@@ -495,6 +495,9 @@ namespace HiddenHarbours.Fishing
             // A fresh cast starts with a dead rod: the working has to be earned again, so the flick's
             // own sweep can't be mistaken for the first few strokes of a jig.
             _jig.Reset();
+            // THE CAST ENTRY (juice charter §4.3, §4.5): the line touches down — the rings and the audio
+            // slot key off this one beat.
+            EventBus.Publish(new JuiceMomentCue(JuiceMoment.CastEntry, _lastCast.LandingPoint, 0f));
             Emit(FishingPhase.Waiting, 0f, 0f);
         }
 
@@ -737,6 +740,13 @@ namespace HiddenHarbours.Fishing
             // ⚠️ FishCaught is NOT published on the in-hand path — see ClamDig for the full reasoning.
             // It means "a catch entered a hold", and the hand is not a hold. CarryHands publishes
             // CatchLanded for the hand moment; FishCaught fires when the fish goes in the pail.
+            // THE LANDING FRAME (juice charter §4.1, §4.5): one published beat at the point the fish
+            // leaves the water. The hit-stop, the weight-sized splash, the audio slot and the notebook's
+            // readout all key off this cue, never off this class (rule 4). Published BEFORE the
+            // hand/hold branch so every landing path fires it exactly once. Strength = kg.
+            Vector2 exit = !_depthGame && _lastCast.IsCast ? _lastCast.LandingPoint : AnglerPosition;
+            EventBus.Publish(new JuiceMomentCue(JuiceMoment.Landing, exit, _pendingWeight));
+
             if (_landInHandOnFoot && _mode == ControlMode.OnFoot && TryLandInHand(item))
             {
                 Debug.Log($"[Fishing] Landed {item} — it's in your hand.");

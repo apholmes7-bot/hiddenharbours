@@ -74,14 +74,20 @@ that plays, and the −12 / −3 dBFS peaks survive import. Repo cost stays 2.19
 
 ## Slots deliberately left empty
 
-An empty slot is honest; a wrong licence is not. These three keep the procedural placeholder from
+An empty slot is honest; a wrong licence is not. The first three keep the procedural placeholder from
 `ProceduralAudio.cs` that has been covering them all along, and the game is complete without them.
+The four moment slots (juice PR 3, charter §4.5) have **no placeholder** — audio is a purchase, so each is
+silent until its file lands (the sale chime plays `_homeWarmth` in its place meanwhile).
 
 | Slot | Why it is empty | What would fill it |
 |---|---|---|
 | `_hullRow` | No CC0 recording of **oars working in water** was found on OpenGameArt or Wikimedia Commons. Every rowing recording located was NC, SA, or from a pack whose terms forbid redistributing the raw files. | **Owner shopping list.** Freesound requires an account, and this lane does not create accounts. Search Freesound for `rowing oar boat`, filter to **CC0**, and confirm the licence on the item page rather than the search chip; drop what you like into `_inbox/` and this lane will process and slot it. |
 | `_catchSting` | Musical, not foley. `docs/audio/foley-production-guide.md` §9 holds both stings until there is a score for them to sit inside, so they land in the same tonal world instead of clashing with it. | Kenney's [Music Jingles](https://kenney.nl/assets/music-jingles) (CC0) is a ready placeholder if the owner wants one now — an inspector edit and a row here, no code. |
 | `_homeWarmth` | As above. The earned made-it-home exhale is the warmest moment in the game and deserves the score's key. | The same Kenney set. |
+| `_landingHit` | The landing frame (juice PR 3). Silent by the charter's rule until a file lands; no placeholder covers it. | A short wet hit, CC0, on `AudioClipSet.LandingHit`. |
+| `_saleChime` | The sale's reward beat (juice PR 3). Plays `_homeWarmth` in its place meanwhile. Musical — waits for the score, as the stings do. | The same Kenney set, on `AudioClipSet.SaleChime`. |
+| `_digStrike` | The shovel's strike (juice PR 3). Silent until a file lands. | A shovel-in-wet-sand strike, CC0, on `AudioClipSet.DigStrike`. |
+| `_castEntry` | The line touching down (juice PR 3). Silent until a file lands. | A small line-entry plip, CC0, on `AudioClipSet.CastEntry`. |
 
 ## Adding a clip later
 

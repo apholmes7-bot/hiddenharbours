@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using HiddenHarbours.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -141,6 +142,30 @@ namespace HiddenHarbours.World
         private int _money;
         private bool _moneyKnown;
         private int _lastPayout;       // the gain annotated beside the balance, 0 for none
+
+        // ---- THE MOMENTS ON THE PAGE (juice charter §4.1, §4.2, §4.4) ---------------------------------
+        // The landing's weight counting up in the LEFT leaf's head with a pop on its last digit; the lift
+        // line ("Lifted out a soft-shell clam — it's in your hand.") lettered into the same head; the
+        // sale's coins flying from that register to the purse with the balance counting up behind them
+        // and a pop when it lands. All of it ticks on UNSCALED time at Juice.MomentTickHz, and ONLY while
+        // the book is open: a moment that happens with the book shut is simply already true when it
+        // opens (the line stands, the weight is the weight, the balance is the balance).
+        private Text _registerLabel;                      // the left head, left: the lift line
+        private Text _weightLabel;                        // the left head, right: the weight readout
+        private string _registerLine = "";                // the last landing's line (stands until the next)
+        private readonly CountUp _weight = new CountUp(); // tenths of a kg
+        private bool _weightAnimating;
+        private readonly CountUp _purse = new CountUp();  // the balance after a sale
+        private readonly StringBuilder _sb = new StringBuilder(32);   // pre-sized; ONE small string per tick
+        private Image[] _coins;                           // the pooled coins, rebuilt with the page
+        private int _coinsLanded;
+        private float _saleClock;                         // unscaled seconds since the sale
+        private bool _saleArmed;                          // coins and/or count-up in flight
+        private int _saleFrom, _saleTo;
+        private float _momentTimer;
+        private int _leftHeadX, _leftHeadY, _leftHeadW;   // the register's home, cached by the last Rebuild
+        private Vector2 _coinFrom, _coinTo;
+        private JuiceSettings? _juiceOverride;            // tests pin the knobs; production reads GameServices.Config
 
         private bool _gateWasBlocked;
         private bool _moveWasClaimed;
@@ -333,6 +358,8 @@ namespace HiddenHarbours.World
             // case. So the money is followed all the time and only lettered when there is a page.
             EventBus.Subscribe<MoneyChanged>(OnMoneyChanged);
             EventBus.Subscribe<CatchSold>(OnCatchSold);
+            EventBus.Subscribe<CatchLanded>(OnCatchLanded);
+            EventBus.Subscribe<JuiceMomentCue>(OnMoment);
         }
 
         private void OnDisable()
@@ -340,6 +367,8 @@ namespace HiddenHarbours.World
             EventBus.Unsubscribe<NotebookRequested>(OnRequested);
             EventBus.Unsubscribe<MoneyChanged>(OnMoneyChanged);
             EventBus.Unsubscribe<CatchSold>(OnCatchSold);
+            EventBus.Unsubscribe<CatchLanded>(OnCatchLanded);
+            EventBus.Unsubscribe<JuiceMomentCue>(OnMoment);
             if (IsOpen) Close();
         }
 
@@ -553,6 +582,8 @@ namespace HiddenHarbours.World
                 return;
             }
 
+            TickMomentsFrame();   // the count-ups and the coins, on unscaled time, while the page is up
+
             // ⭐ THE PRESS THAT OPENED THE BOOK IS STILL DOWN. Interact is read in other components'
             // Updates in an order nobody defines, so without this a book opened with E at a desk would be
             // shut by the same E on the same frame and never appear at all. The same guard covers N:
@@ -662,6 +693,8 @@ namespace HiddenHarbours.World
             DrawTabs(inset + 2 * pageW + NotebookKit.Gutter, inset);
             DrawPageMarks(inset, inset, pageW, pageH);
             DrawPurse(inset + pageW + NotebookKit.Gutter, inset, pageW);
+            DrawRegister(inset, inset, pageW);
+            BuildCoins(inset + pageW + NotebookKit.Gutter, inset, pageW);   // last, so they draw over both leaves
         }
 
         /// <summary>
@@ -820,7 +853,8 @@ namespace HiddenHarbours.World
         /// "this is what the last sale brought in"; leaving it up after she has spent the money would
         /// make it a claim about a balance that no longer contains it.</para>
         /// </summary>
-        private void OnMoneyChanged(MoneyChanged e)
+        /// <summary>Public so tests drive the same path the bus does (EditMode never runs OnEnable).</summary>
+        public void OnMoneyChanged(MoneyChanged e)
         {
             _money = e.NewBalance;
             _moneyKnown = true;
@@ -837,9 +871,11 @@ namespace HiddenHarbours.World
         /// she next looks — which is how a player actually checks what a load of cod was worth. It
         /// stands until she spends.</para>
         /// </summary>
-        private void OnCatchSold(CatchSold e)
+        /// <summary>Public so tests drive the same path the bus does.</summary>
+        public void OnCatchSold(CatchSold e)
         {
             _lastPayout = e.TotalPaid > 0 ? e.TotalPaid : 0;
+            ArmSale(_lastPayout);
             RepaintPurse();
         }
 
@@ -850,8 +886,10 @@ namespace HiddenHarbours.World
         /// </summary>
         public string PurseLine()
         {
-            string balance = _moneyKnown ? MoneyFormat.Balance(_money) : MoneyFormat.Currency + "--";
-            return _lastPayout > 0 ? balance + "   " + MoneyFormat.Payout(_lastPayout) : balance;
+            string balance = _moneyKnown ? MoneyFormat.Balance(DisplayedMoney) : MoneyFormat.Currency + "--";
+            // The payout note waits for the coins: while the balance is still climbing it is the climb
+            // that says what the sale was worth, and the note is the receipt once it has landed.
+            return _lastPayout > 0 && !_saleArmed ? balance + "   " + MoneyFormat.Payout(_lastPayout) : balance;
         }
 
         /// <summary>
@@ -865,6 +903,209 @@ namespace HiddenHarbours.World
 
             string line = PurseLine();
             if (_purseLabel.text != line) _purseLabel.text = line;
+        }
+
+        // ---- the moments ---------------------------------------------------------------------------------
+
+        private JuiceSettings Juice => _juiceOverride ?? (GameServices.Config != null ? GameServices.Config.Juice : JuiceSettings.Default);
+
+        /// <summary>Tests pin the knobs without a GameConfig asset; null returns to the live config.</summary>
+        public void OverrideJuice(JuiceSettings? settings) => _juiceOverride = settings;
+
+        /// <summary>The last landing's line in the register — what the left head letters (tests, proofs).</summary>
+        public string RegisterLine => _registerLine;
+
+        /// <summary>The weight readout right now, in tenths of a kg (tests: the count-up, and where it landed).</summary>
+        public int WeightTenths => _weight.Value;
+
+        /// <summary>The balance the purse letters right now: the true balance, or — for the length of a sale's
+        /// coins and count-up — the balance she SEES climbing toward it.</summary>
+        public int DisplayedMoney => _saleArmed ? _purse.Value : _money;
+
+        /// <summary>A sale's coins and/or count-up are still playing (tests).</summary>
+        public bool SaleAnimating => _saleArmed;
+
+        /// <summary>
+        /// A catch reached her hand (the rod's in-hand landing, or the shovel's lift — #803). The register
+        /// keeps the line the toast says, so the book agrees with the screen when she next looks.
+        /// </summary>
+        public void OnCatchLanded(CatchLanded e)
+        {
+            _registerLine = LiftLine.For(e.Item);
+            if (!IsOpen) return;
+            EnsureRegisterLabels();
+            if (_registerLabel != null && _registerLabel.text != _registerLine) _registerLabel.text = _registerLine;
+        }
+
+        /// <summary>
+        /// A landing or a dig strike carries the catch's weight: the readout counts up to it over
+        /// <c>WeightCountUpSeconds</c> and pops on the last digit (§4.1). Shut book: the weight is simply set.
+        /// </summary>
+        public void OnMoment(JuiceMomentCue e)
+        {
+            if (e.Kind != JuiceMoment.Landing && e.Kind != JuiceMoment.DigStrike) return;
+            int tenths = Mathf.RoundToInt(Mathf.Max(0f, e.Strength) * 10f);
+            JuiceSettings j = Juice;
+            if (!IsOpen || !j.MomentsEnabled || j.WeightCountUpSeconds <= 0f)
+            {
+                _weight.Set(tenths);
+                _weightAnimating = false;
+                if (IsOpen) { EnsureRegisterLabels(); RepaintWeight(1f); }
+                return;
+            }
+            EnsureRegisterLabels();
+            _weight.Start(0, tenths, j.WeightCountUpSeconds);
+            _weightAnimating = true;
+            RepaintWeight(1f);
+        }
+
+        /// <summary>The sale: arm the coins (crate → purse) and the balance's climb behind them (§4.2).
+        /// The balance already moved (<c>MoneyChanged</c> lands before <c>CatchSold</c>), so the climb runs from
+        /// the balance BEFORE the sale to the one she has. Shut book, or the moments off: nothing to play.</summary>
+        private void ArmSale(int paid)
+        {
+            JuiceSettings j = Juice;
+            if (!IsOpen || !j.MomentsEnabled || paid <= 0 || !_moneyKnown) { _saleArmed = false; return; }
+            _saleFrom = _money - paid;
+            _saleTo = _money;
+            _purse.Set(_saleFrom);
+            _saleClock = 0f;
+            _coinsLanded = 0;
+            _saleArmed = true;
+            if (CoinCount(j) == 0) _purse.Start(_saleFrom, _saleTo, j.SaleCountUpSeconds);   // no coins: the climb starts now
+        }
+
+        private static int CoinCount(in JuiceSettings j) => j.CoinFlySeconds > 0f ? Mathf.Max(0, j.CoinFlyCount) : 0;
+
+        private bool MomentsLive => _saleArmed || _weightAnimating;
+
+        private void TickMomentsFrame()
+        {
+            if (!MomentsLive) return;   // the idle cost: two bools
+            // UNSCALED: the landing's hit-stop dips Time.timeScale and the readout must keep counting through it.
+            _momentTimer -= Time.unscaledDeltaTime;
+            if (_momentTimer > 0f) return;
+            float step = 1f / Mathf.Max(1f, Juice.MomentTickHz);
+            _momentTimer = step;
+            TickMoments(step);
+        }
+
+        /// <summary>Advance the page's moments by <paramref name="dt"/> UNSCALED seconds. Public for tests.</summary>
+        public void TickMoments(float dt)
+        {
+            JuiceSettings j = Juice;
+
+            if (_weightAnimating)
+            {
+                _weight.Tick(dt);
+                bool popping = _weight.Popping(j.CountUpPopSeconds);
+                RepaintWeight(popping ? _weight.PopScale(j.CountUpPopScale, j.CountUpPopSeconds) : 1f);
+                if (!_weight.Running && !popping) _weightAnimating = false;
+            }
+
+            if (_saleArmed) TickSale(dt, in j);
+        }
+
+        private void TickSale(float dt, in JuiceSettings j)
+        {
+            _saleClock += Mathf.Max(0f, dt);
+            int n = CoinCount(j);
+            int coins = _coins != null ? Mathf.Min(n, _coins.Length) : 0;
+            int landed = 0;
+            for (int i = 0; i < n; i++)
+            {
+                float t = (_saleClock - i * j.CoinFlyStaggerSeconds) / j.CoinFlySeconds;
+                bool inFlight = t >= 0f && t < 1f;
+                if (t >= 1f) landed++;
+                if (i >= coins) continue;   // the pool is smaller than the count (rebuilt at the next open)
+                Image coin = _coins[i];
+                if (coin == null) continue;
+                if (!inFlight) { if (coin.gameObject.activeSelf) coin.gameObject.SetActive(false); continue; }
+                // A lob: the straight line from the register to the purse, lifted by a half-sine of arc pixels.
+                float lift = Mathf.Sin(t * Mathf.PI) * j.CoinFlyArcPixels;
+                Vector2 p = Vector2.LerpUnclamped(_coinFrom, _coinTo, t);
+                coin.rectTransform.anchoredPosition = new Vector2(p.x, -p.y + lift);
+                if (!coin.gameObject.activeSelf) coin.gameObject.SetActive(true);
+            }
+
+            // The climb starts when the FIRST coin lands and runs while the rest arrive; it pops on landing.
+            if (landed > 0 && _coinsLanded == 0 && n > 0) _purse.Start(_saleFrom, _saleTo, j.SaleCountUpSeconds);
+            _coinsLanded = landed;
+
+            bool wasRunning = _purse.Running;
+            _purse.Tick(dt);
+            bool popping = _purse.Popping(j.CountUpPopSeconds);
+            if (_purseLabel != null)
+            {
+                float pop = popping ? _purse.PopScale(j.CountUpPopScale, j.CountUpPopSeconds) : 1f;
+                _purseLabel.rectTransform.localScale = new Vector3(pop, pop, 1f);
+            }
+            if (wasRunning || _purse.Running || _purse.Landed) RepaintPurse();
+
+            bool coinsDone = landed >= n;
+            bool climbDone = !_purse.Running && (_purse.Landed || _purse.SinceLanded >= 0f) && !popping;
+            if (coinsDone && climbDone)
+            {
+                _saleArmed = false;
+                RepaintPurse();   // the receipt: the true balance with the payout note beside it
+            }
+        }
+
+        /// <summary>The LEFT leaf's head: the register (the lift line on the left, the weight on the right) —
+        /// the strip the book has always printed blank, opposite the purse.</summary>
+        private void DrawRegister(int x, int y, int pageW)
+        {
+            _leftHeadX = x + NotebookKit.PadL;
+            _leftHeadY = y + 2;
+            _leftHeadW = pageW - NotebookKit.PadL - NotebookKit.PadR;
+            _registerLabel = null;
+            _weightLabel = null;
+            EnsureRegisterLabels();
+        }
+
+        /// <summary>Letter the register's two labels if they are not on the page yet (a landing with the book
+        /// open letters them then; an empty register letters nothing).</summary>
+        private void EnsureRegisterLabels()
+        {
+            if (_bookRect == null) return;
+            if (_registerLabel == null && !string.IsNullOrEmpty(_registerLine))
+                _registerLabel = AddText(_bookRect, _registerLine, _leftHeadX, _leftHeadY, _leftHeadW, Ink, TextAnchor.UpperLeft);
+            if (_weightLabel == null && (_weight.Value > 0 || _weight.Running))
+                _weightLabel = AddText(_bookRect, WeightText(), _leftHeadX, _leftHeadY, _leftHeadW, InkStrong, TextAnchor.UpperRight);
+        }
+
+        private string WeightText()
+        {
+            _sb.Clear();
+            _weight.WriteTo(_sb, 1);
+            _sb.Append(" kg");
+            return _sb.ToString();
+        }
+
+        private void RepaintWeight(float scale)
+        {
+            if (!IsOpen || _weightLabel == null) return;
+            string text = WeightText();
+            if (_weightLabel.text != text) _weightLabel.text = text;
+            // The pop is on the whole readout (the last digit is its right edge, where the anchor is).
+            _weightLabel.rectTransform.localScale = new Vector3(scale, scale, 1f);
+        }
+
+        /// <summary>The pooled coins: <c>CoinFlyCount</c> small gold squares, built with the page and parked
+        /// inactive. They leave the register's right edge and land on the purse's fore-edge.</summary>
+        private void BuildCoins(int purseX, int y, int pageW)
+        {
+            int n = CoinCount(Juice);
+            _coins = new Image[n];
+            int w = pageW - NotebookKit.PadL - NotebookKit.PadR;
+            _coinFrom = new Vector2(_leftHeadX + _leftHeadW - 8, y + 2 + 2);
+            _coinTo = new Vector2(purseX + NotebookKit.PadL + w - 8, y + 2 + 2);
+            for (int i = 0; i < n; i++)
+            {
+                RectTransform r = AddPiece(_bookRect, "Coin", null, (int)_coinFrom.x, (int)_coinFrom.y, 3, 3, GoldInk);
+                r.gameObject.SetActive(false);
+                _coins[i] = r.GetComponent<Image>();
+            }
         }
 
         // ---- primitives ---------------------------------------------------------------------------------

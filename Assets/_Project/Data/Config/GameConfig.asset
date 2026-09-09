@@ -432,3 +432,23 @@ MonoBehaviour:
     SpeedPullBackSeaStateFraction: 0.05
     SpeedPullBackSlewSeconds: 2
     FeelSeaStateRefreshHz: 4
+    MomentsEnabled: 1
+    LandingHitStopScale: 0.05
+    LandingHitStopSeconds: 0.09
+    LandingSplashDropsMin: 6
+    LandingSplashDropsPerKg: 3
+    LandingSplashDropsMax: 24
+    LandingSplashSeconds: 0.55
+    WeightCountUpSeconds: 0.6
+    CountUpPopScale: 1.35
+    CountUpPopSeconds: 0.18
+    CoinFlyCount: 8
+    CoinFlySeconds: 0.45
+    CoinFlyStaggerSeconds: 0.05
+    CoinFlyArcPixels: 14
+    SaleCountUpSeconds: 0.7
+    SandChunkCount: 7
+    SandChunkSeconds: 0.45
+    CastRingCount: 3
+    CastRingSeconds: 0.6
+    MomentTickHz: 30

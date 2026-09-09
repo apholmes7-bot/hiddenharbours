@@ -60,6 +60,8 @@ namespace HiddenHarbours.Tests.Audio
         private static readonly HashSet<string> DocumentedHeldSlots = new HashSet<string>
         {
             "HullRow", "CatchSting", "HomeWarmth",
+            // The three moments (juice PR 3, charter §4.5): no placeholder, silent until the owner's file lands.
+            "LandingHit", "SaleChime", "DigStrike", "CastEntry",
         };
 
         private const int ExpectedFilledSlots = 17;
@@ -116,10 +118,10 @@ namespace HiddenHarbours.Tests.Audio
         // ---- the slot inventory -----------------------------------------------------------------
 
         [Test]
-        public void SetHasTwentySlots_OneForEachManifestRow()
+        public void SetHasTwentyFourSlots_OneForEachManifestRow()
         {
-            Assert.AreEqual(20, ClipFields().Count(),
-                "The manifest has 20 slots — 7 on the director, 13 on the rod fight. AudioClipSetDef must " +
+            Assert.AreEqual(24, ClipFields().Count(),
+                "The manifest has 24 slots — 7 on the director, 4 for the three moments, 13 on the rod fight. AudioClipSetDef must " +
                 "carry exactly one AudioClip field per slot.");
         }
 
@@ -139,8 +141,8 @@ namespace HiddenHarbours.Tests.Audio
                 ". Either slot a correctly-licensed clip, or say so in LICENSES.md and add the slot to " +
                 "DocumentedHeldSlots — an empty slot is honest only when it is written down.");
 
-            Assert.GreaterOrEqual(20 - empty.Count, ExpectedFilledSlots,
-                $"PR 1 shipped {ExpectedFilledSlots} filled slots; this build has {20 - empty.Count}.");
+            Assert.GreaterOrEqual(ClipFields().Count() - empty.Count, ExpectedFilledSlots,
+                $"PR 1 shipped {ExpectedFilledSlots} filled slots; this build has {ClipFields().Count() - empty.Count}.");
         }
 
         // ---- the shape the runtime assumes ------------------------------------------------------

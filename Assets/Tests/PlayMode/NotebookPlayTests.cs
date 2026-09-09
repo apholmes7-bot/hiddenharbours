@@ -80,7 +80,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTearDown]
         public IEnumerator TearDown()
         {
-            if (_book != null) _book.Close();
+            if (_book != null) { _book.OverrideJuice(null); _book.Close(); }
             PauseMenu.CloseIfOpen();
             ShellPause.Reset();
 
@@ -304,19 +304,52 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             Assert.AreEqual("₲1,240", _book.PurseLine(), "precondition: just the balance");
 
-            // The payout the HUD band used to flash, in its new home: beside the balance it moved.
+            // The payout the HUD band used to flash, in its new home: beside the balance it moved. Since the
+            // three moments (#816, docs/design/three-moments.md §4.2) the sale PLAYS first — coins crate → purse
+            // with the balance climbing behind them on unscaled time — and the note is the receipt once the
+            // climb has landed. With the moments off (GameConfig.Juice.MomentsEnabled) the receipt is immediate.
+            // ⚠️ PIN THE KNOB — BOTH WAYS. The presenter reads GameConfig.Juice and falls back to
+            // JuiceSettings.Default (moments ON) when no config is wired, which is the case in this bare
+            // fixture scene on CI. A test that reads the knob from a DIFFERENT source than the presenter
+            // (run 34377592807 read "off" from a null config while the presenter played) is a test of the
+            // fixture, not the book; and a test that only ever takes the branch the fixture happens to land
+            // in leaves the other branch untested. So: pin OFF and sell, pin ON and sell. Both branches
+            // always execute. Production's Default fallback is not touched.
+
+            // OFF: the shipped behaviour before #816 — the receipt is there the next frame.
+            JuiceSettings off = JuiceSettings.Default;
+            off.MomentsEnabled = false;
+            _book.OverrideJuice(off);
             EventBus.Publish(new CatchSold(totalPaid: 48, count: 3));
             yield return null;
-
-            StringAssert.Contains("+₲48", _book.PurseLine(),
-                                  "the sale is READ in the book rather than flashed over the game");
+            Assert.IsFalse(_book.SaleAnimating, "moments off: nothing plays");
+            StringAssert.Contains("+₲48", _book.PurseLine(), "moments off: the receipt is immediate");
 
             // ...and it must not outlive the money. "+₲48" beside a balance she has since spent is a
             // claim about a balance that no longer contains it.
             EventBus.Publish(new MoneyChanged(newBalance: 1000, delta: -288));
             yield return null;
-
             Assert.AreEqual("₲1,000", _book.PurseLine(), "spending clears the last sale's annotation");
+
+            // ON: the sale PLAYS first, and the note is the receipt once the climb has landed.
+            JuiceSettings on = JuiceSettings.Default;
+            on.MomentsEnabled = true;
+            _book.OverrideJuice(on);
+            EventBus.Publish(new CatchSold(totalPaid: 60, count: 4));
+            yield return null;
+            Assert.IsTrue(_book.SaleAnimating, "moments on: the sale plays first — the coins and the balance's climb");
+            StringAssert.DoesNotContain("+₲60", _book.PurseLine(), "no receipt while the balance is still climbing");
+            // WALL time, not frames: the presenter ticks the climb on unscaledDeltaTime, and a CI frame is
+            // not a fixed slice of time. Wait until the climb reports landed or 5 real seconds have passed.
+            float deadline = Time.realtimeSinceStartup + 5f;
+            while (_book.SaleAnimating && Time.realtimeSinceStartup < deadline) yield return null;
+            Assert.IsFalse(_book.SaleAnimating, "the coins and the climb land in CoinFly*/SaleCountUpSeconds, well under 5 s of wall time");
+            StringAssert.Contains("+₲60", _book.PurseLine(),
+                                  "the sale is READ in the book rather than flashed over the game");
+
+            EventBus.Publish(new MoneyChanged(newBalance: 700, delta: -300));
+            yield return null;
+            Assert.AreEqual("₲700", _book.PurseLine(), "moments on: spending clears the receipt just the same");
         }
 
         [UnityTest]

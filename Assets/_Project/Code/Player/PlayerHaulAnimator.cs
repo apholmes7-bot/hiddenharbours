@@ -177,7 +177,7 @@ namespace HiddenHarbours.Player
         // The on-foot 8-direction iso skin, when one is installed. While a haul is live the haul sheet owns
         // the renderer, so the iso driver is explicitly SUSPENDED for the duration and Released on hand-back
         // — an announced hand-off rather than two components overwriting each other's sprite every frame.
-        // Cached once (this component has no Update loop, but GetComponent per snapshot is still waste).
+        // Cached once (the Update below only ticks the follow-through tail; GetComponent per snapshot is still waste).
         private HiddenHarbours.Core.IsoCharacterSprite _isoSkin;
         private bool _isoSkinResolved;
         // The shared clip seam. It does its OWN Suspend/Release of the iso skin, so on the clip path
@@ -191,6 +191,23 @@ namespace HiddenHarbours.Player
         private bool _restoreFlipX;
         private float _lastLine01;
         private bool _hasLastLine;        // the previous snapshot was a live-haul one (delta is meaningful)
+
+        // THE FOLLOW-THROUGH (juice charter §4.3). When the haul ends, the last frame HOLDS for the Def's
+        // follow-through + settle on UNSCALED time before the renderer is handed back, so the heave lands
+        // rather than snapping to the walk. A pre-hold cannot apply here: the pull is position-driven
+        // (the frame is the line's progress, not a clock), so only the tail is timed.
+        // WIRED-ONLY, deliberately: the immediate hand-back on None is pinned by four EditMode tests and
+        // one PlayMode test (the iso skin resumes the frame the pot surfaces), and a lingering heave under
+        // a walk that already started would slide her. So there is NO Resources fallback here — the Def at
+        // HaulTimingResource is the one to drag onto this field when the slot judges the hold worth it.
+        public const string HaulTimingResource = "ActionTiming/HaulTiming";
+        [Tooltip("The haul's timing Def — only its follow-through + settle apply (the pull is position-driven). " +
+                 "Empty = the immediate hand-back that shipped. Wire Resources/" + HaulTimingResource + " to hold the heave.")]
+        [SerializeField] private ActionTimingDef _haulTiming;
+        private bool _haulTimingResolved;
+        private float _tailSeconds;       // follow-through + settle, resolved once
+        private bool _tailing;            // the last frame is being held before the hand-back
+        private float _tailElapsed;
 
         /// <summary>The pose the live haul is in — None when there is no haul and the walk sprite owns
         /// the renderer. It reads the HAUL, not the renderer, so it stays truthful through the one beat
@@ -215,7 +232,8 @@ namespace HiddenHarbours.Player
             _hasLastLine = s.Phase == TrapHaulPhase.Hauling;
 
             HaulPose pose = PlayerHaulAnimMath.PoseFor(s.Phase, delta, LineDeltaEpsilon);
-            if (pose == HaulPose.None) { EndHaul(); return; }
+            if (pose == HaulPose.None) { BeginTail(); return; }
+            _tailing = false;   // a live snapshot cancels a pending hand-back
 
             // The rig's clip first when it is baked; the owner's flat sheet below when it is not. The
             // fallback is a STRICT no-op — every line past here is the code that shipped before.
@@ -361,11 +379,57 @@ namespace HiddenHarbours.Player
             return _clipPlayer;
         }
 
+        /// <summary>The haul is over: hold the last frame for the Def's follow-through + settle, then hand
+        /// back. With no Def (a zero tail), or nothing of ours on the renderer, the hand-back is immediate.</summary>
+        private void BeginTail()
+        {
+            float tail = ResolveTail();
+            if (tail <= 0f || (!_active && !_clipActive)) { EndHaul(); return; }
+            Pose = HaulPose.None;     // the HAUL is over even while the frame lingers (Pose reads the haul)
+            _hasLastLine = false;
+            _tailing = true;
+            _tailElapsed = 0f;
+        }
+
+        /// <summary>The last frame is being held for the follow-through (tests).</summary>
+        public bool Tailing => _tailing;
+
+        private float ResolveTail()
+        {
+            if (_haulTimingResolved) return _tailSeconds;
+            _haulTimingResolved = true;
+            ActionTimingDef def = _haulTiming;   // wired only — never Resources (see the note above)
+            _tailSeconds = def != null ? def.Timing.FollowThroughSeconds + def.Timing.SettleSeconds : 0f;
+            return _tailSeconds;
+        }
+
+        /// <summary>Wire the haul timing directly (tests / a builder). Null = the serialized field, else no tail.</summary>
+        public void ConfigureHaulTiming(ActionTimingDef def)
+        {
+            _haulTiming = def;
+            _haulTimingResolved = false;
+        }
+
+        private void Update()
+        {
+            if (!_tailing) return;   // the idle cost: one compare
+            TickTail(Time.unscaledDeltaTime);
+        }
+
+        /// <summary>One frame of the follow-through hold on the caller's UNSCALED delta. Public for tests.</summary>
+        public void TickTail(float unscaledDt)
+        {
+            if (!_tailing) return;
+            _tailElapsed += Mathf.Max(0f, unscaledDt);
+            if (_tailElapsed >= _tailSeconds) EndHaul();
+        }
+
         /// <summary>Hand the renderer back to the walk sprite (idempotent — safe on disable / repeat ends).</summary>
         private void EndHaul()
         {
             Pose = HaulPose.None;
             _hasLastLine = false;
+            _tailing = false;
             EndClip();               // no-op on the legacy path, and the clip restores the sprite itself
             if (!_active) return;
             _active = false;

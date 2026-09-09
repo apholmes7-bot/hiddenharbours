@@ -9,6 +9,11 @@ namespace HiddenHarbours.Audio
         None = 0,
         CatchSting,   // a fish lands (FishCaught)
         HomeWarmth,   // sold the catch / made it back ashore (CatchSold / disembark)
+        // The three moments (juice charter §4.5). No placeholders: a null clip is SILENT until the owner's file lands.
+        LandingHit,   // the landing frame (JuiceMomentCue.Landing)
+        SaleChime,    // the sale's reward beat (CatchSold) — plays HomeWarmth's clip until its own lands
+        DigStrike,    // the shovel's strike (JuiceMomentCue.DigStrike)
+        CastEntry,    // the line touches down (JuiceMomentCue.CastEntry)
     }
 
     /// <summary>The discrete game moments the director turns into a cue.</summary>
@@ -17,6 +22,9 @@ namespace HiddenHarbours.Audio
         FishLanded,   // FishCaught
         CatchSold,    // CatchSold
         CameAshore,   // ControlModeChanged Aboard -> OnFoot ("made it home")
+        Landing,      // JuiceMomentCue(Landing) — the frame the fish leaves the water
+        DigStrike,    // JuiceMomentCue(DigStrike)
+        CastEntry,    // JuiceMomentCue(CastEntry)
     }
 
     /// <summary>The three independent mix buses, each with its own player-set volume.</summary>
@@ -73,9 +81,22 @@ namespace HiddenHarbours.Audio
         public static AudioCue CueFor(AudioMoment moment) => moment switch
         {
             AudioMoment.FishLanded => AudioCue.CatchSting,
-            AudioMoment.CatchSold  => AudioCue.HomeWarmth,
+            AudioMoment.CatchSold  => AudioCue.SaleChime,   // diverged from the arrival cue (juice PR 3)
             AudioMoment.CameAshore => AudioCue.HomeWarmth,
+            AudioMoment.Landing    => AudioCue.LandingHit,
+            AudioMoment.DigStrike  => AudioCue.DigStrike,
+            AudioMoment.CastEntry  => AudioCue.CastEntry,
             _                      => AudioCue.None,
+        };
+
+        /// <summary>The cue a published moment fires. Sale is silent HERE — <c>CatchSold</c> already plays
+        /// the sale, and the cue must not double it.</summary>
+        public static AudioCue CueFor(JuiceMoment moment) => moment switch
+        {
+            JuiceMoment.Landing   => CueFor(AudioMoment.Landing),
+            JuiceMoment.DigStrike => CueFor(AudioMoment.DigStrike),
+            JuiceMoment.CastEntry => CueFor(AudioMoment.CastEntry),
+            _                     => AudioCue.None,
         };
 
         // ---- "made it home" warmth is EARNED, not constant (P5) -----------------------------

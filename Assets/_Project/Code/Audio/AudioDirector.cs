@@ -79,6 +79,12 @@ namespace HiddenHarbours.Audio
         [SerializeField] private AudioClip _catchSting;
         [SerializeField] private AudioClip _homeWarmth;
 
+        [Header("Moment cues (juice charter §4.5; NO placeholders — an empty slot is silent until the owner's file lands)")]
+        [SerializeField] private AudioClip _landingHit;   // JuiceMomentCue(Landing)
+        [SerializeField] private AudioClip _saleChime;    // CatchSold (plays _homeWarmth while empty)
+        [SerializeField] private AudioClip _digStrike;    // JuiceMomentCue(DigStrike)
+        [SerializeField] private AudioClip _castEntry;    // JuiceMomentCue(CastEntry)
+
         // ---- runtime sources ----------------------------------------------------------------
         private AudioSource _bed;     // calm-sea bed (ambience)
         private AudioSource _gull;    // gull layer (ambience)
@@ -144,6 +150,13 @@ namespace HiddenHarbours.Audio
             if (set.WindTell       != null) _windTell       = set.WindTell;
             if (set.CatchSting     != null) _catchSting     = set.CatchSting;
             if (set.HomeWarmth     != null) _homeWarmth     = set.HomeWarmth;
+
+            // The three moments (juice charter §4.5): a null slot stays null — silent, no placeholder;
+            // the sale chime falls back to _homeWarmth in PlayCue while its slot is empty.
+            if (set.LandingHit     != null) _landingHit     = set.LandingHit;
+            if (set.SaleChime      != null) _saleChime      = set.SaleChime;
+            if (set.DigStrike      != null) _digStrike      = set.DigStrike;
+            if (set.CastEntry      != null) _castEntry      = set.CastEntry;
         }
 
         private void OnEnable()  => Subscribe();
@@ -162,6 +175,7 @@ namespace HiddenHarbours.Audio
             EventBus.Subscribe<CatchSold>(OnCatchSold);
             EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
             EventBus.Subscribe<ActiveBoatChanged>(OnActiveBoatChanged);
+            EventBus.Subscribe<JuiceMomentCue>(OnMoment);
             _subscribed = true;
         }
 
@@ -172,6 +186,7 @@ namespace HiddenHarbours.Audio
             EventBus.Unsubscribe<CatchSold>(OnCatchSold);
             EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
             EventBus.Unsubscribe<ActiveBoatChanged>(OnActiveBoatChanged);
+            EventBus.Unsubscribe<JuiceMomentCue>(OnMoment);
             _subscribed = false;
         }
 
@@ -254,6 +269,9 @@ namespace HiddenHarbours.Audio
 
         private void OnFishCaught(FishCaught e) => PlayCue(AudioDirectorLogic.CueFor(AudioMoment.FishLanded));
         private void OnCatchSold(CatchSold e)   => PlayCue(AudioDirectorLogic.CueFor(AudioMoment.CatchSold));
+        /// <summary>The three moments' slots (juice charter §4.5): landing, dig strike, cast entry. The sale's
+        /// cue is NOT keyed here — <c>CatchSold</c> above already plays it.</summary>
+        private void OnMoment(JuiceMomentCue e) => PlayCue(AudioDirectorLogic.CueFor(e.Kind));
 
         private void OnControlModeChanged(ControlModeChanged e)
         {
@@ -290,6 +308,10 @@ namespace HiddenHarbours.Audio
             {
                 AudioCue.CatchSting => _catchSting,
                 AudioCue.HomeWarmth => _homeWarmth,
+                AudioCue.LandingHit => _landingHit,
+                AudioCue.SaleChime  => _saleChime != null ? _saleChime : _homeWarmth,   // the sale keeps its old voice until the chime lands
+                AudioCue.DigStrike  => _digStrike,
+                AudioCue.CastEntry  => _castEntry,
                 _                   => null,
             };
             if (clip == null) return;
