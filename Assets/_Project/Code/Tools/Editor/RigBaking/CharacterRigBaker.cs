@@ -405,8 +405,14 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <para>The stance list comes from the rig's CARRIES table — <c>helm</c> and <c>oars</c>
         /// ride idle and walk but not a run, and that is the rig's statement about its own art, not
         /// a rule worth restating in a menu.</para>
+        ///
+        /// <para><b>Public because the MESH bake must grow the SAME set.</b> ADR 0041 retires a
+        /// baked sheet per state AT PARITY, and parity is only a question you can ask when both
+        /// paths enumerate one state list. A second copy of this expansion in
+        /// <c>CharacterMeshAssetBaker</c> would drift the day the rig adds a stance, and the drift
+        /// would read as "the mesh path is missing art" rather than "two recipes disagree".</para>
         /// </summary>
-        static IReadOnlyList<CharacterState> ExpandCarryStances(
+        public static IReadOnlyList<CharacterState> ExpandCarryStances(
             IRigScriptHost host, string g, IReadOnlyList<CharacterState> states,
             ICollection<string> exclusions = null)
         {

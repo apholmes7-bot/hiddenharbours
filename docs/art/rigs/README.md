@@ -404,11 +404,12 @@ New files in this folder (the kit's other nine were already here and arrived byt
 > the pivot (32,82). **Do not bake a character sheet from this file** — a 64 × 88 sheet no longer
 > slices.
 >
-> **It stays in the folder for exactly one reason**, and it is not sentiment: the ratified
-> deck-character-MESH arc (ADR 0024) pins to it. `DeckCharacterMeshSpikeDef.SourceRigPath` names
-> it and `CharacterPoseMeshSpikeGoldenTests` includes a **byte-identical source check**, so
-> deleting it reds five tests in a live arc. Porting that spike to pass 6 re-baselines its golden
-> numbers and is its own change, with its own eyeball — not a side effect of an art import.
+> ⚠️ **The one reason it stayed is gone (2026-09-09, ADR 0044).** It used to be pinned by the
+> deck-character-mesh SPIKE — `DeckCharacterMeshSpikeDef.SourceRigPath` named it and
+> `CharacterPoseMeshSpikeGoldenTests` byte-checked it. The owner overruled the spike and the whole
+> quarantine was retired; the production mesh bake reads **`characterIsoRig6.js`**, and no C# names
+> this file any more. It is now referenced only by prose (`RodLineMath`'s bite-cadence note).
+> **Deleting it is the `art-director`'s call, not this lane's** — flagged here, not taken.
 >
 > The API below is unchanged in pass 6 and still describes it: `anchors(dir,opts)` →
 > handL/handR/head/hip cell px (the motor-mount pattern: every held thing pins to these),

@@ -58,14 +58,13 @@ Assets/
 |   |   |                                                       App.Editor = the scene BUILDERS (StPeters, NineMileCreek, WestWater...)
 |   |   +-- Tools/Editor/          HiddenHarbours.Tools.Editor  authoring tools; sub-assemblies JsEngine.Editor (embedded V8),
 |   |   |                                                       RigBaking.Editor (the in-engine rig bakers, ADR 0021/0022),
-|   |   |                                                       RigStudio.Editor, SpikeDeckCharacterMesh.Editor
-|   |   +-- Spike/DeckCharacterMesh/  HiddenHarbours.SpikeDeckCharacterMesh: ADR 0024's spike assembly, still shipped (section 9)
+|   |   |                                                       RigStudio.Editor
 |   +-- Data/                      ScriptableObject assets, one entity per file (section 4). Folders as of 2026-09-01:
 |   |                              Art, Bites, Boats (+ Containers, DeckGear, Decks, Helms, HullMeshes, HullProps, Interiors,
 |   |                              Owners, PaintSchemes, Skippers, Visuals), Characters, Commodities, Config (GameConfig),
 |   |                              Decor, Fish, FuelContainers, FuelStations, Homes, Input (HiddenHarbours.inputactions,
 |   |                              the bindings Def and project-wide actions asset, ADR 0043), NPCs, NavBuoys, Recipes, Regions,
-|   |                              Resources (quest/knowledge defs the notebook self-loads), RodFights, Routines, Spike,
+|   |                              Resources (quest/knowledge defs the notebook self-loads), RodFights, Routines,
 |   |                              Staff, StationPieces, Tackle, Terrain (painted seabed), Tools, Traps, Vehicles
 |   +-- Art/                       Boats, Characters, Fishing, Foliage, Materials, Palette, Portraits, Shaders,
 |   |                              Sprites, Terrain, Textures, Tilesets, UI, VFX, Editor   (LFS-tracked binaries)
@@ -81,7 +80,7 @@ Assets/
 +-- Tests/
     +-- EditMode/                  HiddenHarbours.Tests.EditMode (the broad suite) plus per-area assemblies:
     |                              Tests.Art / Audio / Economy / RigBaking / RigSpike / RigStudio / Sell /
-    |                              SpikeDeckCharacterMesh / UI / World .EditMode
+    |                              UI / World .EditMode
     +-- PlayMode/                  HiddenHarbours.Tests.PlayMode (integration; region scenes, journeys)
 ```
 
@@ -218,8 +217,12 @@ rig" are both right (`tr -d '\r'` before comparing).
   index 2. Remove it from the build list and delete the file — a one-line owner action in the editor.
 - `Greywick.unity` (pre-rename) is in the build list at index 3 with no region def behind it.
   Retire or keep as a reference — the owner's scene, the owner's call.
-- `Spike/DeckCharacterMesh` is a spike assembly shipping in `Code/` (ADR 0024 ratified the idea).
-  Promote what it owns into `Art`/`Boats` or retire it; `lead-architect` to audit.
+- ~~`Spike/DeckCharacterMesh` is a spike assembly shipping in `Code/`~~ — **CLOSED 2026-09-09**
+  (ADR 0044). The owner overruled the spike and sent the lane straight to production, so the
+  quarantine was retired: its pure math was promoted to `Core/Iso/CharacterPoseMath.cs` (+ its
+  EditMode test), its pose extractor to `Tools/Editor/RigBaking/CharacterPoseMeshExtractor.cs`,
+  and everything else — the spike Def, its rig MonoBehaviour, its baked 833 KB asset and three
+  asmdefs — was deleted. `Code/Spike/` and `Data/Spike/` no longer exist.
 - `Fishing → Economy` (§5) — the one feature-to-feature edge; promote the contract to Core.
 - This document previously described a `Bootstrap.unity`, a mobile build target, `Assets/ThirdParty/`,
   `Data/Gear|Bait/` and a nine-module code layout, none of which exist as written. The fixes above

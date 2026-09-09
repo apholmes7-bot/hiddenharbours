@@ -59,7 +59,7 @@ namespace HiddenHarbours.Core
     ///
     /// <para><b>Facing does not enter.</b> The hull states its rock as roll about the keel and pitch about
     /// the beam, and a MESH character riding it must rotate that tilt vector into its own frame (the
-    /// spike's <c>DeckCharacterSpikeMath.DeckTiltToCharacter</c>). A SPRITE character must not: its lean
+    /// <c>CharacterPoseMath.DeckTiltToCharacter</c>). A SPRITE character must not: its lean
     /// is a screen-space z-rotation of a finished picture, and the screen-space tilt of a body standing
     /// on a tilting plane is the same whichever way the body faces — only which sheet ROW is drawn
     /// changes. Rotating the tilt by the local heading here would make the fisher lean the wrong way every
