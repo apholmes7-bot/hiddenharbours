@@ -225,7 +225,15 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNotNull(BoatDeckAreas.Resolve(boatGo),
                 "harness: her deck must survive the skinner — if this is null the switcher sees no hull " +
                 "station and every case below is secretly measuring the fallback");
-            Assert.AreEqual(headingDegrees, BoatHullPresenterHost.Resolve(boatGo).DrawnHeadingDegrees(), 1e-2f,
+            // ⚠ Resolved and NAMED before it is dereferenced. A null host here is a fixture that
+            // built a hull the skinner would not present, and an NRE says so in the least useful
+            // way there is — four cases dead before a single station is compared.
+            IBoatHullPresenter presenter = BoatHullPresenterHost.Resolve(boatGo);
+            Assert.IsNotNull(presenter,
+                "harness: the skinner installed no presenter, so this hull is not being DRAWN at " +
+                "all — check MeshVisual() still says Variant = Mesh and carries a mesh, ramps and " +
+                "a cell size");
+            Assert.AreEqual(headingDegrees, presenter.DrawnHeadingDegrees(), 1e-2f,
                 "harness: a mesh hull draws where her bow points — if this ever snaps, every heading " +
                 "below is secretly heading 0 and the fixture proves nothing");
 
@@ -241,18 +249,46 @@ namespace HiddenHarbours.Tests.EditMode
             return (sw, boatGo.transform);
         }
 
+        /// <summary>
+        /// A MESH hull the skinner can actually present — <c>DeckRiderHullSwapTests</c> /
+        /// <c>BoardingSeatHeadingTests</c>' double, field for field.
+        ///
+        /// <para>⚠ <b>Every field here is load-bearing, and leaving one out fails in the FIXTURE
+        /// rather than the assertion.</b> The first cut of this set a <c>HullMesh</c> and an
+        /// elevation and stopped — no <see cref="BoatHullVariant.Mesh"/> variant, no mesh, no
+        /// ramps, no cell size. <c>BoatHullSkinner.Apply</c> then installed no mesh presenter,
+        /// <c>BoatHullPresenterHost.Resolve</c> came back null, and all four cases died on a
+        /// NullReferenceException in <see cref="BuildWithBoat"/> before a single station was
+        /// compared (CI run 34309924065). A hull is not a mesh hull because a field is named
+        /// HullMesh; she is one because her VARIANT says so.</para>
+        /// </summary>
         private BoatVisualDef MeshVisual()
         {
+            var mesh = new Mesh();
+            _spawned.Add(mesh);
+
+            var meshDef = ScriptableObject.CreateInstance<HullMeshDef>();
+            _spawned.Add(meshDef);
+            meshDef.Id = "hullmesh.helm_station";
+            meshDef.Mesh = mesh;
+            meshDef.Ramps = new[]
+            {
+                new HullMeshDef.Ramp { Colors = new[] { new Color32(1, 2, 3, 255) }, Offset = 0 },
+            };
+            meshDef.Bayer16 = new float[16];
+            meshDef.PxPerMetre = 32;
+            meshDef.CellW = 456;
+            meshDef.CellH = 420;
+            meshDef.ElevationDeg = BakeElevationDeg;
+            meshDef.AzimuthCounterClockwise = true;
+            meshDef.WatertightHalfBeamMeters = 0.85f;
+
             var visual = ScriptableObject.CreateInstance<BoatVisualDef>();
             _spawned.Add(visual);
-            visual.Id = "visual.fixture";
+            visual.Id = "visual.helm_station";
+            visual.Variant = BoatHullVariant.Mesh;
+            visual.HullMesh = meshDef;
             visual.ArtBakeElevationDegrees = BakeElevationDeg;
-
-            var mesh = ScriptableObject.CreateInstance<HullMeshDef>();
-            _spawned.Add(mesh);
-            mesh.Id = "hullmesh.fixture";
-            mesh.ElevationDeg = BakeElevationDeg;
-            visual.HullMesh = mesh;
             return visual;
         }
 

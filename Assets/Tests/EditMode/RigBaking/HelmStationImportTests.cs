@@ -51,7 +51,22 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.IsTrue(File.Exists(sidecar),
                               $"{stem}: the asset names sidecar '{def.SourceSidecar}' and it is not there");
 
-                SidecarRead read = DeckSidecarReader.Read(File.ReadAllText(sidecar), def.SourceSidecar, null);
+                // ⚠⚠ THE RIG BYTES ARE NOT OPTIONAL, and passing null here cost a CI cycle
+                // (run 34309924065). DeckSidecarReader.Read enforces the hash FIRST and RETURNS on a
+                // mismatch, before it parses a single section — and a null rig hashes to nothing, so
+                // every hull came back with HasHelmStation false and the first one alphabetically
+                // (CapeIslanderIso) reported as "the sidecar says False and the asset says True".
+                // That is the absence-is-data trap this PR is about, walked into by its own guard:
+                // a REFUSAL is indistinguishable from a hull with no station unless you ask.
+                SidecarRead read = DeckSidecarReader.Read(File.ReadAllText(sidecar), def.SourceSidecar,
+                                                         RigBytesFor(sidecar));
+
+                // …and asked FIRST, so a refusal reports itself as a refusal.
+                Assert.IsTrue(read.Ok,
+                    $"{stem}: the sidecar was REFUSED, not read — nothing below it means anything: " +
+                    string.Join(" | ", read.Errors));
+                Assert.AreNotEqual(RigHashMatch.None, read.HashMatch,
+                    $"{stem}: the sidecar no longer describes the rig it names");
 
                 Assert.AreEqual(read.HasHelmStation, def.HasHelmStation,
                     $"{stem}: the sidecar says HasHelmStation={read.HasHelmStation} and the shipped asset " +
@@ -131,10 +146,15 @@ namespace HiddenHarbours.Tests.RigBaking
             foreach ((string _, string __, BoatDeckDef def) in ShippedDecks())
                 if (def.HasHelmStation) sources.Add(def.HelmStationSource);
 
+            // ⚠ The labels are the READER's, quoted from it rather than guessed: `ANCHORS.<key>`
+            // for the map shape and `STATIONS[id=<id>]` for the record array. The first cut of this
+            // looked for "STATIONS." and went red on a fleet that was entirely correct (CI run
+            // 34309924065) — a guard whose expectation and its subject were written at different
+            // times. One truth: if these strings change, they change in DeckSidecarReader first.
             Assert.IsTrue(sources.Any(s => s.StartsWith("ANCHORS.")),
                           $"no shipped hull uses the ANCHORS object shape (found: {string.Join(", ", sources)})");
-            Assert.IsTrue(sources.Any(s => s.StartsWith("STATIONS.")),
-                          $"no shipped hull uses the STATIONS array shape (found: {string.Join(", ", sources)})");
+            Assert.IsTrue(sources.Any(s => s.StartsWith("STATIONS[")),
+                          $"no shipped hull uses the STATIONS record array (found: {string.Join(", ", sources)})");
         }
 
         /// <summary>
@@ -219,6 +239,17 @@ namespace HiddenHarbours.Tests.RigBaking
         // ---- harness ---------------------------------------------------------------------------------
 
         private static string RepoRoot() => Directory.GetParent(Application.dataPath).FullName;
+
+        /// <summary>The rig bytes a sidecar names, resolved the way the IMPORTER resolves them —
+        /// so the guard reads through the same door production does. Null only when the rig is
+        /// genuinely missing, which the hash gate then reports as the refusal it is.</summary>
+        private static byte[] RigBytesFor(string sidecarPath)
+        {
+            string rigFile = DeckSidecarReader.ResolveRigFileName(Path.GetFileName(sidecarPath),
+                                                                 File.ReadAllText(sidecarPath));
+            string rigPath = DeckSidecarReader.ResolveRigPath(RepoRoot(), rigFile);
+            return rigPath != null ? File.ReadAllBytes(rigPath) : null;
+        }
 
         private static string SidecarPathOf(BoatDeckDef def, string stem)
             => Path.Combine(RepoRoot(), SidecarFolder,
