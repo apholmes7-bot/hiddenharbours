@@ -342,6 +342,46 @@ namespace HiddenHarbours.Boats
             _skipperRenderer.sharedMaterial = _skipperMaterial;
         }
 
+        /// <summary>
+        /// ⭐⭐ <b>THE FIGURE HAS MOVED — SO TELL THE HULL WHERE HE IS.</b> Republishes the deck
+        /// occupant slot at <paramref name="rigLocalMeters"/>, the hull's own rig metres.
+        ///
+        /// <para><b>The defect it closes (owner playtest 2026-09-09):</b> <i>"the captain still
+        /// doesnt appear behind the helm from every angle."</i> <see cref="ClaimTheDeckSlot"/> sets
+        /// the slot ONCE, at spawn, to the middle of her measured deck — which was right while
+        /// nothing moved the figure. #806 then began holding the arrival's skipper at his WHEEL and
+        /// did not carry his occlusion with him, so the hull went on discarding its pixels in front
+        /// of a man standing amidships while he was drawn 1.446 m forward, inside the house. On the
+        /// cape that is <b>46 px at 32 px/m — the whole depth of the wheelhouse</b>, and it is
+        /// heading-DEPENDENT because which geometry lies between the camera and the published point
+        /// changes with facing. Hence "from every angle".</para>
+        ///
+        /// <para><b>⚠ RIG metres, never screen ones.</b> The slot is a place ON THE HULL, so it is
+        /// heading-independent by construction; handing it a screen offset would make the occlusion
+        /// swing with the boat, which is the same class of bug one level down.</para>
+        ///
+        /// <para>Same law as <c>IBoatHullPresenter.DrawnRideMeters</c> and the applied-attitude
+        /// fields: <b>whoever moved the picture reports it.</b> The drawer owns the slot, so the
+        /// mover asks the drawer rather than reaching into the slot table itself.</para>
+        ///
+        /// <para>Inert on a hull with no slot (a sprite hull has no facet depth to discard against)
+        /// and on a review hull that carries nobody — absence is data, as it is in
+        /// <see cref="ClaimTheDeckSlot"/>.</para>
+        /// </summary>
+        public void StandTheSkipperAt(Vector3 rigLocalMeters)
+        {
+            if (_slots == null || _slot < 0) return;
+            if (_standRigMeters == rigLocalMeters) return;   // per-frame path: no write, no churn
+
+            _standRigMeters = rigLocalMeters;
+            _slots.Set(_slot, this, _standRigMeters, active: true);
+        }
+
+        /// <summary>Where this hull has been told her occupant is standing, rig metres — what the
+        /// occluder is discarding against. For fixtures and for anyone diagnosing a figure that is
+        /// drawn in one place and cut in another.</summary>
+        public Vector3 OccupantStandRigMeters => _standRigMeters;
+
         private void ClaimTheDeckSlot()
         {
             _slots = _rig.Presenter?.DeckOccupants;
