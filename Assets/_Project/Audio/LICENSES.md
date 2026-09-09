@@ -27,6 +27,10 @@ key in the table:
   for the smoothest sample pair · peak normalise to **−12 dBFS**.
 - **S (one-shot)** — fold to mono · 70 Hz high-pass · resample to 44,100 Hz · trim silence below
   −46 dBFS with an 8 ms pad · peak normalise to **−3 dBFS**.
+- **Edge fade** — used only where the window is cut out of *continuous* room tone rather than out of
+  silence: a raised-cosine fade at each cut edge, lengths stated in the row, so the cut itself is not a
+  click. One clip needs it (row 19). It is a fade at the edges, not an envelope — nothing inside the
+  window is touched.
 
 **No compression, no limiting, no reverb, no stereo widening and no pitch shift** was applied to any
 file. The dynamics you hear are the dynamics that were recorded. The mix rides gain and pitch at
@@ -53,8 +57,12 @@ runtime, and baking either into a clip would take that control away from it.
 | 15 | `SFX/slack_release.wav` | `_slackRelease` | [Swishes Sound Pack](https://opengameart.org/content/swishes-sound-pack) | `swishes/swish-11.wav` | artisticdude | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-09 | **S** |
 | 16 | `SFX/snap_sting.wav` | `_snapSting` | [Thwack Sounds](https://opengameart.org/content/thwack-sounds) | `PCM/thwack-05.wav` | AntumDeluge (Jordan Irwin) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) — pack `LICENSE.txt` | 2026-09-09 | **S** |
 | 17 | `SFX/landed_flourish.wav` | `_landedFlourish` | [40 CC0 water / splash / slime SFX](https://opengameart.org/content/40-cc0-water-splash-slime-sfx) | `watersplash/slime_09.ogg` | rubberduck | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-09 | **S** |
+| 18 | `SFX/landing_hit.wav` | `_landingHit` | [Thwack Sounds](https://opengameart.org/content/thwack-sounds) | `PCM/thwack-02.wav` | AntumDeluge (Jordan Irwin) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) — pack `LICENSE.txt` | 2026-09-09 | **S**. Picked for its register: 63 % of its energy sits at 250–500 Hz where row 17's wet slap sits at 1–2 kHz, so the two read as one hit in layers rather than as the same hit twice |
+| 19 | `SFX/sale_chime.wav` | `_saleChime` | [coin sounds](https://opengameart.org/content/coin-sounds) | `coinsounds011015.wav` | syncopika | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-09 | **S** on the window t=12.155 s, 0.380 s, **plus edge fades** (5 ms in, 15 ms out): that window is cut out of continuous room tone, and without the fades the cut clicks. The window was chosen by measurement — only 3.2 % of its energy is below 125 Hz, against 89.7 % and 22.3 % for the two other coin hits in the take |
+| 20 | `SFX/dig_strike.wav` | `_digStrike` | [100 CC0 SFX #2](https://opengameart.org/content/100-cc0-sfx-2) | `sfx100/sfx100v2_stones_01.ogg` **and** `sfx100/sfx100v2_footstep_wet_03.ogg` | rubberduck | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-09 | Each layer **S**, then **arranged** the way the gull bed is: the wet give placed 15 ms behind the grit bite and normalised 6 dB under it, so the bite stays the transient and the wet is what the flat gives back. No shovel-in-sand recording exists on OGA under an acceptable licence; this is the nearest honest build of one |
 
-**Committed audio: 2,301,257 bytes = 2.195 MB across 17 files** (per-PR ceiling 6 MB). All under Git LFS.
+**Committed audio: 2,383,921 bytes = 2.273 MB across 20 files** (per-PR ceiling 6 MB). All under Git LFS.
+This PR adds 82,664 bytes = 0.079 MB (rows 18–20).
 
 ## Why some clips are `.ogg` and some are `.wav`
 
@@ -69,25 +77,22 @@ ceiling.
 
 For the same reason the importers are set to **PCM** (`compressionFormat: 0`) with `normalize: 0`: the
 clip Unity hands the game is byte-for-byte the file in this folder, so the seam we measured is the seam
-that plays, and the −12 / −3 dBFS peaks survive import. Repo cost stays 2.195 MB; decoded, that is about
-6.9 MB of RAM. Moving the beds to Vorbis or streaming later is an **importer setting**, not a re-export.
+that plays, and the −12 / −3 dBFS peaks survive import. Repo cost is 2.273 MB; decoded at 16-bit, about
+6.7 MB of RAM. Moving the beds to Vorbis or streaming later is an **importer setting**, not a re-export.
 
 ## Slots deliberately left empty
 
 An empty slot is honest; a wrong licence is not. The first three keep the procedural placeholder from
 `ProceduralAudio.cs` that has been covering them all along, and the game is complete without them.
-The four moment slots (juice PR 3, charter §4.5) have **no placeholder** — audio is a purchase, so each is
-silent until its file lands (the sale chime plays `_homeWarmth` in its place meanwhile).
+Three of the four moment slots (charter §4.5) are filled by rows 18–20 above. The fourth is held for a
+different reason from every other row in this table: it is not unsourced, it is **already voiced**.
 
 | Slot | Why it is empty | What would fill it |
 |---|---|---|
 | `_hullRow` | No CC0 recording of **oars working in water** was found on OpenGameArt or Wikimedia Commons. Every rowing recording located was NC, SA, or from a pack whose terms forbid redistributing the raw files. | **Owner shopping list.** Freesound requires an account, and this lane does not create accounts. Search Freesound for `rowing oar boat`, filter to **CC0**, and confirm the licence on the item page rather than the search chip; drop what you like into `_inbox/` and this lane will process and slot it. |
 | `_catchSting` | Musical, not foley. `docs/audio/foley-production-guide.md` §9 holds both stings until there is a score for them to sit inside, so they land in the same tonal world instead of clashing with it. | Kenney's [Music Jingles](https://kenney.nl/assets/music-jingles) (CC0) is a ready placeholder if the owner wants one now — an inspector edit and a row here, no code. |
 | `_homeWarmth` | As above. The earned made-it-home exhale is the warmest moment in the game and deserves the score's key. | The same Kenney set. |
-| `_landingHit` | The landing frame (juice PR 3). Silent by the charter's rule until a file lands; no placeholder covers it. | A short wet hit, CC0, on `AudioClipSet.LandingHit`. |
-| `_saleChime` | The sale's reward beat (juice PR 3). Plays `_homeWarmth` in its place meanwhile. Musical — waits for the score, as the stings do. | The same Kenney set, on `AudioClipSet.SaleChime`. |
-| `_digStrike` | The shovel's strike (juice PR 3). Silent until a file lands. | A shovel-in-wet-sand strike, CC0, on `AudioClipSet.DigStrike`. |
-| `_castEntry` | The line touching down (juice PR 3). Silent until a file lands. | A small line-entry plip, CC0, on `AudioClipSet.CastEntry`. |
+| `_castEntry` | **Already voiced.** `FishingController.BeginWaiting` publishes `JuiceMomentCue(CastEntry)` in the same call that emits `Cast → Waiting`, and `FishingAudioLogic` turns that transition into `_splashDown` (row 11) — a real recording, same frame, same rig position. A second clip at full level on top of it is a doubled hit, not a layer. | **A level, before a file.** Follow-up (a) in `AUDIO-MANIFEST.md` — folding both players onto shared buses — is what makes a quiet under-layer possible; a small line-entry plip at roughly −9 dB belongs here once a cue can be laid *under* another. Until then the honest state is null. |
 
 ## Adding a clip later
 

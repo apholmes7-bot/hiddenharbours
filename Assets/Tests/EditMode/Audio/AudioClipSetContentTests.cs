@@ -11,7 +11,7 @@ using HiddenHarbours.Audio;
 namespace HiddenHarbours.Tests.Audio
 {
     /// <summary>
-    /// PR 1 of the audio lane — the twenty manifest slots as DATA. These tests are the gate on the
+    /// The audio lane's manifest slots as DATA. These tests are the gate on the
     /// FILES, not on the mix: every recording in
     /// <c>Assets/_Project/Audio/Resources/AudioClipSet.asset</c> has to be the shape the runtime
     /// assumes, has to be small enough to live in a public repository, and has to be able to name its
@@ -32,7 +32,7 @@ namespace HiddenHarbours.Tests.Audio
     /// <para>A NULL slot is not a failure — it is the honest state for a sound we have no
     /// correctly-licensed source for, and the procedural placeholder covers it. What the tests refuse
     /// is a slot going quietly empty after we filled it: <see cref="OnlyDocumentedSlotsAreHeldNull"/>
-    /// pins the three we know about by name.</para>
+    /// pins the four we know about by name.</para>
     /// </summary>
     public class AudioClipSetContentTests
     {
@@ -53,18 +53,21 @@ namespace HiddenHarbours.Tests.Audio
             "RodCreakLoop", "PayoutTickLoop", "StrainGroanLoop", "ReelClickLoop", "SurfaceThrashLoop",
         };
 
-        /// <summary>The slots this PR knowingly leaves empty: no CC0 rowing recording exists that we
-        /// could find (HullRow), and the two musical cues are held until there is a score for them to
-        /// sit inside (foley guide section 9). Filling one later is fine; emptying a filled one is not,
-        /// which is what pinning the list by name catches.</summary>
+        /// <summary>The slots deliberately left empty — and they are empty for two different reasons.
+        /// Three are UNSOURCED: no CC0 recording of oars working in water could be found (HullRow), and
+        /// the two musical cues wait until there is a score for them to sit inside (foley guide
+        /// section 9). CastEntry is the opposite case — it is ALREADY VOICED. FishingController
+        /// publishes JuiceMomentCue(CastEntry) in the same call that emits Cast -> Waiting, which
+        /// FishingAudioLogic turns into the real _splashDown recording; a clip in this slot would land
+        /// on top of an identical hit rather than under it, so what it needs is a shared bus and a
+        /// level, not a file. Filling one later is fine; emptying a filled one is not, which is what
+        /// pinning the list by name catches.</summary>
         private static readonly HashSet<string> DocumentedHeldSlots = new HashSet<string>
         {
-            "HullRow", "CatchSting", "HomeWarmth",
-            // The three moments (juice PR 3, charter §4.5): no placeholder, silent until the owner's file lands.
-            "LandingHit", "SaleChime", "DigStrike", "CastEntry",
+            "HullRow", "CatchSting", "HomeWarmth", "CastEntry",
         };
 
-        private const int ExpectedFilledSlots = 17;
+        private const int ExpectedFilledSlots = 20;
 
         // ---- fixture ----------------------------------------------------------------------------
 
@@ -142,7 +145,9 @@ namespace HiddenHarbours.Tests.Audio
                 "DocumentedHeldSlots — an empty slot is honest only when it is written down.");
 
             Assert.GreaterOrEqual(ClipFields().Count() - empty.Count, ExpectedFilledSlots,
-                $"PR 1 shipped {ExpectedFilledSlots} filled slots; this build has {ClipFields().Count() - empty.Count}.");
+                $"The lane has shipped {ExpectedFilledSlots} filled slots; this build has " +
+                $"{ClipFields().Count() - empty.Count}. A slot does not go back to null without a " +
+                "reason written down here and in LICENSES.md.");
         }
 
         // ---- the shape the runtime assumes ------------------------------------------------------
