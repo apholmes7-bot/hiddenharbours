@@ -312,14 +312,22 @@ namespace HiddenHarbours.Tests.PlayMode
             EventBus.Publish(new CatchSold(totalPaid: 48, count: 3));
             yield return null;
 
-            if (moments)
+            if (!moments)
+            {
+                // The knob OFF is the shipped behaviour before #816: the receipt is there the next frame.
+                Assert.IsFalse(_book.SaleAnimating, "moments off: nothing plays");
+                StringAssert.Contains("+₲48", _book.PurseLine(), "moments off: the receipt is immediate");
+            }
+            else
             {
                 Assert.IsTrue(_book.SaleAnimating, "the sale plays first: the coins and the balance's climb");
                 StringAssert.DoesNotContain("+₲48", _book.PurseLine(), "no receipt while the balance is still climbing");
+                // WALL time, not frames: the presenter ticks the climb on unscaledDeltaTime, and a CI frame is
+                // not a fixed slice of time. Wait until the climb reports landed or 5 real seconds have passed.
+                float deadline = Time.realtimeSinceStartup + 5f;
+                while (_book.SaleAnimating && Time.realtimeSinceStartup < deadline) yield return null;
+                Assert.IsFalse(_book.SaleAnimating, "the coins and the climb land in CoinFly*/SaleCountUpSeconds, well under 5 s of wall time");
             }
-            float deadline = Time.realtimeSinceStartup + 5f;
-            while (_book.SaleAnimating && Time.realtimeSinceStartup < deadline) yield return null;
-            Assert.IsFalse(_book.SaleAnimating, "the coins and the climb land in CoinFly*/SaleCountUpSeconds, well under 5 s");
 
             StringAssert.Contains("+₲48", _book.PurseLine(),
                                   "the sale is READ in the book rather than flashed over the game");
