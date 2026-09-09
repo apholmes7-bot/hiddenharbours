@@ -217,7 +217,8 @@ namespace HiddenHarbours.Tests.EditMode
             }
 
             float gate = elevationGated ? ElevGate(elevation) : 1f;
-            // The blow sea is far above the swell-read calm gate (smoothstep(0.28, 0.45, 0.55) == 1), so
+            // The blow sea is far above the swell-read calm gate (smoothstep(0.10, 0.45, 0.55) == 1 -- and
+            // was == 1 at the superseded 0.28 too, so the 2026-09-09 onset ruling moved nothing here), so
             // the modelled swell is fully engaged; asserted in TheReferenceSea_IsPastTheCalmGate.
             float calmGate = SmoothStep(Mathf.Clamp01(ShaderDefault("_SwellReadSeaStateLo")),
                                         ShaderDefault("_SwellReadSeaStateHi"), BlowSeaState);

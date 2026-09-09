@@ -201,7 +201,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void SwashSeaStateGate_IsStillOnGlass_AndFullInAChop()
         {
-            const float lo = 0.28f, hi = 0.45f, calmGate = 0.7f;   // the shipped gate + _SwashCalmGate
+            // Thresholds chosen to exercise the FUNCTION, not to mirror the shipped pair: the assertions
+            // below are about a gate at 0 and a gate at 0.8, which hold at any lo < 0.8 < hi-ish pair.
+            // (The shipped onset is 0.10 since the owner's 2026-09-09 ruling, register row 25; 0.28 is
+            // kept here deliberately so this test does not move when the owner retunes the onset.)
+            const float lo = 0.28f, hi = 0.45f, calmGate = 0.7f;
 
             float glass = WaterSurface.SwashSeaStateGate(0f, lo, hi, calmGate);
             float chop = WaterSurface.SwashSeaStateGate(0.8f, lo, hi, calmGate);
