@@ -137,6 +137,85 @@ namespace HiddenHarbours.Tests.RigBaking
                           $"no shipped hull uses the STATIONS array shape (found: {string.Join(", ", sources)})");
         }
 
+        /// <summary>
+        /// ⭐⭐ <b>THE ONE HAND-DERIVED ENTRY IS HELD AGAINST THE RIG THAT PUBLISHED IT — by RUNNING the
+        /// rig, not by reading it.</b> The cape's sidecar is hand-authored (only the eighteen lobster
+        /// variants come from the generator), and this PR added her <c>ANCHORS.helm</c> under the
+        /// sidecar README's derived-value rule: read verbatim from the rig with the source line cited.
+        /// A citation nobody executes is a transcription, and a transcription drifts.
+        ///
+        /// <para><b>Three things, in the order that matters.</b> (1) The rig file still hashes to the sha
+        /// the sidecar pins — a stale hash is a REFUSAL per the README, not a warning, so it is asserted
+        /// before any number is compared. (2) The rig is executed in the repo's own V8 and
+        /// <c>CapeIslanderIso.HELM</c> read out of it. (3) The comparison is against what the IMPORTER
+        /// HANDS UNITY — <see cref="DeckSidecarReader"/>'s parse and the shipped
+        /// <see cref="BoatDeckDef"/> — never against the file's own text. A guard that re-reads the JSON
+        /// it is checking has only proved that a string equals itself.</para>
+        ///
+        /// <para><b>Only the cape.</b> The other stationed sidecars are generator output and are covered
+        /// by <see cref="EveryImportedStation_MatchesItsSidecar"/>; a fleet-wide V8 sweep would need each
+        /// rig's global export symbol, which the older sidecars do not publish. When the remaining nine
+        /// station-less hulls gain theirs by the same hand-derived route, each gets a case here.</para>
+        /// </summary>
+        [Test]
+        public void TheCapesHandDerivedStation_IsTheNumberHerRigPublishes()
+        {
+            string rigPath = Path.Combine(RepoRoot(), "docs/art/rigs/capeIslanderIsoRig.js");
+            string sidecarPath = Path.Combine(RepoRoot(), SidecarFolder, "capeIslanderIsoRig.gameplay.json");
+            Assert.IsTrue(File.Exists(rigPath), $"the cape's rig is missing at {rigPath}");
+            Assert.IsTrue(File.Exists(sidecarPath), $"the cape's sidecar is missing at {sidecarPath}");
+
+            // (1) THE HASH, hashed — never assumed. A sidecar whose rig has moved describes a different
+            // boat, and the README calls that a refusal rather than a caution.
+            byte[] rigBytes = File.ReadAllBytes(rigPath);
+            SidecarRead read = DeckSidecarReader.Read(File.ReadAllText(sidecarPath),
+                                                     SidecarFolder + "/capeIslanderIsoRig.gameplay.json",
+                                                     rigBytes);
+            Assert.IsTrue(read.Ok, $"the cape's sidecar does not read: {string.Join(" | ", read.Errors)}");
+            Assert.AreNotEqual(RigHashMatch.None, read.HashMatch,
+                "the cape's derivedFromRigSha256 no longer matches her rig file on either line-ending " +
+                "convention — the hull has been reshaped and every number in that sidecar, this station " +
+                "included, must be re-derived before anything trusts it");
+            Assert.IsTrue(read.HasHelmStation,
+                "the cape's sidecar carries no helm station — the entry this PR added is gone");
+
+            // (2) THE RIG, RUN. Her published export, not her source text.
+            double x, y, z, deck;
+            using (IRigScriptHost host = RigScriptHostFactory.Create())
+            {
+                host.Execute(File.ReadAllText(rigPath));
+                x = host.EvaluateNumber("CapeIslanderIso.HELM.x");
+                y = host.EvaluateNumber("CapeIslanderIso.HELM.y");
+                z = host.EvaluateNumber("CapeIslanderIso.HELM.z");
+                deck = host.EvaluateNumber("CapeIslanderIso.loft.DECK");
+            }
+
+            // The formula the sidecar's provenance writes out, checked rather than quoted:
+            // capeIslanderIsoRig.js:561 `HELM = { x:0, y:1.35, z:DECK+0.02 }`, DECK 0.72 at :60.
+            Assert.AreEqual(deck + 0.02, z, 1e-9,
+                $"the rig's HELM.z ({z}) is no longer her DECK ({deck}) + 0.02 — the sidecar's written-out " +
+                "formula has stopped describing the rig it cites");
+
+            // (3) AGAINST WHAT THE IMPORTER HANDS UNITY, twice: the parse, and the shipped asset.
+            Assert.AreEqual((float)x, read.HelmStation.x, Tol, "sidecar helm x vs the rig's published HELM");
+            Assert.AreEqual((float)y, read.HelmStation.y, Tol, "sidecar helm y vs the rig's published HELM");
+            Assert.AreEqual((float)z, read.HelmStation.z, Tol, "sidecar helm z vs the rig's published HELM");
+
+            var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<BoatDeckDef>(
+                DeckFolder + "/CapeIslanderIso.asset");
+            Assert.IsNotNull(asset, "the cape's deck asset is missing");
+            Assert.IsTrue(asset.HasHelmStation,
+                "the cape's SHIPPED asset carries no station though her sidecar does — the deck sidecar " +
+                "import has not been re-run and committed, and at runtime she is still steered from the " +
+                "dory's tiller however green the sidecar looks");
+            Assert.AreEqual((float)x, asset.HelmStationLocalMeters.x, Tol, "asset helm x vs the rig");
+            Assert.AreEqual((float)y, asset.HelmStationLocalMeters.y, Tol, "asset helm y vs the rig");
+            Assert.AreEqual((float)z, asset.HelmStationLocalMeters.z, Tol, "asset helm z vs the rig");
+
+            Debug.Log($"[HelmStation] cape: rig HELM ({x}, {y}, {z}) = sidecar = asset; " +
+                      $"sha {read.HashMatch}, DECK {deck}.");
+        }
+
         // ---- harness ---------------------------------------------------------------------------------
 
         private static string RepoRoot() => Directory.GetParent(Application.dataPath).FullName;

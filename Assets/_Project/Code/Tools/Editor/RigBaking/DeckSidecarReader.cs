@@ -425,13 +425,17 @@ namespace HiddenHarbours.Tools.RigBaking
         /// metres in the sidecars' own frame — the same frame the DECK polygons and the CLEATS are in, so
         /// nothing is converted and nothing can be converted wrongly.
         ///
-        /// <para><b>Three shapes, because three generations of sidecar wrote it three ways</b>, and the
-        /// ladder is stated here rather than guessed per file: the lobster/sportfisher/skiff kits publish
-        /// <c>ANCHORS.helm</c> as an OBJECT (<c>{"x":…,"y":…,"z":…}</c>); the zodiacs publish
-        /// <c>STATIONS.helm</c> as an ARRAY (<c>[x, y, z]</c>); the punt publishes
-        /// <c>STATIONS.helm_seat</c>, an array, because on a boat you sit at the tiller of, the station IS
-        /// the seat. First match wins and <see cref="SidecarRead.HelmStationSource"/> records WHICH — a
-        /// station whose provenance is not written down is a constant with extra steps.</para>
+        /// <para><b>Two shapes, because two generations of sidecar wrote it two ways</b>, and the ladder is
+        /// stated here rather than guessed per file. The generator's kits (18 lobster variants, both
+        /// sportfishers, sportSkiffMk2, and the cape since 2026-09-09) publish <c>ANCHORS</c> as an
+        /// OBJECT keyed by name with <c>{x, y, z}</c> values. The hand-authored ones (the punt, both
+        /// zodiacs) publish <c>STATIONS</c> as an ARRAY of <c>{id, type, pos:[x,y,z], provenance}</c>
+        /// records — the same shape <see cref="ReadCleats"/> reads, which is this repo's convention for
+        /// a list of named points. ⚠ It is NOT a map: reading it as one finds nothing, silently, on three
+        /// hulls (measured before CI, 2026-09-09). <c>helm</c> first, then <c>helm_seat</c> — on a boat
+        /// you sit at the tiller of, the station IS the seat. First match wins and
+        /// <see cref="SidecarRead.HelmStationSource"/> records WHICH: a station whose provenance is not
+        /// written down is a constant with extra steps.</para>
         ///
         /// <para><b>Absence is data.</b> Ten shipped hulls publish no station at all (cape islander, dory,
         /// console, coastal packet, the old lobster boat and sport skiff, side dragger, stern trawler and
@@ -441,48 +445,67 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         private static void ReadHelmStation(object root, SidecarRead read)
         {
-            if (TryStation(DeckSidecarJson.Member(root, "ANCHORS"), "helm", "ANCHORS.helm", read)) return;
-            if (TryStation(DeckSidecarJson.Member(root, "STATIONS"), "helm", "STATIONS.helm", read)) return;
-            TryStation(DeckSidecarJson.Member(root, "STATIONS"), "helm_seat", "STATIONS.helm_seat", read);
+            // (1) The generator's map: ANCHORS is an OBJECT keyed by name, values {x, y, z}.
+            if (TryAnchorStation(DeckSidecarJson.Member(root, "ANCHORS"), "helm", read)) return;
+
+            // (2) The hand-authored list: STATIONS is an ARRAY of {id, type, pos:[x,y,z], …} — the
+            // same record shape CLEATS uses, which is the house convention for a list of named
+            // points. 'helm' first, then 'helm_seat': on a boat you sit at the tiller of, the
+            // station IS the seat, and the punt says so in her own provenance note.
+            List<object> stations = DeckSidecarJson.AsArray(DeckSidecarJson.Member(root, "STATIONS"));
+            if (TryListStation(stations, "helm", read)) return;
+            TryListStation(stations, "helm_seat", read);
         }
 
-        /// <summary>One rung of the ladder: pull <paramref name="key"/> out of <paramref name="section"/>
-        /// and accept it in either shape. Returns false — silently — when the section or the key is
-        /// absent, and adds an ERROR when the key is there but malformed, because a station somebody
-        /// authored and mistyped is a defect where an absent one is a decision.</summary>
-        private static bool TryStation(object section, string key, string source, SidecarRead read)
+        /// <summary>A named member of the ANCHORS map, as an <c>{x, y, z}</c> object. Absent section
+        /// or absent key returns false SILENTLY (a hull nobody has measured); a key that is present
+        /// and malformed is an ERROR, because a station somebody authored and mistyped is a defect
+        /// where an absent one is a decision.</summary>
+        private static bool TryAnchorStation(object anchors, string key, SidecarRead read)
         {
-            object entry = DeckSidecarJson.Member(section, key);
+            object entry = DeckSidecarJson.Member(anchors, key);
             if (entry == null) return false;
-
-            var arr = DeckSidecarJson.AsArray(entry);
-            if (arr != null)
-            {
-                if (arr.Count < 3)
-                {
-                    read.Errors.Add($"{source}: an array station must be [x, y, z].");
-                    return false;
-                }
-                read.HelmStation = new Vector3(DeckSidecarJson.Float(arr[0]), DeckSidecarJson.Float(arr[1]),
-                                               DeckSidecarJson.Float(arr[2]));
-                read.HelmStationSource = source;
-                read.HasHelmStation = true;
-                return true;
-            }
 
             bool hasX = DeckSidecarJson.TryDouble(DeckSidecarJson.Member(entry, "x"), out double x);
             bool hasY = DeckSidecarJson.TryDouble(DeckSidecarJson.Member(entry, "y"), out double y);
             bool hasZ = DeckSidecarJson.TryDouble(DeckSidecarJson.Member(entry, "z"), out double z);
             if (!hasX || !hasY || !hasZ)
             {
-                read.Errors.Add($"{source}: an object station must carry x, y and z.");
+                read.Errors.Add($"ANCHORS '{key}': an anchor must carry x, y and z.");
                 return false;
             }
 
             read.HelmStation = new Vector3((float)x, (float)y, (float)z);
-            read.HelmStationSource = source;
+            read.HelmStationSource = "ANCHORS." + key;
             read.HasHelmStation = true;
             return true;
+        }
+
+        /// <summary>The STATIONS record whose <c>id</c> is <paramref name="id"/>, read out of its
+        /// <c>pos: [x, y, z]</c> — <see cref="ReadCleats"/>'s shape, and validated the same way.</summary>
+        private static bool TryListStation(List<object> stations, string id, SidecarRead read)
+        {
+            if (stations == null) return false;
+
+            for (int i = 0; i < stations.Count; i++)
+            {
+                object entry = stations[i];
+                if (DeckSidecarJson.String(DeckSidecarJson.Member(entry, "id")) != id) continue;
+
+                var pos = DeckSidecarJson.AsArray(DeckSidecarJson.Member(entry, "pos"));
+                if (pos == null || pos.Count < 3)
+                {
+                    read.Errors.Add($"STATIONS '{id}': 'pos' must be [x, y, z].");
+                    return false;
+                }
+
+                read.HelmStation = new Vector3(DeckSidecarJson.Float(pos[0]), DeckSidecarJson.Float(pos[1]),
+                                               DeckSidecarJson.Float(pos[2]));
+                read.HelmStationSource = $"STATIONS[id={id}]";
+                read.HasHelmStation = true;
+                return true;
+            }
+            return false;
         }
 
         // ---- geometry helpers --------------------------------------------------------------------

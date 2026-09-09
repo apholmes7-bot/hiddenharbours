@@ -1,6 +1,7 @@
 {
   "rig": "capeIslanderIsoRig.js",
   "derivedFromRigSha256": "42a90608978e6fdeec82d11b49dee0608b917a7a2d721f6e6cb97195df82e350",
+  "_helm": "2026-09-09 (the helm station per hull, aboard lane). ADDED, and NO RIG CHANGE: this hull's rig has published HELM since she was cut and this sidecar simply never carried it, so the runtime had no station for her and ControlSwitcher steered every hull in the fleet from one field tooltipped \"the tiller at the DORY'S stern\" (owner playtest 2026-09-09: \"when piloting boats the sprite does not stay in the accurate helm position\"). derivedFromRigSha256 is UNCHANGED and still valid \u2014 the rig file is byte-untouched by this PR, verified by hashing the committed working-tree file: 42a90608\u2026 (its LF hash is 009775b4\u2026, as _repin4 records; do not cross them). SCHEMA DECISION, for art-director to confirm or re-cut: `ANCHORS.helm` as an object, the shape 21 of the fleet's 23 stationed sidecars already use (the 18 lobster variants, both sportfishers, sportSkiffMk2); the punt and both zodiacs instead publish `STATIONS` as an ARRAY of `{id, type, pos:[x,y,z], provenance}` records \u2014 the shape `CLEATS` uses, and this repo's convention for a list of named points \u2014 which the importer also reads, by id. The gameplay README documents DECK / WASHBOARD / CLEATS only \u2014 it predates stations entirely \u2014 so there is no canonical station schema to follow and this note is the decision rather than a citation of one.",
   "_repin4": "2026-09-02 (cutaway kit batch 5, the cape's FIFTH sha). The hash moved because the FILE moved -- she gained the rgba.dep expando, the keyline's dep[i]=Infinity, and one guarded `if(opts.cutaway && root.BoatCutaway)` line in render() -- and NOT because any number here changed. Measured by running BOTH rigs in the repo's own ClearScript V8: her face stream is 517 -> 517 faces with ZERO differing fields, and all 10 renders byte-identical (8 facings at doorOpen 0 plus N/S at doorOpen 1, 766080 B each). WARNING, UNCHANGED: this pin is the WORKING-TREE (CRLF) hash, as all four previous ones were. The LF/blob hash of the same file is 009775b481758f98... and is what the kit's interior.json and gameplay mirror pin; do not cross them.",
   "_repin3": "2026-08-28 (cutaway pass 4, the cape's FOURTH sha). The hash moved because the FILE moved -- she gained lv() face tags, geometry(), faces(), LEVEL_IDS and a cullLevels branch in render() -- and NOT because any number here changed. Measured by running BOTH rigs in the repo's own ClearScript V8: all 32 renders byte-identical (8 directions x {default, elev 0.35, doorOpen 1, scheme banks-white}, 766080 B each); the export surface gained exactly geometry/faces/doorFaces/LEVEL_IDS and lost nothing; every pre-existing export is byte-identical by JSON (data) or by source text (functions) except render() itself, so the OKLCH paint kit -- SCHEMES, palette, rampFrom, chipWall, C_CAP and the nine colour ramps -- is provably untouched. WARNING, UNCHANGED: this pin is the WORKING-TREE (CRLF) hash, as all three previous ones were. The LF/blob hash of the same file is a1304e1b34d3f347... and is what the kit's interior.json and gameplay mirror pin; do not cross them.",
   "generated": "2026-07-22",
@@ -85,6 +86,14 @@
   "_excluded": [
     "hauling block + roller (line 389-390) \u2014 hauling gear, not a tie-off"
   ],
+  "ANCHORS": {
+    "helm": {
+      "x": 0,
+      "y": 1.35,
+      "z": 0.74,
+      "provenance": "exact \u2014 capeIslanderIsoRig.js:561, `const HELM = { x:0, y:1.35, z:DECK+0.02 };` (\"skipper stands at the wheel, forward in the house\"); DECK = 0.72 at :60, `const L = 12.8, TH = 0.05, DECK = 0.72;` \u2014 so z = 0.72 + 0.02 = 0.74. Not transcribed from the source text: the rig was EVALUATED in the repo's own ClearScript V8 (the JsEngine plugin, no editor) and `CapeIslanderIso.HELM` returned {\"x\":0,\"y\":1.35,\"z\":0.74} with `loft.DECK` 0.72."
+    }
+  },
   "_notes": [
     "cockpit obstructions (not modelled as polygon holes): engine box amidships x\u00b10.62, y -1.97..-0.53, to z 1.15 (line 348-349); exhaust stack at [0.86, 0.34] (line 382)"
   ]

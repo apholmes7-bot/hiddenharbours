@@ -164,8 +164,8 @@ namespace HiddenHarbours.Boats
                  "to its own tuned offset and says so once, by name. Absence is data.")]
         public Vector3 HelmStationLocalMeters = Vector3.zero;
 
-        [Tooltip("Which key of the sidecar the station came out of (ANCHORS.helm, STATIONS.helm, " +
-                 "STATIONS.helm_seat). Provenance only — nothing reads it for gameplay, and it is what " +
+        [Tooltip("Which key of the sidecar the station came out of (ANCHORS.helm, STATIONS[id=helm], " +
+                 "STATIONS[id=helm_seat]). Provenance only — nothing reads it for gameplay, and it is what " +
                  "the parity test quotes when an asset and its sidecar disagree.")]
         public string HelmStationSource = "";
 
