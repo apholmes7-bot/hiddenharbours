@@ -309,9 +309,10 @@ namespace HiddenHarbours.App
         private ArrivalCabinWalk _cabin;
         private CabinDoorOffer _cabinOffer;
         private bool _wasBelow;
+        private Transform _skipperFigure;      // found once; MooredBoat builds him in its own Start
         private IsoCharacterSprite _skipperSkin;
         private SpriteRenderer _skipperRenderer;
-        private bool _skipperPosed;            // did WE move him to the wheel?
+        private bool _skipperPosed;            // did WE raise him OVER THE ROOM? (not "did we place him")
         private Vector3 _skipperRestPosition;
         private int _skipperRestSortingOrder;
 
@@ -693,7 +694,10 @@ namespace HiddenHarbours.App
             if (_mooring == null) _mooring = go.AddComponent<BoatMooring>();
 
             // ⭐ THE DECK SHE STANDS ON, registered where the whole game asks about it (see ArrivalDeck).
-            _deck = new ArrivalDeck(_skipper.Boat.LengthMeters, DeckFreeboardMetres);
+            // It takes the boat rather than a number because her PLANKING is the answer and the planking
+            // arrives with the skin: BoatHullSkinner writes BoatDeckAreas, and it runs after this spawn.
+            // The length is the fallback square's, for a hull the rigs have never measured.
+            _deck = new ArrivalDeck(go, _skipper.Boat.LengthMeters, DeckFreeboardMetres);
             StandableSurfaces.Register(_deck);
 
             float inbound = _route.Length > 1
@@ -723,6 +727,11 @@ namespace HiddenHarbours.App
             // gate is a LIVE read of her deck data — which arrives with the skin, and MooredBoat skins her
             // in its Start. A gate taken now would answer "no deck" for every hull in the fleet.
             _deckWalk = new ArrivalDeckWalk(go, _deckWalkSpeed);
+
+            // ⚠ And the standable deck put under her ONCE, here, rather than first at the next LateUpdate.
+            // Registered surfaces answer from the frame they are registered in: a deck left at its default
+            // would spend that frame claiming the world ORIGIN as her planking.
+            FollowTheDeck();
 
             // ⭐ THE PILOTAGE LAYER (design/npc-pilotage.md §2). The berth is a POSE, and every part of it
             // is DERIVED rather than authored twice: the region's berth and heading, the hull's own
@@ -837,7 +846,7 @@ namespace HiddenHarbours.App
             }
 
             SeedTheDeckSeatFromWhereSheStands();
-            LetTheSkipperStandAsHeWas();
+            LowerTheSkipperFromTheRoom();      // ⚠ NOT the full restore — see LowerTheSkipperFromTheRoom.
 
             // Her own motion is honest again the moment she is out on deck: nothing of hers moves her
             // there, so the pose goes back to the hull's heading and a stated zero. PoseThePassenger is
@@ -902,23 +911,52 @@ namespace HiddenHarbours.App
         private void PoseTheSkipperAtHisWheel()
         {
             if (_skipperPosed || _cabin == null || _boatRoot == null) return;
+            if (!FindTheSkipper() || _skipperRenderer == null) return;
 
-            Transform figure = SkipperTransform();
-            if (figure == null || figure == _boatRoot) return;
-
-            _skipperRenderer = figure.GetComponent<SpriteRenderer>();
-            _skipperSkin = figure.GetComponent<IsoCharacterSprite>();
-            if (_skipperRenderer == null) return;
-
-            _skipperRestPosition = figure.localPosition;
-            _skipperRestSortingOrder = _skipperRenderer.sortingOrder;
             _skipperPosed = true;
-
             _skipperRenderer.sortingOrder = RoomSortingOrder() + 1;
         }
 
-        /// <summary>Give the figure back where and how he was found (idempotent). The twin of
-        /// <see cref="PoseTheSkipperAtHisWheel"/>, under the same "did I hold?" law as the player
+        /// <summary>
+        /// Find his figure once and remember how it was found — his transform, his drawer, his resting
+        /// place and his resting order.
+        ///
+        /// <para><b>⭐ Separated from <see cref="PoseTheSkipperAtHisWheel"/> deliberately, and that split
+        /// is the fix.</b> Finding him and RAISING him over the room used to be the same act, gated on
+        /// <c>_skipperPosed</c> — so his place was only ever written while the player was below decks, and
+        /// the moment she came up on deck he was put back at his resting spot for the rest of the passage.
+        /// That resting spot is <c>MooredBoat.StandTheSkipper</c>'s <c>localPosition = Vector3.zero</c>:
+        /// the hull's PIVOT, her waterline amidships — what this class's own note calls "a man standing in
+        /// the bilge under his own feet". Measured on the cape at her three St Peters headings, that is
+        /// <b>1.39 m / 0.44 m / 1.46 m</b> from her rig's own wheel, and the miss CHANGES with heading
+        /// because the wheel swings round a figure pinned at the pivot. The owner watched the whole
+        /// approach from the deck and reported it: <i>"the intro pilot still is not steering at the
+        /// steeringwheel in the wheelhouse."</i> Being over the room is about DRAWING and belongs to the
+        /// cabin; standing at his wheel is about where he is and belongs to the passage.</para>
+        ///
+        /// <para>The scan is cached because it is a <c>GetComponentsInChildren</c> walk and this runs every
+        /// LateUpdate (rule 7). Re-asked while it comes back empty, because <c>MooredBoat</c> builds the
+        /// figure in its own <c>Start</c> — after this component has already begun.</para>
+        /// </summary>
+        private bool FindTheSkipper()
+        {
+            if (_skipperFigure != null) return true;
+            if (_boatRoot == null) return false;
+
+            Transform figure = SkipperTransform();
+            if (figure == null || figure == _boatRoot) return false;
+
+            _skipperFigure = figure;
+            _skipperRenderer = figure.GetComponent<SpriteRenderer>();
+            _skipperSkin = figure.GetComponent<IsoCharacterSprite>();
+            _skipperRestPosition = figure.localPosition;
+            _skipperRestSortingOrder = _skipperRenderer != null ? _skipperRenderer.sortingOrder : 0;
+            return true;
+        }
+
+        /// <summary>Give the figure back where and how he was found (idempotent) — the FULL restore, for
+        /// the end of the passage and for a region unloaded under it. Coming up on deck is not that:
+        /// see <see cref="LowerTheSkipperFromTheRoom"/>. Under the same "did I hold?" law as the player
         /// release.
         ///
         /// <para>⚠ <b>His FACING is not restored, because it cannot be read back.</b>
@@ -930,11 +968,32 @@ namespace HiddenHarbours.App
         /// </summary>
         private void LetTheSkipperStandAsHeWas()
         {
+            LowerTheSkipperFromTheRoom();
+
+            if (_skipperFigure != null && _skipperFigure != _boatRoot)
+                _skipperFigure.localPosition = _skipperRestPosition;
+        }
+
+        /// <summary>
+        /// ⭐ <b>Take back the SORTING ORDER only — he is still at his wheel.</b> What happens when she
+        /// comes up on deck: the room is behind her, so the figure that had to draw over it goes back to
+        /// his own order, and nothing else about him changes.
+        ///
+        /// <para><b>This is the half that used to be missing</b>, and the whole of the owner's "the intro
+        /// pilot still is not steering at the steeringwheel". Coming up called the FULL restore, which put
+        /// his place back to <c>MooredBoat</c>'s pivot as well — so for the entire on-deck approach, which
+        /// is the part he actually watches, the man at the wheel was standing amidships on the waterline.
+        /// Raising him over the room and standing him at his wheel were one act and they are two
+        /// questions.</para>
+        ///
+        /// <para>Idempotent and under the same "did I hold?" law as the player release: everything it
+        /// touches is state <see cref="PoseTheSkipperAtHisWheel"/> saved first.</para>
+        /// </summary>
+        private void LowerTheSkipperFromTheRoom()
+        {
             if (!_skipperPosed) return;
             _skipperPosed = false;
 
-            Transform figure = SkipperTransform();
-            if (figure != null && figure != _boatRoot) figure.localPosition = _skipperRestPosition;
             if (_skipperRenderer != null) _skipperRenderer.sortingOrder = _skipperRestSortingOrder;
         }
 
@@ -945,50 +1004,84 @@ namespace HiddenHarbours.App
         /// heading, which the presenter writes in its own early band. Inputs early, picture late —
         /// <c>DeckRiderVisual</c>'s rule.
         ///
-        /// <para><b>Two things, and only the second is conditional.</b> His FACING follows the hull for the
-        /// whole passage: a man at a wheel looks where his boat is going, and <c>MooredBoat</c> holds a
-        /// fixed bearing only because nothing moves its figures and it has no live heading to read — the
-        /// arrival has one. His PLACE moves to the interior helm anchor only while she is below, and comes
-        /// back when she is not.</para>
+        /// <para><b>Two things, and BOTH last the whole passage.</b> His FACING follows the hull: a man at
+        /// a wheel looks where his boat is going, and <c>MooredBoat</c> holds a fixed bearing only because
+        /// nothing moves its figures and it has no live heading to read — the arrival has one. And his
+        /// PLACE is his hull's helm station, above decks and below alike. ⛔ That second half used to be
+        /// gated on <c>_skipperPosed</c>, i.e. on the player being BELOW — see
+        /// <see cref="LowerTheSkipperFromTheRoom"/> for what the owner saw because of it.</para>
         ///
         /// <para>⚠ <b>Both are gated on this opening having a cabin</b>, so an arrival on any hull the
-        /// interiors kit has not measured draws her skipper exactly as the shipped one does.</para>
+        /// interiors kit has not measured draws her skipper exactly as the shipped one does — and on a
+        /// hull whose def names no station, <see cref="TryHelmStation"/> writes nothing at all.</para>
         /// </summary>
         private void HoldTheSkipper()
         {
             if (_cabin == null || _boatRoot == null) return;
+            if (!FindTheSkipper()) return;
 
-            Transform figure = SkipperTransform();
-            if (figure == null || figure == _boatRoot) return;
+            // ⚠ Retried while she is below, not just on the threshold. MooredBoat builds the figure in its
+            // own Start, so an opening that reaches OpenTheCabin first found nobody to raise and the raise
+            // was then lost for the whole passage. Idempotent behind _skipperPosed.
+            if (IsBelowDecks) PoseTheSkipperAtHisWheel();
 
+            Transform figure = _skipperFigure;
             float heading = DrawnHeadingDegrees();
-            if (_skipperSkin == null) _skipperSkin = figure.GetComponent<IsoCharacterSprite>();
             if (_skipperSkin != null) _skipperSkin.HoldHeading(heading);
 
-            if (!_skipperPosed) return;
+            if (!TryHelmStation(out Vector3 helm)) return;
 
-            BoatInteriorDef def = _cabin.Cabin != null ? _cabin.Cabin.Def : null;
-            Vector3 helm = HelmAnchorOf(def);
-            Vector2 offset = BoatCabinWalkMath.ToWorldOffset(
-                new Vector2(helm.x, helm.y), helm.z, heading,
-                BoatInteriorInstaller.BakeElevationDegrees(HullVisual()),
-                BoatInteriorInstaller.ExteriorAzimuthCounterClockwise(HullVisual()));
+            // ⭐ THE SAME POINT ON THE BOAT, THROUGH WHICHEVER FRAME HER PICTURE IS IN THIS FRAME. Below
+            // decks the room is a turntable (BoatCabinWalkMath folds its handedness in); on deck the hull
+            // is drawn by the deck projection the player's own walk is placed by. They are the same
+            // transform with the same squash — on this hull, whose exterior azimuth is measured
+            // counter-clockwise, they agree to 0.000000 m for the same hull-local point, so he does not
+            // step sideways when she crosses the threshold. Two frames because two pictures, never two
+            // maths.
+            Vector2 offset = IsBelowDecks
+                ? BoatCabinWalkMath.ToWorldOffset(
+                      new Vector2(helm.x, helm.y), helm.z, heading,
+                      BoatInteriorInstaller.BakeElevationDegrees(HullVisual()),
+                      BoatInteriorInstaller.ExteriorAzimuthCounterClockwise(HullVisual()))
+                : DeckAreaMath.DeckToWorld(new Vector2(helm.x, helm.y), helm.z, heading,
+                                           BakeElevationDegrees());
 
             figure.localPosition = new Vector3(offset.x, offset.y, _skipperRestPosition.z);
         }
 
-        /// <summary>The def's own <c>enter_helm</c> anchor — where her wheel is, in hull metres. Falls back
-        /// to the hull pivot, which is where <c>MooredBoat</c> already draws him, so a def that names no
-        /// helm changes nothing rather than guessing a spot.</summary>
-        private static Vector3 HelmAnchorOf(BoatInteriorDef def)
+        /// <summary>
+        /// ⭐ <b>WHERE THIS HULL'S SKIPPER STANDS TO STEER HER</b> — hull-local metres, the sidecars' own
+        /// frame (origin amidships / keel bottom / centreline; +x starboard, +y bow, +z up). The ONE place
+        /// the station is resolved, so there is exactly one line to change when the per-hull station
+        /// lands in <c>BoatVisualDef</c> and this stops reading the interior.
+        ///
+        /// <para><b>Today it is the interior def's <c>enter_helm</c> anchor</b>, because that is the only
+        /// helm point the shipped DATA carries for this hull and it is already what the below-decks pose
+        /// used. 🔴 <b>It is not her wheel, and the PR that added it says so:</b> the cape's rig publishes
+        /// <c>HELM = (0, 1.35, 0.74)</c> — "skipper stands at the wheel, forward in the house" — while
+        /// <c>enter_helm</c> is <c>(0, 0.30, 0.72)</c>, and her house sole runs y 0.57 → 2.525 with the
+        /// <c>helm_console</c> at y 1.86 → 2.34. So the anchor sits 0.27 m ABAFT the wheelhouse's aft
+        /// bulkhead: it is where you stand to ENTER the helm, not where you stand at it. Her gameplay
+        /// sidecar carries no station at all (its sections are DECK / WASHBOARD / CLEATS), which is an
+        /// art-director ask relayed with this PR — not a number to type here (rule 2).</para>
+        ///
+        /// <para>False when the hull states no station, and then nothing is written: he keeps the place
+        /// <c>MooredBoat</c> drew him at, which is what an unmeasured hull already does.</para>
+        /// </summary>
+        private bool TryHelmStation(out Vector3 station)
         {
-            if (def == null || def.Anchors == null) return Vector3.zero;
+            station = Vector3.zero;
+            BoatInteriorDef def = _cabin != null && _cabin.Cabin != null ? _cabin.Cabin.Def : null;
+            if (def == null || def.Anchors == null) return false;
+
             for (int i = 0; i < def.Anchors.Length; i++)
             {
                 BoatInteriorAnchor a = def.Anchors[i];
-                if (a != null && a.Action == "enter_helm") return a.ReachPoint;
+                if (a == null || a.Action != "enter_helm") continue;
+                station = a.ReachPoint;
+                return true;
             }
-            return Vector3.zero;
+            return false;
         }
 
         /// <summary>This hull's visual def, or null — the one place the arrival reaches for it.</summary>
@@ -1648,11 +1741,15 @@ namespace HiddenHarbours.App
             if (!_stepping) SeatThePlayer();
         }
 
-        /// <summary>Keep the registered deck under her as she moves.</summary>
+        /// <summary>Keep the registered deck under her as she moves — and pointing the way her PICTURE
+        /// points. Her planking is hull-local, so where it lies in the world is her position plus her
+        /// drawn heading through her artwork's own foreshortening; both come from the same presenter read
+        /// the deck WALK is clamped by, so the surface she reads as standing on and the surface she is
+        /// allowed to walk on can never be two different shapes.</summary>
         private void FollowTheDeck()
         {
             if (_deck == null || _boatRoot == null) return;
-            _deck.MoveTo(_boatRoot.position);
+            _deck.MoveTo(_boatRoot.position, DrawnHeadingDegrees(), BakeElevationDegrees());
         }
 
         /// <summary>
@@ -2097,19 +2194,46 @@ namespace HiddenHarbours.App
     /// St Peters, so a deck pinned to a number puts the passenger in the air at low water and under it
     /// at high.</para>
     ///
-    /// <para>A SQUARE envelope about her centre rather than her rotated oblong: the contract's footprint
-    /// is an axis-aligned <see cref="Rect"/>, and the envelope errs the forgiving way — a passenger a
-    /// foot over the side still reads as aboard rather than as suddenly swimming. Nothing walks to this
-    /// edge (the passenger is placed, not steered), so the slack costs nothing.</para>
+    /// <para>⛔ <b>IT IS HER AUTHORED PLANKING, NOT A SQUARE ROUND HER — and that changed here.</b> The
+    /// footprint used to be an axis-aligned <see cref="Rect"/> of side = her LENGTH, justified in this
+    /// doc by "nothing walks to this edge (the passenger is placed, not steered), so the slack costs
+    /// nothing". The on-deck arc then made her WALK, and the owner played it: <i>"some of the deck seems
+    /// to extend over water, it seems to change as the boat rotates."</i> Measured on the cape at her
+    /// three St Peters headings (no editor, the real defs through the real projection): the square is
+    /// <b>166.41 m²</b> against <b>23.94 m²</b> of deck as drawn — <b>6.95×</b> — so <b>144.7 / 147.7 /
+    /// 144.2 m² of open water read as her deck, 86.7–88.8% of everything the game called "aboard"</b>,
+    /// out to <b>7.1–7.8 m</b> from the nearest plank. And being WORLD-AXIS it does not turn with her, so
+    /// the water that counted as deck swept round the hull as she came about — his second clause, exactly.
+    /// It was not even purely generous: 0.01 m² of her real foredeck fell OUTSIDE it on the inbound leg.</para>
+    ///
+    /// <para><b>One reader, not two.</b> The walk is clamped to <see cref="BoatDeckDef.ClampToWalkable"/>
+    /// and this test now asks <see cref="BoatDeckDef.IsOverWalkableDeck"/> — the same polygons, the same
+    /// projection, the same heading. Two differently-shaped answers to "is she on the deck?" is how one of
+    /// them ends up letting somebody stand on the sea.</para>
+    ///
+    /// <para><b>The square survives as the no-authored-deck fallback</b>, and only there: a hull the rigs
+    /// have never measured keeps exactly the behaviour it has today. Absence is data — the same law
+    /// <see cref="ArrivalDeckWalk.CanWalk"/> keeps, and asked LIVE for the same reason, because the deck
+    /// arrives with the SKIN and the skinner runs after the spawn.</para>
+    ///
+    /// <para><b>The ELEVATION law is untouched</b>: water level + freeboard, as before. Her raised
+    /// foredeck stands 2.4 m over her sole and this still reports one deck height for both — that is a
+    /// separate question from WHERE her deck is, and changing it would move the mooring maths that reads
+    /// the same freeboard.</para>
     /// </summary>
     internal sealed class ArrivalDeck : IStandableSurface
     {
+        private readonly GameObject _boat;
         private readonly float _halfLength;
         private readonly float _freeboardMetres;
         private Rect _footprint;
+        private Vector2 _centre;
+        private float _drawnHeadingDegrees;
+        private float _bakeElevationDegrees = DeckAreaMath.PlanViewElevationDegrees;
 
-        public ArrivalDeck(float hullLengthMetres, float freeboardMetres)
+        public ArrivalDeck(GameObject boat, float hullLengthMetres, float freeboardMetres)
         {
+            _boat = boat;
             _halfLength = Mathf.Max(0.5f, hullLengthMetres * 0.5f);
             _freeboardMetres = freeboardMetres;
         }
@@ -2117,18 +2241,43 @@ namespace HiddenHarbours.App
         /// <summary>Her id in the registry — one deck, one arrival.</summary>
         public string Id => "boat.arrival_deck";
 
-        /// <summary>Where she is now (for tests and tooling).</summary>
+        /// <summary>The FALLBACK envelope's current box (for tests and tooling). Still maintained on
+        /// every move, because it is what answers on a hull with no authored deck.</summary>
         public Rect Footprint => _footprint;
 
-        /// <summary>Put the deck under the hull's current position.</summary>
-        public void MoveTo(Vector2 centre) =>
+        /// <summary>This hull's imported walkable areas, read LIVE off the boat root — null until the
+        /// skinner has run, and null forever on a hull the rigs have never measured.</summary>
+        public BoatDeckDef Deck => BoatDeckAreas.Resolve(_boat);
+
+        /// <summary>True while this deck is answering from her authored planking rather than from the
+        /// fallback square. What a fixture asserts before believing a footprint number.</summary>
+        public bool HasAuthoredDeck
+        {
+            get { BoatDeckDef deck = Deck; return deck != null && deck.HasWalkableDeck(); }
+        }
+
+        /// <summary>Put the deck under the hull, drawn the way she is drawn. The heading and the
+        /// foreshortening are the caller's because they are the PICTURE's, and the picture is resolved
+        /// once per frame off her presenter — a second read here could disagree with the walk's.</summary>
+        public void MoveTo(Vector2 centre, float drawnHeadingDegrees, float bakeElevationDegrees)
+        {
+            _centre = centre;
+            _drawnHeadingDegrees = drawnHeadingDegrees;
+            _bakeElevationDegrees = bakeElevationDegrees;
             _footprint = new Rect(centre.x - _halfLength, centre.y - _halfLength,
                                   _halfLength * 2f, _halfLength * 2f);
+        }
 
         /// <inheritdoc/>
         public bool TryGetDeckElevation(Vector2 worldPos, out float deckElevation)
         {
             deckElevation = WaterLevelNow() + _freeboardMetres;
+
+            BoatDeckDef deck = Deck;
+            if (deck != null && deck.HasWalkableDeck())
+                return deck.IsOverWalkableDeck(worldPos - _centre, _drawnHeadingDegrees,
+                                               _bakeElevationDegrees, out _);
+
             return _footprint.Contains(worldPos);
         }
 
