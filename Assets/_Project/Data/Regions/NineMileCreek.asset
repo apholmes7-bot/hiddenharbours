@@ -28,3 +28,4 @@ MonoBehaviour:
   TideAmplitude: 2.2
   TidePhaseHours: 1
   SpawnFishIds: []
+  WindProfile: {fileID: 11400000, guid: 9f6d18d9ea69457f8d135b01a4111b04, type: 2}

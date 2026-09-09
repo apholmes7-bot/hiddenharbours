@@ -32,3 +32,4 @@ MonoBehaviour:
   - fish.soft_shell_clam
   - fish.lobster
   - fish.rock_crab
+  WindProfile: {fileID: 11400000, guid: 3dfe5856dda1456591c2b406aeef12e1, type: 2}

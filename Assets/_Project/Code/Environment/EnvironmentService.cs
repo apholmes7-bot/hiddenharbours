@@ -14,6 +14,10 @@ namespace HiddenHarbours.Environment
         [SerializeField] private int _worldSeed = 12345;
         [SerializeField] private TideProfile _activeTideProfile = TideProfile.CoddleCove;
         [SerializeField] private WindProfile _activeWindProfile = WindProfile.CoddleCove;   // VS-05
+        [Tooltip("This region's wind, as DATA (owner ruling 2026-09-09). When assigned it wins " +
+                 "over the inline profile above. Leave empty on an un-rebanked scene and the " +
+                 "inline one is used, so the widened wind law ships either way.")]
+        [SerializeField] private WindProfileDef _windProfileAsset;
 
         [Header("Tidal current")]
         [Tooltip("Prevailing axis the flood tide runs along for the active region — the bearing the wander " +
@@ -49,7 +53,20 @@ namespace HiddenHarbours.Environment
 
         public int WorldSeed => _worldSeed;
         public TideProfile ActiveTideProfile { get => _activeTideProfile; set => _activeTideProfile = value; }
-        public WindProfile ActiveWindProfile { get => _activeWindProfile; set => _activeWindProfile = value; }
+        /// <summary>
+        /// The wind this region actually blows. Resolved LIVE at the query rather than cached in
+        /// Awake: a serialized reference added after a scene was banked is null until the owner
+        /// rebuilds, and a value cached from a null field is the shape that fails silently
+        /// (memory: gameconfig-asset-is-behind-the-code). Asset wins when assigned; otherwise the
+        /// inline profile, which itself defaults to WindProfile.CoddleCove.
+        /// </summary>
+        public WindProfile ActiveWindProfile
+        {
+            get => _windProfileAsset != null
+                 ? WindProfileDef.Resolve(_windProfileAsset, name)
+                 : _activeWindProfile;
+            set => _activeWindProfile = value;
+        }
         public CurrentProfile ActiveCurrentProfile { get => _activeCurrentProfile; set => _activeCurrentProfile = value; }
 
         private void Awake()
@@ -63,7 +80,7 @@ namespace HiddenHarbours.Environment
         public EnvironmentSample Sample()
         {
             double t = Clock?.TotalSeconds ?? 0.0;
-            WeatherModel.Sample(t, _worldSeed, _config, _activeWindProfile, out Vector2 wind, out SeaState sea, out float vis);
+            WeatherModel.Sample(t, _worldSeed, _config, ActiveWindProfile, out Vector2 wind, out SeaState sea, out float vis);
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             // ---- DEV SEA-STATE OVERRIDE (ADR 0027 P0) — editor/dev builds only, default OFF ----------

@@ -58,6 +58,13 @@ namespace HiddenHarbours.World
         [Tooltip("Tide phase offset (h) so regions don't all peak together.")]
         public float TidePhaseHours = 0f;
 
+        [Tooltip("This region's wind character, as data (owner ruling 2026-09-09). Leave empty " +
+                 "and the region falls back to WindProfile.CoddleCove BY NAME with a one-time " +
+                 "warning — never to a zero profile, which would be a dead calm forever. " +
+                 "⚠ The weather SYSTEM's timing and shape are world-level (WeatherModel), not " +
+                 "here: only how hard a system blows HERE is a regional fact.")]
+        public HiddenHarbours.Core.WindProfileDef WindProfile;
+
         [Header("Content (by id)")]
         [Tooltip("Spawn-table fish ids (data-model: by id, never direct refs). Nine Mile Creek is a services " +
                  "region, not a fishing ground, so this is usually empty/marginal.")]
