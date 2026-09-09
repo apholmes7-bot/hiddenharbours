@@ -24,7 +24,7 @@ missing: a short line in the notebook's register ("Lifted out a soft-shell clam 
 hand.") on the dig Def's strike beat, the register's weight readout counting up to the clam's
 weight, and the sand chunks at the hole. The pail's own "1/20" line is unchanged.
 
-## 2. The four laws
+## 2. The five laws
 
 1. **One moment, one cue.** Every moment publishes exactly one `JuiceMomentCue` from the system
    that owns it (`FishingController` for the landing and the cast entry, `ClamDig` for the dig
@@ -40,6 +40,11 @@ weight, and the sand chunks at the hole. The pail's own "1/20" line is unchanged
    (`MomentBurstConfig.PoolSize`, 64), recycle the oldest when full, and die at their lifetime.
    Coins are `CoinFlyCount` pre-built sprites parked inactive. The count-ups write through one
    pre-sized `StringBuilder`. Nothing allocates after construction (rule 7).
+5. **The world clock reads wall time.** `Time.timeScale` is a feel channel. `GameClock.Advance`
+   integrates `Time.unscaledDeltaTime` at its own `TimeScale`, so a 90 ms hit-stop costs the tide
+   90 ms of wall time and not 4.5 ms; `IsPaused` stays the only pause (rule 5; `ShellPause`: "there
+   is no second clock"). Pinned by `GameClockReadsWallTimeTests`. `LandingHitStopSeconds = 0` is the
+   documented off-switch for the dip itself.
 
 ## 3. The pieces
 
@@ -67,11 +72,10 @@ weight, and the sand chunks at the hole. The pail's own "1/20" line is unchanged
   the tool arc's own player and no dig animator lives in `Player`. The dig Def drives the lift
   line's beat only. Wiring the shovel's strike frames to `DigTiming` is one `FrameFor` call in
   whichever player owns them.
-- **Determinism leak under hit-stop (reported, not fixed — charter §4.1).** `GameClock`
-  integrates scaled `Time.deltaTime` (`Environment/GameClock.cs:79`), and roughly thirty sim files
-  read `Time.deltaTime`. A 90 ms hit-stop therefore slows the world clock by ~85 ms of game time
-  per landing. `ShellPause` documents "no second clock" and this is the first production writer of
-  `Time.timeScale`; whether the clock should read unscaled time during a stop is the seat's call.
+- **The hit-stop no longer slows the world (fixed here, lead-architect ruling 2026-09-09).** `GameClock`
+  integrated scaled `Time.deltaTime`, so a 90 ms hit-stop at 0.05 cost ~85 ms of game time per
+  landing. Law 5: the clock integrates `Time.unscaledDeltaTime` in `GameClock.Advance`; the ~thirty
+  sim files that read `Time.deltaTime` for MOTION still slow under the dip, which is the feel.
 - **The hand draws the clam.** `CarriableCatch.Create` sets the renderer's sprite from the
   catch art or the icon registry; the #803 defect was feedback only. Pinned.
 - **The haul cannot be pre-held.** The pull is position-driven (the frame is the line's

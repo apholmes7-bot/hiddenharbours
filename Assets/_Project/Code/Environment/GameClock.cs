@@ -73,10 +73,23 @@ namespace HiddenHarbours.Environment
             }
         }
 
-        private void Update()
+        /// <summary>
+        /// The clock reads WALL time, never <c>Time.timeScale</c> (rule 5; lead-architect ruling 2026-09-09).
+        /// <c>Time.timeScale</c> is a FEEL channel (the landing hit-stop dips it); the world's time is
+        /// <c>(seed, gameTime)</c> and a feel dip must not slow the tide. <see cref="IsPaused"/> is the only
+        /// pause and <see cref="TimeScale"/> the only rate (<c>ShellPause</c>: "there is no second clock").
+        /// </summary>
+        private void Update() => Advance(Time.unscaledDeltaTime);
+
+        /// <summary>
+        /// Integrate <paramref name="wallSeconds"/> of real time at <see cref="TimeScale"/> and fire the
+        /// day/season rollovers. Public so a test can drive the clock without a frame; a game passes
+        /// <c>Time.unscaledDeltaTime</c> and nothing else.
+        /// </summary>
+        public void Advance(float wallSeconds)
         {
             if (_config == null || IsPaused) return;
-            _t += Time.deltaTime * Mathf.Max(0f, TimeScale);
+            _t += wallSeconds * Mathf.Max(0f, TimeScale);
 
             int today = TotalDays;
             if (today != _lastTotalDays)
