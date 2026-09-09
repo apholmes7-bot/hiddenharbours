@@ -496,32 +496,74 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// ✅ <b>The envelope is preserved, which is the property two calibrated systems depend on.</b>
-        /// <c>Σ amplitudes</c> is the crest-factor normalizer the whitecap lifecycle divides by AND the
-        /// bound the watertight hull clamp scans against, so the ladder must not change it — a taller
-        /// envelope would quietly reduce foam and raise every hull. Growing the sea is row 33's
-        /// business, not row 34's.
+        /// ✅ <b>What the ladder conserves across the blend — and it is a DIFFERENT quantity
+        /// depending on whether row 33's height law is on.</b>
+        ///
+        /// <para><b>Height law OFF (the reference tuning, and every pre-2026-09-09 asset):</b> the
+        /// spectrum normalizes onto the hand-authored trains' amplitude ENVELOPE, so <c>Σa</c> is
+        /// unchanged by the ladder. That was row 34's own guarantee and it still holds.</para>
+        ///
+        /// <para><b>Height law ON (the shipped asset since row 33):</b> the finished field is scaled
+        /// so its significant height matches the fetch law, so <b><c>Hs</c> is what the blend
+        /// conserves and the envelope is not</b>. That is arithmetic, not a choice: at a fixed
+        /// <c>Hs</c> (fixed <c>Σa²</c>), spreading the same energy across eight bins instead of four
+        /// RAISES <c>Σa</c> — measured at 1.44x on the shipped config.</para>
+        ///
+        /// <para>⚠️ <b>So row 33 moves two calibrated numbers, and this is where that is said out
+        /// loud.</b> <c>TotalAmplitude</c> is the whitecap crest-factor normalizer AND the bound the
+        /// watertight hull clamp scans against. Against the superseded sea it drops (0.664 -> 0.393 m
+        /// at 5.70 m/s, the sea simply being shorter); across the blend at fixed height it rises
+        /// 1.44x. Neither is a defect — they are what "the height comes from the fetch" means — but
+        /// both are worth the owner's eye at the helm, because foam scoring and how high the hull
+        /// sits both read from that number.</para>
         /// </summary>
         [Test]
-        public void TheAmplitudeEnvelope_IsUnmovedByTheLadder()
+        public void WhatTheLadderConservesAcrossTheBlend_IsTheEnvelope_OrTheHEIGHT_IfRow33IsOn()
         {
             WaveFieldSettings ladder = Shipped();
             WaveFieldSettings legacy = Shipped();
             legacy.SpectrumBlend = 0f;                    // the hand-authored 4-train passthrough
 
-            var report = new StringBuilder("  wind   legacy SumA   ladder SumA   ratio\n");
+            bool heightLaw = ladder.HeightFromFetch;
+            var report = new StringBuilder(
+                $"  height law {(heightLaw ? "ON - Hs is conserved" : "OFF - the envelope is conserved")}\n" +
+                "  wind   4-train SumA   8-bin SumA   ratio |   4-train Hs    8-bin Hs\n");
+
             foreach (float u in ReachableWinds)
             {
-                float a = At(u, in legacy).TotalAmplitude;
-                float b = At(u, in ladder).TotalAmplitude;
-                report.AppendLine($"  {u,5:0.00} {a,13:0.0000} {b,13:0.0000} {(a > 1e-9f ? b / a : 1f),7:0.000}");
-                Assert.AreEqual(a, b, Mathf.Max(1e-4f, a * 0.02f),
-                    $"at {u:0.00} m/s the ladder's total amplitude is {b:0.0000} against the " +
-                    $"hand-authored field's {a:0.0000}. The spectrum normalizes onto the legacy " +
-                    "envelope by construction; if that has broken, the whitecap crest factor and the " +
-                    "hull clamp have both moved and neither of them belongs to row 34.");
+                WaveTrains a = At(u, in legacy), b = At(u, in ladder);
+                float sumA = a.TotalAmplitude, sumB = b.TotalAmplitude;
+                float hsA = WaveMath.SignificantHeightMeters(in a);
+                float hsB = WaveMath.SignificantHeightMeters(in b);
+                report.AppendLine($"  {u,5:0.00} {sumA,14:0.0000} {sumB,12:0.0000} {(sumA > 1e-9f ? sumB / sumA : 1f),7:0.000} |" +
+                                  $" {hsA,12:0.0000} {hsB,11:0.0000}");
+
+                if (heightLaw)
+                    Assert.AreEqual(hsA, hsB, Mathf.Max(1e-4f, hsA * 0.02f),
+                        $"at {u:0.00} m/s the ladder draws Hs {hsB:0.0000} m against the hand-authored " +
+                        $"field's {hsA:0.0000} m. With row 33's height law on, BOTH are scaled onto the " +
+                        "fetch law's height, so the blend must not change how tall the sea is - only " +
+                        "how its energy is distributed across frequencies.");
+                else
+                    Assert.AreEqual(sumA, sumB, Mathf.Max(1e-4f, sumA * 0.02f),
+                        $"at {u:0.00} m/s the ladder's total amplitude is {sumB:0.0000} against the " +
+                        $"hand-authored field's {sumA:0.0000}. With the height law off the spectrum " +
+                        "normalizes onto the legacy ENVELOPE by construction; if that has broken, the " +
+                        "whitecap crest factor and the hull clamp have both moved for no reason.");
             }
             TestContext.WriteLine(report.ToString());
+
+            // ...and the OTHER quantity is reported rather than asserted, because which one moves is
+            // the consequence of a ruling, not a defect to be pinned.
+            if (heightLaw)
+            {
+                WaveTrains a = At(5.70f, in legacy), b = At(5.70f, in ladder);
+                Assert.Greater(b.TotalAmplitude, a.TotalAmplitude,
+                    "⭐ AND THE ENVELOPE MUST RISE across the blend at a fixed height, because " +
+                    "spreading the same energy over more bins raises Σa while holding Σa². If it " +
+                    "did not, the eight-bin field would be carrying its energy in fewer effective " +
+                    "bins than the four-train one, which would mean the spectrum is not spreading.");
+            }
         }
 
         /// <summary>
