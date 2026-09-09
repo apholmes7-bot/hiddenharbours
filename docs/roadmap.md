@@ -23,9 +23,10 @@
 Slice — St Peters"** ([`../backlog/plan-to-m1.md`](../backlog/plan-to-m1.md), owner decisions D1–D8): dig
 clams → walk the tide-gated bar → Nine Mile Creek → buy and repair the dory → sail. **Its world is
 built** — `StPeters.unity`, `NineMileCreek.unity` and `WestWater.unity` are committed hand-authored
-scenes (ADR 0011 / 0019) — but **the M1 Definition of Done (`plan-to-m1.md` §9) has never been
-formally ticked and no GO / POLISH / PIVOT verdict is recorded.** That gate is still the owner's to
-call; `qa-test` owes the written readiness verdict when he asks for it.
+scenes (ADR 0011 / 0019). **M1 verdict: GO, ruled by the owner on 2026-09-09** after playing the
+arc (recorded by the coordinator seat the same day). The `plan-to-m1.md` §9 checklist was not ticked
+item by item; `qa-test` still owes the written readiness verdict if he asks for it, but the gate is
+called and nothing waits on it.
 
 **Built beyond the milestone order — all owner-directed and ADR-backed** (the "redirect later-phase
 work" rule below was consciously overridden by the owner for these; they are not drift): the fleet is
