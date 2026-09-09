@@ -113,8 +113,37 @@ namespace HiddenHarbours.Audio
             GameSettings.LoadInto(this);
             GameServices.AudioMix = this;
 
+            ApplyClipSet();
             BuildSources();
             ApplyMix();
+        }
+
+        /// <summary>
+        /// Takes the real recordings out of <see cref="AudioClipSetDef"/> — content is data (rule 2), so
+        /// slotting a sound is an asset edit and never a change to this file.
+        ///
+        /// <para>It runs here rather than in <see cref="Bootstrap"/> because
+        /// <c>AddComponent&lt;AudioDirector&gt;()</c> runs <c>Awake</c> synchronously: anything assigned
+        /// after that call would land AFTER <see cref="BuildSources"/> had already handed the sources
+        /// their clips. Awake is also the one path a scene-placed director would take. What the charter
+        /// asked for is the ordering, and it holds — the clips are in the fields before the first
+        /// <c>MakeSource</c>.</para>
+        ///
+        /// <para>A slot the set leaves null keeps its procedural placeholder, which is the honest state
+        /// for a sound we have no correctly-licensed recording for yet.</para>
+        /// </summary>
+        private void ApplyClipSet()
+        {
+            var set = Resources.Load<AudioClipSetDef>("AudioClipSet");
+            if (set == null) return;
+
+            if (set.CalmBed        != null) _calmBed        = set.CalmBed;
+            if (set.Gulls          != null) _gulls          = set.Gulls;
+            if (set.HullRow        != null) _hullRow        = set.HullRow;
+            if (set.OutboardEngine != null) _outboardEngine = set.OutboardEngine;
+            if (set.WindTell       != null) _windTell       = set.WindTell;
+            if (set.CatchSting     != null) _catchSting     = set.CatchSting;
+            if (set.HomeWarmth     != null) _homeWarmth     = set.HomeWarmth;
         }
 
         private void OnEnable()  => Subscribe();

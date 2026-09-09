@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9765f07a30e4a76ab1660e30d024163, type: 3}
+  m_Name: AudioClipSet
+  m_EditorClassIdentifier: 
+  Id: audio.clip_set
+  CalmBed: {fileID: 8300000, guid: bb2e65f96cac4a2e948010f970958368, type: 3}
+  Gulls: {fileID: 8300000, guid: b06ad32a1d7542449276c7357d9a4353, type: 3}
+  HullRow: {fileID: 0}
+  OutboardEngine: {fileID: 8300000, guid: 53a2d7c984444aefb73920fcc7f14af9, type: 3}
+  WindTell: {fileID: 8300000, guid: 805cd99312b140d285f919a6d93ac161, type: 3}
+  CatchSting: {fileID: 0}
+  HomeWarmth: {fileID: 0}
+  RodCreakLoop: {fileID: 8300000, guid: a7673b17c7b645b3a9822ccfa0ddcae5, type: 3}
+  PayoutTickLoop: {fileID: 8300000, guid: c3a0f795504c42fcaaac96cb9395744e, type: 3}
+  StrainGroanLoop: {fileID: 8300000, guid: caa29e605b044e3e9cf2cf09127fcc6c, type: 3}
+  ReelClickLoop: {fileID: 8300000, guid: b8ee6714fd3941598eaeed30a92cd1ac, type: 3}
+  SurfaceThrashLoop: {fileID: 8300000, guid: 7a279bec9ff646029024c3588278baf7, type: 3}
+  CastWhoosh: {fileID: 8300000, guid: 575207ac74154d8a87fb004d44a223db, type: 3}
+  SplashDown: {fileID: 8300000, guid: 749b30f34b8d48a1bc5aec232302089d, type: 3}
+  BobberPlop: {fileID: 8300000, guid: 06d30d370e354e43a4fc4d8f7516dc4a, type: 3}
+  RodKnock: {fileID: 8300000, guid: 5655058c732c4d1a842a964ae5bf5b36, type: 3}
+  BottomSettle: {fileID: 8300000, guid: dde193e489e84cb8b418a628a9c78e50, type: 3}
+  SlackRelease: {fileID: 8300000, guid: 3f0dfc284fc641cfb5a3ff4156673023, type: 3}
+  SnapSting: {fileID: 8300000, guid: d42abd056cfc4ee2b01624a4b0bb408e, type: 3}
+  LandedFlourish: {fileID: 8300000, guid: ea327cf1ad4a4eb68b896cc171d57743, type: 3}

@@ -93,7 +93,40 @@ namespace HiddenHarbours.Audio
         {
             if (_instance != null && _instance != this) { Destroy(gameObject); return; }
             _instance = this;
+            ApplyClipSet();
             BuildSources();
+        }
+
+        /// <summary>
+        /// Takes the real recordings out of <see cref="AudioClipSetDef"/> — content is data (rule 2), so
+        /// slotting a sound is an asset edit and never a change to this file.
+        ///
+        /// <para>It runs here rather than in <see cref="Bootstrap"/> because
+        /// <c>AddComponent&lt;FishingAudio&gt;()</c> runs <c>Awake</c> synchronously: anything assigned
+        /// after that call would land AFTER <see cref="BuildSources"/> had already handed the sources
+        /// their clips. The ordering the charter asked for holds — the clips are in the fields before
+        /// the first <c>MakeSource</c>.</para>
+        ///
+        /// <para>A slot the set leaves null keeps its procedural placeholder.</para>
+        /// </summary>
+        private void ApplyClipSet()
+        {
+            var set = Resources.Load<AudioClipSetDef>("AudioClipSet");
+            if (set == null) return;
+
+            if (set.RodCreakLoop      != null) _rodCreakLoop      = set.RodCreakLoop;
+            if (set.PayoutTickLoop    != null) _payoutTickLoop    = set.PayoutTickLoop;
+            if (set.StrainGroanLoop   != null) _strainGroanLoop   = set.StrainGroanLoop;
+            if (set.ReelClickLoop     != null) _reelClickLoop     = set.ReelClickLoop;
+            if (set.SurfaceThrashLoop != null) _surfaceThrashLoop = set.SurfaceThrashLoop;
+            if (set.CastWhoosh        != null) _castWhoosh        = set.CastWhoosh;
+            if (set.SplashDown        != null) _splashDown        = set.SplashDown;
+            if (set.BobberPlop        != null) _bobberPlop        = set.BobberPlop;
+            if (set.RodKnock          != null) _rodKnock          = set.RodKnock;
+            if (set.BottomSettle      != null) _bottomSettle      = set.BottomSettle;
+            if (set.SlackRelease      != null) _slackRelease      = set.SlackRelease;
+            if (set.SnapSting         != null) _snapSting         = set.SnapSting;
+            if (set.LandedFlourish    != null) _landedFlourish    = set.LandedFlourish;
         }
 
         private void OnEnable()  => Subscribe();

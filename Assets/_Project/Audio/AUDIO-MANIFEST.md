@@ -1,13 +1,25 @@
 # Audio asset manifest — adaptive audio scaffold (VS-27/28)
 
-The `AudioDirector` (self-installing, `Code/Audio/AudioDirector.cs`) plays everything below. Until the
-owner's real SFX exist, each clip is generated **procedurally** at boot (`ProceduralAudio.cs`) so the
-adaptive mix is audible/testable end-to-end. **To swap in a real clip:** drop the `.wav` in the folder
-below and assign it to the matching serialized field on the `AudioDirector` component — the procedural
-placeholder is only used when the field is empty, so no code changes.
+The `AudioDirector` (self-installing, `Code/Audio/AudioDirector.cs`) plays everything below. Every slot
+still has a **procedural** placeholder generated at boot (`ProceduralAudio.cs`), and that is what plays
+whenever the slot is empty — so the adaptive mix stays audible and testable end-to-end even with nothing
+recorded.
 
-> Authoring standard (match the art lock spirit): mono unless noted, 44.1 kHz, `.wav` (PCM) for SFX,
-> seamless loops for beds. Keep beds quiet — they sit *under* gameplay. Loudness is mixed at runtime.
+**To swap in a real clip (no code — rule 2):** drop the file in `Ambient/` or `SFX/`, assign it to its
+slot on **`Resources/AudioClipSet.asset`** (`AudioClipSetDef`, one `AudioClip` field per row below), and
+add its row to **`LICENSES.md`**. Each player loads that asset in `Awake` and copies every non-null slot
+over its own field *before* it builds its sources; a null slot keeps its placeholder. Nothing here is a
+serialized reference on a component any more, so slotting a sound never touches a scene.
+
+> Authoring standard (match the art lock spirit): **mono, 44,100 Hz**. `.ogg` (Vorbis ~q6) where it
+> saves real bytes, 16-bit PCM `.wav` where a loop needs a sample-exact join (see `LICENSES.md`).
+> Loops seamless — the step across the wrap no bigger than the median step inside the loop, and that is
+> a *test*, not a hope. Peaks: **−12 dBFS** for beds, **−3 dBFS** for one-shots. Keep beds quiet — they
+> sit *under* gameplay, and loudness is mixed at runtime.
+>
+> **Sources must be dry, even and eventless.** No baked reverb or stereo width, no gust inside a wind
+> bed, no rev inside an engine loop, no ritardando inside a tick loop: the mix rides gain and pitch, and
+> a clip that performs those moves itself fights it.
 
 ## Buses (independent player volumes)
 
@@ -44,15 +56,15 @@ idles when moored and revs underway.
 
 ## Clips needed (placeholder → real)
 
-| Director field | Real asset (place here) | Loop? | Bus | Role / trigger | Placeholder |
+| Director field | Committed clip | Loop? | Bus | Role / trigger | Now playing |
 |---|---|---|---|---|---|
-| `_calmBed`    | `Ambient/calm_sea_bed.wav`  | yes | Ambience | always-on calm-sea wash | `ProceduralAudio.CalmSeaBed` |
-| `_gulls`      | `Ambient/gulls.wav`         | yes | Ambience | sparse gull calls over the bed | `GullCalls` |
-| `_hullRow`    | `Ambient/hull_row.wav`      | yes | Ambience | oar-stroke / water bed — **aboard a rowed hull (the dory)**; crossfades with the engine bed on a swap | `HullRow` |
-| `_outboardEngine` | `Ambient/outboard_engine.wav` | yes | Ambience | looping outboard-engine bed — **aboard an engine boat (the punt and up)**; pitch + volume rise with speed over ground | `OutboardEngine` |
-| `_windTell`   | `Ambient/wind_tell.wav`     | yes | Ambience | **the SACRED rising-wind tell** — loudness driven by wind strength, audible *before* trouble (P1) | `WindTell` |
-| `_catchSting` | `SFX/catch_sting.wav`       | no  | SFX | bright sting on `FishCaught` | `CatchSting` |
-| `_homeWarmth` | `SFX/home_warmth.wav`       | no  | SFX | "made it home" warmth on `CatchSold` / coming ashore | `HomeWarmth` |
+| `_calmBed`    | `Ambient/calm_sea_bed.ogg`  | yes | Ambience | always-on calm-sea wash | **real** — LICENSES.md row 1 |
+| `_gulls`      | `Ambient/gulls.ogg`         | yes | Ambience | sparse gull calls over the bed | **real** — LICENSES.md row 2 |
+| `_hullRow`    | — | yes | Ambience | oar-stroke / water bed — **aboard a rowed hull (the dory)**; crossfades with the engine bed on a swap | `ProceduralAudio.HullRow` — **slot held**: no CC0 rowing recording found, owner shopping list in LICENSES.md |
+| `_outboardEngine` | `Ambient/outboard_engine.wav` | yes | Ambience | looping outboard-engine bed — **aboard an engine boat (the punt and up)**; pitch + volume rise with speed over ground | **real** — LICENSES.md row 3 |
+| `_windTell`   | `Ambient/wind_tell.wav`     | yes | Ambience | **the SACRED rising-wind tell** — loudness driven by wind strength, audible *before* trouble (P1) | **real** — LICENSES.md row 4 |
+| `_catchSting` | — | no  | SFX | bright sting on `FishCaught` | `ProceduralAudio.CatchSting` — **slot held**: musical, waits for the score (foley guide §9) |
+| `_homeWarmth` | — | no  | SFX | "made it home" warmth on `CatchSold` / coming ashore | `ProceduralAudio.HomeWarmth` — **slot held**, as above |
 
 ## Rod-fight sound layer (Rod Fishing v2 — `FishingAudio`)
 
@@ -60,27 +72,28 @@ A second self-installing player, **`FishingAudio`** (`Code/Audio/FishingAudio.cs
 rod-fishing arc **diegetically** (design `rod-fishing-v2-brainstorm.md` §2–3, §7 — the rod is the
 instrument, no HUD). It consumes ONLY the Core `FishingStateChanged` snapshot (rule 4) and all its
 decisions are the pure, EditMode-tested `FishingAudioLogic`. As above, every clip has a procedural
-placeholder until real SFX slot into the serialized fields — same swap flow, no code changes.
+placeholder and takes its real recording from the shared `AudioClipSet.asset` — same swap flow, no code
+changes.
 
 **How the owner tunes it (no code):** select the `[FishingAudio]` object at runtime (or a slotted
 prefab later) — every layer has a tooltip'd 0..1 level (`_fishingVolume` master, `_creakLevel`,
 `_payoutLevel`, `_strainLevel`, `_reelLevel`, `_thrashLevel`, `_cueLevel`).
 
-| Director field | Real asset (place here) | Loop? | Role / trigger | Placeholder |
+| Director field | Committed clip | Loop? | Role / trigger | Now playing |
 |---|---|---|---|---|
-| `_rodCreakLoop` | `SFX/rod_creak.wav` | yes | wind-back draw (`WindBack`) — deepens as the rod loads (`RodBend01`) | `ProceduralAudio.RodCreak` |
-| `_castWhoosh` | `SFX/cast_whoosh.wav` | no | the flick released (enter `Cast`) — whip + line whistle | `CastWhoosh` |
-| `_splashDown` | `SFX/splash_down.wav` | no | the line lands (exit `Cast`) — pairs with the art lane's `SplashBurst` | `SplashDown` |
-| `_payoutTickLoop` | `SFX/payout_tick.wav` | yes | the depth drop (`Sinking`) — its **pitch slows** as `Depth01` → 1 (the no-gauge depth read, §2.3) | `PayoutTick` |
-| `_bottomSettle` | `SFX/bottom_settle.wav` | no | the slack **bottom tell** opens pre-bite — "you felt bottom" | `BottomSettle` |
-| `_bobberPlop` | `SFX/bobber_plop.wav` | no | the **cast-path** bite tell (`Bite` with `Depth01 = 0`) | `BobberPlop` |
-| `_rodKnock` | `SFX/rod_knock.wav` | no | the **depth-path** bite tell (`Bite` with `Depth01 > 0`) — the deep rod-tip knock, in the rod, not the UI | `RodKnock` |
-| `_strainGroanLoop` | `SFX/strain_groan.wav` | yes | the continuous line-strain groan — gain rides `Tension01^1.6` (the "ease off!" voice), pitch tightens with tension; services the **legacy `Fighting`** phase too | `StrainGroan` |
-| `_reelClickLoop` | `SFX/reel_clicks.wav` | yes | reel clicks **only while gaining** (`Landing01` rising) | `ReelClicks` |
-| `_slackRelease` | `SFX/slack_release.wav` | no | the mid-fight slack window opens — the diegetic "PULL now" (§3) | `SlackRelease` |
-| `_surfaceThrashLoop` | `SFX/surface_thrash.wav` | yes | she's up (`FightSurface`) — swells with `RodBend01` + her dart speed, **pans on her offset** | `SurfaceThrash` |
-| `_snapSting` | `SFX/snap_sting.wav` | no | threw the hook (`Snapped`) — a **cozy** sting, never a punishment sound (§7) | `SnapSting` |
-| `_landedFlourish` | `SFX/landed_flourish.wav` | no | landed (`Landed`) — warm flourish + the wet slap on the boards; layers under the `AudioDirector`'s musical `_catchSting` (diegetic vs reward) | `LandedFlourish` |
+| `_rodCreakLoop` | `SFX/rod_creak.ogg` | yes | wind-back draw (`WindBack`) — deepens as the rod loads (`RodBend01`) | **real** — LICENSES.md row 5 |
+| `_castWhoosh` | `SFX/cast_whoosh.wav` | no | the flick released (enter `Cast`) — whip + line whistle | **real** — LICENSES.md row 10 |
+| `_splashDown` | `SFX/splash_down.wav` | no | the line lands (exit `Cast`) — pairs with the art lane's `SplashBurst` | **real** — LICENSES.md row 11 |
+| `_payoutTickLoop` | `SFX/payout_tick.ogg` | yes | the depth drop (`Sinking`) — its **pitch slows** as `Depth01` → 1 (the no-gauge depth read, §2.3) | **real** — LICENSES.md row 6 |
+| `_bottomSettle` | `SFX/bottom_settle.wav` | no | the slack **bottom tell** opens pre-bite — "you felt bottom" | **real** — LICENSES.md row 14 |
+| `_bobberPlop` | `SFX/bobber_plop.wav` | no | the **cast-path** bite tell (`Bite` with `Depth01 = 0`) | **real** — LICENSES.md row 12 |
+| `_rodKnock` | `SFX/rod_knock.wav` | no | the **depth-path** bite tell (`Bite` with `Depth01 > 0`) — the deep rod-tip knock, in the rod, not the UI | **real** — LICENSES.md row 13 |
+| `_strainGroanLoop` | `SFX/strain_groan.wav` | yes | the continuous line-strain groan — gain rides `Tension01^1.6` (the "ease off!" voice), pitch tightens with tension; services the **legacy `Fighting`** phase too | **real** — LICENSES.md row 7. The **weakest fit** in the set: an even low drone, not a rope under load. First to re-source. |
+| `_reelClickLoop` | `SFX/reel_clicks.ogg` | yes | reel clicks **only while gaining** (`Landing01` rising) | **real** — LICENSES.md row 8 |
+| `_slackRelease` | `SFX/slack_release.wav` | no | the mid-fight slack window opens — the diegetic "PULL now" (§3) | **real** — LICENSES.md row 15 |
+| `_surfaceThrashLoop` | `SFX/surface_thrash.ogg` | yes | she's up (`FightSurface`) — swells with `RodBend01` + her dart speed, **pans on her offset** | **real** — LICENSES.md row 9 |
+| `_snapSting` | `SFX/snap_sting.wav` | no | threw the hook (`Snapped`) — a **cozy** sting, never a punishment sound (§7) | **real** — LICENSES.md row 16 |
+| `_landedFlourish` | `SFX/landed_flourish.wav` | no | landed (`Landed`) — warm flourish + the wet slap on the boards; layers under the `AudioDirector`'s musical `_catchSting` (diegetic vs reward) | **real** — LICENSES.md row 17 |
 
 > **Flags:** (a) `FishingAudio` keeps its own master level rather than reaching into the
 > `AudioDirector`'s private bus fields — folding both players onto shared buses (an AudioMixer) is a
