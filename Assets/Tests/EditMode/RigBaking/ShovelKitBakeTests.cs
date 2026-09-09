@@ -268,20 +268,71 @@ namespace HiddenHarbours.Tests.RigBaking
 
         // ---- the mount sidecar, once the bake has written it ---------------------------------
 
+        /// <summary>Where the bake writes the dig sheet — the file whose presence means "the bake
+        /// has run". Named once, because two tests below branch on it.</summary>
+        const string DigSheet = "Assets/_Project/Art/Fishing/Iso/Shovel_dig.png";
+
+        static bool BakeHasRun(out string missing)
+        {
+            bool sheet = File.Exists(Path.Combine(RigCatalog.RepoRoot, DigSheet));
+            bool sidecar = File.Exists(Path.Combine(RigCatalog.RepoRoot, ShovelKitBaker.MountSidecar));
+            missing = sheet == sidecar ? null : (sheet ? ShovelKitBaker.MountSidecar : DigSheet);
+            return sheet && sidecar;
+        }
+
+        /// <summary>
+        /// <b>The sheet and its mount sidecar land TOGETHER, or neither does.</b> This runs
+        /// unconditionally, and it is what makes the skip below a BOUNDED silence rather than an
+        /// open one.
+        ///
+        /// <para><see cref="TheMountSidecar_DescribesTheRigsItNames"/> can only be skipped while
+        /// there is genuinely nothing to guard. The failure mode it cannot cover on its own is the
+        /// bake half-landing — <c>Shovel_dig.png</c> committed and <c>FisherShovelMount.json</c>
+        /// forgotten (or the reverse). That would leave the sheet shipping with its mount contract
+        /// permanently unasserted and the skip looking exactly as innocent as it does today, which
+        /// is the shape of unguarded art nobody notices. Both are written by ONE menu click, so
+        /// anything other than both-or-neither is a commit that dropped a file.</para>
+        /// </summary>
+        [Test]
+        public void TheSheetAndItsMountSidecar_LandTogetherOrNotAtAll()
+        {
+            Assert.IsTrue(BakeHasRun(out string missing) || missing == null,
+                $"the shovel bake half-landed: '{missing}' is missing while its other half is " +
+                "committed. Hidden Harbours ▸ Art ▸ Bake Shovel Kit writes the sheets AND " +
+                "FisherShovelMount.json in one operation — commit both, or neither.");
+        }
+
         /// <summary>
         /// <c>FisherShovelMount.json</c> — the rod's sibling — checked against the live rigs rather
-        /// than against itself. Skipped, honestly, until the bake writes it: the sidecar is DERIVED,
-        /// so there is nothing to guard before the one editor slot this kit needs has run. Every
-        /// assertion above is live today.
+        /// than against itself.
+        ///
+        /// <para><b>⚠️ This test SKIPS before the bake, and a skip is a silence with two causes.</b>
+        /// The innocent one is "the derived file does not exist yet", which is this one: the sidecar
+        /// is written by the bake, the bake is one batchmode launch on an editor slot, and #805
+        /// deliberately lands the kit's code and guards first. The guilty one would be "the sidecar
+        /// exists and this quietly stopped reading it" — impossible here, because the branch is on
+        /// <c>File.Exists</c> and <see cref="TheSheetAndItsMountSidecar_LandTogetherOrNotAtAll"/>
+        /// runs unconditionally and reddens if the sheet ever ships without it.</para>
+        ///
+        /// <para><b>Where it RUNS with the bake in place:</b> on the machine that bakes. The PR that
+        /// commits <c>Shovel_dig.png</c> commits the sidecar in the same operation and empties
+        /// <c>FishingKitSheetSliceTests.AwaitingOwnerBake</c>, and from that commit on this test is
+        /// live on every run including CI — nothing here is graphics-dependent, so CI's null device
+        /// is not a reason it would keep skipping.</para>
         /// </summary>
         [Test]
         public void TheMountSidecar_DescribesTheRigsItNames()
         {
             string abs = Path.Combine(RigCatalog.RepoRoot, ShovelKitBaker.MountSidecar);
             if (!File.Exists(abs))
-                Assert.Ignore($"{ShovelKitBaker.MountSidecar} is not on disk yet — it is written by " +
-                              "Hidden Harbours ▸ Art ▸ Bake Shovel Kit, which needs an editor slot. " +
-                              "The rig, probe and contract guards in this class do not.");
+                Assert.Ignore(
+                    $"SKIPPED because the DERIVED file does not exist yet: {ShovelKitBaker.MountSidecar} " +
+                    "is written by Hidden Harbours ▸ Art ▸ Bake Shovel Kit, which needs an editor " +
+                    "slot, and #805 lands the kit's code before its bake. This is NOT 'the mount " +
+                    "contract is unguarded': TheSheetAndItsMountSidecar_LandTogetherOrNotAtAll runs " +
+                    "unconditionally and fails if a Shovel_ sheet ever ships without this sidecar, so " +
+                    "this test cannot stay silent once there is anything to say. Every rig, probe and " +
+                    "contract guard in this class is live today and needs no bake.");
 
             string json = File.ReadAllText(abs);
 

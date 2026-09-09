@@ -278,19 +278,48 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void TheGuardedSet_IsTheFullKit()
         {
             // The set arithmetic itself, so a future edit that drops a species or tier by accident
-            // is loud: 7 species × 3 rungs × 10 states + 4 bobber states + 3 rod tiers × 10 states (pass 2).
-            Assert.AreEqual(7 * 3 * 10 + 4 + 3 * 10, Sheets.Count);
+            // is loud: 7 species × 3 rungs × 10 states + 4 bobber states + 3 rod tiers × 10 states
+            // (pass 2), + the CLAM SPADE's 3 (#805). The spade's three are named rather than folded
+            // into the total, because they are the whole of why this number moved from 244 to 247:
+            // Shovel_dig (the one anim CharacterIso.ANIM_MOUNT mounts the spade on) and the rig's
+            // two still rests, Shovel_ground and Shovel_stored. There is deliberately no carry
+            // sheet — see ShovelStates above.
+            Assert.AreEqual(7 * 3 * 10 + 4 + 3 * 10 + ShovelStates.Length, Sheets.Count);
             Assert.AreEqual(Sheets.Count, ExpectedFrames.Count);
+            CollectionAssert.AreEquivalent(
+                new[] { "Shovel_dig", "Shovel_ground", "Shovel_stored" },
+                Sheets.Keys.Where(k => k.StartsWith("Shovel_", StringComparison.Ordinal)).ToArray(),
+                "the three sheets that took this kit from 244 stems to 247");
 
             // Every guarded stem must be a stem the spec actually names — a guard on a typo would
             // silently exempt nothing and hide the sheet it was meant to cover.
             foreach (string stem in AwaitingOwnerBake.Concat(StaleUntilRebake))
                 Assert.IsTrue(Sheets.ContainsKey(stem), $"guarded stem '{stem}' is not in the kit");
-            // The re-bake landed (2026-08-23, coordinator last-mile on the 4060): every guard set is
-            // EMPTY and must stay so — a stem re-added here is a sheet nobody re-baked.
-            Assert.AreEqual(0, AwaitingOwnerBake.Count + StaleUntilRebake.Count + RetiredUntilRebake.Count,
-                            "no rod sheet is pending a re-bake any more; if one is, re-bake it rather " +
-                            "than guarding it.");
+
+            // The ROD's re-bake landed (2026-08-23, coordinator last-mile on the 4060) and its guard
+            // sets must stay EMPTY — a ROD stem re-added here is a sheet nobody re-baked. Asserted
+            // per-kit rather than as one "all three sets are empty" total, which is what this used to
+            // be: that total was true only while the rod's re-bake was the only thing these sets had
+            // ever held, and #805 moved that premise by spec'ing a NEW kit ahead of its first bake —
+            // exactly the case AwaitingOwnerBake's own doc comment reserves it for. Lumping the two
+            // together would have forced a choice between deleting a live guard and pretending a
+            // never-baked sheet is a stale one.
+            foreach (string stem in AwaitingOwnerBake.Concat(StaleUntilRebake).Concat(RetiredUntilRebake))
+                Assert.IsFalse(stem.StartsWith("Rod_", StringComparison.Ordinal),
+                               $"'{stem}' is a ROD sheet pending a re-bake; re-bake it rather than " +
+                               "guarding it.");
+
+            // The SPADE is the only kit legitimately pending, and only until its first bake. Pinned
+            // as an exact set so a fourth pending stem cannot join quietly, and so the PR that
+            // commits the bake has to come back here and empty it.
+            CollectionAssert.AreEquivalent(
+                new[] { "Shovel_dig", "Shovel_ground", "Shovel_stored" },
+                AwaitingOwnerBake.ToArray(),
+                "only the clam spade may be pending a first bake. ⚠️ When Hidden Harbours ▸ Art ▸ " +
+                "Bake Shovel Kit has run and the sheets are committed, EMPTY AwaitingOwnerBake — " +
+                "leaving a baked sheet listed here exempts it from every assertion in this file.");
+            CollectionAssert.IsEmpty(StaleUntilRebake);
+            CollectionAssert.IsEmpty(RetiredUntilRebake);
 
             // A retired stem is the opposite: it must NOT be in the kit, or it is not retired.
             foreach (string stem in RetiredUntilRebake)
