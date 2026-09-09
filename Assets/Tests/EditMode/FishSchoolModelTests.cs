@@ -519,17 +519,30 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void BothReads_ClearTheCallersListAndToleratesNull()
         {
-            FishSchoolSettings s = Settings();
-            FishSchoolModel model = Model(new FakeWorld(), in s, Fish("fish.atlantic_cod"));
+            // ⚠ AN EMPTY SEA BY CONSTRUCTION, NOT BY A LUCKY COORDINATE. This used to read a place and
+            // an instant it believed held nothing; the owner's 2026-09-09 lattice put a school there and
+            // the clearing claim quietly stopped being tested. BaseAppearanceChance01 = 0 is the owner's
+            // own off switch (FishSchoolModel.Prepare: "an empty sea"), so the reads below are guaranteed
+            // to find nothing whatever the tuning does next.
+            FishSchoolSettings empty = Settings();
+            empty.BaseAppearanceChance01 = 0f;
+            FishSchoolModel none = Model(new FakeWorld(), in empty, Fish("fish.atlantic_cod"));
 
             var schools = new List<FishSchool> { default };
             var marks = new List<FishMark> { new FishMark(1f, 9, 1f) };
 
-            // Somewhere with nothing showing: stale contents must not survive to be re-drawn.
-            model.SchoolsAt(new Vector2(0f, 0f), -50000.0, schools);
-            model.MarksAt(new Vector2(0f, 0f), -50000.0, marks);
-            Assert.IsEmpty(schools);
-            Assert.IsEmpty(marks);
+            none.SchoolsAt(new Vector2(0f, 0f), 4000.0, schools);
+            none.MarksAt(new Vector2(0f, 0f), 4000.0, marks);
+            Assert.IsEmpty(schools, "stale contents survived a read that found nothing");
+            Assert.IsEmpty(marks, "stale contents survived a read that found nothing");
+
+            // And in populated water the sentinel is gone too: what comes back is only real schools.
+            FishSchoolSettings s = Settings();
+            FishSchoolModel model = Model(new FakeWorld(), in s, Fish("fish.atlantic_cod"));
+            schools.Add(default);
+            model.SchoolsAt(new Vector2(0f, 0f), 4000.0, schools);
+            foreach (FishSchool q in schools)
+                Assert.Greater(q.RadiusMetres, 0f, "the caller's stale entry survived a populated read");
 
             Assert.DoesNotThrow(() => model.SchoolsAt(Vector2.zero, 100.0, null));
             Assert.DoesNotThrow(() => model.MarksAt(Vector2.zero, 100.0, null));

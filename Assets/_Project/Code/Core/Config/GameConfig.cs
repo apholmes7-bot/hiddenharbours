@@ -2486,13 +2486,16 @@ namespace HiddenHarbours.Core
         public const float ShoalMathReferenceSpreadMetres = 1.2f;
 
         /// <summary>
-        /// The density the ONE global <see cref="BaseAppearanceChance01"/> already produced at the
-        /// shipped cell size, so a species that states no density of its own keeps exactly the sea it
-        /// had before the field existed: <c>0.55 school per cell / (0.120 km)^2 = 38.19 schools/km^2</c>.
-        /// <para>Both terms are owner-tunable, so this is the density at the SHIPPED pair and not a law;
-        /// a guard restates the division from those two primitives rather than asking the code.</para>
+        /// The density the ONE global <see cref="BaseAppearanceChance01"/> produces at the shipped cell
+        /// size, so a species that states no density of its own gets exactly that sea:
+        /// <c>0.55 school per cell / (0.022 km)^2 = 1136.36 schools/km^2</c>.
+        /// <para>⚠ <b>This number moves with <see cref="CellSizeMetres"/> and is meaningless without it.</b>
+        /// It was 38.19 while the cell was 120 m (the owner's 2026-09-09 ruling shrank the cell to 22 m):
+        /// a density is only ever realised up to ONE school per cell, so the two are a pair. Both terms
+        /// are owner-tunable, so this is the density at the SHIPPED pair and not a law; a guard restates
+        /// the division from those two primitives rather than asking the code.</para>
         /// </summary>
-        public const float ReferenceSchoolsPerSquareKilometre = 38.194444f;
+        public const float ReferenceSchoolsPerSquareKilometre = 1136.3636f;
 
         // ---- the appearance gate (location · weather · date — the owner's three) --------------------
 
@@ -2638,34 +2641,48 @@ namespace HiddenHarbours.Core
         [Range(0f, 1f)] public float OffSchoolSpeciesDamp01;
 
         /// <summary>
-        /// The reference tuning for the St Peters opening, sized against the region rather than guessed:
-        /// 120 m cells over a 760×520 m region give ~6×4 patches of ground, a little over half of which
-        /// hold fish in a given 2.5 h slot, each showing for roughly half of it — so at any moment
-        /// something like a tenth of the water is fishable and a working morning means reading the glass
-        /// and moving, not parking. Schools run 22–55 m across (a dory covers one in a few seconds of
-        /// steaming), sit a quarter to four-fifths of the way down the column, and hold 1–5 fish: a
-        /// single mark bites ~1.35× as fast, a full five ~2.75× (the ceiling is 3). Winter is deliberately
-        /// lean and high summer generous. Nothing here can zero a fish out: the wrong depth is still worth
-        /// a third of the school, and a species the school does not hold is damped to 0.4, never barred.
+        /// The reference tuning for the St Peters opening, sized against the OWNER'S FRAME rather than
+        /// guessed — his ruling of 2026-09-09, <i>"i want to see them"</i>.
+        ///
+        /// <para><b>The cell is the whole argument.</b> A <c>(cell, slot)</c> holds at most ONE school, so
+        /// <see cref="CellSizeMetres"/> is a hard ceiling on school ANCHORS per square kilometre — and the
+        /// fish are drawn AT the anchor, inside ~7 m of it, against a boat camera 24.9 × 14 m. At the
+        /// retired 120 m cell that ceiling was 69 schools/km² and a fish was on screen at the St Peters
+        /// landing for 0.5–4.8 % of the daylight; at 22 m it is 2 066/km² and 38–58 %
+        /// (<c>FishDutyCycleAtTheLandingTests</c>). No density number could have reached that on its own:
+        /// <see cref="FishSchoolMath.BaseChanceForDensity"/> clamps at one school per cell.</para>
+        ///
+        /// <para><b>The disc is not the drawing.</b> Schools run 8–14 m across, which is how far a BOAT may
+        /// be and still be ON the mark. It was 22–55 m — two to four screens wide, so the rod worked over
+        /// water where nothing could be seen, which is the incoherence the owner was really reporting. The
+        /// 8 m floor is not a taste: the furthest a drawn fish sits from its anchor is 6.9 m (a striped
+        /// bass, 4 m spread), and a disc smaller than that would cull a school whose fish are on screen.</para>
+        ///
+        /// <para>Schools sit a quarter to four-fifths of the way down the column and hold 1–5 fish unless
+        /// the species says otherwise: a single mark bites ~1.35× as fast, a full five ~2.75× (the ceiling
+        /// is 3). A window is 1.75–2.5 h of a 2.5 h slot, so a school you have found is still there when
+        /// you have steamed to it. Winter is deliberately lean and high summer generous. Nothing here can
+        /// zero a fish out: the wrong depth is still worth a third of the school, and a species the school
+        /// does not hold is damped to 0.4, never barred.</para>
         /// </summary>
         public static FishSchoolSettings Default => new FishSchoolSettings
         {
-            CellSizeMetres = 120f,
+            CellSizeMetres = 22f,
             SlotHours = 2.5f,
 
             BaseAppearanceChance01 = 0.55f,
-            MinWaterColumnMetres = 1.5f,
+            MinWaterColumnMetres = 0.8f,
             SeaStateAppearanceBias = 0.25f,
             EarlySpringAppearance = 1f,
             HighSummerAppearance = 1.2f,
             TheTurnAppearance = 1f,
             HardWinterAppearance = 0.55f,
 
-            MinWindowHours = 0.75f,
-            MaxWindowHours = 2f,
+            MinWindowHours = 1.75f,
+            MaxWindowHours = 2.5f,
 
-            MinRadiusMetres = 22f,
-            MaxRadiusMetres = 55f,
+            MinRadiusMetres = 8f,
+            MaxRadiusMetres = 14f,
 
             MinDepthFraction01 = 0.25f,
             MaxDepthFraction01 = 0.8f,
