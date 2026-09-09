@@ -348,6 +348,10 @@ namespace HiddenHarbours.Tools.RigBaking
         /// signed dir the reference rasteriser must pose to reproduce it. TRUE when the mapping must
         /// negate (<c>HullMeshMath.HeadingToDirUnits</c>'s <c>azimuthCounterClockwise</c>).
         ///
+        /// <para><b>The statistic is the SILHOUETTE, not the inked-colour diff.</b> Handedness is a
+        /// question about WHERE the figure is; the facet model's own 45–57% shading delta drowns
+        /// that question out of any colour statistic. The measurement is at the comparison below.</para>
+        ///
         /// <para>Public so the EditMode guard pins the SAME adjudication the bake stored, rather
         /// than a second implementation that could agree by luck.</para>
         /// </summary>
@@ -366,18 +370,34 @@ namespace HiddenHarbours.Tools.RigBaking
             RigPixelDiff dNeg = RigMeshReferenceRasterizer.Compare(truthEast, neg, pose.W, pose.H);
             RigPixelDiff dPos = RigMeshReferenceRasterizer.Compare(truthEast, pos, pose.W, pose.H);
 
-            bool negWins = dNeg.DifferingPixels < dPos.DifferingPixels;
-            RigPixelDiff winner = negWins ? dNeg : dPos;
-            RigPixelDiff loser = negWins ? dPos : dNeg;
+            // ⚠️ Adjudicate on the SILHOUETTE (opaque-vs-transparent), never on inked COLOUR.
+            // The sign question is "is she facing the other way", and that is a question about
+            // WHERE the figure is — not about what shade each pixel of it came out. Every loss this
+            // lane measured in the facet model is a SHADING loss that cannot move an outline:
+            // per-material gain flattened to one global (35.50–53.61%), ordered dither forced on
+            // where rig 6 uses none (19.74–30.21%), the head raster STAMP (0.00–2.82%), the
+            // per-direction gridHead nudge (2.28–15.00%). Together they swamp the colour statistic
+            // — measured here, 77.95% wrong against 90.76% wrong, a 1.16x margin carrying no signal
+            // at all. The same two renders read as coverage: 7 against 78, an 11.1x margin. A
+            // mirrored pose moves the outline everywhere; nothing else in this pipeline can.
+            int negOut = dNeg.CoverageOnlyDifferences;
+            int posOut = dPos.CoverageOnlyDifferences;
+
+            bool negWins = negOut < posOut;
+            int winner = negWins ? negOut : posOut;
+            int loser = negWins ? posOut : negOut;
 
             report =
                 $"rig East (dir 2) vs oracle dir -2: {dNeg}\n" +
                 $"rig East (dir 2) vs oracle dir +2: {dPos}\n" +
+                $"=> adjudicated on SILHOUETTE (opaque-vs-transparent): {negOut} vs {posOut} px\n" +
                 $"=> facet sign: {(negWins ? "NEGATED (azimuthCounterClockwise = true)" : "direct (false)")}";
 
             // The loser must be unambiguously wrong — a mirrored character differs across most of
-            // the silhouette. A mushy margin means the adjudication is reading noise: stop.
-            if (loser.DifferingPixels < winner.DifferingPixels * 4)
+            // the silhouette. A mushy margin means the adjudication is reading noise: stop. Both at
+            // zero is that same failure wearing a different face: two silhouettes that agree
+            // perfectly have not told us which way she turns.
+            if (loser == 0 || loser < winner * 4)
                 throw new InvalidOperationException(
                     "FACET SIGN ADJUDICATION INCONCLUSIVE — the wrong sign is not wrong enough:\n" +
                     report + "\nDo not bake until this is understood.");

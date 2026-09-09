@@ -165,7 +165,10 @@ this PR leaves it EMPTY, and PR 3 flips it per state.
 
 - **turntable-sign oracle** — the character rig turns `th = −dir·π/4` where boats and
   `IsoFacetMath` use `+dir·π/4`. The sign is adjudicated **from pixels at bake time** with a ≥4×
-  sabotage margin and stored on the Def. It is never declared. (`RigCatalog.CharacterKit` warns
+  sabotage margin and stored on the Def. **The statistic is the SILHOUETTE** (opaque-vs-transparent),
+  not the inked-colour diff: the facet model's own 45–57% shading delta (§3.3) drowns handedness
+  out of any colour statistic — the same pair of renders reads 1.16× by colour and 11.1× by
+  coverage — while shading cannot move an outline and a mirrored pose moves it everywhere. It is never declared. (`RigCatalog.CharacterKit` warns
   this lane has been CCW-mislabelled twice.)
 - **golden fidelity across 8 directions** for one frame of every state, reported against the
   measured pipeline delta of §3.3 — **not** against the hull band, which measures a different

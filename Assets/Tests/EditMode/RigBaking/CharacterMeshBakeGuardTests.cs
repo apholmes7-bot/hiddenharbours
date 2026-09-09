@@ -114,6 +114,13 @@ namespace HiddenHarbours.Tests.RigBaking
         /// which way it goes: the bake renders the rig's East view and asks which signed oracle dir
         /// reproduces it, and refuses unless the loser is at least 4× worse.
         ///
+        /// <para><b>"Worse" is measured on the SILHOUETTE</b> — opaque-vs-transparent — because
+        /// handedness is a question about where the figure is, and the facet model's own 45–57%
+        /// shading delta (per-material gain, forced dither, the head stamp, the gridHead nudge)
+        /// drowns that question out of any inked-colour statistic: the same pair of renders reads
+        /// 77.95% against 90.76% by colour (1.16×, no signal) and 7 px against 78 px by coverage
+        /// (11.1×). Shading cannot move an outline; a mirrored pose moves it everywhere.</para>
+        ///
         /// <para>Two independent probes read one rig here. <c>CharacterRigAzimuthProbe</c> reads
         /// face-offset asymmetry out of the rig's own SHEET renders (what the sprite bake uses);
         /// <c>MeasureFacetSign</c> diffs the FACET oracle's raster against the rig's. They measure
@@ -129,8 +136,8 @@ namespace HiddenHarbours.Tests.RigBaking
             bool facetNegates = CharacterMeshAssetBaker.MeasureFacetSign(host, Player, out string report);
             Debug.Log("[character-mesh] facet sign adjudication:\n" + report);
 
-            // The adjudication itself throws below a 4× margin, so reaching here IS the margin
-            // assertion — but say so out loud, because a future refactor could soften it.
+            // The adjudication itself throws below a 4× silhouette margin, so reaching here IS the
+            // margin assertion — but say so out loud, because a future refactor could soften it.
             StringAssert.Contains("facet sign:", report, "the adjudication did not report its reading");
 
             // A SECOND host on purpose: RigCatalog.Install re-executes the UNWIDENED source, and
