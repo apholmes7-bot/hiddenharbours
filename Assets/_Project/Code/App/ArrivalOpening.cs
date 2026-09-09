@@ -310,6 +310,7 @@ namespace HiddenHarbours.App
         private CabinDoorOffer _cabinOffer;
         private bool _wasBelow;
         private Transform _skipperFigure;      // found once; MooredBoat builds him in its own Start
+        private MooredBoat _drawer;            // her drawer, which owns the deck-occupant slot
         private IsoCharacterSprite _skipperSkin;
         private SpriteRenderer _skipperRenderer;
         private bool _skipperPosed;            // did WE raise him OVER THE ROOM? (not "did we place him")
@@ -1047,6 +1048,23 @@ namespace HiddenHarbours.App
                                            BakeElevationDegrees());
 
             figure.localPosition = new Vector3(offset.x, offset.y, _skipperRestPosition.z);
+
+            // ⭐ AND THE HULL IS TOLD, in the same breath as the move. Her deck-occupant slot is what
+            // the occluder discards against, and MooredBoat sets it ONCE at spawn to the middle of
+            // her deck. Moving the figure without moving the slot left him cut for a spot 1.446 m
+            // aft of where he is drawn — 46 px on the cape, and heading-dependent, which is exactly
+            // the owner's "doesnt appear behind the helm from every angle". Whoever moved the
+            // picture reports it. RIG metres: the station, not the projected offset.
+            TheDrawer()?.StandTheSkipperAt(helm);
+        }
+
+        /// <summary>Her drawer, cached — <see cref="HoldTheSkipper"/> runs every LateUpdate and a
+        /// <c>GetComponent</c> per frame is a cost with no reason (rule 7). Re-asked while it comes
+        /// back null, because the hull is assembled before this component starts using it.</summary>
+        private MooredBoat TheDrawer()
+        {
+            if (_drawer == null && _boat != null) _drawer = _boat.GetComponent<MooredBoat>();
+            return _drawer;
         }
 
         /// <summary>
