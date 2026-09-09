@@ -154,7 +154,11 @@ namespace HiddenHarbours.Art
         {
             if (Instance == this) Instance = null;
             SetCameraPost(false);
-            if (_runtimeProfile != null) Destroy(_runtimeProfile);
+            // The test runner tears the scene down in edit mode at exit: Destroy is an error there.
+            if (_runtimeProfile != null)
+            {
+                if (Application.isPlaying) Destroy(_runtimeProfile); else DestroyImmediate(_runtimeProfile);
+            }
         }
 
         private void Update()

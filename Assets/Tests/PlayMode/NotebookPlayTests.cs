@@ -80,7 +80,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTearDown]
         public IEnumerator TearDown()
         {
-            if (_book != null) _book.Close();
+            if (_book != null) { _book.OverrideJuice(null); _book.Close(); }
             PauseMenu.CloseIfOpen();
             ShellPause.Reset();
 
@@ -308,7 +308,13 @@ namespace HiddenHarbours.Tests.PlayMode
             // three moments (#816, docs/design/three-moments.md §4.2) the sale PLAYS first — coins crate → purse
             // with the balance climbing behind them on unscaled time — and the note is the receipt once the
             // climb has landed. With the moments off (GameConfig.Juice.MomentsEnabled) the receipt is immediate.
-            bool moments = GameServices.Config != null && GameServices.Config.Juice.MomentsEnabled;
+            // ⚠️ PIN THE KNOB. The presenter reads GameConfig.Juice and falls back to JuiceSettings.Default
+            // (moments ON) when no config is wired — which is the case in this bare fixture scene on CI. A
+            // test that reads the knob from a DIFFERENT source than the presenter (run 34377592807 read
+            // "off" from a null config while the presenter played) is a test of the fixture, not the book.
+            JuiceSettings pinned = JuiceSettings.Default;
+            _book.OverrideJuice(pinned);
+            bool moments = pinned.MomentsEnabled;
             EventBus.Publish(new CatchSold(totalPaid: 48, count: 3));
             yield return null;
 
