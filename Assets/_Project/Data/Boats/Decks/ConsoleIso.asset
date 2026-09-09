@@ -50,5 +50,8 @@ MonoBehaviour:
   - Id: bow_1
     Type: cleat
     PositionMeters: {x: 0, y: 3.1, z: 1.047}
-  WalkCenter: {x: 0, y: -0.525}
+  HasHelmStation: 0
+  HelmStationLocalMeters: {x: 0, y: 0, z: 0}
+  HelmStationSource: 
+  WalkCenter: {x: 0, y: -0.5250001}
   WalkHalfExtents: {x: 0.935, y: 2.625}

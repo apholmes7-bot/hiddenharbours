@@ -44,7 +44,7 @@ MonoBehaviour:
     - {x: 0.113, y: 1.44}
     - {x: 0.068, y: 1.8}
     HeightPlane: {x: 0, y: 0.020075757, z: 0.10363636}
-    HeightResidualMax: 0.08422729
+    HeightResidualMax: 0.08422728
     Bounds: {x: -0.225, y: -1.8, z: 0.225, w: 1.8}
   Cleats:
   - Id: bow_1
@@ -53,5 +53,8 @@ MonoBehaviour:
   - Id: stern_port
     Type: ring_bolt
     PositionMeters: {x: -0.3, y: -2.16, z: 0.745}
+  HasHelmStation: 0
+  HelmStationLocalMeters: {x: 0, y: 0, z: 0}
+  HelmStationSource: 
   WalkCenter: {x: 0, y: 0}
   WalkHalfExtents: {x: 0.225, y: 1.8}

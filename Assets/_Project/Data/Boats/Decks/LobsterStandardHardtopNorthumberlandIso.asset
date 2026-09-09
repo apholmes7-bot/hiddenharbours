@@ -134,5 +134,8 @@ MonoBehaviour:
   - Id: stern_star
     Type: cleat
     PositionMeters: {x: 1.58, y: -5.72, z: 1.22}
+  HasHelmStation: 1
+  HelmStationLocalMeters: {x: 0, y: 0.883, z: 0.52}
+  HelmStationSource: ANCHORS.helm
   WalkCenter: {x: 0, y: -0.028000116}
   WalkHalfExtents: {x: 1.747, y: 5.972}
