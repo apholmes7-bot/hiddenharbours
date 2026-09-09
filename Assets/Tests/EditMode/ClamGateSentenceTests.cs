@@ -90,12 +90,36 @@ namespace HiddenHarbours.Tests.EditMode
         private readonly List<string> _said = new();
         private void OnNotice(DevNotice e) => _said.Add(e.Text);
 
+        // The console side. `Say` only ever writes plain Logs, so the ONLY warnings this fixture can
+        // provoke are the dig's own "no resolvable hold provider" notice — which is what makes counting
+        // them an honest test of "once per hole, and never for a live one".
+        private readonly List<string> _warnings = new();
+        private void OnLog(string condition, string stack, LogType type)
+        {
+            if (type == LogType.Warning) _warnings.Add(condition);
+        }
+
+        private const string FallbackWarning = "has no resolvable hold provider";
+
+        private int FallbackWarnings
+        {
+            get
+            {
+                int n = 0;
+                for (int i = 0; i < _warnings.Count; i++)
+                    if (_warnings[i].Contains(FallbackWarning)) n++;
+                return n;
+            }
+        }
+
         private SaveData _save;
 
         [SetUp]
         public void SetUp()
         {
             _said.Clear();
+            _warnings.Clear();
+            Application.logMessageReceived += OnLog;
             EventBus.Clear<DevNotice>();
             EventBus.Clear<FishCaught>();
             EventBus.Clear<CatchLanded>();
@@ -117,6 +141,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
+            Application.logMessageReceived -= OnLog;
             EventBus.Unsubscribe<DevNotice>(OnNotice);
             EventBus.Clear<DevNotice>();
             EventBus.Clear<FishCaught>();
@@ -272,6 +297,46 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.IsTrue(dig.TryDig(), "a dead hold is not a hold — the dig looks again");
             Assert.AreEqual(1, belt.UsedUnits, "…and lands the clam in the pail on her belt");
+        }
+
+        [Test]
+        public void The_fallback_says_so_ONCE_per_hole_and_never_for_a_live_provider()
+        {
+            // ⚠️ A FALLBACK THAT ENGAGES SILENTLY HIDES THE NEXT WIRING ROT. The game would keep working
+            // and nothing would ever say which hole stopped resolving its provider — which is how this
+            // whole class of defect went unnoticed until an owner met it at the flats. So the reach past
+            // the provider is announced, by the hole's own id, exactly once per hole.
+            //
+            // A pail with NO room is what keeps the hole unspent across two presses: the dig refuses on
+            // capacity AFTER EnsureBucket has run, so the second press exercises the same code path a
+            // second time and must not repeat itself.
+            ClamBucket belt = Pail(onHerBelt: true);
+            belt.Configure(0, requireOwnedBucket: false);
+
+            ClamDig first = Hole(provider: null, landInHand: false);
+            Assert.IsFalse(first.TryDig(), "no room in the pail — but the fallback resolved it");
+            Assert.AreEqual(1, FallbackWarnings, "the first reach past a dead provider says so");
+
+            // ⚠️ The second press must run the WHOLE fallback again, or "once" would be proved by
+            // EnsureBucket's cache and the once-per-hole flag could be deleted with this test still
+            // green. So the pail it fell back to is destroyed and another is put on her belt: the
+            // corpse is laundered, the provider is still nothing, and the fallback resolves afresh.
+            Object.DestroyImmediate(belt.gameObject);
+            ClamBucket spare = Pail(onHerBelt: true);
+            spare.Configure(0, requireOwnedBucket: false);
+
+            Assert.IsFalse(first.TryDig(), "same hole, the fallback resolves a second time");
+            Assert.AreEqual(1, FallbackWarnings, "…and it does NOT say so again — once per hole");
+
+            ClamDig second = Hole(provider: null, landInHand: false);
+            Assert.IsFalse(second.TryDig());
+            Assert.AreEqual(2, FallbackWarnings,
+                            "per HOLE, not once per session — a second rotten hole is a second fault");
+
+            ClamBucket wired = Pail(onHerBelt: false);
+            ClamDig sound = Hole(provider: wired.gameObject, landInHand: false);
+            Assert.IsTrue(sound.TryDig(), "a wired hole works as it always did");
+            Assert.AreEqual(2, FallbackWarnings, "…and says nothing: there is nothing wrong with it");
         }
 
         // ---- 3. THE OWNER'S ACCEPTANCE ---------------------------------------------------------------

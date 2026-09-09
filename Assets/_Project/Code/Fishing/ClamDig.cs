@@ -101,6 +101,11 @@ namespace HiddenHarbours.Fishing
         private float _phaseMs, _periodMs;
         private int _seedUsed;
         private bool _showingSquirt;
+        // Said ONCE per hole, the first time this hole has to fall back from its own (missing or dead)
+        // provider to the pail on her belt. A fallback that engages silently hides the next wiring rot:
+        // the game would keep working and nothing would ever say which hole stopped resolving. Runtime
+        // only — never serialized, never saved (rule 5).
+        private bool _saidNoProvider;
         private float _spurtRise, _spurtU;
         private bool _consumed;
         private string _resolvedId;
@@ -442,6 +447,13 @@ namespace HiddenHarbours.Fishing
         /// still uses it, and the sentence below stays exactly as it was — it is simply no longer
         /// reachable while she is carrying a pail, which is the only state in which it was a lie.</para>
         ///
+        /// <para><b>The fallback is never silent.</b> A fallback that engages quietly hides the NEXT
+        /// hole to lose its wiring: the game keeps working and nothing ever says which one stopped
+        /// resolving. So the first time a hole has to reach past its own provider it logs a warning
+        /// naming itself, once — the same rule the helm-seat fallback follows. Only when the pail
+        /// actually answers: a context with no hold at all (EditMode, a bare art scene) is not a fault,
+        /// and it already earns the sentence.</para>
+        ///
         /// <para><b>⚠ The laundering line is not decoration.</b> <c>_bucket</c> is INTERFACE-typed, so a
         /// destroyed <c>ClamBucket</c> cached here would compare non-null forever (an interface reference
         /// does not carry <c>UnityEngine.Object</c>'s overloaded <c>==</c>) and every read after would
@@ -452,7 +464,19 @@ namespace HiddenHarbours.Fishing
         {
             if (_bucket is UnityEngine.Object dead && dead == null) _bucket = null;   // a corpse is not a hold
             if (_bucket == null && _bucketProvider != null) _bucket = _bucketProvider.GetComponent<IHold>();
-            if (_bucket == null) _bucket = GameServices.PlayerHold;       // …then the pail on her belt
+            if (_bucket != null) return;
+
+            // …then the pail on her belt — and SAY SO, once, naming this hole. The fallback keeps the
+            // game playable; the warning is what stops it from quietly papering over the next hole that
+            // loses its wiring. Only when the pail actually answers: a context with no hold at all
+            // (EditMode, a bare art scene) is not a fault and earns no warning — it gets the sentence.
+            _bucket = GameServices.PlayerHold;
+            if (_bucket == null || _saidNoProvider) return;
+
+            _saidNoProvider = true;
+            Debug.LogWarning($"[ClamDig] {Id} has no resolvable hold provider; landing in the player's " +
+                             "pail. The hole's serialized _bucketProvider is missing or dead — re-run " +
+                             "the region builder if this hole should have one.", this);
         }
 
         /// <summary>
