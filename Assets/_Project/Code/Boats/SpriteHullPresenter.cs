@@ -132,6 +132,22 @@ namespace HiddenHarbours.Boats
         public float DrawnRideMeters => _directional != null ? _directional.DrawnRideMeters : 0f;
 
         /// <inheritdoc/>
+        /// <remarks>⚠ <b>Exactly 0, and it is DATA rather than a gap.</b> A sprite hull's rock is her
+        /// BAKED FRAME GRID — one attitude per frame, drawn into the artwork — so there is no continuous
+        /// roll or pitch anybody applied and none to mirror. Her rider keeps the cosmetic lean, which is
+        /// the only way she can share a rock nobody computed. Consumers gate on
+        /// <see cref="SupportsContinuousRock"/>, so the dory's oar rock is untouched by construction.</remarks>
+        public float AppliedRollDegrees => 0f;
+
+        /// <inheritdoc cref="AppliedRollDegrees"/>
+        public float AppliedPitchDegrees => 0f;
+
+        /// <inheritdoc cref="AppliedRollDegrees"/>
+        /// <remarks>The sprite path's vertical IS <see cref="DrawnRideMeters"/> plus a storm surge that
+        /// belongs to her rock language; there is no second heave channel to report.</remarks>
+        public float AppliedHeaveMeters => 0f;
+
+        /// <inheritdoc/>
         public void SetDrawnRideMeters(float rideMeters)
         {
             if (_directional != null) _directional.DrawnRideMeters = rideMeters;

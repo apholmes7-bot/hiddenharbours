@@ -1,4 +1,5 @@
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Boats
 {
@@ -75,6 +76,57 @@ namespace HiddenHarbours.Boats
 
             /// <summary>The identity pose: the cell drawn exactly as baked.</summary>
             public static MountRockPose Level => new MountRockPose(0f, Vector2.zero);
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>RIDE WHAT THE HULL ACTUALLY APPLIED, at the point the body is standing on.</b>
+        /// The offset is the difference between where this deck point DRAWS at the hull's applied
+        /// attitude and where it draws level — through <see cref="Project"/>, the transform every other
+        /// on-hull anchor already goes through, so the LEVER ARM is included rather than approximated.
+        ///
+        /// <para><b>Why a difference and not a placement.</b> The body is already standing at the LEVEL
+        /// deck point, put there by the deck walk. What is missing is only what the rock added, so that
+        /// is what this returns — no second placement of the same point, and nothing that could
+        /// disagree with where the walk put her.</para>
+        ///
+        /// <para><b>Why it lives HERE and not beside <see cref="DeckRidePose"/>.</b> It needs the rig
+        /// projection, and that is in this module; <c>HiddenHarbours.Core</c> may not reference
+        /// <c>Boats</c> (rule 4). The pose it returns is the Core type, so nothing about the seam moves.</para>
+        ///
+        /// <para><b>One sea, one sample.</b> <paramref name="rollDegrees"/> and
+        /// <paramref name="pitchDegrees"/> are READ off the presenter
+        /// (<c>IBoatHullPresenter.AppliedRollDegrees</c>), never recomputed — a second copy of a
+        /// storm-scaled amplitude agrees only with itself, and measured on the cape the private copy
+        /// disagreed by 6.1 px at her transom in a flat calm.</para>
+        ///
+        /// <para><paramref name="strength"/> is ONE multiplier over the whole mirrored pose: 1 is the
+        /// hull exactly, 0 stands the body square. It replaces three separate amplitude knobs (a deck
+        /// roll, a deck heave and a pitch lift) that were a feel pass on numbers the hull never agreed
+        /// with — the knob survives, the physics is right at its default.</para>
+        /// </summary>
+        public static DeckRidePose MirrorHull(Vector3 deckLocalMeters, float drawnHeadingDegrees,
+                                              float rollDegrees, float pitchDegrees, float heaveMeters,
+                                              float bakeElevationDegrees, float strength)
+        {
+            if (strength <= 0f) return DeckRidePose.Level;
+            if (!IsFinite(rollDegrees) || !IsFinite(pitchDegrees) || !IsFinite(heaveMeters))
+                return DeckRidePose.Level;
+
+            float headingRad = -drawnHeadingDegrees * Mathf.Deg2Rad;
+            float elevRad = bakeElevationDegrees * Mathf.Deg2Rad;
+            float rollRad = rollDegrees * Mathf.Deg2Rad;
+            float pitchRad = pitchDegrees * Mathf.Deg2Rad;
+
+            Vector2 level = Project(deckLocalMeters, headingRad, 0f, 0f, elevRad);
+            Vector2 posed = Project(deckLocalMeters, headingRad, rollRad, pitchRad, elevRad);
+
+            Vector2 offset = (posed - level) * strength;
+            offset.y += heaveMeters * strength;
+
+            // The figure tips with the deck she is standing on, through the same attitude — not on a
+            // private cycle of her own.
+            float lean = ScreenRollDegrees(headingRad, rollRad, pitchRad, elevRad);
+            return new DeckRidePose(lean * strength, offset.y, offset.x);
         }
 
         /// <summary>

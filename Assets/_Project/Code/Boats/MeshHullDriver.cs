@@ -44,6 +44,7 @@ namespace HiddenHarbours.Boats
         private float _wakeSternOffsetMeters;
         private float _watertightHalfBeamMeters;
         private float _rockRollDegrees, _rockPitchDegrees, _rockHeavePixels;
+        private float _appliedRollDegrees, _appliedPitchDegrees, _appliedHeaveMeters;
         private int _pxPerMetre = 32;
         private float _designWaterlineMeters;
 
@@ -140,6 +141,30 @@ namespace HiddenHarbours.Boats
         /// that went into the renderer, so the two cannot drift.</para>
         /// </summary>
         public float DrawnRideMeters => _drawnRideMeters;
+
+        /// <summary>
+        /// ⭐ <b>THE ATTITUDE THIS HULL IS ACTUALLY DRAWN AT</b> — the roll and pitch handed to the
+        /// renderer this frame, degrees, and the heave folded into the same channel, metres.
+        ///
+        /// <para>Reported for the same reason and under the same law as
+        /// <see cref="DrawnRideMeters"/>: anything that must stay ON this deck needs the numbers the
+        /// PICTURE moved by, and exactly one thing knows them — whoever moved the picture. The rock
+        /// amplitudes here are the def's scaled by the storm, plus the slope-decomposed extras; a
+        /// rider re-deriving them from its own serialized amplitudes agrees with the hull only by
+        /// coincidence, and measured on the cape it does not: 6.1 px at her transom in a FLAT CALM.</para>
+        ///
+        /// <para>⚠ Roll and pitch are the RIG's, not the screen's: a deck point becomes a screen
+        /// offset only through <c>MountedRockPoseMath.Project</c>, which is where the lever arm lives
+        /// — the term that makes the same attitude move the foredeck and the transom by different
+        /// amounts in different directions.</para>
+        /// </summary>
+        public float AppliedRollDegrees => _appliedRollDegrees;
+
+        /// <inheritdoc cref="AppliedRollDegrees"/>
+        public float AppliedPitchDegrees => _appliedPitchDegrees;
+
+        /// <inheritdoc cref="AppliedRollDegrees"/>
+        public float AppliedHeaveMeters => _appliedHeaveMeters;
 
         /// <summary>
         /// The storm rock channel (ADR 0018 B2.5 —
@@ -288,8 +313,12 @@ namespace HiddenHarbours.Boats
             // leaving them held at the last crest.
             _drawnRideMeters = rideMeters;
 
-            _renderer.RollDegrees = roll + VisualTiltDegrees + _stormExtraRollDegrees;
-            _renderer.PitchDegrees = pitch + _stormExtraPitchDegrees;
+            _appliedRollDegrees = roll + VisualTiltDegrees + _stormExtraRollDegrees;
+            _appliedPitchDegrees = pitch + _stormExtraPitchDegrees;
+            _appliedHeaveMeters = heave / Mathf.Max(1e-4f, _pxPerMetre);
+
+            _renderer.RollDegrees = _appliedRollDegrees;
+            _renderer.PitchDegrees = _appliedPitchDegrees;
             _renderer.HeavePixels = heave;
             _renderer.RidePixels = ride;
         }

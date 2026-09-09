@@ -121,6 +121,15 @@ namespace HiddenHarbours.Boats
         public float DrawnRideMeters => _driver != null ? _driver.DrawnRideMeters : 0f;
 
         /// <inheritdoc/>
+        public float AppliedRollDegrees => _driver != null ? _driver.AppliedRollDegrees : 0f;
+
+        /// <inheritdoc/>
+        public float AppliedPitchDegrees => _driver != null ? _driver.AppliedPitchDegrees : 0f;
+
+        /// <inheritdoc/>
+        public float AppliedHeaveMeters => _driver != null ? _driver.AppliedHeaveMeters : 0f;
+
+        /// <inheritdoc/>
         public void SetDrawnRideMeters(float rideMeters)
         {
             // Deliberately a no-op: the MESH driver applies the ride (it owns the settle sink and the

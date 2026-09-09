@@ -213,6 +213,36 @@ namespace HiddenHarbours.Boats
         float DrawnRideMeters { get; }
 
         /// <summary>
+        /// ⭐⭐ <b>THE ATTITUDE AND HEAVE THIS HULL IS ACTUALLY BEING DRAWN AT</b>, this frame — rig
+        /// roll and pitch in degrees, and the vertical the picture moved by in metres.
+        ///
+        /// <para><b>The same law as <see cref="DrawnRideMeters"/>, for the same reason.</b> Anything
+        /// that must stay ON this deck needs the numbers the PICTURE moved by, and exactly one thing
+        /// knows them: whoever moved the picture. A rider that re-derives the rock from its own
+        /// serialized amplitudes agrees with the hull only by coincidence — and measured on the cape
+        /// (owner playtest 2026-09-09, <i>"in large waves the sprite does not stay anchored to the
+        /// correct spot on the deck"</i>) it does not agree even in a FLAT CALM: 5° against her def's
+        /// 3.4°, 1.6 px against her 1.3, and the storm then scales one side only.</para>
+        ///
+        /// <para>⚠ <b>Rig degrees, never screen ones.</b> A deck point becomes a screen offset only
+        /// through <c>MountedRockPoseMath.Project</c> — which is where the LEVER ARM lives, the term
+        /// that makes one attitude move the foredeck and the transom by different amounts in different
+        /// directions, and the term a lean-plus-lift pose can never express.</para>
+        ///
+        /// <para><b>0 on a SPRITE hull, and that is data.</b> Her rock IS the baked frame grid — there
+        /// is no continuous attitude to mirror, so her rider keeps the cosmetic lean that is the only
+        /// way she can share it. Gated on <see cref="SupportsContinuousRock"/>, so the dory's oar rock
+        /// is untouched by construction.</para>
+        /// </summary>
+        float AppliedRollDegrees { get; }
+
+        /// <inheritdoc cref="AppliedRollDegrees"/>
+        float AppliedPitchDegrees { get; }
+
+        /// <inheritdoc cref="AppliedRollDegrees"/>
+        float AppliedHeaveMeters { get; }
+
+        /// <summary>
         /// Publish the displaced ride just applied to this hull's visual — see
         /// <see cref="DrawnRideMeters"/>. Called by <see cref="BoatWaveMotion"/> on the paths where IT
         /// is the applier (the sprite hulls); <b>ignored by a mesh presenter</b>, deliberately and in
