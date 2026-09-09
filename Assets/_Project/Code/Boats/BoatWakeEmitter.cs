@@ -387,7 +387,8 @@ namespace HiddenHarbours.Boats
             {
                 WaveFieldSettings waveField = GameServices.WaveField;
                 WaveFieldAnimatorSettings waveSmoothing = GameServices.WaveFieldAnimator;
-                _seaAnimator.Tick(dt, s.WindVector, s.SeaState01, in waveField, in waveSmoothing);
+                _seaAnimator.Tick(dt, WaveFieldAnimator.GameTimeSeconds,
+                                  s.WindVector, s.SeaState01, in waveField, in waveSmoothing);
                 if (displaced)
                     lift = new SeaLift(_seaAnimator, GameServices.TidalTerrain, env, totalSeconds,
                                        sea.ShoreFadeBandMeters, sea.Exaggeration);

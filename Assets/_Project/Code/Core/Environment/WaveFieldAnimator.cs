@@ -46,9 +46,9 @@ namespace HiddenHarbours.Core
     /// <see cref="WaveFieldAnimatorSettings.ParameterSmoothingSeconds"/>), (b) re-derives the phase
     /// speed from the EASED wavelength through the canon dispersion relation <c>c = √(g·λ/2π)</c>
     /// (via the <see cref="WaveTrain"/> constructor — the one place that formula lives; speed is
-    /// never free), and (c) advances each train's phase INCREMENTALLY
-    /// (<c>phase += k·c·dt</c>, wrapped) so the phase is continuous no matter how the parameters
-    /// move. The accumulated phase is baked into each returned train's
+    /// never free), and (c) evaluates each train's travel phase in CLOSED FORM at the game clock
+    /// (<c>ω·t</c>, accumulated in double and wrapped before it drops to float) so it is a pure
+    /// function of <c>(worldSeed, gameTime)</c>. That phase is baked into each returned train's
     /// <see cref="WaveTrain.PhaseOffset"/>, so the pure <see cref="WaveMath.Sample"/> remains the
     /// single evaluator — <b>sample the returned trains at <c>timeSeconds = 0</c></b> (or call
     /// <see cref="Sample"/>, which does exactly that).</para>
@@ -59,16 +59,31 @@ namespace HiddenHarbours.Core
     /// decayed to that floor, it snaps to exactly 0 — the field flattens to the full mirror, the
     /// owner's ruling intact.</para>
     ///
-    /// <para>⚠ <b>Honesty about determinism (read before reusing).</b> This class is STATEFUL and
-    /// presentation-only. It is deterministic given the same tick sequence (same deltas, same
-    /// inputs → same output, no RNG), but it is <b>NOT a pure function of gameTime</b>: two
-    /// machines running different frame rates ease and accumulate along different paths, and a
-    /// save/load does not reproduce its state (nothing here is saved — rule 5 — it just re-eases
-    /// in). That is fine for pixels and sprite tilt; it is <b>not fine for simulation</b>. The
-    /// ADR 0018 sim contract — B3 seakeeping FORCES and anything gameplay-consequential — must keep
-    /// reading the pure <c>WaveMath.TrainsFrom</c> + <c>Sample(pos, gameTime)</c> path, the sim
-    /// reference; pointing B3 at this class requires a lead-architect decision first (ADR 0018
-    /// addendum records this boundary).</para>
+    /// <para>✅ <b>THE PHASE IS NO LONGER A LEAK (PR E, 2026-09-09).</b> This paragraph used to
+    /// confess that the class was <b>not a pure function of gameTime</b> — that two machines at
+    /// different frame rates accumulated along different paths, and that a save/load did not
+    /// reproduce the sea the player left. That was true while the travel phase was a running total.
+    /// It is not any more: the phase is <c>ω·t</c> at the clock, so a cold start at any instant
+    /// draws what an hour-long run would have drawn, and 30 fps and 60 fps agree exactly.
+    /// <c>WaveFieldPhaseIsClosedFormTests</c> asserts all three, with a dead control that shows the
+    /// retired accumulator failing the same comparisons.</para>
+    ///
+    /// <para>⚠ <b>Why the accumulator existed, and why its reason expired.</b> It was there because
+    /// <c>ω</c> came from <c>λ_p(U)</c>: every mood change moved it, and <c>Δω·t</c> threw the sea
+    /// across the wave — register row 34, measured at up to 474 858 radians at thirty hours.
+    /// <b>PR B put the bins on a fixed ladder</b>, so <c>λ</c> no longer depends on the wind and
+    /// <c>ω·t</c> is continuous by itself. ⚠ <b>That dependency is load-bearing:</b> put the wind
+    /// back into the wavelength and this class's phase becomes discontinuous again. It is asserted,
+    /// in <c>ThisOnlyWorksBecauseTheBinsAreFIXED_AndThatIsAssertedHere</c>.</para>
+    ///
+    /// <para>⚠ <b>What is still stateful:</b> the AMPLITUDE / wavelength / direction easing. A mood
+    /// should arrive over a second and a half rather than in a frame, and that easing is still
+    /// shaped by the tick sequence. It is presentation only and it converges, so two frame rates
+    /// reach the same sea and merely take slightly different routes to it. The ADR 0018 sim
+    /// contract is unchanged: B3 seakeeping FORCES and anything gameplay-consequential read the
+    /// pure <c>WaveMath.TrainsFrom</c> + <c>Sample(pos, gameTime)</c> path. The difference since
+    /// PR E is that the drawn sea and the ridden sea are now the same function of the same clock
+    /// (P1, SEE == FEEL) rather than two paths that happen to agree.</para>
     /// </summary>
     public sealed class WaveFieldAnimator
     {
@@ -78,7 +93,7 @@ namespace HiddenHarbours.Core
         private readonly Vector2[] _direction = new Vector2[WaveTrains.MaxTrains];
         private readonly float[] _wavelength = new float[WaveTrains.MaxTrains];
         private readonly float[] _amplitude = new float[WaveTrains.MaxTrains];
-        // Accumulated travel phase Φ_i = Σ k_i·c_i·dt, wrapped to [0, 2π). Double so a long session
+        // ⚠ RETIRED 2026-09-09 (PR E): the travel phase was ACCUMULATED here. Double so a long session
         // never grinds the wrap through float precision.
         private readonly double[] _phase = new double[WaveTrains.MaxTrains];
 
@@ -95,7 +110,7 @@ namespace HiddenHarbours.Core
         private int _initializedCount;
 
         /// <summary>The trains the last <see cref="Tick"/> produced — phase-continuous, to be
-        /// sampled at <c>timeSeconds = 0</c> (the accumulated phase rides in each train's
+        /// sampled at <c>timeSeconds = 0</c> (the phase AT THE GAME CLOCK rides in each train's
         /// <see cref="WaveTrain.PhaseOffset"/>). <see cref="WaveTrains.None"/> before the first tick.</summary>
         public WaveTrains Current => _current;
 
@@ -117,7 +132,8 @@ namespace HiddenHarbours.Core
         /// to the targets (no ease-in from a zeroed sea). <paramref name="deltaSeconds"/> is the
         /// GAME-time step since the last tick (clamped ≥ 0): a paused clock (dt 0) freezes the sea.
         /// </summary>
-        public WaveTrains Tick(float deltaSeconds, Vector2 windVector, float seaState01,
+        public WaveTrains Tick(float deltaSeconds, double gameTimeSeconds,
+                               Vector2 windVector, float seaState01,
                                in WaveFieldSettings fieldSettings, in WaveFieldAnimatorSettings animatorSettings)
         {
             WaveTrains targets = WaveMath.TrainsFrom(windVector, seaState01, in fieldSettings);
@@ -152,7 +168,7 @@ namespace HiddenHarbours.Core
                     _direction[i] = target.Direction;
                     _wavelength[i] = target.Wavelength;
                     _amplitude[i] = growth ? 0f : target.Amplitude;
-                    _phase[i] = 0.0; // travel starts here; the hash offset φ still de-syncs the trains
+                    // (no phase to seed since PR E: it is ω·t at the clock, not a running total)
                 }
                 _initialized = true;
                 _initializedCount = Mathf.Max(_initializedCount, count);
@@ -182,13 +198,23 @@ namespace HiddenHarbours.Core
                 var train = new WaveTrain(_direction[i], _wavelength[i], _amplitude[i],
                                           0f, fieldSettings.Gravity);
 
-                // (c) incremental phase: Φ += k·c·dt — continuous by construction however k and c
-                // moved this tick. Baked into PhaseOffset as (φ_hash − Φ) so that sampling the
-                // returned train at t = 0 reads k·d·pos − Φ + φ: exactly the closed form's phase,
-                // minus its discontinuity.
+                // (c) 🔴 THE CLOSED FORM, not an accumulator (PR E). The travel phase is
+                // Φ(t) = ω·t evaluated at the game clock, wrapped to [0, 2π) IN DOUBLE before it
+                // drops to float — which is exactly what WaveMath.Sample does, and for the same
+                // reason: ω·t reaches millions of radians in a long session and float32 would lose
+                // the wave to rounding. Baked into PhaseOffset as (φ_hash − Φ) so that sampling
+                // the returned train at t = 0 reads k·d·pos − ω·t + φ: the closed form, exactly.
+                //
+                // ⚠️ WHY THIS IS SAFE NOW AND WAS NOT BEFORE. The accumulator existed because a
+                // parameter change jumped the phase: ω came from λ_p(U), so every mood change moved it
+                // and Δω·t threw the sea across the wave (register row 34 — up to 474 858 radians at
+                // thirty hours). PR B put the bins on a FIXED ladder: λ no longer depends on the wind,
+                // so ω is constant and ω·t is continuous by itself. The accumulator is no longer what
+                // makes the phase continuous — it is only a rule-5 leak, because an accumulated phase
+                // is a function of the frame sequence rather than of (worldSeed, gameTime).
                 double waveNumber = TwoPi / train.Wavelength;
-                _phase[i] = Wrap(_phase[i] + waveNumber * train.PhaseSpeed * dt);
-                float phaseOffset = (float)Wrap(target.PhaseOffset - _phase[i]);
+                double travelPhase = Wrap(waveNumber * train.PhaseSpeed * gameTimeSeconds);
+                float phaseOffset = (float)Wrap(target.PhaseOffset - travelPhase);
 
                 // ⚠️ Written into the slot it BELONGS to. This was a four-way switch whose `default`
                 // arm caught slot 3; at MaxTrains = 4 that was correct, but it silently made every
@@ -256,6 +282,19 @@ namespace HiddenHarbours.Core
             => current + (target - current) * SmoothingAlpha(deltaSeconds, timeConstantSeconds);
 
         /// <summary>Wrap a phase to [0, 2π) in double (float wrap would chew precision over hours).</summary>
+        /// <summary>
+        /// The clock the drawn sea reads — and it is deliberately <b>the same one the RIDDEN sea
+        /// reads</b>. <c>BoatController</c> samples <c>WaveMath.Sample(pos, GameServices.Clock.TotalSeconds)</c>;
+        /// since PR E the presentation path evaluates ω·t at this same value, so the two are one
+        /// function of one clock rather than two paths that happen to agree (P1, SEE == FEEL).
+        ///
+        /// <para>⚠️ Falls back to <c>Time.timeAsDouble</c> only where no game clock is installed —
+        /// an EditMode fixture or a scene without the persistent core. That fallback is NOT
+        /// deterministic and must never be what ships; <c>GameServices.Clock</c> is.</para>
+        /// </summary>
+        public static double GameTimeSeconds =>
+            GameServices.Clock != null ? GameServices.Clock.TotalSeconds : Time.timeAsDouble;
+
         private static double Wrap(double radians)
         {
             radians -= Math.Floor(radians / TwoPi) * TwoPi;

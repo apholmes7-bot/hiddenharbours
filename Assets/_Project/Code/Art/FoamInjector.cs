@@ -249,7 +249,8 @@ namespace HiddenHarbours.Art
             EnvironmentSample sample = env.Sample();
             WaveFieldSettings field = GameServices.WaveField;
             WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
-            _animator.Tick(dt, sample.WindVector, sample.SeaState01, in field, in smoothing);
+            _animator.Tick(dt, WaveFieldAnimator.GameTimeSeconds,
+                           sample.WindVector, sample.SeaState01, in field, in smoothing);
 
             float exaggeration = 1f;
             float bandMeters = 0f;

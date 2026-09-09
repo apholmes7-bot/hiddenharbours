@@ -468,7 +468,8 @@ namespace HiddenHarbours.Boats
                 EnvironmentSample sample = env.Sample();
                 seaState01 = sample.SeaState01;
                 WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
-                _animator.Tick(dt, sample.WindVector, sample.SeaState01, in field, in smoothing);
+                _animator.Tick(dt, WaveFieldAnimator.GameTimeSeconds,
+                               sample.WindVector, sample.SeaState01, in field, in smoothing);
                 // The WIND-FETCH envelope (ADR 0027 #1), resolved once at the hull's centre and
                 // shared by the surface sample below AND the storm-attitude envelope — the march is
                 // real terrain reads, and the two consumers must see the same lee.

@@ -489,7 +489,8 @@ namespace HiddenHarbours.Fishing
             EnvironmentSample sample = env.Sample();
             WaveFieldSettings field = GameServices.WaveField;
             WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
-            WaveTrains trains = _animator.Tick(gameDt, sample.WindVector, sample.SeaState01, in field, in smoothing);
+            WaveTrains trains = _animator.Tick(gameDt, WaveFieldAnimator.GameTimeSeconds,
+                                               sample.WindVector, sample.SeaState01, in field, in smoothing);
             // The wind-fetch envelope at the pot (ADR 0027 #1): a haul in the lee of a headland rides
             // the calm water the player can see there. Exactly 1 while the model is off.
             Vector2 haulPos = (Vector2)_hauling.transform.position;
