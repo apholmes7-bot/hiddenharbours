@@ -317,7 +317,7 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < 37; i++)
             {
                 clock.Advance(Dt);
-                bridge.Tick(Dt, sea.Wind, sea.SeaState01, in field, in smoothing);
+                bridge.Tick(Dt, clock.TotalSeconds, sea.Wind, sea.SeaState01, in field, in smoothing);
             }
 
             using var rig = new MeshRig(waterline, sea, clock, config.Value);
@@ -327,7 +327,8 @@ namespace HiddenHarbours.Tests.EditMode
             for (int f = 0; f < frames; f++)
             {
                 clock.Advance(Dt);
-                WaveTrains trains = bridge.Tick(Dt, sea.Wind, sea.SeaState01, in field, in smoothing);
+                WaveTrains trains = bridge.Tick(Dt, clock.TotalSeconds, sea.Wind, sea.SeaState01,
+                                                in field, in smoothing);
                 if (publishTheBridgeField) SharedWaveField.Publish(_fieldOwner, in trains);
                 else SharedWaveField.Clear(_fieldOwner);
 
@@ -414,7 +415,8 @@ namespace HiddenHarbours.Tests.EditMode
             for (int f = 0; f < frames; f++)
             {
                 clock.Advance(Dt);
-                WaveTrains trains = bridge.Tick(Dt, sea.Wind, sea.SeaState01, in field, in smoothing);
+                WaveTrains trains = bridge.Tick(Dt, clock.TotalSeconds, sea.Wind, sea.SeaState01,
+                                                in field, in smoothing);
                 SharedWaveField.Publish(_fieldOwner, in trains);
                 rig.Tick();
 

@@ -523,11 +523,12 @@ namespace HiddenHarbours.Tests.EditMode
             var animSettings = WaveFieldAnimatorSettings.Default;
 
             var off = Spectrum(0f);
-            for (int i = 0; i < 200; i++) animator.Tick(0.016f, Wind, Sea, in off, in animSettings);
+            double t = 0;
+            for (int i = 0; i < 200; i++) animator.Tick(0.016f, t += 0.016, Wind, Sea, in off, in animSettings);
             Assert.AreEqual(4, animator.Current.Count, "sanity: the blend-0 field is four trains");
 
             var on = Spectrum(1f);
-            WaveTrains grown = animator.Tick(0.016f, Wind, Sea, in on, in animSettings);
+            WaveTrains grown = animator.Tick(0.016f, t += 0.016, Wind, Sea, in on, in animSettings);
 
             Assert.AreEqual(8, grown.Count, "the field grew");
             for (int i = 4; i < grown.Count; i++)
