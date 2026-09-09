@@ -20,9 +20,9 @@ MonoBehaviour:
   WindTell: {fileID: 8300000, guid: 805cd99312b140d285f919a6d93ac161, type: 3}
   CatchSting: {fileID: 0}
   HomeWarmth: {fileID: 0}
-  LandingHit: {fileID: 0}
-  SaleChime: {fileID: 0}
-  DigStrike: {fileID: 0}
+  LandingHit: {fileID: 8300000, guid: 202b8e8e31e142e7ac7d74f24895c181, type: 3}
+  SaleChime: {fileID: 8300000, guid: 4ab2d3441b75466c91ce1b25d781a916, type: 3}
+  DigStrike: {fileID: 8300000, guid: 5705b59c5ec54cef8347b3a6a50be380, type: 3}
   CastEntry: {fileID: 0}
   RodCreakLoop: {fileID: 8300000, guid: a7673b17c7b645b3a9822ccfa0ddcae5, type: 3}
   PayoutTickLoop: {fileID: 8300000, guid: c3a0f795504c42fcaaac96cb9395744e, type: 3}

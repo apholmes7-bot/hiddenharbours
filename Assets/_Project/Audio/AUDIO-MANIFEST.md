@@ -65,10 +65,10 @@ idles when moored and revs underway.
 | `_windTell`   | `Ambient/wind_tell.wav`     | yes | Ambience | **the SACRED rising-wind tell** — loudness driven by wind strength, audible *before* trouble (P1) | **real** — LICENSES.md row 4 |
 | `_catchSting` | — | no  | SFX | bright sting on `FishCaught` | `ProceduralAudio.CatchSting` — **slot held**: musical, waits for the score (foley guide §9) |
 | `_homeWarmth` | — | no  | SFX | "made it home" warmth on `CatchSold` / coming ashore | `ProceduralAudio.HomeWarmth` — **slot held**, as above |
-| `_landingHit` | — | no  | SFX | **the landing frame** — `JuiceMomentCue(Landing)`, the frame the fish leaves the water (with the hit-stop and the splash; juice charter §4.1/§4.5) | **slot held** (juice PR 3): NO placeholder — silent until a file lands in `AudioClipSet.LandingHit`; owner shopping list in LICENSES.md |
-| `_saleChime`  | — | no  | SFX | **the sale's reward beat** on `CatchSold` (with the coins flying in the notebook; §4.2) | **slot held** (juice PR 3): plays `_homeWarmth` in its place until a file lands in `AudioClipSet.SaleChime` |
-| `_digStrike`  | — | no  | SFX | **the shovel's strike** — `JuiceMomentCue(DigStrike)`, with the sand chunks (§4.3) | **slot held** (juice PR 3): NO placeholder — silent until a file lands in `AudioClipSet.DigStrike` |
-| `_castEntry`  | — | no  | SFX | **the line touches down** — `JuiceMomentCue(CastEntry)`, with the rings (§4.3) | **slot held** (juice PR 3): NO placeholder — silent until a file lands in `AudioClipSet.CastEntry` |
+| `_landingHit` | `SFX/landing_hit.wav` | no  | SFX | **the landing frame** — `JuiceMomentCue(Landing)`, the frame the fish leaves the water (with the hit-stop and the splash; juice charter §4.1/§4.5) | **real** — LICENSES.md row 18. A low thump under `_landedFlourish`, which fires on the same frame: two registers, one hit |
+| `_saleChime`  | `SFX/sale_chime.wav`  | no  | SFX | **the sale's reward beat** on `CatchSold` (with the coins flying in the notebook; §4.2) | **real** — LICENSES.md row 19. Coins changing hands: **foley**, not a musical sting, so it does not pre-empt the score's key the way `_catchSting` would |
+| `_digStrike`  | `SFX/dig_strike.wav`  | no  | SFX | **the shovel's strike** — `JuiceMomentCue(DigStrike)`, with the sand chunks (§4.3) | **real** — LICENSES.md row 20 |
+| `_castEntry`  | — | no  | SFX | **the line touches down** — `JuiceMomentCue(CastEntry)`, with the rings (§4.3) | **slot held — already voiced**, not unsourced: `FishingAudio` plays `_splashDown` on the same frame from the same call, so a clip here would double it. Waits on flag (a), the shared bus, so it can sit *under*. See LICENSES.md |
 
 ## Rod-fight sound layer (Rod Fishing v2 — `FishingAudio`)
 
@@ -121,11 +121,12 @@ the owning lanes rather than reached across:
 - **A `PropulsionType` on `ActiveBoatChanged`** (Boats/Player + Core). The aboard boat bed picks oars-vs-
   engine from the hull **id** because the signal carries no propulsion type and the Audio asmdef is
   Core-only (see the boat-bed flag above). A Core propulsion field would remove the id heuristic.
-- **RESOLVED (juice PR 3) — a distinct `CatchSold` reward cue.** `_saleChime` is the sale's slot now
-  (`SFX/sale_chime.wav`); until its file lands the director plays `_homeWarmth` in its place, so nothing
-  the player hears changed. The home-warmth stays the rarer, earned arrival cue. The other three moment
-  slots (`_landingHit`, `_digStrike`, `_castEntry`) have NO placeholder by the charter's rule — audio is
-  a purchase — so each is silent until its file is dropped on the director.
+- **RESOLVED (juice PR 3) — a distinct `CatchSold` reward cue.** `_saleChime` is the sale's slot and now
+  carries a real recording (`SFX/sale_chime.wav`, LICENSES.md row 19). It is **foley** — coins changing
+  hands — which is why it could ship while `_catchSting` and `_homeWarmth` stay held: a coin sound has no
+  key to clash with the score's, and a sting does. The home-warmth stays the rarer, earned arrival cue.
+  `_landingHit` and `_digStrike` are filled too (rows 18 and 20). `_castEntry` stays null on purpose:
+  `_splashDown` already voices that exact frame, so the fix there is a level, not a file.
 
 ## Wishlist (future, not wired this round)
 - A light **music** stem for the harbour / title (would slot onto the Music bus).
