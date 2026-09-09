@@ -94,21 +94,49 @@ by a byte-identity guard.
 a feature. This does not stop the tools — the tools are what let anyone argue about it with numbers
 — but it is an open question for the seat (§5), not a solved one.
 
-### 3.3 The fidelity delta, decomposed
+### 3.3 The fidelity delta: a decomposition (a PROXY) and a measurement (the oracle)
 
-Measured against the rig's own raster, per direction, per frame:
+**These are two different numbers and this ADR was first written with only the first one.** The
+correction belongs here because it is the lane's own:
 
-| what the facet model drops | delta |
+**(a) The decomposition is a PROXY.** The table below was produced by rendering the rig against
+*itself* with one expression patched out per term — a model of what each loss would cost — worst
+of 20 probes (5 clips × 4 dirs), in a standalone V8 harness. It never ran the C# facet oracle. It
+is a good decomposition and a bad ceiling.
+
+| what the facet model drops | modelled delta |
 |---|---|
 | the head face **stamp** (a raster stamp, not geometry) | 0.00–2.82% |
 | rev 6.8's per-direction `gridHead` sub-pixel nudge | 2.28–**15.00%** |
 | ordered dither forced on where rig 6 uses none | 19.74–**30.21%** |
 | **per-material `gain` flattened to one global** | **35.50–53.61%** |
-| **all four together — the facet model as it stands today** | **44.85–56.63%** |
-| *reference:* ADR 0022 hulls | 2.47–4.81% |
-| *reference:* ADR 0024 characters (on the OLD rig) | 0.61–4.33% |
+| **all four together, modelled** | 44.85–56.63% |
 
-Read the table by its biggest row. **The character does not look wrong because meshes are wrong; it
+**(b) The measurement.** CI run **34356893050** is the first time the C# facet oracle was ever
+compared against the rig over the whole recipe — **44 states × 8 dirs = 352 probes**, one frame of
+every state. Two statistics, and the distinction between them is the finding:
+
+| statistic | min | median | max | sd |
+|---|---|---|---|---|
+| **shading** (inked colour differing) | 59.38% | 65.68% | **79.34%** | 4.30 |
+| **outline** (opaque-vs-transparent, as % of inked) | 0.00% | 2.31% | **4.98%** | — |
+| *reference:* ADR 0022 hulls, colour | — | — | 2.47–4.81% | — |
+| *reference:* ADR 0024 characters, colour (on the OLD rig) | — | — | 0.61–4.33% | — |
+
+The measured shading band sits **above** the modelled one everywhere — the real rasteriser composes
+the four losses less kindly than patching them out one at a time predicts. There is no outlier in
+it: the worst state (`balance`, 79.34%) is 2.2 sd above the mean of the 44 per-state worsts, the
+top of one tight unimodal band, not a defect.
+
+**The outline is the number that holds the bake to account.** Shading cannot move a silhouette; a
+pose resolved against the wrong build, a heading applied twice or a mirrored turntable move it
+everywhere — the mirror the sign guard rejects costs 21.8%. So the golden guard's load-bearing bar
+is **outline < 8%** (above the measured 4.98%, below the 21.8% of the smallest real geometry defect
+on record), and the shading band is kept only as a collapse/blow-up detector at 40–88%. **The
+geometry is right everywhere; it is the shading that is 60–80% off, and that is a shader this lane
+does not own.**
+
+Read the decomposition by its biggest row. **The character does not look wrong because meshes are wrong; it
 looks wrong because the facet shader carries one global gain/bias and rig 6 gives 27 of its 36
 materials their own.** That is a shader widening, and it is small: `_RampMeta[m].z/.w` are free, and
 filling `z = 1, w = _Bias` in `IsoFacetHullRenderer.Configure` keeps every shipped hull
@@ -170,9 +198,12 @@ this PR leaves it EMPTY, and PR 3 flips it per state.
   out of any colour statistic — the same pair of renders reads 1.16× by colour and 11.1× by
   coverage — while shading cannot move an outline and a mirrored pose moves it everywhere. It is never declared. (`RigCatalog.CharacterKit` warns
   this lane has been CCW-mislabelled twice.)
-- **golden fidelity across 8 directions** for one frame of every state, reported against the
-  measured pipeline delta of §3.3 — **not** against the hull band, which measures a different
-  shader.
+- **golden fidelity across 8 directions** for one frame of every state, 352 probes, asserted on
+  **two** statistics with the OUTLINE load-bearing: outline < 8% (measured 0.00–4.98%; a mirrored
+  pose costs 21.8%), shading held only as a band, 40–88% (measured 59.38–79.34%, sd 4.30), so a
+  collapse is as loud as a regression. **Not** against the hull band, which measures a different
+  shader, and not against §3.3's modelled 44.85–56.63% — that is a proxy, and the real rasteriser
+  sits above it.
 - **`docs/art/rigs/**` byte-identity** — the widenings are in memory only.
 - **pose is heading-independent** — extract at dir 0 and dir 4, assert identical face blobs.
 - **Def completeness** and **materials-used ≤ 16**.

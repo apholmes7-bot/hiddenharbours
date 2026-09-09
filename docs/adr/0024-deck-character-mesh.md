@@ -12,8 +12,10 @@
 > 2. **Every number in this ADR is VOID.** The 0.61–4.33% delta, the 12 meshes, 4,576 tris and
 >    411 KB were all measured on **`characterIsoRig.js` (pass 1)**; the game bakes from
 >    **`characterIsoRig6.js` rev 6.9**. Re-measured on the shipped rig the player recipe is
->    **334 meshes, 524,068 tris, 44.1 MB**, and the facet delta is **44.85–56.63%** — dominated by
->    per-material `gain` being flattened to one global. ADR 0044 §3 carries the full table.
+>    **334 meshes, 524,068 tris, 44.1 MB**, and the facet SHADING delta, measured by the oracle
+>    over 352 probes, is **59.38–79.34%** — dominated by per-material `gain` being flattened to one
+>    global. The OUTLINE, which is what says the geometry is right, is **0.00–4.98%**. ADR 0044 §3.3
+>    carries both tables and the difference between them.
 >
 > What still stands: the flipbook shape (one mesh per frame, heading as a live transform) and the
 > reasons for it. The scope, the numbers, and "zero changes to Art/Boats/Core" do not.

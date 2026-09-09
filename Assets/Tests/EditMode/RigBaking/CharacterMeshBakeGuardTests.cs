@@ -24,24 +24,56 @@ namespace HiddenHarbours.Tests.RigBaking
     /// <item>the recipe and the Def can carry what the bake will put in them.</item>
     /// </list>
     ///
-    /// <para><b>Read the fidelity numbers against ADR 0044 §3.3, never against the hull band.</b>
-    /// Hulls sit at 2.47–4.81% because the facet shader carries the one gain/bias their rigs use.
-    /// Rig 6 gives 27 of its 36 materials their own gain, and until the shader carries per-material
-    /// gain (an open question for the seat, ADR 0044 §5.2) the character's honest residual is
-    /// 44.85–56.63%. A guard that asserted the hull band here would be asserting a shader change
-    /// this PR does not make.</para>
+    /// <para><b>Read the fidelity numbers against ADR 0044 §3.3, never against the hull band, and
+    /// read the OUTLINE before the colour.</b> Hulls sit at 2.47–4.81% because the facet shader
+    /// carries the one gain/bias their rigs use. Rig 6 gives 27 of its 36 materials their own gain,
+    /// and until the shader carries per-material gain (an open question for the seat, ADR 0044 §5.2)
+    /// the character's honest SHADING residual is 59.38–79.34%, measured. A guard that asserted the
+    /// hull band here would be asserting a shader change this PR does not make. What this PR CAN be
+    /// held to is where the figure is: the outline residual is 0.00–4.98% across the same 352
+    /// probes, and that is the bar the golden fixture leans on.</para>
     /// </summary>
     public class CharacterMeshBakeGuardTests
     {
-        /// <summary>The worst-case pipeline delta ADR 0044 §3.3 measured, plus headroom for the
-        /// per-state variation the ADR's range already spans. A number ABOVE this is a new loss,
-        /// not the known one — find out which of the four components grew.</summary>
-        const double PipelineDeltaCeilingPercent = 60.0;
+        // ⚠️ THE BARS BELOW ARE MEASURED, AND THEY REPLACE A PROXY. Their first version came from
+        // ADR 0044 §3.3's 44.85–56.63% band, which was measured rig-JS against rig-JS with one
+        // expression patched out per term, worst of 20 probes — a MODEL of what the facet oracle
+        // would lose, never the oracle itself. CI run 34356893050 is the first time the C# oracle
+        // was ever compared against the rig, over the whole recipe: 44 states × 8 dirs = 352
+        // probes. What that measured, and what the bars below are derived from:
+        //
+        //     shading delta   59.38% .. 79.34%   median 65.68%, sd 4.30   — EVERY probe above 59%
+        //     outline delta    0.00% ..  4.98%   median  2.31%
+        //
+        // There is no outlier in that. The worst state ('balance', 79.34%) sits 2.2 sd above the
+        // mean of the 44 per-state worsts, at the top of one tight unimodal band. The old 60%
+        // ceiling was not exceeded by one state — it sat BELOW the entire distribution.
 
-        /// <summary>And a FLOOR: if the delta collapses toward the hull band, either somebody
-        /// landed the per-material-gain shader widening (good — re-baseline this file and ADR 0044
-        /// §3.3 in the same PR) or the comparison stopped comparing anything.</summary>
-        const double PipelineDeltaFloorPercent = 5.0;
+        /// <summary>
+        /// <b>The load-bearing bar.</b> The OUTLINE — opaque against transparent — is what a bake
+        /// can actually get wrong: a pose resolved against the wrong build, a heading applied
+        /// twice, a mirrored turntable all MOVE the figure. Shading cannot move a silhouette.
+        /// Measured max over 352 probes: <b>4.98%</b>. Measured cost of a real geometry defect,
+        /// from the mirrored pose <c>MeasureFacetSign</c> rejects: <b>78/357 px = 21.8%</b>. This
+        /// bar sits between them with better than 1.6× of margin on each side — above every probe
+        /// measured, below the smallest geometry error this lane has evidence of.
+        /// </summary>
+        const double OutlineCeilingPercent = 8.0;
+
+        /// <summary>
+        /// The SHADING delta, kept as a band and not as an acceptance criterion, because what it
+        /// measures is a shader this PR does not change: one global gain against rig 6's 27
+        /// per-material ones (§3.3, and the seat's PR-2 widening question). Measured max 79.34%,
+        /// sd 4.30 — this is two sd of headroom. Above it a NEW loss has joined the four known
+        /// ones (head stamp, gridHead, dither, flattened gain): find which.
+        /// </summary>
+        const double ShadeDeltaCeilingPercent = 88.0;
+
+        /// <summary>And a FLOOR, well under the measured 59.38% minimum: if the shading delta
+        /// collapses, either somebody landed the per-material-gain widening (good — re-baseline
+        /// this file and ADR 0044 §3.3 in the same PR) or the two rasters stopped being
+        /// compared.</summary>
+        const double ShadeDeltaFloorPercent = 40.0;
 
         const string Player = CharacterRigBakeMenu.PlayerPreset;
 
@@ -216,25 +248,37 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.Greater(recipe.Count, 30, "the player recipe collapsed — the states are the test");
 
             var report = new StringBuilder();
-            double worst = 0;
-            string worstState = null;
+            double worst = 0, worstOutline = 0;
+            string worstState = null, worstOutlineState = null;
 
             foreach (CharacterState state in recipe)
             {
-                double d = CharacterMeshAssetBaker.GoldenReport(host, Player, state, 0, ccw, report);
+                double d = CharacterMeshAssetBaker.GoldenReport(
+                    host, Player, state, 0, ccw, report, out double outline);
                 if (d > worst) { worst = d; worstState = state.Key; }
+                if (outline > worstOutline) { worstOutline = outline; worstOutlineState = state.Key; }
             }
 
             Debug.Log($"[character-mesh] golden across {recipe.Count} states × 8 dirs, " +
-                      $"worst {worst:F2}% at '{worstState}'\n{report}");
+                      $"worst shading {worst:F2}% at '{worstState}', " +
+                      $"worst outline {worstOutline:F2}% at '{worstOutlineState}'\n{report}");
 
-            Assert.Less(worst, PipelineDeltaCeilingPercent,
-                $"'{worstState}' differs by {worst:F2}%, above the {PipelineDeltaCeilingPercent}% " +
-                "ceiling ADR 0044 §3.3's measurement allows. That is a NEW loss on top of the four " +
-                "known ones (head stamp, gridHead, dither, flattened gain) — find which grew.");
-            Assert.Greater(worst, PipelineDeltaFloorPercent,
-                $"the worst state differs by only {worst:F2}%, which is better than the shader can " +
-                "currently do. Either the per-material-gain widening landed (re-baseline this file " +
+            // The OUTLINE first: of the two it is the one that says the mesh is right.
+            Assert.Less(worstOutline, OutlineCeilingPercent,
+                $"'{worstOutlineState}' misses the rig's OUTLINE by {worstOutline:F2}%, above the " +
+                $"{OutlineCeilingPercent}% bar. Shading cannot move a silhouette, so this is " +
+                "GEOMETRY: a pose resolved against the wrong build, a heading applied twice, or a " +
+                "turntable sign that flipped. The measured band over 352 probes is 0.00–4.98%; a " +
+                "mirrored pose costs 21.8%. Do not raise this bar — find what moved the figure.");
+
+            Assert.Less(worst, ShadeDeltaCeilingPercent,
+                $"'{worstState}' differs by {worst:F2}%, above the {ShadeDeltaCeilingPercent}% " +
+                "ceiling — two sd above the 59.38–79.34% band measured over 352 probes. That is a " +
+                "NEW loss on top of the four known ones (head stamp, gridHead, dither, flattened " +
+                "gain) — find which grew.");
+            Assert.Greater(worst, ShadeDeltaFloorPercent,
+                $"the worst state differs by only {worst:F2}%, well under the measured 59.38% " +
+                "floor. Either the per-material-gain widening landed (good — re-baseline this file " +
                 "AND ADR 0044 §3.3 in that PR) or the two rasters stopped being compared.");
         }
 

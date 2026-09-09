@@ -409,17 +409,35 @@ namespace HiddenHarbours.Tools.RigBaking
         /// Returns the worst percentage so a caller can assert on it.
         ///
         /// <para>The residual is NOT noise and is not expected to be small: it is the pipeline delta
-        /// this lane measured and ADR 0044 records — the head raster STAMP the mesh does not carry
-        /// (0.00–2.82%), rev 6.8's per-direction <c>gridHead</c> sub-pixel nudge a rotated flipbook
-        /// cannot carry (2.28–15.00%), and, until the shader carries per-material gain, the flattened
-        /// shading (35.50–53.61%). Assert against the number the ADR states, never against the hull
-        /// band (2.47–4.81%) — these are different pipelines.</para>
+        /// this lane measured — the head raster STAMP the mesh does not carry, rev 6.8's
+        /// per-direction <c>gridHead</c> sub-pixel nudge a rotated flipbook cannot carry, and,
+        /// until the shader carries per-material gain, the flattened shading. <b>Measured over the
+        /// whole recipe, 352 probes: 59.38–79.34%.</b> (ADR 0044 §3.3's 44.85–56.63% is a
+        /// rig-JS-vs-rig-JS PROXY from 20 probes, not a measurement of this rasteriser.) Never
+        /// assert against the hull band (2.47–4.81%) — that is a different pipeline. And prefer
+        /// the outline overload below: this number is dominated by shading the bake cannot
+        /// change.</para>
         /// </summary>
         public static double GoldenReport(IRigScriptHost host, string preset, in CharacterState state,
-                                          int frame, bool azimuthCcw, StringBuilder report)
+                                          int frame, bool azimuthCcw, StringBuilder report) =>
+            GoldenReport(host, preset, state, frame, azimuthCcw, report, out _);
+
+        /// <summary>
+        /// As above, and also hands back the worst SILHOUETTE delta — the outline, as a percentage
+        /// of inked pixels. <b>That is the number this comparison can actually hold to account.</b>
+        /// Measured over the whole recipe (44 states × 8 dirs, 352 probes) the shading delta spans
+        /// 59.38–79.34% and the outline spans 0.00–4.98%: the mesh reproduces WHERE the figure is
+        /// and not what shade it came out, because the facet shader carries one global gain where
+        /// rig 6 gives 27 of its 36 materials their own. A mesh bake defect — a pose resolved
+        /// against the wrong build, a heading applied twice — moves the outline; the measured
+        /// mirror in <see cref="MeasureFacetSign"/> moves it by 21.8%.
+        /// </summary>
+        public static double GoldenReport(IRigScriptHost host, string preset, in CharacterState state,
+                                          int frame, bool azimuthCcw, StringBuilder report,
+                                          out double worstOutlinePercent)
         {
             RigMeshData pose = CharacterPoseMeshExtractor.ExtractPose(host, preset, state, frame);
-            double worst = 0;
+            double worst = 0, outline = 0;
             int worstCluster = 0;
 
             for (int dir = 0; dir < 8; dir++)
@@ -433,10 +451,14 @@ namespace HiddenHarbours.Tools.RigBaking
                 report?.AppendLine($"  {state.Key}[{frame}] dir {dir}: {diff}");
                 worst = Math.Max(worst, diff.PercentDiffering);
                 worstCluster = Math.Max(worstCluster, diff.LargestDifferingCluster);
+                if (diff.InkedPixels > 0)
+                    outline = Math.Max(outline,
+                                       100.0 * diff.CoverageOnlyDifferences / diff.InkedPixels);
             }
 
             report?.AppendLine($"  {state.Key}[{frame}] worst: {worst:F2}% differing, " +
-                               $"cluster {worstCluster}");
+                               $"cluster {worstCluster}, outline {outline:F2}%");
+            worstOutlinePercent = outline;
             return worst;
         }
 
