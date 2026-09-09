@@ -362,6 +362,41 @@ namespace HiddenHarbours.Core
         private static ICatchHands _catchHands;
 
         /// <summary>
+        /// <b>The hold she carries on her own person</b> — the clam pail on her belt, published by the
+        /// Player lane's <c>ClamBucket</c> so a catch source that cannot reference Player still knows
+        /// where a landed thing goes when nothing nearer will take it.
+        ///
+        /// <para><b>Why this exists at all (2026-09-09).</b> A clam hole carried its pail as a
+        /// <em>serialized reference to one GameObject</em>, and that reference is only as good as the
+        /// scene that wrote it: a hole authored in a region she is not standing in, a hole spawned by a
+        /// tool, a hole whose scene was rebuilt around a different core — any of those leaves the hole
+        /// with no hold and the game saying <i>"you need a bucket"</i> to a fisher with a twenty-clam pail
+        /// on her belt and <c>gear.bucket</c> in her save. The pail is a fact about HER, so it is asked of
+        /// her, not of the hole.</para>
+        ///
+        /// <para><b>⚠ Same fake-null laundering as <see cref="Hands"/>, and for the same reason</b> — the
+        /// field is interface-typed, so a destroyed <c>ClamBucket</c> would read as a live
+        /// <see cref="IHold"/> and every consumer's <c>!= null</c> would pass on a corpse.</para>
+        ///
+        /// <para><b>Lifetime: published in <c>OnEnable</c>, released in <c>OnDestroy</c> — never
+        /// <c>OnDisable</c></b>, because root-toggling IS how a region hop works and a service cleared on
+        /// disable is a service wiped mid-crossing. That is the rule <see cref="CatchHands"/> already
+        /// states; this slot obeys it.</para>
+        ///
+        /// <para>OPTIONAL and NOT part of <see cref="Ready"/>: null in EditMode (nothing fires
+        /// <c>OnEnable</c> there), in a bare art scene, and before the persistent core boots. A null here
+        /// must mean "fall back to whatever the caller was wired to", never a dropped catch.</para>
+        /// FLAG lead-architect: new Core contract (the on-person hold seam).
+        /// </summary>
+        public static IHold PlayerHold
+        {
+            get => _playerHold is UnityEngine.Object o && o == null ? null : _playerHold;
+            set => _playerHold = value;
+        }
+
+        private static IHold _playerHold;
+
+        /// <summary>
         /// The stable id of the region the player is CURRENTLY in (e.g. <c>"region.st_peters"</c>) —
         /// the travel-aware read gameplay resolves per-region content against (which fish bite HERE,
         /// now). The <b>App</b> travel rig is the writer (the active region's anchor reports itself;
@@ -856,6 +891,7 @@ namespace HiddenHarbours.Core
             PlayerTransform = null;
             Hands = null;
             CatchHands = null;
+            PlayerHold = null;
             CurrentRegionId = null;
             PendingArrivalKey = null;
             CurrentRegionBounds = default;

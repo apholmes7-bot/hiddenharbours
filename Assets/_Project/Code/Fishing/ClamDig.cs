@@ -234,6 +234,10 @@ namespace HiddenHarbours.Fishing
             else
             {
                 EnsureBucket();
+                // ⭐ TRUE NOW, AND IT WAS NOT BEFORE. EnsureBucket falls back to the pail she carries, so
+                // a null here means there is no hold on this flat AND none on her person — she really has
+                // nowhere to put it. Before that fallback this sentence could fire at a fisher with a full
+                // pail on her belt, purely because the hole's own serialized reference had not survived.
                 if (_bucket == null) { Say("Nowhere to put a clam — you need a bucket."); return false; }
                 if (_bucket.UsedUnits >= _bucket.CapacityUnits)
                 {
@@ -424,9 +428,31 @@ namespace HiddenHarbours.Fishing
             return $"fixture.clam_hole#{GetEntityId()}";
         }
 
+        /// <summary>
+        /// Resolve somewhere to put a clam: the hold this hole was WIRED to first, and failing that the
+        /// pail she is carrying (<see cref="GameServices.PlayerHold"/>).
+        ///
+        /// <para><b>⭐ The fallback is the fix for the owner's 2026-09-09 report</b> ("pressing e the first
+        /// time … i needed a bucket"). <see cref="_bucketProvider"/> is a serialized reference to ONE
+        /// GameObject, and it is only as good as the scene that wrote it — a hole authored in a region she
+        /// is not standing in, a hole spawned by a tool, a hole whose scene was rebuilt round a different
+        /// core all leave it dead. When it was dead this method left <c>_bucket</c> null and the dig said
+        /// <i>"you need a bucket"</i> to a fisher with a twenty-clam pail on her belt. The pail is a fact
+        /// about HER, so it is now asked of her. <b>Nothing is taken away:</b> a hole with a live provider
+        /// still uses it, and the sentence below stays exactly as it was — it is simply no longer
+        /// reachable while she is carrying a pail, which is the only state in which it was a lie.</para>
+        ///
+        /// <para><b>⚠ The laundering line is not decoration.</b> <c>_bucket</c> is INTERFACE-typed, so a
+        /// destroyed <c>ClamBucket</c> cached here would compare non-null forever (an interface reference
+        /// does not carry <c>UnityEngine.Object</c>'s overloaded <c>==</c>) and every read after would
+        /// throw on a corpse instead of falling back. <see cref="GameServices.PlayerHold"/> launders its
+        /// own; this launders what the provider handed us.</para>
+        /// </summary>
         private void EnsureBucket()
         {
+            if (_bucket is UnityEngine.Object dead && dead == null) _bucket = null;   // a corpse is not a hold
             if (_bucket == null && _bucketProvider != null) _bucket = _bucketProvider.GetComponent<IHold>();
+            if (_bucket == null) _bucket = GameServices.PlayerHold;       // …then the pail on her belt
         }
 
         /// <summary>

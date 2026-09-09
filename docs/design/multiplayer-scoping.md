@@ -131,7 +131,7 @@ The useful discovery is that the members split cleanly in two:
 | `IconRegistry`, `RegionDisplayNames` — *separate Core statics (`Core/Services/IconLibrary.cs`, `Core/Services/RegionDisplayNames.cs`), not `GameServices` members; the first draft filed them here in error. World-scoped either way.* | **`CatchHands`** — ⚠ **whose catch lands where** *(new)* |
 | `Wallet` — **stays shared** (owner ruling, §6.1.1) | `CurrentRegionId` — *if* players may be apart (§6.1.2, open) |
 | `Licenses` — **stays shared** (owner ruling, §6.1.1) | `PendingArrivalKey` — same condition; consume-once *(new)* |
-| `Save` — **one world blob**, plus a thin per-player record (§6.1.1) | |
+| `Save` — **one world blob**, plus a thin per-player record (§6.1.1) | **`PlayerHold`** — ⚠ **whose pail** *(new since 2026-09-09)* |
 
 That right-hand column is the project.
 
@@ -157,7 +157,15 @@ added exactly the kind of member the shared purse *cannot* absorb, because they 
 - **`Hands`** (`:260`) and **`CatchHands`** (`:284`) — the carry seam, both published by the one
   `Player/CarryHands.cs:102-103` on enable and cleared on destroy. `Hands` answers "is the shovel in
   your hands?" for gates in other lanes; `CatchHands` is where a landed clam goes. Two players, one
-  slot: your friend's dig checks *your* hands.
+  slot: your friend's dig checks *your* hands. ⚠ Because ONE `OnEnable` writes both, they are never in
+  disagreement — which is why a "the hands published late" theory cannot explain a refusal that got
+  past the shovel gate (see `PlayerHold` below).
+- **`PlayerHold`** — the pail on her belt, published by `Player/ClamBucket.cs` on enable and released
+  on destroy, on the same lifetime rule. Added 2026-09-09 because a clam hole carried its hold as a
+  serialized reference to one GameObject, and told a fisher carrying a full pail that she needed a
+  bucket whenever that reference did not survive the scene that wrote it. Two players, one slot: your
+  friend's dig would fall back into *your* pail, so this joins `Hands` in whatever per-player
+  resolution §6 lands on.
 - **`PendingArrivalKey`** (`:324`) — which way in you took, consume-once. Conditional on §6.1.2 in
   the same way `CurrentRegionId` is, and *more* fragile: it is explicitly documented as unsafe to
   leave standing, and two players crossing at once would consume each other's.
