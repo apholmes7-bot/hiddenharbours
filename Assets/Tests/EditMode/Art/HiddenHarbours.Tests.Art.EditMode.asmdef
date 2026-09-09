@@ -8,6 +8,7 @@
         "HiddenHarbours.Art",
         "HiddenHarbours.Art.Editor",
         "Unity.2D.Sprite.Editor",
+        "Unity.RenderPipelines.Core.Runtime",
         "Unity.RenderPipelines.Universal.Runtime",
         "Unity.RenderPipelines.Universal.2D.Runtime"
     ],

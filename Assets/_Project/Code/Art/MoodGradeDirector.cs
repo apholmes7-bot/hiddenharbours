@@ -33,6 +33,16 @@ namespace HiddenHarbours.Art
     ///
     /// <para><b>UI is untouched.</b> Every canvas in the project is Screen Space – Overlay, which URP
     /// composites AFTER post-processing, so the notebook and HUD are never graded.</para>
+    /// <para><b>Fixture guard (a self-installing host runs in EVERY scene and EVERY PlayMode test).</b>
+    /// The host installs everywhere, but it GRADES only while three facts hold, re-read every tick
+    /// (<see cref="MayGrade"/>): the camera it would switch post-processing on for is the persistent
+    /// core's (its GameObject lives in the <c>DontDestroyOnLoad</c> scene, where <c>PersistentObject</c>
+    /// promotes the Main Camera — a camera a fixture builds lives in the fixture's own scene); a region
+    /// anchor has reported through <see cref="GameServices.CurrentRegionId"/>; and there is a graphics
+    /// device (URP post-processing on the Null device CI runs is a pass with a cost and no picture).
+    /// Otherwise the Volume stays disabled and no camera flag is touched, so a PlayMode fixture with its
+    /// own camera and no region sees exactly what it saw before this host existed.
+    /// <c>GameConfig.Juice.GradeEnabled</c> is the OWNER's switch; it is not this guard.</para>
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class MoodGradeDirector : MonoBehaviour
@@ -72,6 +82,27 @@ namespace HiddenHarbours.Art
         public int ActiveEffectCount  => _stack?.ActiveCount ?? 0;
         public int DroppedEffectCount => _stack?.DroppedCount ?? 0;
         public bool GradeIsOn => _volume != null && _volume.enabled;
+
+        /// <summary>What the last tick decided under <see cref="MayGrade"/> — read by tests and the slot.</summary>
+        public bool LastTickGraded { get; private set; }
+
+        /// <summary>The scene <c>DontDestroyOnLoad</c> promotes root objects into; the persistent core's camera lives there.</summary>
+        public const string PersistentSceneName = "DontDestroyOnLoad";
+
+        /// <summary>
+        /// Pure: the grade runs only for the persistent core's camera, in a region an anchor has reported,
+        /// on a real graphics device. Every other camera (a fixture's), every pre-boot tick and the Null
+        /// device leave the frame untouched.
+        /// </summary>
+        public static bool MayGrade(bool cameraIsPersistent, bool regionReported, bool hasGraphicsDevice)
+            => cameraIsPersistent && regionReported && hasGraphicsDevice;
+
+        /// <summary>True for the persistent core's camera; false for a camera a fixture built in its own scene, and for null.</summary>
+        public static bool IsPersistentCamera(Camera cam)
+            => cam != null && cam.gameObject.scene.name == PersistentSceneName;
+
+        /// <summary>False on the Null device (CI, <c>-nographics</c>) — the same probe the Art render features use.</summary>
+        public static bool HasGraphicsDevice => SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null;
 
         private static bool _installed;
 
@@ -152,6 +183,16 @@ namespace HiddenHarbours.Art
                 SetCameraPost(false);
                 return;
             }
+            var cam = ResolveCamera();
+            if (!MayGrade(IsPersistentCamera(cam), !string.IsNullOrEmpty(GameServices.CurrentRegionId), HasGraphicsDevice))
+            {
+                // The fixture guard: not the persistent camera, no region reported, or no device — leave the frame alone.
+                LastTickGraded = false;
+                if (_volume != null) _volume.enabled = false;
+                SetCameraPost(false);
+                return;
+            }
+            LastTickGraded = true;
             if (_volume != null && !_volume.enabled) _volume.enabled = true;
 
             var clock = GameServices.Clock;
@@ -182,14 +223,20 @@ namespace HiddenHarbours.Art
             SetCameraPost(true);
         }
 
+        /// <summary>The camera the grade would switch post on for. Re-resolved when the cached one is gone or off.</summary>
+        private Camera ResolveCamera()
+        {
+            if (_camera == null || !_camera.isActiveAndEnabled) _camera = Camera.main;
+            return _camera;
+        }
+
         /// <summary>
         /// Post-processing is a per-camera flag the scenes ship OFF. Turn it on for the main camera while
         /// the grade is on, and back off (only if we were the one who set it) when it is not.
         /// </summary>
         private void SetCameraPost(bool on)
         {
-            if (_camera == null) _camera = Camera.main;
-            if (_camera == null) return;
+            if (ResolveCamera() == null) return;
             var data = _camera.GetUniversalAdditionalCameraData();
             if (data == null) return;
             if (on)
