@@ -304,9 +304,22 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             Assert.AreEqual("₲1,240", _book.PurseLine(), "precondition: just the balance");
 
-            // The payout the HUD band used to flash, in its new home: beside the balance it moved.
+            // The payout the HUD band used to flash, in its new home: beside the balance it moved. Since the
+            // three moments (#816, docs/design/three-moments.md §4.2) the sale PLAYS first — coins crate → purse
+            // with the balance climbing behind them on unscaled time — and the note is the receipt once the
+            // climb has landed. With the moments off (GameConfig.Juice.MomentsEnabled) the receipt is immediate.
+            bool moments = GameServices.Config != null && GameServices.Config.Juice.MomentsEnabled;
             EventBus.Publish(new CatchSold(totalPaid: 48, count: 3));
             yield return null;
+
+            if (moments)
+            {
+                Assert.IsTrue(_book.SaleAnimating, "the sale plays first: the coins and the balance's climb");
+                StringAssert.DoesNotContain("+₲48", _book.PurseLine(), "no receipt while the balance is still climbing");
+            }
+            float deadline = Time.realtimeSinceStartup + 5f;
+            while (_book.SaleAnimating && Time.realtimeSinceStartup < deadline) yield return null;
+            Assert.IsFalse(_book.SaleAnimating, "the coins and the climb land in CoinFly*/SaleCountUpSeconds, well under 5 s");
 
             StringAssert.Contains("+₲48", _book.PurseLine(),
                                   "the sale is READ in the book rather than flashed over the game");

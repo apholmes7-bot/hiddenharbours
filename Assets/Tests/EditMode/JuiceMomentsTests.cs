@@ -491,7 +491,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(6,  MomentBurstMath.SplashDrops(0f, 6, 3f, 24), "the floor");
             Assert.AreEqual(12, MomentBurstMath.SplashDrops(2f, 6, 3f, 24), "6 + 3/kg");
             Assert.AreEqual(24, MomentBurstMath.SplashDrops(40f, 6, 3f, 24), "the cap");
-            Assert.AreEqual(0,  MomentBurstMath.SplashDrops(2f, -9, 3f, 24), "never negative");
+            Assert.AreEqual(0,  MomentBurstMath.SplashDrops(0f, -9, 3f, 24), "never negative: a negative floor is no floor");
+            Assert.AreEqual(6,  MomentBurstMath.SplashDrops(2f, -9, 3f, 24), "the per-kg share survives a negative floor");
+            Assert.AreEqual(0,  MomentBurstMath.SplashDrops(2f, 6, 3f, -1), "a negative cap is no drops");
             Assert.AreEqual(0f, MomentBurstMath.RingDelay(0, 3, 0.6f, 0.5f), "the first ring is born now");
             Assert.AreEqual(0.15f, MomentBurstMath.RingDelay(1, 3, 0.6f, 0.5f), 1e-5f);
             Assert.AreEqual(0.30f, MomentBurstMath.RingDelay(2, 3, 0.6f, 0.5f), 1e-5f, "the last ring at lifetime*stagger");
