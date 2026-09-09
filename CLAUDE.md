@@ -95,3 +95,19 @@ code to direct this project well — read the canon, the roadmap, and the PR sum
 - Saving tide/weather → bloated, fragile saves. **Recompute from seed+time.**
 - Committing a `.png`/`.wav` not covered by LFS → bloated repo. **Check `.gitattributes`.**
 - Implementing a cool later-phase idea now → scope creep. **Stay in your phase; log the idea.**
+
+## 9. Token discipline (the weekly limit is context size x turn count)
+Every tool call re-reads the whole conversation, so a long session at a large context is what spends the week.
+- **One session per PR.** Start from the charter, stop at PR-open, close at merge. Do not keep a lane alive for
+  the next piece of work; a fresh session reading the handoff is cheaper than a 40-hour one.
+- **Compact at breakpoints.** `/compact focus on <the open item>` after a PR opens or a measurement lands; `/clear`
+  between unrelated tasks. Do not ride the 1M window.
+- **Batch independent calls in ONE turn.** Never one `cd && <command>` per turn; several reads, several greps, one
+  turn. Multi-step shell work is one script, not a conversation.
+- **Never poll in the conversation.** A wait on CI, a PR, a bake or Unity is ONE backgrounded command that returns
+  a single line when the condition is met (`run_in_background`, or a `Monitor`). Sleeping turns at full context are
+  the most expensive nothing in the project.
+- **Read sections, not files.** Line ranges and greps; never a whole scene, shader, or results XML into context.
+  Tool output is capped in settings; if you need more, filter it, do not raise the cap.
+- **Verify without Unity when you can.** CI is the runner for arithmetic and wiring; a local editor run is for the
+  plate, on a granted slot.
