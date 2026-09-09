@@ -388,6 +388,32 @@ namespace HiddenHarbours.Core
                  "either side of downwind. 0 = every train follows the wind exactly.")]
         public float SpectrumSpreadDegrees;
 
+        // ---- the FIXED LADDER (register row 34, owner ruling 2026-09-09) -------------------------
+        // The bins' wavelengths, and so their frequencies, are these three numbers and nothing else.
+        // No wind term: that is the whole of row 34's fix. The wind moves only WHICH bins carry the
+        // amplitude, by walking the JONSWAP peak across a ladder that stands still.
+        //
+        // ⚠️ These fields postdate 2026-09-09, so an asset serialized before then deserializes them
+        // as ZERO — and a zero ladder is degenerate, not merely small. WaveSpectrum floors every one
+        // of them (2 bins minimum, ends widened off each other) for exactly that reason, and
+        // SpectrumBlend = 0 remains the untouched 4-train passthrough regardless.
+
+        [Tooltip("How many fixed frequency bins the spectrum sea is built from (2..8). More bins " +
+                 "cover more of the wind range at the same group rhythm, and cost trig per water " +
+                 "pixel AND per hull probe — rule 7. Raising it past 8 needs the shader globals and " +
+                 "the bridge widened too (_WaveTrain0..7).")]
+        public int SpectrumBinCount;
+
+        [Tooltip("Shortest wave in the fixed ladder (metres) — the ladder's SHORT end. Below this " +
+                 "the sea simply has no bin, so a near-calm day is drawn with longer waves than the " +
+                 "fetch law wants, at an amplitude near zero.")]
+        public float SpectrumLadderMinWavelengthMeters;
+
+        [Tooltip("Longest wave in the fixed ladder (metres) — the ladder's LONG end, and the longest " +
+                 "wave the sea can ever draw. Widening the ladder at a fixed bin count spends group " +
+                 "rhythm to buy wind coverage: the beat period is inverse in the derived spacing.")]
+        public float SpectrumLadderMaxWavelengthMeters;
+
         [Tooltip("Directional spreading exponent s in cos^2s(θ). 0 = energy spread evenly across the " +
                  "fan (a fully confused sea); larger = energy pulled into a narrow following sea.")]
         public float SpectrumSpreadExponent;
@@ -433,6 +459,15 @@ namespace HiddenHarbours.Core
             SpectrumFrequencySpacing = 0.08f,
             SpectrumSpreadDegrees = 55f,
             SpectrumSpreadExponent = 2f,
+
+            // Row 34's ladder: 5-30 m over 8 bins, a derived relative spacing of ~0.137. The long
+            // end carries the peak at the top of the wind the weather can reach (#797 caps it at
+            // 5.7 m/s, where the fetch law's peak is 15.6 m); the short end is where it is because
+            // anything wider stops the sea GROUPING - measured, table in
+            // WaveSpectrum.DefaultLadderMinWavelengthMeters.
+            SpectrumBinCount = 8,
+            SpectrumLadderMinWavelengthMeters = WaveSpectrum.DefaultLadderMinWavelengthMeters,
+            SpectrumLadderMaxWavelengthMeters = WaveSpectrum.DefaultLadderMaxWavelengthMeters,
         };
     }
 
@@ -482,6 +517,11 @@ namespace HiddenHarbours.Core
         public const float GlassAmplitudeMeters = 1e-6f;
 
         private const double TwoPi = Math.PI * 2.0;
+
+        /// <summary>The same constant in float, for the single-precision derivation path
+        /// (the ladder's dispersion). Declared beside its double twin so the two cannot
+        /// drift.</summary>
+        private const float TwoPiF = (float)(Math.PI * 2.0);
 
         /// <summary>
         /// Derive the wave field from the weather — the pure function at the heart of ADR 0018 §(1).
@@ -606,19 +646,68 @@ namespace HiddenHarbours.Core
             int seed = settings.PhaseSeed;
             float maxSpread = Mathf.Max(0f, settings.SpectrumSpreadDegrees) * Mathf.Deg2Rad;
 
-            // ---- (1) the raw spectral weights ------------------------------------------------------
+            // ---- (1) the FIXED ladder, and the weights the wind puts on it --------------------------
+            // 🔴 ROW 34 (owner ruling 2026-09-09). The superseded code read the shape at a FIXED ratio
+            // per slot and scaled every wavelength by λ_p(U) — so the bins walked under a stationary
+            // peak, every ω was a function of the wind, and φ = k·x − ω·t jumped by Δω·t at every mood
+            // change (27 000–47 500 radians per bin at three hours of play). It is now the other way
+            // round: THE BINS STAND STILL AND THE PEAK WALKS ACROSS THEM. λ_i has no wind term at all;
+            // the wind enters only here, in the ratio ω_i/ω_p(U) the JONSWAP shape is read at.
+            //
             // amplitude ∝ √(S(ω)) · cos^s(θ): the JONSWAP shape times the directional spreading, both
             // taken as AMPLITUDE weights (√energy). Δω is common to every slot and normalizes away.
+            int bins = Mathf.Clamp(settings.SpectrumBinCount <= 0
+                                       ? WaveTrains.MaxTrains : settings.SpectrumBinCount,
+                                   WaveSpectrum.MinLadderBins, WaveTrains.MaxTrains);
+            float ladderMin = settings.SpectrumLadderMinWavelengthMeters > 0f
+                ? settings.SpectrumLadderMinWavelengthMeters
+                : WaveSpectrum.DefaultLadderMinWavelengthMeters;
+            float ladderMax = settings.SpectrumLadderMaxWavelengthMeters > 0f
+                ? settings.SpectrumLadderMaxWavelengthMeters
+                : WaveSpectrum.DefaultLadderMaxWavelengthMeters;
+
+            // ω_p of the CURRENT sea — the only place the wind touches the spectrum now. λ_p is the
+            // fetch law's peak, unchanged by this PR; it no longer scales anything, it only says
+            // where on the standing ladder the energy sits.
+            float omegaPeak = Mathf.Sqrt(TwoPiF * gravity
+                                         / Mathf.Max(dominantWavelength, WaveTrain.MinWavelengthMeters));
+
+            // ⚠️ AND THE PEAK IS PINNED TO THE LADDER IT WALKS ON. Measured 2026-09-09: at 0.5 m/s
+            // the fetch law's peak is 0.21 m, far below the ladder's short end, so EVERY bin sat at
+            // ω_i/ω_p < 0.27 — where the JONSWAP shape carries exp(-1.25·r⁻⁴), which underflows to
+            // exactly zero. weightTotal went with it, the normalizer with that, and the sea lost the
+            // whole 65 % spectral share of its height (total amplitude 0.0173 -> 0.0060 m at 0.5 m/s).
+            // Clamping the peak into the ladder's own frequency range makes the energy pile onto the
+            // nearest END bin instead of falling off the edge — which is exactly what a sea whose
+            // waves are shorter than the shortest bin should look like: drawn a little long, at the
+            // right height. That is the stated price of a finite ladder, not a fudge.
+            float omegaLadderLong = Mathf.Sqrt(TwoPiF * gravity
+                / Mathf.Max(WaveSpectrum.BinWavelengthMeters(0, bins, ladderMin, ladderMax, seed),
+                            WaveTrain.MinWavelengthMeters));
+            float omegaLadderShort = Mathf.Sqrt(TwoPiF * gravity
+                / Mathf.Max(WaveSpectrum.BinWavelengthMeters(bins - 1, bins, ladderMin, ladderMax, seed),
+                            WaveTrain.MinWavelengthMeters));
+            omegaPeak = Mathf.Clamp(omegaPeak,
+                                    Mathf.Min(omegaLadderLong, omegaLadderShort),
+                                    Mathf.Max(omegaLadderLong, omegaLadderShort));
+
             Span<float> weight = stackalloc float[WaveTrains.MaxTrains];
             Span<float> angle = stackalloc float[WaveTrains.MaxTrains];
+            Span<float> binLambda = stackalloc float[WaveTrains.MaxTrains];
             float weightTotal = 0f;
             for (int i = 0; i < WaveTrains.MaxTrains; i++)
             {
+                // Slots past the ladder's bin count fold onto its short end and are silenced by the
+                // shape; they stay in the loop so the container's arity never depends on the tuning.
+                binLambda[i] = WaveSpectrum.BinWavelengthMeters(i, bins, ladderMin, ladderMax, seed);
                 angle[i] = WaveSpectrum.AngleOffsetRadians(i, seed, maxSpread);
+
+                float omegaBin = Mathf.Sqrt(TwoPiF * gravity / binLambda[i]);
                 float shape = WaveSpectrum.JonswapShape(
-                    WaveSpectrum.FrequencyRatio(i, settings.SpectrumFrequencySpacing),
+                    omegaBin / Mathf.Max(omegaPeak, 1e-6f),
                     settings.SpectrumPeakEnhancement, settings.SpectrumPeakWidth);
-                weight[i] = Mathf.Sqrt(Mathf.Max(0f, shape))
+                weight[i] = (i < bins ? 1f : 0f)
+                          * Mathf.Sqrt(Mathf.Max(0f, shape))
                           * WaveSpectrum.DirectionalWeight(angle[i], settings.SpectrumSpreadExponent);
                 weightTotal += weight[i];
             }
@@ -643,14 +732,21 @@ namespace HiddenHarbours.Core
                 bool hasLegacy = i < legacyCount;
                 WaveTrain legacy = hasLegacy ? LegacySlot(i, legacy0, legacy1, legacy2, legacy3) : default;
 
-                float spectrumWavelength =
-                    dominantWavelength * WaveSpectrum.WavelengthRatio(i, settings.SpectrumFrequencySpacing);
                 float spectrumAmplitude = weight[i] * normalizer;
 
-                // A slot with no legacy counterpart has nothing to morph FROM: it simply fades in.
-                float wavelength = hasLegacy
-                    ? Mathf.Lerp(legacy.Wavelength, spectrumWavelength, blend)
-                    : spectrumWavelength;
+                // ⚠️ THE WAVELENGTH IS NO LONGER MORPHED, and that is deliberate (row 34). The
+                // superseded line was `Lerp(legacy.Wavelength, spectrumWavelength, blend)` — and
+                // legacy.Wavelength is λ_p(U)·ratio, so ANY blend below 1 kept a wind term in ω and
+                // therefore kept a share of the vibration: at the shipped 0.65 it would still have
+                // carried 35 % of it. A wavelength that follows the wind IS the defect; there is no
+                // fraction of it worth morphing through.
+                //
+                // The price, stated rather than hidden: the field is no longer CONTINUOUS in λ as
+                // `blend` → 0⁺ — it steps from the hand-authored wavelengths to the ladder's. That is
+                // harmless because `SpectrumBlend` is a static tuning value, never animated: nothing
+                // in the game moves it while the player is looking. (`blend <= 0` still returns the
+                // 4-train field bit-for-bit from the caller, so every passthrough guard holds.)
+                float wavelength = binLambda[i];
                 float amplitude = Mathf.Lerp(hasLegacy ? legacy.Amplitude : 0f, spectrumAmplitude, blend);
 
                 // Directions morph as an ANGLE off downwind, never as a lerped vector — lerping two

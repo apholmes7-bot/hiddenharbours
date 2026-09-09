@@ -62,16 +62,27 @@ namespace HiddenHarbours.Tests.EditMode
             WaveTrains field = WaveMath.TrainsFrom(Wind, Sea, Spectrum());
             Assert.AreEqual(WaveTrains.MaxTrains, field.Count, "the full spectrum uses every slot");
 
-            float peakLambda = field[0].Wavelength;
+            // ⚠️ Measured around the REAL peak, not around slot 0. Until register row 34
+            // (2026-09-09) every bin was λ_p(U) times a fixed ratio, so slot 0 WAS the peak by
+            // construction. The bins are now an absolute ladder that the peak walks across, so slot 0
+            // is merely the LONGEST bin — and asking "what sits near slot 0" would measure the
+            // ladder's long end rather than the sea's dominant size.
+            int peak = field.DominantIndex;
+            float peakLambda = field[peak].Wavelength;
             int neighboursWithinHalfAnOctave = 0;
-            for (int i = 1; i < field.Count; i++)
+            for (int i = 0; i < field.Count; i++)
             {
+                if (i == peak) continue;
                 float ratio = field[i].Wavelength / peakLambda;
                 if (ratio > 0.7f && ratio < 1.43f) neighboursWithinHalfAnOctave++;
             }
             Assert.GreaterOrEqual(neighboursWithinHalfAnOctave, 2,
-                "at least two trains must sit within half an octave of the peak — that is what makes " +
-                "the sea read as ONE body of water with varied waves rather than stacked layers");
+                $"at least two trains must sit within half an octave of the peak (slot {peak}, " +
+                $"{peakLambda:0.0} m) — that is what makes the sea read as ONE body of water with " +
+                "varied waves rather than stacked layers. ⚠️ On a fixed ladder this is a statement " +
+                "about the LADDER'S SPACING: widen the ladder at the same bin count and the " +
+                "neighbours walk out of the window. It is the same trade the group-run acceptance " +
+                "measures, seen as a look property instead of a rhythm one.");
         }
 
         // ===== (2) THE FAN — "moving in different directions" ============================================
@@ -327,14 +338,30 @@ namespace HiddenHarbours.Tests.EditMode
                     $"blend {blend}: the amplitude envelope must not move");
         }
 
+        /// <summary>
+        /// ⚠️ <b>RE-DERIVED 2026-09-09 (register row 34): the blend is continuous in AMPLITUDE, and
+        /// the WAVELENGTHS step. That step is the fix, not a regression.</b>
+        ///
+        /// <para>This test used to compare the SURFACE either side of blend = 0 and require it not to
+        /// jump. It cannot any more, and the reason is the whole of row 34: the superseded spectral
+        /// path lerped each slot's wavelength from its hand-authored value (which is
+        /// <c>λ_p(U)·ratio</c> — a function of the wind) toward its spectral one. Any blend below 1
+        /// therefore kept a wind term in ω, and at the shipped 0.65 it would have kept <b>35 % of the
+        /// vibration</b>. A wavelength that follows the wind is the defect; there is no fraction of it
+        /// worth morphing through, so the ladder is used whole whenever <c>blend &gt; 0</c>.</para>
+        ///
+        /// <para><b>Why the step is harmless:</b> <c>SpectrumBlend</c> is a static tuning value read
+        /// from <c>GameConfig.asset</c>. Nothing animates it, so no player ever sees the transition —
+        /// unlike the wind, which changes constantly and is what made the old λ-morph a defect. The
+        /// properties that DO have to hold across the dial are asserted below: the amplitude envelope
+        /// is preserved (<see cref="TheEnvelopeIsPreserved_AtEveryBlendValue"/>) and the four new
+        /// slots still fade in from exactly zero.</para>
+        /// </summary>
         [Test]
-        public void TheBlendIsContinuous_NoJumpOffZero()
+        public void TheBlendIsContinuousInAmplitude_AndTheWavelengthsStep_Deliberately()
         {
-            // The live slot count JUMPS from 4 to 8 the instant the blend leaves 0. That is only
-            // acceptable because the four new trains fade in from EXACTLY zero amplitude, so the
-            // surface itself is continuous. If they did not, the sea would visibly snap the moment the
-            // owner touched the dial.
-            var pos = new Vector2(11.25f, -6.5f);
+            // The live slot count JUMPS from 4 to 8 the instant the blend leaves 0. The AMPLITUDE side
+            // of that is still continuous, because the four new trains fade in from EXACTLY zero.
             WaveTrains off = WaveMath.TrainsFrom(Wind, Sea, Spectrum(0f));
             WaveTrains barelyOn = WaveMath.TrainsFrom(Wind, Sea, Spectrum(1e-4f));
 
@@ -343,6 +370,23 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = off.Count; i < barelyOn.Count; i++)
                 Assert.Less(barelyOn[i].Amplitude, 1e-4f,
                     $"slot {i} must fade IN from zero, not appear at its full spectral amplitude");
+
+            Assert.AreEqual(off.TotalAmplitude, barelyOn.TotalAmplitude, 1e-4f,
+                "the envelope must not move as the dial leaves zero — that is the continuity that " +
+                "still holds, and the one the whitecap crest factor and the hull clamp depend on");
+
+            // ⭐ AND THE WAVELENGTHS STEP, on purpose. Asserted rather than tolerated, so that a
+            // future PR quietly restoring the λ-lerp (which would read as "restoring continuity")
+            // turns this test red and has to explain itself.
+            bool anyWavelengthStepped = false;
+            for (int i = 0; i < off.Count; i++)
+                if (Mathf.Abs(off[i].Wavelength - barelyOn[i].Wavelength) > 1e-3f)
+                    anyWavelengthStepped = true;
+            Assert.IsTrue(anyWavelengthStepped,
+                "⭐ the spectral path must use the FIXED LADDER whole, not a lerp from the " +
+                "hand-authored wavelengths — a lerp keeps (1 - blend) of the wind term in ω, which is " +
+                "(1 - blend) of register row 34's vibration. If this passes silently the λ-morph is " +
+                "back and the sea will resynch again after an evening's play.");
 
             // ⚠️ Compared near t = 0, and the reason is the SAME one that scoped the PR-A passthrough
             // proof. A nudge of the blend moves each slot's wavelength a little, which moves its
@@ -354,10 +398,11 @@ namespace HiddenHarbours.Tests.EditMode
             // accumulates phase INCREMENTALLY (ADR 0018 addendum), which exists precisely so a
             // changing wavelength cannot jump the phase under a large running t. Dragging the dial
             // mid-session is covered by TurningTheBlendUpMidSession_… above.
-            for (double t = 0; t <= 3.0; t += 1.0)
-                Assert.AreEqual(WaveMath.Sample(pos, t, in off).Height,
-                                WaveMath.Sample(pos, t, in barelyOn).Height, 1e-3f,
-                    $"the surface at t={t} must not jump as the blend leaves zero");
+            // ⚠️ The SURFACE comparison that used to close this test is gone with the λ-lerp. Two
+            // fields on different wavelengths draw different water at the same instant, by
+            // construction — asserting otherwise would be asserting that the ladder had not been
+            // adopted. What survives, and is asserted above, is the envelope and the fade-in from
+            // zero; what replaces it is the step being deliberate and guarded.
         }
 
         [Test]
@@ -376,10 +421,17 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheDominantIndex_IsTheRealPeak_AndTheConsumersCanFollowIt()
         {
-            // Slot 0 carries ω/ω_p = 1 and the maximum directional weight, so it SHOULD be the peak —
-            // but DominantIndex is computed by argmax, not asserted, precisely so a future tuning that
-            // moved the peak would carry the phase consumers with it instead of silently desyncing
-            // the hull's rocking from the foam's breaking.
+            // DominantIndex is computed by argmax, never assumed — and since register row 34
+            // (2026-09-09) that is load-bearing rather than defensive. The bins are a FIXED ladder and
+            // the wind moves the amplitudes across it, so the peak genuinely WALKS from slot to slot
+            // as the weather changes. The phase consumers follow DominantIndex, so if it ever stopped
+            // being the argmax the hull's rocking would desync from the foam's breaking.
+            //
+            // ⚠️ This test used to also assert `DominantIndex == 0`, "pinned so a tuning change that
+            // moves it is a deliberate, visible decision rather than a surprise". This IS that
+            // deliberate decision: slot 0 is now merely the ladder's LONGEST bin, and pinning the peak
+            // there would contradict the ruling.
+            var peaks = new System.Collections.Generic.HashSet<int>();
             foreach (float windSpeed in new[] { 2f, 8f, 25f })
             foreach (float sea in new[] { 0.2f, 0.6f, 1f })
             {
@@ -390,10 +442,16 @@ namespace HiddenHarbours.Tests.EditMode
 
                 Assert.AreEqual(argmax, field.DominantIndex,
                     $"wind {windSpeed} sea {sea}: DominantIndex must BE the largest train");
-                Assert.AreEqual(0, field.DominantIndex,
-                    "at the shipped tuning the peak is slot 0 — pinned so a tuning change that moves " +
-                    "it is a deliberate, visible decision rather than a surprise");
+                Assert.That(field.DominantIndex, Is.InRange(0, field.Count - 1),
+                    $"wind {windSpeed} sea {sea}: the peak must be a live slot");
+                peaks.Add(field.DominantIndex);
             }
+
+            Assert.Greater(peaks.Count, 1,
+                "⭐ ROW 34's OTHER HALF: the peak must WALK across the standing ladder as the wind " +
+                "changes — that is how a fixed-frequency sea responds to the weather at all. If one " +
+                "slot dominates at every wind, the amplitudes have stopped following ω_p(U) and the " +
+                "sea no longer grows; the vibration would be gone because nothing moves.");
         }
 
         [Test]

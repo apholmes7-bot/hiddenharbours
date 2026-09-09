@@ -96,6 +96,9 @@ MonoBehaviour:
     SpectrumFrequencySpacing: 0.08
     SpectrumSpreadDegrees: 55
     SpectrumSpreadExponent: 2
+    SpectrumBinCount: 8
+    SpectrumLadderMinWavelengthMeters: 5
+    SpectrumLadderMaxWavelengthMeters: 30
   WaveFieldAnimator:
     ParameterSmoothingSeconds: 1.5
     GlassSnapAmplitudeMeters: 0.0001
