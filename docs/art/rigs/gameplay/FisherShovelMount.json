@@ -1,0 +1,46 @@
+{
+ "build": "fisher",
+ "derivedFromRigSha256": {
+  "characterIsoRig6.js": "6200efbb3e7c855476fd73e2c4c7eca9deb1ae1975c0aba6e9a153970a744ede",
+  "shovelIsoRig.js": "f79bb1c82377f4c910c1952a83f091588df1d71b40b0fcc4f24bbd3e57e1464e"
+ },
+ "order": ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
+ "bodyCell": { "w": 64, "h": 92 },
+ "shovelCell": { "w": 112, "h": 112 },
+ "shovelPivot": { "x": 56, "y": 72 },
+ "shaftLenM": { "up": 0.375, "down": 0.665 },
+ "behindDirs": [0, 1, 7],
+ "measuredShovelConvention": "CounterClockwise",
+ "measuredCharacterConvention": "Clockwise",
+ "facingsAreCounterClockwise": false,
+ "note": "ONE SPADE, EVERY STATE. Draw the body cell; place the shovel overlay so shovelPivot lands on grip[dir][frame]. shovelCell/shovelPivot/shaftLenM do not vary by state — that is the contract. behindDirs -> spade UNDER body. Spoil (tossed dirt) is RUNTIME FX and never baked: it launches at DIG.tossFrame from ShovelIso.tip(), projected from the grip via ShovelIso.project(). The two conventions above are MEASURED and they DISAGREE - the spade rig is counter-clockwise where the character and the rod are clockwise - so every cell applies the correction per rig. The sheets on disk are clockwise like every other sheet in the project.",
+ "_absent": "There is no carried/walk block, and that is a finding rather than an omission. CharacterIso.ANIM_MOUNT marks idle/walk/run 'free' and tool() returns null on all three, so the shipped rigs have no answer for a spade on a swinging arm. A carried spade needs a 'shovelTrail' PROPS row in characterIsoRig6.hands.js (the art director's lane), which would then import through CarryAnchorTableBuilder like rodTrail does. Until it lands, CarryHands poses a held shovel from one serialized hip offset - which is what the owner saw. Measured cost of the gap: at the rig's default held pose the spade is 37 opaque px at north and 78 at north-east, against 157 at south, because it points into the screen at those headings. Do NOT borrow the gaff's row: 1.55 m of pole tuned on a different lever.",
+ "poses": {
+  "dig": {
+   "frames": 10,
+   "ms": 90,
+   "tossFrame": 8,
+   "grip": [
+    [{ "x": 37.6, "y": 63.7 }, { "x": 37.6, "y": 62.6 }, { "x": 37.6, "y": 60.7 }, { "x": 37.6, "y": 60 }, { "x": 37.6, "y": 61.7 }, { "x": 37.6, "y": 64.3 }, { "x": 37.6, "y": 65.5 }, { "x": 37.6, "y": 66.4 }, { "x": 37.5, "y": 64 }, { "x": 37.6, "y": 64.4 }],
+    [{ "x": 40.4, "y": 67.4 }, { "x": 40.2, "y": 66.3 }, { "x": 39.7, "y": 64.2 }, { "x": 39.6, "y": 63.5 }, { "x": 40.6, "y": 65.5 }, { "x": 42.2, "y": 68.5 }, { "x": 41.4, "y": 69.5 }, { "x": 40.8, "y": 70.2 }, { "x": 40, "y": 67.6 }, { "x": 40.5, "y": 68.2 }],
+    [{ "x": 38.2, "y": 71.3 }, { "x": 37.9, "y": 70 }, { "x": 37.3, "y": 67.7 }, { "x": 37.2, "y": 66.9 }, { "x": 38.6, "y": 69.5 }, { "x": 40.8, "y": 73.6 }, { "x": 39.7, "y": 74.1 }, { "x": 38.9, "y": 74.4 }, { "x": 37.9, "y": 71.3 }, { "x": 38.4, "y": 72.1 }],
+    [{ "x": 32.4, "y": 73.1 }, { "x": 32.2, "y": 71.6 }, { "x": 31.8, "y": 69.1 }, { "x": 31.7, "y": 68.2 }, { "x": 32.7, "y": 71.4 }, { "x": 34.2, "y": 76.5 }, { "x": 33.5, "y": 76.5 }, { "x": 32.9, "y": 76.5 }, { "x": 32.3, "y": 72.9 }, { "x": 32.6, "y": 74 }],
+    [{ "x": 26.4, "y": 71.7 }, { "x": 26.4, "y": 70.2 }, { "x": 26.4, "y": 67.5 }, { "x": 26.4, "y": 66.6 }, { "x": 26.4, "y": 70.1 }, { "x": 26.4, "y": 75.6 }, { "x": 26.4, "y": 75.4 }, { "x": 26.4, "y": 75.3 }, { "x": 26.5, "y": 71.6 }, { "x": 26.4, "y": 72.6 }],
+    [{ "x": 23.6, "y": 68 }, { "x": 23.8, "y": 66.5 }, { "x": 24.3, "y": 64 }, { "x": 24.4, "y": 63.1 }, { "x": 23.4, "y": 66.3 }, { "x": 21.8, "y": 71.4 }, { "x": 22.6, "y": 71.4 }, { "x": 23.2, "y": 71.4 }, { "x": 24, "y": 68 }, { "x": 23.5, "y": 68.9 }],
+    [{ "x": 25.8, "y": 64.1 }, { "x": 26.1, "y": 62.8 }, { "x": 26.7, "y": 60.5 }, { "x": 26.8, "y": 59.7 }, { "x": 25.4, "y": 62.3 }, { "x": 23.2, "y": 66.4 }, { "x": 24.3, "y": 66.8 }, { "x": 25.1, "y": 67.2 }, { "x": 26.1, "y": 64.3 }, { "x": 25.6, "y": 64.9 }],
+    [{ "x": 31.6, "y": 62.3 }, { "x": 31.8, "y": 61.1 }, { "x": 32.2, "y": 59.1 }, { "x": 32.3, "y": 58.4 }, { "x": 31.3, "y": 60.3 }, { "x": 29.8, "y": 63.4 }, { "x": 30.5, "y": 64.4 }, { "x": 31.1, "y": 65.2 }, { "x": 31.7, "y": 62.6 }, { "x": 31.4, "y": 63 }]
+   ],
+   "shovelPose": [
+    [{ "pitch": -0.352, "yaw": 1.008, "bend": 0 }, { "pitch": -0.278, "yaw": 0.973, "bend": 0 }, { "pitch": -0.141, "yaw": 0.932, "bend": 0 }, { "pitch": -0.095, "yaw": 0.923, "bend": 0 }, { "pitch": -0.301, "yaw": 0.982, "bend": 0 }, { "pitch": -0.558, "yaw": 1.202, "bend": 0 }, { "pitch": -0.472, "yaw": 1.095, "bend": 0 }, { "pitch": -0.39, "yaw": 1.029, "bend": 0 }, { "pitch": -0.15, "yaw": 0.921, "bend": 0 }, { "pitch": -0.362, "yaw": 1.013, "bend": 0 }],
+    [{ "pitch": -0.352, "yaw": 1.008, "bend": 0 }, { "pitch": -0.278, "yaw": 0.973, "bend": 0 }, { "pitch": -0.141, "yaw": 0.932, "bend": 0 }, { "pitch": -0.095, "yaw": 0.923, "bend": 0 }, { "pitch": -0.301, "yaw": 0.982, "bend": 0 }, { "pitch": -0.558, "yaw": 1.202, "bend": 0 }, { "pitch": -0.472, "yaw": 1.095, "bend": 0 }, { "pitch": -0.39, "yaw": 1.029, "bend": 0 }, { "pitch": -0.15, "yaw": 0.921, "bend": 0 }, { "pitch": -0.362, "yaw": 1.013, "bend": 0 }],
+    [{ "pitch": -0.352, "yaw": 1.008, "bend": 0 }, { "pitch": -0.278, "yaw": 0.973, "bend": 0 }, { "pitch": -0.141, "yaw": 0.932, "bend": 0 }, { "pitch": -0.095, "yaw": 0.923, "bend": 0 }, { "pitch": -0.301, "yaw": 0.982, "bend": 0 }, { "pitch": -0.558, "yaw": 1.202, "bend": 0 }, { "pitch": -0.472, "yaw": 1.095, "bend": 0 }, { "pitch": -0.39, "yaw": 1.029, "bend": 0 }, { "pitch": -0.15, "yaw": 0.921, "bend": 0 }, { "pitch": -0.362, "yaw": 1.013, "bend": 0 }],
+    [{ "pitch": -0.352, "yaw": 1.008, "bend": 0 }, { "pitch": -0.278, "yaw": 0.973, "bend": 0 }, { "pitch": -0.141, "yaw": 0.932, "bend": 0 }, { "pitch": -0.095, "yaw": 0.923, "bend": 0 }, { "pitch": -0.301, "yaw": 0.982, "bend": 0 }, { "pitch": -0.558, "yaw": 1.202, "bend": 0 }, { "pitch": -0.472, "yaw": 1.095, "bend": 0 }, { "pitch": -0.39, "yaw": 1.029, "bend": 0 }, { "pitch": -0.15, "yaw": 0.921, "bend": 0 }, { "pitch": -0.362, "yaw": 1.013, "bend": 0 }],
+    [{ "pitch": -0.352, "yaw": 1.008, "bend": 0 }, { "pitch": -0.278, "yaw": 0.973, "bend": 0 }, { "pitch": -0.141, "yaw": 0.932, "bend": 0 }, { "pitch": -0.095, "yaw": 0.923, "bend": 0 }, { "pitch": -0.301, "yaw": 0.982, "bend": 0 }, { "pitch": -0.558, "yaw": 1.202, "bend": 0 }, { "pitch": -0.472, "yaw": 1.095, "bend": 0 }, { "pitch": -0.39, "yaw": 1.029, "bend": 0 }, { "pitch": -0.15, "yaw": 0.921, "bend": 0 }, { "pitch": -0.362, "yaw": 1.013, "bend": 0 }],
+    [{ "pitch": -0.352, "yaw": 1.008, "bend": 0 }, { "pitch": -0.278, "yaw": 0.973, "bend": 0 }, { "pitch": -0.141, "yaw": 0.932, "bend": 0 }, { "pitch": -0.095, "yaw": 0.923, "bend": 0 }, { "pitch": -0.301, "yaw": 0.982, "bend": 0 }, { "pitch": -0.558, "yaw": 1.202, "bend": 0 }, { "pitch": -0.472, "yaw": 1.095, "bend": 0 }, { "pitch": -0.39, "yaw": 1.029, "bend": 0 }, { "pitch": -0.15, "yaw": 0.921, "bend": 0 }, { "pitch": -0.362, "yaw": 1.013, "bend": 0 }],
+    [{ "pitch": -0.352, "yaw": 1.008, "bend": 0 }, { "pitch": -0.278, "yaw": 0.973, "bend": 0 }, { "pitch": -0.141, "yaw": 0.932, "bend": 0 }, { "pitch": -0.095, "yaw": 0.923, "bend": 0 }, { "pitch": -0.301, "yaw": 0.982, "bend": 0 }, { "pitch": -0.558, "yaw": 1.202, "bend": 0 }, { "pitch": -0.472, "yaw": 1.095, "bend": 0 }, { "pitch": -0.39, "yaw": 1.029, "bend": 0 }, { "pitch": -0.15, "yaw": 0.921, "bend": 0 }, { "pitch": -0.362, "yaw": 1.013, "bend": 0 }],
+    [{ "pitch": -0.352, "yaw": 1.008, "bend": 0 }, { "pitch": -0.278, "yaw": 0.973, "bend": 0 }, { "pitch": -0.141, "yaw": 0.932, "bend": 0 }, { "pitch": -0.095, "yaw": 0.923, "bend": 0 }, { "pitch": -0.301, "yaw": 0.982, "bend": 0 }, { "pitch": -0.558, "yaw": 1.202, "bend": 0 }, { "pitch": -0.472, "yaw": 1.095, "bend": 0 }, { "pitch": -0.39, "yaw": 1.029, "bend": 0 }, { "pitch": -0.15, "yaw": 0.921, "bend": 0 }, { "pitch": -0.362, "yaw": 1.013, "bend": 0 }]
+   ]
+  }
+ },
+ "rests": ["ground", "stored"]
+}

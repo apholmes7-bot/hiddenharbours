@@ -92,6 +92,16 @@ namespace HiddenHarbours.Art.Editor
 
                 // RodIso: 112×112, pivot (56,72) = the grip centre, pinned to handR every pose.
                 ["Rod_"] = new KitSpec(112, 112, rows: 8, pivotX: 56, pivotY: 72),
+
+                // ShovelIso: 112×112, pivot (56,72) = the grip centre (the right hand, low on
+                // the shaft). ⚠️ IDENTICAL numbers to the rod's and NOT a copy of them — each
+                // was read off its own rig's W/H/pivot exports, and ShovelKitBakeTests asserts the
+                // spade's against the SPADE rig rather than against the rod. Two kits that agree
+                // by measurement stay right when one of them moves; two that agree by
+                // transcription do not. The spade is a clam tool and not tackle, but this folder
+                // is not named for tackle: it is the folder for rigs whose pivot is NOT ground
+                // contact (see FishingKitBaker.DefaultOutputFolder), and a grip is exactly that.
+                ["Shovel_"] = new KitSpec(112, 112, rows: 8, pivotX: 56, pivotY: 72),
             };
 
         /// <summary>The kit a stem belongs to, or null for a stranger (which must fail, not

@@ -95,6 +95,26 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// <summary>The rest stems, which the guards below hold pending the owner's re-bake.</summary>
         private static readonly string[] RodRestStates = { "ground", "stowV", "stowH" };
 
+        /// <summary>
+        /// The CLAM SPADE's states. One tool anim and two still rests, and the asymmetry with the
+        /// rod's ten is a finding rather than an omission: <c>CharacterIso.ANIM_MOUNT</c> names the
+        /// spade on <c>dig</c> alone, and marks idle / walk / run <c>'free'</c> — <c>tool()</c>
+        /// returns null on all three, so the shipped rigs have no answer for a CARRIED spade. That
+        /// needs a <c>shovelTrail</c> PROPS row in <c>characterIsoRig6.hands.js</c>, the art
+        /// director's file; until it lands there is no carry sheet to guard. See
+        /// <c>ShovelKitBaker.DigOnlyBecauseToolIsNullOnAGait</c>.
+        ///
+        /// <para>10 dig frames from the character rig's ANIMS table — the same number
+        /// <c>ShovelIso.DIG.frames</c> claims, and <c>ShovelKitBakeTests</c> holds the two to each
+        /// other so this table cannot drift away from either. The rests are ONE frame each because
+        /// <c>ShovelIso</c> declares no <c>REST_FRAMES</c>: a spade's rest is a still prop, not the
+        /// animated hand-over the rod's rests became.</para>
+        /// </summary>
+        private static readonly (string state, int frames)[] ShovelStates =
+        {
+            ("dig", 10), ("ground", 1), ("stored", 1),
+        };
+
         private readonly struct Kit
         {
             public readonly Vector2Int Cell;
@@ -109,6 +129,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private static readonly Kit FishKit = new Kit(64, 64, rows: 8, pivotPxX: 32, pivotPxY: 26);
         private static readonly Kit BobberKit = new Kit(16, 22, rows: 1, pivotPxX: 8, pivotPxY: 10);
         private static readonly Kit RodKit = new Kit(112, 112, rows: 8, pivotPxX: 56, pivotPxY: 40);
+        // The spade: 112×112 on THE GRIP (56,72) top-left → y = 112−72 = 40. The rod's numbers
+        // exactly — and written out again rather than aliased to RodKit, for this file's stated
+        // reason: the guard is a RESTATEMENT of the contract, and `= RodKit` would make the spade's
+        // slice silently follow the rod's the day someone re-cells the rod.
+        private static readonly Kit ShovelKit = new Kit(112, 112, rows: 8, pivotPxX: 56, pivotPxY: 40);
 
         private static readonly Dictionary<string, Kit> Sheets = BuildGuardedSet();
         private static readonly Dictionary<string, int> ExpectedFrames = BuildExpectedFrames();
@@ -122,7 +147,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             foreach (var (state, _) in BobberStates) d[$"Bobber_{state}"] = BobberKit;
             foreach (var tier in RodTiers)
                 foreach (var (state, _) in RodStates) d[$"Rod_{tier}_{state}"] = RodKit;
-            return d;   // 7×3×10 + 4 + 3×10 = 244 stems
+            foreach (var (state, _) in ShovelStates) d[$"Shovel_{state}"] = ShovelKit;
+            return d;   // 7×3×10 + 4 + 3×10 + 3 = 247 stems
         }
 
         private static Dictionary<string, int> BuildExpectedFrames()
@@ -135,6 +161,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             foreach (var (state, frames) in BobberStates) d[$"Bobber_{state}"] = frames;
             foreach (var tier in RodTiers)
                 foreach (var (state, frames) in RodStates) d[$"Rod_{tier}_{state}"] = frames;
+            foreach (var (state, frames) in ShovelStates) d[$"Shovel_{state}"] = frames;
             return d;
         }
 
@@ -242,19 +269,51 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void TheGuardedSet_IsTheFullKit()
         {
             // The set arithmetic itself, so a future edit that drops a species or tier by accident
-            // is loud: 7 species × 3 rungs × 10 states + 4 bobber states + 3 rod tiers × 10 states (pass 2).
-            Assert.AreEqual(7 * 3 * 10 + 4 + 3 * 10, Sheets.Count);
+            // is loud: 7 species × 3 rungs × 10 states + 4 bobber states + 3 rod tiers × 10 states
+            // (pass 2), + the CLAM SPADE's 3 (#805). The spade's three are named rather than folded
+            // into the total, because they are the whole of why this number moved from 244 to 247:
+            // Shovel_dig (the one anim CharacterIso.ANIM_MOUNT mounts the spade on) and the rig's
+            // two still rests, Shovel_ground and Shovel_stored. There is deliberately no carry
+            // sheet — see ShovelStates above.
+            Assert.AreEqual(7 * 3 * 10 + 4 + 3 * 10 + ShovelStates.Length, Sheets.Count);
             Assert.AreEqual(Sheets.Count, ExpectedFrames.Count);
+            CollectionAssert.AreEquivalent(
+                new[] { "Shovel_dig", "Shovel_ground", "Shovel_stored" },
+                Sheets.Keys.Where(k => k.StartsWith("Shovel_", StringComparison.Ordinal)).ToArray(),
+                "the three sheets that took this kit from 244 stems to 247");
 
             // Every guarded stem must be a stem the spec actually names — a guard on a typo would
             // silently exempt nothing and hide the sheet it was meant to cover.
             foreach (string stem in AwaitingOwnerBake.Concat(StaleUntilRebake))
                 Assert.IsTrue(Sheets.ContainsKey(stem), $"guarded stem '{stem}' is not in the kit");
-            // The re-bake landed (2026-08-23, coordinator last-mile on the 4060): every guard set is
-            // EMPTY and must stay so — a stem re-added here is a sheet nobody re-baked.
-            Assert.AreEqual(0, AwaitingOwnerBake.Count + StaleUntilRebake.Count + RetiredUntilRebake.Count,
-                            "no rod sheet is pending a re-bake any more; if one is, re-bake it rather " +
-                            "than guarding it.");
+
+            // The ROD's re-bake landed (2026-08-23, coordinator last-mile on the 4060) and its guard
+            // sets must stay EMPTY — a ROD stem re-added here is a sheet nobody re-baked. Asserted
+            // per-kit rather than as one "all three sets are empty" total, which is what this used to
+            // be: that total was true only while the rod's re-bake was the only thing these sets had
+            // ever held, and #805 moved that premise by spec'ing a NEW kit ahead of its first bake —
+            // exactly the case AwaitingOwnerBake's own doc comment reserves it for. Lumping the two
+            // together would have forced a choice between deleting a live guard and pretending a
+            // never-baked sheet is a stale one.
+            foreach (string stem in AwaitingOwnerBake.Concat(StaleUntilRebake).Concat(RetiredUntilRebake))
+                Assert.IsFalse(stem.StartsWith("Rod_", StringComparison.Ordinal),
+                               $"'{stem}' is a ROD sheet pending a re-bake; re-bake it rather than " +
+                               "guarding it.");
+
+            // NOTHING is pending. The spade's first bake landed in this same PR (96 cells, 3 sheets,
+            // 40 KB), so its three stems came OUT of AwaitingOwnerBake and are now held to every
+            // assertion in this file like the other 244. The previous commit pinned the set as
+            // exactly those three specifically so that emptying it could not be forgotten — that pin
+            // went red on this bake and this is it consumed.
+            //
+            // ⚠️ All three sets asserted empty rather than counted, so a stem added to ANY of them
+            // has to justify itself here. A guarded stem is a sheet exempted from every check in this
+            // file; that is worth a red test to add.
+            CollectionAssert.IsEmpty(AwaitingOwnerBake,
+                "a stem here is EXEMPT from every assertion in this file while it is absent. Add one " +
+                "only for a kit spec'd ahead of its first bake, and empty it in the PR that bakes.");
+            CollectionAssert.IsEmpty(StaleUntilRebake);
+            CollectionAssert.IsEmpty(RetiredUntilRebake);
 
             // A retired stem is the opposite: it must NOT be in the kit, or it is not retired.
             foreach (string stem in RetiredUntilRebake)
