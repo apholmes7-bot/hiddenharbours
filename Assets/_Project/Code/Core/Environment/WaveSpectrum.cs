@@ -122,6 +122,109 @@ namespace HiddenHarbours.Core
             return 1f / (r * r);
         }
 
+
+        // =========================================================================================
+        //  THE FIXED LADDER (register row 34, owner ruling 2026-09-09) — bins that do not move
+        // =========================================================================================
+
+        /// <summary>Fewest bins a ladder can carry and still be a ladder.</summary>
+        public const int MinLadderBins = 2;
+
+        /// <summary>
+        /// Reference ladder ends (metres), the shipped defaults. ⚠️ <b>The short end is 5 m, not the
+        /// 3 m first proposed, and the number was MEASURED rather than chosen.</b> A wider ladder at a
+        /// fixed bin count spaces the bins further apart in frequency, and grouping is what
+        /// neighbouring frequencies beating produce — so a ladder wide enough to carry the peak down
+        /// to 3 m stops the sea grouping. Against <c>WaveSpectrumTests</c>' own run-length metric
+        /// (hand-authored field 1.53 waves; the acceptance is &gt; 1.84):
+        /// <code>
+        ///   ladder    spacing   group run
+        ///    3-30 m    0.1788      1.706   fails the shipped acceptance
+        ///    4-30 m    0.1548      1.656   fails
+        ///    5-30 m    0.1365      2.121   SHIPPED - the widest ladder that still groups
+        ///    8-30 m    0.0990      2.833   passes, but gives up the light-airs end
+        /// </code>
+        /// The price of 5 m: below about 2.5 m/s of wind the fetch law's peak is shorter than the
+        /// shortest bin, so a near-calm sea is drawn a little long. It is drawn at the right HEIGHT
+        /// (the peak is pinned to the ladder rather than falling off it — see
+        /// <c>WaveMath.SpectrumTrainsFrom</c>), and at that wind the waves are a few centimetres.
+        /// </summary>
+        public const float DefaultLadderMinWavelengthMeters = 5f;
+        /// <summary>See <see cref="DefaultLadderMinWavelengthMeters"/>.</summary>
+        public const float DefaultLadderMaxWavelengthMeters = 30f;
+
+        /// <summary>
+        /// 🔴 <b>ROW 34's FIX: bin <paramref name="slot"/>'s wavelength, with NO wind term at all.</b>
+        ///
+        /// <para>The superseded ladder was <c>λ_i = λ_p(U)·WavelengthRatio(i)</c> — every bin's
+        /// wavelength, and therefore every bin's ω, a function of the wind. Because
+        /// <see cref="WaveMath.Sample"/> forms <c>φ = k·x − ω·t</c> with <c>t</c> the TOTAL game time,
+        /// a change in ω moved the phase at a fixed point by <c>Δω·t</c> — measured at 27 000–47 500
+        /// radians per bin after three hours of play, which is the owner's <i>"it vibrates"</i>.</para>
+        ///
+        /// <para><b>The ladder is geometric in λ, which is geometric in ω</b> (ω ∝ λ^−½), so
+        /// neighbouring bins sit a CONSTANT relative frequency apart — see
+        /// <see cref="LadderRelativeSpacing"/>. That is what wave groups are made of, and unlike the
+        /// superseded ladder it no longer changes with the weather.</para>
+        ///
+        /// <para><b>Slot 0 is the LONGEST wave</b> and slot <c>binCount−1</c> the shortest; the two
+        /// ends are pinned exactly on <paramref name="maxLambda"/>/<paramref name="minLambda"/> so the
+        /// span is what the settings say. Interior bins carry a deterministic jitter of at most
+        /// ±<see cref="LadderJitterStrata"/> of a step, hashed off <paramref name="seed"/> — enough to
+        /// break exact harmonic ratios between bins (which would read as a repeating pattern), never
+        /// enough to reorder them. The jitter is a function of (slot, seed) ONLY: no wind, no time,
+        /// no accumulator. Rule 5 holds.</para>
+        /// </summary>
+        public static float BinWavelengthMeters(int slot, int binCount,
+                                                float minLambda, float maxLambda, int seed)
+        {
+            int n = Mathf.Clamp(binCount, MinLadderBins, WaveTrains.MaxTrains);
+            LadderEnds(minLambda, maxLambda, out float lo, out float hi);
+
+            int i = Mathf.Clamp(slot, 0, n - 1);
+            float t = i / (float)(n - 1);                        // 0 at the long end, 1 at the short
+            if (i > 0 && i < n - 1)                              // the ends are pinned, never jittered
+                t += (Hash01(i + LadderHashSalt, seed) - 0.5f) * (2f * LadderJitterStrata) / (n - 1);
+
+            return hi * Mathf.Pow(lo / hi, t);
+        }
+
+        /// <summary>
+        /// The ladder's constant relative frequency spacing <c>Δω/ω</c> between neighbouring bins —
+        /// the number <see cref="BeatPeriodSeconds"/> wants, and the one the group period is set by.
+        ///
+        /// <para><c>ω ∝ λ^−½</c>, so over <c>n−1</c> equal ratio steps from <paramref name="maxLambda"/>
+        /// to <paramref name="minLambda"/> the per-step frequency ratio is
+        /// <c>(λ_max/λ_min)^(1/(2(n−1)))</c>. ⚠️ <b>This is DERIVED, not authored</b>: a wider ladder
+        /// at a fixed bin count buys wind coverage by spending group rhythm, and that trade is the
+        /// whole of row 34's tuning. The shipped 3–30 m over 8 bins gives ≈0.177.</para>
+        /// </summary>
+        public static float LadderRelativeSpacing(int binCount, float minLambda, float maxLambda)
+        {
+            int n = Mathf.Clamp(binCount, MinLadderBins, WaveTrains.MaxTrains);
+            LadderEnds(minLambda, maxLambda, out float lo, out float hi);
+            return Mathf.Pow(hi / lo, 1f / (2f * (n - 1))) - 1f;
+        }
+
+        /// <summary>The ladder ends, ordered and floored. A degenerate pair (equal, inverted, or at
+        /// or below the wavelength floor) is widened rather than allowed to divide by zero — an
+        /// authoring mistake must give a poor sea, never a NaN one.</summary>
+        private static void LadderEnds(float minLambda, float maxLambda, out float lo, out float hi)
+        {
+            float a = Mathf.Max(WaveTrain.MinWavelengthMeters, Mathf.Min(minLambda, maxLambda));
+            float b = Mathf.Max(WaveTrain.MinWavelengthMeters, Mathf.Max(minLambda, maxLambda));
+            lo = a;
+            hi = Mathf.Max(b, a * 1.0001f);
+        }
+
+        /// <summary>How far, as a fraction of one ladder step, an interior bin may be jittered. Below
+        /// 0.5 by construction: at 0.5 two neighbours could meet.</summary>
+        private const float LadderJitterStrata = 0.35f;
+
+        /// <summary>Salt keeping a bin's WAVELENGTH hash off the same stream as its angle and its
+        /// phase — three properties of one slot that must not correlate.</summary>
+        private const int LadderHashSalt = 977;
+
         /// <summary>
         /// The angular offset (radians, signed) for a slot's train: a stratified fan across
         /// ±<paramref name="maxSpreadRadians"/>, jittered inside each stratum by the deterministic

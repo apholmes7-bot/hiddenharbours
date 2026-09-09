@@ -43,15 +43,23 @@ namespace HiddenHarbours.Tests.EditMode
     {
         const float G = 9.81f;
 
-        static WaveFieldSettings Shipped()
-        {
-            WaveFieldSettings s = WaveFieldSettings.Default;
-            s.SeaFetchKilometres = 25f;      // GameConfig.asset
-            return s;
-        }
+        /// <summary>
+        /// The sea the owner actually plays. ⚠️ <b>This used to be
+        /// <c>WaveFieldSettings.Default</c> with <c>SeaFetchKilometres</c> patched, and that was
+        /// wrong</b> — the asset also overrides <c>SeaStateAmplitudeExponent</c> (1.35 -> 1.5),
+        /// <c>CrestSharpening</c> (2.2 -> 2.6) and, decisively, <c>SpectrumBlend</c> (0 -> 0.65),
+        /// which is the difference between the hand-authored FOUR-train field and the eight-bin
+        /// spectral one. Every number this fixture published before 2026-09-09 therefore described a
+        /// sea nobody sails. <see cref="ShippedWaveField"/> carries the one mirror now, with a guard
+        /// that walks the asset's own keys.
+        /// </summary>
+        static WaveFieldSettings Shipped() => ShippedWaveField.Settings();
 
-        /// <summary>The primary train's angular frequency at a wind speed, through the shipped peak
-        /// law — <c>ω = k·c</c> with <c>c = √(gλ/2π)</c>, which is <c>√(2πg/λ)</c>.</summary>
+        /// <summary>The primary train's angular frequency at a wind speed, through the SUPERSEDED
+        /// peak-scaled law — <c>ω = k·c</c> with <c>c = √(gλ/2π)</c>, which is <c>√(2πg/λ)</c>.
+        /// ⚠️ Kept as the RECORD of the defect: since 2026-09-09 the shipped field's bins do not
+        /// scale with λ_p at all, so this is a transcription of what the sea used to do, not of what
+        /// it does. <see cref="TheShippedField_DoesNoneOfThis"/> is the half that reads production.</summary>
         static double Omega(float windSpeed, in WaveFieldSettings s)
         {
             float lambda = WaveMath.PeakWavelengthMeters(windSpeed, in s);
@@ -138,14 +146,19 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// 🔴 <b>THE PROPOSED FIX, MEASURED BEFORE IT IS PROPOSED.</b> Fix the frequencies and let the
-        /// sea state move only the AMPLITUDES. Physically this is what a growing sea does — it puts
+        /// ✅ <b>THE FIX, AND IT SHIPPED (owner ruling 2026-09-09, register row 34).</b> Fix the
+        /// frequencies and let the sea state move only the AMPLITUDES. Physically this is what a growing sea does — it puts
         /// energy into frequencies that were always there, it does not slide existing waves up the
         /// scale — and arithmetically it removes <c>t·dω/dt</c> because ω stops depending on t at all.
         ///
-        /// <para>The field is already an 8-train JONSWAP-shaped spectrum (<c>WaveTrains.MaxTrains</c>),
-        /// so the bins to hold fixed already exist. ⚠️ Rule 5 stays satisfied: still a pure function of
-        /// (seed, gameTime), still no accumulator, still nothing saved.</para>
+        /// <para>The field was already an 8-train JONSWAP-shaped spectrum (<c>WaveTrains.MaxTrains</c>),
+        /// so the bins to hold fixed already existed — they were simply all being scaled by
+        /// <c>λ_p(U)</c>. ⚠️ Rule 5 stays satisfied: still a pure function of (seed, gameTime), still
+        /// no accumulator, still nothing saved.</para>
+        ///
+        /// <para>⚠️ <b>This test models the fix; it does not read production.</b> That is
+        /// <see cref="TheShippedField_DoesNoneOfThis"/>, and the difference matters — a model that
+        /// agrees with itself is the failure mode this repo calls "two transcriptions agreeing".</para>
         /// </summary>
         [Test]
         public void FixedFrequencies_RemoveTheVibrationEntirely_AndStayDeterministic()
@@ -206,6 +219,57 @@ namespace HiddenHarbours.Tests.EditMode
                     "fixture rather than the state change, and every number in it is void.");
             }
             TestContext.WriteLine($"  steady wind: exact at 1 min through 10 days, {physical:0.000} Hz");
+        }
+
+        /// <summary>
+        /// ✅ <b>AND THE SHIPPED FIELD DOES NONE OF IT — read out of production, not modelled.</b>
+        ///
+        /// <para>Everything above transcribes the superseded arithmetic, which is the right way to
+        /// keep the RECORD of a defect but says nothing about the code that ships. This asks
+        /// <see cref="WaveMath.TrainsFrom"/> itself, on the owner's own settings, and checks the two
+        /// things the ruling promised: every bin's ω is the same number at every wind, and the drawn
+        /// phase rate at a point is therefore the wave's own rate at any age of the world.</para>
+        ///
+        /// <para>⚠️ The bound is EXACT rather than tolerant. <c>Δω</c> is not small now, it is
+        /// identically zero — and "small" is what the defect looked like for the first minute of every
+        /// session before it grew into the owner's <i>"it vibrates"</i>.</para>
+        /// </summary>
+        [Test]
+        public void TheShippedField_DoesNoneOfThis()
+        {
+            WaveFieldSettings s = Shipped();
+            const float From = 1.63f, To = 5.70f;
+
+            WaveTrains a = WaveMath.TrainsFrom(new Vector2(0f, From), Mathf.Clamp01(From / 10f), in s);
+            WaveTrains b = WaveMath.TrainsFrom(new Vector2(0f, To), Mathf.Clamp01(To / 10f), in s);
+            Assert.AreEqual(a.Count, b.Count, "the live train count moved with the wind");
+            Assert.Greater(a.Count, 0, "no trains at all — every assertion below would be vacuous");
+
+            var report = new StringBuilder();
+            report.AppendLine("  bin   lambda@1.63   lambda@5.70   |d(omega)|   |d(phi)| at 30 h");
+            double worst = 0.0;
+            for (int i = 0; i < a.Count; i++)
+            {
+                double wA = Math.Sqrt(2.0 * Math.PI * G / a[i].Wavelength);
+                double wB = Math.Sqrt(2.0 * Math.PI * G / b[i].Wavelength);
+                double dPhi = Math.Abs(wB - wA) * 30.0 * 3600.0;
+                worst = Math.Max(worst, dPhi);
+                report.AppendLine($"  {i,3} {a[i].Wavelength,13:0.000} {b[i].Wavelength,13:0.000} " +
+                                  $"{Math.Abs(wB - wA),12:0.###e+0} {dPhi,17:0.###}");
+            }
+            TestContext.WriteLine(report.ToString());
+
+            Assert.AreEqual(0.0, worst, 1e-9,
+                "⭐ ROW 34's ACCEPTANCE, on the shipped derivation: across a light->blow change, at " +
+                "thirty hours of game time, the phase at a fixed point must not move at all. The " +
+                "superseded law put up to 474 858 radians through here — about 75 000 whole cycles.");
+
+            // ...and the sea did change, so the zero above is not the zero of a field that ignores
+            // the weather. This is the same dead control the ladder guard carries, kept here too
+            // because THIS fixture's whole subject is a change that produced no motion.
+            Assert.Greater(b.TotalAmplitude, a.TotalAmplitude * 1.5f,
+                "DEAD CONTROL: the light->blow step must be a real change in the sea's height, or a " +
+                "phase that did not move proves nothing whatever.");
         }
     }
 }
