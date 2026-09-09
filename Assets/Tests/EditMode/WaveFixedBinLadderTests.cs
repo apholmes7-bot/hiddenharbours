@@ -44,10 +44,17 @@ namespace HiddenHarbours.Tests.EditMode
     /// bins further apart in frequency — which is a FASTER group beat, because groups are what
     /// neighbouring frequencies beating produce. See
     /// <see cref="TheLadderSpendsGroupRhythmToBuyWindCoverage_AndThisIsTheMenu"/>. The shipped
-    /// 8 bins over <b>5–30 m</b> is the widest ladder that still passes
-    /// <c>WaveSpectrumTests</c>' group-run acceptance; 3–30 m was tried first and fails it (run 1.71
-    /// against a bar of 1.84). Widening it further needs MORE BINS, which costs per-pixel trig and,
-    /// past eight, the shader globals and the bridge widened beyond <c>_WaveTrain0..7</c>.</para>
+    /// 8 bins over <b>5–30 m</b> passes <c>WaveSpectrumTests</c>' group-run acceptance where 3–30 m
+    /// fails it (2.12 against 1.71, bar 1.84).
+    ///
+    /// <para>⚠️ <b>But NOT because it is narrower, and this correction matters for whoever retunes
+    /// the ladder next.</b> Measured across ten ladders, the run-length metric is <b>not monotone in
+    /// the spacing</b>: 6–24 m has a TIGHTER spacing than 5–30 m and fails (1.70), while 3–50 m has
+    /// the widest spacing tried and scores best (3.44). The run length depends on where the bins fall
+    /// relative to the PEAK at the condition measured, not on the spacing formula. 5–30 m is a ladder
+    /// that passes, not an optimum — and a single-condition run-length metric is a weak instrument
+    /// for choosing one. The beat period IS monotone in the spacing (that is analytic, and is what
+    /// the menu test asserts); the grouping is not.</para>
     ///
     /// <para>⚠️⚠️ <b>WHICH PATH ACTUALLY CARRIED THE DEFECT — a correction to row 34's own
     /// wording, found while building this fix (2026-09-09).</b> The register describes this as the
@@ -180,6 +187,128 @@ namespace HiddenHarbours.Tests.EditMode
                 "bound is zero rather than small because Δω is identically zero once the bins stand " +
                 "still — a non-zero reading here means a wind term has come back into a wavelength, " +
                 "and it will be invisible in a short test and violent after an evening's play.");
+        }
+
+
+        /// <summary>
+        /// 🔴 <b>THE RIDDEN SEA — and on the evidence this is the half the player actually saw.</b>
+        ///
+        /// <para><c>BoatController</c> samples the pure closed form at the game clock
+        /// (<c>WaveMath.Sample(pos, now, in trains, …)</c>), and the camera rides the hull. The DRAWN
+        /// sea never jumped, because <c>WaveFieldAnimator</c> accumulates its phase; so on a mood
+        /// change the boat — and the whole picture with it — lurched against water that was itself
+        /// continuous. That is what a player at the helm would call <i>"the water starts
+        /// oscillating"</i>.</para>
+        ///
+        /// <para>This asserts the thing the hull actually reads: the surface HEIGHT at the boat's own
+        /// position, across every wind step the weather can produce, at three ages of the world.
+        /// Height rather than phase because height is what becomes a force, a heave and a camera
+        /// move — and because a phase that is continuous while the height is not would still be a
+        /// jolt.</para>
+        ///
+        /// <para>⚠️ <b>The claim is bounded.</b> This shows the ridden sea is continuous where it
+        /// was not; it does not prove the owner's report had this cause. Only the helm settles that,
+        /// and the plate is owed when a slot opens.</para>
+        /// </summary>
+        [Test]
+        public void TheRIDDENSea_IsContinuousAcrossEveryMoodChange_WhichIsWhatTheHullAndCameraFeel()
+        {
+            WaveFieldSettings s = Shipped();
+
+            // A handful of world points, because a single point can sit at a node where every train
+            // happens to cancel and no jump could show.
+            var probes = new[]
+            {
+                new Vector2(0f, 0f), new Vector2(13.7f, -4.25f),
+                new Vector2(-31.5f, 18.25f), new Vector2(96.5f, 63.75f),
+            };
+
+            double worst = 0.0;
+            string worstWhere = "";
+            var report = new StringBuilder();
+            report.AppendLine("  wind step      t=0 s       t=3 h      t=30 h   (max |dHeight| over probes, metres)");
+
+            for (int w = 0; w + 1 < ReachableWinds.Length; w++)
+            {
+                WaveTrains before = At(ReachableWinds[w], in s);
+                WaveTrains after = At(ReachableWinds[w + 1], in s);
+
+                var row = new StringBuilder($"  {ReachableWinds[w]:0.00}->{ReachableWinds[w + 1]:0.00}");
+                foreach (double age in new[] { 0.0, 3 * 3600.0, 30 * 3600.0 })
+                {
+                    double peak = 0.0;
+                    foreach (Vector2 p in probes)
+                    {
+                        // The SAME instant either side of the step: any difference is the step's own
+                        // doing, not the passage of time.
+                        float h0 = WaveMath.Sample(p, age, in before).Height;
+                        float h1 = WaveMath.Sample(p, age, in after).Height;
+                        peak = Math.Max(peak, Math.Abs(h1 - h0));
+                    }
+                    row.Append($" {peak,11:0.000000}");
+                    if (peak > worst)
+                    {
+                        worst = peak;
+                        worstWhere = $"{ReachableWinds[w]:0.00}->{ReachableWinds[w + 1]:0.00} at {age / 3600.0:0.#} h";
+                    }
+                }
+                report.AppendLine(row.ToString());
+            }
+            TestContext.WriteLine(report.ToString());
+
+            // ⚠️ NOT zero, and it must not be: a wind step legitimately changes the sea's AMPLITUDES,
+            // so the height under the hull moves. The question is BY HOW MUCH, and against what bound.
+            //
+            // ⚠️ An earlier revision of this test asserted that |dHeight| must not GROW between 0 s
+            // and 30 h. That was wrong, and wrong in an instructive way: with the bins fixed,
+            //     dh(t) = SUM_i (A_i(U2) - A_i(U1)) * profile(k_i*x - omega_i*t + phi_i)
+            // whose profile terms still oscillate in t. |dh| therefore VARIES with the age of the
+            // world — bounded, but not monotone — so comparing two instants measures which phase the
+            // probes happened to catch, not whether anything grows. It failed on sampling luck
+            // (0.498 m at 30 h against 0.299 m at 0 s) while the field was perfectly correct.
+            //
+            // ⭐ The bound above is the real invariant, and it is exact: because the phases are
+            // IDENTICAL either side of the step, the difference can only be the amplitude difference.
+            // Before the fixed ladder it could not be — delta-omega*t put up to 474 858 radians
+            // through the closed form at 30 h, so the two samples were at unrelated points of the
+            // wave and the step could reach the sum of BOTH envelopes.
+            double amplitudeDelta = 0.0;
+            double bothEnvelopes = 0.0;
+            {
+                WaveTrains a = At(1.63f, in s), b = At(5.70f, in s);
+                for (int i = 0; i < Math.Min(a.Count, b.Count); i++)
+                {
+                    amplitudeDelta += Math.Abs(b[i].Amplitude - a[i].Amplitude);
+                    bothEnvelopes += a[i].Amplitude + b[i].Amplitude;
+                }
+            }
+            TestContext.WriteLine($"  worst step {worst:0.000000} m ({worstWhere}) | " +
+                                  $"amplitude-only bound {amplitudeDelta:0.0000} m | " +
+                                  $"arbitrary-phase bound {bothEnvelopes:0.0000} m");
+
+            double worstLightToBlow = 0.0;
+            {
+                WaveTrains a = At(1.63f, in s), b = At(5.70f, in s);
+                foreach (Vector2 p in probes)
+                foreach (double age in new[] { 0.0, 3 * 3600.0, 30 * 3600.0, 300 * 3600.0 })
+                    worstLightToBlow = Math.Max(worstLightToBlow,
+                        Math.Abs(WaveMath.Sample(p, age, in b).Height
+                               - WaveMath.Sample(p, age, in a).Height));
+            }
+
+            Assert.LessOrEqual(worstLightToBlow, amplitudeDelta + 1e-4,
+                $"⭐ THE RIDDEN SEA'S ACCEPTANCE: a wind step may move the surface under the hull by at " +
+                $"most the AMPLITUDE difference ({amplitudeDelta:0.0000} m), at any age of the world. " +
+                "That bound holds only because the bins stand still, so every train is at the same " +
+                "phase either side of the step and nothing but the amplitude can differ. With the " +
+                "bins following the wind the two samples sat at unrelated points of the wave and the " +
+                $"step could reach the sum of both envelopes ({bothEnvelopes:0.0000} m) — which is the " +
+                "lurch the hull, and the camera riding it, actually took.");
+
+            Assert.Less(amplitudeDelta, bothEnvelopes,
+                "DEAD CONTROL: the amplitude-only bound must be strictly tighter than the " +
+                "arbitrary-phase one, or the assertion above is not saying anything the old field " +
+                "would have failed.");
         }
 
         /// <summary>

@@ -132,22 +132,35 @@ namespace HiddenHarbours.Core
 
         /// <summary>
         /// Reference ladder ends (metres), the shipped defaults. ⚠️ <b>The short end is 5 m, not the
-        /// 3 m first proposed, and the number was MEASURED rather than chosen.</b> A wider ladder at a
-        /// fixed bin count spaces the bins further apart in frequency, and grouping is what
-        /// neighbouring frequencies beating produce — so a ladder wide enough to carry the peak down
-        /// to 3 m stops the sea grouping. Against <c>WaveSpectrumTests</c>' own run-length metric
-        /// (hand-authored field 1.53 waves; the acceptance is &gt; 1.84):
+        /// 3 m first proposed, and the number was MEASURED — but read the caveat, because the obvious
+        /// explanation for it is WRONG.</b>
+        ///
+        /// <para>Against <c>WaveSpectrumTests</c>' run-length metric at that suite's own condition
+        /// (λ_p = 18 m; hand-authored field 1.53 waves; the acceptance is &gt; 1.84):</para>
         /// <code>
         ///   ladder    spacing   group run
         ///    3-30 m    0.1788      1.706   fails the shipped acceptance
         ///    4-30 m    0.1548      1.656   fails
-        ///    5-30 m    0.1365      2.121   SHIPPED - the widest ladder that still groups
-        ///    8-30 m    0.0990      2.833   passes, but gives up the light-airs end
+        ///    5-30 m    0.1365      2.121   SHIPPED
+        ///    6-24 m    0.1041      1.697   fails  &lt;- TIGHTER spacing than 5-30, and it fails
+        ///    3-40 m    0.2032      2.375   passes &lt;- WIDER spacing than 3-30, and it passes
+        ///    3-50 m    0.2226      3.435   passes &lt;- widest tried, best score
         /// </code>
-        /// The price of 5 m: below about 2.5 m/s of wind the fetch law's peak is shorter than the
-        /// shortest bin, so a near-calm sea is drawn a little long. It is drawn at the right HEIGHT
-        /// (the peak is pinned to the ladder rather than falling off it — see
-        /// <c>WaveMath.SpectrumTrainsFrom</c>), and at that wind the waves are a few centimetres.
+        /// <para>⚠️ <b>So the metric is NOT monotone in the ladder's spacing, and "5-30 is the
+        /// widest ladder that still groups" — which an earlier revision of this comment claimed — is
+        /// false.</b> What the run length actually depends on is where the bins happen to fall
+        /// RELATIVE TO THE PEAK at the condition being measured: a ladder whose bins straddle the
+        /// peak with useful offsets beats well, one whose bins sit awkwardly does not, and the
+        /// spacing formula cannot tell you which you have. 5-30 m is a ladder that PASSES, chosen by
+        /// measurement; it is not an optimum, and the single-condition run-length metric is a weak
+        /// instrument for choosing one. Anything that re-tunes this ladder (PR D's wind uncap will)
+        /// must re-measure across the winds that matter rather than reason from
+        /// <see cref="LadderRelativeSpacing"/>.</para>
+        ///
+        /// <para>The price of the 5 m end: below about 2.5 m/s of wind the fetch law's peak is shorter
+        /// than the shortest bin, so a near-calm sea is drawn a little long. It is drawn at the right
+        /// HEIGHT (the peak is pinned to the ladder rather than falling off it — see
+        /// <c>WaveMath.SpectrumTrainsFrom</c>), and at that wind the waves are a few centimetres.</para>
         /// </summary>
         public const float DefaultLadderMinWavelengthMeters = 5f;
         /// <summary>See <see cref="DefaultLadderMinWavelengthMeters"/>.</summary>
