@@ -123,7 +123,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(MoodGradeMath.StormWeight(f, s, f), Is.EqualTo(1f));
             Assert.That(MoodGradeMath.StormWeight(1f, s, f), Is.EqualTo(1f));
             Assert.That(MoodGradeMath.StormWeight(0.5f * (s + f), s, f), Is.EqualTo(0.5f).Within(1e-5f));
-            Assert.That(MoodGradeMath.StormWeight(0.7f, 0.8f, 0.6f), Is.EqualTo(1f), "backwards thresholds = step at start");
+            // full ≤ start: a hard step AT START (the same law as FogWeight): below it calm, at/above it wild.
+            Assert.That(MoodGradeMath.StormWeight(0.7f, 0.8f, 0.6f), Is.EqualTo(0f), "backwards thresholds = step at start: below start is calm");
+            Assert.That(MoodGradeMath.StormWeight(0.85f, 0.8f, 0.6f), Is.EqualTo(1f), "backwards thresholds = step at start: at/above start is wild");
+            Assert.That(MoodGradeMath.StormWeight(0.8f, 0.8f, 0.8f), Is.EqualTo(0f), "start == full: the step, no divide-by-zero");
         }
 
         static void AssertGradeEqual(in MoodGrade a, in MoodGrade b, string why, float eps = 1e-5f)
