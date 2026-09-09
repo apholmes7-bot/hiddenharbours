@@ -5699,7 +5699,33 @@ the midday sea to have a *legible* face, 0.10 does it (0.136) at the cost of a 0
 calmest water the game ever draws — which is a real change to row 5's mirror, and therefore his call
 and not this lane's.
 
-**Nothing here is moved.** `_SwellReadSeaStateLo` is a tunable on all nine water materials.
+### ✅ RULED AND SHIPPED — 0.10, on 2026-09-09
+
+The owner ruled **"go with 0.10"**. Shipped in **water PR A** the same day: `_SwellReadSeaStateLo`
+0.28 → **0.10** on the shader default, and serialized explicitly on all nine water materials — which
+none of them did before, so until now they all rode the shader default. (Explicit for the same reason
+row 8's `_UntileStrength` is: **"Apply water preset" is a wholesale `CopyPropertiesFromMaterial`**, so a
+preset that does not carry the key is exactly how the superseded onset would come back the next time he
+changed the sea's mood.) `_SwellReadSeaStateHi` stays **0.45**.
+
+**The 15:51 evening picture is the acceptance for this row.** The midday one is owed a plate when an
+editor slot opens — the prediction to check it against is a gate of 0.136 where he saw 0.000.
+
+⚠️ **The ruling moved the SHORE too, and that is by design.** `SwashSeaStateGate()` deliberately
+reuses this same threshold pair for the swash's calm fade (§ the shader's `SwashSeaStateGate`, twin
+`WaterSurface.SwashSeaStateGate`) — one axis, one place to tune. At the shipped `_SwashCalmGate` 0.7 the
+swash gate on the calmest reachable sea goes **0.300 → 0.329**, and at his 13:12 sea **0.300 → 0.395**:
+a slightly livelier calm shore, bought along with the legible midday swell. The knob for the shore alone
+is `_SwashCalmGate`; moving the onset back would undo row 25.
+
+Guard: `Assets/Tests/EditMode/WaterSwellReadOnsetTests.cs`. It pins the onset table above through the
+shader's own arithmetic (including the superseded 0.28's exact 0.000 at his 13:12, kept as the record of
+why the knob moved), reads the nine materials **both** as bytes **and** as what `AssetDatabase`
+deserializes — a hand-added YAML key that lands outside the mapping reads the shader default while the
+file still plainly shows the number — and asserts the 0.041 cost rather than merely tolerating it, so
+nobody "fixes" the mirror back without a new ruling.
+
+**Nothing in the tables above is moved.** They are the arithmetic the ruling was chosen from.
 
 ### Method note
 

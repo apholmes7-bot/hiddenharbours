@@ -229,6 +229,7 @@ Material:
     - _SwashWavelength: 1.2
     - _SwellFaceShade: 0.22
     - _SwellReadBands: 0
+    - _SwellReadSeaStateLo: 0.1
     - _SwellReadStrength: 0.35
     - _Turbidity: 0.25
     - _UntileStrength: 1

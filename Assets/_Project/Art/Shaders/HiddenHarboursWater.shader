@@ -173,7 +173,7 @@ Shader "HiddenHarbours/Water"
         // the sim field (P1 integrity, CLAUDE.md rule 5). _SunSideStrength = 0 is an EXACT passthrough.
         _SunSideStrength ("Sun side warm/cool split (0 = off)", Range(0,2)) = 1.7
 
-        [Header(Modelled swell CALM gate (glassy calm shows no read))]
+        [Header(Modelled swell CALM gate (melts the read away toward glass))]
         // Owner playtest (2026-07-08): "i can definitely notice the swells now better. although i still do
         // see them at calm." The wave field's own amplitude gate (swellLive) fully engages at ~0.025 m, so a
         // small-but-real calm-day swell still earns the full ~3x legibility contrast — a calm sea read as
@@ -182,15 +182,25 @@ Shader "HiddenHarbours/Water"
         // a smoothstep RISE over _Chop (== EnvironmentSample.SeaState01, the same axis the drift-line window
         // keys — the _DriftLineSeaStateLo/Hi precedent). MONOTONE, not the drift-line BELL: drift lines are
         // delicate texture a storm erases, but the swell read must SURVIVE a heavy sea — the haul is timed
-        // against the swell precisely when the sea is up. Defaults key the canon sea-state bands (SeaState01
-        // equals enum/7 at every band edge): Lo 0.28 sits just under the Calm-to-Light edge (2/7) so ALL of
-        // Glass + Calm shows essentially no read; Hi 0.45 sits just past the Light-to-Moderate edge (3/7) so
-        // the read ramps in across Light and a moderate sea keeps today's full read (gate ~0.96 at the
-        // Moderate onset). Set BOTH to 0 to disable the gate (today's pre-gate look on any non-glass sea).
+        // against the swell precisely when the sea is up. Hi 0.45 keys the canon sea-state bands (SeaState01
+        // equals enum/7 at every band edge): it sits just past the Light-to-Moderate edge (3/7), so a moderate
+        // sea keeps today's full read (gate ~0.96 at the Moderate onset).
+        //
+        // >> Lo SHIPS AT 0.10 — OWNER RULING 2026-09-09, register row 25. The superseded value was 0.28. <<
+        // 0.28 shipped from 2026-07-08 to 2026-09-09 because it sits just under the Calm-to-Light band edge
+        // (2/7), so all of Glass + Calm read nothing. Two facts retired it. (a) THE GLASS IT PROTECTED CANNOT
+        // HAPPEN: the wind law is 3 + strN*1.3 + gustN*1.2 with both noises bottoming at -1, so wind never
+        // falls below 0.50 m/s and _Chop never below 0.143 — a glassy 0.05 sea is unreachable under the
+        // shipped WindProfile (water-rendering.md 45). (b) THE OWNER PLAYED THE GATE SHUT: 2026-09-08 13:12,
+        // sea state 0.181, gate 0.000 — "it just still doesnt feel like one coherent surface, it feels like
+        // layers"; same beach 15:51, sea 0.341, gate 0.294 — "it actually looks really good". At 0.10 his
+        // midday moment reads 0.136 and his evening one 0.769, and the calmest sea the game can draw (0.143)
+        // carries a faint 0.041 — a real, RULED change to row 5's mirror, not an oversight.
+        // Set BOTH to 0 to disable the gate (the pre-gate look on any non-glass sea).
         // col.rgb ONLY: it merely scales the two existing pre-grade adds — never depth/clip/the deep tint/
         // _WaterLevel/the sim wave field (P1 integrity, CLAUDE.md rule 5); the stock _OceanSwellStrength
         // band is NOT gated (that is the owner's tuned-subtle base look, not the amplified read).
-        _SwellReadSeaStateLo ("Swell read sea-state rise (_Chop; at or below = glassy)", Range(0,1)) = 0.28
+        _SwellReadSeaStateLo ("Swell read sea-state rise (_Chop; at or below = glassy)", Range(0,1)) = 0.10
         _SwellReadSeaStateHi ("Swell read sea-state full (_Chop; above = today's read)", Range(0,1)) = 0.45
 
         [Header(Foam fringe (layer 3))]
