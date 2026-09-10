@@ -136,51 +136,64 @@ namespace HiddenHarbours.Art
 
     /// <summary>
     /// Every tunable of the GULL flock (rule 6). <see cref="GullFlock"/> serializes an owner-editable
-    /// instance. Defaults are a few birds wheeling occasionally over the harbour.
+    /// instance. Defaults are a handful of birds working the harbour, a third of them down on the water
+    /// or the wharf at any moment.
+    ///
+    /// <para><b>There is no size knob, and that is deliberate.</b> A gull is 1.40 m across at every
+    /// altitude — 45 px at the project's 32 px/m — and the sheet is baked at exactly that. Height is a
+    /// SCREEN OFFSET (<c>altitude x cos 40</c>, <see cref="HiddenHarbours.Core.IsoGround.HeightScale"/>),
+    /// never a sprite scale, so a bird high overhead is the same 45 px with its shadow far below it
+    /// rather than a giant gull crossing the camera. The old <c>Size</c> and per-bird size jitter were
+    /// deleted with the placeholder flock they belonged to.</para>
     /// </summary>
     [System.Serializable]
     public struct GullConfig
     {
         [Header("Flock")]
-        [Tooltip("How many gulls wheel at once. A FEW reads as a living coast; a sky full reads as a swarm.")]
+        [Tooltip("How many gulls work the harbour at once. A FEW reads as a living coast; a sky full reads as a swarm.")]
         [Min(0)] public int Count;
-        [Tooltip("Half-size (m) of the region, centred on the camera, the gull loops fill (x across, y depth).")]
+        [Tooltip("Half-size (m) of the region, centred on the camera, the flock works (x across, y depth). " +
+                 "Landing spots are drawn inside it; a settled bird left outside it rejoins the wheel off-screen.")]
         public Vector2 AreaHalfSize;
-        [Tooltip("Min/max loop radius (m) — bigger birds take wider, lazier wheels.")]
-        public Vector2 RadiusRange;
-        [Tooltip("Min/max loop period (s) — how long one full wheel takes (slower = lazier).")]
-        public Vector2 PeriodRange;
+        [Tooltip("Radius (m) of the wheel the flying birds turn. 0 = the rig's own FLOCK.radius_m (6 m), " +
+                 "which is what the art director tuned the wheel against.")]
+        [Min(0f)] public float WheelRadiusMetres;
+        [Tooltip("Seed for the wheel and for where birds choose to put down. Same seed, same flock, every run.")]
+        public int Seed;
 
         [Header("Cadence")]
-        [Tooltip("Fraction of the time a given gull is actually ON-SCREEN/flying vs resting off-loop (0..1). Lower = occasional birds, not constant.")]
-        [Range(0f, 1f)] public float ActiveFraction;
+        [Tooltip("Share of the flock that is DOWN on ground or water at any moment (0..1). 0 = they never " +
+                 "settle, 1 = they never fly. Birds re-decide on the rig's own settle_after_s.")]
+        [Range(0f, 1f)] public float SettledFraction;
 
         [Header("Look")]
-        [Tooltip("Gull sprite size (m).")]
-        [Min(0.01f)] public float Size;
-        [Tooltip("Metres the whole loop is skewed downwind per unit of the shared 0..1 wind (rides the breeze).")]
+        [Tooltip("Metres the whole wheel is skewed downwind on the shared breeze (the flock rides it).")]
         public float WindDrift;
-        [Tooltip("Gull tint. A pale grey-white reads against sky/sea; alpha driven by day/night + the appear/vanish fade.")]
+        [Tooltip("Gull tint, multiplied over the sheet. White leaves the baked art alone.")]
         public Color Color;
-        [Tooltip("Peak opacity (0..1) before day/night + fade scale it.")]
+        [Tooltip("Peak opacity (0..1) before day/night scales it.")]
         [Range(0f, 1f)] public float MaxAlpha;
 
         [Header("Day / night")]
-        [Tooltip("How strongly night dims the gulls (0 = ignore). Gulls roost at night, so a high fade reads true.")]
+        [Tooltip("How strongly night dims the gulls (0 = ignore). They roost rather than vanish, so this " +
+                 "should DIM, not erase.")]
         [Range(0f, 1f)] public float NightFade;
+        [Tooltip("Day/night brightness (0..1) at or below which the flock roosts: every bird puts down and " +
+                 "stands. Gulls do not wheel over a dark harbour.")]
+        [Range(0f, 1f)] public float RoostBelowBrightness;
 
         public static GullConfig Default => new GullConfig
         {
-            Count          = 4,
-            AreaHalfSize   = new Vector2(14f, 9f),
-            RadiusRange    = new Vector2(3.5f, 7f),
-            PeriodRange    = new Vector2(9f, 16f),
-            ActiveFraction = 0.6f,
-            Size           = 0.7f,
-            WindDrift      = 1.0f,
-            Color          = new Color(0.93f, 0.95f, 0.97f, 1f),
-            MaxAlpha       = 0.9f,
-            NightFade      = 0.8f,
+            Count                = 5,
+            AreaHalfSize         = new Vector2(14f, 9f),
+            WheelRadiusMetres    = 0f,
+            Seed                 = 7,
+            SettledFraction      = 0.35f,
+            WindDrift            = 1.0f,
+            Color                = Color.white,
+            MaxAlpha             = 1f,
+            NightFade            = 0.6f,
+            RoostBelowBrightness = 0.3f,
         };
     }
 
