@@ -40,24 +40,29 @@ namespace HiddenHarbours.App.Editor
     /// </summary>
     public static class StPetersInteriors
     {
-        /// <summary>The child object name of a room's sprite under its building.</summary>
-        public const string RoomChildName = "Interior";
+        // The names and the two numbers moved to BuildingInteriorStander, which is now the one recipe
+        // for both families. Forwarded rather than deleted: a dozen readers across the village, the
+        // shops and the proofs spell them `StPetersInteriors.…`, and a const forwarder costs nothing
+        // at runtime while leaving one place where the value is actually decided.
 
-        /// <summary>The child object name of the furniture root.</summary>
-        public const string PropsChildName = "Furniture";
+        /// <inheritdoc cref="BuildingInteriorStander.RoomChildName"/>
+        public const string RoomChildName = BuildingInteriorStander.RoomChildName;
 
-        /// <summary>The child object name of the wall colliders.</summary>
-        public const string WallsChildName = "Walls";
+        /// <inheritdoc cref="BuildingInteriorStander.PropsChildName"/>
+        public const string PropsChildName = BuildingInteriorStander.PropsChildName;
 
-        /// <summary>The child object name of the UPPER storey's room sprite.</summary>
-        public const string UpperRoomChildName = "InteriorUpper";
+        /// <inheritdoc cref="BuildingInteriorStander.WallsChildName"/>
+        public const string WallsChildName = BuildingInteriorStander.WallsChildName;
 
-        /// <summary>The child object name of the upper storey's furniture root.</summary>
-        public const string UpperPropsChildName = "FurnitureUpper";
+        /// <inheritdoc cref="BuildingInteriorStander.UpperRoomChildName"/>
+        public const string UpperRoomChildName = BuildingInteriorStander.UpperRoomChildName;
+
+        /// <inheritdoc cref="BuildingInteriorStander.UpperPropsChildName"/>
+        public const string UpperPropsChildName = BuildingInteriorStander.UpperPropsChildName;
 
         /// <summary>The child object name of the colliders that exist only upstairs — the partitions
         /// and the plug that closes the front doorway. The building's own walls are NOT in here.</summary>
-        public const string UpperWallsChildName = "WallsUpper";
+        public const string UpperWallsChildName = BuildingInteriorStander.UpperWallsChildName;
 
         /// <summary>
         /// Wall thickness (m) the colliders are built with and the inside test uses.
@@ -67,12 +72,12 @@ namespace HiddenHarbours.App.Editor
         /// inside a factor of 1.5 of tunnelling and a fast diagonal into a corner is exactly the
         /// input that finds it. 0.3 m costs a hand's width of floor and cannot be walked through.</para>
         /// </summary>
-        public const float WallThicknessMetres = 0.3f;
+        public const float WallThicknessMetres = BuildingInteriorStander.WallThicknessMetres;
 
         /// <summary>The gap left in the front wall (m) — wider than the drawn 1.05 m opening, because
         /// the player has width of their own and a threshold you have to line up on to the pixel is not
         /// cozy.</summary>
-        public const float DoorwayWidthMetres = 1.4f;
+        public const float DoorwayWidthMetres = BuildingInteriorStander.DoorwayWidthMetres;
 
         // =====================================================================================
         //  THE FURNISHING (authored — the identity a hash could not have produced)
@@ -523,130 +528,22 @@ namespace HiddenHarbours.App.Editor
         /// <para><b>Re-runnable.</b> Any interior already under this building is destroyed first, so a
         /// second builder run leaves one room and one set of furniture rather than two of each. That is
         /// the whole of "non-destructive" here: the builder owns these objects and rebuilds them.</para>
+        ///
+        /// <para><b>The recipe itself is <see cref="BuildingInteriorStander"/> now</b>, and the shops
+        /// call the same one. What stayed here is the village's CONTENT — <see cref="FurnishingsFor"/>
+        /// and the upper-storey plans — which the stander calls back into. The <c>buildingKey</c> is
+        /// declared to be a VILLAGE building by this overload; <c>generalStore</c> is a key in both kits
+        /// and the two carry different rooms, so the family is never inferred.</para>
         /// </summary>
         public static bool Stand(GameObject buildingGo, SpriteRenderer shell, string buildingKey,
-                                 int exteriorFacing, Transform occupant, string upperPlanKey = null)
-        {
-            if (buildingGo == null) return false;
-
-            ClearExisting(buildingGo.transform);
-
-            InteriorCatalog.Placement room = InteriorCatalog.FindRoom(buildingKey);
-            if (!room.IsValid) return false;
-
-            int interiorFacing = InteriorCatalog.InteriorFacingFor(exteriorFacing);
-            Sprite roomSprite = InteriorCatalog.LoadFacing(room, interiorFacing);
-            if (roomSprite == null)
-            {
-                Debug.LogWarning(
-                    $"[StPetersInteriors] '{buildingKey}' has a baked room but no facing-{interiorFacing} " +
-                    $"sprite — its sheet is missing or unsliced ({room.SheetPath}). Leaving the building " +
-                    "solid and un-enterable rather than standing a blank room inside it.");
-                return false;
-            }
-
-            // --- the room sprite: same position as the shell, because both pivot on the ground centre.
-            var roomGo = new GameObject(RoomChildName);
-            roomGo.transform.SetParent(buildingGo.transform, worldPositionStays: false);
-            roomGo.transform.localPosition = Vector3.zero;
-            SpriteRenderer roomRenderer = InteriorCatalog.ConfigureRoom(roomGo, room, roomSprite);
-
-            // --- where the doorway is, in the room's own model frame. MEASURED, per room, from the
-            //     bake's own anchors — not taken from InteriorFootprint's house-family defaults. The
-            //     two agree today (this rig's door anchor is pj(0,−Ln/2,fZ), so it cannot be anything
-            //     but centred on −y); measuring is what keeps that true after the next rig drop.
-            Vector2 door = InteriorCatalog.DoorModelMetres(room);
-            float doorSign = door.y >= 0f ? 1f : -1f;
-
-            // --- the footprint everything else is measured from.
-            var footprint = new InteriorFootprint(
-                buildingGo.transform.position,
-                room.Entry.footprintWidthMetres, room.Entry.footprintLengthMetres,
-                interiorFacing, room.Entry.facings, SpriteLightMath.GroundDepthScale,
-                doorSign, door.x);
-
-            // --- the walls. Always on, from both sides: the cutaway that drops the two camera-facing
-            //     walls is a courtesy to the camera, not a hole in the house.
-            BuildWalls(buildingGo.transform, footprint);
-
-            // --- the furniture.
-            var propsGo = new GameObject(PropsChildName);
-            propsGo.transform.SetParent(buildingGo.transform, worldPositionStays: false);
-            propsGo.transform.localPosition = Vector3.zero;
-            int furnished = Furnish(propsGo.transform, FurnishingsFor(room.Entry.key), room.Entry.key,
-                                    footprint, interiorFacing, room.Entry.facings);
-
-            // --- the behaviour.
-            var interior = buildingGo.AddComponent<BuildingInterior>();
-            interior.Configure(shell, roomRenderer, propsGo.transform,
-                               room.Entry.footprintWidthMetres, room.Entry.footprintLengthMetres,
-                               interiorFacing, room.Entry.facings,
-                               SpriteLightMath.GroundDepthScale,
-                               WallThicknessMetres, DoorwayWidthMetres,
-                               doorOnPlusY: doorSign > 0f, doorAcrossMetres: door.x);
-            interior.SetOccupant(occupant);
-
-            // --- THE STOREY ABOVE, if this SITE asked for one. Keyed by plan and not by room, because
-            //     Ginny's cottage and the village's pilot cottage are the same build — see UpperLevelFor.
-            int upstairs = StandUpperLevel(buildingGo, interior, room, roomSprite, footprint,
-                                           interiorFacing, propsGo.transform, upperPlanKey);
-            if (upstairs > 0) furnished += upstairs;
-
-            Debug.Log(
-                $"[StPetersInteriors] '{buildingKey}' is enterable: room d{interiorFacing} under shell " +
-                $"d{exteriorFacing} (the contract's MEASURED offset), " +
-                $"{room.Entry.footprintWidthMetres:0.#}×{room.Entry.footprintLengthMetres:0.#} m of " +
-                $"floor, {furnished} piece(s) of furniture, doorway on the " +
-                $"{(doorSign > 0f ? "+Y" : "−Y")} wall {door.x:+0.00;-0.00} m off its centre, threshold " +
-                $"at ({footprint.DoorWorld.x:0.#},{footprint.DoorWorld.y:0.#})" +
-                (interior.HasUpperLevel ? ", AND a storey above it." : "."));
-            return true;
-        }
-
-        /// <summary>Destroy anything a previous run of this pass left on a building, so re-running the
-        /// builder cannot double the furniture or leave an orphaned room behind a new one.</summary>
-        static void ClearExisting(Transform buildingRoot)
-        {
-            var existing = buildingRoot.GetComponent<BuildingInterior>();
-            if (existing != null) Object.DestroyImmediate(existing);
-
-            for (int i = buildingRoot.childCount - 1; i >= 0; i--)
-            {
-                Transform child = buildingRoot.GetChild(i);
-                if (child.name == RoomChildName || child.name == PropsChildName ||
-                    child.name == WallsChildName || child.name == UpperRoomChildName ||
-                    child.name == UpperPropsChildName || child.name == UpperWallsChildName)
-                    Object.DestroyImmediate(child.gameObject);
-            }
-        }
-
-        /// <summary>
-        /// The wall colliders: five quads on one child object — back, left, right, and the front wall
-        /// split around the doorway.
-        ///
-        /// <para>One <see cref="PolygonCollider2D"/> per wall rather than five paths on one collider.
-        /// Several paths on one collider turn their overlaps into HOLES, and while
-        /// <see cref="InteriorFootprint.WallQuads"/> already returns disjoint quads, separate colliders
-        /// mean a future wall that does overlap cannot silently open a gap at a corner.</para>
-        /// </summary>
-        static void BuildWalls(Transform buildingRoot, in InteriorFootprint footprint)
-        {
-            var wallsGo = new GameObject(WallsChildName);
-            wallsGo.transform.SetParent(buildingRoot, worldPositionStays: false);
-            wallsGo.transform.localPosition = Vector3.zero;
-
-            Vector2 origin = buildingRoot.position;
-            foreach (Vector2[] quad in footprint.WallQuads(WallThicknessMetres, DoorwayWidthMetres))
-            {
-                var collider = wallsGo.AddComponent<PolygonCollider2D>();
-                collider.pathCount = 1;
-                collider.SetPath(0, ToLocal(quad, origin));
-            }
-        }
+                                 int exteriorFacing, Transform occupant, string upperPlanKey = null) =>
+            BuildingInteriorStander.Stand(buildingGo, buildingKey, InteriorFamily.VillageBuilding,
+                                          exteriorFacing, occupant, upperPlanKey, shell,
+                                          "[StPetersInteriors]").Enterable;
 
         /// <summary>Stand the furniture. Each prop is its own sprite with its own Y-sort and its own
         /// footprint collider — the two things that make walking round a table work.</summary>
-        static int Furnish(Transform propsRoot, IReadOnlyList<Furnishing> furnishings, string roomKey,
+        public static int Furnish(Transform propsRoot, IReadOnlyList<Furnishing> furnishings, string roomKey,
                            in InteriorFootprint footprint, int interiorFacing, int facings,
                            BuildingInterior interior = null, string fixtureIdPrefix = null)
         {
@@ -688,7 +585,7 @@ namespace HiddenHarbours.App.Editor
 
                 var collider = go.AddComponent<PolygonCollider2D>();
                 collider.pathCount = 1;
-                collider.SetPath(0, ToLocal(
+                collider.SetPath(0, BuildingInteriorStander.ToLocal(
                     footprint.PropQuad(f.RoomMetres, prop.Entry.propFootprintWidth,
                                        prop.Entry.propFootprintDepth, f.FacingOffset),
                     world));
@@ -739,7 +636,7 @@ namespace HiddenHarbours.App.Editor
         /// resolve to the wrong direction — not because the resolver was careful, but because only one
         /// of them is in the room.</para>
         /// </summary>
-        static int StandUpperLevel(GameObject buildingGo, BuildingInterior interior,
+        public static int StandUpperLevel(GameObject buildingGo, BuildingInterior interior,
                                    InteriorCatalog.Placement room, Sprite groundRoomSprite,
                                    in InteriorFootprint footprint, int interiorFacing,
                                    Transform groundProps, string planKey)
@@ -859,14 +756,14 @@ namespace HiddenHarbours.App.Editor
             {
                 var collider = root.gameObject.AddComponent<PolygonCollider2D>();
                 collider.pathCount = 1;
-                collider.SetPath(0, ToLocal(footprint.Quad(r.X0, r.X1, r.Y0, r.Y1), origin));
+                collider.SetPath(0, BuildingInteriorStander.ToLocal(footprint.Quad(r.X0, r.X1, r.Y0, r.Y1), origin));
             }
 
             // The doorway, closed. Derived from the same arithmetic that cut the gap, so the two can
             // never disagree about where the door is.
             var plug = root.gameObject.AddComponent<PolygonCollider2D>();
             plug.pathCount = 1;
-            plug.SetPath(0, ToLocal(
+            plug.SetPath(0, BuildingInteriorStander.ToLocal(
                 footprint.DoorwayPlugQuad(WallThicknessMetres, DoorwayWidthMetres), origin));
         }
 
@@ -1042,16 +939,6 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>Where the player is turning in, for the notice.</summary>
         public const string PlayerBedPlaceName = "your bed at Ginny's";
-
-        /// <summary>World-space quad → collider-local points. <see cref="PolygonCollider2D.SetPath"/>
-        /// takes LOCAL coordinates, and handing it world ones puts every wall an entire village away
-        /// from the house — silently, because nothing about a collider is drawn.</summary>
-        static Vector2[] ToLocal(Vector2[] worldPoints, Vector2 origin)
-        {
-            var local = new Vector2[worldPoints.Length];
-            for (int i = 0; i < worldPoints.Length; i++) local[i] = worldPoints[i] - origin;
-            return local;
-        }
     }
 }
 #endif
