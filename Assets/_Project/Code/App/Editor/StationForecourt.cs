@@ -16,7 +16,7 @@ namespace HiddenHarbours.App.Editor
     /// thing over as one object.
     ///
     /// <para><b>Why this is shared and the SITES are not.</b> The same division
-    /// <see cref="ShopPlacement"/> draws. Nine Mile Creek's wharf pumps and its Route 91 station disagree
+    /// <see cref="BuildingInteriorStander"/> draws. Nine Mile Creek's wharf pumps and its Route 91 station disagree
     /// about everything a place disagrees about — which ground, which way, how many hoses, what is in the
     /// way. They agree completely about what STANDING A PIECE means, and that agreement is arithmetic a
     /// second copy of would get subtly wrong: the facing cell, the collider's turn, and the reach pass.

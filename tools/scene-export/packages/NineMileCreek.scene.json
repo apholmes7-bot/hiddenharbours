@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-09-07T11:18:47Z",
+  "generatedAt": "2026-09-10T00:28:30Z",
   "region": {
     "id": "region.nine_mile_creek",
     "sceneName": "NineMileCreek",
@@ -195385,7 +195385,7 @@
   "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum) — the repo's own convention, the same one docs/art/rigs sidecars publish. A SIBLING of the table rather than a key inside it: the table's keys are family names and nothing else, so iterating it cannot pick up a note.",
   "x-cliffLinesNote": "the region's cliffs, as the format's own key. Each is one CliffWallSurface — the builder pushes one CHUNK per stretch, so a coastline arrives as many short lines and not one long one; joining them would be a derivation this exporter invents. `nodes` is the chunk's brow plan and its stations are SAMPLED at ~0.25 m rather than hand-placed (see each line's x-nodesAre). No `tiles` count: this exporter paints no cliff layer at all, so a 0 would read as a fact about the line instead of about the export.",
   "x-provenance": {
-    "generatedAt": "2026-09-07T11:18:47Z",
+    "generatedAt": "2026-09-10T00:28:30Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/NineMileCreek.unity",
     "sceneFileSha256": "65faf9223f63268bcc046b0b4bf913d9213b827aa204c2ff5a71eb38afee0d7c",
@@ -195394,11 +195394,12 @@
     "sceneLastBuiltSubject": "feat(fishing): the sea shows what is in it — a third reader of the one school model draws the fish that are already there, and depth decides what you can see (visible fish PR 1) (#752)",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
-      "builderCommitsSinceScene": 1,
-      "measuredTo": "117174fe1dfc5b3f26deaeccfdd358db43f5d29a",
-      "measuredToDate": "2026-09-07T08:18:47-03:00",
+      "builderCommitsSinceScene": 2,
+      "measuredTo": "23575d496aec434dc94d30c3b806dec04ebfba3c",
+      "measuredToDate": "2026-09-09T21:28:30-03:00",
       "exact": true,
       "builderCommits": [
+        "23575d49 feat(tools): bake every building in one command, and stand every interior with one recipe",
         "117174fe feat(world): the sea climbs the quay — a wall stops being drawn where the water is over it, so a boat alongside is IN it (owner playtest 2026-09-06) (#765)"
       ]
     },

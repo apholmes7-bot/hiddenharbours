@@ -10,7 +10,7 @@ namespace HiddenHarbours.App.Editor
     /// <b>THE WHARF OPENS ITS TWO SHOPS</b> — Nine Mile Creek's half of the commercial block: the
     /// RESTAURANT the photograph pass reserved ground for, and the FISH MARKET a fish wharf ought to
     /// have. Sibling of <see cref="StPetersShops"/> and shaped the same way, over the same
-    /// <see cref="ShopPlacement"/>.
+    /// <see cref="BuildingInteriorStander"/>.
     ///
     /// <para><b>⭐ THE RESTAURANT FILLS A LOT THAT WAS ALREADY CLAIMED.</b> It is not new ground: the
     /// owner's satellite view put a restaurant on the wharf front, the photograph pass sited it at
@@ -218,8 +218,9 @@ namespace HiddenHarbours.App.Editor
 
                 SpriteRenderer shellRenderer = ShopCatalog.Configure(go, shell, sprite);
 
-                bool enterable = ShopPlacement.StandInterior(go, shellRenderer, site.Key, facing,
-                                                             occupant, "[NineMileCreekShops]");
+                bool enterable = BuildingInteriorStander.Stand(
+                    go, site.Key, InteriorFamily.Shop, facing, occupant, upperPlanKey: null,
+                    shell: shellRenderer, logPrefix: "[NineMileCreekShops]").Enterable;
 
                 placed++;
                 report.Add($"{site.Key} d{facing} at ({site.Position.x:0.#},{site.Position.y:0.#}) " +

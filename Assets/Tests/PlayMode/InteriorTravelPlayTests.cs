@@ -139,7 +139,7 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>A shop with a shell, a baked room and a <see cref="BuildingInterior"/> over both —
-        /// wired the way <c>ShopPlacement.StandInterior</c> wires one.</summary>
+        /// wired the way <c>BuildingInteriorStander.Stand</c> wires one.</summary>
         private BuildingInterior StandShop(Transform occupant)
         {
             var shopGo = new GameObject("Shop");

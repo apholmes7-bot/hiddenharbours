@@ -26,7 +26,7 @@ namespace HiddenHarbours.World
     /// <para><b>⚠ ONE COLLIDER PER SEGMENT, NEVER ONE COLLIDER WITH MANY PATHS.</b> Several paths on one
     /// <see cref="PolygonCollider2D"/> turn their overlaps into HOLES — and every corner of every run is
     /// an overlap, so a single-collider version leaks the player through precisely the corners.
-    /// <c>ShopPlacement</c> learned this on the shop walls; it is restated here because the shape of the
+    /// <c>BuildingInteriorStander</c> learned this on the shop walls; it is restated here because the shape of the
     /// bug (a player who "sometimes" slips through) reads as a physics glitch rather than as a modelling
     /// mistake.</para>
     ///
