@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-09-07T11:18:47Z",
+  "generatedAt": "2026-09-10T02:51:25Z",
   "region": {
     "id": "region.nine_mile_creek",
     "sceneName": "NineMileCreek",
@@ -75779,7 +75779,7 @@
       "x-cellAt": [469, 170],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": "6200efbb3e7c855476fd73e2c4c7eca9deb1ae1975c0aba6e9a153970a744ede",
+      "x-rigSha256": "c2eab86b4a0b8aefa695756fbdd84559befa2ef5b8529a7ab669d9f31606a4a4",
       "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Characters/Iso/deckboss/DeckBoss_idle.png",
@@ -75823,7 +75823,7 @@
       "x-cellAt": [446, 168],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": "6200efbb3e7c855476fd73e2c4c7eca9deb1ae1975c0aba6e9a153970a744ede",
+      "x-rigSha256": "c2eab86b4a0b8aefa695756fbdd84559befa2ef5b8529a7ab669d9f31606a4a4",
       "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Characters/Iso/skipper/Skipper_idle.png",
@@ -195250,7 +195250,7 @@
     {
       "rig": "characterIsoRig6",
       "rigSource": "docs/art/rigs/characterIsoRig6.js",
-      "sha256": "6200efbb3e7c855476fd73e2c4c7eca9deb1ae1975c0aba6e9a153970a744ede",
+      "sha256": "c2eab86b4a0b8aefa695756fbdd84559befa2ef5b8529a7ab669d9f31606a4a4",
       "shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\\r' | sha256sum)",
       "x-declaredBy": "Assets/_Project/Art/Characters/Iso/deckboss/DeckBossAnchors.json"
     },
@@ -195339,7 +195339,7 @@
     },
     "character": {
       "rigSource": "docs/art/rigs/characterIsoRig6.js",
-      "sha256": "6200efbb3e7c855476fd73e2c4c7eca9deb1ae1975c0aba6e9a153970a744ede"
+      "sha256": "c2eab86b4a0b8aefa695756fbdd84559befa2ef5b8529a7ab669d9f31606a4a4"
     },
     "house": {
       "rigSource": "docs/art/rigs/houseIsoRig.js",
@@ -195385,7 +195385,7 @@
   "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum) — the repo's own convention, the same one docs/art/rigs sidecars publish. A SIBLING of the table rather than a key inside it: the table's keys are family names and nothing else, so iterating it cannot pick up a note.",
   "x-cliffLinesNote": "the region's cliffs, as the format's own key. Each is one CliffWallSurface — the builder pushes one CHUNK per stretch, so a coastline arrives as many short lines and not one long one; joining them would be a derivation this exporter invents. `nodes` is the chunk's brow plan and its stations are SAMPLED at ~0.25 m rather than hand-placed (see each line's x-nodesAre). No `tiles` count: this exporter paints no cliff layer at all, so a 0 would read as a fact about the line instead of about the export.",
   "x-provenance": {
-    "generatedAt": "2026-09-07T11:18:47Z",
+    "generatedAt": "2026-09-10T02:51:25Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/NineMileCreek.unity",
     "sceneFileSha256": "65faf9223f63268bcc046b0b4bf913d9213b827aa204c2ff5a71eb38afee0d7c",
@@ -195394,11 +195394,12 @@
     "sceneLastBuiltSubject": "feat(fishing): the sea shows what is in it — a third reader of the one school model draws the fish that are already there, and depth decides what you can see (visible fish PR 1) (#752)",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
-      "builderCommitsSinceScene": 1,
-      "measuredTo": "117174fe1dfc5b3f26deaeccfdd358db43f5d29a",
-      "measuredToDate": "2026-09-07T08:18:47-03:00",
+      "builderCommitsSinceScene": 2,
+      "measuredTo": "e66fce003774747650be366831d9e548842fc1ce",
+      "measuredToDate": "2026-09-09T23:51:25-03:00",
       "exact": true,
       "builderCommits": [
+        "e66fce00 feat(tools): bake every building in one command, and stand every interior with one recipe (#824)",
         "117174fe feat(world): the sea climbs the quay — a wall stops being drawn where the water is over it, so a boat alongside is IN it (owner playtest 2026-09-06) (#765)"
       ]
     },

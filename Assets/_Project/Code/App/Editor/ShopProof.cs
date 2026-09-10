@@ -124,7 +124,7 @@ namespace HiddenHarbours.App.Editor
             var shell = root.GetComponent<SpriteRenderer>();
             if (shell != null) shell.enabled = !inside;
 
-            Transform room = root.Find(ShopPlacement.InteriorChildName);
+            Transform room = root.Find(BuildingInteriorStander.RoomChildName);
             if (room != null)
             {
                 var sr = room.GetComponent<SpriteRenderer>();

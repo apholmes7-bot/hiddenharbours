@@ -26,13 +26,13 @@ namespace HiddenHarbours.App.Editor
     /// ever</i> (ADR 0036, Ruling 1b). A C-store with a baked sales floor behind a solid wall is a
     /// façade with the interior already paid for.</para>
     ///
-    /// <para><b>The shape of the fix is <see cref="ShopPlacement"/>'s, deliberately.</b> Cut the solid
+    /// <para><b>The shape of the fix is <see cref="BuildingInteriorStander"/>'s, deliberately.</b> Cut the solid
     /// footprint down to a RING of walls with a gap where the door is drawn, then let
     /// <see cref="BuildingInterior"/> swap shell for room at the threshold. Every piece of that already
     /// exists and is tested; what this adds is the arithmetic that reads a station shell's geometry
     /// instead of a shop's.</para>
     ///
-    /// <para><b>⭐ AND THE SQUASH IS THE SAME ONE THE SHOP PASSES.</b> <see cref="ShopPlacement"/> hands
+    /// <para><b>⭐ AND THE SQUASH IS THE SAME ONE THE SHOP PASSES.</b> <see cref="BuildingInteriorStander"/> hands
     /// <see cref="InteriorFootprint"/> <c>SpriteLightMath.GroundDepthScale</c> (0.643) because the house
     /// family's rooms are stated in ground metres and drawn into a squashed picture — and so are this
     /// kit's. The squash is baked into every cell's pixels, not applied at render time, so a wall ring
@@ -418,7 +418,7 @@ namespace HiddenHarbours.App.Editor
         ///
         /// <para>⚠️ One <see cref="PolygonCollider2D"/> PER WALL rather than five paths on one — several
         /// paths on a single collider turn their overlaps into HOLES, and a hole at a corner is a player
-        /// who occasionally slips through it. <see cref="ShopPlacement"/> pays for the same lesson.</para>
+        /// who occasionally slips through it. <see cref="BuildingInteriorStander"/> pays for the same lesson.</para>
         ///
         /// <para>⚠️ And the quads go on a child at LOCAL ZERO with no rotation of its own, holding
         /// world-derived paths — exactly the way the kit's own blockers are placed now

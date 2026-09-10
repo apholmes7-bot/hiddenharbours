@@ -475,7 +475,14 @@ namespace HiddenHarbours.Tests.EditMode
 
                 follow.OnCatchLanded(new CatchLanded(Fish(8f)));
                 for (int i = 0; i < 12; i++) follow.TickFeel(0.01f, 0f);
-                Assert.AreEqual(baseOrtho, cam.orthographicSize, "charter §3: deck mode untouched — FeelOnDeckEnabled ships 0");
+                // ⚠ This measures the CODE default (GameConfig.Juice.Default), which is still false —
+                // not the shipped asset. The owner turned the dial ON in Data/Config/GameConfig.asset on
+                // 2026-09-09 ("accept the deck feel"), and DoryAboardTests holds that flip; the code
+                // default stays off so a config-less fixture still gets the quiet camera it always had.
+                Assert.AreEqual(baseOrtho, cam.orthographicSize,
+                    "charter §3: with the dial off the deck camera is untouched — FeelOnDeckEnabled " +
+                    "DEFAULTS to 0 (the shipped asset now ships 1; see DoryAboardTests)");
+
                 Assert.IsFalse(follow.FeelApplied);
 
                 ConfigWith(c => c.Juice.FeelOnDeckEnabled = true);

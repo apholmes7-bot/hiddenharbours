@@ -234,7 +234,8 @@ namespace HiddenHarbours.Art
             EnvironmentSample sample = env.Sample();
             WaveFieldSettings field = GameServices.WaveField;
             WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
-            WaveTrains trains = _animator.Tick(dt, sample.WindVector, sample.SeaState01,
+            WaveTrains trains = _animator.Tick(dt, WaveFieldAnimator.GameTimeSeconds,
+                                               sample.WindVector, sample.SeaState01,
                                                in field, in smoothing);
             PublishGlobals(Pack(in trains));
             SharedWaveField.Publish(this, in trains);

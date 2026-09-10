@@ -312,13 +312,25 @@
                      set-down is. `settle` is the frame->u mapping the tool kit bakes with:
                      u = f/(frames-1), so the LAST frame is the settled rest at u = 1 rather than
                      one step short of it. It is set on this clip and nowhere else. */
-                  reach:{frames:6, ms:100, oneShot:true, settle:true} };
+                  reach:{frames:6, ms:100, oneShot:true, settle:true},
+                  /* 6.10 — append-only. THE SADDLE FAMILY. All six read opts.saddle (absolute world
+                     metres straight off the machine: AtvIso.saddleFor() / AmphibIso.benchFor()).
+                     astride/astrideStand LOOP; the four mount clips are one-shot and their endpoints
+                     are the clips they hand off to — see mountCurve. */
+                  astride:{frames:6, ms:170}, astrideStand:{frames:8, ms:120},
+                  /* a mount is a bigger move than a walk stride and gets the frames for it: at 95ms
+                     these run 1.1-1.5 s, which is what keeps any one limb under ~0.3 m per frame. */
+                  mountUp:{frames:16, ms:80, oneShot:true, settle:true},
+                  mountDown:{frames:14, ms:85, oneShot:true, settle:true},
+                  mountCab:{frames:18, ms:80, oneShot:true, settle:true},
+                  mountCabDown:{frames:16, ms:85, oneShot:true, settle:true} };
   const GROUPS = { base:['idle','walk','run'], balance:['balance','stagger'],
                    fishing:['hold','cast','castBack','castRelease','bite','strike','reel','land'],
                    boarding:['board','boardDown','ladderDown'], work:['dig','haul'],
                    deck:['hauler','lift','place','bench','chop','toss'],
                    water:['swim','tread'], rest:['sleep'], cab:['drive'],
-                   handover:['reach'] };
+                   handover:['reach'],
+                   saddle:['astride','astrideStand','mountUp','mountDown','mountCab','mountCabDown'] };
   const CAST_W1 = 0.34, CAST_S1 = 0.50;
 
   /* ---------------- THE MOUNT CONTRACT (pass 6) ----------------
@@ -984,6 +996,242 @@
           R:{x: 0.128+0.010*steer, y:handY, z:handZ-0.020*steer} } };
   }
 
+  /* ==================== THE SADDLE FAMILY (6.10) ====================
+     A rider is not a driver. `drive` sits a figure in a seat with its knees together and its hands
+     on a wheel 0.13 m either side of the sternum; astride a machine the knees go OUT around a tank,
+     the feet sit on pegs a quarter-metre apart, and the hands are 0.33 m wide on a bar that TURNS.
+
+     THE CONTRACT: every target here is an ABSOLUTE world metre, handed in by the machine. AtvIso's
+     anchors(dir,opts) returns `.m = [x,y,z]` for seat, gripL/gripR and pegL/pegR ALREADY POSED
+     through steer, suspension and (on the bike) lean — and both rigs use the same frame: +x curb,
+     +y nose, +z up, origin on the ground under the machine. So the machine's anchor metres ARE this
+     curve's inputs, unconverted. Pass them through `saddle`:
+
+       CharacterIso6.render('SE', { anim:'astride', saddle: AtvIso.saddleFor('SE', {body:'quad'}) })
+
+     Nothing is scaled by build here except how wide the figure's own knees splay: how high the seat
+     is and how far apart the pegs are is the MACHINE's business, on the workZ precedent. A short
+     figure on a tall bike gets short legs reaching real pegs, which is the honest read.
+
+     TWO CLIPS. `astride` is seated — the weight on the saddle, a small judder. `astrideStand` is up
+     on the pegs, hips off the cushion, torso pitched over the bars: the trail-standing pose, and the
+     one a quad rider works from. Both LOOP.
+
+     THE HANDS ARE NOT CLAMPED, deliberately, on the tool-clip precedent: a hand holding a grip has
+     to be WHERE the grip is. saddleMount() reports the overreach instead of hiding it. */
+  const SADDLE_DEF = { seatZ:0.94, gripOut:0.33, gripY:0.42, gripZ:1.04, pegOut:0.27, pegY:-0.06, pegZ:0.42 };
+  const SADDLE_C = { astride:1, astrideStand:1 };
+  function saddleOf(o){
+    const s = (o && o.saddle) || null;
+    const n = (v, d)=> (v!=null && isFinite(+v)) ? +v : d;
+    const pt = (p, dx, dy, dz)=> (Array.isArray(p) && p.length>2 && p.every(isFinite))
+      ? [+p[0], +p[1], +p[2]] : [dx, dy, dz];
+    const D = SADDLE_DEF;
+    const seat = pt(s && (s.seat || s.seatM), 0, -0.30, n(s && s.seatZ, D.seatZ));
+    return {
+      seat,
+      gripL: pt(s && (s.gripL || s.gripLM), -D.gripOut, D.gripY, D.gripZ),
+      gripR: pt(s && (s.gripR || s.gripRM),  D.gripOut, D.gripY, D.gripZ),
+      pegL:  pt(s && (s.pegL  || s.pegLM),  -D.pegOut,  D.pegY,  D.pegZ),
+      pegR:  pt(s && (s.pegR  || s.pegRM),   D.pegOut,  D.pegY,  D.pegZ),
+      /* the machine's own roll, published for the compositor. NOT applied to the figure in 6.10 —
+         see saddleMount().machineLean and the kit's known limits. */
+      leanDeg: n(s && s.leanDeg, 0),
+      /* BENCH: she is sitting IN the machine, not ON it — the Otter's front bench with its centred
+         T-bar. Same absolute targets (the footwell floor stands in for the pegs), but the knees
+         come together because there is no tank between them and the spine sits up because the bar
+         is close. It is the same posture family; it is not the same read. */
+      bench: !!(s && s.bench),
+      supplied: !!s
+    };
+  }
+  /* boot sole ON the peg: the ankle rides this far above the peg's top face */
+  const PEG_ANKLE = 0.055;
+  /* HOW FAR SHE LEANS IS NOT A CONSTANT — it is where the bars are. An enduro's grips sit 0.72 m
+     forward of the seat ref, which is 0.12 m past a mid-build's arm at an 11° pitch; a bench T-bar
+     sits 0.36 m forward and needs almost none. Authoring one angle per posture put every short build
+     on every wide machine 100+ mm short of its own grips, so this SOLVES for the pitch that brings
+     the shoulder within reach, then clamps it to a range that still reads as riding.
+
+     Cheap: a 24-step bisection on a monotone function, twice per pose. The result is published on
+     the curve as leanSolved / leanClamped so saddleMount can report a machine nobody fits. */
+  function solveLean(grip, hipZ, hS, wS, PR, lo, hi){
+    const TS = hS*PR.torsoK;
+    const dsh = 0.485*TS;                                  // hip -> shoulder, along the spine
+    const shX = 0.150*wS*PR.shoulderK;
+    const arm = (0.230 + 0.210)*hS*PR.legK;
+    const need = (deg)=>{
+      const th = deg*Math.PI/180;
+      const sy = dsh*Math.sin(th), sz = hipZ + dsh*Math.cos(th);
+      return Math.hypot(Math.abs(grip[0]) - shX, grip[1] - sy, grip[2] - sz) - arm;
+    };
+    if(need(lo) <= 0) return { deg:lo, solved:false, short_mm:0 };
+    let a = lo, b = hi;
+    if(need(b) > 0){                                       // even folded flat she cannot make it
+      return { deg:b, solved:true, short_mm:Math.round(need(b)*1000) };
+    }
+    for(let i=0; i<24; i++){ const m=(a+b)/2; if(need(m) > 0) a = m; else b = m; }
+    return { deg:+b.toFixed(2), solved:true, short_mm:0 };
+  }
+  function astrideCurve(anim, u, o, hS, wS, PR){
+    const M = saddleOf(o), up = anim === 'astrideStand', bench = M.bench && !up;
+    /* the machine works under her: a two-per-cycle judder through the pegs, and a slower weight
+       shift she rides with her arms. Small — this is a loop, not a stunt. */
+    const j = Math.sin(4*Math.PI*u), sway = Math.sin(2*Math.PI*u);
+    const rise = up ? 0.165*hS : 0;               // hips off the cushion, standing
+    const hipZ = M.seat[2] + 0.045*hS + rise + (up ? 0.012 : 0.006)*j;
+    /* standing she is OVER the bars, not behind them; seated the spine is near upright with the
+       weight on the sit bones — unless the bars are far enough forward to pull her over, which the
+       solver decides. The floor is the posture's own resting pitch; the ceiling is where a lean
+       stops reading as riding and starts reading as a crash. */
+    const floorDeg = up ? 24 : bench ? 6 : 11;
+    const SL = PR ? solveLean(M.gripR, hipZ, hS, wS, PR, floorDeg, up ? 40 : 34)
+                  : { deg:floorDeg, solved:false, short_mm:0 };
+    const lean = SL.deg + (up ? 1.6 : 0.9)*j;
+    /* seated astride she grips the tank WIDER than she stands; on a bench there is nothing to grip */
+    const kneeOut = (up ? 0.185 : bench ? 0.098 : 0.215)*wS;
+    return { kind:'saddle', up, bench, seatZ:M.seat[2], judder:j,
+      hipZ, yOff:0, lean, list:(up?1.4:0.8)*sway, twist:(up?2.6:1.8)*sway, headF:0.55,
+      leanFloor:floorDeg, leanSolved:SL.solved, leanShort_mm:SL.short_mm,
+      kneeOut, machineLean:M.leanDeg, supplied:M.supplied,
+      seat:M.seat, grip:{L:M.gripL, R:M.gripR}, peg:{L:M.pegL, R:M.pegR},
+      /* ankles: on the pegs, absolutely — x included, which is why pose() takes an ankle x from a
+         curve for the first time. A peg is 0.27 m out; hip0[0]*0.92 is 0.075, and a foot there
+         reads as a figure kneeling on the frame. */
+      F:{ L:{x:M.pegL[0], y:M.pegL[1], z:M.pegL[2] + PEG_ANKLE + 0.004*j},
+          R:{x:M.pegR[0], y:M.pegR[1], z:M.pegR[2] + PEG_ANKLE - 0.004*j} },
+      A:{ L:{x:M.gripL[0], y:M.gripL[1], z:M.gripL[2]},
+          R:{x:M.gripR[0], y:M.gripR[1], z:M.gripR[2]} } };
+  }
+
+  /* ==================== THE MOUNT TRANSITIONS (6.10) ====================
+     Getting ON. Four one-shot clips, and the whole point of them is their ENDPOINTS:
+
+       u = 0  is the idle rest, to the millimetre — the pose a walk cycle settles into
+       u = 1  is the held clip's frame 0, to the millimetre — astride, or the bench
+
+     which is why neither end is hand-authored. mountCurve BUILDS both states (rest from the
+     figure's own hipBase/ankleZ, the seated end by CALLING astrideCurve at u=0) and eases between
+     them. Retune the saddle and the transition follows; there is no second table to forget. The
+     harness asserts both ends against the clips they hand off to, per body, in every facing.
+
+       walk → mountUp → astride            (a machine you sit ON: leg over the saddle)
+       walk → mountCab → astride{bench}    (a machine you sit IN: over the sill, down, onto the bench)
+
+     and mountDown / mountCabDown are those two run backwards, which is what a dismount is.
+
+     THE LATERAL TRAVEL is the part that makes it read: she does not appear on the seat, she starts
+     BESIDE the machine at its published reach point and crosses. That needs a rigid world-X
+     recentring, which no earlier clip has ever wanted — hence xOff, the sibling of 6.5's yOff, and
+     exactly 0 on every clip but these four. */
+  const MOUNT_C = { mountUp:1, mountDown:1, mountCab:1, mountCabDown:1 };
+  const MOUNT_REV = { mountDown:1, mountCabDown:1 };
+  const MOUNT_CAB = { mountCab:1, mountCabDown:1 };
+  /* ease: slow out of the rest, slow into the seat. The middle is where the leg travels. */
+  const smooth = (t)=> t<=0 ? 0 : t>=1 ? 1 : t*t*(3-2*t);
+  const seg = (t, a, b)=> smooth(a===b ? (t<a?0:1) : (t-a)/(b-a));
+  const mix = (a, b, t)=> a + (b-a)*t;
+  const mix3 = (A, B, t)=> [mix(A[0],B[0],t), mix(A[1],B[1],t), mix(A[2],B[2],t)];
+  /* quadratic bezier — the swing leg's arc over the saddle, and the boarding foot's over the tire */
+  const bez3 = (A, C, B, t)=>{ const k=1-t; return [
+    k*k*A[0] + 2*k*t*C[0] + t*t*B[0], k*k*A[1] + 2*k*t*C[1] + t*t*B[1], k*k*A[2] + 2*k*t*C[2] + t*t*B[2] ]; };
+  function mountCurve(anim, u, o, hipBase, ankleZ, hS, wS, PR){
+    const cab = !!MOUNT_CAB[anim];
+    const t = MOUNT_REV[anim] ? 1-u : u;
+    const M = saddleOf(o);
+    /* WHICH SIDE she comes from, and so which leg swings. The machine says: the ATV pack's
+       mount.preferred is 'street' (-x) on the bike, over the stand; 'either' on the trike and quad;
+       the Otter has three ways in and the sides are the habit. -1 = street/-x. */
+    const side = (o && o.mountSide!=null) ? (+o.mountSide < 0 ? -1 : 1)
+               : (M.gripL[0] <= M.gripR[0] ? -1 : 1);
+    const reachX = (o && o.reachX!=null && isFinite(+o.reachX)) ? Math.abs(+o.reachX) : 1.0;
+    const standSide = side < 0 ? 'L' : 'R';     // the foot that stays down longest
+    const swingSide = side < 0 ? 'R' : 'L';     // the one that goes over
+    const A0 = astrideCurve('astride', 0, o, hS, wS, PR);
+    const sgnOf = (s)=> s==='L' ? -1 : 1;
+    /* --- the two ends, built not written ------------------------------------------------------ */
+    const restX = side * reachX;
+    /* THE REST END IS pose()'s OWN IDLE BRANCH, transcribed — not "about where idle stands" but the
+       same arithmetic off the same PR, so the handoff is exact for every build in the cast and stays
+       exact if the idle numbers are ever retuned. The harness asserts it joint by joint. */
+    const shK = PR ? PR.shoulderK : 1, hipK = PR ? PR.hipK : 1;
+    const shX = 0.150*wS*shK;                     // pose()'s `sw`, the shoulder half-width
+    const hipX = 0.082*wS*hipK;                   // pose()'s hip0 before sway
+    const rest = {
+      hipZ: hipBase,
+      F: { L:{ x:-hipX*0.92, y:-0.012, z:ankleZ }, R:{ x: hipX*0.92, y: 0.012, z:ankleZ } },
+      A: { L:{ x:-shX-0.012, y:0.015,                     z:0.63*hS },
+           R:{ x: shX+0.012, y:0.015+0.008*Math.sin(0.6), z:0.63*hS } },
+      lean:0, list:0, twist:0
+    };
+    /* --- phase envelopes ---------------------------------------------------------------------- */
+    /* WIDE, OVERLAPPING windows. Tight ones made every limb sprint: the near hand was crossing a
+       metre in two frames and reading as a teleport even though the path was smooth. A mount is one
+       continuous move with parts of it overlapping, not four steps in sequence. */
+    const reach  = seg(t, 0.00, cab ? 0.48 : 0.46);   // near hand to the grip / the rail
+    const swing  = seg(t, cab ? 0.10 : 0.08, cab ? 0.76 : 0.74);
+    const settle = seg(t, cab ? 0.44 : 0.40, cab ? 0.88 : 0.84);
+    const set    = seg(t, cab ? 0.42 : 0.44, 1.00);   // far hand across, last
+    const step   = seg(t, cab ? 0.54 : 0.56, 1.00);   // the standing foot's own, slower window
+    /* --- the body ----------------------------------------------------------------------------- */
+    /* she is over the machine before she is on it: the hips cross laterally on `settle`, and rise
+       on a blend of swing and settle so the lift reads before the landing. */
+    const xOff = mix(restX, 0, settle);
+    const climb = Math.max(swing*0.55, settle);
+    const hipZ = mix(rest.hipZ, A0.hipZ, climb)
+               + (cab ? 0 : 0.055*hS*swing*(1-swing)*4);   // a small hop over the saddle
+    const lean = mix(rest.lean, A0.lean, climb) + (cab ? 10 : 8)*reach*(1-settle);
+    const list = mix(rest.list, A0.list, settle) + side*(cab ? 5 : 7)*swing*(1-settle);
+    const twist= mix(rest.twist, A0.twist, settle) - side*(cab ? 7 : 10)*swing*(1-set);
+    /* --- the feet ----------------------------------------------------------------------------- */
+    /* TWO DIFFERENT MOVES, and conflating them was a 0.8 m-per-frame pop. The SWING leg crosses the
+       machine — it arcs over the saddle, apex above the seat, and that is the read of the whole clip.
+       The STANDING leg does not cross anything: it stays planted while the body goes over, then
+       lifts onto its own peg on its own side. Giving it the swing leg's apex sent it vaulting over
+       the seat it was standing next to. */
+    const F = {};
+    for(const s of ['L','R']){
+      const r = rest.F[s], a = A0.F[s];
+      const crosses = (s === swingSide);
+      const kOwn = crosses ? swing : step;
+      const start = [restX + r.x, r.y, r.z];
+      const end   = [a.x, a.y, a.z];
+      /* the apex: over the saddle for the leg that crosses it (or over the gunwale and the tire
+         under it, on the Otter); a bootlace off the ground for the one that does not. */
+      const overZ = crosses
+        ? (cab ? Math.max(M.seat[2], 0.86) : M.seat[2]) + (cab ? 0.16 : 0.20)*hS
+        : Math.max(start[2], end[2]) + 0.11*hS;
+      const ctrl = [ mix(start[0], end[0], 0.5) + (crosses ? -side*0.10 : 0),
+                     mix(start[1], end[1], 0.5) + (cab ? 0.10 : -0.04),
+                     overZ ];
+      const p = bez3(start, ctrl, end, kOwn);
+      F[s] = { x:p[0], y:p[1], z:Math.max(p[2], ankleZ*0.5) };
+    }
+    /* --- the hands ---------------------------------------------------------------------------- */
+    /* the NEAR hand (mount side) takes the grip first and holds it — it is the anchor she pivots
+       around. The far hand comes across last, on `set`. */
+    const A = {};
+    for(const s of ['L','R']){
+      const r = rest.A[s], a = A0.A[s];
+      const near = (s === standSide);
+      const k = near ? reach : set;
+      const start = [restX + r.x, r.y, r.z];
+      const end   = [a.x, a.y, a.z];
+      const ctrl  = [ mix(start[0], end[0], 0.6), mix(start[1], end[1], 0.5) + 0.12,
+                      Math.max(start[2], end[2]) + 0.10*hS ];
+      const p = near ? mix3(start, end, k) : bez3(start, ctrl, end, k);
+      A[s] = { x:p[0], y:p[1], z:p[2] };
+    }
+    return { kind:'mount', cab, t, side, standSide, swingSide, reachX:restX,
+      hipZ, xOff, yOff:0, lean, list, twist, headF:mix(0.85, A0.headF, settle),
+      kneeOut: mix(0.030*wS, A0.kneeOut, Math.max(swing, settle)),
+      phase:{ reach, swing, settle, set, step },
+      seated: settle, grounded: 1 - step, F, A,
+      /* what the two ends ARE, so a caller (and the harness) can prove the handoff without
+         re-deriving them */
+      ends:{ rest, held:{ hipZ:A0.hipZ, lean:A0.lean, F:A0.F, A:A0.A, kneeOut:A0.kneeOut } } };
+  }
+
   /* ==================== THE REACH-DOWN FAMILY (6.6) ====================
      One clip, one parameter. `lift` is the height of the surface the tool is being set on, in WORLD
      metres on the workZ precedent (a rack belongs to the wheelhouse, not to the person standing at
@@ -1122,8 +1370,16 @@
     /* 6.6: the reach-down family. Same shape as a work clip — absolute world targets for the hand,
        a dip and a fold for the body — plus the tool kit's grip path when it is handed in. */
     const rch = REACH[anim] ? reachCurve(u, arguments[5], hipBase, hS, wS) : null;
+    /* 6.10: the saddle family and its four transitions. `ast` holds a pose; `mnt` travels into or out
+       of one. xOff is the mount clips' rigid world-X recentring — 0 on everything else. */
+    const ast = SADDLE_C[anim] ? astrideCurve(anim, u, arguments[5], hS, wS, PR) : null;
+    const mnt = MOUNT_C[anim] ? mountCurve(anim, u, arguments[5], hipBase, ankleZ, hS, wS, PR) : null;
     const yOff = (wat&&wat.yOff)||(slp&&slp.yOff)||0;
+    /* the BODY is recentred by xOff; the mount curve's own F/A targets are already absolute in the
+       machine's frame (they carry the lateral travel themselves), so they do not take it again. */
+    const xOff = (mnt&&mnt.xOff)||0;
     const hipZ0  = lad ? lad.hipZ : wat ? wat.hipZ : slp ? slp.hipZ : drv ? drv.hipZ
+                 : ast ? ast.hipZ : mnt ? mnt.hipZ
                  : rch ? rch.hipZ
                  : hipBase + (brd ? brd.rise : 0);
     const TS     = hS*PR.torsoK;
@@ -1139,12 +1395,12 @@
     stride*=PR.legK; lift*=PR.legK;
     const TOOLS = { hold:1, cast:1, dig:1, bite:1, strike:1, reel:1, land:1, castBack:1, castRelease:1 };
     const tc = TOOLS[anim] ? toolCurve(anim,u,power) : null;
-    const carry = (!tc && !wk && !wat && !slp && !drv && !rch && (arguments.length>4)) ? arguments[4] : null;
+    const carry = (!tc && !wk && !wat && !slp && !drv && !rch && !ast && !mnt && (arguments.length>4)) ? arguments[4] : null;
     const rock = arguments[5] || null;
     const bal = anim==='balance', stag = anim==='stagger';
     const tw=Math.sin(2*Math.PI*u);
     const idle = anim==='idle', calm = idle || anim==='hold' || bal || anim==='bite'
-               || anim==='tread' || anim==='sleep' || anim==='drive';
+               || anim==='tread' || anim==='sleep' || anim==='drive' || anim==='astride';
     if(tc) lean = tc.lean*DEG;
     if(carry==='tray') lean = -5*DEG;
     if(carry==='buckets') lean = lean*0.5;
@@ -1158,6 +1414,8 @@
     if(wat) lean = wat.lean*DEG;
     if(slp) lean = slp.lean*DEG;
     if(drv) lean = drv.lean*DEG;
+    if(ast) lean = ast.lean*DEG;
+    if(mnt) lean = mnt.lean*DEG;
     if(rch) lean = rch.lean*DEG;
     const senv = stag ? Math.exp(-2.4*u) : 0;
     if(stag) lean += (6*DEG)*senv*Math.sin(2*Math.PI*1.2*u);
@@ -1170,15 +1428,18 @@
     if(wat)  list = (wat.list||0)*DEG;
     if(slp)  list = (slp.list||0)*DEG;
     if(drv)  list = (drv.list||0)*DEG;
+    if(ast)  list = (ast.list||0)*DEG;
+    if(mnt)  list = (mnt.list||0)*DEG;
     if(rch)  list = (rch.list||0)*DEG;
     if(rock && rock.counter){ const c=counterLean(rock.roll||0, rock.pitch||0, rock.counter);
       list += c.list*DEG; lean += c.lean*DEG; }
     const breathe = calm ? 0.018*Math.sin(2*Math.PI*u)*hS : 0;
-    const swayX = tc ? (calm?0.012*tw:0) : ((brd||lad||wat||slp||drv||rch) ? 0 : (idle ? 0.012*tw : 0.010*tw));
+    const swayX = tc ? (calm?0.012*tw:0) : ((brd||lad||wat||slp||drv||rch||ast||mnt) ? 0 : (idle ? 0.012*tw : 0.010*tw));
     let dip;
     if(tc) dip = tc.dip*hS;
     else if(brd||lad) dip = 0;
     else if(wat||slp||drv) dip = 0;   // 6.5: bob is authored in the curve's own hipZ
+    else if(ast||mnt) dip = 0;        // 6.10: likewise — the judder and the climb are in hipZ
     else if(rch) dip = 0;             // 6.6: so is the crouch — see reachCurve's hipZ
     else if(hl)  dip = hl.dip*hS;
     else if(wk)  dip = wk.dip*hS;
@@ -1187,7 +1448,7 @@
     else if(stag) dip = 0.060*hS*senv*(u<0.5?1:0.6);
     else dip = bob*hS*(0.5+0.5*Math.cos(4*Math.PI*u));
     const hipZ = hipZ0 - dip;
-    const twS = brd||hl||lad||wk||wat||slp||drv||rch;
+    const twS = brd||hl||lad||wk||wat||slp||drv||rch||ast||mnt;
     const yawS = tc ? tc.twist*DEG : twS ? twS.twist*DEG : yaw*tw,
           yawH = tc ? tc.twist*0.45*DEG : twS ? twS.twist*0.40*DEG : -0.6*yaw*tw;
 
@@ -1208,7 +1469,7 @@
       const sgn = side==='L' ? -1 : 1;
       const p2=(u+ph)%1;
       const braceX = (carry==='helm'||carry==='oars'||carry==='pot'||bal||stag||hl||wk||rch) ? 1.55 : 1;
-      const hip0 = rotZ(yawH)([sgn*0.082*wS*PR.hipK*braceX, 0, 0]); hip0[0]+=swayX*0.5; hip0[1]+=yOff; hip0[2]=hipZ;
+      const hip0 = rotZ(yawH)([sgn*0.082*wS*PR.hipK*braceX, 0, 0]); hip0[0]+=swayX*0.5+xOff; hip0[1]+=yOff; hip0[2]=hipZ;
       let yF, zF;
       if(tc){ yF = sgn<0 ? (tc.dig?0.105:0.075) : (tc.dig?-0.085:-0.055); zF = ankleZ; }
       else if(brd){ const LG=(side==='R'?brd.lead:brd.trail); yF = LG.y; zF = ankleZ + LG.z; }
@@ -1222,6 +1483,10 @@
       else if(wat){ const LG=(side==='R'?wat.F.R:wat.F.L); yF = LG.y + yOff; zF = LG.z; }
       else if(slp){ const LG=(side==='R'?slp.F.R:slp.F.L); yF = LG.y + yOff; zF = LG.z; }
       else if(drv){ const LG=(side==='R'?drv.F.R:drv.F.L); yF = LG.y + yOff; zF = LG.z; }
+      /* 6.10: a peg is a THREE-axis target. Every earlier clip could leave the ankle's x to the hip,
+         because every earlier clip stood on a floor; a foot on a peg 0.27 m outboard cannot. */
+      else if(ast){ const LG=(side==='R'?ast.F.R:ast.F.L); yF = LG.y; zF = LG.z; }
+      else if(mnt){ const LG=(side==='R'?mnt.F.R:mnt.F.L); yF = LG.y; zF = LG.z; }
       /* 6.6: a set-down is a braced squat — the feet stay planted and staggered, and the hips do
          the descending. Same shape as a work stance, wider (braceX) because it goes lower. */
       else if(rch){ yF = (side==='R') ? rch.F.R : rch.F.L; zF = ankleZ; }
@@ -1231,7 +1496,14 @@
       /* Same guard as the arms, for the same reason: a boarding foot is the only target that can
          out-reach its own leg (at a tall rail, or at the top of the drive). Tuned so the default
          rails never need it — it is the floor under the extremes, not the mechanism. */
-      if(brd||lad||wat||slp||drv||rch){ const mx=(thigh+shin)*0.995, dy2=yF-hip0[1], dz2=zF-hip0[2], dd=Math.hypot(dy2,dz2);
+      /* A FOOT AND A HAND ARE NOT THE SAME CASE. The hands stay unclamped on the tool-clip rule — a
+         hand holding a grip has to be where the grip is, and one that isn't reads as broken. A foot
+         is the opposite: a leg too short for the pegs should HANG short of them, which is exactly
+         what a child on an adult enduro looks like. So `ast` clamps here with the mount clips, and
+         saddleMount reports the shortfall in millimetres rather than either hiding it or faking it.
+         (Leaving ast out of this guard is also what pulled the two ends of the mount contract apart
+         on every short build: 188 mm at the ankle on `girl`, 0 on `fisher`.) */
+      if(brd||lad||wat||slp||drv||rch||mnt||ast){ const mx=(thigh+shin)*0.995, dy2=yF-hip0[1], dz2=zF-hip0[2], dd=Math.hypot(dy2,dz2);
         if(dd>mx){ const k=mx/dd; yF=hip0[1]+dy2*k; zF=hip0[2]+dz2*k; } }
       /* lying on the back the knee bends UP off the mattress, not down through it */
       const [ky,kz]=ik2(hip0[1],hip0[2], yF, zF, thigh, shin, slp ? -1 : +1);
@@ -1240,17 +1512,26 @@
       const kx = lad ? hip0[0]*0.97 + sgn*0.038
                : wat ? hip0[0]*0.97 + sgn*wat.splay*hS
                : drv ? hip0[0]*0.97 + sgn*0.020
+               /* 6.10: the knees are the whole read of astride. Splayed WIDE around a tank they say
+                  motorcycle; together they say a chair with the seat missing. kneeOut comes off the
+                  curve so the bench posture (Otter) can close them without a second branch. */
+               : ast ? hip0[0]*0.97 + sgn*ast.kneeOut
+               : mnt ? hip0[0]*0.97 + sgn*mnt.kneeOut
                : slp ? hip0[0]*0.97 + sgn*0.012
                : rch ? hip0[0]*0.97 + sgn*0.030*rch.crouch*rch.bend
                : hip0[0]*0.97;
-      P.legs[side]={ hip:hip0, knee:[kx,ky,kz], ankle:[hip0[0]*0.92, yF, zF] };
+      /* the ankle's x: from the curve when the curve owns it, otherwise under the hip as always */
+      const ankX = ast ? (side==='R'?ast.F.R.x:ast.F.L.x)
+                 : mnt ? (side==='R'?mnt.F.R.x:mnt.F.L.x)
+                 : hip0[0]*0.92;
+      P.legs[side]={ hip:hip0, knee:[kx,ky,kz], ankle:[ankX, yF, zF] };
     }
     P.arms = {};
     const upA=0.230*hS*PR.legK, foA=0.210*hS*PR.legK, shZ=shZ0+breathe, sw=0.150*wS*PR.shoulderK;
     for(const [side, ph] of [['L',0.5],['R',0]]){
       const sgn = side==='L' ? -1 : 1;
       const p2=(u+ph)%1;
-      let sh = P.leanP(rotZ(yawS)([sgn*sw, 0, shZ])); sh[0]+=swayX*0.5;
+      let sh = P.leanP(rotZ(yawS)([sgn*sw, 0, shZ])); sh[0]+=swayX*0.5+xOff;
       if(listR) sh = listR(sh);
       sh[1]+=yOff;
       let ty, tz, tx=sh[0]+sgn*0.012;
@@ -1289,6 +1570,12 @@
         tx = A2.x; ty = A2.y + yOff; tz = A2.z + breathe*0.4; }
       else if(drv){ const A2 = side==='R' ? drv.A.R : drv.A.L;
         tx = A2.x; ty = A2.y + yOff; tz = A2.z; }
+      /* 6.10: a hand on a grip is a tool hand — absolute, and NOT pulled back inside the arm's
+         reach (see the guard below). If a build cannot make the bars, saddleMount() reports it. */
+      else if(ast){ const A2 = side==='R' ? ast.A.R : ast.A.L;
+        tx = A2.x; ty = A2.y; tz = A2.z + breathe*0.5; }
+      else if(mnt){ const A2 = side==='R' ? mnt.A.R : mnt.A.L;
+        tx = A2.x; ty = A2.y; tz = A2.z; }
       /* 6.6: the tool hand is an absolute world target like a work clip's — and when the tool rig
          handed its grip path in, THAT is the target, to the millimetre, until the release. */
       else if(rch){ const HH = side==='R' ? rch.R : rch.L;
@@ -2035,6 +2322,84 @@
                 same near/away test a carried tray does */
              behind: B.ct > 0.05 };
   }
+  /* ==================== THE SADDLE MOUNT CALL (6.10) ====================
+     What a compositor needs to put this figure on that machine, and what it needs to be TOLD when
+     the fit is wrong. Both rigs share the frame and the camera, so the whole placement is one
+     integer offset: the machine's pivot minus this cell's pivot. No scaling, no rotation, no
+     resampling — the rider is stamped into the machine's cell at `at`, and the pixels line up
+     because the two rigs projected the same world.
+
+       const M = AtvIso.saddleFor('SE', {body:'dirtbike', stand:0});
+       const r = CharacterIso6.saddleMount('SE', {anim:'astride', saddle:M, host:M.host});
+       blit(CharacterIso6.render('SE',{anim:'astride', saddle:M}), r.at.x, r.at.y);
+
+     `overreach` is the honest one. Hands are placed ON the grips unclamped (the tool-clip rule), so
+     a short build on a wide machine gets a straight arm and a detached-looking shoulder rather than
+     a hand that has quietly left the bar. This reports the millimetres, per hand, so a caller can
+     pick a build, move the bars, or accept it. */
+  function saddleMount(dir, opts){
+    const o0 = opts || {};
+    const anim = o0.anim || 'astride';
+    const {o,b,u,power} = resolveOpts(dir, o0);
+    const PR = propsOf(b), hS = PR.hS, wS = PR.wS;
+    const P = pose(anim, u, b, power, null, o);
+    const B = camBasis(o);
+    const pt = (p)=>{ const v=projVert(p[0],p[1],p[2],B); return {x:v.sx, y:v.sy}; };
+    const M = saddleOf(o);
+    const host = o0.host || (o0.saddle && o0.saddle.host) || null;
+    const hp = (host && host.pivot) || {x:128, y:128};
+    const at = { x: Math.round(hp.x - cx), y: Math.round(hp.y - cy) };
+    /* how far each hand is beyond the arm it hangs off */
+    const armLen = (0.230 + 0.210)*hS*PR.legK;
+    const reachOf = (side)=>{
+      const A = P.arms[side]; if(!A) return null;
+      const d = Math.hypot(A.wrist[0]-A.sh[0], A.wrist[1]-A.sh[1], A.wrist[2]-A.sh[2]);
+      return { need_m:+d.toFixed(4), have_m:+armLen.toFixed(4),
+               over_mm: Math.max(0, Math.round((d-armLen)*1000)) };
+    };
+    const oL = reachOf('L'), oR = reachOf('R');
+    /* the same question for the legs: can this build's feet actually make the pegs from the seat? */
+    const legLen = (0.280 + 0.250)*hS*PR.legK;
+    const footOf = (side, peg)=>{
+      const G = P.legs[side]; if(!G || !peg) return null;
+      const want = [peg[0], peg[1], peg[2] + PEG_ANKLE];
+      const gap = Math.hypot(G.ankle[0]-want[0], G.ankle[1]-want[1], G.ankle[2]-want[2]);
+      return { short_mm: Math.round(gap*1000), reach_m:+legLen.toFixed(4) };
+    };
+    const fL = footOf('L', M.pegL), fR = footOf('R', M.pegR);
+    const isMount = !!MOUNT_C[anim], held = !!SADDLE_C[anim];
+    return {
+      anim, at, cell:{ W, H, cx, cy }, host:hp,
+      posture: held ? (anim==='astrideStand' ? 'standing_on_pegs' : M.bench ? 'seated_bench' : 'seated_astride')
+             : isMount ? (MOUNT_REV[anim] ? 'dismounting' : 'mounting') : 'other',
+      seat:pt(M.seat), gripL:pt(M.gripL), gripR:pt(M.gripR), pegL:pt(M.pegL), pegR:pt(M.pegR),
+      handL:pt(P.arms.L.wrist), handR:pt(P.arms.R.wrist),
+      footL:pt(P.legs.L.ankle), footR:pt(P.legs.R.ankle),
+      hip:pt([P.swayX*0.5, 0, P.hipZ]),
+      head:pt([P.headC?P.headC[0]:0, P.headC?P.headC[1]:0, (P.headC?P.headC[2]:P.headZ)+0.17*PR.headK]),
+      overreach:{ L:oL, R:oR, worst_mm: Math.max(oL?oL.over_mm:0, oR?oR.over_mm:0),
+                  fits: Math.max(oL?oL.over_mm:0, oR?oR.over_mm:0) === 0 },
+      /* feet: clamped to the leg, so this is how far SHORT of the pegs they hang */
+      footgap:{ L:fL, R:fR, worst_mm: Math.max(fL?fL.short_mm:0, fR?fR.short_mm:0),
+                onPegs: Math.max(fL?fL.short_mm:0, fR?fR.short_mm:0) <= 6 },
+      /* how far she had to fold to make the bars, and whether folding was enough */
+      lean: held ? (function(){ const c=astrideCurve(anim, u, o, hS, wS, PR);
+        return { deg:+c.lean.toFixed(2), floor:c.leanFloor, solved:c.leanSolved,
+                 short_mm:c.leanShort_mm, reachable:c.leanShort_mm===0 }; })() : null,
+      saddleSupplied: M.supplied,
+      /* the machine's roll is PUBLISHED, not applied — 6.10 mounts the upright (ridden) machine.
+         Bake the bike at stand:0 for a mounted rider; see the kit's known limits. */
+      machineLean: M.leanDeg,
+      /* one-shot progress, for a game driving the clip */
+      phase: isMount ? (function(){ const c=mountCurve(anim, u, o, 0.060*hS + 0.515*hS*PR.legK, 0.060*hS, hS, wS, PR);
+        return { t:c.t, side:c.side, standSide:c.standSide, swingSide:c.swingSide,
+                 seated:+c.seated.toFixed(3), grounded:+c.grounded.toFixed(3), reachX:c.reachX }; })() : null,
+      frames: (ANIMS[anim]||ANIMS.idle).frames, ms:(ANIMS[anim]||ANIMS.idle).ms,
+      handoff: isMount ? (MOUNT_REV[anim] ? { from:(MOUNT_CAB[anim]?'astride(bench)':'astride'), to:'idle' }
+                                          : { from:'idle', to:(MOUNT_CAB[anim]?'astride(bench)':'astride') }) : null
+    };
+  }
+
   function projectLocal(dir, p, elev){
     const v=projVert(p[0],p[1],p[2],camBasis({dir, elev}));
     return { x:v.sx, y:v.sy };
@@ -2063,7 +2428,8 @@
     reachOf, gripRiseOf, reachCurve, reachMount,
     GROUPS, CAST_W1, CAST_S1, DEFAULT_BUILD,
     render, anchors, tool, carry, counter:counterLean, projectLocal, metrics, propsOf,
-    facesOf, pose, makeMats, lathe, arcLathe, limb, torsoProf, GAIN, BIAS, LN, BAYER, pass:6, revision:'6.9',   // 6.9: head 3.3 only (T2 profile hairline, T5 beard masks); body unchanged
+    saddleMount, saddleOf, resolveBuild, SADDLE_DEF, SADDLE_C, MOUNT_C, MOUNT_REV, PEG_ANKLE,
+    facesOf, pose, makeMats, lathe, arcLathe, limb, torsoProf, GAIN, BIAS, LN, BAYER, pass:6, revision:'6.10',   // 6.10: the SADDLE family — astride/astrideStand + four mount transitions, reading absolute machine metres; xOff and a curve-owned ankle x. 6.9: head 3.3 only; body unchanged
     get head(){ return root.HeadIso || null; } };
   root.CharacterIso6 = API;
   if(!root.CharacterIso5) root.CharacterIso5 = API;   // drop-in when pass 5 is not loaded

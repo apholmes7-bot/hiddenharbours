@@ -35,22 +35,22 @@ namespace HiddenHarbours.App.Editor
     {
         public const string RootName = "IslandShops";
 
-        // ⭐ The standing-up of a shop moved to ShopPlacement when Nine Mile Creek opened its own two
-        // (B2). What is left here is the ISLAND's: which trades, which ground, what the doors look at.
+        // ⭐ The standing-up of a shop is BuildingInteriorStander now: one recipe for both families.
+        // What is left here is the ISLAND's: which trades, which ground, what the doors look at.
         // These forward rather than being re-declared, so a caller reading this file still finds them and
         // there is still exactly one of each number.
 
         /// <summary>The child object name of a shop's floor plan under its shell.</summary>
-        public const string InteriorChildName = ShopPlacement.InteriorChildName;
+        public const string InteriorChildName = BuildingInteriorStander.RoomChildName;
 
         /// <summary>The child object name of the wall colliders.</summary>
-        public const string WallsChildName = ShopPlacement.WallsChildName;
+        public const string WallsChildName = BuildingInteriorStander.WallsChildName;
 
-        /// <inheritdoc cref="ShopPlacement.WallThicknessMetres"/>
-        public const float WallThicknessMetres = ShopPlacement.WallThicknessMetres;
+        /// <inheritdoc cref="BuildingInteriorStander.WallThicknessMetres"/>
+        public const float WallThicknessMetres = BuildingInteriorStander.WallThicknessMetres;
 
-        /// <inheritdoc cref="ShopPlacement.DoorwayWidthMetres"/>
-        public const float DoorwayWidthMetres = ShopPlacement.DoorwayWidthMetres;
+        /// <inheritdoc cref="BuildingInteriorStander.DoorwayWidthMetres"/>
+        public const float DoorwayWidthMetres = BuildingInteriorStander.DoorwayWidthMetres;
 
         // =====================================================================================
         //  THE SITES
@@ -213,8 +213,9 @@ namespace HiddenHarbours.App.Editor
 
                 SpriteRenderer shellRenderer = ShopCatalog.Configure(go, shell, sprite);
 
-                bool enterable = ShopPlacement.StandInterior(go, shellRenderer, site.Key, facing,
-                                                             occupant, "[StPetersShops]");
+                bool enterable = BuildingInteriorStander.Stand(
+                    go, site.Key, InteriorFamily.Shop, facing, occupant, upperPlanKey: null,
+                    shell: shellRenderer, logPrefix: "[StPetersShops]").Enterable;
 
                 placed++;
                 report.Add($"{site.Key} d{facing} at ({site.Position.x:0.#},{site.Position.y:0.#}) " +

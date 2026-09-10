@@ -67,6 +67,11 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         private readonly List<Object> _spawned = new();
+        /// <summary>The instant every scripted run starts at. Named rather than repeated so the
+        /// SetUp and RunPoseSheet cannot drift apart — they must agree, or two sheets are taken
+        /// at two different moments of the sea.</summary>
+        private const double ClockOrigin = 1000.0;
+
         private SteppedClock _clock;
         private SteadySea _sea;
         private SeaweedPresenter _presenter;
@@ -78,7 +83,7 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.Reset();
             SnagTargets.Clear();
 
-            _clock = new SteppedClock { TotalSeconds = 1000.0 };
+            _clock = new SteppedClock { TotalSeconds = ClockOrigin };
             _sea = new SteadySea();
             GameServices.Clock = _clock;
             GameServices.Environment = _sea;
@@ -227,6 +232,16 @@ namespace HiddenHarbours.Tests.PlayMode
         /// place to publish trap signals, which a presenter can only hear once it exists.</param>
         private string RunPoseSheet(SeaweedDef def, int steps, System.Action arrange = null)
         {
+            // ⚠️ THE FIXTURE OWNS ITS CLOCK, and it has to say so out loud. Two sheets are compared
+            // byte-for-byte, and Step() advances a clock this fixture SHARES across runs — so without
+            // this line the second run starts wherever the first one finished.
+            //
+            // That was invisible until 2026-09-09: the wave field's travel phase used to be
+            // ACCUMULATED inside each animator, and Install() builds a fresh one, so every run began
+            // at phase zero whatever the clock said. Water PR E made the phase ω·t at the game clock
+            // — correct, and the sea is now a pure function of (seed, gameTime) — which means the
+            // absolute instant is part of the scenario and two runs must stand at the same one.
+            _clock.TotalSeconds = ClockOrigin;
             var presenter = Install(def);
             arrange?.Invoke();
             _snagsInLastSheet = 0;

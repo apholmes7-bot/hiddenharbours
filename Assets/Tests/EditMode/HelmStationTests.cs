@@ -23,12 +23,16 @@ namespace HiddenHarbours.Tests.EditMode
     /// number cannot be both, and with a 0.9 m reach you could stand at the drawn wheel and press E into
     /// nothing.</para>
     ///
-    /// <para><b>Where the migration bar really lives.</b> <see cref="HelmStationHeadingTests"/> already
-    /// holds #789's tuned dory helm against her drawn stern and her outline at six headings. This PR does
-    /// not touch that number — the dory publishes no station, so she takes the fallback branch before
-    /// anything is computed. <see cref="TheDoryStillHasNoStation_SoTheShippedBarStillMeasuresTheFallback"/>
-    /// is what stops that suite quietly changing meaning: the day her rig starts publishing a station, it
-    /// stops being a bar on the fallback and nobody would otherwise notice.</para>
+    /// <para><b>Where the migration bar really lives.</b> <see cref="HelmStationHeadingTests"/> holds
+    /// #789's tuned offset against a drawn stern and an outline at six headings. ⚠ It is a bar on the
+    /// FALLBACK, and since 2026-09-09 it is no longer the dory's bar: she publishes a station now
+    /// (<see cref="TheDorySteersFromHerOwnAfterThwart_TheSeatTheOwnerRuled"/>), and that suite keeps
+    /// measuring the fallback only because it wires no deck data at all and calls <c>ConfigureHelm</c>
+    /// with the tuned number itself. <see cref="AShippedHullWithNoStation_StillTakesTheTunedFallback"/>
+    /// is the re-pointed oracle that stops it quietly changing meaning again: it holds the fallback
+    /// against a hull that really does publish nothing, and fails BY NAME the day the last one is
+    /// measured — which is the notice that the fallback and that suite can both be retired.</para>
+
     ///
     /// <para>Headless by construction: the hull wears a MESH visual behind the Core presentation seam (a
     /// test double), because a mesh hull is drawn exactly where her bow points — a sprite compass would
@@ -47,6 +51,13 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>The offset as both scenes still carry it, and as #789 un-projected it.</summary>
         private static readonly Vector2 ShippedHelmOffset = new Vector2(0f, -1.3f);
+
+        /// <summary>The starter dory's AFTER THWART in hull metres, exactly as
+        /// <c>docs/art/rigs/gameplay/doryIsoRig.gameplay.json</c> publishes it (<c>STATIONS[id=helm]</c>,
+        /// evaluated from her rig rather than transcribed): y = −L/2 + 0.34·L on a 4.5 m boat, and
+        /// z = the keel line at that station plus the rig's own SEAT height. Restated here because a bar
+        /// the asset supplies to itself is a mirror.</summary>
+        private static readonly Vector3 DoryThwart = new Vector3(0f, -0.72f, 0.3056f);
 
         private readonly List<Object> _spawned = new List<Object>();
         private IHullMeshPresentationService _previousService;
@@ -70,29 +81,96 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ---- the cases -------------------------------------------------------------------------------
 
-        /// <summary>⭐⭐ THE MIGRATION BAR, stated as the precondition of the suite that holds it. A hull
-        /// with no published station gets the tuned offset she always got, unchanged — and the dory is one
-        /// of those hulls, so every assertion in <see cref="HelmStationHeadingTests"/> still measures the
-        /// fallback. Asserted through the un-projection that IS the shipped behaviour, at heading north
-        /// where the projection and its inverse are exact.</summary>
+        /// <summary>
+        /// ⭐⭐ <b>THE OWNER'S SEAT.</b> The starter dory steers from her OWN after thwart, published
+        /// as <c>STATIONS[id=helm]</c> in <c>doryIsoRig.gameplay.json</c> and imported onto her deck def.
+        /// (Owner, 2026-09-09: <i>"she can walk while standing in the dory in its narrow deck, sits at
+        /// the helm with e and rows only from that position."</i>)
+        ///
+        /// <para><b>This case replaced the migration bar that stood here.</b> It used to assert the
+        /// OPPOSITE — that the dory published no station — as the precondition of
+        /// <see cref="HelmStationHeadingTests"/>, and its own failure message specified the migration:
+        /// <i>"that is good news — but the migration oracle #789 left has to be re-pointed at a hull
+        /// that still has none."</i> It has been. The re-pointed oracle is the case below this one, and
+        /// the heading suite it protects wires no deck at all, so it measures the fallback by
+        /// CONSTRUCTION rather than by the dory's data.</para>
+        ///
+        /// <para><b>The bar is her sidecar's number, not the switcher's.</b> The station is asserted
+        /// against the hull metres the rig evaluates to — a seat 0.72 m abaft amidships standing
+        /// 0.3056 m off the keel — and only THEN read back through <see cref="ControlSwitcher"/>. A
+        /// case that asked the switcher for both halves would agree with itself on any number at all.</para>
+        /// </summary>
         [Test]
-        public void TheDoryStillHasNoStation_SoTheShippedBarStillMeasuresTheFallback()
+        public void TheDorySteersFromHerOwnAfterThwart_TheSeatTheOwnerRuled()
         {
             BoatDeckDef dory = Load(DoryDeckPath);
-            Assert.IsFalse(dory.HasHelmStation,
-                "the dory's rig has begun publishing a helm station. That is good news — but it means " +
-                "HelmStationHeadingTests is no longer a bar on the FALLBACK, and the migration oracle " +
-                "#789 left has to be re-pointed at a hull that still has none before that suite can be " +
-                "trusted to mean what its doc says.");
 
-            Vector2 helm = Build(0f, dory).HelmDeckOffset();
+            Assert.IsTrue(dory.HasHelmStation,
+                "the starter dory's helm station has gone away. She is the boat the owner ruled on: she " +
+                "sits at her after thwart on E and rows only from it, so a dory with no station is a dory " +
+                "steered from a tuned screen offset 0.58 m abaft her seat, over bare bottom boards.");
+            Assert.AreEqual("STATIONS[id=helm]", dory.HelmStationSource,
+                "her station must come from the sidecar's STATIONS array by id — the provenance is the " +
+                "difference between an imported measurement and a number somebody typed into the asset");
+
+            Assert.AreEqual(DoryThwart.x, dory.HelmStationLocalMeters.x, Tol,
+                "she rows from the centreline");
+            Assert.AreEqual(DoryThwart.y, dory.HelmStationLocalMeters.y, Tol,
+                "the AFTER thwart — the first seat of the rig's thwart loop, station(0.34) of her LOA");
+            Assert.AreEqual(DoryThwart.z, dory.HelmStationLocalMeters.z, Tol,
+                "…and the seat TOP, 0.24 m above her bottom boards — a thwart you sit on, not a spot " +
+                "on the sole");
+
+            // …and the switcher actually seats her there, in her own metres.
+            Vector2 seat = Build(0f, dory).HelmDeckOffset();
+            Assert.AreEqual(DoryThwart.x, seat.x, Tol, "the switcher moved her station abeam");
+            Assert.AreEqual(DoryThwart.y, seat.y, Tol, "the switcher moved her station along the keel");
+
+            // The negative control: this is HER seat, not the shared tiller she used to be steered from.
+            Vector2 fallback = DeckAreaMath.WorldToDeck(ShippedHelmOffset, 0f, 0f, BakeElevationDeg);
+            Assert.Greater(Mathf.Abs(seat.y - fallback.y), 0.5f,
+                $"her seat {seat} is still the tuned fallback {fallback} — her own station is not reaching " +
+                "the switcher, and the import did nothing");
+
+            // …and it is somewhere she can WALK to. The fallback was not: 2.02 m abaft amidships is
+            // 0.22 m astern of the after end of her floor, which is why E at her seat used to be a reach
+            // back over the transom rather than a sit-down.
+            Assert.Less(Mathf.Abs(seat.y), dory.WalkHalfExtents.y,
+                $"her helm must lie INSIDE the floor she walks ({dory.WalkHalfExtents.y:0.00} m aft of " +
+                "amidships) — you cannot sit at a seat you cannot stand at");
+            Assert.Greater(Mathf.Abs(fallback.y), dory.WalkHalfExtents.y,
+                "harness: the fallback is supposed to be OUTSIDE her floor — if it is not, the line above " +
+                "is not distinguishing the seat from the tiller");
+        }
+
+        /// <summary>⭐ <b>THE RE-POINTED MIGRATION ORACLE.</b> A shipped hull whose rig publishes NO
+        /// station still gets the tuned offset she always got, unchanged — so the fallback branch is
+        /// exercised by real fleet data rather than surviving untested the day the last hull is measured.
+        ///
+        /// <para>This is what <see cref="HelmStationHeadingTests"/> rests on. That suite builds a bare
+        /// hull with no deck data at all and calls <c>ConfigureHelm</c> with the shipped offset, so it
+        /// measures the fallback by construction; this case is the promise that the fallback is still a
+        /// thing the game does. Asserted through the un-projection that IS the shipped behaviour, at
+        /// heading north where the projection and its inverse are exact.</para>
+        ///
+        /// <para>Chosen from the DATA rather than named. When the last unstationed hull is finally
+        /// measured this fails by NAME — and the answer then is to retire the fallback and this pair of
+        /// cases together, not to pin a hull back to none.</para>
+        /// </summary>
+        [Test]
+        public void AShippedHullWithNoStation_StillTakesTheTunedFallback()
+        {
+            (string stem, BoatDeckDef def) hull = AnUnstationedHull();
+
+            Vector2 helm = Build(0f, hull.def).HelmDeckOffset();
             Vector2 asShipped = DeckAreaMath.DeckToWorld(helm, 0f, 0f, BakeElevationDeg);
 
-            Assert.AreEqual(ShippedHelmOffset.x, asShipped.x, Tol, "x is untouched by the per-hull station");
+            Assert.AreEqual(ShippedHelmOffset.x, asShipped.x, Tol,
+                $"{hull.stem}: x is untouched by the per-hull station");
             Assert.AreEqual(ShippedHelmOffset.y, asShipped.y, Tol,
-                "with her bow north the un-projection and the projection are exact inverses, so the tuned " +
-                "number reaches the helm unchanged — the fallback branch is taken before anything is " +
-                "computed, which is why this is bit-identical by construction and not by care");
+                $"{hull.stem}: with her bow north the un-projection and the projection are exact inverses, " +
+                "so the tuned number reaches the helm unchanged — the fallback branch is taken before " +
+                "anything is computed, which is why this is bit-identical by construction and not by care");
         }
 
         /// <summary>⭐ A hull WITH a station is seated at it, in her own metres, at every heading — the
@@ -189,6 +267,28 @@ namespace HiddenHarbours.Tests.EditMode
                 : "no shipped deck carries a helm station at all — run Hidden Harbours ▸ Dev ▸ Boats ▸ " +
                   "Import deck sidecars and commit the assets, or every hull in the game is still being " +
                   "steered from the dory's tiller");
+            return default;
+        }
+
+        /// <summary>…and the mirror of it: any shipped hull whose rig publishes NO station, so the
+        /// FALLBACK branch is measured against real fleet data. Chosen from the data for the same reason
+        /// — the day the fleet is fully measured this fails by name, which is the notice that the
+        /// fallback (and the suite resting on it) can be retired.</summary>
+        private static (string stem, BoatDeckDef def) AnUnstationedHull()
+        {
+            foreach (string guid in UnityEditor.AssetDatabase.FindAssets("t:BoatDeckDef", new[] { DeckFolder })
+                                                             .OrderBy(g => g))
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                var def = UnityEditor.AssetDatabase.LoadAssetAtPath<BoatDeckDef>(path);
+                if (def == null || def.HasHelmStation) continue;
+                return (Path.GetFileNameWithoutExtension(path), def);
+            }
+
+            Assert.Fail("every shipped deck now carries a helm station. That is the end state this whole " +
+                        "migration was for — but it means ControlSwitcher's tuned fallback is no longer " +
+                        "reachable from any boat in the game, and HelmStationHeadingTests is measuring a " +
+                        "branch nothing takes. Retire the fallback and both suites, do not pin a hull back.");
             return default;
         }
 

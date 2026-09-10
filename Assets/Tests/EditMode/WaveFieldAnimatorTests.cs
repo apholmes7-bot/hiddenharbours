@@ -17,6 +17,12 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class WaveFieldAnimatorTests
     {
+        /// <summary>The game clock these ticks stand at. Since PR E the animator's
+        /// phase is the CLOSED FORM at this value rather than a running total, so a test
+        /// that ticks must say WHEN it is. Advancing it by each call's own dt reproduces
+        /// exactly what the superseded accumulator did.</summary>
+        private double _tickClock;
+
         private static readonly Vector2 SamplePos = new Vector2(12.3f, -7.7f);
         private static readonly Vector2 WindA = new Vector2(6f, 0f);
         private static readonly Vector2 WindB = new Vector2(2.5f, 9.5f);   // sharp shift: speed AND direction
@@ -41,10 +47,10 @@ namespace HiddenHarbours.Tests.EditMode
             var animator = new WaveFieldAnimator();
 
             for (int i = 0; i < 200; i++)
-                animator.Tick(Dt60, WindA, 0.35f, in field, in anim);   // build up real phase
+                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.35f, in field, in anim);   // build up real phase
             float before = Height(animator);
 
-            animator.Tick(1e-5f, WindB, 0.8f, in field, in anim);       // the weather STEPS, time doesn't
+            animator.Tick(1e-5f, _tickClock += 1e-5f, WindB, 0.8f, in field, in anim);  // the weather STEPS, time doesn't
             float after = Height(animator);
 
             Assert.AreEqual(before, after, 1e-3f,
@@ -65,13 +71,13 @@ namespace HiddenHarbours.Tests.EditMode
             var animator = new WaveFieldAnimator();
 
             for (int i = 0; i < 200; i++)
-                animator.Tick(Dt60, WindA, 0.35f, in field, in anim);
+                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.35f, in field, in anim);
 
             float previous = Height(animator);
             float maxDelta = 0f;
             for (int i = 0; i < 600; i++)   // 10 s: the whole ease through the step and beyond
             {
-                animator.Tick(Dt60, WindB, 0.8f, in field, in anim);
+                animator.Tick(Dt60, _tickClock += Dt60, WindB, 0.8f, in field, in anim);
                 float h = Height(animator);
                 maxDelta = Mathf.Max(maxDelta, Mathf.Abs(h - previous));
                 previous = h;
@@ -100,12 +106,12 @@ namespace HiddenHarbours.Tests.EditMode
             var animator = new WaveFieldAnimator();
 
             for (int i = 0; i < 300; i++)
-                animator.Tick(Dt60, WindA, 0.6f, in field, in anim);
+                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.6f, in field, in anim);
             Assert.AreEqual(2, animator.Current.Count, "sanity: the field started with two trains");
 
             // Grow it. The FIRST tick after growth is the one that used to pop.
             field.SecondaryTrainCount = 3;      // → four trains
-            animator.Tick(Dt60, WindA, 0.6f, in field, in anim);
+            animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.6f, in field, in anim);
 
             WaveTrains grown = animator.Current;
             Assert.AreEqual(4, grown.Count, "sanity: the field grew to four trains");
@@ -121,7 +127,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             // ...and it does arrive: given time, the grown trains reach their real amplitude.
             for (int i = 0; i < 900; i++)       // 15 s ≫ τ
-                animator.Tick(Dt60, WindA, 0.6f, in field, in anim);
+                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.6f, in field, in anim);
             WaveTrains settled = animator.Current;
             for (int i = 2; i < 4; i++)
                 Assert.Greater(settled[i].Amplitude, 0.02f,
@@ -138,11 +144,11 @@ namespace HiddenHarbours.Tests.EditMode
             var animator = new WaveFieldAnimator();
 
             for (int i = 0; i < 300; i++)
-                animator.Tick(Dt60, WindA, 0.6f, in field, in anim);
+                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.6f, in field, in anim);
             float before = Height(animator);
 
             field.SecondaryTrainCount = 3;
-            animator.Tick(1e-5f, WindA, 0.6f, in field, in anim);   // the field grows, time does not
+            animator.Tick(1e-5f, _tickClock += 1e-5f, WindA, 0.6f, in field, in anim);   // the field grows, time does not
             float after = Height(animator);
 
             Assert.AreEqual(before, after, 1e-3f,
@@ -162,11 +168,11 @@ namespace HiddenHarbours.Tests.EditMode
             var animator = new WaveFieldAnimator();
 
             for (int i = 0; i < 100; i++)
-                animator.Tick(Dt60, WindA, 0.5f, in field, in anim);    // a real sea first
+                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.5f, in field, in anim);    // a real sea first
             Assert.Greater(animator.Current.TotalAmplitude, 0f, "sanity: the sea was running");
 
             for (int i = 0; i < 1500; i++)                              // 25 s of dead calm
-                animator.Tick(Dt60, WindA, 0f, in field, in anim);
+                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0f, in field, in anim);
 
             WaveTrains trains = animator.Current;
             for (int i = 0; i < trains.Count; i++)
@@ -189,9 +195,9 @@ namespace HiddenHarbours.Tests.EditMode
             var animator = new WaveFieldAnimator();
 
             for (int i = 0; i < 200; i++)
-                animator.Tick(Dt60, WindA, 0.35f, in field, in anim);
+                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.35f, in field, in anim);
             for (int i = 0; i < 20; i++)                                // mid-ease: λ between A and B
-                animator.Tick(Dt60, WindB, 0.8f, in field, in anim);
+                animator.Tick(Dt60, _tickClock += Dt60, WindB, 0.8f, in field, in anim);
 
             WaveTrains trains = animator.Current;
             Assert.Greater(trains.Count, 0, "sanity: trains live");
@@ -231,8 +237,9 @@ namespace HiddenHarbours.Tests.EditMode
 
             var at30 = new WaveFieldAnimator();
             var at60 = new WaveFieldAnimator();
-            for (int i = 0; i < 90; i++)  at30.Tick(1f / 30f, WindA, 0.6f, in field, in anim);   // 3 s
-            for (int i = 0; i < 180; i++) at60.Tick(1f / 60f, WindA, 0.6f, in field, in anim);   // 3 s
+            double t30 = 0, t60 = 0;
+            for (int i = 0; i < 90; i++)  at30.Tick(1f / 30f, t30 += 1.0 / 30.0, WindA, 0.6f, in field, in anim);   // 3 s
+            for (int i = 0; i < 180; i++) at60.Tick(1f / 60f, t60 += 1.0 / 60.0, WindA, 0.6f, in field, in anim);   // 3 s
 
             Assert.AreEqual(Height(at30), Height(at60), 1e-3f,
                 "the same span of constant weather must land on the same surface whether ticked at " +
@@ -249,13 +256,15 @@ namespace HiddenHarbours.Tests.EditMode
             var a = new WaveFieldAnimator();
             var b = new WaveFieldAnimator();
 
+            double tSeq = 0;
             for (int i = 0; i < 300; i++)
             {
                 // A deterministic, drifting weather script — no RNG in tests either.
                 Vector2 wind = new Vector2(4f + Mathf.Sin(i * 0.01f) * 3f, Mathf.Cos(i * 0.013f) * 2f);
                 float sea = 0.3f + 0.2f * Mathf.Sin(i * 0.007f);
-                a.Tick(Dt60, wind, sea, in field, in anim);
-                b.Tick(Dt60, wind, sea, in field, in anim);
+                tSeq += Dt60;
+                a.Tick(Dt60, tSeq, wind, sea, in field, in anim);
+                b.Tick(Dt60, tSeq, wind, sea, in field, in anim);
             }
 
             Assert.AreEqual(Height(a), Height(b), 0f,

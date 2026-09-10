@@ -30,6 +30,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// </summary>
     public class WaveFieldBridgeTests
     {
+        /// <summary>The game clock these ticks stand at. Since PR E the animator's
+        /// phase is the CLOSED FORM at this value rather than a running total, so a test
+        /// that ticks must say WHEN it is. Advancing it by each call's own dt reproduces
+        /// exactly what the superseded accumulator did.</summary>
+        private double _tickClock;
+
         // The WaveMathTests sweep, reused (same winds/seas/positions so the grids line up).
         private static readonly Vector2[] Winds =
             { new Vector2(3f, 1f), new Vector2(-6f, 4f), new Vector2(0f, -11f) };
@@ -162,7 +168,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             float[] frameDts = { 0.016f, 0.033f, 0.008f, 0.1f, 0.016f };
             for (int frame = 0; frame < 5000; frame++)
-                animator.Tick(frameDts[frame % frameDts.Length], wind, 0.6f,
+                animator.Tick(frameDts[frame % frameDts.Length], _tickClock += frameDts[frame % frameDts.Length], wind, 0.6f,
                               in fieldSettings, in animatorSettings);
 
             WaveTrains eased = animator.Current;

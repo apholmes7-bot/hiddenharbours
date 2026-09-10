@@ -488,17 +488,19 @@ namespace HiddenHarbours.Tools.RigBaking
         /// OBJECT keyed by name with <c>{x, y, z}</c> values. The hand-authored ones (the punt, both
         /// zodiacs) publish <c>STATIONS</c> as an ARRAY of <c>{id, type, pos:[x,y,z], provenance}</c>
         /// records — the same shape <see cref="ReadCleats"/> reads, which is this repo's convention for
-        /// a list of named points. ⚠ It is NOT a map: reading it as one finds nothing, silently, on three
-        /// hulls (measured before CI, 2026-09-09). <c>helm</c> first, then <c>helm_seat</c> — on a boat
-        /// you sit at the tiller of, the station IS the seat. First match wins and
-        /// <see cref="SidecarRead.HelmStationSource"/> records WHICH: a station whose provenance is not
-        /// written down is a constant with extra steps.</para>
+        /// a list of named points. ⚠ It is NOT a map: reading it as one finds nothing, silently, on four
+        /// hulls (both Zodiacs, the punt, and since 2026-09-09 the dory). <c>helm</c> first, then
+        /// <c>helm_seat</c> — on a boat you sit at the tiller of, the station IS the seat. First match
+        /// wins and <see cref="SidecarRead.HelmStationSource"/> records WHICH: a station whose
+        /// provenance is not written down is a constant with extra steps.</para>
         ///
-        /// <para><b>Absence is data.</b> Ten shipped hulls publish no station at all (cape islander, dory,
-        /// console, coastal packet, the old lobster boat and sport skiff, side dragger, stern trawler and
-        /// Mk2, tanker). They import with <c>HasHelmStation</c> false and the switcher falls back to its
+        /// <para><b>Absence is data.</b> Eight shipped hulls publish no station at all (console,
+        /// coastal packet, the old lobster boat and sport skiff, side dragger, stern trawler and Mk2,
+        /// tanker). They import with <c>HasHelmStation</c> false and the switcher falls back to its
         /// own tuned offset, loudly and by name. A missing section is not an error here for the same
-        /// reason a missing <c>WASHBOARD</c> is not: it is a hull nobody has measured yet.</para>
+        /// reason a missing <c>WASHBOARD</c> is not: it is a hull nobody has measured yet. The cape
+        /// islander left that list in #808 and the dory on 2026-09-09 — both by hand, in
+        /// <c>STATIONS</c>, which is branch (2) below.</para>
         /// </summary>
         private static void ReadHelmStation(object root, SidecarRead read)
         {

@@ -20,7 +20,7 @@ namespace HiddenHarbours.App.Editor
     /// (#610); this is the ground they stand on.
     ///
     /// <para><b>Sites here, kit arithmetic in <see cref="StationForecourt"/></b> — the same division
-    /// <see cref="NineMileCreekShops"/> and <see cref="ShopPlacement"/> draw, and for the same reason.
+    /// <see cref="NineMileCreekShops"/> and <see cref="BuildingInteriorStander"/> draw, and for the same reason.
     /// </para>
     ///
     /// <para><b>⭐ THESE PUMPS FILL A BOAT, AND THAT BECAME TRUE SIX MINUTES BEFORE THIS FILE LANDED.</b>

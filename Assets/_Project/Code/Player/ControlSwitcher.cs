@@ -480,10 +480,17 @@ namespace HiddenHarbours.Player
 
         /// <summary>
         /// ⭐ <b>Say, once per hull and BY NAME, that this boat is being steered from the dory's
-        /// tiller.</b> Ten shipped hulls publish no station (cape islander, dory, console, coastal
-        /// packet, the old lobster boat and sport skiff, side dragger, stern trawler and Mk2, tanker),
-        /// and for them <see cref="_helmLocalOffset"/> is still the answer — which is correct for the
-        /// dory it was tuned on and a guess everywhere else.
+        /// tiller.</b> Eight shipped hulls publish no station (console, coastal packet, the old
+        /// lobster boat and sport skiff, side dragger, stern trawler and Mk2, tanker), and for them
+        /// <see cref="_helmLocalOffset"/> is still the answer — a number tuned on the dory and a
+        /// guess everywhere else.
+        ///
+        /// <para>⚠ <b>The dory is no longer one of them, and neither is the cape.</b> The cape
+        /// islander was measured in #808 and the dory on 2026-09-09, when the owner ruled she
+        /// <i>"sits at the helm with e"</i> and her sidecar gained <c>STATIONS[id=helm]</c> on her
+        /// after thwart. So the hull this offset was tuned on now steers from her own imported
+        /// point, and what is left below is a legacy default with eight users — every one of them a
+        /// boat nobody has measured yet, not a boat this number was ever tuned for.</para>
         ///
         /// <para><b>Why a log and not a warning, and why once.</b> A hull with no measured station is
         /// not broken — it is unmeasured, and absence is data (the deck sidecars' own law). But a
@@ -1053,10 +1060,17 @@ namespace HiddenHarbours.Player
         private void PublishBoatOwnership()
         {
             // The HELM: only while she is actually steering.
+            //
+            // ⚠ THE ROWED HULL IS NO LONGER AN EXCEPTION HERE. The paragraph below this pair used to
+            // say "a rowed dory has no helm at all", and on 2026-09-09 the owner overturned exactly that:
+            // she sits at the dory's after thwart on E and ROWS ONLY FROM IT. The thwart is published as
+            // STATIONS[id=helm] in her sidecar and imported onto BoatDeckDef.HelmStationLocalMeters, so
+            // this write is now load-bearing on a rowed boat too — DevBoatInput.RowingStationManned reads
+            // the slot to decide whether an oar may move at all, and this method is its ONLY writer.
             GameServices.Helm.SetPilotedHull(_mode == ControlMode.Aboard ? _boatController : null);
-            // The BOAT: at the helm or on her deck. Wider on purpose — a rowed dory has no helm at all
-            // and her anchor still answers to the player, and stepping back from the wheel gives up the
-            // wheel, not the boat.
+
+            // The BOAT: at the helm or on her deck. Wider on purpose — her anchor still answers to the
+            // player from the deck, and stepping back from the wheel gives up the wheel, not the boat.
             GameServices.Helm.SetPlayersBoat(
                 _mode == ControlMode.Aboard || _mode == ControlMode.OnDeck ? _boatController : null);
         }

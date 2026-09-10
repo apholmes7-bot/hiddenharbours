@@ -47,6 +47,12 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class MeshRockSmoothnessTests
     {
+        /// <summary>The game clock these ticks stand at. Since PR E the animator's
+        /// phase is the CLOSED FORM at this value rather than a running total, so a test
+        /// that ticks must say WHEN it is. Advancing it by each call's own dt reproduces
+        /// exactly what the superseded accumulator did.</summary>
+        private double _tickClock;
+
         const float Dt = 1f / 60f;
         const int Frames = 600;                       // 10 s of sail
 
@@ -296,7 +302,7 @@ namespace HiddenHarbours.Tests.EditMode
             var phase = new float[Frames];
             for (int f = 0; f < Frames; f++)
             {
-                animator.Tick(Dt, new Vector2(6f, 3f), 0.40f, in settings, in animSettings);
+                animator.Tick(Dt, _tickClock += Dt, new Vector2(6f, 3f), 0.40f, in settings, in animSettings);
                 WaveSample wave = animator.Sample(Vector2.zero);
                 WaveTrain dominant = animator.Current[0];
                 float k = (2f * Mathf.PI) / Mathf.Max(WaveTrain.MinWavelengthMeters, dominant.Wavelength);
