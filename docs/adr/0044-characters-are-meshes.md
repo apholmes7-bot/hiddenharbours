@@ -270,8 +270,15 @@ series, and one observation cannot tell them apart** — a blank frame is equall
 **Gate 1 — the pass is recorded only while a mesh HULL is registered. FOUND, and it is the finding
 that outranks the other one.** `AddRenderPasses` opens with `bool hulls = IsoFacetHullRegistry.Count
 > 0` and returns early when no hull, water, reflector or foam wants the frame.
-`IsoFacetHullRegistry.Register` is `internal` **and** typed to `IsoFacetHullRenderer`, called only
-from that component's `OnEnable`. So:
+`IsoFacetHullRegistry.Register` (`:31`) is `internal` **and** typed to `IsoFacetHullRenderer`, with
+exactly one production caller — `IsoFacetHullRenderer.cs:716`, in that component's `OnEnable`.
+
+**The gate is not that early return, and the difference matters.** Water alone keeps the feature
+alive past `:199`. What closes the door is the facet block itself: `IsoFacetHullFeature.cs:847`
+opens `if (drawHulls)`, and **both** renderer lists are created inside it — the `HHHullFacet` list
+**and** the `HHHullDeck` deck-occupant list, which is the one a character aboard would ride in on.
+`drawHulls = DrawHulls && ResolveMaterial != null` (`:471`) is fed from `Count > 0` (`:163` →
+`:247`). With no hull registered the raster pass is never added and neither list is created. So:
 
 > **A mesh character draws through the facet path only in a frame that also carries a registered
 > mesh hull.** Aboard the dory that is free. On the wharf it is nothing at all.
