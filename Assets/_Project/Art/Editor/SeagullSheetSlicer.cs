@@ -182,6 +182,15 @@ namespace HiddenHarbours.Art.Editor
                 return 0;
             }
 
+            // ⚠️ THE CAP RAISE MUST LAND BEFORE THE BATCH OPENS. StartAssetEditing below defers
+            // every import until StopAssetEditing, which makes a SaveAndReimport inside the block a
+            // no-op — see EnsureNativeResolutionImport for the measurement.
+            if (!EnsureNativeResolutionImport(sheetPath, contract))
+            {
+                failed++;
+                return 0;
+            }
+
             try
             {
                 AssetDatabase.StartAssetEditing();
@@ -290,7 +299,20 @@ namespace HiddenHarbours.Art.Editor
             return true;
         }
 
-        public static bool SliceSheet(string assetPath, Contract contract)
+        /// <summary>
+        /// Brings the sheet in at native resolution, and refuses if it cannot.
+        ///
+        /// <para><b>Why this is not inside <see cref="SliceSheet"/>.</b> It was, and it did not
+        /// work. <see cref="SliceAll"/> runs the slice inside <c>AssetDatabase.StartAssetEditing()</c>,
+        /// which DEFERS every import to the matching <c>StopAssetEditing()</c>. A
+        /// <c>SaveAndReimport()</c> issued in there does nothing until the block closes, so the
+        /// texture read a few lines later was still the DOWNSCALED import, the dimension guard fired,
+        /// and a bake that had written a perfectly good 3072×512 PNG reported <c>failed 1</c>.
+        /// MEASURED 2026-09-10 on the seagull's first bake: the editor log carried no import at all
+        /// between the cap-raise line and the refusal, and the reimport landed only once the block
+        /// closed. Raising the cap out here, where the reimport is synchronous, is the fix.</para>
+        /// </summary>
+        public static bool EnsureNativeResolutionImport(string assetPath, Contract contract)
         {
             if (AssetImporter.GetAtPath(assetPath) is not TextureImporter importer)
             {
@@ -318,12 +340,29 @@ namespace HiddenHarbours.Art.Editor
                           $"{importer.maxTextureSize} — raising maxTextureSize to {needed} so the " +
                           "sheet imports at native resolution.");
                 importer.maxTextureSize = needed;
+                LockImportSettings(importer);
                 importer.SaveAndReimport();
+                AssetDatabase.ImportAsset(assetPath,
+                    ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+            }
+
+            return true;
+        }
+
+        public static bool SliceSheet(string assetPath, Contract contract)
+        {
+            if (AssetImporter.GetAtPath(assetPath) is not TextureImporter importer)
+            {
+                Debug.LogError($"[SeagullSheetSlicer] '{assetPath}' has no TextureImporter — skipping.");
+                return false;
             }
 
             LockImportSettings(importer);
 
-            // Load AFTER the reimport above — a mid-build import invalidates any texture read before it.
+            // The cap and its reimport were settled by EnsureNativeResolutionImport BEFORE the
+            // deferred-import block opened, so the guard below is a real one again rather than a
+            // self-inflicted failure: if the texture still is not the size the contract plans,
+            // something outside this slicer changed it.
             var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
             if (tex == null)
             {

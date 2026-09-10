@@ -315,9 +315,10 @@ namespace HiddenHarbours.Tests.RigBaking
         // =================================================================================
 
         /// <summary>
-        /// The contract that actually ships, put through the same refusals. Ignored — not passed —
-        /// while the sheet is held: a test that quietly passes on a missing file is a test that
-        /// stops noticing when the file arrives wrong.
+        /// The contract that actually ships, put through the same refusals. This was written to
+        /// SKIP while the sheet was held — a test that quietly passes on a missing file is a test
+        /// that stops noticing when the file arrives wrong — and it turns into the failure below in
+        /// the commit that lands the sheet, because from here on "it is not there" is the defect.
         /// </summary>
         [Test]
         public void TheCommittedContractIsOneTheSlicerAccepts()
@@ -325,8 +326,9 @@ namespace HiddenHarbours.Tests.RigBaking
             string root = Directory.GetParent(Application.dataPath).FullName;
             string abs = Path.Combine(root, SeagullSheetSlicer.ContractPath);
             if (!File.Exists(abs))
-                Assert.Ignore($"'{SeagullSheetSlicer.ContractPath}' is not committed yet — it lands " +
-                              "with the baked sheet. Run \"Hidden Harbours/Art/Bake Seagull\".");
+                Assert.Fail($"'{SeagullSheetSlicer.ContractPath}' is missing. It ships with the sheet " +
+                            "and the two are committed together — a sheet without its contract is a " +
+                            "grid nothing can re-cut. Run \"Hidden Harbours/Art/Bake Seagull\".");
 
             var c = JsonUtility.FromJson<SeagullSheetSlicer.Contract>(File.ReadAllText(abs));
             Assert.IsTrue(SeagullSheetSlicer.Validate(c, out string why), why);
@@ -342,6 +344,95 @@ namespace HiddenHarbours.Tests.RigBaking
                 Order.SelectMany(o => Enumerable.Range(0, o.frames).Select(f => $"{o.anim}:{f}")).ToArray(),
                 c.order.Select(o => $"{o.anim}:{o.frame}").ToArray(),
                 "the committed column order is not the rig's AORDER × frame counts");
+        }
+
+        /// <summary>
+        /// ⚠️ <b>THE SPRITE COUNT IS NOT THE GUARD — the count is what fooled us.</b>
+        ///
+        /// <para>MEASURED 2026-09-10, the seagull's first headless bake. The slicer refused (its cap
+        /// raise was stranded inside <c>AssetDatabase.StartAssetEditing()</c>, which defers every
+        /// import), the bake logged success anyway, and the <c>.meta</c> left on disk carried 384
+        /// sprite rects — EXACTLY the right number. They were Unity's automatic alpha-trimmed
+        /// detection over the DOWNSCALED 2048×341 import: named <c>Seagull_0</c>…<c>Seagull_383</c>,
+        /// rects like <c>x:857 y:462 w:14 h:18</c>, pivot <c>{0,0}</c>, alignment 0. The count read
+        /// right only because there are 384 cells each holding exactly one bird, and every one of
+        /// those blobs is one bird. A sheet in that state imports clean, reports its 384 sprites to
+        /// anything that asks, and draws every gull from the wrong pixels hung by the wrong point.</para>
+        ///
+        /// <para>So this asserts the GRID, and it takes its bar from this fixture's own constants
+        /// rather than from the contract sitting beside the sheet: every sprite is named by
+        /// <see cref="SeagullSheetSlicer.SpriteName"/>, sits on the 64×64 lattice at the column its
+        /// state and frame occupy in <see cref="Order"/>, and hangs at the ADR 0026 flip of the
+        /// contract's top-left pivot. It is what turns that defect into a red in CI — no editor
+        /// session, no eyes on the art.</para>
+        /// </summary>
+        [Test]
+        public void TheCommittedSheetCarriesTheSlicersGrid_NotUnitysAutoDetectedRects()
+        {
+            const string sheet = SeagullSheetSlicer.SheetFolder + "/Seagull.png";
+            string root = Directory.GetParent(Application.dataPath).FullName;
+            if (!File.Exists(Path.Combine(root, sheet)))
+                Assert.Fail($"'{sheet}' is missing. It ships in this commit, via Git LFS — an LFS " +
+                            "pointer that was never smudged leaves the path present but this file " +
+                            "absent. Run \"Hidden Harbours/Art/Bake Seagull\".");
+
+            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(sheet);
+            Assert.IsNotNull(tex, $"'{sheet}' is on disk but does not load as a Texture2D — is its " +
+                                  ".meta committed alongside it?");
+            Assert.AreEqual(Columns * Cell, tex.width,
+                "the committed sheet imported at the wrong width. 2048 or less means Unity's default " +
+                "texture cap downscaled it SILENTLY: rects refitted, pivots thrown away, and the " +
+                "sprite count still reads 384. maxTextureSize must be 4096 in the .meta.");
+            Assert.AreEqual(Rows * Cell, tex.height, "the committed sheet imported at the wrong height.");
+
+            // ⚠️ Multiple-mode sheets return null from LoadAssetAtPath<Sprite> — LoadAllAssetsAtPath
+            // is the rule. Cf. FlowerCatalogTests.
+            var sprites = AssetDatabase.LoadAllAssetsAtPath(sheet).OfType<Sprite>().ToArray();
+            Assert.AreEqual(Rows * Columns, sprites.Length,
+                "the committed sheet does not carry 384 sprites. ZERO means spriteImportMode is " +
+                "Multiple with no rects at all — which imports clean and reads back as a correctly " +
+                "configured sheet everywhere except here.");
+
+            var byName = new Dictionary<string, Sprite>(StringComparer.Ordinal);
+            foreach (var sp in sprites)
+                Assert.IsTrue(byName.TryAdd(sp.name, sp), $"two sprites are both named '{sp.name}'.");
+
+            // The ADR 0026 flip: the contract's pivot is TOP-left, Unity's normalised pivot is
+            // BOTTOM-left. Spelled out here rather than read from Contract.NormalisedPivot, so a
+            // sign error in production cannot also move this fixture's expectation.
+            var wantPivot = new Vector2((float)PivotXPx / Cell, (float)(Cell - PivotYPx) / Cell);
+
+            int col = 0;
+            foreach (var (anim, frames) in Order)
+                for (int f = 0; f < frames; f++, col++)
+                    for (int row = 0; row < Rows; row++)
+                    {
+                        string name = SeagullSheetSlicer.SpriteName(anim, f, row);
+                        Assert.IsTrue(byName.TryGetValue(name, out var sp),
+                            $"no sprite named '{name}'. Names of the form 'Seagull_<n>' mean Unity's " +
+                            "automatic sprite detection wrote this .meta and the slicer never ran — " +
+                            "and it produces exactly 384 of them on this sheet, so the count above " +
+                            "cannot tell you. Re-bake and commit the .meta the slicer writes.");
+
+                        Assert.AreEqual(new Rect(col * Cell, (Rows - 1 - row) * Cell, Cell, Cell), sp.rect,
+                            $"'{name}' is not on the 64×64 lattice. A rect narrower or shorter than a " +
+                            "cell is alpha-fitted auto-detection. A rect on the wrong row is the " +
+                            "bottom-origin flip applied twice — art that is very nearly right.");
+
+                        var got = new Vector2(sp.pivot.x / sp.rect.width, sp.pivot.y / sp.rect.height);
+                        Assert.AreEqual(wantPivot.x, got.x, 1e-4f, $"'{name}': pivot x is {got.x}.");
+                        Assert.AreEqual(wantPivot.y, got.y, 1e-4f,
+                            $"'{name}': pivot y is {got.y}, want {wantPivot.y} — the flip of the " +
+                            $"contract's top-left {PivotYPx}. A pivot of 0 is auto-detection's default " +
+                            "and hangs every gull by the corner of its trimmed box.");
+
+                        Assert.AreEqual(32f, sp.pixelsPerUnit, 1e-4f,
+                            $"'{name}': {sp.pixelsPerUnit} PPU, want 32 — one pixel per world " +
+                            "1/32 m is the whole of the strict-scale ruling.");
+                    }
+
+            Assert.AreEqual(Columns, col,
+                "the Order table does not walk 48 columns, so the sweep above skipped part of the sheet");
         }
     }
 }

@@ -54,7 +54,18 @@ namespace HiddenHarbours.Tools.RigBaking
             // SILENTLY DOWNSCALED one. The slicer lifts the cap from the contract's
             // requiredMaxTextureSize before it reads the texture; leaving the sheet for a later
             // manual slice is leaving it half-imported.
-            Art.Editor.SeagullSheetSlicer.SliceAllMenu();
+            // ⚠️ Not SliceAllMenu(): it logs its counts and returns void, so a FAILED slice fell
+            // straight through to the success line below and BakeSeagullFromCommandLine exited 0. A
+            // headless bake reporting green over an UNSLICED sheet is the worst failure this tool
+            // has — the PNG and contract look committed while the .meta carries no grid at all, and
+            // Unity's automatic sprite detection fills it with the RIGHT NUMBER of wrong rects. Take
+            // the counts and throw.
+            int sliced = Art.Editor.SeagullSheetSlicer.SliceAll(out int skipped, out int failed);
+            if (failed > 0 || sliced != 1)
+                throw new InvalidOperationException(
+                    $"[rig-baker] the seagull sheet did NOT slice (sliced {sliced}, skipped {skipped}, " +
+                    $"failed {failed}). The PNG and the contract are on disk but the .meta carries no " +
+                    "grid — do not commit this state. The slicer logged the reason above.");
 
             Debug.Log("[rig-baker] Seagull baked and sliced. COMMIT the results: " +
                       $"{OutputFolder}/{SeagullBaker.SheetName}.png + its .meta (LFS covers *.png), " +
