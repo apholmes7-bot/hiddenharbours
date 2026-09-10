@@ -384,6 +384,15 @@ namespace HiddenHarbours.Tests.EditMode
                           "It is arithmetic for ranking the options, not a plate. The plate is the proof.");
             sb.AppendLine();
 
+            // ------------------------------------------------------------------- the table goes to disk FIRST
+            // ⚠ The table IS this fixture's deliverable, so it is written BEFORE the first Assert: a red
+            // run must still leave the numbers behind to diagnose from, and an assertion that throws takes
+            // everything after it with it. The Debug.Log stays at the END on purpose — a report EMITTED
+            // ahead of its assertions is attributed to no test and reads as SKIPPED in the results.
+            Directory.CreateDirectory(OutDir);
+            File.WriteAllText(Path.Combine(OutDir, "LADDER.txt"), sb.ToString());
+            Assert.IsTrue(File.Exists(Path.Combine(OutDir, "LADDER.txt")), "the ladder table must be written");
+
             // ------------------------------------------------------------------------------- the assertions
             // SHAPE only. A rougher sea must never mirror MORE, and a dead calm must suffer no reduction.
             const float Step = 0.02f;
@@ -420,10 +429,7 @@ namespace HiddenHarbours.Tests.EditMode
                             "on a glassy calm the reflection must be the blended master, undiminished — " +
                             "row 5's mirror is the one thing this ladder guards");
 
-            Directory.CreateDirectory(OutDir);
-            File.WriteAllText(Path.Combine(OutDir, "LADDER.txt"), sb.ToString());
             Debug.Log("[water-ladder]\n" + sb);
-            Assert.IsTrue(File.Exists(Path.Combine(OutDir, "LADDER.txt")), "the ladder table must be written");
         }
     }
 }
