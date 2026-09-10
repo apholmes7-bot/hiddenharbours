@@ -1,6 +1,8 @@
 # ADR 0044 — Characters are MESHES in every state; the baked 8-dir sheets retire per state, at parity
 
-- **Status: PROPOSED** — written by the mesh-characters lane in PR 1 (`feat/character-mesh-tools`)
+- **Status: PROPOSED** — written by the mesh-characters lane in PR 1 (`feat/character-mesh-tools`),
+  amended 2026-09-10 by the skinned bake (`feat/character-skinned-assets`): §3.6 records that the
+  owner took option (d) and what it measures, §3.7 the facet-pass gates
   because the owner's overrule of 2026-09-09 changed a ratified decision and the change must be
   recorded in the PR that makes it. **The seat ratifies.** Nothing here retires a sheet by itself:
   the retirements are PR 3's, one per state, each at measured parity (the ADR 0041 law).
@@ -78,7 +80,7 @@ by a byte-identity guard.
 
 | measurement | value |
 |---|---|
-| `ANIMS` | **29 clips, 230 frames** |
+| `ANIMS` | **29 clips, 230 frames** (rig 6, at the time of writing; rig 7 ships **35 clips, 308 frames** — §3.6) |
 | MATS declared for fisher | 36 (27 with a per-material gain, 8 with a fixed `idx`, **0 with `dith`**) |
 | materials actually USED by fisher | **12** (`boot bootL brass collar hair over overD shirt skin sleeve sole stub`) |
 | materials used, whole cast | 12–17 — **deckboss 17 and packer 17 exceed the `_RampMeta[16]` cap** |
@@ -161,7 +163,8 @@ cannot carry by construction.
 
 **§3.2’s 44.1 MB is a FLIPBOOK number** — 334 pose meshes, one per state per frame. The rigidity
 measurement that followed it said the same character is expressible as ONE mesh posed by bones (35
-rigid bones, 0.000 mm drift over 308 poses), which is roughly 90× smaller. The art director shipped
+rigid bones, 0.000 mm drift over 308 poses), which is roughly two orders smaller (**74×**, once
+baked and measured — §3.6; this paragraph originally estimated 90× from the rigidity study alone). The art director shipped
 exactly that on 2026-09-09 as **`characterIsoRig7.js` rev 7.1**: a skeleton, one bind mesh, and bone
 clips. It is registered as catalog key **`characterSkin`** (prerequisite `character`), and this ADR
 records the claim only because the claim was **re-run in this repo**, not read off the drop:
@@ -175,8 +178,9 @@ records the claim only because the claim was **re-run in this repo**, not read o
 
 **What this does and does not settle.** It does not take §5.1 — that decision is still the seat’s.
 It changes the MENU §5.1 chooses from: the question stops being “ship 334 meshes, bake them at
-import, or bake them at build” and becomes “ship ONE mesh and its clips”, at roughly 0.47 MB per
-preset against 44.1 MB. The 17-materials cap (§5.3) and the shader widening (§5.2) are untouched by
+import, or bake them at build” and becomes “ship ONE mesh and its clips”, at **0.60 MB** per
+preset against 44.1 MB (§3.6 — measured after the bake; the 0.47 MB written here first was an
+estimate that had not yet paid for `boneWeights` and `bindposes`). The 17-materials cap (§5.3) and the shader widening (§5.2) are untouched by
 it: an export changes how the vertices are produced, not what colours them.
 
 ⚠️ **It rides on the body, by prototype.** `CharacterIso7` is `Object.create(CharacterIso6)`, and it
@@ -184,7 +188,128 @@ names the base it re-expresses (`CharacterIso7.base === CharacterIso6.revision`)
 forgets the export costs nothing at load time and everything at draw time, so the agreement is a
 CI guard (§6), not a README line.
 
-## 4. What this PR actually lands
+### 3.6 Option (d) is taken, and this is what it costs (added 2026-09-10)
+
+**The owner ruled on 2026-09-09: characters are ONE SKINNED MESH per preset — a bind mesh, a
+skeleton, and one clip per `ANIMS` row.** That is option (d) of §5.1, and this PR is the bake that
+makes it a fact instead of an estimate. Everything below is measured on `fisher`, the PLAYER preset,
+by `CharacterSkinAssetBaker.Compose` — CPU-only, no editor slot, reproducible in CI.
+
+#### The size, against the flipbook it replaces
+
+| what | bytes | |
+|---|---:|---|
+| bind mesh geometry (pos + normal + uv0 + indices) | 138,520 | 135.3 KB |
+| `boneWeights` (2,992 × 32 B) | 95,744 | 93.5 KB |
+| `bindposes` (45 × 64 B) | 2,880 | 2.8 KB |
+| **bind mesh, total** | **237,144** | **231.6 KB** |
+| 35 clips (308 frames × 45 bones × 28 B) | 388,080 | 379.0 KB |
+| **the player preset, total** | **625,224** | **610.6 KB = 0.60 MB** |
+| the flipbook it replaces (§3.2) | | **44.1 MB** |
+| **ratio** | | **74.0× smaller** |
+| the whole cast at this rate (×10) | | **5.96 MB** |
+
+Bake wall-clock: **2,101 ms** for the preset. The geometry: 711 faces, 1,570 triangles, 2,992
+corners, 45 bones, 2,920 vertices at one weight and **72 at two**, max bone index 35.
+
+**The 0.60 MB is the honest number and it is bigger than §3.5's 0.47 MB estimate**, because the
+estimate priced the vertices and forgot what makes them skinnable: `boneWeights` is 93.5 KB, 40% of
+the bind mesh, and it is not optional.
+
+#### The fidelity, in two numbers, both of which must be quoted
+
+The posed bind mesh was replayed against rig 6's own `facesOf` — every clip, every frame, 921,536
+corner samples — outside Unity, on a standalone V8 host:
+
+| what | measured | against the rig's own 1e-4 m tolerance |
+|---|---|---|
+| the transcription in double | **3.461e-13 m** | exact |
+| the shipped **float32** Def, worst overall | **5.845e-5 m** | **1.71×** margin |
+| the shipped float32 Def, the four `mount*` clips set aside | **3.907e-7 m** | **256×** margin |
+
+⚠️ **The 1.71× is not the skinning; it is a rig-6 defect the skinning inherits.** The four `mount*`
+clips fling `boot_R`/`boot_cuff_R` **100–356 m** from the rig origin for four or five consecutive
+MID-clip frames and then cancel back — catastrophic cancellation through a 356 m lever arm, where a
+float32 ulp is 3.05e-5 m. Every other clip stays inside 1.93 m. **The flipbook bakes those frames
+too** (`goldenRow` walks the same `k`), so this is not a cost of the mesh route; it is a defect the
+mesh route made visible. `docs/art/rigs/**` is the art-director's — **filed, not fixed here.**
+Do not widen the guard to buy room: the bar is `CharacterIso7.TOL`, read off the rig.
+
+#### ⚠️ A clip is discrete samples, not a curve
+
+Adjacent frames step up to **178.3°** on a single bone (20 of 315 adjacent bone-steps in `walk`
+alone exceed 90°). `solveAt(anim, u)` is a closed-form pose function sampled at `u = k/den`;
+consecutive samples are not required to be near each other in quaternion space. **A presenter must
+step frames — sample-and-hold at `FramesPerSecond` — never slerp between them, never cross-fade
+between clips, never retarget through an `Animator` that assumes a continuous curve.** Smoothing has
+to come from the rig authoring more frames. Guarded in §6.
+
+#### ⚠️ Two things a skinned character does NOT bring with her
+
+1. **No face.** The rig draws eyes, brows and mouth as a raster STAMP over the rendered figure, not
+   as geometry — it is ≤2.82% of her pixels and it is not in the mesh. A mesh character is
+   featureless until the presenter re-adds the stamp. This is a PR-2 obligation, not a nice-to-have.
+2. **No facet pass, when she is ashore alone.** See §3.7.
+
+#### The asset path
+
+`Assets/_Project/Data/Characters/Skin/<preset>.asset`, id `charskin.<preset>`. The flipbook already
+owns `Data/Characters/<preset>.asset` and `AssetDatabase.CreateAsset` REPLACES; a shared path would
+delete the sheet Def the game currently draws from. `CharacterMeshDef` is left in place and
+untouched — the two routes coexist until PR 2 chooses.
+
+### 3.7 The riskiest unknown, asked as a test: does the facet pass draw a skinned renderer?
+
+The mesh fleet is drawn by `IsoFacetHullFeature`, which collects subjects with a
+`ShaderTagId("HHHullFacet")` renderer list. Every mesh that has ever gone through it is a
+`MeshRenderer`; `SkinnedMeshRenderer` appears nowhere else in this repository. **It is two gates in
+series, and one observation cannot tell them apart** — a blank frame is equally consistent with
+"the pass never ran" and "the pass ran and skipped her" — so they are two tests
+(`CharacterSkinFacetPassTests`).
+
+**Gate 1 — the pass is recorded only while a mesh HULL is registered. FOUND, and it is the finding
+that outranks the other one.** `AddRenderPasses` opens with `bool hulls = IsoFacetHullRegistry.Count
+> 0` and returns early when no hull, water, reflector or foam wants the frame.
+`IsoFacetHullRegistry.Register` is `internal` **and** typed to `IsoFacetHullRenderer`, called only
+from that component's `OnEnable`. So:
+
+> **A mesh character draws through the facet path only in a frame that also carries a registered
+> mesh hull.** Aboard the dory that is free. On the wharf it is nothing at all.
+
+This is true of **both** candidate presenter paths — a CPU-skinned `MeshRenderer` is exactly as
+invisible ashore as a `SkinnedMeshRenderer` — so it does not choose between them; it prices them
+both. Opening the gate is a change to `IsoFacetHullFeature`/`IsoFacetHullRegistry`, which are the
+**water lane's** files (§5.2 is the same boundary). **Filed for that lane, not taken here.**
+
+**Gate 2 — given the pass IS recorded, does the list include her? PREDICTED, not yet evidenced.**
+The list is built with `DrawingSettings(HHHullFacet, sorting) { perObjectData = None }` +
+`FilteringSettings(RenderQueueRange.all)`: no layer mask, no renderer-type discriminator — the same
+API URP's own opaque pass uses to draw skinned characters, and Unity skins into a vertex buffer
+*before* the draw, passing non-position streams through unchanged (so `attrs : TEXCOORD0`, which
+carries the per-face facet data, survives). The necessary conditions are asserted headlessly and all
+hold: the shader carries the tag, the material's queue is inside `RenderQueueRange.all`, the
+renderer survives culling, `FilteringSettings` exposes no member that could name a renderer class.
+
+**That is a prediction. The evidence needs pixels, and CI has no GPU** — recording this pass on a
+null device does not fail, it crashes the editor. `TheSkinnedRendererPaintsTheSameFacetPixelsAsThe
+CpuSkinnedMesh` stands the hull up itself (so gate 1 is known-open while gate 2 is read), draws the
+same figure both ways in one stage sharing material, property block and transform, and carries a
+bone-rotation sabotage so a fixture that rendered nothing twice cannot report a perfect match. **It
+is written and it is unrun until this lane is granted the editor slot; it `Assert.Ignore`s loudly on
+CI, and a green CI run carries no evidence about it.** This ADR is amended with the verdict when it
+runs — until then §3.7's gate-2 line reads PREDICTED.
+
+**Option (b) is costed regardless, because the handoff asked for the number either way.**
+CPU-skinning the bind mesh — 45 bone matrices, 2,992 corners at ≤2 influences, positions and
+normals, into a reused `Mesh` — is measured by `CpuSkinningTheBindMeshCostsThisMuchOfAFrame` and
+reported against the 16.67 ms frame, per figure and ×10 for the cast. It is an EditMode stopwatch on
+one machine: an order-of-magnitude figure for choosing a path, not a budget gate, and its assertion
+is a loose ceiling that only catches a change of ORDER (four influences, or per-frame allocation).
+
+## 4. What PR 1 landed
+
+*(This section describes the mesh-tools PR that first wrote this ADR. The skinned bake of
+§3.6 is a later PR against the same ADR; §3.6/§3.7 are its record.)*
 
 `SpikeDeckCharacterMesh/` is retired, losslessly:
 
@@ -209,8 +334,11 @@ this PR leaves it EMPTY, and PR 3 flips it per state.
    import? Bake at build? This is the decision that decides whether the whole cast follows the
    player.
    **Update 2026-09-09:** still open, but the menu changed — rig 7 (§3.5) puts ONE skinned mesh
-   plus clips on the table, ~0.47 MB per preset instead of 44.1 MB, measured to land on the same
+   plus clips on the table, **0.60 MB** per preset instead of 44.1 MB, measured to land on the same
    vertices to 4.02e-13 m. The choice is the seat’s; the option it was missing now exists.
+   **TAKEN 2026-09-09 by the owner, and landed by this PR as §3.6: option (d), ship the skinned
+   Def.** What stays open under this heading is only the CAST — §3.6’s 5.96 MB for ten presets is a
+   number, not yet a ruling.
 2. **The shader widening** — `_RampMeta.zw` for per-material gain/bias, plus a per-object
    dither-mode uniform. `IsoFacetHullFeature` and the facet resolve shader are the **WATER lane's**;
    this is a boundary question, not this lane's to take.
@@ -241,3 +369,23 @@ this PR leaves it EMPTY, and PR 3 flips it per state.
   revision, the golden inside the rig’s own tolerance, 64 render probes byte-identical, and the
   BLENDED collapse still costing >100× tolerance so the exception keeps earning itself.
 - **Def completeness** and **materials-used ≤ 16**.
+
+**Added by the skinned bake (§3.6), EditMode, `Assets/Tests/EditMode/RigBaking/`:**
+
+- **the posed bind mesh IS the rig** — skin every vertex on every frame of every clip and compare
+  against rig 6's own `facesOf`, within the rig's **1e-4 m**. This is the guard the whole option
+  rests on: if linear blend skinning cannot reproduce the lathe, there is no skinned character.
+- **vertex ORDER matches the rig's**, not just the vertex set — a reordering would pass a
+  nearest-point comparison and ship a scrambled `boneWeights` table.
+- **rig-hash identity** — the Def carries an LF-normalised SHA-256 of both rig sources; a bake
+  that does not match the file on disk is stale and says so.
+- **the clips still STEP** — assert the worst adjacent-frame bone step is *large* (>90°), so a
+  future “helpful” resample that quietly smooths them reddens instead of shipping a different
+  character (§3.6). Loose delta (0.01°): float32 quantisation moves the measured angle.
+- **the azimuth-sign oracle keeps a sabotage margin** — the handedness statistic must still
+  separate a mirrored pose from an honest one by the margin §6 claims, measured, not asserted.
+- **Def completeness** for the skinned Def — bones parented before use, one weight per vertex,
+  `bindposes.Length == bones.Length`, every `ANIMS` row present.
+- **the facet-pass gates** (§3.7) — gate 1 asserted headlessly and meant to REDDEN the day the
+  registry opens to non-hulls; gate 2's necessary conditions headless, its evidence GPU-gated and
+  skipping loudly on CI.
