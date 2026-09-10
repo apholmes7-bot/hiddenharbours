@@ -32,7 +32,20 @@ namespace HiddenHarbours.Tests.EditMode
     /// seam (a test double, the same one <c>DeckRiderHullSwapTests</c> uses), because a mesh hull is drawn
     /// exactly where her bow points — no facing grid to snap 45° back to 0 and quietly turn six headings
     /// into two.</para>
+    ///
+    /// <para>⚠ <b>Since 2026-09-09 this is a bar on the FALLBACK, not on the starter dory's helm.</b>
+    /// She publishes her own station now — <c>STATIONS[id=helm]</c> in <c>doryIsoRig.gameplay.json</c>,
+    /// imported onto <c>DoryIso.asset</c>, her AFTER THWART 0.72 m abaft amidships — and the game seats
+    /// her there, 0.58 m forward of the tuned offset this suite holds. Nothing here reddened, because
+    /// <see cref="Build"/> wires NO deck data at all and hands the tuned number straight to
+    /// <c>ConfigureHelm</c>: it takes the fallback branch by CONSTRUCTION. So read "the dory" below as
+    /// <i>a 4.5 m hull with her lines and no measured station</i> — the shape is hers, the helm is not.
+    /// What keeps that honest is <c>HelmStationTests.AShippedHullWithNoStation_StillTakesTheTunedFallback</c>,
+    /// which holds this same fallback against a hull in the fleet that really does publish nothing, and
+    /// fails BY NAME the day the last one is measured — which is the notice that this whole suite, and
+    /// the tuned offset it guards, can be retired.</para>
     /// </summary>
+
     public class HelmStationHeadingTests
     {
         // ---- the starter dory's authored numbers (Dory.asset, DoryIsoHullMesh.asset, DoryIso.asset) ----
@@ -223,8 +236,15 @@ namespace HiddenHarbours.Tests.EditMode
             => boat.position + (Vector3)DeckAreaMath.DeckToWorld(
                    new Vector2(0f, -LoaMeters * 0.5f), 0f, headingDegrees, BakeElevationDeg);
 
-        /// <summary>A dory lying on <paramref name="headingDegrees"/>, wearing a mesh hull so the picture
-        /// is drawn exactly where her bow points, with a switcher on deck beside her.</summary>
+        /// <summary>A dory-shaped hull lying on <paramref name="headingDegrees"/>, wearing a mesh hull so
+        /// the picture is drawn exactly where her bow points, with a switcher on deck beside her.
+        ///
+        /// <para>⚠ <b>She carries no <c>BoatDeckAreas</c>, and that is load-bearing.</b> With no deck def
+        /// there is no published station, so <c>ControlSwitcher</c> falls back to the tuned offset handed
+        /// to <c>ConfigureHelm</c> on the line below — which is the branch this whole suite exists to
+        /// measure. Wire the real <c>DoryIso.asset</c> here and every case starts measuring her after
+        /// thwart instead, silently, and the tuned number would be guarded by nothing.</para></summary>
+
         private Rig Build(float headingDegrees)
         {
             var boatGo = new GameObject("Boat");

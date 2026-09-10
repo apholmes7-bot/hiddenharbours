@@ -417,7 +417,7 @@ MonoBehaviour:
     GradeStormSeaStateFull: 0.9
     GradeRefreshHz: 10
     FeelEnabled: 1
-    FeelOnDeckEnabled: 0
+    FeelOnDeckEnabled: 1
     CatchPushInFraction: 0.08
     CatchPushInSeconds: 0.12
     CatchPushOutSeconds: 0.45

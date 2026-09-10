@@ -12,6 +12,9 @@ namespace HiddenHarbours.Boats
     ///     W+A = port oar only ahead · W+D = stbd only · S+A = port only astern · S+D = stbd only ·
     ///     A or D with no W/S = a stationary pivot (oars opposite) · Space = brace (both oars → brake).
     ///     UNCHANGED — the stepped throttle below is motorised hulls ONLY (owner directive 2026-08-03).
+    ///     ⭐ EVERY one of those strokes is gated on <see cref="RowingStationManned"/> — she rows only
+    ///     from the thwart (owner ruling 2026-09-09). Standing on the sole, W/A/S/D and Space reach
+    ///     the hull as a ZERO stroke: no thrust, no yaw, no oar swing.
     ///   • Engine (boats you buy) — the STEPPED-AND-HELD notched throttle (ADR 0025 S1, owner directive
     ///     2026-08-03: a key can't hold an analog position, so each press bumps a detent and the drive
     ///     STAYS there): W/Up press = +1 detent, S/Down press = −1 detent, the drive HOLDS between
@@ -25,7 +28,8 @@ namespace HiddenHarbours.Boats
     /// <see cref="BoatController.Throttle"/> each frame) — this component holds only repeat TIMERS,
     /// so the mouse drag path (HelmControlRelay) and these keys can never fight over a second copy.
     /// To ship, replace this with the control scheme through an InputService (design/ux-and-mobile-
-    /// controls.md, owned by ui-ux); a gamepad maps analog oar effort straight to BoatController.SetOarInput.
+    /// controls.md, owned by ui-ux); a gamepad maps analog oar effort through <see cref="DriveOars"/>,
+    /// which is where the seat rule lives — never straight to BoatController.SetOarInput.
     ///
     /// Uses the new Input System (Keyboard.current/Gamepad.current), matching this project's input setting.
     /// </summary>
@@ -66,6 +70,66 @@ namespace HiddenHarbours.Boats
         /// the right thing, in both directions, on the live component.</para>
         /// </summary>
         public bool HelmKeysLive => !HiddenHarbours.Core.HelmKeyCapture.IsCapturing;
+
+        /// <summary>
+        /// <b>She is SITTING at the rowing station</b> - the single gate every oar stroke passes, and
+        /// the only thing on this component that decides whether the dory moves under oar.
+        ///
+        /// <para><b>Owner's ruling, 2026-09-09:</b> "she can walk while standing in the dory in its
+        /// narrow deck, sits at the helm with e and <b>rows only from that position</b>." So an oar is
+        /// not a thing you can reach from anywhere on the sole: she takes the thwart the deck def
+        /// publishes as her helm station (<c>BoatDeckDef.HelmStationLocalMeters</c> - the dory's
+        /// <c>STATIONS[id=helm]</c> at hull-local (0, -0.72, 0.3056), the AFTER thwart, with the thole
+        /// pins 0.135 m abaft it), and until she does, W/A/S/D and Space do nothing at all.</para>
+        ///
+        /// <para><b>The read is the helm slot, not a second copy of the answer.</b>
+        /// <see cref="HiddenHarbours.Core.HelmSlot.PilotedHull"/> is the project's arbiter of "who is
+        /// at this wheel" (#642): the Player lane writes it from exactly one place - the mode setter's
+        /// <c>ControlSwitcher.PublishBoatOwnership</c>, which names this hull while and only while the
+        /// mode is <see cref="HiddenHarbours.Core.ControlMode.Aboard"/>, i.e. while she is seated at
+        /// the station E put her on. Asking it here is the same question <c>BoatCutaway</c> asks of the
+        /// same slot, so the oars and the picture can never disagree about who is aboard. A hull nobody
+        /// is piloting reads null and this is false; a hull somebody ELSE is piloting (the arrival
+        /// skipper, the ambient fleet) is not this <c>_boat</c> and this is still false.</para>
+        ///
+        /// <para>Exposed as a property for the reason <see cref="HelmKeysLive"/> is: headless batchmode
+        /// drops key events, so a test cannot press W and watch the oars - but it CAN assert that the
+        /// gate the read consults says the right thing, in both directions, on the live component, and
+        /// then drive <see cref="DriveOars"/> across it and watch the thrust.</para>
+        /// </summary>
+        public bool RowingStationManned
+            => _boat != null && ReferenceEquals(GameServices.Helm.PilotedHull, _boat);
+
+        /// <summary>
+        /// <b>The one way an oar stroke reaches the hull.</b> Every read that wants to row goes through
+        /// here - <see cref="ReadOars"/> today, an InputService later - so the "only from the seat" rule
+        /// is stated ONCE rather than at each caller.
+        ///
+        /// <para>Unmanned, it does not simply decline: it writes a ZERO stroke. That is deliberate and
+        /// it is what makes the refusal total. <see cref="BoatController.SetOarInput"/> is the single
+        /// surface behind BOTH the drive (<c>ApplyOarDrive</c>, thrust and yaw) and the picture
+        /// (<c>BoatRowAnimator</c> reads <c>LeftOar</c>/<c>RightOar</c> to swing the looms), so one zero
+        /// write kills stroke, thrust and oar animation together and cannot leave a blade waving over a
+        /// hull that is refusing to move. Returning early would instead LEAVE the last stroke standing
+        /// on the controller - a boat that keeps rowing because she was rowing when the rower stood up.</para>
+        ///
+        /// <para>Public so a fixture can vary the ONE gate under test (the helm slot) and observe the
+        /// ONE thing it guards, without going through the component's <c>Update</c> - which is behind a
+        /// second gate the switcher owns (<c>_boatInput.enabled</c>) and an input device headless CI
+        /// does not have. Two gates in series cannot be told apart by one observation.</para>
+        /// </summary>
+        public void DriveOars(float left, float right, bool brace)
+        {
+            if (_boat == null) return;
+
+            if (!RowingStationManned)
+            {
+                _boat.SetOarInput(0f, 0f, false);
+                return;
+            }
+
+            _boat.SetOarInput(left, right, brace);
+        }
 
         private void Update()
         {
@@ -126,8 +190,11 @@ namespace HiddenHarbours.Boats
             return (drive, drive);                                        // both oars together (or A+D cancel) → straight
         }
 
-        // Differential hand-rowing (the dory): each oar's state comes from the combo table, then drives
-        // the per-oar physics surface. Space braces both oars (a strong braking drag).
+        // Differential hand-rowing (the dory): each oar's state comes from the combo table, then goes
+        // through DriveOars, which is where the seat rule lives (owner 2026-09-09: rows only from
+        // the thwart). Space braces both oars (a strong braking drag). The keys are read WHETHER OR
+        // NOT she is seated: the gate is on the WRITE, so there is exactly one place a stroke can
+        // get through, and it is the same place for every future input surface.
         private void ReadOars(Keyboard kb)
         {
             bool ahead  = kb.wKey.isPressed || kb.upArrowKey.isPressed;
@@ -135,7 +202,7 @@ namespace HiddenHarbours.Boats
             bool portKey = kb.aKey.isPressed || kb.leftArrowKey.isPressed;
             bool stbdKey = kb.dKey.isPressed || kb.rightArrowKey.isPressed;
             var (left, right) = OarStateFor(ahead, astern, portKey, stbdKey);
-            _boat.SetOarInput(left, right, kb.spaceKey.isPressed);   // Space = brace = brake/stop
+            DriveOars(left, right, kb.spaceKey.isPressed);          // Space = brace = brake/stop
         }
 
         // Engine helm — the STEPPED-AND-HELD notched throttle (owner directive 2026-08-03). Presses

@@ -298,6 +298,23 @@
       ]
     }
   ],
+  "STATIONS": [
+    {
+      "id": "helm",
+      "type": "seat",
+      "pos": [
+        0,
+        -0.72,
+        0.3056
+      ],
+      "builds": [
+        "oars"
+      ],
+      "provenance": "rig station(0.34) top centre - the AFTER (rowing) thwart, the first seat of the rig's thwart loop `for(const u of [0.34,0.60])` at zTop = station(u).kz + SEAT. Evaluated from doryIsoRig.js (sha256 bd781b03..., the derivedFromRigSha256 above) in the repo's own ClearScript V8, not transcribed: y = -L/2 + 0.34*L = -0.72, kz = 0.0056, z = kz + SEAT(0.30) = 0.3056 (exact). Seat top is 0.24 m above the local floor here (floor z = kz + FLOOR = 0.0656), which is the same step-over _notes.sole_read records for all three seats.",
+      "note": "THE HELM OF THE SHIPPED DORY. She is Propulsion: Oars (Dory.asset) and the rig's defaultBuild is 'oars', so she is steered from the oars, and the oars are worked from this thwart: the thole pins (rig OARLOCK_U = 0.31 -> y = -0.855) sit 0.135 m ABAFT this seat centre, which is where an oar handle wants to be for a rower sitting here facing the transom. Do not confuse this with pilotStand (PILOT y = -0.30, z = 0.06): that is a STANDING foot-contact on the sole between the two thwarts, not a seat. The motor build's helm is a different point entirely - rig HELM / helmSeat(dir,opts) at station(0.13) = (0, -1.665, 0.3584), the stern-bench top - and it is NOT published here because bench_stern is motor-build-only and this sidecar describes the oars hull the game ships (see _excluded.motor).",
+      "_ruled": "was _notes.sole_read.stations_not_deck: the rig-side read suggested a move-aft/station transition over free walking and flagged the choice as a DESIGN call for M2-37..39. RULED (owner, 2026-09-09): free walking, and a seat. Verbatim: \"she can walk while standing in the dory in its narrow deck, sits at the helm with e and rows only from that position\". So the dory now publishes a helm station where before absence was the answer: E within reach of this point seats her and hands control to the boat, a second E stands her back up on the deck at the seat, and the oars refuse to move unless she is in it. The walkable DECK polygon is unchanged by this - the station sits inside it, and the seats stay a step-over rather than a wall."
+    }
+  ],
   "_excluded": {
     "washboard": "Open rowed boat — no washboards.",
     "cleats": "Superseded — CLEATS is now modeled (bow_1 stem ring bolt + stern_port quarter-knee ring). No deck/mid cleats and no starboard stern twin: an open 4.5 m boat does not carry them.",

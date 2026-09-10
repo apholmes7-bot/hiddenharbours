@@ -2781,8 +2781,9 @@ namespace HiddenHarbours.Core
         public bool FeelEnabled;
 
         [Tooltip("Whether the layer is live ON DECK (the push-in and the shake; the pull-back is the helm's " +
-                 "alone). The juice charter leaves the deck untouched, so this ships OFF — but the intro " +
-                 "fishes from the deck (owner ruling 2026-09-06), so it is a number and not a rule.")]
+                 "alone). The juice charter left the deck untouched, so this DEFAULTED off — but the intro " +
+                 "fishes from the deck, and on 2026-09-09 the owner played it and ruled 'accept the deck " +
+                 "feel', so the shipped GameConfig asset now carries 1. It stays a number and not a rule.")]
         public bool FeelOnDeckEnabled;
 
         [Tooltip("Push-in on a landed catch (CatchLanded), as a fraction of the framing height, for a fish at " +

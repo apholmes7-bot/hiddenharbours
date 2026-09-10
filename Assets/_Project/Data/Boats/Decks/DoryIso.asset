@@ -53,8 +53,8 @@ MonoBehaviour:
   - Id: stern_port
     Type: ring_bolt
     PositionMeters: {x: -0.3, y: -2.16, z: 0.745}
-  HasHelmStation: 0
-  HelmStationLocalMeters: {x: 0, y: 0, z: 0}
-  HelmStationSource: 
+  HasHelmStation: 1
+  HelmStationLocalMeters: {x: 0, y: -0.72, z: 0.3056}
+  HelmStationSource: 'STATIONS[id=helm]'
   WalkCenter: {x: 0, y: 0}
   WalkHalfExtents: {x: 0.225, y: 1.8}
