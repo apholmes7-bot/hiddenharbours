@@ -128,46 +128,5 @@ namespace HiddenHarbours.Art
             tex.Apply(false, false);
             return Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), ppu);
         }
-
-        /// <summary>
-        /// A small "M"-silhouette gull (the classic two-arc seagull glyph), point-filtered, drawn pointing
-        /// +x (east) so <see cref="GullFlock"/> can rotate it to its heading. One shared sprite → the flock
-        /// batches. Pixel-art faithful: a few solid pixels, no anti-aliasing beyond the shape.
-        /// </summary>
-        public static Sprite BuildGull(string name, int ppu)
-        {
-            const int W = 16, H = 8;
-            var tex = new Texture2D(W, H, TextureFormat.RGBA32, false, true)
-            {
-                name = name,
-                filterMode = FilterMode.Point,
-                wrapMode = TextureWrapMode.Clamp,
-            };
-            var px = new Color32[W * H];
-            // start transparent
-            for (int i = 0; i < px.Length; i++) px[i] = new Color32(255, 255, 255, 0);
-
-            // Two gently-arced wings meeting at the centre (a shallow "M" / gull silhouette).
-            // Plot from the centre out along each wing with a slight upward then downward arc.
-            void Plot(int x, int y)
-            {
-                if (x >= 0 && x < W && y >= 0 && y < H) px[y * W + x] = new Color32(255, 255, 255, 255);
-            }
-            int cx = W / 2;
-            int baseY = 3;
-            for (int k = 0; k <= 6; k++)
-            {
-                // arc height: rises then dips toward the wingtip
-                int dy = Mathf.RoundToInt(Mathf.Sin(k / 6f * Mathf.PI) * 2.2f);
-                Plot(cx + k, baseY + dy);
-                Plot(cx - k, baseY + dy);
-                // a touch of thickness near the body
-                if (k <= 2) { Plot(cx + k, baseY + dy - 1); Plot(cx - k, baseY + dy - 1); }
-            }
-            tex.SetPixels32(px);
-            tex.Apply(false, false);
-            // Pointing +x: the sprite is symmetric, but heading-rotation still reads as "facing travel".
-            return Sprite.Create(tex, new Rect(0, 0, W, H), new Vector2(0.5f, 0.5f), ppu);
-        }
     }
 }
