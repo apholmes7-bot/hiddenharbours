@@ -323,8 +323,8 @@ namespace HiddenHarbours.Tests.EditMode
             report.AppendLine("  sea state | swash gate was | swash gate now");
             foreach (float sea in new[] { CalmestReachableSea, SeaAtHisMidday, SeaAtHisEvening })
             {
-                float was = Art.WaterSurface.SwashSeaStateGate(sea, SupersededOnset, FullAt, calmGate);
-                float now = Art.WaterSurface.SwashSeaStateGate(sea, RuledOnset, FullAt, calmGate);
+                float was = HiddenHarbours.Art.WaterSurface.SwashSeaStateGate(sea, SupersededOnset, FullAt, calmGate);
+                float now = HiddenHarbours.Art.WaterSurface.SwashSeaStateGate(sea, RuledOnset, FullAt, calmGate);
                 report.AppendLine($"  {sea,9:0.000} | {was,14:0.000} | {now,14:0.000}");
 
                 Assert.GreaterOrEqual(now, was - 1e-6f,
@@ -337,9 +337,9 @@ namespace HiddenHarbours.Tests.EditMode
             }
             TestContext.WriteLine(report.ToString());
 
-            float wasCalmest = Art.WaterSurface.SwashSeaStateGate(
+            float wasCalmest = HiddenHarbours.Art.WaterSurface.SwashSeaStateGate(
                 CalmestReachableSea, SupersededOnset, FullAt, calmGate);
-            float nowCalmest = Art.WaterSurface.SwashSeaStateGate(
+            float nowCalmest = HiddenHarbours.Art.WaterSurface.SwashSeaStateGate(
                 CalmestReachableSea, RuledOnset, FullAt, calmGate);
 
             Assert.AreEqual(floor, wasCalmest, 1e-5f,
