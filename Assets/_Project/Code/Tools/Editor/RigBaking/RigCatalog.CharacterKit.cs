@@ -69,6 +69,29 @@ namespace HiddenHarbours.Tools.RigBaking
                                                   "CharacterHands6",
                                                   AzimuthConvention.Clockwise,
                                                   prerequisites: new[] { "character" }),
+
+                // ---- the SKINNED EXPORT layer, rig 7 rev 7.1 (drop of 2026-09-09) ----------------
+                //
+                // The fifth file, and the second that draws nothing on its own: it re-expresses the
+                // body as a SKELETON + a BIND MESH + CLIPS, so one mesh can be posed by bones instead
+                // of re-lathed per frame. Its API object is Object.create(CharacterIso6), so W, H,
+                // pivot, ANIMS, render() and friends all resolve THROUGH the body by prototype — which
+                // is exactly why it must load after it, and why it still installs with InstallModule:
+                // its own contribution is the export, not a cell.
+                //
+                // ⚠️ The base it re-expresses is NAMED: CharacterIso7.base is CharacterIso6.revision.
+                // Bump the body without re-running the export and nothing throws — the skinned mesh
+                // simply stops agreeing with the sprite, silently, one clip at a time. That agreement
+                // is measured on CI by CharacterSkinnedExportTests, not assumed here.
+                //
+                // Re-run against the drop on 2026-09-09, 10 builds x 56 golden rows x 462 frames:
+                // worst vertex error 4.02e-13 m against a 1e-4 m tolerance, 0 failing rows; and
+                // 36,960 rendered probes (56 rows x 8 dirs x 10 builds) of renderSkinned() against
+                // render() came back byte-identical, 0 pixels.
+                ["characterSkin"] = new RigEntry($"{RigFolder}/characterIsoRig7.js",
+                                                 "CharacterIso7",
+                                                 AzimuthConvention.Clockwise,
+                                                 prerequisites: new[] { "character" }),
             };
     }
 }
