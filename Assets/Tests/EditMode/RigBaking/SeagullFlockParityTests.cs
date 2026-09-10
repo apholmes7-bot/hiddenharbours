@@ -423,10 +423,15 @@ globalThis.__gullPack = function (n, t, opts) {
                 // number about the SIDECAR being asked of a FLOAT FIELD, and 1e-9 duly reddened CI on
                 // glide_duty 0.45 (#831) for no fault of the def's.
                 Assert.AreEqual((float)theirs, (float)mine, 0f,
-                    $"{expression}: the rig says {Text(theirs)}, the def carries {Text(mine)} — and " +
-                    $"they differ once both are narrowed to the float the def stores ({(float)theirs} " +
-                    $"vs {(float)mine}). Re-export the sidecar and rebuild SeagullVisualDef.asset — " +
-                    "the port must not carry its own copy of a tunable (rule 6).");
+                    $"{expression}: the rig says {Text(theirs)}, the def carries {Text(mine)}, and they " +
+                    $"STILL differ once both are narrowed to the float the def stores ({(float)theirs} " +
+                    $"vs {(float)mine}).\n\nThis comparison is AT float precision, so a float " +
+                    "round trip cannot be what put you here: the def storing 0.45 as " +
+                    "0.44999998807907104 compares EQUAL by design, and re-exporting could never " +
+                    "have changed that — every export writes the same float. A gap wide enough to " +
+                    "survive the narrowing is REAL drift " +
+                    "— re-export the sidecar and rebuild SeagullVisualDef.asset, and check the port did " +
+                    "not type its own copy of a tunable (rule 6).");
             }
 
             Same("SeagullIso.FLOCK.radius_m", t.RadiusMetres);
