@@ -2560,6 +2560,29 @@ namespace HiddenHarbours.Tests.EditMode
         /// watermark before the next is built. A fixture that leaves two seas standing publishes the LAST
         /// one's globals into the next test in the class, and NUnit orders a fixture alphabetically, so the
         /// test it poisons can run before it (water PR 8, five runs to pin).</para>
+        ///
+        /// <para>⚠️ <b>HOW TO RUN IT, and the false green that eats the slot.</b> The namespace is
+        /// <c>HiddenHarbours.Tests.EditMode</c> — a filter that drops the <c>.EditMode</c> segment matches
+        /// NOTHING, runs ZERO tests and <b>exits 0</b>, which reads exactly like a pass and hands back a
+        /// granted editor slot with no plates and no error. The filter is
+        /// <c>-testFilter "HiddenHarbours.Tests.EditMode.WaterFidelityPlateSweepTests.TheBlowIsWhereTheSeaGoesOut_MeasuredKnobByKnob"</c>,
+        /// and the run is only believable once the results XML is grepped for this method's NAME and the
+        /// executed count asserted to be <b>1</b>. No <c>-quit</c> beside <c>-runTests</c> (it races the
+        /// runner), and no <c>-nographics</c> (this arm self-skips on the Null device and reports NOT
+        /// VERIFIED rather than a number).</para>
+        ///
+        /// <para>⚠️ <b>WHAT FRAME THESE NUMBERS ARE TAKEN THROUGH — there is no post stack in it.</b>
+        /// The capture path is a bare <c>Camera</c> rendering to an ARGBHalf target: no
+        /// <c>UniversalAdditionalCameraData</c>, no <c>Volume</c>, no colour grading — the fixture does not
+        /// reference the word. The ONLY operation applied after the water draws is ADR 0013's day/night
+        /// MULTIPLY, replayed in C# from <c>DayNightMath.DayNightTint(...)</c> because that screen-space pass
+        /// does not run in a fixture. So the MoodGrade Volume the player actually sees through is NOT in
+        /// these plates, and every luma in this report is the water's own output, pre-grade. That is what
+        /// makes them survivable: #828 (the grade tone-down) moves <c>MoodGradeMath</c> /
+        /// <c>MoodGradeDirector</c> / <c>MoodGradeProfile</c> and touches no DayNight file at all, so
+        /// neither of the two things in this frame is in its diff and these numbers do not expire when it
+        /// lands. What they are not is the final frame: rule on the RATIOS between the seas, not on an
+        /// absolute the player never sees unfiltered.</para>
         /// </summary>
         [Test]
         public void TheBlowIsWhereTheSeaGoesOut_MeasuredKnobByKnob()
