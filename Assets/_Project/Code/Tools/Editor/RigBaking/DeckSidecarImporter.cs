@@ -98,13 +98,14 @@ namespace HiddenHarbours.Tools.RigBaking
                   priority = 122)]
         public static void ImportAll()
         {
-            string report = Run(out int imported, out int refused);
+            string report = Run(out int imported, out int refused, out int skipped);
             Debug.Log(report);
             if (refused > 0)
                 Debug.LogError($"[DeckSidecarImporter] {refused} sidecar(s) REFUSED — see the report above. " +
                                "Those hulls keep the deck-walk's greybox rectangle until they are re-derived.");
             EditorUtility.DisplayDialog("Import deck sidecars",
-                $"{imported} imported, {refused} refused.\n\nFull report in the Console.", "OK");
+                $"{imported} imported, {refused} refused, {skipped} skipped.\n\nFull report in the Console.",
+                "OK");
         }
 
         /// <summary>
@@ -116,7 +117,7 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             try
             {
-                Debug.Log(Run(out int imported, out int refused));
+                Debug.Log(Run(out int imported, out int refused, out int skipped));
                 if (refused > 0)
                 {
                     Debug.LogError($"[DeckSidecarImporter] CLI import FAILED: {refused} refused, " +
@@ -124,7 +125,8 @@ namespace HiddenHarbours.Tools.RigBaking
                     EditorApplication.Exit(1);
                     return;
                 }
-                Debug.Log($"[DeckSidecarImporter] CLI import OK — {imported} sidecar(s).");
+                Debug.Log($"[DeckSidecarImporter] CLI import OK — {imported} sidecar(s), " +
+                          $"{skipped} non-hull sidecar(s) skipped.");
                 // Success must exit as loudly as failure — a -quit-less editor with no Exit(0)
                 // outlives its work forever, and the idle burn reads as an import still running.
                 EditorApplication.Exit(0);
@@ -138,10 +140,11 @@ namespace HiddenHarbours.Tools.RigBaking
 
         /// <summary>Do the import and hand back the report. Split out so a test (or a CI step) can run
         /// it without the dialog.</summary>
-        public static string Run(out int imported, out int refused)
+        public static string Run(out int imported, out int refused, out int skipped)
         {
             imported = 0;
             refused = 0;
+            skipped = 0;
             var log = new StringBuilder("[DeckSidecarImporter] rig sidecars → BoatDeckDef\n");
 
             string root = RepoRoot();
@@ -162,6 +165,25 @@ namespace HiddenHarbours.Tools.RigBaking
                 // string, so nothing about them changes — see DeckSidecarReader.ResolveRigFileName.
                 string stem = Path.GetFileName(file).Replace(".gameplay.json", "");
                 string json = File.ReadAllText(file);
+
+                // ⚠️ Not every sidecar in this folder is a HULL any more. The seagull kit
+                // (2026-09-10) put the first CREATURE sidecar here — hidden-harbours/creature-
+                // gameplay@1 — and a creature has no DECK, which the reader correctly calls an
+                // export fault on a boat. Left unclassified it is REFUSED, and ImportAllCli() exits
+                // 1 on any refusal, so one bird would break the deck import for the whole fleet.
+                //
+                // Skipped, not refused, and the difference is stated in the log: absence of a deck
+                // is data on an animal and a fault on a hull. Why the test is negative rather than
+                // positive — eight committed hulls declare no schema at all — is on
+                // DeckSidecarReader.IsHullSidecar.
+                if (!DeckSidecarReader.IsHullSidecar(json))
+                {
+                    skipped++;
+                    log.Append($"  – {stem}: {DeckSidecarReader.DeclaredSchema(json)} — not a hull " +
+                               "sidecar, so there is no deck here to import.\n");
+                    continue;
+                }
+
                 string rigFile = DeckSidecarReader.ResolveRigFileName(Path.GetFileName(file), json);
                 // Flat first, then anywhere under the rig tree — the sail rig kit lands its two hulls
                 // in sail-rig-kit/<hull>/ (DeckSidecarReader.ResolveRigPath, which the parity test
@@ -213,7 +235,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            log.Append($"  — {imported} imported, {refused} refused.");
+            log.Append($"  — {imported} imported, {refused} refused, {skipped} skipped (not hull sidecars).");
             return log.ToString();
         }
 

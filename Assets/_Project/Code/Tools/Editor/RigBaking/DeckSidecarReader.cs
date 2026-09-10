@@ -192,6 +192,63 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
+        /// <b>The schema families in this folder that are NOT hull geometry.</b> One entry today:
+        /// the seagull kit's <c>hidden-harbours/creature-gameplay@1</c> (owner drop of 2026-09-10),
+        /// the first sidecar here that describes an animal rather than a boat — no DECK, no CLEATS,
+        /// its sections are behaviours.
+        ///
+        /// <para>Matched by FAMILY — everything left of the <c>@</c> — so a later
+        /// <c>creature-gameplay@2</c> is understood without a code change, while a schema this list
+        /// has never heard of stays a hull and reddens the deck parity suite by name.</para>
+        /// </summary>
+        public static readonly string[] NonHullSchemaFamilies = { "hidden-harbours/creature-gameplay" };
+
+        /// <summary>The sidecar's <c>schema</c> declaration, or <c>""</c> when it does not carry one.
+        /// Unparseable JSON reads as no declaration; <see cref="Read"/> is what reports it.</summary>
+        public static string DeclaredSchema(string sidecarJson)
+        {
+            string declared = null;
+            try { declared = DeckSidecarJson.String(DeckSidecarJson.Member(DeckSidecarJson.Parse(sidecarJson), "schema")); }
+            catch (Exception) { /* reported by Read(); an unreadable file is not reclassified here */ }
+
+            return string.IsNullOrWhiteSpace(declared) ? "" : declared.Trim();
+        }
+
+        /// <summary>Everything left of the <c>@</c> in a schema string — the part that survives a
+        /// version bump. <c>""</c> in, <c>""</c> out.</summary>
+        public static string SchemaFamily(string schema)
+        {
+            if (string.IsNullOrEmpty(schema)) return "";
+            int at = schema.IndexOf('@');
+            return at >= 0 ? schema.Substring(0, at) : schema;
+        }
+
+        /// <summary>
+        /// <b>Is this file one of the fleet's measured hulls?</b> Everything under
+        /// <c>docs/art/rigs/gameplay/</c> was a boat until the seagull landed, and a creature has no
+        /// DECK — which this reader correctly calls an export fault ON A BOAT. So the folder needs a
+        /// classifier, and this is it.
+        ///
+        /// <para><b>⚠️ The filter is NEGATIVE, and that is the whole design.</b> Eight of the
+        /// thirty-five committed sidecars declare no <c>schema</c> at all (capeIslander,
+        /// coastalPacket, lobsterBoat, sideDragger, sportSkiff, sternTrawler, sternTrawlerMk2,
+        /// tanker) — they predate the field. A positive "does it say boat-gameplay-geometry?" filter
+        /// would drop those eight hulls out of the import and out of the parity suite SILENTLY, and
+        /// the suite would go green having checked eight fewer boats. Unknown means hull: a typo'd
+        /// or brand-new schema reddens loudly instead of vanishing.</para>
+        /// </summary>
+        public static bool IsHullSidecar(string sidecarJson)
+        {
+            string family = SchemaFamily(DeclaredSchema(sidecarJson));
+            if (family.Length == 0) return true;
+
+            foreach (string nonHull in NonHullSchemaFamilies)
+                if (string.Equals(family, nonHull, StringComparison.Ordinal)) return false;
+
+            return true;
+        }
+
+        /// <summary>
         /// <b>Where that rig file actually IS.</b> Flat first, then anywhere under
         /// <c>docs/art/rigs/</c> — because kits arrive in folders now and a sidecar names a FILE, not
         /// a path.
