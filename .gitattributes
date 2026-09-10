@@ -204,6 +204,15 @@ docs/tools/reference/*.json    text eol=lf
 docs/art/rigs/sail-rig-kit/**               text eol=lf
 docs/art/rigs/gameplay/sail/**              text eol=lf
 
+# The seagull rig kit (drop of 2026-09-10) ships SHA256SUMS.txt, and the creature sidecar stamps
+# derivedFromRigSha256 over the rig bytes AS SERVED, which are LF (measured: 0 CR in either file).
+# SeagullSidecarReader re-hashes the WORKING-TREE rig and refuses a mismatch, so an unpinned
+# checkout with core.autocrlf on would hand it the CRLF form and the pin would miss for line
+# endings alone -- on every Windows box, while CI stayed green. Same reasoning as the sail kit
+# above; pin the working-tree form so the kit's own checksum file is verifiable anywhere.
+docs/art/rigs/seagullIsoRig.js              text eol=lf
+docs/art/rigs/gameplay/seagullIsoRig.gameplay.json text eol=lf
+
 # Shell scripts run under bash, which chokes on CR. The gauntlet in tools/gauntlet is the seat's
 # merge battery; a checkout with autocrlf on would otherwise hand it back with CRLF and it would not start.
 *.sh                    text eol=lf
