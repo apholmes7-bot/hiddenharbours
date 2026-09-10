@@ -325,6 +325,17 @@ sabotage shows the measure would have said so had they not. Then the second half
 silhouette that agrees perfectly, the values written to the facet target are almost entirely
 different, and the split is sharp — **alpha is byte-identical while R, G and B are unrelated**.
 
+**⚠️ `SkinQuality.Bone2` is an obligation on the FUTURE PRESENTER, and nothing holds it today.** It
+is pinned in the fixture and nowhere else: no code under `Assets/_Project/Code` creates a
+`SkinnedMeshRenderer` or sets `SkinQuality` at all. A renderer left on `Auto` reads
+`QualitySettings.skinWeights`, which is **per quality level, not one project default** — this
+project ships Very Low 1, Low/Medium/High 2, Very High 4, Ultra 255 — so **ONE bone is reachable on
+a real machine by the player's own quality choice**, reproducing §3.5's 4.52e-2 m (452× tolerance)
+silently and only in the hems. `CharacterSkinDef` states the requirement — `MaxBoneInfluences` is
+two, and `IsUsable` refuses a def claiming fewer — but **a Def cannot enforce a renderer setting**:
+PR 2's presenter sets `SkinQuality.Bone2` explicitly and a guard asserts it. Option (b) is
+unaffected; it skins in this lane's own code and uses both influences unconditionally.
+
 **So option (a) is not available on today's shader.** Handing the presenter a
 `SkinnedMeshRenderer` would draw the figure in precisely the right place carrying the wrong facet
 values. *Why* is not established from here. Identical coverage with divergent values is consistent
@@ -423,8 +434,8 @@ this PR leaves it EMPTY, and PR 3 flips it per state.
   heavier bone and re-pose against rig 6, asserting the cost stays above **100×** the 1e-4 m
   tolerance. **Sweep EVERY clip.** The 4.52e-2 m §3.5 quotes is the max over the rig's 56 golden
   rows, and it does not live in `walk`: `walk` alone costs **3.620e-3 m**, an order UNDER the bar.
-  Swept over all 35 def clips the guard measures **4.516e-2 m** on `sleep`, frame 1, face 396
-  (`upper_R`) — 451.6× tolerance, reproducing §3.5's number from the def instead of the rig.
+  Swept over all 35 def clips the guard measures **4.516e-2 m** on `sleep`, frame 1, face 399
+  (`upper_R`), corner 2 — 451.6× tolerance, reproducing §3.5's number from the def instead of the rig.
   Then `toss` 3.389e-2, `reach` 3.295e-2, `ladderDown` 3.227e-2. Only 72 of 2,992 corners carry a
   second influence, so a guard that samples the wrong clip finds almost nothing to break.
 - **the clips still STEP** — assert the worst adjacent-frame bone step is *large* (>90°), so a
