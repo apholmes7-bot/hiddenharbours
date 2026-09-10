@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.Art;
 using HiddenHarbours.App.Editor;
+using HiddenHarbours.Core;
 using HiddenHarbours.Environment;
 using Object = UnityEngine.Object;
 
@@ -79,7 +80,17 @@ namespace HiddenHarbours.Tests.EditMode
 
         static BlendShape ReadBlendShape(out string provenance)
         {
-            var go = new GameObject("ladder-probe");
+            // ⚠ Built exactly the way WaterUniformContinuityTests.ShippedFloatField and
+            // DisplacedWaterConfigTests build theirs, and for the same reason: WaterSurface is
+            // [ExecuteAlways], so Awake and OnEnable RUN the moment AddComponent lands — in edit mode,
+            // in this fixture. Awake dereferences GetComponent<Renderer>(), and [RequireComponent]
+            // names the ABSTRACT Renderer, which Unity cannot auto-add; on a bare GameObject that is
+            // a null deref logged as an error, i.e. a red test. The MeshRenderer must be in the
+            // constructor. GameServices.Reset() on both sides puts OnEnable on the edit-mode (no sim)
+            // path and drops the static TidalTerrainChanged subscription it takes out, which would
+            // otherwise outlive this GameObject and reach into every later test in the run.
+            GameServices.Reset();
+            var go = new GameObject("ladder-probe", typeof(MeshRenderer));
             try
             {
                 var surface = go.AddComponent<WaterSurface>();
@@ -105,7 +116,11 @@ namespace HiddenHarbours.Tests.EditMode
                              $"calmReach {shape.CalmReach:0.###}";
                 return shape;
             }
-            finally { Object.DestroyImmediate(go); }
+            finally
+            {
+                Object.DestroyImmediate(go);
+                GameServices.Reset();
+            }
         }
 
         /// <summary>One rung: everything the shader multiplies together at one sea state, priced apart.</summary>
