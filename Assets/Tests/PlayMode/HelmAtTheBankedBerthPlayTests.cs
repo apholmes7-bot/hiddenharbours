@@ -47,7 +47,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
         private readonly List<Object> _spawned = new List<Object>();
         private ControlSwitcher _switcher;
+        private BoatDeckDef _deck;
         private DeckWalkController _walk;
+
         private BoatController _boat;
         private BoatMooring _mooring;
         private GameObject _playerGo;
@@ -109,9 +111,14 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // Her authored deck — the floor the fisher walks and the box the tiller sits abaft of.
             string path = "Assets/_Project/Data/Boats/Decks/DoryIso.asset";
-            var deck = UnityEditor.AssetDatabase.LoadAssetAtPath<BoatDeckDef>(path);
-            Assert.IsNotNull(deck, $"the authored deck {path} must exist");
-            boatGo.AddComponent<BoatDeckAreas>().Configure(deck);
+            _deck = UnityEditor.AssetDatabase.LoadAssetAtPath<BoatDeckDef>(path);
+            Assert.IsNotNull(_deck, $"the authored deck {path} must exist");
+            Assert.IsTrue(_deck.HasHelmStation,
+                "premise: since 2026-09-09 the dory publishes her own helm station (her after thwart). " +
+                "Without it this fixture is measuring the shared tuned offset again and the case below " +
+                "is not about her seat at all.");
+            boatGo.AddComponent<BoatDeckAreas>().Configure(_deck);
+
 
             // The pier she is tied to, as a standable surface — this is what makes stepping ashore
             // available from her deck at all, and it is the whole reason the old press ended on the planks.
@@ -146,9 +153,19 @@ namespace HiddenHarbours.Tests.PlayMode
         // ---- the cases ---------------------------------------------------------------------------
 
         /// <summary>
-        /// ⭐ <b>THE DEFECT, as he met it.</b> Aboard the banked dory, walk aft to the tiller, press E
+        /// ⭐ <b>THE DEFECT, as he met it.</b> Aboard the banked dory, walk aft to her helm, press E
         /// once: she takes the HELM. Before the fix the helm spot lay 2.4 m away abeam of her, so this
         /// same press stepped the fisher onto the pier with the painter in his hand.
+        ///
+        /// <para>⚠ <b>Her helm MOVED on 2026-09-09, and this case moved with it.</b> It used to walk
+        /// her to the after end of her floor — deck-frame <c>(0, −1.8)</c> — because with no published
+        /// station she was steered from a tuned offset 2.02 m abaft amidships, astern of the floor
+        /// entirely. The owner then ruled she <i>"sits at the helm with e"</i>, and her sidecar's
+        /// <c>STATIONS[id=helm]</c> put that seat on her AFTER THWART, 0.72 m abaft amidships. The old
+        /// spot is now 1.08 m of hull abaft her seat, which on this berth (she lies bow-west) is
+        /// 1.10 drawn metres — outside a 0.9 m reach, and the press would have fallen through to a
+        /// step-ashore, which is the very defect this case exists to catch. Walking her to the aft end
+        /// of a box is not walking her to the helm; the helm is a published point, so walk to it.</para>
         /// </summary>
         [UnityTest]
         public IEnumerator AtHerTiller_OnTheBankedBerth_EPressTakesTheHelm()
@@ -157,11 +174,12 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(_switcher.CanStepAshore(),
                 "premise: she IS alongside a wharf — that is what made the old press so easy to lose");
 
-            yield return WalkAft();
+            yield return WalkToHerThwart();
 
             Assert.IsTrue(_switcher.WithinHelmReach(),
-                "standing at her stern, the fisher is at the tiller — the whole of defect A is that this " +
-                "was false on every heading but north");
+                "standing at her published helm station, the fisher is at the helm — the whole of " +
+                "defect A is that this was false on every heading but north");
+
 
             Assert.IsTrue(_switcher.BeginInteract(), "E must do something");
             yield return SettleAnyMove();
@@ -243,15 +261,36 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode, "premise: he is on deck");
         }
 
-        /// <summary>Walk him to the after end of her floor — the tiller end. Placed in the DECK frame,
-        /// which is the frame a walk actually happens in; the projection to screen is the hull's.</summary>
-        private IEnumerator WalkAft()
+        /// <summary>
+        /// Walk him aft to HER AFTER THWART — the seat her rig publishes, read off her own deck asset.
+        /// Placed in the DECK frame, which is the frame a walk actually happens in; the projection to
+        /// screen is the hull's.
+        ///
+        /// <para><b>⚠ And then check he is standing where the fixture thinks he is.</b> The walk clamps
+        /// to her floor polygons every tick, so a seat that fell outside them would be silently dragged
+        /// inboard and the reach assertion below would be measuring a spot nobody asked for. Her floor
+        /// is 0.45 m wide amidships and tapers to 0.14 m at the ends, so this is not a formality.</para>
+        /// </summary>
+        private IEnumerator WalkToHerThwart()
         {
+            Vector3 station = _deck.HelmStationLocalMeters;
+            var seat = new Vector2(station.x, station.y);
+
             Assert.IsTrue(_walk.TryDeckBox(_boat.transform, out Vector2 centre, out Vector2 half),
                           "harness: her walkable box");
-            _walk.SnapToDeckLocal(new Vector2(centre.x, centre.y - half.y));
+            Assert.Less(Mathf.Abs(seat.y - centre.y), half.y,
+                $"harness: her helm station {seat} is outside the floor she can walk (centre {centre}, " +
+                $"half {half}) — he cannot stand at a seat that is not on her deck");
+
+            _walk.SnapToDeckLocal(seat);
             yield return null;
+
+            Assert.AreEqual(seat.x, _walk.DeckLocalPosition.x, 0.05f,
+                $"harness: the deck clamp moved him abeam of her seat (he is at {_walk.DeckLocalPosition})");
+            Assert.AreEqual(seat.y, _walk.DeckLocalPosition.y, 0.05f,
+                $"harness: the deck clamp moved him along her keel (he is at {_walk.DeckLocalPosition})");
         }
+
 
         private IEnumerator SettleAnyMove()
         {
