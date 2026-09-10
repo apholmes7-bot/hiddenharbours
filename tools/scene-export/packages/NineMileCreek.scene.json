@@ -75779,7 +75779,7 @@
       "x-cellAt": [469, 170],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": "6200efbb3e7c855476fd73e2c4c7eca9deb1ae1975c0aba6e9a153970a744ede",
+      "x-rigSha256": "c2eab86b4a0b8aefa695756fbdd84559befa2ef5b8529a7ab669d9f31606a4a4",
       "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Characters/Iso/deckboss/DeckBoss_idle.png",
@@ -75823,7 +75823,7 @@
       "x-cellAt": [446, 168],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": "6200efbb3e7c855476fd73e2c4c7eca9deb1ae1975c0aba6e9a153970a744ede",
+      "x-rigSha256": "c2eab86b4a0b8aefa695756fbdd84559befa2ef5b8529a7ab669d9f31606a4a4",
       "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Characters/Iso/skipper/Skipper_idle.png",
@@ -195250,7 +195250,7 @@
     {
       "rig": "characterIsoRig6",
       "rigSource": "docs/art/rigs/characterIsoRig6.js",
-      "sha256": "6200efbb3e7c855476fd73e2c4c7eca9deb1ae1975c0aba6e9a153970a744ede",
+      "sha256": "c2eab86b4a0b8aefa695756fbdd84559befa2ef5b8529a7ab669d9f31606a4a4",
       "shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\\r' | sha256sum)",
       "x-declaredBy": "Assets/_Project/Art/Characters/Iso/deckboss/DeckBossAnchors.json"
     },
@@ -195339,7 +195339,7 @@
     },
     "character": {
       "rigSource": "docs/art/rigs/characterIsoRig6.js",
-      "sha256": "6200efbb3e7c855476fd73e2c4c7eca9deb1ae1975c0aba6e9a153970a744ede"
+      "sha256": "c2eab86b4a0b8aefa695756fbdd84559befa2ef5b8529a7ab669d9f31606a4a4"
     },
     "house": {
       "rigSource": "docs/art/rigs/houseIsoRig.js",

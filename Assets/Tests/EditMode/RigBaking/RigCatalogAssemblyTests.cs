@@ -125,6 +125,13 @@ namespace HiddenHarbours.Tests.RigBaking
                          "CharacterHands6", AzimuthConvention.Clockwise, "character"),
             new Snapshot("characterHead", "docs/art/rigs/headIsoRig3.js",
                          "HeadIso3", AzimuthConvention.Clockwise, "characterEye"),
+            // Added by the rig-7 skinned-export drop (2026-09-09). Draws nothing: it is the body
+            // re-expressed as skeleton + bind mesh + clips. Its API is Object.create(CharacterIso6),
+            // so the prerequisite is not politeness — without the body the prototype is missing and
+            // every inherited W/H/pivot/ANIMS read is undefined. Convention is inherited, not
+            // measured: it owns no pixels of its own.
+            new Snapshot("characterSkin", "docs/art/rigs/characterIsoRig7.js",
+                         "CharacterIso7", AzimuthConvention.Clockwise, "character"),
             // catch pass 2. The wire roller basket, lathed against the shared turntable.
             new Snapshot("clamHod", "docs/art/rigs/catch-pass-2-kit/Art/clamHodRig.js",
                          "ClamHod", AzimuthConvention.Clockwise, "deckIsoSolid"),
