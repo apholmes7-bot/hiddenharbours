@@ -539,37 +539,65 @@ namespace HiddenHarbours.Tests.RigBaking
                     "Option (a) is NOT available: the presenter must CPU-skin into a Mesh " +
                     "(option b) — its cost is in CpuSkinningTheBindMeshCostsThisMuchOfAFrame.");
 
-                double diff = MismatchPercent(refPx, skinPx);
+                // Exact-byte equality is the WRONG comparator across two arithmetic paths: the
+                // CPU skins in float on the managed side, the GPU skins in the vertex shader, and
+                // the last bits of an interpolated attribute are never going to agree. Measured
+                // that way the mismatch SATURATES - every solid pixel differs by an LSB, so the
+                // count comes back EXACTLY equal to the solid count and the figure has no
+                // resolution: it cannot tell 1/255 from a different figure. Split into the two
+                // questions it was really asking; each is measured on its own terms.
+                double rawBytes = MismatchPercent(refPx, skinPx);
+
+                //  (i) GEOMETRY - did the pass draw her in the same PLACE? Tolerance-free: a pixel
+                //      is solid or it is not, and a displaced figure lights different ones.
+                double silhouette = SilhouetteMismatchPercent(refPx, skinPx, out int union, out int xor);
+
+                //  (ii) SHADING - inside the pixels BOTH paths lit, how far apart are the VALUES?
+                //      Read as the worst single channel, because that is the number that says
+                //      whether this is arithmetic noise or a different facet id band.
+                ShadingStats(refPx, skinPx, out int maxDelta, out double meanDelta, out int shared);
+
                 Debug.Log(
-                    "FACET PASS GATE 2 — MEASURED ON A GPU\n" +
+                    "FACET PASS GATE 2 - MEASURED ON A GPU\n" +
                     $"  device            {SystemInfo.graphicsDeviceType} / {SystemInfo.graphicsDeviceName}\n" +
+                    $"  frame             {rt.width}x{rt.height} = {rt.width * rt.height:N0} px\n" +
                     $"  (b) MeshRenderer, CPU-skinned   {refSolid:N0} solid px\n" +
                     $"  (a) SkinnedMeshRenderer         {skinSolid:N0} solid px\n" +
-                    $"  per-pixel mismatch              {diff:F3} %\n" +
-                    "  → a SkinnedMeshRenderer IS picked up by the HHHullFacet renderer list.");
+                    $"  silhouette        {xor:N0} of {union:N0} px lit by exactly one path = {silhouette:F3} %\n" +
+                    $"  shading           worst channel {maxDelta}/255, mean {meanDelta:F4}/255, over {shared:N0} shared px\n" +
+                    $"  exact-byte        {rawBytes:F3} % (diagnostic only - this comparator saturates)\n" +
+                    "  -> a SkinnedMeshRenderer IS picked up by the HHHullFacet renderer list.");
 
-                Assert.Less(diff, 2.0,
-                    $"the two paths disagree on {diff:F3} % of pixels. The list DID draw the " +
-                    "skinned renderer (it painted pixels), so this is not the tag question — it is " +
-                    "the skin: check SkinQuality, the bindposes, and whether GPU skinning carried " +
-                    "uv0 (the per-face facet attrs) through.");
+                Assert.Less(silhouette, 2.0,
+                    $"the two paths light different pixels: {xor:N0} of {union:N0} ({silhouette:F3} %) " +
+                    "are solid in exactly one of them. The list DID draw the skinned renderer, so " +
+                    "this is not the tag question - it is the skin: check the bindposes, and check " +
+                    "SkinQuality (the PROJECT QualitySettings.skinWeights CAPS the per-renderer " +
+                    "value, so a Bone2 request can still be skinned at one bone).");
+
+                Assert.LessOrEqual(maxDelta, ShadingTolerance,
+                    $"inside the {shared:N0} pixels both paths lit, the worst channel differs by " +
+                    $"{maxDelta}/255 - past the {ShadingTolerance}/255 that two arithmetic paths can " +
+                    "explain. The geometry agrees, so it is the VALUE that is wrong: GPU skinning " +
+                    "did not carry uv0 (the per-face facet attrs) through unchanged, or the draw " +
+                    "resolved into a different _HullId band.");
 
                 // --- the sabotage: the comparison must be able to fail ------------------------
                 int sabotaged = SabotageBone(_def);
                 bones[sabotaged].localRotation = bones[sabotaged].localRotation *
                                                  Quaternion.AngleAxis(90f, Vector3.right);
                 byte[] brokenPx = Render(cam, rt);
-                double brokenDiff = MismatchPercent(refPx, brokenPx);
+                double brokenSil = SilhouetteMismatchPercent(refPx, brokenPx, out _, out int brokenXor);
 
-                Assert.Greater(brokenDiff, diff + 1.0,
+                Assert.Greater(brokenSil, silhouette + 1.0,
                     $"rotating bone {sabotaged} ('{_def.Bones[sabotaged].Id}') a quarter turn moved " +
-                    $"the picture by only {brokenDiff:F3} % against the honest {diff:F3} %. This " +
-                    "comparison cannot tell a wrong pose from a right one, so its PASS above is " +
-                    "worth nothing.");
+                    $"the silhouette by only {brokenSil:F3} % against the honest {silhouette:F3} %. " +
+                    "This comparison cannot tell a wrong pose from a right one, so its PASS above " +
+                    "is worth nothing.");
 
-                Debug.Log($"  sabotage margin: bone '{_def.Bones[sabotaged].Id}' +90° moves " +
-                          $"{brokenDiff:F3} % of pixels against the honest {diff:F3} % — " +
-                          $"{brokenDiff / Math.Max(1e-9, diff):F0}x");
+                Debug.Log($"  sabotage margin: bone '{_def.Bones[sabotaged].Id}' +90 deg lights " +
+                          $"{brokenXor:N0} px differently = {brokenSil:F3} % against the honest " +
+                          $"{silhouette:F3} % - the silhouette test has resolution.");
             }
             finally
             {
@@ -819,12 +847,58 @@ namespace HiddenHarbours.Tests.RigBaking
             return bytes;
         }
 
+        /// <summary>Alpha above which a pixel counts as painted. The facet target is cleared to
+        /// zero alpha, so anything the pass wrote clears this comfortably.</summary>
+        const int SolidAlpha = 8;
+
+        /// <summary>How far apart two 8-bit channels may be before the difference stops being "two
+        /// arithmetic paths" and starts being "a different value". One LSB of a float32 attribute
+        /// interpolated through a vertex shader lands well inside this; a facet id band or a hull
+        /// id band is far outside it.</summary>
+        const int ShadingTolerance = 8;
+
         static int SolidPixels(byte[] rgba)
         {
             int n = 0;
             for (int i = 3; i < rgba.Length; i += 4)
-                if (rgba[i] > 8) n++;
+                if (rgba[i] > SolidAlpha) n++;
             return n;
+        }
+
+        /// <summary>Pixels lit by exactly one of the two renders, as a percentage of the pixels lit
+        /// by either. No tolerance is involved or wanted: this is the GEOMETRY question.</summary>
+        static double SilhouetteMismatchPercent(byte[] a, byte[] b, out int union, out int xor)
+        {
+            Assert.AreEqual(a.Length, b.Length, "two renders of different sizes");
+            union = 0; xor = 0;
+            for (int i = 3; i < a.Length; i += 4)
+            {
+                bool sa = a[i] > SolidAlpha, sb = b[i] > SolidAlpha;
+                if (sa || sb) union++;
+                if (sa != sb) xor++;
+            }
+            return 100.0 * xor / Math.Max(1, union);
+        }
+
+        /// <summary>Worst and mean per-channel distance across the pixels BOTH renders lit. Pixels
+        /// only one of them lit are the silhouette's business, not this one's.</summary>
+        static void ShadingStats(byte[] a, byte[] b, out int maxDelta, out double meanDelta, out int shared)
+        {
+            Assert.AreEqual(a.Length, b.Length, "two renders of different sizes");
+            maxDelta = 0; shared = 0;
+            long sum = 0;
+            for (int i = 0; i < a.Length; i += 4)
+            {
+                if (a[i + 3] <= SolidAlpha || b[i + 3] <= SolidAlpha) continue;
+                shared++;
+                for (int c = 0; c < 4; c++)
+                {
+                    int d = Math.Abs(a[i + c] - b[i + c]);
+                    if (d > maxDelta) maxDelta = d;
+                    sum += d;
+                }
+            }
+            meanDelta = shared == 0 ? 0.0 : (double)sum / (shared * 4L);
         }
 
         static double MismatchPercent(byte[] a, byte[] b)
