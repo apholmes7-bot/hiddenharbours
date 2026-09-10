@@ -18,3 +18,9 @@ using System.Runtime.CompilerServices;
 // game-time delta and slow-tick flag instead of the wall clock) and reads its bed state back —
 // the seam a 60 s scripted A/B against round 1 needs. Tests only.
 [assembly: InternalsVisibleTo("HiddenHarbours.Tests.PlayMode")]
+// The seagull VISUAL DEF (SeagullVisualDef.asset) is REGENERATED, never hand-edited: the builder
+// reads the baked sheet and the gameplay sidecar and writes the strips, the 384 cells, the state
+// table and the LAND/WATER/FLOCK rules in one pass. It lives in the rig-baking editor assembly
+// because that is the only home that can see BOTH the sidecar reader and Art, so the def's
+// EditorPopulate seam has to be reachable from there. Editor-only; nothing at runtime binds it.
+[assembly: InternalsVisibleTo("HiddenHarbours.Tools.RigBaking.Editor")]

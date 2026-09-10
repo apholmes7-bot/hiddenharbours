@@ -74,20 +74,20 @@ namespace HiddenHarbours.Tests.EditMode
         enum Tide { Low, Mean, High }
         enum Hour { Noon, Golden, Night }
 
-        static readonly string[] WeatherName = { "glass", "light", "blow", "gale" };
+        internal static readonly string[] WeatherName = { "glass", "light", "blow", "gale" };
         static readonly string[] TideName = { "low", "mean", "high" };
         static readonly string[] HourName = { "noon", "golden", "night" };
 
         /// <summary>The continuous sea state each weather stands for. Glass is the strict 0 (amplitudes are
         /// exactly 0 — ADR 0018 §(1)); blow is #680's "ordinary working day" sea; gale is #691's gale, just
         /// under the Storm edge the dev override reaches at 1.</summary>
-        static readonly float[] SeaStateOf = { 0f, 0.25f, 0.55f, 0.95f };
+        internal static readonly float[] SeaStateOf = { 0f, 0.25f, 0.55f, 0.95f };
 
         /// <summary>The wind's heading — the onshore breeze #680 and #691 both shot under, so these plates
         /// are comparable with those. Its STRENGTH is derived from the sea state through the sim's own inverse
         /// (<see cref="WeatherModel.WindStrengthFor"/>), so a plate's wind and sea state are the pair the
         /// weather model would actually produce together.</summary>
-        static readonly Vector2 WindHeading = new Vector2(6f, -5.3f).normalized;
+        internal static readonly Vector2 WindHeading = new Vector2(6f, -5.3f).normalized;
 
         static float SeaStateFor(Weather w) => SeaStateOf[(int)w];
         static Vector2 WindFor(Weather w) => WindHeading * WeatherModel.WindStrengthFor(SeaStateFor(w));
@@ -2516,44 +2516,210 @@ namespace HiddenHarbours.Tests.EditMode
                           "property through the property block AFTER the shipped push; the baseline is the " +
                           "plate as shipped. Columns: meanLuma | rowStd (horizontal band contrast) | colStd " +
                           "(vertical streak contrast) | hardDarkEdge% (near-black pixels beside a lit neighbour)");
-            Diagnose(stage, Weather.Glass, GlassKnobs, dir, sb);
-            Diagnose(stage, Weather.Gale, GaleKnobs, dir, sb);
+            Diagnose(stage, Weather.Glass, Tide.Mean, Hour.Noon, GlassKnobs, dir, sb);
+            Diagnose(stage, Weather.Gale, Tide.Mean, Hour.Noon, GaleKnobs, dir, sb);
             File.WriteAllText(Path.Combine(dir, "DIAGNOSTIC.txt"), sb.ToString());
             Debug.Log("[water-plates] diagnostic\n" + sb);
-            Assert.IsTrue(File.Exists(Path.Combine(dir, "glass-baseline.png")), "the glass baseline must be written");
-            Assert.IsTrue(File.Exists(Path.Combine(dir, "gale-baseline.png")), "the gale baseline must be written");
+            Assert.IsTrue(File.Exists(Path.Combine(dir, "ww-open-glass-mean-noon-baseline.png")),
+                          "the glass baseline must be written");
+            Assert.IsTrue(File.Exists(Path.Combine(dir, "ww-open-gale-mean-noon-baseline.png")),
+                          "the gale baseline must be written");
         }
 
-        void Diagnose(Stage stage, Weather w, string[] knobs, string dir, StringBuilder sb)
+        /// <summary>⭐ <b>The blow — the sea state the player actually sails, and the one the register
+        /// says goes out.</b> Row 6 / row 25: at noon on open water at mean tide the mean wet luma reads
+        /// glass 0.331 → light 0.176 → <b>blow 0.012</b> → gale 0.021 — a 15× cliff between light airs and a
+        /// blow. The suspects, in the order the reflection ladder implicates them: the three terms of the
+        /// reflection itself, then the body of the water, then the shading that only ever subtracts, then
+        /// the foam. <c>_PaletteDeep</c> is a COLOUR and is zeroed as one.</summary>
+        static readonly string[] BlowKnobs =
         {
-            string cond = WeatherName[(int)w];
-            sb.AppendLine($"## {cond}");
-            Color[] baseline = ShootDiagnostic(stage, w, null, Path.Combine(dir, $"{cond}-baseline.png"));
+            "_ReflectionStrength", "_ReflectionFadeChop", "_ReflectionWindFade", "_SkyReflectionStrength",
+            "_DeepBlueStrength", "_PaletteDeep", "_Roughness",
+            "_SwellReadStrength", "_SwellFaceShade", "_SunSideStrength",
+            "_FoamConvergenceStrength", "_StormFoamLaneStrength", "_PaletteGradeStrength",
+        };
+
+        /// <summary>
+        /// ⭐ <b>The blow arm of the knob diagnostic — who owns the darkness, in numbers.</b>
+        /// (water charter 2026-09-10; register rows 6 and 25.)
+        ///
+        /// <para>✅ <b>SHOT 2026-09-10 12:16Z, and the answer is NOT the reflection.</b> At
+        /// <c>ww-open-blow-mean-noon</c> the shipped plate reads 0.0098; zeroing the whole mirror
+        /// (<c>_ReflectionStrength</c> or <c>_ReflectionFadeChop</c> — both land on 0.0088, which is
+        /// this diagnostic authenticating itself) costs 0.0010, i.e. the reflection is 10.2 % of the
+        /// light on the plate. Zeroing <c>_SwellReadStrength</c> takes it to <b>0.0431</b> — a 4.40x
+        /// brighter sea, so the read band is eating 77 % of the water, <b>33x the reflection's worth</b>,
+        /// and it is brighter at all four viewpoints and both hours. It is a trade, not a bug: the same
+        /// zeroing costs 37 % of the plate's horizontal band contrast, which IS the swell legibility.
+        /// The arm also fixes the ladder's k: predicted 0.3208 luma per unit strength (fit at the glass
+        /// calm), photographed <b>0.120</b> at the blow, so every option priced off k is over-priced
+        /// 2.7x there. Register rows 6 and 25 carry the full table; nothing was moved.</para>
+        ///
+        /// <para>The same method as the glass and gale arms: shoot as shipped, then once per layer with that
+        /// ONE property zeroed through the property block AFTER the shipped push, and read the four
+        /// structural numbers off each frame. What is new is the CELL. The existing arms stand at the two
+        /// ends — a flat calm and a gale — and the register's cliff is neither: it is the ordinary working
+        /// sea, at <b>mean tide</b>, at <b>noon and at golden hour</b>, on the open-water control AND on the
+        /// sand shoal, because a shoal reads its shallow ramp where open water reads only depth.</para>
+        ///
+        /// <para><b>Two hours, because the reflection is the suspect.</b> A reflection that has collapsed
+        /// takes the SKY out of the water; at golden hour the sky is the brightest thing there is, so if the
+        /// gap between the two hours is small at a blow and large at a calm, the missing sky is the finding
+        /// and no body knob can be the answer.</para>
+        ///
+        /// <para>⚠️ One stage alive at a time — each cell is destroyed back to the fixture's own
+        /// watermark before the next is built. A fixture that leaves two seas standing publishes the LAST
+        /// one's globals into the next test in the class, and NUnit orders a fixture alphabetically, so the
+        /// test it poisons can run before it (water PR 8, five runs to pin).</para>
+        ///
+        /// <para>⚠️ <b>HOW TO RUN IT, and the false green that eats the slot.</b> The namespace is
+        /// <c>HiddenHarbours.Tests.EditMode</c> — a filter that drops the <c>.EditMode</c> segment matches
+        /// NOTHING, runs ZERO tests and <b>exits 0</b>, which reads exactly like a pass and hands back a
+        /// granted editor slot with no plates and no error. The filter is
+        /// <c>-testFilter "HiddenHarbours.Tests.EditMode.WaterFidelityPlateSweepTests.TheBlowIsWhereTheSeaGoesOut_MeasuredKnobByKnob"</c>,
+        /// and the run is only believable once the results XML is grepped for this method's NAME and the
+        /// executed count asserted to be <b>1</b>. No <c>-quit</c> beside <c>-runTests</c> (it races the
+        /// runner), and no <c>-nographics</c> (this arm self-skips on the Null device and reports NOT
+        /// VERIFIED rather than a number).</para>
+        ///
+        /// <para>⚠️ <b>WHAT FRAME THESE NUMBERS ARE TAKEN THROUGH — there is no post stack in it.</b>
+        /// The capture path is a bare <c>Camera</c> rendering to an ARGBHalf target: no
+        /// <c>UniversalAdditionalCameraData</c>, no <c>Volume</c>, no colour grading — the fixture does not
+        /// reference the word. The ONLY operation applied after the water draws is ADR 0013's day/night
+        /// MULTIPLY, replayed in C# from <c>DayNightMath.DayNightTint(...)</c> because that screen-space pass
+        /// does not run in a fixture. So the MoodGrade Volume the player actually sees through is NOT in
+        /// these plates, and every luma in this report is the water's own output, pre-grade. That is what
+        /// makes them survivable: #828 (the grade tone-down) moves <c>MoodGradeMath</c> /
+        /// <c>MoodGradeDirector</c> / <c>MoodGradeProfile</c> and touches no DayNight file at all, so
+        /// neither of the two things in this frame is in its diff and these numbers do not expire when it
+        /// lands. What they are not is the final frame: rule on the RATIOS between the seas, not on an
+        /// absolute the player never sees unfiltered.</para>
+        /// </summary>
+        [Test]
+        public void TheBlowIsWhereTheSeaGoesOut_MeasuredKnobByKnob()
+        {
+            RequireAGraphicsDevice();
+            Prepare();
+
+            string dir = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "diagnostic");
+            Directory.CreateDirectory(dir);
+            var sb = new StringBuilder();
+            sb.AppendLine("# THE BLOW, KNOB BY KNOB — water charter 2026-09-10, register rows 6 and 25.");
+            sb.AppendLine("# Two viewpoints (the open-water control and the sand shoal) x two hours (noon, golden), " +
+                          "at a BLOW and MEAN TIDE. Each row zeroes ONE property through the property block AFTER " +
+                          "the shipped push; the baseline is the plate as shipped.");
+            sb.AppendLine("# Columns: meanLuma | rowStd (horizontal band contrast) | colStd (vertical streak " +
+                          "contrast) | hardDarkEdge% (near-black pixels beside a lit neighbour)");
+            sb.AppendLine();
+
+            foreach (string cell in new[] { "ww-open", "nmc-sand" })
+            {
+                int builtBefore = _built.Count;
+
+                Stage stage;
+                if (cell == "ww-open")
+                {
+                    stage = BuildWestWater();
+                    stage.Name = "ww-open";
+                    stage.Aim = WestWaterPlan.RegionWorldCenter;
+                }
+                else
+                {
+                    stage = BuildNineMileCreek();
+                    stage.Name = "nmc-sand";
+                    stage.Aim = AimAtTheLongestSurfRun(stage);
+                }
+                BuildCamera();
+                _cam.transform.position = new Vector3(stage.Aim.x, stage.Aim.y, -100f);
+                WarmTheShaderCache(stage);
+
+                foreach (Hour h in new[] { Hour.Noon, Hour.Golden })
+                {
+                    Diagnose(stage, Weather.Blow, Tide.Mean, h, BlowKnobs, dir, sb);
+                    sb.AppendLine();
+                }
+
+                for (int b = _built.Count - 1; b >= builtBefore; b--)
+                {
+                    if (_built[b] != null) Object.DestroyImmediate(_built[b]);
+                    _built.RemoveAt(b);
+                }
+            }
+
+            File.WriteAllText(Path.Combine(dir, "DIAGNOSTIC-BLOW.txt"), sb.ToString());
+            Debug.Log("[water-plates] blow diagnostic\n" + sb);
+            Assert.IsTrue(File.Exists(Path.Combine(dir, "ww-open-blow-mean-noon-baseline.png")),
+                          "the open-water blow baseline at noon must be written");
+            Assert.IsTrue(File.Exists(Path.Combine(dir, "nmc-sand-blow-mean-golden-baseline.png")),
+                          "the sand-shoal blow baseline at golden hour must be written");
+        }
+
+        /// <summary>One arm of the diagnostic: one viewpoint, one weather, one tide, one hour — shot as
+        /// shipped, then once per knob with that ONE property zeroed. Every file carries the whole cell in
+        /// its name, so the four arms of the blow never write over each other or over the glass/gale pair.
+        ///
+        /// <para>⚠️ The baseline's WET FRACTION is reported and guarded before any row is believed. A
+        /// diagnostic aimed at bared sand would publish a full table of confident numbers about a beach
+        /// (the 2026-09-08 lesson: the tide moves with the sun, and a spot aimed once is not aimed twice).</para>
+        /// </summary>
+        void Diagnose(Stage stage, Weather w, Tide t, Hour h, string[] knobs, string dir, StringBuilder sb)
+        {
+            string tag = $"{stage.Name}-{WeatherName[(int)w]}-{TideName[(int)t]}-{HourName[(int)h]}";
+            sb.AppendLine($"## {tag}");
+            Color[] baseline = ShootDiagnostic(stage, w, t, h, null, Path.Combine(dir, $"{tag}-baseline.png"));
+
+            WetStatistics(stage, LevelFor(stage, t), baseline, out float wetFraction, out float meanLumaWet);
+            sb.AppendLine($"subject in frame: wet fraction {100f * wetFraction:F1}% of the plate, " +
+                          $"mean luma over the WET pixels only {meanLumaWet:F4}");
+            Assert.Greater(wetFraction, 0.05f,
+                           $"{tag}: the terrain says this frame is barely water — the arm is not looking at the sea");
+
             sb.AppendLine(DiagnosticRow("baseline (as shipped)", baseline));
             foreach (string knob in knobs)
             {
-                Color[] px = ShootDiagnostic(stage, w, knob, Path.Combine(dir, $"{cond}-{knob.TrimStart('_')}-0.png"));
+                Color[] px = ShootDiagnostic(stage, w, t, h, knob,
+                                             Path.Combine(dir, $"{tag}-{knob.TrimStart('_')}-0.png"));
                 sb.AppendLine(DiagnosticRow($"{knob} = 0", px));
             }
         }
 
-        Color[] ShootDiagnostic(Stage stage, Weather w, string knob, string path)
+        Color[] ShootDiagnostic(Stage stage, Weather w, Tide t, Hour h, string knob, string path)
         {
-            Publish(stage, w, Tide.Mean, Hour.Noon, out _, out Color tint, out _, out _, out _);
+            Publish(stage, w, t, h, out _, out Color tint, out _, out _, out _);
             var sr = stage.SeaGo.GetComponent<SpriteRenderer>();
             Material mat = sr.sharedMaterial;
             var block = new MaterialPropertyBlock();
             sr.GetPropertyBlock(block);
 
-            float restore = 0f;
+            float restoreFloat = 0f;
+            Color restoreColour = Color.black;
+            bool isColour = false;
             if (knob != null)
             {
                 Assert.IsTrue(mat.HasProperty(knob), $"{knob} is not a property of the water shader");
+                // ⚠️ A COLOUR anchor (_PaletteDeep and its neighbours) cannot be zeroed with SetFloat: the
+                // write lands nowhere and the row reports "this layer draws nothing" about a layer it never
+                // touched. Ask the SHADER what the property is rather than inferring it from the name — the
+                // 2026-09-08 law that until a knob arm is proven by a write that MUST change the picture, no
+                // knob arm is evidence.
+                int index = mat.shader.FindPropertyIndex(knob);
+                Assert.GreaterOrEqual(index, 0, $"{knob} is not declared by {mat.shader.name}");
+                isColour = mat.shader.GetPropertyType(index) == ShaderPropertyType.Color;
+
                 // The EFFECTIVE value: the block's where the push wrote one, else the material's — which is
                 // exactly the precedence the GPU applies. Restored after the shot, so the next shot starts
                 // from the shipped look and not from this override (the sticky-block law).
-                restore = block.HasFloat(knob) ? block.GetFloat(knob) : mat.GetFloat(knob);
-                block.SetFloat(knob, 0f);
+                if (isColour)
+                {
+                    restoreColour = block.HasColor(knob) ? block.GetColor(knob) : mat.GetColor(knob);
+                    block.SetColor(knob, new Color(0f, 0f, 0f, restoreColour.a));
+                }
+                else
+                {
+                    restoreFloat = block.HasFloat(knob) ? block.GetFloat(knob) : mat.GetFloat(knob);
+                    block.SetFloat(knob, 0f);
+                }
                 sr.SetPropertyBlock(block);
             }
 
@@ -2561,7 +2727,8 @@ namespace HiddenHarbours.Tests.EditMode
 
             if (knob != null)
             {
-                block.SetFloat(knob, restore);
+                if (isColour) block.SetColor(knob, restoreColour);
+                else block.SetFloat(knob, restoreFloat);
                 sr.SetPropertyBlock(block);
             }
             return ldr;

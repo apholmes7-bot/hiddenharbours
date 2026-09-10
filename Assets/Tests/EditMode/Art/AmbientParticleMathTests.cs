@@ -237,54 +237,6 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(2.0f, b2, Eps);
         }
 
-        // ---- GullPosition / GullHeading ------------------------------------------------------------------
-
-        [Test]
-        public void GullPosition_LoopsBackAfterFullPhase()
-        {
-            Vector2 c = new Vector2(2f, 3f);
-            Vector2 a = AmbientParticleMath.GullPosition(c, 5f, 3f, 0f, 0.25f, Vector2.zero, 0f);
-            Vector2 b = AmbientParticleMath.GullPosition(c, 5f, 3f, 1f, 0.25f, Vector2.zero, 0f);
-            Assert.AreEqual(a.x, b.x, 1e-3f, "Phase 0 and 1 are the same point on the loop.");
-            Assert.AreEqual(a.y, b.y, 1e-3f);
-        }
-
-        [Test]
-        public void GullPosition_StaysWithinRadiusOfCenter()
-        {
-            Vector2 c = new Vector2(-4f, 6f);
-            float rx = 5f, ry = 3f;
-            for (int i = 0; i <= 40; i++)
-            {
-                float ph = i / 40f;
-                Vector2 p = AmbientParticleMath.GullPosition(c, rx, ry, ph, 0.5f, Vector2.zero, 0f);
-                Assert.LessOrEqual(Mathf.Abs(p.x - c.x), rx + Eps, "x stays within the loop radius.");
-                // y is a sum of two unit sinusoids scaled by ry → bounded by ry.
-                Assert.LessOrEqual(Mathf.Abs(p.y - c.y), ry + Eps, "y stays within the loop radius.");
-            }
-        }
-
-        [Test]
-        public void GullPosition_RidesWindDownwind()
-        {
-            Vector2 c = Vector2.zero;
-            Vector2 still = AmbientParticleMath.GullPosition(c, 4f, 2f, 0.3f, 0.1f, Vector2.zero, 0f);
-            Vector2 windy = AmbientParticleMath.GullPosition(c, 4f, 2f, 0.3f, 0.1f, new Vector2(1f, 0f), 2f);
-            Assert.AreEqual(still.x + 2f, windy.x, Eps, "The whole loop skews downwind by wind*windDrift.");
-        }
-
-        [Test]
-        public void GullHeading_IsUnitAndNeverNaN()
-        {
-            for (int i = 0; i <= 20; i++)
-            {
-                float ph = i / 20f;
-                Vector2 h = AmbientParticleMath.GullHeading(Vector2.zero, 5f, 3f, ph, 0.3f, Vector2.zero, 0f);
-                Assert.IsFalse(float.IsNaN(h.x) || float.IsNaN(h.y));
-                Assert.AreEqual(1f, h.magnitude, 1e-2f, "Heading is a unit tangent.");
-            }
-        }
-
         // ---- MoteBob -------------------------------------------------------------------------------------
 
         [Test]

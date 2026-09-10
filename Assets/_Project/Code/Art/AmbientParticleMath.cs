@@ -273,47 +273,6 @@ namespace HiddenHarbours.Art
             return new Vector2(origin.x + bend.x + sway, origin.y + height + bend.y);
         }
 
-        // ==== gull flight path (looping, varied wheeling) =================================================
-
-        /// <summary>
-        /// A gull's position on a smooth, looping, wheeling path at parameter <paramref name="phase"/>
-        /// (0..1 = one full loop). The path is a wandering ellipse (a Lissajous-style figure) centred on
-        /// <paramref name="center"/> with semi-axes (<paramref name="radiusX"/>, <paramref name="radiusY"/>),
-        /// the two axes ticking at different harmonics so the bird carves a varied, never-quite-repeating
-        /// wheel rather than a plain circle. <paramref name="variant"/> (a per-gull deterministic 0..1) phase-
-        /// shifts and reshapes each bird's loop so a small flock spreads out. A gentle DOWNWIND lean
-        /// (<paramref name="wind"/> · <paramref name="windDrift"/>) skews the whole loop so the gulls ride the
-        /// same breeze as the rest of the coast. Pure + static.
-        /// </summary>
-        public static Vector2 GullPosition(Vector2 center, float radiusX, float radiusY,
-                                           float phase, float variant, Vector2 wind, float windDrift)
-        {
-            float a = phase * Mathf.PI * 2f;
-            float vshift = variant * Mathf.PI * 2f;
-            // Different harmonics on x and y → a wheeling figure-eight-ish wander, not a flat circle.
-            float x = Mathf.Cos(a + vshift);
-            float y = Mathf.Sin(a * 2f + vshift) * 0.5f + Mathf.Sin(a + vshift * 0.5f) * 0.5f;
-            Vector2 onLoop = new Vector2(center.x + x * radiusX, center.y + y * radiusY);
-            // Ride the breeze: a steady downwind skew of the whole loop.
-            return onLoop + wind * windDrift;
-        }
-
-        /// <summary>
-        /// The gull's facing (unit heading) along its path — the finite-difference tangent of
-        /// <see cref="GullPosition"/>, so the sprite turns into its turns and we can flip it to face its travel
-        /// direction (gulls don't fly backwards). Returns +x when degenerate so a paused bird faces east
-        /// rather than NaN. Pure + static.
-        /// </summary>
-        public static Vector2 GullHeading(Vector2 center, float radiusX, float radiusY,
-                                          float phase, float variant, Vector2 wind, float windDrift)
-        {
-            const float h = 1e-3f;
-            Vector2 p0 = GullPosition(center, radiusX, radiusY, phase, variant, wind, windDrift);
-            Vector2 p1 = GullPosition(center, radiusX, radiusY, phase + h, variant, wind, windDrift);
-            Vector2 d = p1 - p0;
-            return d.sqrMagnitude > 1e-10f ? d.normalized : Vector2.right;
-        }
-
         // ==== motes (slow buoyant drift) ==================================================================
 
         /// <summary>

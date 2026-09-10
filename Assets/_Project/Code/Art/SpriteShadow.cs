@@ -241,6 +241,24 @@ namespace HiddenHarbours.Art
                  "the feet. Used to anchor the shadow at the ground and to measure the caster's height.")]
         [SerializeField] private float _footOffset = 0f;
 
+        /// <summary>
+        /// World-Y of the caster's feet below its transform origin, metres - where the shadow's anchor
+        /// is taken from.
+        ///
+        /// <para><b>It moves the shadow, not the shear.</b> The projected LENGTH comes from
+        /// <c>CasterWorldHeight()</c>, which measures the sprite; this only says where on the ground
+        /// the projection starts. That distinction is what lets a FLYING caster work:
+        /// <see cref="GullFlock"/> lifts a gull's transform up the screen by its altitude and sets this
+        /// to the same number, so the shadow stays down at the pivot and the bird descends onto it -
+        /// at the size it would have had standing there, not a shadow inflated by how high it is.
+        /// </para>
+        /// </summary>
+        public float FootOffset
+        {
+            get => _footOffset;
+            set => _footOffset = value;
+        }
+
         [Header("Sun (when no clock is running)")]
         [Tooltip("Hour (0..24) used for the sun arc when the day/night cycle isn't pushing the globals yet " +
                  "(EditMode / a bare art scene), so the demo shadow still shows. Ignored once the cycle runs.")]
