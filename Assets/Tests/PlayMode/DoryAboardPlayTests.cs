@@ -57,6 +57,18 @@ namespace HiddenHarbours.Tests.PlayMode
         /// distance instead. A millimetre is not a way off a 0.45 m boat.</summary>
         private const float OnTheEdge = 1e-3f;
 
+        /// <summary>The frame step this fixture PINS, so one frame is worth the same slice of her clock
+        /// on every machine. <b>⚠ Unpinned it is not.</b> With nothing to draw, headless CI turned over a
+        /// frame every <b>0.36 ms</b> on 2026-09-09 — 46× less walking per frame than a played one — and
+        /// a 240-frame walk down a 3.6 m deck covered 0.22 m. A frame is not a unit of time.</summary>
+        private const float FrameSeconds = 1f / 60f;
+
+        /// <summary>The net under every walk below: far more frames than any budget here asks for under
+        /// the pin (a second of her clock is 60 of them), and far too few to reach on a runner that is
+        /// honouring it. If this ever bites, the pin stopped taking — and it says so by name rather than
+        /// letting a leg quietly go short and redden the assertion after it.</summary>
+        private const int FrameSafetyCap = 20000;
+
         private const string DoryDeckPath = "Assets/_Project/Data/Boats/Decks/DoryIso.asset";
 
         private sealed class FixedTide : IEnvironmentService
@@ -84,6 +96,11 @@ namespace HiddenHarbours.Tests.PlayMode
         /// her deck" case that sampled nothing passed by saying nothing.</summary>
         private int _samples;
 
+        /// <summary>What the clock was before this fixture pinned it. Both are STATICS shared with every
+        /// other test in the run, so both go back exactly as found.</summary>
+        private float _timeScaleBefore;
+        private float _captureBefore;
+
         [SetUp]
         public void SetUp()
         {
@@ -91,6 +108,16 @@ namespace HiddenHarbours.Tests.PlayMode
             StandableSurfaces.Clear();
             InteractionGate.Reset();
             _samples = 0;
+
+            // ⚠ PIN THE FRAME STEP, because the walk steps speed × Time.deltaTime and a frame buys
+            // HARDWARE, not time. Capture time makes every frame advance her clock by exactly
+            // FrameSeconds on any machine — a played one or a headless runner doing 2,800 fps.
+            // timeScale is pinned with it: it is a static, several plate fixtures in this suite freeze
+            // it at zero, and one that leaked would stop him dead on a deck he is supposed to walk.
+            _timeScaleBefore = Time.timeScale;
+            _captureBefore = Time.captureDeltaTime;
+            Time.timeScale = 1f;
+            Time.captureDeltaTime = FrameSeconds;
 
             GameServices.Environment = new FixedTide { Level = StPetersBuilder.TideMean };
 
@@ -185,6 +212,8 @@ namespace HiddenHarbours.Tests.PlayMode
         [TearDown]
         public void TearDown()
         {
+            Time.captureDeltaTime = _captureBefore;   // exactly as found, whatever it was
+            Time.timeScale = _timeScaleBefore;
             StandableSurfaces.Clear();
             InteractionGate.Reset();
             GameServices.PlayerTransform = null;
@@ -222,7 +251,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Vector2 start = _walk.DeckLocalPosition;
             yield return WalkUntil(held, new Vector2(0f, 1f),
-                                   () => _walk.DeckLocalPosition.y >= 1.2f, 240, "toward her bow");
+                                   () => _walk.DeckLocalPosition.y >= 1.2f, 4f, "toward her bow");
 
             Assert.Greater(held.Reads, 0,
                 "the deck walk never asked its source — the input seam is not wired into Update, and " +
@@ -233,7 +262,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // Now shove him at the rail, up where the planking has closed in.
             Vector2 beforeAbeam = _walk.DeckLocalPosition;
-            yield return WalkFor(held, new Vector2(1f, 0f), 60, "hard to starboard");
+            yield return WalkFor(held, new Vector2(1f, 0f), 1f, "hard to starboard");
 
             Vector2 at = _walk.DeckLocalPosition;
             Assert.Greater(at.x - beforeAbeam.x, 0.02f,
@@ -425,9 +454,16 @@ namespace HiddenHarbours.Tests.PlayMode
 
         /// <summary>
         /// Hold a DECK direction (x abeam to starboard, y along her keel toward the bow) until
-        /// <paramref name="arrived"/> or <paramref name="frameCap"/> frames, checking her outline every
-        /// frame on the way. A frame CAP rather than a fixed count, so neither a fast runner nor a slow
-        /// one changes what is being asserted.
+        /// <paramref name="arrived"/> or <paramref name="budgetSeconds"/> of HER CLOCK have gone by,
+        /// checking her outline every frame on the way.
+        ///
+        /// <para><b>⚠ The budget is SECONDS, and it used to be frames.</b> That is what reddened this
+        /// case on its first CI run: the walk steps <c>speed × Time.deltaTime</c>, a headless runner with
+        /// nothing to draw gave <c>Time.deltaTime</c> as <b>0.36 ms</b>, and 240 frames down a 3.6 m deck
+        /// left him 0.22 m from where he started. Nothing was wrong with the deck, the clamp or the seam
+        /// — the fixture had budgeted in a unit that measures the machine. So the budget is now the same
+        /// clock the walk reads, accumulated frame by frame; SetUp pins that step so the frame count
+        /// stays sane, and <see cref="FrameSafetyCap"/> is the net for the day the pin stops taking.</para>
         ///
         /// <para><b>⚠ The intent is expressed in her deck frame and handed over in WORLD axes</b>, which
         /// is the frame the seam speaks: <c>StepOnDeckPolygon</c> un-projects what it is given through
@@ -439,15 +475,52 @@ namespace HiddenHarbours.Tests.PlayMode
         /// yield after a set buys nothing and is spent before anything is counted.</para>
         /// </summary>
         private IEnumerator WalkUntil(HeldDeckIntents held, Vector2 deckDirection,
-                                      System.Func<bool> arrived, int frameCap, string leg)
+                                      System.Func<bool> arrived, float budgetSeconds, string leg)
         {
             held.Walk(WorldDirectionFor(deckDirection));
             yield return null;
 
+            float walked = 0f;
             int frames = 0;
-            while (!arrived() && frames < frameCap)
+            bool there = arrived();
+            while (!there && walked < budgetSeconds && frames < FrameSafetyCap)
             {
                 yield return null;
+                walked += Time.deltaTime;
+                frames++;
+                AssertHeIsOnHerFloor(leg);
+                there = arrived();
+            }
+
+            held.Walk(Vector2.zero);
+            yield return null;
+            AssertHeIsOnHerFloor(leg + ", at rest");
+
+            Assert.Less(frames, FrameSafetyCap,
+                $"the frame step is not pinned: {frames} frames bought only {walked:F3} s of her clock " +
+                $"walking {leg} (a frame is {Time.deltaTime * 1000f:F3} ms). This is the net under the " +
+                "budget, not the bar — read it as 'the clock, not the deck'");
+            Assert.IsTrue(there,
+                $"he never got there walking {leg}: {walked:F2} s at the walk's own speed, over " +
+                $"{frames} frames, left him at {_walk.DeckLocalPosition}");
+        }
+
+        /// <summary>Hold a DECK direction for a fixed slice of HER CLOCK — the shove that is supposed
+        /// to get nowhere. Same seam, same one-frame delay, same check every frame, and seconds rather
+        /// than frames for the reason spelled out on <see cref="WalkUntil"/>: a shove budgeted in frames
+        /// is a shove whose length is set by the runner, and a shove that never happened cannot be
+        /// stopped by her planking or by anything else.</summary>
+        private IEnumerator WalkFor(HeldDeckIntents held, Vector2 deckDirection, float seconds, string leg)
+        {
+            held.Walk(WorldDirectionFor(deckDirection));
+            yield return null;
+
+            float pushed = 0f;
+            int frames = 0;
+            while (pushed < seconds && frames < FrameSafetyCap)
+            {
+                yield return null;
+                pushed += Time.deltaTime;
                 frames++;
                 AssertHeIsOnHerFloor(leg);
             }
@@ -456,27 +529,9 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             AssertHeIsOnHerFloor(leg + ", at rest");
 
-            Assert.Less(frames, frameCap,
-                $"he never got there walking {leg}: {frameCap} frames left him at " +
-                $"{_walk.DeckLocalPosition}");
-        }
-
-        /// <summary>Hold a DECK direction for a fixed number of frames — the shove that is supposed to
-        /// get nowhere. Same seam, same one-frame delay, same check every frame.</summary>
-        private IEnumerator WalkFor(HeldDeckIntents held, Vector2 deckDirection, int frames, string leg)
-        {
-            held.Walk(WorldDirectionFor(deckDirection));
-            yield return null;
-
-            for (int i = 0; i < frames; i++)
-            {
-                yield return null;
-                AssertHeIsOnHerFloor(leg);
-            }
-
-            held.Walk(Vector2.zero);
-            yield return null;
-            AssertHeIsOnHerFloor(leg + ", at rest");
+            Assert.GreaterOrEqual(pushed, seconds,
+                $"the shove {leg} was cut short at {frames} frames ({pushed:F3} s of her clock): the " +
+                "frame step is not pinned, and nothing below can claim to have stopped him");
         }
 
         /// <summary>A deck direction as the world-axis direction the input seam speaks — through HER
