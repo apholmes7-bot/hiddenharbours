@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-09-10T00:28:30Z",
+  "generatedAt": "2026-09-10T02:51:25Z",
   "region": {
     "id": "region.st_peters",
     "sceneName": "StPeters",
@@ -94447,7 +94447,7 @@
   "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum) — the repo's own convention, the same one docs/art/rigs sidecars publish. A SIBLING of the table rather than a key inside it: the table's keys are family names and nothing else, so iterating it cannot pick up a note.",
   "x-cliffLinesNote": "the region's cliffs, as the format's own key. Each is one CliffWallSurface — the builder pushes one CHUNK per stretch, so a coastline arrives as many short lines and not one long one; joining them would be a derivation this exporter invents. `nodes` is the chunk's brow plan and its stations are SAMPLED at ~0.25 m rather than hand-placed (see each line's x-nodesAre). No `tiles` count: this exporter paints no cliff layer at all, so a 0 would read as a fact about the line instead of about the export.",
   "x-provenance": {
-    "generatedAt": "2026-09-10T00:28:30Z",
+    "generatedAt": "2026-09-10T02:51:25Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/StPeters.unity",
     "sceneFileSha256": "59785d32460d7eb9f5c4d3c9a39d9141178c59cfdfdd34e41afd083069f5d0eb",
@@ -94457,11 +94457,11 @@
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
       "builderCommitsSinceScene": 1,
-      "measuredTo": "23575d496aec434dc94d30c3b806dec04ebfba3c",
-      "measuredToDate": "2026-09-09T21:28:30-03:00",
+      "measuredTo": "e66fce003774747650be366831d9e548842fc1ce",
+      "measuredToDate": "2026-09-09T23:51:25-03:00",
       "exact": true,
       "builderCommits": [
-        "23575d49 feat(tools): bake every building in one command, and stand every interior with one recipe"
+        "e66fce00 feat(tools): bake every building in one command, and stand every interior with one recipe (#824)"
       ]
     },
     "heightMap": {
