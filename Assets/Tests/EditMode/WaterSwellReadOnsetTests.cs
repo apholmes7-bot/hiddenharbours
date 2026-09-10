@@ -27,21 +27,27 @@ namespace HiddenHarbours.Tests.EditMode
     ///                                  me rethink what i just said"
     /// </code>
     ///
-    /// <para>⭐ <b>And the glass the 0.28 was protecting cannot happen.</b> #797 measured the shipped
-    /// wind law — <c>3 + strN·1.3 + gustN·1.2</c>, both noises bottoming at −1 — so the wind never
-    /// falls below 0.50 m/s and the sea state never below <b>0.143</b>. A glassy 0.05 sea is
-    /// unreachable, so the row-5 mirror was never the thing the onset was buying.</para>
+    /// <para>⭐ <b>The floor this ruling was priced against has since MOVED.</b> #797 measured the
+    /// wind law as it then stood — <c>3 + strN·1.3 + gustN·1.2</c>, both noises bottoming at −1
+    /// — so the wind never fell below 0.50 m/s and the sea state never below <b>0.143</b>. That is
+    /// the sea the 0.041 price below was quoted on. <b>PR D (#811) then widened the law</b>: the
+    /// strength clamp's lower bound is now a literal <c>0f</c> (<c>WeatherModel</c> ~90–92), and
+    /// <c>WindUncapReachTests</c> MEASURES a Glass sea on <b>6.3 %</b> of a game week over nine seeds.
+    /// A glass calm is reachable at last — and at sea state <b>0.000</b> this gate reads exactly
+    /// <b>0.000</b>. So the ruling survives and cost LESS than the owner was told: on water that is
+    /// actually glass, row 5's mirror is untouched. The 0.143 constant below is kept because it is the
+    /// sea the price was QUOTED on, not because it is still a floor.</para>
     ///
     /// <para>The onset table this ruling was chosen from (water-rendering.md §45, register row 25):</para>
     /// <code>
-    ///   onset | glass 0.05 | calmest reachable 0.143 | his 13:12 (0.181) | his 15:51 (0.341)
+    ///   onset | glass 0.05 | sea 0.143 (as priced) | his 13:12 (0.181) | his 15:51 (0.341)
     ///    0.28 |      0.000 |                   0.000 |             0.000 |             0.294   &lt;- SUPERSEDED
     ///    0.15 |      0.000 |                   0.000 |             0.030 |             0.700
     ///    0.10 |      0.000 |                   0.041 |             0.136 |             0.769   &lt;- SHIPPED
     ///    0.05 |      0.000 |                   0.137 |             0.252 |             0.818
     /// </code>
     ///
-    /// <para>0.15 was the lowest onset that leaves the calmest reachable sea completely unshaded; the
+    /// <para>0.15 was the lowest onset that leaves the 0.143 sea completely unshaded; the
     /// owner took <b>0.10</b> instead, buying a legible midday face (0.136 rather than 0.030) at the
     /// cost of a faint 0.041 on the calmest water the game can draw. That cost is <b>ruled, not
     /// overlooked</b> — which is why it is asserted below rather than merely tolerated.</para>
@@ -76,10 +82,18 @@ namespace HiddenHarbours.Tests.EditMode
         const float SeaAtHisMidday  = 0.181f;
         const float SeaAtHisEvening = 0.341f;
 
-        /// <summary>⚠️ #797's measurement of the SHIPPED WindProfile, not a constant of nature: the
-        /// calmest sea state the wind law can produce. If a future PR retunes the profile this number
-        /// moves, and the cost side of this ruling has to be re-argued rather than re-typed.</summary>
-        const float CalmestReachableSea = 0.143f;
+        /// <summary>⚠️ #797's measurement of the WindProfile AS IT THEN STOOD — and it warned that
+        /// "if a future PR retunes the profile this number moves, and the cost side of this ruling has
+        /// to be re-argued rather than re-typed". <b>PR D (#811) retuned it.</b> This is no longer a
+        /// floor; it is kept because it is the sea the ruling's 0.041 price was QUOTED on, so that cost
+        /// stays checkable. For the floor use <see cref="TrueCalmFloorSincePrD"/>.</summary>
+        const float CalmSeaTheRulingWasPricedAt = 0.143f;
+
+        /// <summary>The calmest sea the wind law can now produce. <c>WeatherModel</c> clamps the wind
+        /// strength at a literal <c>0f</c> lower bound (~90–92), and <c>WindUncapReachTests</c> measures
+        /// a Glass sea on 6.3 % of a game week over nine seeds — so this is reachable, not theoretical.
+        /// </summary>
+        const float TrueCalmFloorSincePrD = 0f;
 
         const string ShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
 
@@ -148,10 +162,11 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheRuledOnset_MakesHisMiddaySeaLegible_AndPutsAFaintReadOnTheCalmestWater()
         {
             var report = new StringBuilder();
-            report.AppendLine("  onset | glass 0.05 | calmest 0.143 | midday 0.181 | evening 0.341");
+            report.AppendLine("  onset | floor 0.000 | glass 0.05 | 0.143 as priced | midday 0.181 | evening 0.341");
             foreach (float onset in new[] { SupersededOnset, 0.15f, RuledOnset, 0.05f })
-                report.AppendLine($"   {onset:0.00}  | {Gate(onset, FullAt, 0.05f),10:0.000} | " +
-                                  $"{Gate(onset, FullAt, CalmestReachableSea),13:0.000} | " +
+                report.AppendLine($"   {onset:0.00}  | {Gate(onset, FullAt, TrueCalmFloorSincePrD),11:0.000} | " +
+                                  $"{Gate(onset, FullAt, 0.05f),10:0.000} | " +
+                                  $"{Gate(onset, FullAt, CalmSeaTheRulingWasPricedAt),15:0.000} | " +
                                   $"{Gate(onset, FullAt, SeaAtHisMidday),12:0.000} | " +
                                   $"{Gate(onset, FullAt, SeaAtHisEvening),13:0.000}");
             TestContext.WriteLine(report.ToString());
@@ -167,11 +182,21 @@ namespace HiddenHarbours.Tests.EditMode
 
             // 0.0416 exactly; the register and §45 print it rounded to 0.041. Pinned at full
             // precision so the assertion is not sitting on the edge of its own tolerance.
-            Assert.AreEqual(0.0416f, Gate(RuledOnset, FullAt, CalmestReachableSea), 0.0005f,
-                "⭐ THE RULING'S PRICE, asserted so it cannot be un-noticed: on the calmest sea the " +
-                "wind law can produce the swell now shades faintly. Row 5 calls a glass calm sacred; " +
-                "the owner ruled on 2026-09-09 that 0.041 on a sea that is not actually glass is " +
-                "worth a legible midday. Do NOT 'fix' this back to 0 without a new ruling.");
+            Assert.AreEqual(0.0416f, Gate(RuledOnset, FullAt, CalmSeaTheRulingWasPricedAt), 0.0005f,
+                "⭐ THE RULING'S PRICE, asserted so it cannot be un-noticed: on the 0.143 sea this " +
+                "ruling was PRICED against, the swell now shades faintly. Row 5 calls a glass calm " +
+                "sacred; the owner ruled on 2026-09-09 that 0.041 on a sea that is not actually glass " +
+                "is worth a legible midday. Do NOT 'fix' this back to 0 without a new ruling.");
+
+            // ⭐ ...and that price is NOT paid at the floor, because the floor moved after the ruling.
+            Assert.AreEqual(0f, Gate(RuledOnset, FullAt, TrueCalmFloorSincePrD), 1e-6f,
+                "⭐ THE RULING COST LESS THAN HE WAS TOLD. The 0.041 above was quoted to him as the " +
+                "price on 'the calmest water the game can draw', because #797 had measured a 0.143 " +
+                "floor. PR D (#811) then widened the wind law — WeatherModel clamps strength at a " +
+                "literal 0f lower bound, and WindUncapReachTests MEASURES a Glass sea on 6.3 % of a " +
+                "game week over nine seeds. At that true floor this gate is EXACTLY 0.000, so row 5's " +
+                "mirror on water that is actually glass was never touched. Do not re-quote the 0.041 " +
+                "as a floor cost; it is the cost at sea state 0.143 and nowhere calmer.");
 
             Assert.AreEqual(0f, Gate(RuledOnset, FullAt, 0.05f), 1e-6f,
                 "…and a TRUE glass calm still reads nothing at the ruled onset. The sea state has to " +
@@ -321,7 +346,7 @@ namespace HiddenHarbours.Tests.EditMode
             var report = new StringBuilder();
             report.AppendLine($"  _SwashCalmGate {calmGate:0.###} -> swash floor {floor:0.###}");
             report.AppendLine("  sea state | swash gate was | swash gate now");
-            foreach (float sea in new[] { CalmestReachableSea, SeaAtHisMidday, SeaAtHisEvening })
+            foreach (float sea in new[] { CalmSeaTheRulingWasPricedAt, SeaAtHisMidday, SeaAtHisEvening })
             {
                 float was = HiddenHarbours.Art.WaterSurface.SwashSeaStateGate(sea, SupersededOnset, FullAt, calmGate);
                 float now = HiddenHarbours.Art.WaterSurface.SwashSeaStateGate(sea, RuledOnset, FullAt, calmGate);
@@ -338,12 +363,12 @@ namespace HiddenHarbours.Tests.EditMode
             TestContext.WriteLine(report.ToString());
 
             float wasCalmest = HiddenHarbours.Art.WaterSurface.SwashSeaStateGate(
-                CalmestReachableSea, SupersededOnset, FullAt, calmGate);
+                CalmSeaTheRulingWasPricedAt, SupersededOnset, FullAt, calmGate);
             float nowCalmest = HiddenHarbours.Art.WaterSurface.SwashSeaStateGate(
-                CalmestReachableSea, RuledOnset, FullAt, calmGate);
+                CalmSeaTheRulingWasPricedAt, RuledOnset, FullAt, calmGate);
 
             Assert.AreEqual(floor, wasCalmest, 1e-5f,
-                "before the ruling the calmest reachable sea sat exactly on the swash's calm floor");
+                "before the ruling the 0.143 sea it was priced on sat exactly on the swash's calm floor");
             Assert.Greater(nowCalmest, wasCalmest,
                 "⭐ AND AFTER IT, IT DOES NOT. This is the shared-axis consequence of the ruling: the " +
                 "shore's calm fade keys the SAME two thresholds as the swell read (shader " +
