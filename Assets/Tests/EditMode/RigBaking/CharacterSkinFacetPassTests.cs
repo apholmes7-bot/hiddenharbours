@@ -217,6 +217,11 @@ namespace HiddenHarbours.Tests.RigBaking
                 smr.sharedMesh = _def.BindMesh;
                 smr.quality = SkinQuality.Bone2;
                 smr.updateWhenOffscreen = true;
+                // This fixture renders the same renderer several times inside ONE editor tick,
+                // moving bones in between. Skinning is otherwise computed once per frame, so
+                // every render after the first would reuse the first one's skinned buffer - and
+                // the sabotage, which exists to prove the comparison can fail, would move nothing.
+                smr.forceMatrixRecalculationPerRender = true;
 
                 // (ii) the render queue. RenderQueueRange.all is the filter the facet list uses.
                 RenderQueueRange all = RenderQueueRange.all;
@@ -514,10 +519,25 @@ namespace HiddenHarbours.Tests.RigBaking
                 smr.SetPropertyBlock(block);
                 SetLayerRecursive(skinGo.transform, ProbeLayer);
 
-                // --- render (b), then (a), then the sabotage ----------------------------------
+                // --- the control, before anything is measured ---------------------------------
+                // "The skinned render painted 3,181 px" is equally consistent with "the hull is
+                // still drawing". One observation cannot tell those apart, so take the other
+                // observation: with BOTH renderers off the frame must be empty. Without this the
+                // numbers below could be the hull measured against itself.
                 smr.enabled = false;
                 hullMr.enabled = true;
                 WarmShaders(cam);
+
+                hullMr.enabled = false;
+                byte[] blankPx = Render(cam, rt);
+                int blankSolid = SolidPixels(blankPx);
+                Assert.Zero(blankSolid,
+                    $"with both renderers disabled the facet target still holds {blankSolid} solid " +
+                    "pixels, so something else on the probe layer is painting and neither render " +
+                    "below is a picture of the renderer it names.");
+
+                // --- render (b), then (a), then the sabotage ----------------------------------
+                hullMr.enabled = true;
                 byte[] refPx = Render(cam, rt);
 
                 int refSolid = SolidPixels(refPx);
