@@ -439,7 +439,7 @@ namespace HiddenHarbours.Tests.RigBaking
         /// it skips, loudly: a green CI run carries no evidence about this fixture.</para>
         /// </summary>
         [Test]
-        public void TheSkinnedRendererPaintsTheSameFacetPixelsAsTheCpuSkinnedMesh()
+        public void TheFacetListDrawsASkinnedRenderer_ButNotWithTheSameFacetValues()
         {
             RequireAGraphicsDevice();
 
@@ -555,7 +555,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 //  (ii) SHADING - inside the pixels BOTH paths lit, how far apart are the VALUES?
                 //      Read as the worst single channel, because that is the number that says
                 //      whether this is arithmetic noise or a different facet id band.
-                ShadingStats(refPx, skinPx, out int maxDelta, out double meanDelta, out int shared);
+                Shading sh = MeasureShading(refPx, skinPx);
 
                 Debug.Log(
                     "FACET PASS GATE 2 - MEASURED ON A GPU\n" +
@@ -564,25 +564,43 @@ namespace HiddenHarbours.Tests.RigBaking
                     $"  (b) MeshRenderer, CPU-skinned   {refSolid:N0} solid px\n" +
                     $"  (a) SkinnedMeshRenderer         {skinSolid:N0} solid px\n" +
                     $"  silhouette        {xor:N0} of {union:N0} px lit by exactly one path = {silhouette:F3} %\n" +
-                    $"  shading           worst channel {maxDelta}/255, mean {meanDelta:F4}/255, over {shared:N0} shared px\n" +
+                    $"  shading           worst channel {sh.Max}/255, mean {sh.Mean:F4}/255, over {sh.Shared:N0} shared px\n" +
+                    $"    R max {sh.ChMax[0],3}/255 mean {sh.ChMean[0]:F2}   G max {sh.ChMax[1],3}/255 mean {sh.ChMean[1]:F2}\n" +
+                    $"    B max {sh.ChMax[2],3}/255 mean {sh.ChMean[2]:F2}   A max {sh.ChMax[3],3}/255 mean {sh.ChMean[3]:F2}\n" +
                     $"  exact-byte        {rawBytes:F3} % (diagnostic only - this comparator saturates)\n" +
-                    "  -> a SkinnedMeshRenderer IS picked up by the HHHullFacet renderer list.");
+                    $"  object-to-world   MeshRenderer {hullMr.localToWorldMatrix.GetColumn(3)}  " +
+                    $"SkinnedMeshRenderer {smr.localToWorldMatrix.GetColumn(3)}  " +
+                    $"equal={(hullMr.localToWorldMatrix == smr.localToWorldMatrix)}\n" +
+                    $"  root bone         {smr.rootBone.name} at {smr.rootBone.position}");
 
+                // ---- the answer the handoff asked for, in two halves --------------------------
+                //
+                //  (1) IS SHE DRAWN? Yes. Nothing about a SkinnedMeshRenderer keeps it out of a
+                //      ShaderTagId/DrawRendererList collection, and the geometry is not merely
+                //      close, it is exact: ZERO pixels are lit by one path and not the other.
+                //      Bindposes, bone weights and SkinQuality.Bone2 all land.
                 Assert.Less(silhouette, 2.0,
                     $"the two paths light different pixels: {xor:N0} of {union:N0} ({silhouette:F3} %) " +
                     "are solid in exactly one of them. The list DID draw the skinned renderer, so " +
                     "this is not the tag question - it is the skin: check the bindposes, and check " +
-                    "SkinQuality (the PROJECT QualitySettings.skinWeights CAPS the per-renderer " +
-                    "value, so a Bone2 request can still be skinned at one bone).");
+                    "SkinQuality (the ACTIVE quality level's QualitySettings.skinWeights CAPS the " +
+                    "per-renderer value, so a Bone2 request can still be skinned at one bone).");
 
-                Assert.LessOrEqual(maxDelta, ShadingTolerance,
-                    $"inside the {shared:N0} pixels both paths lit, the worst channel differs by " +
-                    $"{maxDelta}/255 - past the {ShadingTolerance}/255 that two arithmetic paths can " +
-                    "explain. The geometry agrees, so it is the VALUE that is wrong: GPU skinning " +
-                    "did not carry uv0 (the per-face facet attrs) through unchanged, or the draw " +
-                    "resolved into a different _HullId band.");
+                //  (2) DOES SHE CARRY THE FACET DATA? No - and that is the finding. Inside a
+                //      silhouette that agrees to the pixel, the VALUES written to the facet target
+                //      are almost entirely different. This assertion PINS that divergence: it is
+                //      not a bar that production is failing, it is the measured state of the world,
+                //      asserted so that FIXING it cannot pass unnoticed.
+                Assert.Greater(sh.Max, ShadingTolerance,
+                    "THE FACET VALUES NOW AGREE between a SkinnedMeshRenderer and a CPU-skinned " +
+                    $"MeshRenderer (worst channel {sh.Max}/255, inside the {ShadingTolerance}/255 " +
+                    "that two arithmetic paths explain). That is GOOD NEWS and this assertion is " +
+                    "now wrong: option (a) has become available. Invert it to Assert.LessOrEqual, " +
+                    "and amend ADR 0044 s3.7 - the presenter no longer has to CPU-skin.");
 
                 // --- the sabotage: the comparison must be able to fail ------------------------
+                // The verdict above rests on the SILHOUETTE, so it is the silhouette that has to
+                // be shown to have resolution. A quarter turn on a real bone must move it.
                 int sabotaged = SabotageBone(_def);
                 bones[sabotaged].localRotation = bones[sabotaged].localRotation *
                                                  Quaternion.AngleAxis(90f, Vector3.right);
@@ -880,25 +898,43 @@ namespace HiddenHarbours.Tests.RigBaking
             return 100.0 * xor / Math.Max(1, union);
         }
 
-        /// <summary>Worst and mean per-channel distance across the pixels BOTH renders lit. Pixels
-        /// only one of them lit are the silhouette's business, not this one's.</summary>
-        static void ShadingStats(byte[] a, byte[] b, out int maxDelta, out double meanDelta, out int shared)
+        /// <summary>Per-channel distance across the pixels BOTH renders lit. Pixels only one of
+        /// them lit are the silhouette's business, not this one's. Broken out by channel because
+        /// WHICH channel diverges says which packed field the facet pass got wrong.</summary>
+        struct Shading
+        {
+            public int Shared;
+            public int Max;
+            public double Mean;
+            public int[] ChMax;
+            public double[] ChMean;
+        }
+
+        static Shading MeasureShading(byte[] a, byte[] b)
         {
             Assert.AreEqual(a.Length, b.Length, "two renders of different sizes");
-            maxDelta = 0; shared = 0;
-            long sum = 0;
+            var r = new Shading { ChMax = new int[4], ChMean = new double[4] };
+            var sums = new long[4];
             for (int i = 0; i < a.Length; i += 4)
             {
                 if (a[i + 3] <= SolidAlpha || b[i + 3] <= SolidAlpha) continue;
-                shared++;
+                r.Shared++;
                 for (int c = 0; c < 4; c++)
                 {
                     int d = Math.Abs(a[i + c] - b[i + c]);
-                    if (d > maxDelta) maxDelta = d;
-                    sum += d;
+                    sums[c] += d;
+                    if (d > r.ChMax[c]) r.ChMax[c] = d;
+                    if (d > r.Max) r.Max = d;
                 }
             }
-            meanDelta = shared == 0 ? 0.0 : (double)sum / (shared * 4L);
+            long total = 0;
+            for (int c = 0; c < 4; c++)
+            {
+                total += sums[c];
+                r.ChMean[c] = r.Shared == 0 ? 0.0 : (double)sums[c] / r.Shared;
+            }
+            r.Mean = r.Shared == 0 ? 0.0 : (double)total / (r.Shared * 4L);
+            return r;
         }
 
         static double MismatchPercent(byte[] a, byte[] b)
