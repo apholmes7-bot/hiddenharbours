@@ -288,7 +288,8 @@ invisible ashore as a `SkinnedMeshRenderer` — so it does not choose between th
 both. Opening the gate is a change to `IsoFacetHullFeature`/`IsoFacetHullRegistry`, which are the
 **water lane's** files (§5.2 is the same boundary). **Filed for that lane, not taken here.**
 
-**Gate 2 — given the pass IS recorded, does the list include her? PREDICTED, not yet evidenced.**
+**Gate 2 — given the pass IS recorded, does the list include her? MEASURED ON A GPU, and the
+answer splits in two.**
 The list is built with `DrawingSettings(HHHullFacet, sorting) { perObjectData = None }` +
 `FilteringSettings(RenderQueueRange.all)`: no layer mask, no renderer-type discriminator — the same
 API URP's own opaque pass uses to draw skinned characters, and Unity skins into a vertex buffer
@@ -297,14 +298,46 @@ carries the per-face facet data, survives). The necessary conditions are asserte
 hold: the shader carries the tag, the material's queue is inside `RenderQueueRange.all`, the
 renderer survives culling, `FilteringSettings` exposes no member that could name a renderer class.
 
-**That is a prediction. The evidence needs pixels, and CI has no GPU** — recording this pass on a
-null device does not fail, it crashes the editor. `TheSkinnedRendererPaintsTheSameFacetPixelsAsThe
-CpuSkinnedMesh` stands the hull up itself (so gate 1 is known-open while gate 2 is read), draws the
-same figure both ways in one stage sharing material, property block and transform, and carries a
-bone-rotation sabotage so a fixture that rendered nothing twice cannot report a perfect match. **It
-is written and it is unrun until this lane is granted the editor slot; it `Assert.Ignore`s loudly on
-CI, and a green CI run carries no evidence about it.** This ADR is amended with the verdict when it
-runs — until then §3.7's gate-2 line reads PREDICTED.
+**The evidence needs pixels, and CI has no GPU** — recording this pass on a null device does not
+fail, it crashes the editor, so `TheFacetListDrawsASkinnedRenderer_ButNotWithTheSameFacetValues`
+`Assert.Ignore`s there and **a green CI run carries no evidence about this section**. It was run on
+a granted editor slot, on **Direct3D12 / NVIDIA GeForce RTX 4060**. It stands the hull up itself, so
+gate 1 is known-open while gate 2 is read, and draws the same figure both ways into one 128×184
+facet target sharing material, property block and transform.
+
+| what | measured |
+|---|---|
+| control, **both** renderers off | **0** solid px — so the pixels below are hers, and not the hull's |
+| (b) `MeshRenderer`, CPU-skinned | 3,181 solid px |
+| (a) `SkinnedMeshRenderer` | 3,181 solid px |
+| **silhouette** | **0 of 3,181 px lit by exactly one path = 0.000 %** |
+| sabotage: `head` +90° | 96 px = **3.007 %** — the comparison can fail, so its agreement means something |
+| **shading**, worst channel | **242/255**, mean 95.92/255, over 3,181 shared px |
+| per channel | R 242 (mean 127.26) · G 240 (144.13) · B 234 (112.30) · **A 0 (0.00)** |
+
+> **She is drawn, and she is drawn in exactly the right place. The facet VALUES are not the same.**
+
+Read in that order. **Nothing about a `SkinnedMeshRenderer` keeps it out of a
+`ShaderTagId`/`DrawRendererList` collection** — that was the riskiest unknown and the answer is yes,
+in pixels, with a control frame proving they are her pixels. The geometry is not merely close but
+exact: bindposes, the legacy `BoneWeight[]` and `SkinQuality.Bone2` land to the pixel, and the
+sabotage shows the measure would have said so had they not. Then the second half: inside a
+silhouette that agrees perfectly, the values written to the facet target are almost entirely
+different, and the split is sharp — **alpha is byte-identical while R, G and B are unrelated**.
+
+**So option (a) is not available on today's shader.** Handing the presenter a
+`SkinnedMeshRenderer` would draw the figure in precisely the right place carrying the wrong facet
+values. *Why* is not established from here. Identical coverage with divergent values is consistent
+with the shading inputs the facet shader derives from position — `wpos` feeds the dither frame —
+resolving differently for a renderer Unity skins into its own space; that is a **hypothesis**, this
+lane did not test it, and it must not be quoted as a result. `HiddenHarboursIsoFacet.shader` and
+`IsoFacetHullFeature` are the **water lane's** files (§5.2, the same boundary gate 1 ran into).
+**Filed for that lane, not chased here.** Option (b) stands, priced below.
+
+`Assert.Greater(sh.Max, ShadingTolerance)` **pins** that divergence. It is not a bar production is
+failing; it is the measured state of the world, asserted so that *fixing* it cannot pass unnoticed —
+the failure message tells whoever closes the gap to invert the assertion and amend this section,
+because at that moment option (a) becomes available and the presenter stops having to CPU-skin.
 
 **Option (b) is costed regardless, because the handoff asked for the number either way.**
 CPU-skinning the bind mesh — 45 bone matrices, 2,992 corners at ≤2 influences, positions and

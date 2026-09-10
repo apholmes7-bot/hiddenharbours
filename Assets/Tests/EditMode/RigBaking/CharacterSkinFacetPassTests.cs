@@ -178,8 +178,9 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <para><b>⚠️ <c>SkinQuality</c> is not a detail and it is asserted here.</b> The BLENDED
         /// rings carry TWO weights; collapsing them to one moves a vertex by 4.52e-2 m — 452× the
         /// rig's own 1e-4 m tolerance. A renderer left on <see cref="SkinQuality.Auto"/> reads
-        /// <see cref="QualitySettings.skinWeights"/>, which is a PROJECT setting a quality-level
-        /// edit can lower without touching a line of this lane's code. The presenter must set
+        /// <see cref="QualitySettings.skinWeights"/>, which is a PER-LEVEL setting — this project
+        /// ships Very Low 1, Low/Medium/High 2, Very High 4, Ultra 255, so the player's own quality
+        /// choice can lower it without touching a line of this lane's code. The presenter must set
         /// <see cref="SkinQuality.Bone2"/> explicitly; the project's current setting is printed
         /// either way, because that is the number that says how close the trapdoor is.</para>
         /// </summary>
@@ -261,9 +262,12 @@ namespace HiddenHarbours.Tests.RigBaking
                     $"  bones {smr.bones.Length}, bindposes {_def.BindMesh.bindposes.Length}, " +
                     $"weights {_def.BindMesh.boneWeights.Length}, verts {_def.BindMesh.vertexCount}\n" +
                     $"  world bounds {b.center} +/- {b.extents}\n" +
-                    $"  quality pinned to {smr.quality}; the PROJECT default " +
-                    $"QualitySettings.skinWeights is {QualitySettings.skinWeights} — a renderer left " +
-                    "on Auto would inherit that, and OneBone costs 4.52e-2 m");
+                    $"  quality pinned to {smr.quality}; the ACTIVE quality level " +
+                    $"('{QualitySettings.names[QualitySettings.GetQualityLevel()]}') caps " +
+                    $"skinWeights at {QualitySettings.skinWeights}. It is a PER-LEVEL setting, not " +
+                    "one project default: this project ships Very Low 1, Low/Medium/High 2, Very " +
+                    "High 4, Ultra 255. A renderer left on Auto inherits whichever level the player " +
+                    "is on, so ONE bone is reachable on a real machine, and costs 4.52e-2 m");
 
                 Object.DestroyImmediate(mat);
             }
