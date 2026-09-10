@@ -217,11 +217,6 @@ namespace HiddenHarbours.Tests.RigBaking
                 smr.sharedMesh = _def.BindMesh;
                 smr.quality = SkinQuality.Bone2;
                 smr.updateWhenOffscreen = true;
-                // This fixture renders the same renderer several times inside ONE editor tick,
-                // moving bones in between. Skinning is otherwise computed once per frame, so
-                // every render after the first would reuse the first one's skinned buffer - and
-                // the sabotage, which exists to prove the comparison can fail, would move nothing.
-                smr.forceMatrixRecalculationPerRender = true;
 
                 // (ii) the render queue. RenderQueueRange.all is the filter the facet list uses.
                 RenderQueueRange all = RenderQueueRange.all;
@@ -509,6 +504,12 @@ namespace HiddenHarbours.Tests.RigBaking
                 smr.sharedMesh = _def.BindMesh;
                 smr.quality = SkinQuality.Bone2;
                 smr.updateWhenOffscreen = true;
+                // A SkinnedMeshRenderer skins ONCE PER FRAME. This fixture renders it three times
+                // inside ONE editor tick - reference, subject, sabotage - moving bones in between,
+                // so every render after the first would otherwise reuse the first one's skinned
+                // buffer. The sabotage exists to prove the comparison can fail; without this it
+                // cannot, and reports a 0.000 % move for a quarter turn on the biggest bone.
+                smr.forceMatrixRecalculationPerRender = true;
                 PoseSkeleton(bones, _def, clip, Frame);
 
                 // The hull writes _HullId, _HullOrigin and the deck-occupant slots per DRAW, on a
