@@ -261,11 +261,26 @@ namespace HiddenHarbours.Tests.EditMode
         /// would draw is computed from the sea the SHADER got and the ride the RENDERER got. It must
         /// sit on the datum and stay there, however hard she heaves.
         ///
-        /// <para><b>SABOTAGE ARM: release the seam.</b> The hull then falls back to her own animator
-        /// — whose travel phase was deliberately started 37 ticks after the bridge's, exactly as a
-        /// hull skinned mid-session does — and the waterline must WANDER by a large multiple of the
-        /// bar. That is the defect the owner watched: a hull heaving on a sea of exactly the right
-        /// size at the wrong moment, so she is never at her waterline for long.</para>
+        /// <para>⚠️ <b>THE OLD SABOTAGE ARM IS INVERTED, because PR E deleted the defect it
+        /// guarded.</b> It used to release the Core seam, drop the hull onto her own animator — whose
+        /// travel phase had been started 37 ticks after the bridge's, exactly as a hull skinned
+        /// mid-session is — and require the waterline to WANDER. That desync existed because the
+        /// phase was ACCUMULATED, so it began at zero on whichever wake created the animator. Since
+        /// PR E the phase is <c>ω·t</c> at the shared game clock: an animator built 37 ticks late
+        /// computes the same phase as one built on time, and the seam is no longer what holds the
+        /// hull and the water together. Releasing it now changes nothing, and the arm swung 0.000 m
+        /// on CI — not a weakened guard, a defect that can no longer occur. The arm is therefore
+        /// RETIRED and its number logged: the amplitude easing is still per-instance, so a freshly
+        /// built hull animator eases in from zero while the bridge's is settled, and what that
+        /// residual does to a ten-second peak-to-peak wants measuring with an editor rather than
+        /// barring by reasoning.</para>
+        ///
+        /// <para><b>SABOTAGE ARM (re-armed): put the two paths on DIFFERENT CLOCKS.</b> That is the
+        /// only way left to decorrelate them, and it is exactly the invariant PR E rests on — all
+        /// seven <c>Tick</c> call sites read <c>WaveFieldAnimator.GameTimeSeconds</c>, the same clock
+        /// <c>BoatController</c> rides. Wire one of them to a different clock and the hull heaves on
+        /// a sea of the right size at the wrong moment again, which is the defect the owner
+        /// originally watched. The arm proves that failure is still detectable here.</para>
         /// </summary>
         [Test]
         public void SailingTheSeaTheShaderDraws_TheWaterlineNeverLeavesTheDatum()
@@ -283,13 +298,34 @@ namespace HiddenHarbours.Tests.EditMode
                 "across a 10 s sail. She is riding the sea she is drawn on, so the water stands " +
                 "at the same line on her planking whatever the wave is doing.");
 
-            (float spread, float meanError) desynced = SailAndMeasureWaterline(waterline, frames,
+            // ⚠️ The old seam-release arm is RETIRED, not re-tuned, and the number is logged rather
+            // than barred. PR E removed the PHASE half of the desync it depended on — an animator
+            // built 37 ticks late now computes the same ω·t — but the AMPLITUDE easing is still
+            // per-instance, so a freshly-built hull animator eases in from zero over
+            // ParameterSmoothingSeconds while the bridge's is already settled. What that residual
+            // ease-in does to the peak-to-peak over ten seconds is not something this lane could
+            // measure without the editor, and a bar chosen by reasoning rather than measurement is
+            // exactly the kind this repo keeps having to withdraw. It is recorded so the next run
+            // with a slot can set an honest one.
+            (float spread, float meanError) unseamed = SailAndMeasureWaterline(waterline, frames,
                                                                                publishTheBridgeField: false);
-            Assert.Greater(desynced.spread, 20f * shared.spread + 0.1f,
-                "SABOTAGE ARM: with the Core seam released the hull rides her own animator, whose " +
-                "travel phase started at a different moment from the water's — the waterline must " +
-                "then swing wildly. It swung " + $"{desynced.spread:0.000} m, which is not wild " +
-                "enough to be the defect the owner reported; has the desync been neutralised?");
+            TestContext.WriteLine(
+                $"  seam released (no bar, recorded): spread {unseamed.spread * 1000f:0.0} mm, " +
+                $"mean error {unseamed.meanError * 1000f:0.0} mm. Before PR E this arm was REQUIRED to " +
+                $"swing past {(20f * shared.spread + 0.1f) * 1000f:0.0} mm and did; on CI after PR E it " +
+                "swung 0.000 m, because the phase no longer starts on whichever wake built the " +
+                "animator. What remains here is the amplitude ease-in, not the phase.");
+
+            // ⭐ RE-ARMED SABOTAGE: the one desync PR E still permits — two clocks.
+            (float spread, float meanError) twoClocks = SailAndMeasureWaterline(
+                waterline, frames, publishTheBridgeField: true, bridgeClockOffsetSeconds: 1.37);
+            Assert.Greater(twoClocks.spread, 20f * shared.spread + 0.1f,
+                "SABOTAGE ARM: with the bridge ticked 1.37 s off the clock the hull reads, she heaves " +
+                "on a sea of exactly the right size at the wrong moment — the defect the owner " +
+                "reported — and the waterline must swing wildly. It swung " +
+                $"{twoClocks.spread:0.000} m. PR E's whole guarantee is that every Tick call site " +
+                "reads WaveFieldAnimator.GameTimeSeconds; if this arm stops biting, that guarantee " +
+                "has stopped being testable here.");
         }
 
         /// <summary>
@@ -300,7 +336,8 @@ namespace HiddenHarbours.Tests.EditMode
         /// skinned, swapped or re-enabled.
         /// </summary>
         (float spread, float meanError) SailAndMeasureWaterline(float waterline, int frames,
-                                                                bool publishTheBridgeField)
+                                                                bool publishTheBridgeField,
+                                                                double bridgeClockOffsetSeconds = 0.0)
         {
             var bridge = new WaveFieldAnimator();
             var clock = new ScriptedClock();
@@ -317,7 +354,8 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < 37; i++)
             {
                 clock.Advance(Dt);
-                bridge.Tick(Dt, clock.TotalSeconds, sea.Wind, sea.SeaState01, in field, in smoothing);
+                bridge.Tick(Dt, clock.TotalSeconds + bridgeClockOffsetSeconds,
+                            sea.Wind, sea.SeaState01, in field, in smoothing);
             }
 
             using var rig = new MeshRig(waterline, sea, clock, config.Value);
@@ -327,8 +365,8 @@ namespace HiddenHarbours.Tests.EditMode
             for (int f = 0; f < frames; f++)
             {
                 clock.Advance(Dt);
-                WaveTrains trains = bridge.Tick(Dt, clock.TotalSeconds, sea.Wind, sea.SeaState01,
-                                                in field, in smoothing);
+                WaveTrains trains = bridge.Tick(Dt, clock.TotalSeconds + bridgeClockOffsetSeconds,
+                                                sea.Wind, sea.SeaState01, in field, in smoothing);
                 if (publishTheBridgeField) SharedWaveField.Publish(_fieldOwner, in trains);
                 else SharedWaveField.Clear(_fieldOwner);
 
