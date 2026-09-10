@@ -190,6 +190,56 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.AreEqual(1, read.Areas.Count(a => !a.IsWashboard));
         }
 
+        // ---- hull or not -----------------------------------------------------------------------------
+
+        /// <summary>
+        /// <b>The classifier answers BOTH ways, and for the right reasons.</b>
+        /// <c>docs/art/rigs/gameplay/</c> was all boats until the seagull kit put a creature in it,
+        /// and every deck assertion in the repo is a question about a boat. Measured against the
+        /// committed corpus only one file answers "no" today, which cannot show what happens to the
+        /// next creature or to a typo — so the interesting inputs are stated here.
+        /// </summary>
+        [Test]
+        public void TheHullClassifierAnswersBothWays()
+        {
+            Assert.IsTrue(DeckSidecarReader.IsHullSidecar(
+                @"{ ""schema"": ""hidden-harbours/boat-gameplay-geometry@1"", ""rig"": ""doryIsoRig.js"" }"),
+                "a hull that declares the hull schema");
+
+            // ⚠️ THE ONE THAT DECIDES THE DESIGN. Eight committed hulls predate the schema field and
+            // declare nothing. Unknown must mean HULL, or a positive filter drops those eight out of
+            // the import and out of the parity suite without a word.
+            Assert.IsTrue(DeckSidecarReader.IsHullSidecar(
+                @"{ ""rig"": ""capeIslanderIsoRig.js"" }"),
+                "a hull that declares no schema at all — eight committed files are like this");
+
+            Assert.IsFalse(DeckSidecarReader.IsHullSidecar(
+                @"{ ""schema"": ""hidden-harbours/creature-gameplay@1"", ""rig"": ""seagullIsoRig.js"" }"),
+                "the creature schema the seagull kit landed");
+
+            // Matching the FAMILY rather than the exact string is what makes this generalise: the
+            // next revision of the creature contract needs no code change here.
+            Assert.IsFalse(DeckSidecarReader.IsHullSidecar(
+                @"{ ""schema"": ""hidden-harbours/creature-gameplay@2"" }"),
+                "a later revision of the creature contract");
+
+            // ...and what stops the generalisation swallowing things. A typo is a hull, so it fails
+            // LOUDLY in the parity suite by name instead of quietly leaving it.
+            Assert.IsTrue(DeckSidecarReader.IsHullSidecar(
+                @"{ ""schema"": ""hidden-harbours/creture-gameplay@1"" }"),
+                "a MISSPELLED creature schema must not silently exempt the file");
+            Assert.IsTrue(DeckSidecarReader.IsHullSidecar(
+                @"{ ""schema"": ""hidden-harbours/vehicle-gameplay@1"" }"),
+                "a non-hull family nobody has classified yet must not exempt itself");
+
+            Assert.IsTrue(DeckSidecarReader.IsHullSidecar("this is not JSON at all"),
+                "an unreadable sidecar is reported by Read(), not quietly reclassified");
+
+            Assert.AreEqual("hidden-harbours/creature-gameplay",
+                            DeckSidecarReader.SchemaFamily("hidden-harbours/creature-gameplay@1"));
+            Assert.AreEqual("", DeckSidecarReader.SchemaFamily(""));
+        }
+
         // ---- naming ----------------------------------------------------------------------------------
 
         [Test]

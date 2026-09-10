@@ -191,6 +191,14 @@ namespace HiddenHarbours.Tests.RigBaking
                          "PuntIso", AzimuthConvention.CounterClockwise),
             new Snapshot("rod", "docs/art/rigs/rodIsoRig.js",
                          "RodIso", AzimuthConvention.Clockwise),
+            // The fleet's first CREATURE rig (owner drop of 2026-09-10, PR 1 of 4). Standalone —
+            // a self-contained IIFE with no isoSolid dependency, so no prerequisites.
+            // ⚠️ CLOCKWISE, and MEASURED rather than assumed: the minority convention in this repo
+            // (19 of 21 directional rigs are counter-clockwise), shared only with `character` and
+            // `rod`. RigCatalog.Seagull.cs carries the bill-pixel probe that settled it. Flipping
+            // this handedness mirrors all eight facings of all 48 columns of the sheet.
+            new Snapshot("seagull", "docs/art/rigs/seagullIsoRig.js",
+                         "SeagullIso", AzimuthConvention.Clockwise),
             new Snapshot("shellfish", "docs/art/rigs/shellfishRig.js",
                          "Shellfish", AzimuthConvention.Clockwise),
             // catch pass 2. NOT directional (IW/IH/ipivot, no camera) — InstallModule only.
