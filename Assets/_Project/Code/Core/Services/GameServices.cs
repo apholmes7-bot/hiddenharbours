@@ -459,6 +459,25 @@ namespace HiddenHarbours.Core
         public static UnityEngine.Rect CurrentRegionBounds { get; set; }
 
         /// <summary>
+        /// TRUE while the ARRIVAL OPENING is running — from the moment <c>ArrivalOpening</c> leaves
+        /// <c>Dormant</c> until it hands the player the boat, and false again the instant it is torn
+        /// down. The <b>App</b> opening is the writer; the <b>Art</b> mood-grade director is the reader,
+        /// so the intro can carry a stronger grade than play does
+        /// (<c>JuiceSettings.GradeIntroStrength</c> vs <c>GradeStrength</c>) without either module
+        /// referencing the other (rule 4).
+        ///
+        /// <para><b>A fact and not a scene name on purpose.</b> The opening runs inside the ordinary
+        /// region scene, so a look that keyed off a scene STRING would still be on after the handover
+        /// and on again on every re-entry. The writer sets it from the phase itself and clears it in
+        /// <c>OnDisable</c>, so a torn-down opening cannot leave it standing.</para>
+        ///
+        /// <para>OPTIONAL and NOT part of <see cref="Ready"/>: false is "no opening is running", which
+        /// is the truth in every test rig, in the editor and in ordinary play.</para>
+        /// FLAG lead-architect: new Core contract (the opening-in-progress seam the grade reads).
+        /// </summary>
+        public static bool OpeningCinematicRunning { get; set; }
+
+        /// <summary>
         /// The owner's tuning asset, wired once by <c>GameRoot</c>. OPTIONAL and deliberately NOT part
         /// of <see cref="Ready"/>: EditMode, a bare art scene and every test rig run without it, and
         /// each derived read below falls back to its own <c>Default</c>, so nothing breaks unwired.
@@ -895,6 +914,7 @@ namespace HiddenHarbours.Core
             CurrentRegionId = null;
             PendingArrivalKey = null;
             CurrentRegionBounds = default;
+            OpeningCinematicRunning = false;   // a torn-down opening never leaves the intro grade on
             WorldUnitsPerRenderedPixel = 0f;   // 0 = no camera has reported; every snap inert
             Config = null;
             CatchFactory = null;

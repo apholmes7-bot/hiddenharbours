@@ -33,16 +33,16 @@ MonoBehaviour:
     BloomIntensity: 0.5
     BloomThreshold: 0.85
     BloomScatter: 0.75
-    Lift: {x: 1.06, y: 1, z: 0.92, w: 0.02}
+    Lift: {x: 1.01, y: 1, z: 0.99, w: 0.02}
     Gamma: {x: 1, y: 1, z: 1, w: 0}
-    Gain: {x: 1.05, y: 0.98, z: 0.9, w: 0}
+    Gain: {x: 1.01, y: 1, z: 0.99, w: 0}
     PostExposure: 0
     Contrast: 10
     Saturation: 12
-    ColorFilter: {r: 1, g: 0.95, b: 0.86, a: 1}
-    VignetteIntensity: 0.22
+    ColorFilter: {r: 1, g: 1, b: 1, a: 1}
+    VignetteIntensity: 0.12
     VignetteSmoothness: 0.45
-    VignetteColor: {r: 0.12, g: 0.06, b: 0.02, a: 1}
+    VignetteColor: {r: 0, g: 0, b: 0, a: 1}
     GrainIntensity: 0
     GrainResponse: 0.8
     ChromaticAberration: 0
@@ -50,16 +50,16 @@ MonoBehaviour:
     BloomIntensity: 0.8
     BloomThreshold: 0.75
     BloomScatter: 0.8
-    Lift: {x: 0.9, y: 0.95, z: 1.1, w: -0.02}
-    Gamma: {x: 0.95, y: 0.98, z: 1.05, w: 0}
-    Gain: {x: 0.95, y: 0.98, z: 1.05, w: 0}
+    Lift: {x: 0.99, y: 0.995, z: 1.01, w: -0.02}
+    Gamma: {x: 1, y: 1, z: 1, w: 0}
+    Gain: {x: 1, y: 1, z: 1, w: 0}
     PostExposure: 0
     Contrast: 10
-    Saturation: -15
-    ColorFilter: {r: 0.9, g: 0.94, b: 1, a: 1}
-    VignetteIntensity: 0.3
+    Saturation: -6
+    ColorFilter: {r: 1, g: 1, b: 1, a: 1}
+    VignetteIntensity: 0.18
     VignetteSmoothness: 0.5
-    VignetteColor: {r: 0.02, g: 0.03, b: 0.08, a: 1}
+    VignetteColor: {r: 0, g: 0, b: 0, a: 1}
     GrainIntensity: 0
     GrainResponse: 0.8
     ChromaticAberration: 0

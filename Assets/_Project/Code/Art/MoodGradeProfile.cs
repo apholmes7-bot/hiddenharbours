@@ -74,28 +74,44 @@ namespace HiddenHarbours.Art
             return g;
         }
 
+        /// <summary>
+        /// ⚠ <b>THE MULTIPLY OWNS THE COLOUR; THIS OWNS THE TONE.</b> <c>DayNightProfile._skyTint</c>
+        /// already multiplies the WHOLE SCREEN by the dusk orange <c>(1, 0.55, 0.32)</c> at this hour.
+        /// A warm colour filter and a warm lift on top of that is the second hue the owner saw on
+        /// 2026-09-09 — "a very noticeable yellow filter before and after". So the hue here is a
+        /// RESIDUE of 0.01: enough that the art bible §4.2 direction is still true of these numbers,
+        /// far too little to tint a frame. What is left is what only a post pass can do — bloom,
+        /// contrast, saturation, a vignette.
+        /// </summary>
         public static MoodGrade DefaultGoldenHour()
         {
             var g = MoodGrade.Neutral;
             g.BloomIntensity = 0.5f;  g.BloomThreshold = 0.85f; g.BloomScatter = 0.75f;
-            g.Lift = new Vector4(1.06f, 1.00f, 0.92f, 0.02f);   // warm lift
-            g.Gain = new Vector4(1.05f, 0.98f, 0.90f, 0.00f);   // warm highlights
+            g.Lift = new Vector4(1.01f, 1.00f, 0.99f, 0.02f);   // a breath of warmth, not a filter
+            g.Gain = new Vector4(1.01f, 1.00f, 0.99f, 0.00f);   // the black-point lift (.w) is TONE, kept
             g.Contrast = 10f;         g.Saturation = 12f;
-            g.ColorFilter = new Color(1f, 0.95f, 0.86f, 1f);
-            g.VignetteIntensity = 0.22f; g.VignetteSmoothness = 0.45f; g.VignetteColor = new Color(0.12f, 0.06f, 0.02f, 1f);
+            g.ColorFilter = Color.white;                        // the sky tint is the golden hour's colour
+            g.VignetteIntensity = 0.12f; g.VignetteSmoothness = 0.45f; g.VignetteColor = Color.black;
             return g;
         }
 
+        /// <summary>
+        /// ⚠ Same law as <see cref="DefaultGoldenHour"/>. The midnight blue is
+        /// <c>DayNightProfile._skyTint</c>'s <c>(0.12, 0.16, 0.34)</c> at 18% intensity — the whole
+        /// screen is already night-coloured before this runs. Laying a second blue over it while −15
+        /// saturation pulled the world's own colour out is exactly what the owner reported: it
+        /// "completely washes everything out on the screen except the colour". The blue is a residue
+        /// now and the saturation cut is a nudge; the lamps still bloom, which is the point of a night
+        /// grade at all.
+        /// </summary>
         public static MoodGrade DefaultNight()
         {
             var g = MoodGrade.Neutral;
             g.BloomIntensity = 0.8f;  g.BloomThreshold = 0.75f; g.BloomScatter = 0.8f;
-            g.Lift  = new Vector4(0.90f, 0.95f, 1.10f, -0.02f); // cold shadows
-            g.Gamma = new Vector4(0.95f, 0.98f, 1.05f, 0f);
-            g.Gain  = new Vector4(0.95f, 0.98f, 1.05f, 0f);
-            g.Contrast = 10f;         g.Saturation = -15f;
-            g.ColorFilter = new Color(0.90f, 0.94f, 1f, 1f);
-            g.VignetteIntensity = 0.3f; g.VignetteSmoothness = 0.5f; g.VignetteColor = new Color(0.02f, 0.03f, 0.08f, 1f);
+            g.Lift  = new Vector4(0.99f, 0.995f, 1.01f, -0.02f); // shadows still read cold, barely
+            g.Contrast = 10f;         g.Saturation = -6f;
+            g.ColorFilter = Color.white;
+            g.VignetteIntensity = 0.18f; g.VignetteSmoothness = 0.5f; g.VignetteColor = Color.black;
             return g;
         }
 

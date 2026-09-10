@@ -161,19 +161,44 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// <b>THE MASTER DIAL</b> (owner's ruling, 2026-09-09). A lerp from the IDENTITY grade
+        /// (<see cref="MoodGrade.Neutral"/> — no bloom, no tint, no vignette: exactly the pre-juice
+        /// frame) toward the look the profile authored. <c>strength 0</c> is the identity, <c>1</c> is
+        /// the authored look, and in between the WHOLE look comes on together — tone and the little hue
+        /// residue alike. One number to turn, no carve-outs to remember.
+        ///
+        /// <para>Both endpoints return their operand itself rather than a lerp that lands within a
+        /// float of it, so "strength 1 is exactly what shipped before the dial existed" is a fact and
+        /// not a tolerance.</para>
+        ///
+        /// <para>The value is <c>GameConfig.Juice.GradeStrength</c>, or <c>GradeIntroStrength</c> while
+        /// the arrival opening is running — <see cref="MoodGradeDirector"/> chooses; this stays pure.</para>
+        /// </summary>
+        public static MoodGrade AtStrength(in MoodGrade authored, float strength)
+        {
+            if (strength >= 1f) return authored;
+            if (strength <= 0f) return MoodGrade.Neutral;
+            return MoodGrade.Lerp(MoodGrade.Neutral, authored, strength);
+        }
+
+        /// <summary>
         /// The whole model in one call — what the director runs every tick and what the tests drive:
         /// weights from the facts, the profile blended by them, the region laid over, clamped to URP's
-        /// ranges. Pure.
+        /// ranges, and the master <paramref name="strength"/> applied last. Pure.
+        ///
+        /// <para><paramref name="strength"/> is explicit and deliberately has NO default: every caller
+        /// states which look it is asking for, and none can bypass the dial by forgetting it. Pass
+        /// <c>1f</c> for the authored look at full.</para>
         /// </summary>
         public static MoodGrade Evaluate(MoodGradeProfile profile, MoodGradeRegionOverride region,
                                          float hour, float sunriseHour, float sunsetHour,
                                          float visibility, float seaState01, in JuiceSettings juice,
-                                         out MoodWeights weights)
+                                         float strength, out MoodWeights weights)
         {
             weights = Weights(hour, sunriseHour, sunsetHour, visibility, seaState01, juice);
             var g = Blend(profile, weights);
             g = ApplyRegion(g, region);
-            return g.Clamped();
+            return AtStrength(g.Clamped(), strength);
         }
     }
 }

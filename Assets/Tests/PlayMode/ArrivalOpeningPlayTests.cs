@@ -211,9 +211,18 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(_skipper, "the arrival skipper Def must exist for this to mean anything");
             var opening = Build(hasRestAnchor: false, alreadyArrived: false);
 
+            // ⭐ THE GRADE HAS TO KNOW. The intro carries the mood grade at its own strength (owner's
+            // ruling, 2026-09-09) and the only thing that tells it so is this Core fact, set from the
+            // phase itself and never from a scene name. Before she is brought in, nothing is running.
+            Assert.IsFalse(GameServices.OpeningCinematicRunning,
+                "the opening fact was standing before the opening began — play would wear the intro grade");
+
             Assert.IsTrue(opening.TryBegin(), "a fresh save must be brought in");
             Assert.AreEqual(ArrivalOpening.Phase.Approaching, opening.Current,
                 "she is under way the moment the arrival begins");
+            Assert.IsTrue(GameServices.OpeningCinematicRunning,
+                "the arrival began and the Core fact did not go up — MoodGradeDirector would grade the " +
+                "intro at the PLAY strength");
             Assert.IsNotNull(opening.Boat, "…and there is a boat under her");
 
             // Her helm is being worked — the sequencer holds the SAME control surface the player is
@@ -296,6 +305,36 @@ namespace HiddenHarbours.Tests.PlayMode
                 "the arrival did not record itself — the next boot would land the player all over again");
             Assert.Greater(save.Saves, 0,
                 "…and it was not written to disk, so a crash on the walk up to Ginny replays the opening");
+
+            // …and the intro grade lets go with the opening. A fact left standing here would carry the
+            // intro's strength over the whole game.
+            Assert.IsFalse(GameServices.OpeningCinematicRunning,
+                "the player is ashore and the opening fact is still up — the intro grade never ends");
+        }
+
+        /// <summary>
+        /// The predicate under the Core fact, stated over every phase there is. The three middle phases
+        /// are an opening in progress and carry the intro strength; neither end does — a Dormant opening
+        /// has not begun, and a HandedOver one is the game.
+        ///
+        /// <para>The count is asserted too, so ADDING a phase reddens here and someone has to say whether
+        /// the intro grade is on in it.</para>
+        /// </summary>
+        [Test]
+        public void TheOpeningIsRunningInTheThreeMiddlePhasesAndInNeitherEnd()
+        {
+            Assert.IsFalse(ArrivalOpening.RunningIn(ArrivalOpening.Phase.Dormant),
+                "nothing has begun, so nothing is running");
+            Assert.IsTrue(ArrivalOpening.RunningIn(ArrivalOpening.Phase.Approaching), "under way");
+            Assert.IsTrue(ArrivalOpening.RunningIn(ArrivalOpening.Phase.Docking), "coming alongside");
+            Assert.IsTrue(ArrivalOpening.RunningIn(ArrivalOpening.Phase.Moored),
+                "tied up but still HER boat — the player has not been handed the controls yet");
+            Assert.IsFalse(ArrivalOpening.RunningIn(ArrivalOpening.Phase.HandedOver),
+                "the controls are the player's — this is play, and play gets the play strength");
+
+            Assert.AreEqual(5, System.Enum.GetValues(typeof(ArrivalOpening.Phase)).Length,
+                "a phase was added or removed — say here whether the intro grade is on during it, " +
+                "because MoodGradeDirector will ask");
         }
 
         /// <summary>

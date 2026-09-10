@@ -2720,7 +2720,12 @@ namespace HiddenHarbours.Core
     ///
     /// <para><b>Grade*</b> (PR 1 — <c>MoodGradeDirector</c>): the BLEND curve between the five looks the
     /// owner authors in <c>Resources/MoodGradeProfile.asset</c>. The looks are the profile's; how wide
-    /// the golden hour is, how fast night fades in, and where fog and storm begin are these.</para>
+    /// the golden hour is, how fast night fades in, and where fog and storm begin are these. Since the
+    /// owner's 2026-09-09 ruling the STRENGTH of the whole thing is one too — <see cref="GradeStrength"/>
+    /// in play, <see cref="GradeIntroStrength"/> while the arrival opening runs — each a lerp from the
+    /// identity grade toward the authored look. The grade owns TONE only (bloom, contrast, saturation, a
+    /// vignette); the whole-screen multiply of <c>DayNightProfile</c> owns the time-of-day COLOUR, and
+    /// never both — see <c>docs/design/lighting-and-daynight.md</c> §8.2.</para>
     ///
     /// <para><b>Feel*</b> / <b>CatchPushIn*</b> / <b>ImpactShake*</b> / <b>SpeedPullBack*</b> (PR 2 —
     /// <c>CameraFeel</c> inside the one <c>CameraFollow</c>): the push-in on a landed catch, the shake on a
@@ -2747,6 +2752,21 @@ namespace HiddenHarbours.Core
         [Tooltip("Master switch. OFF disables the Volume and hands the camera back with post-processing " +
                  "off — the frame is exactly the pre-juice frame.")]
         public bool GradeEnabled;
+
+        [Tooltip("Master strength of the grade in PLAY, 0..1. The evaluated look is lerped from the " +
+                 "IDENTITY grade (MoodGrade.Neutral: no bloom, no tint, no vignette) toward the look " +
+                 "the profile authored. 0 = exactly the pre-juice frame; 1 = the authored look at full. " +
+                 "The owner played the full-strength grade on 2026-09-09 and ruled it a filter over the " +
+                 "world, so the shipped asset carries a fraction. This field MUST exist in " +
+                 "GameConfig.asset — a serialized field absent from the asset reads ZERO, and zero here " +
+                 "is no grade at all.")]
+        [Range(0f, 1f)] public float GradeStrength;
+
+        [Tooltip("Master strength of the grade WHILE THE ARRIVAL OPENING IS RUNNING, 0..1 — the director " +
+                 "reads GameServices.OpeningCinematicRunning and picks this instead of GradeStrength. " +
+                 "The owner keeps the grade on the intro ('i do like it on the intro maybe toned down a " +
+                 "little'), so this sits ABOVE GradeStrength. Same law: absent from the asset reads ZERO.")]
+        [Range(0f, 1f)] public float GradeIntroStrength;
 
         [Tooltip("Half-width of the golden-hour kernel, in hours, centred on sunrise and on sunset. The " +
                  "Golden Hour look is at full weight ON the horizon crossing and fades linearly to " +
@@ -2899,7 +2919,9 @@ namespace HiddenHarbours.Core
         public static JuiceSettings Default => new JuiceSettings
         {
             GradeEnabled = true,
-            GradeGoldenHourWidthHours = 1.5f,
+            GradeStrength = 0.35f,
+            GradeIntroStrength = 0.7f,
+            GradeGoldenHourWidthHours = 0.75f,
             GradeNightBlendHours = 1f,
             GradeFogVisibilityStart = 0.6f,
             GradeFogVisibilityFull = 0.15f,
