@@ -356,45 +356,70 @@ namespace HiddenHarbours.Tests.RigBaking
                 "no vertex carries a second influence, so this def cannot be the two-weight one " +
                 "rig 7 exports — either the extractor dropped the blend or the rig changed.");
 
-            // One clip is enough and 'walk' is where the hems swing: find the worst drawn vertex.
-            CharacterSkinDef.SkinClip clip = ClipNamed("walk");
-            var parked = new HashSet<string>(clip.ParkedParts ?? Array.Empty<string>(), StringComparer.Ordinal);
+            // 'walk' ALONE COSTS 3.620e-3 m — an order short of the bar, because the 4.52e-2 m the
+            // rig quotes is the max over its WHOLE row set and the hems swing hardest elsewhere.
+            // Sweep every clip the def carries. Measured 2026-09-10 in the standalone V8 harness:
+            // worst 4.516e-2 m on 'sleep', frame 1, face 396 ('upper_R'); then toss 3.389e-2,
+            // reach 3.295e-2, ladderDown 3.227e-2. Do not narrow this back to one clip.
             var bindFaces = _bake.Bind.Faces;
             double worst = 0; string at = "none";
+            var perClip = new List<KeyValuePair<string, double>>();
 
-            for (int frame = 0; frame < clip.FrameCount; frame++)
+            foreach (CharacterSkinDef.SkinClip clip in _def.Clips)
             {
-                RigMeshData reference = CharacterPoseMeshExtractor.ExtractPose(
-                    _host, Player, clip.Anim, frame, Nz(clip.Carry), Nz(clip.Power));
-                Matrix4x4[] skin = SkinMatrices(_def, clip, frame);
+                var parked = new HashSet<string>(clip.ParkedParts ?? Array.Empty<string>(), StringComparer.Ordinal);
+                double clipWorst = 0;
 
-                int corner = 0, j = 0;
-                for (int f = 0; f < bindFaces.Count; f++)
+                for (int frame = 0; frame < clip.FrameCount; frame++)
                 {
-                    RigFace bf = bindFaces[f];
-                    if (parked.Contains(_bake.Skin.FacePart[f])) { corner += bf.V.Length; continue; }
-                    RigFace rf = reference.Faces[j++];
-                    for (int k = 0; k < bf.V.Length; k++)
+                    RigMeshData reference = CharacterPoseMeshExtractor.ExtractPose(
+                        _host, Player, clip.Anim, frame, Nz(clip.Carry), Nz(clip.Power));
+                    Matrix4x4[] skin = SkinMatrices(_def, clip, frame);
+
+                    int corner = 0, j = 0;
+                    for (int f = 0; f < bindFaces.Count; f++)
                     {
-                        Vector3 posed = SkinVertex(verts[corner + k], collapsed[corner + k], skin, 1);
-                        double d = Vector3.Distance(posed, rf.V[k].ToVector3());
-                        if (d > worst) { worst = d; at = $"frame {frame} face {f} ('{_bake.Skin.FacePart[f]}') corner {k}"; }
+                        RigFace bf = bindFaces[f];
+                        if (parked.Contains(_bake.Skin.FacePart[f])) { corner += bf.V.Length; continue; }
+                        RigFace rf = reference.Faces[j++];
+                        for (int k = 0; k < bf.V.Length; k++)
+                        {
+                            Vector3 posed = SkinVertex(verts[corner + k], collapsed[corner + k], skin, 1);
+                            double d = Vector3.Distance(posed, rf.V[k].ToVector3());
+                            if (d > clipWorst) clipWorst = d;
+                            if (d > worst)
+                            {
+                                worst = d;
+                                at = $"'{clip.Anim}' frame {frame} face {f} " +
+                                     $"('{_bake.Skin.FacePart[f]}') corner {k}";
+                            }
+                        }
+                        corner += bf.V.Length;
                     }
-                    corner += bf.V.Length;
                 }
+
+                perClip.Add(new KeyValuePair<string, double>(clip.Anim, clipWorst));
             }
 
+            perClip.Sort((x, y) => y.Value.CompareTo(x.Value));
             double tol = _bake.Tolerance;
-            Debug.Log($"[char-skin guard] one-influence sabotage on 'walk': {blended} blended " +
-                      $"corners of {weights.Length:N0} collapsed onto their heavier bone → " +
-                      $"worst {worst:E3} m at {at}, {worst / tol:N0}× the {tol:E1} m tolerance");
+            var loudest = new StringBuilder();
+            for (int i = 0; i < 4 && i < perClip.Count; i++)
+                loudest.Append(i == 0 ? "" : ", ").Append(perClip[i].Key).Append(' ')
+                       .Append(perClip[i].Value.ToString("E3"));
+
+            Debug.Log($"[char-skin guard] one-influence sabotage over all {perClip.Count} clips: " +
+                      $"{blended} blended corners of {weights.Length:N0} collapsed onto their " +
+                      $"heavier bone → worst {worst:E3} m at {at}, {worst / tol:N0}× the " +
+                      $"{tol:E1} m tolerance. Loudest clips: {loudest}");
 
             Assert.Greater(worst, tol * 100,
                 $"collapsing the blended rings cost only {worst:E3} m ({worst / tol:N1}× tol). " +
                 "Either the sabotage no longer reaches the weights the hems actually use, or the " +
                 "rig stopped blending — and if the rig stopped blending, the def should be one " +
                 "influence wide and this whole test should go. Do not relax the bar to make it " +
-                "pass: rig 7's own measurement of this collapse is 4.52e-2 m.");
+                "pass: rig 7's own measurement of this collapse is 4.52e-2 m, and this sweep " +
+                "reproduced it at 4.516e-2 m on 'sleep' on 2026-09-10.");
         }
 
         // =======================================================================================
@@ -529,6 +554,24 @@ namespace HiddenHarbours.Tests.RigBaking
                     new CharacterSkinDef.Bone { Id = "spine", Parent = 0 },
                 };
                 probe.Clips = new[] { OneFrameClip(probe.Bones.Length) };
+
+                // IsUsable also gates the SHADING half — ramps, the dither matrix, the cell. A
+                // probe that only carries geometry is refused for a reason that has nothing to do
+                // with what the next few lines sabotage, so satisfy every clause first and take
+                // them away one at a time. (This is what made the first draft of this test red:
+                // it asserted a def with no Materials was usable.)
+                probe.Materials = new[]
+                {
+                    new CharacterSkinDef.Material
+                    {
+                        Name = "skin",
+                        Colors = new[] { new Color32(0, 0, 0, 255), new Color32(255, 255, 255, 255) },
+                    },
+                };
+                probe.Bayer16 = new float[16];
+                probe.CellW = _def.CellW;
+                probe.CellH = _def.CellH;
+                probe.PxPerMetre = _def.PxPerMetre;
                 Assert.IsTrue(probe.IsUsable(), "a minimal well-formed def must be usable");
 
                 // A parent LATER in the array. The composition loop walks the array once and reads
@@ -549,6 +592,56 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.IsFalse(probe.IsUsable(),
                     "a width wider than the def can store must be refused, not truncated");
                 probe.MaxInfluences = CharacterSkinDef.MaxBoneInfluences;
+
+                // No ramp at all. The presenter reads Materials[i].Colors to index the palette;
+                // an empty table draws every facet at index 0, which is a silhouette, not a figure.
+                CharacterSkinDef.Material[] mats = probe.Materials;
+                probe.Materials = null;
+                Assert.IsFalse(probe.IsUsable(), "a def with no material table must be refused");
+                probe.Materials = Array.Empty<CharacterSkinDef.Material>();
+                Assert.IsFalse(probe.IsUsable(), "an empty material table must be refused");
+
+                // More ramps than the shader has slots. RampSlots is the width of the array the
+                // material block uploads; a 17th ramp is not clamped, it is dropped off the end.
+                var tooMany = new CharacterSkinDef.Material[CharacterSkinDef.RampSlots + 1];
+                for (int i = 0; i < tooMany.Length; i++) tooMany[i] = mats[0];
+                probe.Materials = tooMany;
+                Assert.IsFalse(probe.IsUsable(),
+                    $"more than {CharacterSkinDef.RampSlots} ramps must be refused, not truncated");
+
+                // A named material carrying no colours — the shape the extractor produces when a
+                // rig part names a palette that the build did not resolve.
+                probe.Materials = new[] { new CharacterSkinDef.Material { Name = "skin", Colors = null } };
+                Assert.IsFalse(probe.IsUsable(), "a material with no ramp must be refused");
+                probe.Materials = new[]
+                {
+                    new CharacterSkinDef.Material { Name = "skin", Colors = Array.Empty<Color32>() },
+                };
+                Assert.IsFalse(probe.IsUsable(), "a material with an empty ramp must be refused");
+                probe.Materials = mats;
+
+                // The ordered-dither matrix is indexed (y & 3) * 4 + (x & 3) with no bounds check.
+                probe.Bayer16 = null;
+                Assert.IsFalse(probe.IsUsable(), "a def with no dither matrix must be refused");
+                probe.Bayer16 = new float[15];
+                Assert.IsFalse(probe.IsUsable(), "a dither matrix that is not 4×4 must be refused");
+                probe.Bayer16 = new float[16];
+
+                // The cell and the scale. PxPerMetre 0 divides by zero when the presenter converts
+                // rig metres to pixels; a zero cell gives every sprite an empty rect.
+                probe.CellW = 0;
+                Assert.IsFalse(probe.IsUsable(), "a zero-width cell must be refused");
+                probe.CellW = _def.CellW;
+                probe.CellH = 0;
+                Assert.IsFalse(probe.IsUsable(), "a zero-height cell must be refused");
+                probe.CellH = _def.CellH;
+                probe.PxPerMetre = 0;
+                Assert.IsFalse(probe.IsUsable(), "a def with no metres-to-pixels scale must be refused");
+                probe.PxPerMetre = _def.PxPerMetre;
+
+                Assert.IsTrue(probe.IsUsable(),
+                    "every sabotage above must have been put back — if this fails the ones after " +
+                    "it are measuring the leftovers of an earlier one, not their own clause");
 
                 // A key array that is not FrameCount × boneCount indexes past its end on the last
                 // frame of the last bone, which is the frame a looping clip reaches every cycle.

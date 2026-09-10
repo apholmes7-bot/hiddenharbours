@@ -379,6 +379,14 @@ this PR leaves it EMPTY, and PR 3 flips it per state.
   nearest-point comparison and ship a scrambled `boneWeights` table.
 - **rig-hash identity** — the Def carries an LF-normalised SHA-256 of both rig sources; a bake
   that does not match the file on disk is stale and says so.
+- **the two-weight floor, sabotaged at DEF level** — collapse every blended vertex onto its
+  heavier bone and re-pose against rig 6, asserting the cost stays above **100×** the 1e-4 m
+  tolerance. **Sweep EVERY clip.** The 4.52e-2 m §3.5 quotes is the max over the rig's 56 golden
+  rows, and it does not live in `walk`: `walk` alone costs **3.620e-3 m**, an order UNDER the bar.
+  Swept over all 35 def clips the guard measures **4.516e-2 m** on `sleep`, frame 1, face 396
+  (`upper_R`) — 451.6× tolerance, reproducing §3.5's number from the def instead of the rig.
+  Then `toss` 3.389e-2, `reach` 3.295e-2, `ladderDown` 3.227e-2. Only 72 of 2,992 corners carry a
+  second influence, so a guard that samples the wrong clip finds almost nothing to break.
 - **the clips still STEP** — assert the worst adjacent-frame bone step is *large* (>90°), so a
   future “helpful” resample that quietly smooths them reddens instead of shipping a different
   character (§3.6). Loose delta (0.01°): float32 quantisation moves the measured angle.
