@@ -35,6 +35,34 @@ namespace HiddenHarbours.Tests.PlayMode
         private readonly List<Object> _spawned = new();
         private readonly object _seaOwner = new();
 
+        /// <summary>A clock the TEST advances, for the fixtures that need the sea to actually move.
+        /// ⚠️ Frames are not time (and headless frames are barely any time at all): a loop of 120
+        /// yields buys whatever the machine felt like giving it, which on CI was a fraction of a wave
+        /// period. Since PR E the drawn phase is ω·t at <c>GameServices.Clock</c>, so a fixture that
+        /// wants the sea to travel must BUY that time here rather than hope the hardware donates
+        /// it.</summary>
+        private sealed class SteppedClock : IGameClock
+        {
+            public double TotalSeconds { get; set; }
+            public GameTime Now => new GameTime(TotalSeconds);
+            public Season Season => Season.EarlySpring;
+            public int Year => 1;
+            public int DayIndex => 0;
+            public int DayOfSeason => 1;
+            public Weekday Weekday => Weekday.Monday;
+            public bool IsMarketDay => false;
+            public float HourOfDay => 0f;
+            public float DayFraction => 0f;
+            public bool IsPaused { get; set; }
+            public float TimeScale { get; set; } = 1f;
+        }
+
+        /// <summary>The instant a scripted run starts at, and the game-time each yielded frame buys.
+        /// 1/60 s a frame is the shipping step; naming them keeps a loop's bound readable as SECONDS
+        /// of sail rather than as a frame count that means nothing.</summary>
+        private const double ClockOrigin = 1000.0;
+        private const double FrameStep = 1.0 / 60.0;
+
         [SetUp]
         public void SetUp()
         {
@@ -347,6 +375,18 @@ namespace HiddenHarbours.Tests.PlayMode
             // enable/disable callbacks for runtime scripts outside play mode. Here the callback really
             // fires, and the assertion is end-to-end: the RIDER goes level, not merely a published field.
             GameServices.Environment = new RoughSea();
+            // ⚠️ THIS FIXTURE OWNS ITS CLOCK, and before PR E it got away with not owning one. The
+            // rock FRAME is picked from the drawn phase, and — with 8 frames — two of the eight are the
+            // level ones, where sin(phase) is 0 and she has no roll to measure. While the phase was
+            // ACCUMULATED it began at 0 on the wake that built the animator, so the loop always
+            // started in the same bucket and always found a rolling frame. Since PR E the phase is
+            // ω·t at the clock: with no clock installed that is Time.timeAsDouble, an arbitrary instant,
+            // so the starting bucket became a coin flip — and on CI it landed on a level frame and the
+            // loop never bought enough game time to leave it (harness premise Expected True, was False,
+            // run 34421620467). Advancing a real clock a real 1/60 s per frame makes the loop 2 s of
+            // sail — most of a wave period at this sea state — whatever the hardware does with the frames.
+            var clock = new SteppedClock { TotalSeconds = ClockOrigin };
+            GameServices.Clock = clock;
 
             var r = NewRig(rowed: true);
             // Give her a real rock grid so BoatWaveMotion drives the frame path (the shipping dory's).
@@ -363,10 +403,14 @@ namespace HiddenHarbours.Tests.PlayMode
             bool rocked = false;
             for (int f = 0; f < 120 && !rocked; f++)
             {
+                clock.TotalSeconds += FrameStep;      // the SEA advances because the CLOCK does
                 yield return null;
                 rocked = wave.IsRocking && Mathf.Abs(r.Rider.Pose.RollDegrees) > 1e-4f;
             }
-            Assert.IsTrue(rocked, "harness: a sea state of 0.4 must actually rock her and lean the fisher");
+            Assert.IsTrue(rocked,
+                "harness: a sea state of 0.4 must actually rock her and lean the fisher. The loop " +
+                "buys 2 s of GAME time (120 frames — 1/60 s), which is most of a wave period, so a " +
+                "failure here is the rock chain, not the fixture running out of sea.");
 
             wave.enabled = false;      // OnDisable — the same path a region hop takes
             yield return null;

@@ -281,6 +281,15 @@ namespace HiddenHarbours.Tests.EditMode
         /// <c>BoatController</c> rides. Wire one of them to a different clock and the hull heaves on
         /// a sea of the right size at the wrong moment again, which is the defect the owner
         /// originally watched. The arm proves that failure is still detectable here.</para>
+        ///
+        /// <para>⚠️ <b>It takes TWO animators, and the first cut of this arm had one.</b> Offsetting a
+        /// single animator's clock offsets the published field and the drawn read together, so the
+        /// mismatch cancels: the arm swung 0.000 m on CI (run 34421620467) while measuring nothing.
+        /// The harness now ticks the published bridge on the clock and a SECOND bridge
+        /// <c>bridgeClockOffsetSeconds</c> off it, and only the second feeds <c>lift</c>. A sabotage
+        /// arm that cannot fail is worse than no arm, and this one had to be caught by CI rather than
+        /// by reading it — the check that would have found it is: <i>does the offset reach a value the
+        /// assertion does not also derive?</i></para>
         /// </summary>
         [Test]
         public void SailingTheSeaTheShaderDraws_TheWaterlineNeverLeavesTheDatum()
@@ -317,12 +326,18 @@ namespace HiddenHarbours.Tests.EditMode
                 "animator. What remains here is the amplitude ease-in, not the phase.");
 
             // ⭐ RE-ARMED SABOTAGE: the one desync PR E still permits — two clocks.
+            // MEASURED 2026-09-09 without an editor (two animators, 37-tick warm-up, 600 frames, the
+            // decomposition (lift(t+T) − lift(t)) × the 40° iso gain 0.9056, which is exact because the
+            // published field — and therefore the hull's ride — is identical between the two arms):
+            //   offset 0.50 s → 3.110 m    1.37 s → 4.376 m    2.00 s → 3.788 m    3.00 s → 2.324 m
+            // against a bar of ~0.10–0.30 m. It bites at every offset tried, so the arm is not perched
+            // on one lucky phase difference.
             (float spread, float meanError) twoClocks = SailAndMeasureWaterline(
                 waterline, frames, publishTheBridgeField: true, bridgeClockOffsetSeconds: 1.37);
             Assert.Greater(twoClocks.spread, 20f * shared.spread + 0.1f,
-                "SABOTAGE ARM: with the bridge ticked 1.37 s off the clock the hull reads, she heaves " +
-                "on a sea of exactly the right size at the wrong moment — the defect the owner " +
-                "reported — and the waterline must swing wildly. It swung " +
+                "SABOTAGE ARM: with the DRAWN sea ticked by a SECOND animator 1.37 s off the clock the hull " +
+                "rides, she heaves on a sea of exactly the right size at the wrong moment — the " +
+                "defect the owner reported — and the waterline must swing wildly. It swung " +
                 $"{twoClocks.spread:0.000} m. PR E's whole guarantee is that every Tick call site " +
                 "reads WaveFieldAnimator.GameTimeSeconds; if this arm stops biting, that guarantee " +
                 "has stopped being testable here.");
@@ -340,6 +355,15 @@ namespace HiddenHarbours.Tests.EditMode
                                                                 double bridgeClockOffsetSeconds = 0.0)
         {
             var bridge = new WaveFieldAnimator();
+            // ⚠️ THE SECOND ANIMATOR IS WHAT MAKES THE SABOTAGE REACH THE SEAM, and its absence is
+            // why the arm shipped on 0a42c459 swung 0.000 m on CI. One animator cannot decorrelate
+            // anything: its trains are BOTH published to SharedWaveField (the sea she rides) AND read
+            // for `lift` (the sea she is drawn on), so an offset on its clock moves the two together
+            // and the mismatch is identically zero. With two, the PUBLISHED field stays on the clock
+            // the hull reads while the DRAWN field is evaluated bridgeClockOffsetSeconds away from it
+            // — which is exactly the failure PR E forbids: one Tick call site on a different clock.
+            // At offset 0 no second animator is built, so every honest arm runs the code it always did.
+            var drawnBridge = bridgeClockOffsetSeconds != 0.0 ? new WaveFieldAnimator() : null;
             var clock = new ScriptedClock();
             var sea = new ScriptedSea { SeaState01 = 0.75f };
             GameServices.Clock = clock;
@@ -354,8 +378,9 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < 37; i++)
             {
                 clock.Advance(Dt);
-                bridge.Tick(Dt, clock.TotalSeconds + bridgeClockOffsetSeconds,
-                            sea.Wind, sea.SeaState01, in field, in smoothing);
+                bridge.Tick(Dt, clock.TotalSeconds, sea.Wind, sea.SeaState01, in field, in smoothing);
+                drawnBridge?.Tick(Dt, clock.TotalSeconds + bridgeClockOffsetSeconds,
+                                  sea.Wind, sea.SeaState01, in field, in smoothing);
             }
 
             using var rig = new MeshRig(waterline, sea, clock, config.Value);
@@ -365,10 +390,17 @@ namespace HiddenHarbours.Tests.EditMode
             for (int f = 0; f < frames; f++)
             {
                 clock.Advance(Dt);
-                WaveTrains trains = bridge.Tick(Dt, clock.TotalSeconds + bridgeClockOffsetSeconds,
-                                                sea.Wind, sea.SeaState01, in field, in smoothing);
+                WaveTrains trains = bridge.Tick(Dt, clock.TotalSeconds, sea.Wind, sea.SeaState01,
+                                                in field, in smoothing);
                 if (publishTheBridgeField) SharedWaveField.Publish(_fieldOwner, in trains);
                 else SharedWaveField.Clear(_fieldOwner);
+
+                // The sea the SHADER draws. Same class, same tick sequence, same inputs — only the
+                // clock differs, and only when the sabotage arm asks for it.
+                WaveTrains drawnTrains = drawnBridge != null
+                    ? drawnBridge.Tick(Dt, clock.TotalSeconds + bridgeClockOffsetSeconds,
+                                       sea.Wind, sea.SeaState01, in field, in smoothing)
+                    : trains;
 
                 rig.Tick();
 
@@ -379,7 +411,7 @@ namespace HiddenHarbours.Tests.EditMode
                 // than assuming 1 — assuming it would make this measurement agree with the hull for
                 // the wrong reason the day the model is dialled on.
                 float fetch = GameServices.FetchEnvelopeAt(BoatWorldPos);
-                float lift = WaveMath.Sample(BoatWorldPos * FreqScale, 0.0, in trains, fetch).Height * Exag;
+                float lift = WaveMath.Sample(BoatWorldPos * FreqScale, 0.0, in drawnTrains, fetch).Height * Exag;
                 float ride = rig.Renderer.HeavePixels / PxPerMetre;
 
                 float drawn = HullSettleMath.DrawnWaterlineMeters(lift, ride, RigElevation);
