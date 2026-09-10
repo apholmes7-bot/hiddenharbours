@@ -391,6 +391,21 @@ globalThis.__gullPack = function (n, t, opts) {
         /// <see cref="SeagullVisualDef"/>. They are two copies of one drop, and if a re-export ever
         /// moves one without the other, the parity tests would fail somewhere confusing — so the
         /// divergence is caught here, by name.
+        ///
+        /// <para><b>⚠ The two sides are not the same precision, and the comparison must say so.</b>
+        /// A JS number is a <c>double</c>; every non-integer FLOCK field of
+        /// <see cref="SeagullVisualDef"/> is a serialized <c>float</c>. Of the rig's own numbers only
+        /// <c>glide_duty</c> 0.45 and <c>spacing_m</c> 1.6 fail to survive that round trip: 0.45 comes
+        /// back as 0.44999998807907104, which is simply the nearest float to it. So the answerable question
+        /// is not "are these two doubles equal" (they cannot be) but <b>"does the def carry the
+        /// NEAREST FLOAT to the number the rig states"</b>, and that is asked exactly, with no
+        /// tolerance to drift. What this guard exists to catch — a re-export that moved a tunable,
+        /// or a port that typed its own copy — misses by orders of magnitude more than one ULP, and
+        /// the negative control at the end of the method proves the cast did not blunt it.</para>
+        ///
+        /// <para>That the remaining 1.2e-8 does not change the FLIGHT is not assumed here, it is
+        /// measured by the siblings above: they drive the port from this same float-widened tuning
+        /// and V8 from the rig's own doubles, and agree on every anim, frame and dir.</para>
         /// </summary>
         [Test]
         public void TheTuningThePortFliesIsTheRigsOwnFlockBlock()
@@ -403,10 +418,15 @@ globalThis.__gullPack = function (n, t, opts) {
             void Same(string expression, double mine)
             {
                 double theirs = host.EvaluateNumber(expression);
-                Assert.AreEqual(theirs, mine, 1e-9,
-                    $"{expression}: the rig says {Text(theirs)}, the def carries {Text(mine)}. " +
-                    "Re-export the sidecar and rebuild SeagullVisualDef.asset — the port must not " +
-                    "carry its own copy of a tunable (rule 6).");
+
+                // Exact, at FLOAT precision — see the remark. A double-precision tolerance here is a
+                // number about the SIDECAR being asked of a FLOAT FIELD, and 1e-9 duly reddened CI on
+                // glide_duty 0.45 (#831) for no fault of the def's.
+                Assert.AreEqual((float)theirs, (float)mine, 0f,
+                    $"{expression}: the rig says {Text(theirs)}, the def carries {Text(mine)} — and " +
+                    $"they differ once both are narrowed to the float the def stores ({(float)theirs} " +
+                    $"vs {(float)mine}). Re-export the sidecar and rebuild SeagullVisualDef.asset — " +
+                    "the port must not carry its own copy of a tunable (rule 6).");
             }
 
             Same("SeagullIso.FLOCK.radius_m", t.RadiusMetres);
@@ -423,6 +443,17 @@ globalThis.__gullPack = function (n, t, opts) {
             Same("SeagullIso.ANIMS.glide.ms", t.GlideMilliseconds);
             Same("SeagullIso.ANIMS.swoop.n", t.SwoopFrames);
             Same("SeagullIso.ANIMS.swoop.ms", t.SwoopMilliseconds);
+
+            // ⚠ The control on the narrowing. Everything above compares floats, so it is worth one
+            // line to prove that a tunable which REALLY moved is still caught. The offset is derived
+            // from the rig's own value rather than typed, so it survives the drop re-tuning the duty;
+            // 1e-4 is some three thousand times a float ULP at 0.45 (2^-25) and still a change
+            // no one would make by accident.
+            Assert.Throws<AssertionException>(
+                () => Same("SeagullIso.FLOCK.glide_duty", t.GlideDuty + 1e-4),
+                "A glide duty a ten-thousandth away from the rig's compared EQUAL. Narrowing to float " +
+                "has made this guard vacuous: it can no longer see a re-export that moved a number, " +
+                "and every 'the port flies the drop's own tuning' claim in this fixture is worthless.");
         }
 
         /// <summary>The sidecar on disk is still the one this rig produced, so everything below
