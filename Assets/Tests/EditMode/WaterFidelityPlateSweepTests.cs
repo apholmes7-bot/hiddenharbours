@@ -2544,6 +2544,18 @@ namespace HiddenHarbours.Tests.EditMode
         /// ⭐ <b>The blow arm of the knob diagnostic — who owns the darkness, in numbers.</b>
         /// (water charter 2026-09-10; register rows 6 and 25.)
         ///
+        /// <para>✅ <b>SHOT 2026-09-10 12:16Z, and the answer is NOT the reflection.</b> At
+        /// <c>ww-open-blow-mean-noon</c> the shipped plate reads 0.0098; zeroing the whole mirror
+        /// (<c>_ReflectionStrength</c> or <c>_ReflectionFadeChop</c> — both land on 0.0088, which is
+        /// this diagnostic authenticating itself) costs 0.0010, i.e. the reflection is 10.2 % of the
+        /// light on the plate. Zeroing <c>_SwellReadStrength</c> takes it to <b>0.0431</b> — a 4.40x
+        /// brighter sea, so the read band is eating 77 % of the water, <b>33x the reflection's worth</b>,
+        /// and it is brighter at all four viewpoints and both hours. It is a trade, not a bug: the same
+        /// zeroing costs 37 % of the plate's horizontal band contrast, which IS the swell legibility.
+        /// The arm also fixes the ladder's k: predicted 0.3208 luma per unit strength (fit at the glass
+        /// calm), photographed <b>0.120</b> at the blow, so every option priced off k is over-priced
+        /// 2.7x there. Register rows 6 and 25 carry the full table; nothing was moved.</para>
+        ///
         /// <para>The same method as the glass and gale arms: shoot as shipped, then once per layer with that
         /// ONE property zeroed through the property block AFTER the shipped push, and read the four
         /// structural numbers off each frame. What is new is the CELL. The existing arms stand at the two
