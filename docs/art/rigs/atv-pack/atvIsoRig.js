@@ -744,3 +744,46 @@
     steer:{ quad:{ barsMaxDeg:SPECS.quad.barsMax, innerMaxDeg:SPECS.quad.steerMax, outerMaxDeg:+steerAngles(1,SPECS.quad).R.toFixed(2) }, dirtbike:{ maxDeg:SPECS.dirtbike.steerMax, rakeDeg:SPECS.dirtbike.rake }, trike:{ maxDeg:SPECS.trike.steerMax, rakeDeg:SPECS.trike.rake }, angles:steerAngles },
     list, dims, resolve, render, frames, anchors, project, gameplayGeometry, gameplayAll, RIG_URL:'Art/atvIsoRig.js' };
 })(typeof globalThis!=='undefined'?globalThis:window);
+
+/* ================================================================================================
+   APPEND-ONLY — atvIsoRig.js rev 1.1 (2026-09-09): THE RIDER HANDOFF.
+   Base: the merged rev 1.0, sha256 (LF) 8578eb450f563489d3a40e6422e41f1b5de65ec061f90d3dc93c9cfe1fc0be9b.
+   Nothing above this line changed, and this note lives at the tail so every line number quoted in
+   the intake notes (anchors() 593, root.AtvIso 741) still holds.
+
+   Adds AtvIso.saddleFor(dir, opts) — the record characterIsoRig6.js 6.10's saddle family reads as
+   opts.saddle (astride, astrideStand, mountUp, mountDown, mountCab, mountCabDown). Every metre in it
+   is DERIVED from anchors(): the same steer, suspension and lean transforms the bake applies, in the
+   machine's absolute world frame (+x curb, +y nose, +z up, origin on the ground under the wheelbase).
+   Nothing is typed here. Keys are the ones SADDLE_DEF names — seat, gripL, gripR, pegL, pegR — plus
+   what the mount clips read (mountSide, reachX) and what a compositor pins with (host).
+
+   STAND. A ridden bike is OFF its stand. When the caller passes no `stand`, the dirtbike's seat is
+   solved at stand 0 (render() itself keeps baking the parked bike — this only decides where the
+   rider sits, and a rider on a bike that is leaning 12deg onto its stand is a rider about to fall).
+   Pass stand explicitly to override. Quad and trike have no stand and ignore it, as resolve() does.
+
+   Usage:  const M = AtvIso.saddleFor('SE', { body:'quad' });
+           CharacterIso6.render('SE', { anim:'astride', saddle:M, mountSide:M.mountSide, reachX:M.reachX }); */
+(function(root){
+  const A = root.AtvIso; if(!A || A.saddleFor) return;
+  const dirIx=(d)=> typeof d==='number' ? d : Math.max(0, A.order.indexOf(d));
+  function saddleFor(dir, opts){
+    const o = Object.assign({}, opts||{});
+    const bike = (o.body||'quad')==='dirtbike';
+    const ridden = bike && o.stand==null; if(ridden) o.stand = 0;
+    const s = A.resolve(o), an = A.anchors(dirIx(dir), o);
+    const m = (k)=> an[k] ? an[k].m.slice() : null;
+    return {
+      body:s.body, label:s.B.label, dir, bench:false,
+      seat:m('seat'), gripL:m('gripL'), gripR:m('gripR'), pegL:m('pegL'), pegR:m('pegR'), bars:m('bars'),
+      pegKind: s.body==='quad' ? 'footboard' : 'peg',
+      leanDeg:an.leanDeg,                       // published, not applied: rig 6.10 mounts the upright machine
+      mountSide:-1, mountPreferred: bike ? 'street' : 'either',
+      reachX:+(s.B.width/2 + 0.55).toFixed(3),  // gameplayGeometry's reach points: width/2 + 0.55 outboard
+      pose:{ steer:s.steer, susF:s.susF, susR:s.susR, lean:s.lean, stand:s.stand, yaw:s.yaw, ridden },
+      host:{ pivot:{x:A.pivot.x, y:A.pivot.y}, cell:{W:A.W, H:A.H}, px:A.PX, rig:'atvIsoRig.js', symbol:'AtvIso' }
+    };
+  }
+  A.saddleFor = saddleFor; A.revision = '1.1';
+})(typeof globalThis!=='undefined'?globalThis:window);
