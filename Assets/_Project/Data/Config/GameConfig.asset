@@ -376,6 +376,8 @@ MonoBehaviour:
     MovingWaterMetresPerHour: 0.25
     SchoolSpeciesBoost: 3
     OffSchoolSpeciesDamp01: 0.4
+    GullSplashScatterRadiusMetres: 2.5
+    GullSplashScatterStrength01: 0.5
   Freshness:
     AmbientRateMultiplier: 1
     LiveRateMultiplier: 0

@@ -100,6 +100,21 @@ namespace HiddenHarbours.Fishing
         private float _tickAccum;
 
         /// <summary>
+        /// WHAT THE FISH HEARD — recent <see cref="GullSplashed"/> signals, subscribed for exactly as
+        /// long as this component is enabled.
+        ///
+        /// <para>The lifetime is the whole point (fixture law: a signal is heard only by a listener that
+        /// already exists). The subscription is taken in <c>OnEnable</c> and dropped in <c>OnDisable</c>,
+        /// so a presenter that has been switched off is not still moving fish, and one switched back on
+        /// is not hearing every splash twice.</para>
+        ///
+        /// <para>It is the fishing side of the Core signal and it names no gull type: the bird module
+        /// publishes <see cref="GullSplashed"/>, this listens, and neither one can see the other's
+        /// classes (rule 4).</para>
+        /// </summary>
+        private readonly GullSplashLog _splashes = new GullSplashLog();
+
+        /// <summary>
         /// SELF-INSTALLING (the <c>BoatWakeEmitter</c> / <c>WakeSpriteLibrary</c> pattern): one hidden
         /// <c>DontDestroyOnLoad</c> host before the first scene loads, so the sea shows its fish with
         /// <b>no builder change, no builder re-run and no scene edit</b>.
@@ -146,8 +161,12 @@ namespace HiddenHarbours.Fishing
                 _swimmers = new ShoalMath.Swimmer[MaxSwimmersPerSchool];
         }
 
+        private void OnEnable() => _splashes.Subscribe();
+
         private void OnDisable()
         {
+            _splashes.Unsubscribe();
+
             // Leave no fish frozen on the water behind us.
             for (int i = 0; i < _pool.Count; i++)
                 if (_pool[i] != null) _pool[i].enabled = false;
@@ -175,8 +194,9 @@ namespace HiddenHarbours.Fishing
             VisibleSchools = 0;
 
             int used = 0;
-            if (TryGather(out double now, out DepthDropSettings depth, out int worldSeed))
-                used = Paint(now, in depth, worldSeed);
+            if (TryGather(out double now, out DepthDropSettings depth, out int worldSeed,
+                          out FishSchoolSettings schools))
+                used = Paint(now, in depth, worldSeed, in schools);
 
             // Everything the paint did not claim goes dark. Never destroyed — the pool is the budget.
             for (int i = used; i < _pool.Count; i++)
@@ -187,11 +207,13 @@ namespace HiddenHarbours.Fishing
 
         /// <summary>Read the world and the schools in view. False = draw nothing at all (no model, no
         /// camera, no library, or an empty sea).</summary>
-        private bool TryGather(out double now, out DepthDropSettings depth, out int worldSeed)
+        private bool TryGather(out double now, out DepthDropSettings depth, out int worldSeed,
+                               out FishSchoolSettings schools)
         {
             now = 0.0;
             depth = default;
             worldSeed = 0;
+            schools = FishSchoolMath.Sanitized(FishSchoolSettings.Default);
 
             if (_library == null) return false;
 
@@ -206,6 +228,8 @@ namespace HiddenHarbours.Fishing
             IEnvironmentService env = GameServices.Environment;
             worldSeed = env != null ? env.WorldSeed : 0;
             depth = GameServices.Config != null ? GameServices.Config.DepthDrop : DepthDropSettings.Default;
+            if (GameServices.Config != null)
+                schools = FishSchoolMath.Sanitized(GameServices.Config.FishSchools);
 
             VisibleSchools = view.SchoolsInView(ViewRect(_camera), now, _schools);
             return VisibleSchools > 0;
@@ -223,7 +247,8 @@ namespace HiddenHarbours.Fishing
         }
 
         /// <summary>Place every visible school's swimmers; returns how many renderers were used.</summary>
-        private int Paint(double now, in DepthDropSettings depth, int worldSeed)
+        private int Paint(double now, in DepthDropSettings depth, int worldSeed,
+                          in FishSchoolSettings schools)
         {
             int used = 0;
 
@@ -251,20 +276,46 @@ namespace HiddenHarbours.Fishing
                 if (n <= 0) continue;
 
                 uint key = SchoolKey(school);
-                int solved = ShoalMath.Fill(lengthM, n, now, ShoalMath.SeedFor(key),
-                                            SpreadMetresFor(primary),
+                float spread = SpreadMetresFor(primary);
+                int solved = ShoalMath.Fill(lengthM, n, now, ShoalMath.SeedFor(key), spread,
                                             ShoalMath.DefaultSpeedMetresPerSecond, 1f,
                                             ShoalMath.DefaultZMetres, _swimmers);
 
-                ShoalEventKind ev = ShoalEventMath.At(worldSeed, key, now, n, KindJumps(school),
-                                                      _eventPeriodSeconds,
-                                                      out int actor, out double evStart);
+                // THE SCATTER — the owner's "fish react to it landing", seen from the water. It is the
+                // one event that is not on the slotted schedule and the only one the WHOLE school does at
+                // once: a gull came down on them, so every fish bolts. It outranks whatever the schedule
+                // had planned for this instant, because a herring mid-roll with a bird landing on top of
+                // it is darting, not rolling.
+                //
+                // It moves the PICTURE and nothing else. No bite rate, no catch weight and no species
+                // roll is read or written here (owner's ruling 2026-09-09: fish bite rates are LEAVE).
+                bool scattering = _splashes.TryScatter(school, now,
+                                                       schools.GullSplashScatterRadiusMetres,
+                                                       schools.GullSplashScatterStrength01,
+                                                       out float scatter01, out double scatterStart,
+                                                       out Vector2 scatterFrom);
+
+                ShoalEventKind ev;
+                int actor;
+                double evStart;
+                if (scattering)
+                {
+                    ev = ShoalEventKind.Dart;
+                    actor = -1;                  // every fish in it, not the one the schedule picked
+                    evStart = scatterStart;
+                }
+                else
+                {
+                    ev = ShoalEventMath.At(worldSeed, key, now, n, KindJumps(school),
+                                           _eventPeriodSeconds, out actor, out evStart);
+                }
 
                 for (int i = 0; i < solved; i++)
                 {
-                    bool isActor = ev != ShoalEventKind.None && i == actor;
+                    bool acting = scattering || (ev != ShoalEventKind.None && i == actor);
                     if (!Place(used, school, _swimmers[i], kind, draw,
-                               isActor ? ev : ShoalEventKind.None, evStart, now)) continue;
+                               acting ? ev : ShoalEventKind.None, evStart, now,
+                               scattering ? scatter01 : 0f, scatterFrom, spread)) continue;
                     used++;
                 }
             }
@@ -275,7 +326,8 @@ namespace HiddenHarbours.Fishing
         /// <summary>Point one pooled renderer at one fish. False when there is no art for it, in which
         /// case the slot is left for the next fish rather than drawn blank.</summary>
         private bool Place(int slot, in FishSchool school, in ShoalMath.Swimmer sw, string kind,
-                           SwimmerDraw draw, ShoalEventKind ev, double evStart, double now)
+                           SwimmerDraw draw, ShoalEventKind ev, double evStart, double now,
+                           float scatter01, Vector2 scatterFrom, float spreadMetres)
         {
             // A shadow school shows the SHAPE and nothing else — no fins, no events.
             string anim = draw == SwimmerDraw.Shadow
@@ -301,8 +353,17 @@ namespace HiddenHarbours.Fishing
                 ? ShoalEventMath.JumpArc01(evStart, now) * ShoalEventMath.JumpTravelMetres
                 : 0f;
 
-            sr.transform.localPosition = new Vector3(school.Centre.x + sw.X,
-                                                     school.Centre.y + sw.Y + lift, 0f);
+            // A scattered fish bolts straight away from where the bird hit and eases back into the
+            // shoal as the dart ends — the same half-sine the jump lifts on, so nothing snaps at either
+            // end. With no gull the strength is zero and this is an exact zero offset: the water at rest
+            // is drawn by the same line it always was.
+            ShoalEventMath.ScatterOffset(scatterFrom.x, scatterFrom.y,
+                                         school.Centre.x + sw.X, school.Centre.y + sw.Y,
+                                         scatter01, spreadMetres, evStart, now,
+                                         out float boltX, out float boltY);
+
+            sr.transform.localPosition = new Vector3(school.Centre.x + sw.X + boltX,
+                                                     school.Centre.y + sw.Y + lift + boltY, 0f);
             sr.transform.localScale = Vector3.one * Mathf.Max(0.01f, sw.Scale);
 
             // Inshore is dimmed on top of the depth tint the rig already baked into the cells.

@@ -2645,6 +2645,24 @@ namespace HiddenHarbours.Core
                  "unlikely. 1 = no damp.")]
         [Range(0f, 1f)] public float OffSchoolSpeciesDamp01;
 
+        // ---- the gull's splash (owner's ask 2026-09-09: "fish react to it landing") ----------------
+
+        [Tooltip("How far PAST a school's edge a gull hitting the water still scatters it (m). A school " +
+                 "is a disc 8-14 m across and its fish are drawn over the whole of it, so this is the " +
+                 "margin beyond the rim, not a radius from the anchor. Ships at the sidecar's own flee " +
+                 "radius (2.5 m — the distance a gull bolts from a person), read from the other side: " +
+                 "how close something has to land before the fish take it personally. 0 = a splash is " +
+                 "never noticed.")]
+        [Min(0f)] public float GullSplashScatterRadiusMetres;
+
+        [Tooltip("How hard a school bolts from a splash landing right on top of it (0..1). Scales how " +
+                 "far each fish darts — 1 is a full shoal-width, which reads as panic. Ships at 0.5, " +
+                 "the sidecar's own gull-to-shoal coupling (attractor 'surface shoal', weight 0.5); " +
+                 "nothing in the rig drop measures a FISH's reaction, so this is the number to move if " +
+                 "it looks wrong. 0 = no scatter at all. ⚠️ This moves the picture ONLY: bite and catch " +
+                 "rates are untouched by a gull, by ruling (2026-09-09).")]
+        [Range(0f, 1f)] public float GullSplashScatterStrength01;
+
         /// <summary>
         /// The reference tuning for the St Peters opening, sized against the OWNER'S FRAME rather than
         /// guessed — his ruling of 2026-09-09, <i>"i want to see them"</i>.
@@ -2709,6 +2727,9 @@ namespace HiddenHarbours.Core
             MovingWaterMetresPerHour = 0.25f,
             SchoolSpeciesBoost = 3f,
             OffSchoolSpeciesDamp01 = 0.4f,
+
+            GullSplashScatterRadiusMetres = 2.5f,
+            GullSplashScatterStrength01 = 0.5f,
         };
     }
 

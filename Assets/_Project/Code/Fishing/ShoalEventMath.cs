@@ -1,3 +1,4 @@
+using System;
 using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Fishing
@@ -192,6 +193,89 @@ namespace HiddenHarbours.Fishing
             => influenceStrength01 > 0f
                && secondsSinceSplash >= 0.0
                && secondsSinceSplash < DurationSeconds(ShoalEventKind.Dart);
+
+        /// <summary>
+        /// <b>THE SCATTER'S REACH</b> — how hard a splash at <c>(splashX, splashY)</c> hits this school,
+        /// 0..1, the term <see cref="ScatterAt"/> consumes. The owner's two knobs
+        /// (<c>GameConfig.FishSchools.GullSplashScatterRadiusMetres</c> and
+        /// <c>...ScatterStrength01</c>) are <paramref name="reachMetres"/> and
+        /// <paramref name="maxStrength01"/>; nothing here is a number of its own.
+        ///
+        /// <para><b>Measured to the school's EDGE, not its anchor.</b> A school is a disc 8-14 m across
+        /// and its fish are drawn spread over the whole of it, so a bird that came down on the rim landed
+        /// ON the fish even though the anchor is ten metres away. Distance to the anchor would say
+        /// otherwise and the picture would contradict itself.</para>
+        ///
+        /// <para>Falls off linearly from full strength at the rim to nothing at <paramref name="reachMetres"/>
+        /// past it, so a splash across the cove is not a soft nudge — it is no event at all, and the
+        /// school runs its ordinary schedule.</para>
+        /// </summary>
+        public static float ScatterStrength01(double splashX, double splashY,
+                                              double centreX, double centreY,
+                                              float schoolRadiusMetres, float reachMetres,
+                                              float maxStrength01)
+        {
+            if (!(reachMetres > 0f) || !(maxStrength01 > 0f)) return 0f;
+
+            double dx = splashX - centreX;
+            double dy = splashY - centreY;
+            double toEdge = Math.Sqrt(dx * dx + dy * dy) - Math.Max(0.0, schoolRadiusMetres);
+            if (toEdge >= reachMetres) return 0f;
+
+            float peak = maxStrength01 > 1f ? 1f : maxStrength01;
+            if (toEdge <= 0.0) return peak;
+            return peak * (float)(1.0 - toEdge / reachMetres);
+        }
+
+        /// <summary>
+        /// How far through its bolt the school is, 0..1 — a half-sine over the <c>dart</c>, the same shape
+        /// <see cref="JumpArc01"/> lifts a jumping fish on. Out and back: nothing at the splash, furthest
+        /// at the middle of the anim, home again as the last frame ends.
+        ///
+        /// <para>That it returns to zero is the whole reason it is a sine and not a ramp. The shoal's
+        /// position is closed-form in <c>(worldSeed, schoolKey, t)</c> with nothing to integrate, so an
+        /// offset that ended anywhere but zero would snap the fish back the instant the dart expired.</para>
+        /// </summary>
+        public static float ScatterArc01(double startSeconds, double gameSeconds)
+        {
+            double duration = DurationSeconds(ShoalEventKind.Dart);
+            double t = gameSeconds - startSeconds;
+            if (t <= 0.0 || t >= duration) return 0f;
+            return (float)Math.Sin(t / duration * Math.PI);
+        }
+
+        /// <summary>
+        /// Where one fish of a scattering school is, relative to where it would have been — straight away
+        /// from the splash, on the arc above.
+        ///
+        /// <para><b>The distance is the shoal's own spread</b> (<c>FishSpeciesDef.ShoalSpreadMetres</c>,
+        /// the length the swimmers are solved over), scaled by <paramref name="strength01"/>. A startled
+        /// fish bolts about a shoal-width and no further, which keeps every displaced fish inside the
+        /// school's own disc — a scatter must never move a school, because a <c>(cell, slot)</c> holds
+        /// exactly one and re-placing it would put two in a cell (#802).</para>
+        ///
+        /// <para>A fish sitting exactly under the splash has no "away" to run: it takes one fixed bearing
+        /// rather than a drawn one, so the whole law stays a pure function of its arguments (rule 5).</para>
+        /// </summary>
+        public static void ScatterOffset(double splashX, double splashY, double fishX, double fishY,
+                                         float strength01, float spreadMetres,
+                                         double startSeconds, double gameSeconds,
+                                         out float offsetX, out float offsetY)
+        {
+            offsetX = 0f; offsetY = 0f;
+
+            float arc = ScatterArc01(startSeconds, gameSeconds);
+            if (arc <= 0f || !(strength01 > 0f) || !(spreadMetres > 0f)) return;
+
+            double ax = fishX - splashX;
+            double ay = fishY - splashY;
+            double len = Math.Sqrt(ax * ax + ay * ay);
+            if (len < 1e-4) { ax = 1.0; ay = 0.0; len = 1.0; }
+
+            double travel = (strength01 > 1f ? 1f : strength01) * spreadMetres * arc;
+            offsetX = (float)(ax / len * travel);
+            offsetY = (float)(ay / len * travel);
+        }
 
         /// <summary>Which event this period holds. Jumpers jump a third of the time; everything else is
         /// split between the roll and the thrash, both of which any fish may do.</summary>

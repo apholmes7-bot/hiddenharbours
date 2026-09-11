@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
+using HiddenHarbours.Fishing;
 
 namespace HiddenHarbours.Tests.PlayMode
 {
@@ -34,6 +35,13 @@ namespace HiddenHarbours.Tests.PlayMode
     /// the wheel takes it all the time. The edge table therefore governs from the moment a bird LEAVES
     /// the wheel, which is exactly where this fixture starts recording.</para>
     ///
+    /// <para><b>And the water she comes down on is heard.</b> The last two tests here are the gull
+    /// half of the owner's <i>"fish react to it landing"</i> (2026-09-09): a commanded arrival onto
+    /// water must publish <see cref="GullSplashed"/> once, on the frame the rig says the water breaks
+    /// on, carrying the position the bird is drawn at — and a school seeded inside the owner's scatter
+    /// radius of that position must bolt while one across the cove does not. Nothing about the player
+    /// is read or written by any of it (bite rates are LEAVE); the signal moves a picture.</para>
+    ///
     /// <para><b>Headless-safe by construction (⚠ do not relax).</b> Nothing renders, reads pixels or
     /// calls <c>Camera.Render</c>. CI runs with a null graphics device, where a ReadPixels PlayMode test
     /// does not fail — it KILLS the editor with no results XML at all. The camera here exists only
@@ -55,6 +63,8 @@ namespace HiddenHarbours.Tests.PlayMode
         float _timeScaleBefore;
         IGameClock _clockBefore;
         IEnvironmentService _environmentBefore;
+        IFishSchools _fishBefore;
+        System.Action<GullSplashed> _ear;
 
         /// <summary>One 60 Hz frame, as milliseconds. Small enough that <c>land</c> (440 ms) is more
         /// than twenty samples of the descent, and far under <c>stand</c>'s 520 ms frame so the arrival
@@ -109,6 +119,14 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.Clock = null;
             GameServices.Environment = null;
 
+            // ⚠ AND IT MUST NOT BE ABLE TO REACH THE FISH EITHER, unless a test puts them there. The
+            // flock reads IFishSchools twice: the landing attractor pulls a chosen spot toward fish
+            // showing at the surface, and the burst asks whether she came down ON them. A service left
+            // installed by an earlier test would move where birds land, which is the one thing the
+            // descent tests in this file measure.
+            _fishBefore = GameServices.FishSchools;
+            GameServices.FishSchools = null;
+
             _visual = Resources.Load<SeagullVisualDef>(SeagullVisualDef.ResourcesPath);
             Assert.IsNotNull(_visual,
                 "Resources/" + SeagullVisualDef.ResourcesPath + " did not load — without the baked " +
@@ -141,6 +159,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Shader.SetGlobalVector("_WindWorld", _windBefore);
             GameServices.Clock = _clockBefore;
             GameServices.Environment = _environmentBefore;
+            GameServices.FishSchools = _fishBefore;
+            Hush();
 
             foreach (GameObject go in _spawned) if (go != null) Object.Destroy(go);
             _spawned.Clear();
@@ -620,6 +640,251 @@ namespace HiddenHarbours.Tests.PlayMode
                 "the same number of ticks produced two different sim times");
             AssertSameFlight(Capture(steady), Capture(stuttered),
                 "stepped across real frames at timeScale 0 rather than in one burst");
+        }
+
+        // ── the splash the fish hear ────────────────────────────────────────────
+
+        /// <summary>
+        /// Listens for <see cref="GullSplashed"/> into <paramref name="into"/>, replacing any ear this
+        /// fixture already has. One at a time, and <see cref="Hush"/> takes the last one down.
+        ///
+        /// <para><b>⚠ Never <c>EventBus.Clear&lt;GullSplashed&gt;()</c> here.</b> The fish presenter
+        /// self-installs into every PlayMode scene and subscribes its own log in <c>OnEnable</c>, which
+        /// will not run again. Clearing the channel would silently deafen the shipped listener for the
+        /// rest of the run, and every later test would be measuring a game with no fish in it.</para>
+        /// </summary>
+        void Listen(List<GullSplashed> into)
+        {
+            Hush();
+            _ear = s => into.Add(s);
+            EventBus.Subscribe(_ear);
+        }
+
+        void Hush()
+        {
+            if (_ear == null) return;
+            EventBus.Unsubscribe(_ear);
+            _ear = null;
+        }
+
+        /// <summary>
+        /// <b>THE OWNER'S ASK AS ONE SCENE</b> (2026-09-09: <i>"fish react to it landing"</i>). A bird
+        /// commanded down onto the water publishes exactly one <see cref="GullSplashed"/>, on the frame
+        /// the rig says the water breaks on, carrying the place she is drawn at — and a school seeded
+        /// inside the owner's scatter radius of that place bolts, while one across the cove does not.
+        ///
+        /// <para><b>Why the whole chain rather than its two halves.</b> Both ends are pinned in EditMode
+        /// already — <c>GullSplashScatterTests</c> for the reach, the arc and the listener's lifetime,
+        /// <c>SeagullRigKitTests.TheWaterSectionNamesTheFrameTheSplashFiresOn</c> for the frame. What
+        /// neither can see is whether the running flock FIRES: a publish site behind a latch that never
+        /// opens, or gated on a frame the arrival never reaches, is invisible to both of them and looks
+        /// exactly like a feature that works.</para>
+        ///
+        /// <para><b>The splash is matched to THIS bird by position.</b> The flock settles other birds
+        /// while this one comes down and some of them come down on water too, so counting signals would
+        /// be counting the whole flock. The signal carries the position the publisher read off the sim
+        /// on that very tick, so the one belonging to this arrival is the one that lands where she is —
+        /// which is also the assertion that it carries a real place and not a stale one.</para>
+        ///
+        /// <para><b>Nothing about the player is asserted, because nothing about the player moved</b> —
+        /// no bite rate, no catch, no counter (owner's ruling 2026-09-09: fish bite rates are LEAVE).</para>
+        /// </summary>
+        [Test]
+        public void AGullComingDownOnWaterTellsTheFishAndTheyRun()
+        {
+            int splash = _table.IndexOf(SeagullStates.Splash);
+            int burst = SeagullSplashMath.BurstFrame(_table.Water.SplashBurstFrame,
+                                                     _table.Row(splash).Frames);
+            Assert.AreEqual(2, burst,
+                "the drop bursts the splash on frame 2 (seagullIsoRig water.splash_burst_frame). If the " +
+                "sidecar moved it, SeagullRigKitTests moves with it and the PR says so by name");
+
+            var heard = new List<GullSplashed>();
+            Listen(heard);
+
+            GullFlock flock = NewFlock("SplashFlock");
+            Step(flock, WarmUpTicks);
+
+            int bird = BirdAloft(flock, 1.0);
+            Assert.GreaterOrEqual(bird, 0, "no bird was airborne to send to the water");
+            Assert.IsTrue(flock.CommandLanding(bird, WaterSpot, splash, WindHeading),
+                "the table refused a water arrival from " + Id(flock, bird));
+
+            int mine = 0;
+            int frameOnBurst = -1;
+            string idOnBurst = null;
+            Vector2 at = Vector2.zero;
+            for (int t = 0; t < PatienceTicks; t++)
+            {
+                int before = heard.Count;
+                flock.Tick(TickMilliseconds);
+
+                SeagullSimBird b = flock.BirdState(bird);
+                var here = new Vector2((float)b.X, (float)b.Y);
+                for (int k = before; k < heard.Count; k++)
+                {
+                    if (Vector2.Distance(heard[k].WorldPosition, here) > 1e-4f) continue;   // another bird
+                    mine++;
+                    if (mine > 1) continue;
+                    frameOnBurst = b.Frame;
+                    idOnBurst = Id(flock, bird);
+                    at = heard[k].WorldPosition;
+                }
+
+                if (Id(flock, bird) == SeagullStates.Float) break;
+            }
+
+            Assert.AreEqual(SeagullStates.Float, Id(flock, bird),
+                "the commanded bird never reached float in " + PatienceTicks + " ticks; she is in " +
+                Id(flock, bird) + " at " + flock.BirdState(bird).AltitudeMetres + " m");
+            Assert.AreEqual(1, mine,
+                "the arrival published " + mine + " splashes for this bird. ONE splash is ONE signal: " +
+                "the burst frame is on screen for six ticks at 60 Hz and the fish must not be told six " +
+                "times that the same bird landed on them");
+            Assert.AreEqual(SeagullStates.Splash, idOnBurst,
+                "the splash fired from " + idOnBurst + " rather than from the water arrival");
+            Assert.AreEqual(burst, frameOnBurst,
+                "the water broke on frame " + frameOnBurst + " rather than the frame the rig names");
+            Assert.AreEqual(GullSplashKind.Alight, heard[0].Kind,
+                "with no fish service in this scene there was nothing under her to strike at, so the " +
+                "kind must be Alight — a Dive here would mean the kind is decided by the state rather " +
+                "than by what is in the water");
+
+            // ── and the fish run from it ─────────────────────────────────────
+            FishSchoolSettings tuning = FishSchoolMath.Sanitized(
+                GameServices.Config != null ? GameServices.Config.FishSchools
+                                            : FishSchoolSettings.Default);
+            Assert.Greater(tuning.GullSplashScatterRadiusMetres, 0f,
+                "GameConfig.FishSchools.GullSplashScatterRadiusMetres shipped at zero; the scatter is " +
+                "off and everything below would pass vacuously");
+            Assert.Greater(tuning.GullSplashScatterStrength01, 0f,
+                "GameConfig.FishSchools.GullSplashScatterStrength01 shipped at zero; same");
+
+            // The registry the fishing side keeps, fed the signal this arrival actually published. The
+            // clock is null in this fixture, so the shipped listener would stamp it at 0.0 too.
+            var log = new GullSplashLog();
+            log.RecordAt(new GullSplashed(at, GullSplashKind.Alight), 0.0);
+
+            var near = new FishSchool(at + new Vector2(0.5f, 0f), 1f, 2f, 6, null, 0.0, 600.0);
+            var away = new FishSchool(at + new Vector2(40f, 0f), 1f, 2f, 6, null, 0.0, 600.0);
+
+            Assert.IsTrue(log.TryScatter(near, 0.0, tuning.GullSplashScatterRadiusMetres,
+                                         tuning.GullSplashScatterStrength01,
+                                         out float strength, out double start, out Vector2 from),
+                "a school half a metre from where the bird hit the water did not bolt");
+            Assert.AreEqual(tuning.GullSplashScatterStrength01, strength, 1e-6f,
+                "a splash inside the school's own disc is not full strength");
+            Assert.AreEqual(0f, Vector2.Distance(at, from), 1e-6f,
+                "the school is running from somewhere other than where the bird landed");
+            Assert.AreEqual(0.0, start, 1e-9,
+                "the dart did not start at the moment of the splash");
+
+            Assert.IsFalse(log.TryScatter(away, 0.0, tuning.GullSplashScatterRadiusMetres,
+                                          tuning.GullSplashScatterStrength01,
+                                          out _, out _, out _),
+                "a school forty metres away bolted; a splash across the cove is no event at all, not a " +
+                "soft nudge");
+
+            // PR 4 owns perches. Nothing in this PR may put a bird on one.
+            for (int i = 0; i < flock.BirdCount; i++)
+                Assert.AreNotEqual(SeagullSurface.Perch, _table.SurfaceOf(flock.BirdState(i).State),
+                    "bird " + i + " perched; perches are PR 4 and this PR lands on flat ground and water");
+        }
+
+        /// <summary>
+        /// <b>A STRIKE IS A SPLASH WITH FISH UNDER IT.</b> The same arrival, onto the same spot, over the
+        /// same school — showing at the surface it is a <see cref="GullSplashKind.Dive"/>; ten metres
+        /// deeper it is an <see cref="GullSplashKind.Alight"/>.
+        ///
+        /// <para>That threshold is the one number this lane invented, so it is the one that has to be
+        /// held: "at the surface" is <c>DepthDrop.ShallowsMaxMeters</c>, the exact depth at which the
+        /// fish stop being drawn in full. A gull strikes at the fish the player can SEE, which is the
+        /// only version of this a player can read — and it is what makes <see cref="GullSplashKind"/> a
+        /// real distinction rather than a vestigial enum member. Both kinds scatter the school; only the
+        /// first can come up with anything.</para>
+        ///
+        /// <para><b>The stub is deliberately not an <c>IFishSchoolView</c>.</b> The landing attractor
+        /// reads the view to pull a chosen spot toward fish; this test commands the spot outright and is
+        /// measuring the burst, so the approach is kept out of it entirely.</para>
+        /// </summary>
+        [Test]
+        public void OnlyASplashOnFishShowingAtTheSurfaceIsADive()
+        {
+            float surface = (GameServices.Config != null ? GameServices.Config.DepthDrop
+                                                         : DepthDropSettings.Default).ShallowsMaxMeters;
+            Assert.Greater(surface, 0f,
+                "DepthDrop.ShallowsMaxMeters is zero; no school could ever be 'at the surface' and the " +
+                "dive arm below would pass for the wrong reason");
+
+            var shoal = new OneSchool { Depth = surface * 0.5f };
+            GameServices.FishSchools = shoal;                       // TearDown puts the old one back
+            Assert.AreEqual(GullSplashKind.Dive, KindOfOneSplash("DiveFlock"),
+                "she came down inside fish showing at " + shoal.Depth +
+                " m and it was not read as a strike");
+
+            shoal.Depth = surface + 10f;
+            Assert.AreEqual(GullSplashKind.Alight, KindOfOneSplash("AlightFlock"),
+                "the same school at " + shoal.Depth + " m — far below the " + surface + " m the player " +
+                "can see into — was still read as a strike");
+        }
+
+        /// <summary>
+        /// Sends one bird down onto <see cref="WaterSpot"/> in a flock of her own and returns the kind of
+        /// the splash SHE published, matched by position exactly as the test above does.
+        /// </summary>
+        GullSplashKind KindOfOneSplash(string flockName)
+        {
+            int splash = _table.IndexOf(SeagullStates.Splash);
+
+            var heard = new List<GullSplashed>();
+            Listen(heard);
+
+            GullFlock flock = NewFlock(flockName);
+            Step(flock, WarmUpTicks);
+
+            int bird = BirdAloft(flock, 1.0);
+            Assert.GreaterOrEqual(bird, 0, flockName + ": no bird was airborne to send to the water");
+            Assert.IsTrue(flock.CommandLanding(bird, WaterSpot, splash, WindHeading),
+                flockName + ": the table refused a water arrival from " + Id(flock, bird));
+
+            for (int t = 0; t < PatienceTicks; t++)
+            {
+                int before = heard.Count;
+                flock.Tick(TickMilliseconds);
+
+                SeagullSimBird b = flock.BirdState(bird);
+                var here = new Vector2((float)b.X, (float)b.Y);
+                for (int k = before; k < heard.Count; k++)
+                    if (Vector2.Distance(heard[k].WorldPosition, here) <= 1e-4f) return heard[k].Kind;
+            }
+
+            Assert.Fail(flockName + ": the commanded bird published no splash in " + PatienceTicks +
+                        " ticks; she is in " + Id(flock, bird));
+            return default;
+        }
+
+        /// <summary>One school, at whatever depth the test is asking about, wherever the test put it.
+        /// Honours the seam's own contract — <c>SchoolsAt</c> returns the schools whose area CONTAINS
+        /// the point — so the bird's own nearness test is the one under measurement.</summary>
+        sealed class OneSchool : IFishSchools
+        {
+            public Vector2 Centre = WaterSpot;
+            public float Radius = 6f;
+            public float Depth = 1f;
+
+            public int SchoolsAt(Vector2 worldPos, double gameSeconds, List<FishSchool> into)
+            {
+                into?.Clear();
+                if ((worldPos - Centre).sqrMagnitude > Radius * Radius) return 0;
+                into?.Add(new FishSchool(Centre, Radius, Depth, 6, null, 0.0, double.MaxValue));
+                return 1;
+            }
+
+            public int MarksAt(Vector2 worldPos, double gameSeconds, List<FishMark> into)
+            {
+                into?.Clear();
+                return 0;
+            }
         }
     }
 }

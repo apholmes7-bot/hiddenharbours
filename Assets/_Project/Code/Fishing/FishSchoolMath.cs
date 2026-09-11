@@ -456,6 +456,9 @@ namespace HiddenHarbours.Fishing
             o.SchoolSpeciesBoost = Mathf.Max(1f, Safe(s.SchoolSpeciesBoost));
             o.OffSchoolSpeciesDamp01 = Mathf.Clamp01(Safe(s.OffSchoolSpeciesDamp01));
 
+            o.GullSplashScatterRadiusMetres = Mathf.Max(0f, Safe(s.GullSplashScatterRadiusMetres));
+            o.GullSplashScatterStrength01 = Mathf.Clamp01(Safe(s.GullSplashScatterStrength01));
+
             return o;
         }
 
