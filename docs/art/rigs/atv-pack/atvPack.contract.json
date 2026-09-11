@@ -2,7 +2,7 @@
   "kit": "vehicle-rig-pack/atv-pack",
   "rig": "atvIsoRig.js",
   "exportSymbol": "AtvIso",
-  "rigSha256": "8578eb450f563489d3a40e6422e41f1b5de65ec061f90d3dc93c9cfe1fc0be9b",
+  "rigSha256": "c47d4b8c80cbfeda2e8c924c7899b60f34f01a1684d8355742fdcc05e2117277",
   "bodies": [
     "dirtbike",
     "trike",

@@ -566,3 +566,48 @@
     BODIES, PRESETS, CUES, G, hwAt, bzAt, topAt, crownAt,
     list, dims, resolve, render, frames, anchors, project };
 })(typeof globalThis!=='undefined'?globalThis:window);
+
+/* ================================================================================================
+   APPEND-ONLY — amphibIsoRig.js rev 1.1 (2026-09-09): THE RIDER HANDOFF.
+   Base: the merged rev 1.0, sha256 (LF) f71a01b8f04097948d7e54286d7851de304b6a52ee1585d4268c8f57961eb9f3.
+   Nothing above this line changed; the note lives at the tail so quoted line numbers still hold.
+
+   Adds AmphibIso.benchFor(dir, opts) — the same record shape as AtvIso.saddleFor(), so one
+   compositor drives both machines, with bench:true so characterIsoRig6.js 6.10 closes the knees and
+   sits the spine up (there is no tank between them and the bar is close). Read the helm off the BAR,
+   not the seats: this machine is centre-steer.
+
+   Derived from anchors(): seat = anchors().benchF (the front cushion top), bars = anchors().helm
+   (the T-bar centre). Two numbers are the rig's own geometry, read off buildHelm()/buildSeats():
+   the rubber grips run 0.20..0.30 either side of the bar centre, so a hand closes on ±0.25; the feet
+   go on the tub floor (G.floorZ) forward of the bench pedestal (y 0.14..0.34) and under the console
+   (y 0.62..0.78), at y 0.52, x ±0.16.
+
+   Every z is SHIFTED by the bake's own dz — the float sink AND the track lift — unlike anchors().m,
+   which is the unshifted model point (and whose projection applies the sink only). A rider handed
+   these metres sinks and rises with the hull, and stands 0.07 higher on a tracked Otter, exactly as
+   the bake does. That is the whole reason this is not just anchors(). */
+(function(root){
+  const A = root.AmphibIso; if(!A || A.benchFor) return;
+  const BENCH = { gripOut:0.25, footX:0.16, footY:0.52 };
+  const dirIx=(d)=> typeof d==='number' ? d : Math.max(0, A.order.indexOf(d));
+  function benchFor(dir, opts){
+    const o = Object.assign({}, opts||{}), G = A.G;
+    const s = A.resolve(o), an = A.anchors(dirIx(dir), o);
+    const dz = -G.sinkMax*s.float + (s.tracks ? G.trackLift : 0);
+    const S = (p,dx)=>[+(p[0]+(dx||0)).toFixed(3), +p[1].toFixed(3), +(p[2]+dz).toFixed(3)];
+    const helm = an.helm.m, bench = an.benchF.m;
+    return {
+      body:'otter8x8', label:(s.B && s.B.label) || 'Otter 8x8', dir, bench:true,
+      seat:S(bench), bars:S(helm), gripL:S(helm,-BENCH.gripOut), gripR:S(helm,BENCH.gripOut),
+      pegL:S([-BENCH.footX, BENCH.footY, G.floorZ]), pegR:S([BENCH.footX, BENCH.footY, G.floorZ]), pegKind:'tub_floor',
+      leanDeg:0,
+      /* no doors: boarding is a step over the gunwale, and over a tire under it — use mountCab */
+      mountSide:-1, mountPreferred:'either', reachX:+(G.wheelX + G.tireW/2 + 0.55).toFixed(3),
+      sillZ:+(G.railZ+dz).toFixed(3), floorZ:+(G.floorZ+dz).toFixed(3),
+      pose:{ float:s.float, tracks:!!s.tracks, yaw:s.yaw, shiftedBy:+dz.toFixed(3) },
+      host:{ pivot:{x:A.pivot.x, y:A.pivot.y}, cell:{W:A.W, H:A.H}, px:A.PX, rig:'amphibIsoRig.js', symbol:'AmphibIso' }
+    };
+  }
+  A.benchFor = benchFor; A.revision = '1.1';
+})(typeof globalThis!=='undefined'?globalThis:window);
