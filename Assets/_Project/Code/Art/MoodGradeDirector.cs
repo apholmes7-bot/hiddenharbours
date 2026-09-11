@@ -79,6 +79,11 @@ namespace HiddenHarbours.Art
         public MoodGrade   LastGrade   { get; private set; }
         public MoodWeights LastWeights { get; private set; }
         public string      LastRegionId { get; private set; }
+
+        /// <summary>The master strength the last tick used — see <see cref="StrengthFor"/>. 0 is the
+        /// pre-juice frame; the shipped asset carries a fraction (owner's ruling, 2026-09-09).</summary>
+        public float       LastStrength { get; private set; }
+
         public int ActiveEffectCount  => _stack?.ActiveCount ?? 0;
         public int DroppedEffectCount => _stack?.DroppedCount ?? 0;
         public bool GradeIsOn => _volume != null && _volume.enabled;
@@ -171,6 +176,16 @@ namespace HiddenHarbours.Art
             Tick();
         }
 
+
+        /// <summary>
+        /// WHICH master strength is in force right now: <c>GradeIntroStrength</c> while the arrival
+        /// opening is running (<see cref="GameServices.OpeningCinematicRunning"/> — a Core fact, never a
+        /// scene name), <c>GradeStrength</c> in ordinary play. The owner ruled on 2026-09-09 that the
+        /// full-strength grade filtered the world but that the intro may keep it, softened; this is
+        /// where the two numbers meet, and it is the only place that choice is made.
+        /// </summary>
+        public static float StrengthFor(in JuiceSettings juice) =>
+            GameServices.OpeningCinematicRunning ? juice.GradeIntroStrength : juice.GradeStrength;
         private static JuiceSettings CurrentJuice()
         {
             var cfg = GameServices.Config;
@@ -215,14 +230,16 @@ namespace HiddenHarbours.Art
             MoodGradeRegionOverride region = null;
             if (!string.IsNullOrEmpty(regionId)) _regions.TryGetValue(regionId, out region);
 
+            float strength = StrengthFor(juice);
             var grade = MoodGradeMath.Evaluate(_profile, region, hour,
                                                _dayNight.SunriseHour, _dayNight.SunsetHour,
-                                               visibility, seaState01, juice, out var weights);
+                                               visibility, seaState01, juice, strength, out var weights);
             _stack.Write(in grade);
 
             LastGrade = grade;
             LastWeights = weights;
             LastRegionId = regionId;
+            LastStrength = strength;
 
             SetCameraPost(true);
         }

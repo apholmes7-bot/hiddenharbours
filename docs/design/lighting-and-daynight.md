@@ -755,6 +755,22 @@ at golden hour, cold shadows and blooming lamps at night, the vignette closing i
 Owner ruling 2026-09-09 ("yes to 4, write the juice charter"), PR 1 of the juice lane; pillars P1
 (The Sea Has Moods) and P5 (Cozy but with Teeth).
 
+> ⭐⭐ **THE HUE-OWNER RULE — the multiply owns the time-of-day COLOUR, the grade owns TONE. Never
+> both.** The owner played the full-strength grade on 2026-09-09 and ruled it out: *"the juice lane
+> added a very blue filter at night and very noticeable yellow filter before and after, its far too
+> noticeable … it completely washes everything out on the screen except the colour"*. Two systems
+> were tinting the same frame and stacking: `DayNightProfile._skyTint` already multiplies the whole
+> screen by about (0.12, 0.16, 0.34) at midnight and (1.00, 0.55, 0.32) at dusk (§2), and the grade
+> then laid a cold `ColorFilter` plus cold trackballs over that at night, a warm pair at golden hour.
+> The tone-down (2026-09-10) hands the hue back to §1–§7: the `Night` and `GoldenHour` keys ship with
+> `ColorFilter` **white**, **black** vignette colours, and at most a **±0.02 residue** in the
+> Lift/Gamma/Gain RGB — a lean, not a tint. What the grade keeps is TONE: bloom, contrast,
+> saturation, vignette, and the black-point lift in `.w`.
+> `MoodGradeStrengthTests.TheShippedProfile_LeavesTheTimeOfDayColourToTheMultiply` holds that line on
+> the shipped asset. **If a time-of-day colour ever needs to move, it moves in `DayNightProfile`, not
+> here.** (Day, Fog and Storm are untouched by the ruling: they are not time-of-day hues, and the
+> multiply has no opinion about weather.)
+
 ### 8.1 What it is
 
 - **One global `Volume`**, priority 100, on a self-installing hidden host
@@ -787,7 +803,9 @@ Owner ruling 2026-09-09 ("yes to 4, write the juice charter"), PR 1 of the juice
 | Where | Field | Ships | What it does |
 |---|---|---|---|
 | `GameConfig ▸ Juice` | `GradeEnabled` | on | Master switch; OFF hands the camera back with post-processing off. |
-| | `GradeGoldenHourWidthHours` | 1.5 | Half-width of the golden hour either side of sunrise/sunset. 0 = none. |
+| | `GradeStrength` | **0.35** | ⭐ **Master strength of the grade in PLAY, 0..1.** The evaluated look, lerped from the IDENTITY grade (no bloom, no tint, no vignette) toward what the profile authored. 0 = exactly the pre-juice frame and nothing active on the Volume; 1 = the authored look at full, which is what the owner rejected. |
+| | `GradeIntroStrength` | **0.7** | The same dial WHILE THE ARRIVAL OPENING IS RUNNING, 0..1 — he kept the grade on the intro, softened. Chosen off the Core fact `GameServices.OpeningCinematicRunning`; never a scene name. |
+| | `GradeGoldenHourWidthHours` | **0.75** | Half-width of the golden hour either side of sunrise/sunset. 0 = none. Was 1.5, which put the golden key on the frame for three hours a day — the owner's "before and after". |
 | | `GradeNightBlendHours` | 1.0 | Hours after sunset for Night to reach full. 0 = a hard step. |
 | | `GradeFogVisibilityStart` / `Full` | 0.6 / 0.15 | Visibility at which Fog begins / is total. |
 | | `GradeStormSeaStateStart` / `Full` | 0.55 / 0.9 | Sea state at which Storm begins / is total. |
@@ -799,6 +817,22 @@ The code default (`MoodGradeProfile.CreateDefault`) is the fallback for a scene 
 the asset. `MoodGradeProfileAssetTests` pins the asset and the fallback on the FEATURE facts (night
 colder than day, golden gain warmer, fog crushes saturation and closes the vignette, grain and
 chroma OFF) — not the numbers, which are the owner's to move.
+
+**The strength dials (owner ruling 2026-09-09, shipped by the tone-down 2026-09-10).** They are a
+lerp and nothing else — `MoodGradeMath.AtStrength(authored, s)` walks from the identity grade
+(`MoodGrade.Neutral`) toward the evaluated look, with both ends EXACT: at 0 the stack finds nothing
+to activate (the frame is the pre-juice frame and the Volume costs nothing), at 1 the look is
+bit-for-bit what shipped before the dial existed. The whole look moves together — tone and the
+little hue residue alike — so there are no carve-outs to remember.
+`MoodGradeDirector.StrengthFor` is the ONE place that chooses between the two dials, off
+`GameServices.OpeningCinematicRunning`: a Core `bool` that `ArrivalOpening` republishes from its own
+phase (rule 4 — Art never learns a scene name, and a torn-down opening puts the fact down).
+
+> ⚠ Both fields MUST be written into `Assets/_Project/Data/Config/GameConfig.asset`. A serialized
+> field ABSENT from an asset reads **zero**, not its code default, and zero on these two is *no grade
+> at all* — in play and on the intro alike. `MoodGradeStrengthTests` asserts them through the loader
+> **and** straight out of the YAML, and pins the ruling's shape (a fraction rather than full; the
+> intro at least as strong as play) without pinning the owner's numbers, which are his to move.
 
 ### 8.3 Budget (rule 7)
 

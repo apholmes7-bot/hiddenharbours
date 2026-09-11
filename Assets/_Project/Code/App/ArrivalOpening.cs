@@ -330,6 +330,29 @@ namespace HiddenHarbours.App
         public Phase Current => _phase;
 
         /// <summary>
+        /// Is the opening RUNNING right now — begun, and not yet handed over? The one predicate behind
+        /// <see cref="GameServices.OpeningCinematicRunning"/>, which the mood grade reads so the intro
+        /// can carry its own strength (rule 4 — through Core, never a scene name).
+        /// </summary>
+        public bool IsRunning => RunningIn(_phase);
+
+        /// <summary>The predicate itself, so the law can be asserted without standing a scene up:
+        /// an opening is running in <see cref="Phase.Approaching"/>, <see cref="Phase.Docking"/> and
+        /// <see cref="Phase.Moored"/>, and in neither of the two ends.</summary>
+        public static bool RunningIn(Phase phase) => phase != Phase.Dormant && phase != Phase.HandedOver;
+
+        /// <summary>
+        /// Move to <paramref name="next"/> and republish the Core fact in the same breath, so the phase
+        /// and what the rest of the game believes about it can never disagree. ⚠ EVERY write to
+        /// <c>_phase</c> goes through here — the field is the state machine's, the fact is everyone's.
+        /// </summary>
+        private void SetPhase(Phase next)
+        {
+            _phase = next;
+            GameServices.OpeningCinematicRunning = IsRunning;
+        }
+
+        /// <summary>
         /// Which PILOTAGE phase her skipper is in (design/npc-pilotage.md §2.1) — the finer machine
         /// underneath <see cref="Current"/>. The two are one mapping and not two opinions:
         /// <c>Passage</c>/<c>Approach</c> read as <see cref="Phase.Approaching"/>, <c>Gate</c>/
@@ -537,6 +560,11 @@ namespace HiddenHarbours.App
 
         private void OnEnable()
         {
+            // A region hop root-toggles this object (see OnDisable), so republish the fact from the phase
+            // we are actually in — a re-enabled opening carries the intro strength again, a handed-over
+            // one does not.
+            GameServices.OpeningCinematicRunning = IsRunning;
+
             if (_subscribed) return;
             EventBus.Subscribe<ShellPhaseChanged>(OnShellPhase);
             _subscribed = true;
@@ -546,6 +574,11 @@ namespace HiddenHarbours.App
         {
             if (_subscribed) EventBus.Unsubscribe<ShellPhaseChanged>(OnShellPhase);
             _subscribed = false;
+
+            // The grade must never keep the intro's strength over a torn-down opening. Cleared first and
+            // unconditionally: if this component is not enabled, no opening is running, whatever _phase says.
+            GameServices.OpeningCinematicRunning = false;
+
             // Never leave the player frozen, or a dead deck or a dead offer registered, because a region
             // unloaded mid-arrival. All three are global state that would outlive the scene that made
             // them — and each is torn down under the same law the player release keeps: everything here
@@ -602,7 +635,7 @@ namespace HiddenHarbours.App
 
             if (!Spawn()) return false;
 
-            _phase = Phase.Approaching;
+            SetPhase(Phase.Approaching);
             _dockingTimer = 0f;
             Debug.Log($"[ArrivalOpening] making the approach — {_route.Length} marks, " +
                       $"{_pilotage.MetresToGate(_route[0]):F0} m to run to the gate at " +
@@ -1188,7 +1221,7 @@ namespace HiddenHarbours.App
                 Debug.Log($"[ArrivalOpening] docking at {_boat.Velocity.magnitude:F2} m/s, " +
                           $"{Vector2.Distance(_boatRoot.position, _berth):F1} m off the berth — " +
                           "presenting at the gate.");
-            _phase = want;
+            SetPhase(want);
         }
 
         private void Update()
@@ -1350,7 +1383,7 @@ namespace HiddenHarbours.App
             if (drawer != null) drawer.SetWay(VesselWay.Moored);
 
             _tiedUpHonestly = honest;
-            _phase = Phase.Moored;
+            SetPhase(Phase.Moored);
             _mooredTimer = 0f;
             Debug.Log($"[ArrivalOpening] tied up at ({_helm.Position.x:F1}, {_helm.Position.y:F1}) " +
                       $"heading {_helm.HeadingDegrees:F0}° — the berth is ({_berth.x:F1}, {_berth.y:F1}) " +
@@ -1651,7 +1684,7 @@ namespace HiddenHarbours.App
             WithdrawTheCabinDoor();
             LetTheSkipperStandAsHeWas();
 
-            _phase = Phase.HandedOver;
+            SetPhase(Phase.HandedOver);
             EventBus.Publish(new ArrivalCompleted(_skipperLine, SkipperTransform(),
                                                  _skipper != null ? _skipper.DisplayName : null));
             Debug.Log($"[ArrivalOpening] ashore. The skipper: \"{_skipperLine}\"");

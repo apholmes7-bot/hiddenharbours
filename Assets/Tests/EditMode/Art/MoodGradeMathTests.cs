@@ -55,11 +55,20 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(gSet, Is.EqualTo(1f).Within(1e-6f), "sunset");
             Assert.That(gRise, Is.EqualTo(1f).Within(1e-6f), "sunrise");
 
-            // One hour before sunset, still daylight: golden = 1 - 1/1.5, day the rest.
-            Partition(Sunset - 1f, out float d, out float g, out float n);
+            // ⚠ MOVED PREMISE (2026-09-10 grade tone-down), not a production red. This used to sample a
+            // FIXED one hour before sunset and expect 1 − 1/width — an expectation that is only inside
+            // the kernel while the width is over an hour. The owner's ruling narrows
+            // GradeGoldenHourWidthHours to 0.75, so the old sample falls OUTSIDE the kernel (TimeOfDay
+            // clamps to 0) while the arithmetic goes negative. The law being guarded is unchanged: the
+            // kernel is a straight ramp over its own half-width. So the sample moves onto the WIDTH
+            // instead of onto the clock, and now says so in two places.
+            Partition(Sunset - 0.5f * J.GradeGoldenHourWidthHours, out float d, out float g, out float n);
             Assert.That(n, Is.EqualTo(0f).Within(1e-6f));
-            Assert.That(g, Is.EqualTo(1f - 1f / J.GradeGoldenHourWidthHours).Within(1e-5f));
+            Assert.That(g, Is.EqualTo(0.5f).Within(1e-5f), "half a width out is half weight");
             Assert.That(d, Is.EqualTo(1f - g).Within(1e-5f));
+
+            Partition(Sunset - 0.25f * J.GradeGoldenHourWidthHours, out _, out g, out _);
+            Assert.That(g, Is.EqualTo(0.75f).Within(1e-5f), "a quarter out is three quarters — a ramp, not a step");
 
             // Beyond the width the golden hour is gone.
             Partition(Sunset - J.GradeGoldenHourWidthHours - 0.01f, out _, out g, out _);
@@ -231,10 +240,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
             try
             {
                 var j = J;
-                var a = MoodGradeMath.Evaluate(p, null, 19.5f, Sunrise, Sunset, 0.3f, 0.7f, j, out var wa);
-                MoodGradeMath.Evaluate(p, null, 3f, Sunrise, Sunset, 1f, 0f, j, out _);      // something else in between
-                MoodGradeMath.Evaluate(p, null, 12f, Sunrise, Sunset, 0.05f, 1f, j, out _);
-                var b = MoodGradeMath.Evaluate(p, null, 19.5f, Sunrise, Sunset, 0.3f, 0.7f, j, out var wb);
+                var a = MoodGradeMath.Evaluate(p, null, 19.5f, Sunrise, Sunset, 0.3f, 0.7f, j, 1f, out var wa);
+                MoodGradeMath.Evaluate(p, null, 3f, Sunrise, Sunset, 1f, 0f, j, 1f, out _);      // something else in between
+                MoodGradeMath.Evaluate(p, null, 12f, Sunrise, Sunset, 0.05f, 1f, j, 1f, out _);
+                var b = MoodGradeMath.Evaluate(p, null, 19.5f, Sunrise, Sunset, 0.3f, 0.7f, j, 1f, out var wb);
                 AssertGradeEqual(a, b, "same facts, different history");
                 Assert.That(wb.Fog, Is.EqualTo(wa.Fog)); Assert.That(wb.Storm, Is.EqualTo(wa.Storm));
                 Assert.That(wb.GoldenHour, Is.EqualTo(wa.GoldenHour));
@@ -248,7 +257,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var p = MoodGradeProfile.CreateDefault();
             try
             {
-                var g = MoodGradeMath.Evaluate(p, null, 2f, Sunrise, Sunset, 1f, 0f, J, out var w);
+                var g = MoodGradeMath.Evaluate(p, null, 2f, Sunrise, Sunset, 1f, 0f, J, 1f, out var w);
                 Assert.That(w.Night, Is.EqualTo(1f).Within(1e-6f));
                 Assert.That(w.Fog, Is.EqualTo(0f)); Assert.That(w.Storm, Is.EqualTo(0f));
                 AssertGradeEqual(p.Night.Clamped(), g, "night");
@@ -263,7 +272,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var p = MoodGradeProfile.CreateDefault();
             try
             {
-                var g = MoodGradeMath.Evaluate(p, null, Sunset, Sunrise, Sunset, 1f, 0f, J, out var w);
+                var g = MoodGradeMath.Evaluate(p, null, Sunset, Sunrise, Sunset, 1f, 0f, J, 1f, out var w);
                 Assert.That(w.GoldenHour, Is.EqualTo(1f).Within(1e-6f));
                 Assert.That(g.Gain.x, Is.GreaterThan(g.Gain.z), "golden-hour highlights are warm (bible §4.2)");
                 Assert.That(g.Lift.x, Is.GreaterThan(g.Lift.z), "golden-hour lift is warm");
@@ -277,8 +286,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var p = MoodGradeProfile.CreateDefault();
             try
             {
-                var clear = MoodGradeMath.Evaluate(p, null, 12f, Sunrise, Sunset, 1f, 0f, J, out _);
-                var fog   = MoodGradeMath.Evaluate(p, null, 12f, Sunrise, Sunset, 0.05f, 0f, J, out var w);
+                var clear = MoodGradeMath.Evaluate(p, null, 12f, Sunrise, Sunset, 1f, 0f, J, 1f, out _);
+                var fog   = MoodGradeMath.Evaluate(p, null, 12f, Sunrise, Sunset, 0.05f, 0f, J, 1f, out var w);
                 Assert.That(w.Fog, Is.EqualTo(1f));
                 Assert.That(fog.Saturation, Is.LessThan(clear.Saturation));
                 Assert.That(fog.VignetteIntensity, Is.GreaterThan(clear.VignetteIntensity));

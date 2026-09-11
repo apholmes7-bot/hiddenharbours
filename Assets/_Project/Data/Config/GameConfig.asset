@@ -409,7 +409,9 @@ MonoBehaviour:
   StairClimbSeconds: 0.5
   Juice:
     GradeEnabled: 1
-    GradeGoldenHourWidthHours: 1.5
+    GradeStrength: 0.35
+    GradeIntroStrength: 0.7
+    GradeGoldenHourWidthHours: 0.75
     GradeNightBlendHours: 1
     GradeFogVisibilityStart: 0.6
     GradeFogVisibilityFull: 0.15

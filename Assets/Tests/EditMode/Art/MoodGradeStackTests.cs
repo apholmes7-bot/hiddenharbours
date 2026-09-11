@@ -114,7 +114,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 foreach (var h in hours)
                 foreach (var w in weathers)
                 {
-                    var g = MoodGradeMath.Evaluate(p, null, h, 6f, 20f, w.vis, w.sea, j, out _);
+                    var g = MoodGradeMath.Evaluate(p, null, h, 6f, 20f, w.vis, w.sea, j, 1f, out _);
                     int n = _stack.Write(g);
                     Assert.That(n, Is.LessThanOrEqualTo(MoodGradeStack.MaxActiveEffects), $"h {h} vis {w.vis} sea {w.sea}");
                     Assert.That(n, Is.GreaterThan(0), $"the grade does something at h {h} vis {w.vis} sea {w.sea}");
