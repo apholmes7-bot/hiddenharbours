@@ -1,0 +1,202 @@
+# THE RAISED _ReflectionFadeChop, PRICED — owner ruling 2026-09-11 ("shoot the plate first"), water charter 2026-09-11, register §3 item 10.
+# NOTHING SHIPS FROM THIS FILE. Every value below is a MaterialPropertyBlock override inside the fixture, restored after each shot; the nine water materials, the shader and the production C# are untouched and the shipped look is bit-identical.
+
+## SHOT FROM
+viewpoint        :  — open water, aimed at the region world centre
+camera world pos : (0.00, 0.00, -100.00)   (orthographic, 40 m across, 960 px)
+capture path     : bare Camera -> ARGBHalf RenderTexture -> RGBAFloat readback, NO URP Volume stack; the only post-water op is the ADR 0013 day/night tint MULTIPLY replayed in C#. These lumas are the WATER'S OWN OUTPUT, PRE-GRADE — not the final frame.
+clock            : mean tide, noon — ONE clock for the whole plate, so no arm needs re-aiming.
+
+## THE CELL (every value read back off the property block AFTER the shipped push)
+weather                : blow   sea state 0.550, wind 5.70 m/s
+_Chop                  : 0.5500
+_Roughness             : 0.4750
+_ReflectionFadeChop    : 0.6000   (ships at 0.6 on all nine materials)
+_ReflectionWindFade    : 0.4827
+_ReflectionStrength    : 0.6233   <- the BLENDED master this weather actually draws. NOT 0.7, NOT 0.15: WaterSurface mood-blends it across the anchors, so (c1) and (c2) are priced as pinned columns further down.
+ReflectionStrength()   : 0.00945   (the arithmetic's own prediction for the shipped cell)
+subject in frame       : wet fraction 100.0% of the plate; mean luma over the WET pixels only 0.01114
+
+## THE NOISE FLOOR
+shipped frame re-shot 3x, worst departure from the first: 0.000068   (0.61% of the frame). EditMode _Time is REAL time, so this is not zero and no row inside it is a number.
+
+## EVERY WEIGHT-LIKE TERM IN THE FRAME, ZEROED ONE AT A TIME (54 terms, enumerated FROM THE SHADER at the shipped cell)
+# This exists because #829's charter named the reflection by arithmetic and the plate then found _SwellReadStrength — never suspected — carrying 77% of the blow. A suspect named by arithmetic is a hypothesis. Nothing here was hand-picked.
+term | meanWetLuma with it zeroed | delta vs shipped | share of the shipped frame | x floor
+_BeamLitStrength               |                    0.01105 |         -0.00009 |                       0.80% |     1.3x
+_BeamReliefMaxGain             |                    0.01107 |         -0.00007 |                       0.62% |     1.0x
+_BeamReliefStrength            |                    0.01106 |         -0.00008 |                       0.73% |     1.2x
+_BoatLightGain                 |                    0.01104 |         -0.00010 |                       0.88% |     1.5x
+_BoatLightTintAmount           |                    0.01102 |         -0.00012 |                       1.07% |     1.8x
+_CapAgeStrength                |                    0.01129 |         +0.00015 |                      -1.31% |     2.2x
+_CapSalienceStrength           |                    0.01103 |         -0.00011 |                       0.98% |     1.6x
+_CausticAmount                 |                    0.01101 |         -0.00013 |                       1.18% |     2.0x
+_CausticCurvatureGain          |                    0.01099 |         -0.00015 |                       1.32% |     2.2x
+_CausticTexStrength            |                    0.01101 |         -0.00013 |                       1.19% |     2.0x
+_CloudStrength                 |                    0.01056 |         -0.00058 |                       5.19% |     8.6x
+_DeepBlueStrength              |                    0.01055 |         -0.00059 |                       5.32% |     8.8x
+_DriftLineStrength             |                    0.01077 |         -0.00037 |                       3.30% |     5.4x
+_EnvelopeBandStrength          |                    0.00450 |         -0.00664 |                      59.57% |    98.1x
+_FbmStrength                   |                    0.01063 |         -0.00052 |                       4.62% |     7.6x
+_FoamClumpStrength             |                    0.01105 |         -0.00009 |                       0.77% |     1.3x
+_FoamConvergenceStrength       |                    0.01021 |         -0.00093 |                       8.35% |    13.8x
+_FoamDensity                   |                    0.01104 |         -0.00010 |                       0.87% |     1.4x
+_FoamTexStrength               |                    0.01102 |         -0.00012 |                       1.10% |     1.8x
+_MoonStrength                  |                    0.01102 |         -0.00012 |                       1.07% |     1.8x
+_ObjectReflectStrength         |                    0.01102 |         -0.00012 |                       1.08% |     1.8x
+_OceanSwellStrength            |                    0.02157 |         +0.01043 |                     -93.62% |   154.2x
+_Octave2Weight                 |                    0.01105 |         -0.00009 |                       0.79% |     1.3x
+_Octave3Weight                 |                    0.01106 |         -0.00008 |                       0.74% |     1.2x
+_PaletteGradeStrength          |                    0.00263 |         -0.00851 |                      76.40% |   125.9x
+_PalettePullStrength           |                    0.00992 |         -0.00122 |                      10.98% |    18.1x
+_RainIntensity                 |                    0.01109 |         -0.00005 |                       0.49% |     0.8x
+_RainRingDensity               |                    0.01107 |         -0.00007 |                       0.64% |     1.1x
+_RainRingStrength              |                    0.01109 |         -0.00005 |                       0.46% |     0.8x
+_ReflectionStrength            |                    0.01005 |         -0.00109 |                       9.76% |    16.1x
+_RippleStrength                |                    0.00911 |         -0.00203 |                      18.20% |    30.0x
+_SkyReflectionStrength         |                    0.01065 |         -0.00049 |                       4.38% |     7.2x
+_SparkleTexStrength            |                    0.01174 |         +0.00060 |                      -5.40% |     8.9x
+_SpecAmount                    |                    0.01089 |         -0.00025 |                       2.28% |     3.8x
+_StarDensity                   |                    0.01115 |         +0.00000 |                      -0.04% |     0.1x
+_StarStrength                  |                    0.01115 |         +0.00001 |                      -0.08% |     0.1x
+_StormFoamLaneStrength         |                    0.00809 |         -0.00305 |                      27.37% |    45.1x
+_SunGlitterStrength            |                    0.01116 |         +0.00002 |                      -0.15% |     0.3x
+_SunSideStrength               |                    0.01115 |         +0.00001 |                      -0.08% |     0.1x
+_SurfAgeStrength               |                    0.01114 |         +0.00000 |                       0.02% |     0.0x
+_SurfBeatStrength              |                    0.01112 |         -0.00002 |                       0.14% |     0.2x
+_SurfCrestBoost                |                    0.01114 |         +0.00000 |                       0.03% |     0.0x
+_SurfDepositStrength           |                    0.01114 |         +0.00000 |                      -0.01% |     0.0x
+_SurfPlungeStrength            |                    0.01113 |         -0.00001 |                       0.05% |     0.1x
+_SurfPocketBoost               |                    0.01112 |         -0.00002 |                       0.17% |     0.3x
+_SurfRunUpStrength             |                    0.01112 |         -0.00002 |                       0.15% |     0.2x
+_SurfStrength                  |                    0.01113 |         -0.00001 |                       0.10% |     0.2x
+_SurfaceTexStrength            |                    0.01107 |         -0.00008 |                       0.68% |     1.1x
+_SwellReadStrength             |                    0.04562 |         +0.03447 |                    -309.44% |   509.8x
+_UntileStrength                |                    0.01112 |         -0.00002 |                       0.17% |     0.3x
+_WakeFoamAgeStrength           |                    0.01110 |         -0.00004 |                       0.37% |     0.6x
+_WakeFoamStrength              |                    0.01111 |         -0.00003 |                       0.27% |     0.4x
+_WhitecapPeakDensity           |                    0.01111 |         -0.00003 |                       0.26% |     0.4x
+_WhitecapTexStrength           |                    0.01110 |         -0.00004 |                       0.36% |     0.6x
+
+### ranked by share of the shipped blow frame
+ 1. _PaletteGradeStrength            76.40%
+ 2. _EnvelopeBandStrength            59.57%
+ 3. _StormFoamLaneStrength           27.37%
+ 4. _RippleStrength                  18.20%
+ 5. _PalettePullStrength             10.98%
+ 6. _ReflectionStrength               9.76%
+ 7. _FoamConvergenceStrength          8.35%
+ 8. _DeepBlueStrength                 5.32%
+ 9. _CloudStrength                    5.19%
+10. _FbmStrength                      4.62%
+11. _SkyReflectionStrength            4.38%
+12. _DriftLineStrength                3.30%
+13. _SpecAmount                       2.28%
+14. _CausticCurvatureGain             1.32%
+15. _CausticTexStrength               1.19%
+16. _CausticAmount                    1.18%
+17. _FoamTexStrength                  1.10%
+18. _ObjectReflectStrength            1.08%
+19. _BoatLightTintAmount              1.07%
+20. _MoonStrength                     1.07%
+21. _CapSalienceStrength              0.98%
+22. _BoatLightGain                    0.88%
+23. _FoamDensity                      0.87%
+24. _BeamLitStrength                  0.80%
+25. _Octave2Weight                    0.79%
+26. _FoamClumpStrength                0.77%
+27. _Octave3Weight                    0.74%
+28. _BeamReliefStrength               0.73%
+29. _SurfaceTexStrength               0.68%
+30. _RainRingDensity                  0.64%
+31. _BeamReliefMaxGain                0.62%
+32. _RainIntensity                    0.49%
+33. _RainRingStrength                 0.46%
+34. _WakeFoamAgeStrength              0.37%
+35. _WhitecapTexStrength              0.36%
+36. _WakeFoamStrength                 0.27%
+37. _WhitecapPeakDensity              0.26%
+38. _SurfPocketBoost                  0.17%
+39. _UntileStrength                   0.17%
+40. _SurfRunUpStrength                0.15%
+41. _SurfBeatStrength                 0.14%
+42. _SurfStrength                     0.10%
+43. _SurfPlungeStrength               0.05%
+44. _SurfCrestBoost                   0.03%
+45. _SurfAgeStrength                  0.02%
+46. _SurfDepositStrength             -0.01%
+47. _StarDensity                     -0.04%
+48. _StarStrength                    -0.08%
+49. _SunSideStrength                 -0.08%
+50. _SunGlitterStrength              -0.15%
+51. _CapAgeStrength                  -1.31%
+52. _SparkleTexStrength              -5.40%
+53. _OceanSwellStrength             -93.62%
+54. _SwellReadStrength             -309.44%
+
+### RESIDUAL — all 54 weight-like terms zeroed at once
+meanWetLuma 0.01509 = 135.43% of the shipped frame. This is the colour anchors and the shape knobs — the part of the blow NO weight switches off, and the reason the single-term shares below do not sum to 100%.
+
+## THE LADDER — _ReflectionFadeChop walked up, at three masters
+# 0.6 = shipped. 1.12 = the value option (a) was costed at. 64 = NOT A CANDIDATE: it is the positive control AND the clamp discriminator.
+### ww-open-blow-mean-noon — master 0.623 (blended, unpinned)
+fadeChop | predicted ReflectionStrength() | measured meanWetLuma | delta vs shipped | delta as % of the shipped frame | x noise floor
+    0.60 |                        0.0095 |              0.01109 |         -0.00005 |                           -0.45% |           0.7x
+    0.80 |                        0.1114 |              0.02717 |         +0.01603 |                          143.92% |         237.1x
+    1.00 |                        0.2043 |              0.04604 |         +0.03490 |                          313.22% |         516.0x
+    1.12 |                        0.2466 |              0.05508 |         +0.04393 |                          394.36% |         649.7x
+    1.50 |                        0.3340 |              0.07469 |         +0.06355 |                          570.46% |         939.8x
+    2.00 |                        0.3914 |              0.08894 |         +0.07780 |                          698.35% |        1150.5x
+    4.00 |                        0.4556 |              0.10662 |         +0.09548 |                          857.03% |        1411.9x
+   64.00 |                        0.4803 |              0.11370 |         +0.10256 |                          920.60% |        1516.6x
+
+### ww-open-blow-mean-noon — master 0.70
+fadeChop | predicted ReflectionStrength() | measured meanWetLuma | delta vs shipped | delta as % of the shipped frame | x noise floor
+    0.60 |                        0.0106 |              0.01119 |         +0.00005 |                            0.47% |           0.8x
+    0.80 |                        0.1251 |              0.02977 |         +0.01863 |                          167.23% |         275.5x
+    1.00 |                        0.2294 |              0.05133 |         +0.04019 |                          360.75% |         594.3x
+    1.12 |                        0.2770 |              0.06161 |         +0.05047 |                          453.02% |         746.3x
+    1.50 |                        0.3751 |              0.08464 |         +0.07350 |                          659.75% |        1086.9x
+    2.00 |                        0.4396 |              0.10198 |         +0.09084 |                          815.37% |        1343.3x
+    4.00 |                        0.5117 |              0.12296 |         +0.11182 |                         1003.71% |        1653.6x
+   64.00 |                        0.5394 |              0.13131 |         +0.12017 |                         1078.66% |        1777.0x
+
+### ww-open-blow-mean-noon — master 0.15
+fadeChop | predicted ReflectionStrength() | measured meanWetLuma | delta vs shipped | delta as % of the shipped frame | x noise floor
+    0.60 |                        0.0023 |              0.01023 |         -0.00091 |                           -8.14% |          13.4x
+    0.80 |                        0.0268 |              0.01319 |         +0.00205 |                           18.37% |          30.3x
+    1.00 |                        0.0492 |              0.01636 |         +0.00522 |                           46.83% |          77.2x
+    1.12 |                        0.0594 |              0.01797 |         +0.00683 |                           61.28% |         101.0x
+    1.50 |                        0.0804 |              0.02141 |         +0.01027 |                           92.20% |         151.9x
+    2.00 |                        0.0942 |              0.02387 |         +0.01273 |                          114.28% |         188.3x
+    4.00 |                        0.1097 |              0.02678 |         +0.01564 |                          140.37% |         231.2x
+   64.00 |                        0.1156 |              0.02791 |         +0.01677 |                          150.54% |         248.0x
+
+### the whole mirror, at a RAISED fade (2.00)
+reflection master 0 : 0.00998
+reflection as blended: 0.08894   -> the entire reflection is worth 0.07897 = 708.80% of the shipped blow frame once the chop fade is out of its way.
+
+## THE GLASS CONTROL — the NEGATIVE arm
+# At a calm the chop falloff is already ~1, so raising the fade should buy NOTHING. If this arm moves as much as the blow does, the ladder is measuring the instrument.
+_Chop 0.0000   _Roughness 0.0000   blended master 0.8760   shipped meanWetLuma 0.34171   noise floor 0.000013
+### ww-open-glass-mean-noon — master 0.876 (blended, unpinned)
+fadeChop | predicted ReflectionStrength() | measured meanWetLuma | delta vs shipped | delta as % of the shipped frame | x noise floor
+    0.60 |                        0.8760 |              0.34172 |         +0.00001 |                            0.00% |           0.4x
+    0.80 |                        0.8760 |              0.34170 |         -0.00002 |                           -0.01% |           1.4x
+    1.00 |                        0.8760 |              0.34170 |         -0.00001 |                            0.00% |           0.9x
+    1.12 |                        0.8760 |              0.34170 |         -0.00002 |                           -0.01% |           1.4x
+    1.50 |                        0.8760 |              0.34168 |         -0.00003 |                           -0.01% |           2.6x
+    2.00 |                        0.8760 |              0.34168 |         -0.00003 |                           -0.01% |           2.6x
+    4.00 |                        0.8760 |              0.34168 |         -0.00003 |                           -0.01% |           2.3x
+   64.00 |                        0.8760 |              0.34168 |         -0.00003 |                           -0.01% |           2.5x
+
+### what the ladder costs each sea (rung 64 minus rung 0.6, the full swing)
+blow  : 0.10261   (921.0% of its frame)
+glass : 0.00004   (0.0% of its frame)
+ratio : 2776.7x   <- the RATIO is the claim; the absolutes are pre-grade.
+
+## WHAT THIS PLATE DOES NOT SAY
+- It does not rule. Register row 6 stands: ask, never choose. The numbers land in register §3 item 10 as a PROPOSAL column with the ruling column EMPTY.
+- It is not the final frame: no MoodGrade Volume, so do not read an absolute off it.
+- It does not re-derive anything from #829's fitted slope k=0.3208. That fit was taken at GLASS and is falsified at a blow (local 0.120, ~2.7x over-priced). Every number above is measured at the cell it is quoted for.
+- It says nothing about whether shipping option (a) needs the Range(0,1) widened. A property-block write is not clamped by the declaration; a material asset write is. That is a SHIPPING question for whichever option the owner picks, not a measurement one.

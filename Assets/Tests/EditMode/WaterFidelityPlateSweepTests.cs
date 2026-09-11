@@ -2454,11 +2454,17 @@ namespace HiddenHarbours.Tests.EditMode
                                    Mathf.Clamp01(lit[i].b * tint.b), 1f);
             Object.DestroyImmediate(hdr);
 
-            var tex = new Texture2D(ShotPx, ShotPx, TextureFormat.RGBA32, false);
-            tex.SetPixels(ldr);
-            tex.Apply();
-            File.WriteAllBytes(path, tex.EncodeToPNG());
-            Object.DestroyImmediate(tex);
+            // ⚠️ <c>path</c> may be null, and the fade-chop ladder below is why: it shoots ~90 frames
+            // and a PNG per frame is ~2 MB of disk and most of the wall clock on a granted slot. The shots
+            // that are EVIDENCE are still written by name; the ones that are only a row in a table are not.
+            if (path != null)
+            {
+                var tex = new Texture2D(ShotPx, ShotPx, TextureFormat.RGBA32, false);
+                tex.SetPixels(ldr);
+                tex.Apply();
+                File.WriteAllBytes(path, tex.EncodeToPNG());
+                Object.DestroyImmediate(tex);
+            }
             return ldr;
         }
 
@@ -2654,6 +2660,487 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(File.Exists(Path.Combine(dir, "nmc-sand-blow-mean-golden-baseline.png")),
                           "the sand-shoal blow baseline at golden hour must be written");
         }
+
+        // =============================================================================================
+        //  The raised _ReflectionFadeChop — the plate that PRICES the option table
+        //  (owner ruling 2026-09-11: "shoot the plate first"; charter 2026-09-11; register §3 item 10)
+        // =============================================================================================
+
+        /// <summary>The rungs the ladder is walked at, in <c>_Chop</c> units. <b>0.6</b> is what ships on all
+        /// nine water materials; <b>1.12</b> is the value register §3 item 10 costed option (a) at; <b>64</b>
+        /// is not a candidate at all — it is the <b>POSITIVE CONTROL</b>, far enough above the blow's own chop
+        /// that the falloff term is ~1 and the whole mirror must come back. If the frame does not move there,
+        /// the write never reached the shader and not one other row of this table is evidence (the 2026-09-08
+        /// law: until a knob arm is proven by a control that MUST change the picture, no knob arm is evidence).</summary>
+        static readonly float[] FadeChopRungs = { 0.6f, 0.8f, 1.0f, 1.12f, 1.5f, 2.0f, 4.0f, 64f };
+
+        /// <summary>The two masters the charter asks to be priced APART — <c>Water.mat</c>'s 0.7 (option c1,
+        /// the shared body) and <c>Water_StormGrey</c>'s 0.15 (option c2, the storm's own) — because a second
+        /// multiply hides inside <c>ReflectionStrength()</c> and the two anchors disagree about it by 4.7x.
+        /// ⚠️ NEITHER is what a blow actually draws: <c>WaterSurface</c> mood-blends <c>_ReflectionStrength</c>
+        /// across the anchors by weather, so the BLENDED value is read back off the property block after the
+        /// shipped push and reported as a third, unpinned column beside these two.</summary>
+        const float MasterOnWaterMat = 0.7f;
+        const float MasterOnStormGrey = 0.15f;
+
+        /// <summary>Every weight-like float the water shader DECLARES — asked of the shader, not typed out
+        /// from memory.
+        ///
+        /// <para>⭐ <b>This is the charter's own correction to #829, made mechanical.</b> #829 named
+        /// <c>ReflectionStrength()</c> as the suspect because its arithmetic ladder had the same SHAPE as the
+        /// measured luma; the plate then found the whole reflection to be 10.2% of the blow while
+        /// <c>_SwellReadStrength</c> — never suspected, pushed by no C# — was 77%. A suspect named by
+        /// arithmetic is a hypothesis, and a matching ladder is not a share of the frame. So the term list is
+        /// no longer a hand-picked list of suspects (<c>BlowKnobs</c> is 13 names somebody chose): it is every
+        /// property the shader declares whose name ends in a weight, which is the set of layers that HAVE an
+        /// off switch. A term whose zero does nothing simply reports 0.0000 and costs one frame.</para>
+        ///
+        /// <para>What it deliberately does not enumerate: SHAPE knobs (<c>_Roughness</c>, scales, tilings,
+        /// thresholds) and every colour anchor, where zero is not "this layer is off" but a different sea.
+        /// Their floor is measured instead, by the RESIDUAL arm — zero every term on this list at once and
+        /// photograph what no weight can turn off.</para></summary>
+        static string[] EveryWeightLikeTerm(Shader shader)
+        {
+            var names = new List<string>();
+            int declared = shader.GetPropertyCount();
+            for (int i = 0; i < declared; i++)
+            {
+                ShaderPropertyType type = shader.GetPropertyType(i);
+                if (type != ShaderPropertyType.Float && type != ShaderPropertyType.Range) continue;
+                string name = shader.GetPropertyName(i);
+                if (name.EndsWith("Strength", StringComparison.Ordinal)
+                    || name.EndsWith("Amount", StringComparison.Ordinal)
+                    || name.EndsWith("Density", StringComparison.Ordinal)
+                    || name.EndsWith("Intensity", StringComparison.Ordinal)
+                    || name.EndsWith("Opacity", StringComparison.Ordinal)
+                    || name.EndsWith("Weight", StringComparison.Ordinal)
+                    || name.EndsWith("Gain", StringComparison.Ordinal)
+                    || name.EndsWith("Boost", StringComparison.Ordinal))
+                    names.Add(name);
+            }
+            names.Sort(StringComparer.Ordinal);
+            return names.ToArray();
+        }
+
+        /// <summary>Shoot one frame of the published world with a set of floats overridden through the
+        /// per-renderer property block AFTER the shipped push, then put every one of them back.
+        ///
+        /// <para>⚠️ The block is STICKY, and <c>sharedMaterial.SetFloat</c> would dirty the owner's asset — so
+        /// the overrides go on the BLOCK, the value restored is the block's where the push wrote one and the
+        /// material's where it did not (exactly the precedence the GPU applies), and nothing here can leave a
+        /// value behind in <c>Water.mat</c>.</para>
+        ///
+        /// <para>⚠️ The overrides reach the TREATMENT shot only — the block is restored before the next
+        /// <c>Publish</c>, so the baseline every row is differenced against is never fed by the knob under
+        /// test. A sabotage that reaches both sides of a comparison cancels exactly and measures nothing.</para>
+        ///
+        /// <para>⚠️ A block write is NOT clamped by the property's <c>Range(0,1)</c> declaration — that clamp
+        /// is an inspector and <c>Material.SetFloat</c> concern. That is why this plate needs no shader edit
+        /// to walk <c>_ReflectionFadeChop</c> past 1, and why the ladder carries a CLAMP DISCRIMINATOR (rung
+        /// 64 must differ from rung 1.0) rather than assuming the write got through.</para></summary>
+        Color[] ShootWithOverrides(Stage stage, Weather w, Tide t, Hour h,
+                                   (string Key, float Value)[] overrides, string path)
+        {
+            Publish(stage, w, t, h, out _, out Color tint, out _, out _, out _);
+            var sr = stage.SeaGo.GetComponent<SpriteRenderer>();
+            Material mat = sr.sharedMaterial;
+            var block = new MaterialPropertyBlock();
+            sr.GetPropertyBlock(block);
+
+            int n = overrides == null ? 0 : overrides.Length;
+            var restore = new float[n];
+            for (int i = 0; i < n; i++)
+            {
+                string key = overrides[i].Key;
+                Assert.IsTrue(mat.HasProperty(key), key + " is not a property of " + mat.shader.name);
+                restore[i] = block.HasFloat(key) ? block.GetFloat(key) : mat.GetFloat(key);
+                block.SetFloat(key, overrides[i].Value);
+            }
+            if (n > 0) sr.SetPropertyBlock(block);
+
+            Color[] ldr = Capture(tint, path);
+
+            for (int i = 0; i < n; i++) block.SetFloat(overrides[i].Key, restore[i]);
+            if (n > 0) sr.SetPropertyBlock(block);
+            return ldr;
+        }
+
+        /// <summary>One number off one frame: the mean luma over the pixels the TERRAIN says are wet. The mask
+        /// is solved from the elevation and the published water level, never from the picture — a mask derived
+        /// from colour would widen as the reflection came back, and the ladder would be measuring its own
+        /// mask instead of the sea.</summary>
+        float MeanWetLuma(Stage stage, Weather w, Tide t, Hour h,
+                          (string Key, float Value)[] overrides, string path, out float wetFraction)
+        {
+            Color[] ldr = ShootWithOverrides(stage, w, t, h, overrides, path);
+            WetStatistics(stage, LevelFor(stage, t), ldr, out wetFraction, out float meanLumaWet);
+            return meanLumaWet;
+        }
+
+        /// <summary>The instrument's own run-to-run noise on this exact cell, measured rather than assumed:
+        /// the shipped frame re-shot three times, and the WORST departure from the first kept.
+        ///
+        /// <para>⚠️ In EDIT MODE the shader clock is REAL time — two shots of the same sea differ across half
+        /// the frame — so a per-pixel diff would be measuring <c>_Time</c>. The mean over the ~57 600 sampled
+        /// wet pixels is the statistic that survives it, and this is the number that says by how much. Every
+        /// row below is reported against this floor, and a row inside it is not a number.</para></summary>
+        float NoiseFloor(Stage stage, Weather w, Tide t, Hour h, float shipped)
+        {
+            float worst = 0f;
+            for (int i = 0; i < 3; i++)
+            {
+                float again = MeanWetLuma(stage, w, t, h, null, null, out _);
+                worst = Mathf.Max(worst, Mathf.Abs(again - shipped));
+            }
+            return worst;
+        }
+
+        /// <summary>Walk <c>_ReflectionFadeChop</c> up the rungs at one pinned master, reporting the measured
+        /// mean wet luma beside the arithmetic's own prediction, and hand back the readings.</summary>
+        float[] ClimbTheFadeChop(Stage stage, Weather w, Tide t, Hour h, string cell,
+                                 float master, bool pinMaster, float shipped, float floor,
+                                 float chop, float roughness, float windFade, float blendedMaster,
+                                 string dir, StringBuilder sb)
+        {
+            float effectiveMaster = pinMaster ? master : blendedMaster;
+            sb.AppendLine("### " + cell + " — master " +
+                          (pinMaster ? effectiveMaster.ToString("F2") : effectiveMaster.ToString("F3") + " (blended, unpinned)"));
+            sb.AppendLine("fadeChop | predicted ReflectionStrength() | measured meanWetLuma | delta vs shipped | " +
+                          "delta as % of the shipped frame | x noise floor");
+
+            var read = new float[FadeChopRungs.Length];
+            for (int i = 0; i < FadeChopRungs.Length; i++)
+            {
+                float f = FadeChopRungs[i];
+                var overrides = pinMaster
+                    ? new[] { ("_ReflectionFadeChop", f), ("_ReflectionStrength", master) }
+                    : new[] { ("_ReflectionFadeChop", f) };
+
+                string path = null;
+                if (!pinMaster && Mathf.Approximately(f, 0.6f)) path = Path.Combine(dir, cell + "-fade0.60-SHIPPED.png");
+                else if (!pinMaster && Mathf.Approximately(f, 1.12f)) path = Path.Combine(dir, cell + "-fade1.12-OPTION-A.png");
+                else if (!pinMaster && Mathf.Approximately(f, 2.0f)) path = Path.Combine(dir, cell + "-fade2.00.png");
+                else if (!pinMaster && Mathf.Approximately(f, 64f)) path = Path.Combine(dir, cell + "-fade64-POSITIVE-CONTROL.png");
+                else if (pinMaster && Mathf.Approximately(f, 2.0f))
+                    path = Path.Combine(dir, cell + "-fade2.00-master" + master.ToString("F2") + ".png");
+
+                read[i] = MeanWetLuma(stage, w, t, h, overrides, path, out _);
+                float predicted = WaterReflection.ReflectionStrength(chop, roughness, f, windFade, effectiveMaster);
+                float delta = read[i] - shipped;
+                sb.AppendLine(string.Format("{0,8:F2} | {1,29:F4} | {2,20:F5} | {3,16:+0.00000;-0.00000} | {4,31:F2}% | {5,13:F1}x",
+                                            f, predicted, read[i], delta,
+                                            shipped > 1e-6f ? 100f * delta / shipped : 0f,
+                                            floor > 1e-9f ? Mathf.Abs(delta) / floor : 0f));
+            }
+            sb.AppendLine();
+            return read;
+        }
+
+        /// <summary>
+        /// ⭐ <b>The plate the owner asked for before any knob ships</b> (ruling 2026-09-11, "shoot the plate
+        /// first"; charter 2026-09-11): what does raising <c>_ReflectionFadeChop</c> off its shipped 0.6
+        /// actually BUY BACK at a blow, and what is that worth beside every other weight in the same frame?
+        ///
+        /// <para><b>SHOT FROM</b> the open water at the centre of West Water — one stage, one clock
+        /// (mean tide, noon), so nothing here needs re-aiming and no second scene can poison the comparison.
+        /// Two cells on it: the BLOW (the sea the register calls near-black) and a GLASS control (where the
+        /// falloff is already ~1 and option (a) should therefore be free). The subject is asserted IN FRAME by
+        /// wet fraction before a single row is believed.</para>
+        ///
+        /// <para><b>THE FRAME THESE LUMAS WERE SHOT THROUGH</b> (2026-09-08 law — a measurement must name its
+        /// capture path): a bare orthographic <c>Camera</c> into an ARGBHalf <c>RenderTexture</c>, 40 m across
+        /// at 960 px, with NO URP Volume stack. The only post-water operation is ADR 0013's day/night tint
+        /// MULTIPLY, replayed in C# from <c>DayNightMath.DayNightTint(...)</c> because that screen-space pass
+        /// does not run in a fixture. The MoodGrade Volume the player actually sees through is NOT in these
+        /// plates. That is deliberate and it is what makes them survivable — #828 (the grade tone-down) moves
+        /// <c>MoodGradeMath</c>/<c>MoodGradeDirector</c>/<c>MoodGradeProfile</c> and touches no DayNight file,
+        /// so nothing in this frame is in its diff and these numbers do not expire when it lands. What they
+        /// are NOT is the final frame: rule on the RATIOS in this table, not on an absolute the player never
+        /// sees unfiltered.</para>
+        ///
+        /// <para><b>THE COMPARATOR.</b> Every row is one override written on the property block AFTER the
+        /// shipped push and restored before the next shot, so the knob under test reaches exactly ONE side of
+        /// its comparison. Three controls sit around the table and any of them failing takes the whole table
+        /// down rather than quietly averaging over the fault: (1) the NOISE FLOOR — the shipped frame re-shot,
+        /// the bar every delta is read against; (2) the POSITIVE CONTROL — rung 64, where the mirror must come
+        /// fully back; (3) the CLAMP DISCRIMINATOR — rung 64 must also differ from rung 1.0, which is what
+        /// would catch a silent clamp of the write at 1 and is the difference between "raising it past 1 buys
+        /// nothing" and "we never raised it past 1". A fourth control guards the master column: the two pinned
+        /// masters must disagree, or the (c1)/(c2) split is fiction.</para>
+        ///
+        /// <para><b>THIS TEST SHIPS NO KNOB AND MOVES NO LOOK.</b> Row 6 of the register stands: ask, never
+        /// choose. Every write here is a per-renderer block override inside a fixture — the nine materials,
+        /// the shader and the production C# are untouched, and the shipped values render bit-identically.
+        /// The numbers land in register §3 item 10 as a PROPOSAL column with the ruling column left empty.</para>
+        ///
+        /// <para>⚠️ <b>Filter trap.</b> Run it by its FULL name —
+        /// <c>-testFilter "HiddenHarbours.Tests.EditMode.WaterFidelityPlateSweepTests.TheRaisedFadeChop_PricedAgainstEveryTermInTheFrame"</c>.
+        /// A filter that drops the <c>.EditMode</c> segment matches nothing, runs zero tests and exits 0 — a
+        /// false green that eats a granted editor slot. Believe a run only after grepping the results XML for
+        /// the method NAME and asserting the executed count is 1. It needs a GPU: on CI it self-skips.</para>
+        /// </summary>
+        [Test]
+        public void TheRaisedFadeChop_PricedAgainstEveryTermInTheFrame()
+        {
+            RequireAGraphicsDevice();
+            Prepare();
+
+            string dir = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "fadechop");
+            Directory.CreateDirectory(dir);
+            var sb = new StringBuilder();
+
+            Stage stage = BuildWestWater();
+            stage.Name = "ww-open";
+            stage.Aim = WestWaterPlan.RegionWorldCenter;
+            BuildCamera();
+            _cam.transform.position = new Vector3(stage.Aim.x, stage.Aim.y, -100f);
+            WarmTheShaderCache(stage);
+
+            const Tide T = Tide.Mean;
+            const Hour H = Hour.Noon;
+
+            sb.AppendLine("# THE RAISED _ReflectionFadeChop, PRICED — owner ruling 2026-09-11 (\"shoot the " +
+                          "plate first\"), water charter 2026-09-11, register §3 item 10.");
+            sb.AppendLine("# NOTHING SHIPS FROM THIS FILE. Every value below is a MaterialPropertyBlock " +
+                          "override inside the fixture, restored after each shot; the nine water materials, " +
+                          "the shader and the production C# are untouched and the shipped look is bit-identical.");
+            sb.AppendLine();
+            sb.AppendLine("## SHOT FROM");
+            sb.AppendLine("viewpoint        : " + stage.Title + " — open water, aimed at the region world centre");
+            sb.AppendLine("camera world pos : " + _cam.transform.position.ToString("F2") +
+                          "   (orthographic, " + FrameMetres.ToString("F0") + " m across, " + ShotPx + " px)");
+            sb.AppendLine("capture path     : bare Camera -> ARGBHalf RenderTexture -> RGBAFloat readback, " +
+                          "NO URP Volume stack; the only post-water op is the ADR 0013 day/night tint MULTIPLY " +
+                          "replayed in C#. These lumas are the WATER'S OWN OUTPUT, PRE-GRADE — not the final frame.");
+            sb.AppendLine("clock            : " + TideName[(int)T] + " tide, " + HourName[(int)H] +
+                          " — ONE clock for the whole plate, so no arm needs re-aiming.");
+            sb.AppendLine();
+
+            // ------------------------------------------------------------------------------------------
+            //  The blow cell, as shipped — and the cell's own facts, READ BACK off the block, never assumed
+            // ------------------------------------------------------------------------------------------
+            float shipped = MeanWetLuma(stage, Weather.Blow, T, H, null,
+                                        Path.Combine(dir, "ww-open-blow-mean-noon-fade0.60-SHIPPED.png"),
+                                        out float wetBlow);
+
+            var sr = stage.SeaGo.GetComponent<SpriteRenderer>();
+            Material mat = sr.sharedMaterial;
+            var probe = new MaterialPropertyBlock();
+            sr.GetPropertyBlock(probe);
+            float Effective(string key) => probe.HasFloat(key) ? probe.GetFloat(key) : mat.GetFloat(key);
+            float chop = Effective("_Chop");
+            float roughness = Effective("_Roughness");
+            float blendedMaster = Effective("_ReflectionStrength");
+            float shippedFade = Effective("_ReflectionFadeChop");
+            float windFade = Effective("_ReflectionWindFade");
+
+            sb.AppendLine("## THE CELL (every value read back off the property block AFTER the shipped push)");
+            sb.AppendLine("weather                : " + WeatherName[(int)Weather.Blow] +
+                          "   sea state " + _env.SeaState01.ToString("F3") +
+                          ", wind " + _env.Wind.magnitude.ToString("F2") + " m/s");
+            sb.AppendLine("_Chop                  : " + chop.ToString("F4"));
+            sb.AppendLine("_Roughness             : " + roughness.ToString("F4"));
+            sb.AppendLine("_ReflectionFadeChop    : " + shippedFade.ToString("F4") + "   (ships at 0.6 on all nine materials)");
+            sb.AppendLine("_ReflectionWindFade    : " + windFade.ToString("F4"));
+            sb.AppendLine("_ReflectionStrength    : " + blendedMaster.ToString("F4") +
+                          "   <- the BLENDED master this weather actually draws. NOT 0.7, NOT 0.15: " +
+                          "WaterSurface mood-blends it across the anchors, so (c1) and (c2) are priced " +
+                          "as pinned columns further down.");
+            sb.AppendLine("ReflectionStrength()   : " +
+                          WaterReflection.ReflectionStrength(chop, roughness, shippedFade, windFade, blendedMaster).ToString("F5") +
+                          "   (the arithmetic's own prediction for the shipped cell)");
+            sb.AppendLine("subject in frame       : wet fraction " + (100f * wetBlow).ToString("F1") +
+                          "% of the plate; mean luma over the WET pixels only " + shipped.ToString("F5"));
+            Assert.Greater(wetBlow, 0.05f,
+                           "the terrain says the blow cell is barely water — this plate is not looking at the sea");
+            sb.AppendLine();
+
+            // ------------------------------------------------------------------------------------------
+            //  The noise floor — the bar every delta below is read against
+            // ------------------------------------------------------------------------------------------
+            float floor = NoiseFloor(stage, Weather.Blow, T, H, shipped);
+            sb.AppendLine("## THE NOISE FLOOR");
+            sb.AppendLine("shipped frame re-shot 3x, worst departure from the first: " + floor.ToString("F6") +
+                          "   (" + (shipped > 1e-6f ? (100f * floor / shipped).ToString("F2") : "n/a") +
+                          "% of the frame). EditMode _Time is REAL time, so this is not zero and no row " +
+                          "inside it is a number.");
+            sb.AppendLine();
+
+            // ------------------------------------------------------------------------------------------
+            //  Every weight-like term in the frame, zeroed one at a time — the #829 correction, mechanised
+            // ------------------------------------------------------------------------------------------
+            string[] terms = EveryWeightLikeTerm(mat.shader);
+            sb.AppendLine("## EVERY WEIGHT-LIKE TERM IN THE FRAME, ZEROED ONE AT A TIME (" + terms.Length +
+                          " terms, enumerated FROM THE SHADER at the shipped cell)");
+            sb.AppendLine("# This exists because #829's charter named the reflection by arithmetic and the " +
+                          "plate then found _SwellReadStrength — never suspected — carrying 77% of the blow. " +
+                          "A suspect named by arithmetic is a hypothesis. Nothing here was hand-picked.");
+            sb.AppendLine("term | meanWetLuma with it zeroed | delta vs shipped | share of the shipped frame | x floor");
+
+            var termShare = new List<KeyValuePair<string, float>>(terms.Length);
+            foreach (string term in terms)
+            {
+                float zeroed = MeanWetLuma(stage, Weather.Blow, T, H,
+                                           new[] { (term, 0f) }, null, out _);
+                float delta = shipped - zeroed;
+                termShare.Add(new KeyValuePair<string, float>(term, delta));
+                sb.AppendLine(string.Format("{0,-30} | {1,26:F5} | {2,16:+0.00000;-0.00000} | {3,26:F2}% | {4,7:F1}x",
+                                            term, zeroed, -delta,
+                                            shipped > 1e-6f ? 100f * delta / shipped : 0f,
+                                            floor > 1e-9f ? Mathf.Abs(delta) / floor : 0f));
+            }
+            sb.AppendLine();
+            sb.AppendLine("### ranked by share of the shipped blow frame");
+            termShare.Sort((x, y) => y.Value.CompareTo(x.Value));
+            for (int i = 0; i < termShare.Count; i++)
+                sb.AppendLine(string.Format("{0,2}. {1,-30} {2,7:F2}%", i + 1, termShare[i].Key,
+                                            shipped > 1e-6f ? 100f * termShare[i].Value / shipped : 0f));
+            sb.AppendLine();
+
+            // The residual: every weight off at once. What is left is what no weight can turn off — the
+            // colour anchors and the shape knobs — measured, so the un-enumerated floor is a number and
+            // not an assumption.
+            var allOff = new (string, float)[terms.Length];
+            for (int i = 0; i < terms.Length; i++) allOff[i] = (terms[i], 0f);
+            float residual = MeanWetLuma(stage, Weather.Blow, T, H, allOff,
+                                         Path.Combine(dir, "ww-open-blow-mean-noon-every-weight-zeroed-RESIDUAL.png"),
+                                         out _);
+            sb.AppendLine("### RESIDUAL — all " + terms.Length + " weight-like terms zeroed at once");
+            sb.AppendLine("meanWetLuma " + residual.ToString("F5") + " = " +
+                          (shipped > 1e-6f ? (100f * residual / shipped).ToString("F2") : "n/a") +
+                          "% of the shipped frame. This is the colour anchors and the shape knobs — the part " +
+                          "of the blow NO weight switches off, and the reason the single-term shares below " +
+                          "do not sum to 100%.");
+            sb.AppendLine();
+
+            // ------------------------------------------------------------------------------------------
+            //  The ladder — the option table's own numbers
+            // ------------------------------------------------------------------------------------------
+            sb.AppendLine("## THE LADDER — _ReflectionFadeChop walked up, at three masters");
+            sb.AppendLine("# 0.6 = shipped. 1.12 = the value option (a) was costed at. 64 = NOT A CANDIDATE: " +
+                          "it is the positive control AND the clamp discriminator.");
+            float[] blend = ClimbTheFadeChop(stage, Weather.Blow, T, H, "ww-open-blow-mean-noon",
+                                             0f, false, shipped, floor, chop, roughness, windFade,
+                                             blendedMaster, dir, sb);
+            float[] atWaterMat = ClimbTheFadeChop(stage, Weather.Blow, T, H, "ww-open-blow-mean-noon",
+                                                  MasterOnWaterMat, true, shipped, floor, chop, roughness,
+                                                  windFade, blendedMaster, dir, sb);
+            float[] atStormGrey = ClimbTheFadeChop(stage, Weather.Blow, T, H, "ww-open-blow-mean-noon",
+                                                   MasterOnStormGrey, true, shipped, floor, chop, roughness,
+                                                   windFade, blendedMaster, dir, sb);
+
+            // What the whole mirror is worth once the fade is out of the way — the number option (b)'s
+            // sky-scatter floor would have to beat, and the one (c1)/(c2) are dividing up.
+            float mirrorOffAtRaised = MeanWetLuma(stage, Weather.Blow, T, H,
+                                                  new[] { ("_ReflectionFadeChop", 2.0f), ("_ReflectionStrength", 0f) },
+                                                  null, out _);
+            int rung20 = Array.IndexOf(FadeChopRungs, 2.0f);
+            sb.AppendLine("### the whole mirror, at a RAISED fade (2.00)");
+            sb.AppendLine("reflection master 0 : " + mirrorOffAtRaised.ToString("F5"));
+            sb.AppendLine("reflection as blended: " + blend[rung20].ToString("F5") + "   -> the entire " +
+                          "reflection is worth " + (blend[rung20] - mirrorOffAtRaised).ToString("F5") + " = " +
+                          (shipped > 1e-6f ? (100f * (blend[rung20] - mirrorOffAtRaised) / shipped).ToString("F2") : "n/a") +
+                          "% of the shipped blow frame once the chop fade is out of its way.");
+            sb.AppendLine();
+
+            // ------------------------------------------------------------------------------------------
+            //  The glass control — does option (a) cost a calm anything?
+            // ------------------------------------------------------------------------------------------
+            float glassShipped = MeanWetLuma(stage, Weather.Glass, T, H, null,
+                                             Path.Combine(dir, "ww-open-glass-mean-noon-fade0.60-SHIPPED.png"),
+                                             out float wetGlass);
+            Assert.Greater(wetGlass, 0.05f,
+                           "the terrain says the glass control is barely water — the control is not looking at the sea");
+            float glassFloor = NoiseFloor(stage, Weather.Glass, T, H, glassShipped);
+            // ⚠️ The glass cell has its OWN blended reflection values — WaterSurface mood-blends the master,
+            // the fade and the wind dim across the anchors, and GlassyCalm's master is 0.92 against the blow's
+            // blend. Reading the blow's back here would print a predicted column for a sea this arm is not
+            // looking at.
+            var glassProbe = new MaterialPropertyBlock();
+            sr.GetPropertyBlock(glassProbe);
+            float GlassEffective(string key) => glassProbe.HasFloat(key) ? glassProbe.GetFloat(key) : mat.GetFloat(key);
+            float glassChop = GlassEffective("_Chop");
+            float glassRoughness = GlassEffective("_Roughness");
+            float glassWindFade = GlassEffective("_ReflectionWindFade");
+            float glassMaster = GlassEffective("_ReflectionStrength");
+
+            sb.AppendLine("## THE GLASS CONTROL — the NEGATIVE arm");
+            sb.AppendLine("# At a calm the chop falloff is already ~1, so raising the fade should buy NOTHING. " +
+                          "If this arm moves as much as the blow does, the ladder is measuring the instrument.");
+            sb.AppendLine("_Chop " + glassChop.ToString("F4") + "   _Roughness " + glassRoughness.ToString("F4") +
+                          "   blended master " + glassMaster.ToString("F4") +
+                          "   shipped meanWetLuma " + glassShipped.ToString("F5") +
+                          "   noise floor " + glassFloor.ToString("F6"));
+            float[] glass = ClimbTheFadeChop(stage, Weather.Glass, T, H, "ww-open-glass-mean-noon",
+                                             0f, false, glassShipped, glassFloor, glassChop,
+                                             glassRoughness, glassWindFade, glassMaster, dir, sb);
+
+            float blowSpread = Mathf.Max(Mathf.Abs(blend[blend.Length - 1] - blend[0]), 0f);
+            float glassSpread = Mathf.Abs(glass[glass.Length - 1] - glass[0]);
+            sb.AppendLine("### what the ladder costs each sea (rung 64 minus rung 0.6, the full swing)");
+            sb.AppendLine("blow  : " + blowSpread.ToString("F5") + "   (" +
+                          (shipped > 1e-6f ? (100f * blowSpread / shipped).ToString("F1") : "n/a") + "% of its frame)");
+            sb.AppendLine("glass : " + glassSpread.ToString("F5") + "   (" +
+                          (glassShipped > 1e-6f ? (100f * glassSpread / glassShipped).ToString("F1") : "n/a") + "% of its frame)");
+            sb.AppendLine("ratio : " + (glassSpread > 1e-9f ? (blowSpread / glassSpread).ToString("F1") : "inf") +
+                          "x   <- the RATIO is the claim; the absolutes are pre-grade.");
+            sb.AppendLine();
+
+            sb.AppendLine("## WHAT THIS PLATE DOES NOT SAY");
+            sb.AppendLine("- It does not rule. Register row 6 stands: ask, never choose. The numbers land in " +
+                          "register §3 item 10 as a PROPOSAL column with the ruling column EMPTY.");
+            sb.AppendLine("- It is not the final frame: no MoodGrade Volume, so do not read an absolute off it.");
+            sb.AppendLine("- It does not re-derive anything from #829's fitted slope k=0.3208. That fit was " +
+                          "taken at GLASS and is falsified at a blow (local 0.120, ~2.7x over-priced). Every " +
+                          "number above is measured at the cell it is quoted for.");
+            sb.AppendLine("- It says nothing about whether shipping option (a) needs the Range(0,1) widened. " +
+                          "A property-block write is not clamped by the declaration; a material asset write is. " +
+                          "That is a SHIPPING question for whichever option the owner picks, not a measurement one.");
+
+            File.WriteAllText(Path.Combine(dir, "DIAGNOSTIC-FADECHOP.txt"), sb.ToString());
+            Debug.Log("[water-plates] fade-chop plate\n" + sb);
+
+            // ------------------------------------------------------------------------------------------
+            //  The controls. Any of these failing takes the whole table down — which is the point.
+            // ------------------------------------------------------------------------------------------
+            int rung10 = Array.IndexOf(FadeChopRungs, 1.0f);
+            float positive = Mathf.Abs(blend[blend.Length - 1] - blend[0]);
+            Assert.Greater(positive, Mathf.Max(10f * floor, 1e-4f),
+                "POSITIVE CONTROL FAILED: _ReflectionFadeChop = 64 draws the same blow as the shipped 0.6 " +
+                "(delta " + positive.ToString("F6") + " vs bar " + Mathf.Max(10f * floor, 1e-4f).ToString("F6") +
+                "). The override never reached the shader, so not one row of this table is evidence.");
+
+            float discriminator = Mathf.Abs(blend[blend.Length - 1] - blend[rung10]);
+            Assert.Greater(discriminator, Mathf.Max(2f * floor, 1e-5f),
+                "CLAMP DISCRIMINATOR FAILED: rung 64 and rung 1.0 draw the same frame (delta " +
+                discriminator.ToString("F6") + "). Either the write is being clamped at 1 — in which case " +
+                "\"raising it past 1 buys nothing\" is a measurement of the clamp and not of the sea — or the " +
+                "falloff saturates below 1.0. Name which before any row above is quoted.");
+
+            float masterSplit = Mathf.Abs(atWaterMat[rung20] - atStormGrey[rung20]);
+            Assert.Greater(masterSplit, Mathf.Max(3f * floor, 1e-4f),
+                "MASTER CONTROL FAILED: pinning _ReflectionStrength to " + MasterOnWaterMat + " and to " +
+                MasterOnStormGrey + " draws the same frame at fade 2.00 (delta " + masterSplit.ToString("F6") +
+                "). The (c1)/(c2) columns would be fiction.");
+
+            Assert.Greater(blowSpread, 3f * glassSpread,
+                "NEGATIVE CONTROL FAILED: the ladder moves the glass calm (" + glassSpread.ToString("F6") +
+                ") nearly as much as the blow (" + blowSpread.ToString("F6") + "). A fade the sea's own chop " +
+                "already clears should buy a calm nothing — this arm is measuring the instrument, not the knob.");
+
+            foreach (string evidence in new[]
+            {
+                "ww-open-blow-mean-noon-fade0.60-SHIPPED.png",
+                "ww-open-blow-mean-noon-fade1.12-OPTION-A.png",
+                "ww-open-blow-mean-noon-fade2.00.png",
+                "ww-open-blow-mean-noon-fade64-POSITIVE-CONTROL.png",
+                "ww-open-blow-mean-noon-every-weight-zeroed-RESIDUAL.png",
+                "ww-open-glass-mean-noon-fade0.60-SHIPPED.png",
+            })
+                Assert.IsTrue(File.Exists(Path.Combine(dir, evidence)),
+                              evidence + " must be written — the table is not evidence without the plate beside it");
+        }
+
 
         /// <summary>One arm of the diagnostic: one viewpoint, one weather, one tide, one hour — shot as
         /// shipped, then once per knob with that ONE property zeroed. Every file carries the whole cell in
