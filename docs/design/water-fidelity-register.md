@@ -148,19 +148,56 @@ sails in (the blow). **The owner's ranking replaces this column.**
     Each row is one change; the other columns are what that change would do to the seas you did NOT ask
     to move:
 
-    | | what moves | glass | light | **blow** | gale | what it costs you |
-    |---|---|---|---|---|---|---|
-    | **(a-today)** | `_ReflectionFadeChop` 0.6 → **1.00** — as far as the dial goes today | 0.331 | 0.232 | **0.075**, or **0.034** — see below | 0.021 | ⭐ **No code at all. One drag in the inspector.** The shader caps this dial at 1.0, and the cap carries **82 %** of the row above for **nothing** at your glass calm (+0.0000) and **+0.0002** at the gale. Widening the cap is what buys the last 18 %. ⚠️ The two blow figures are the same change priced with the old constant and with the one the blow arm photographed on 2026-09-10; **we do not yet know which is right**, and one more plate settles it. |
-    | **(a)** | `_ReflectionFadeChop` 0.6 → **1.12** | 0.331 | 0.239 | **0.088** | 0.023 | **Nothing at a glass calm** — not by tuning, by arithmetic: at a dead calm there is no chop for this knob to fade, so your mirror cannot be touched by it at *any* value. Almost nothing at a gale either (0.021 → 0.023). What it costs is the **intent**: "a storm doesn't mirror". A blow would start to mirror. ⚠️ Needs the shader's `Range(0,1)` widened, and must **not** be applied to the sharpness curve — a storm that mirrors *sharply* is a different picture from one carrying a broad smear of sky. |
-    | **(b)** | a NEW `_SkyScatterFloor` at **0.077** | 0.331 | 0.208 | **0.088** | 0.098 | Nothing at a calm, by construction — it rises exactly as the mirror falls. Broadband, unsmeared sky: the rough sea gets lighter and *flatter*, not more mirror-like. Costs one new uniform, and this PR does **not** ship it. |
-    | **(c1)** | the shared body × **9.5** (`_PaletteDeep` / `_DeepBlueStrength`) | **0.755** | 0.326 | **0.088** | 0.199 | The only option that **cannot** be made free to your glass calm — it more than doubles it (0.331 → 0.755). Against that, the only one needing no new uniform and no widened range: two knobs you already have. |
-    | **(c2)** | `Water_StormGrey`'s own master **+0.218** | 0.331 | 0.187 | **0.088** | 0.222 | Nothing at a calm (the storm mood's weight there is 0.000), but it lands hardest of all on the gale: 0.021 → **0.222**, 2.6× whatever it gives the blow. This is the one most likely to **flatten the storm's mood**. Cheapest to ship. |
-
-    | **(d)** | `_SwellReadStrength` 0.35 → **0** — the swell read you set the onset for | 0.331 *(gated off already)* | not measured | **0.053** *(measured 4.40×)* | not measured | ⭐ **The only row on this table whose blow figure is a PHOTOGRAPH and not arithmetic** — 0.0098 → 0.0431 on the plate, and brighter at all four viewpoints and both hours. It is also the biggest single lever there is: **33× the whole reflection.** ⚠️ **But it is the one option that takes something away from you.** That band is the swell legibility you asked for on 2026-09-09; zeroing it costs 37 % of the plate's band contrast. A partial turn-down is not priced — only 0.35 and 0 were shot. **This is a trade between a brighter sea and a readable swell, and it is yours to make.** |
+    | | what moves | glass | light | **blow** | gale | what it costs you | **PROPOSAL — measured 2026-09-11 (plate series, this PR)** | **your ruling** |
+    |---|---|---|---|---|---|---|---|---|
+    | **(a-today)** | `_ReflectionFadeChop` 0.6 → **1.00** — as far as the dial goes today | 0.331 | 0.232 | **0.075**, or **0.034** — see below | 0.021 | ⭐ **No code at all. One drag in the inspector.** The shader caps this dial at 1.0, and the cap carries **82 %** of the row above for **nothing** at your glass calm (+0.0000) and **+0.0002** at the gale. Widening the cap is what buys the last 18 %. ⚠️ The two blow figures are the same change priced with the old constant and with the one the blow arm photographed on 2026-09-10; **we do not yet know which is right**, and one more plate settles it. | **0.046** measured (fade 1.00, at the master this weather actually blends to, 0.623). ⭐ **This row's open question is settled — and the answer is *neither*:** the measured 0.046 sits *between* the 0.075 and the 0.034. At your glass calm the whole sweep moved the frame by **+0.00000**, so “nothing at your calm” is now a photograph and not arithmetic. ⚠️ **The render path does NOT cap this dial at 1.0.** `Range(0,1)` is an inspector clamp; the HLSL has no upper bound at all. Whether *shipping* it needs the range widened is a shipping question, not a physics one. |  |
+    | **(a)** | `_ReflectionFadeChop` 0.6 → **1.12** | 0.331 | 0.239 | **0.088** | 0.023 | **Nothing at a glass calm** — not by tuning, by arithmetic: at a dead calm there is no chop for this knob to fade, so your mirror cannot be touched by it at *any* value. Almost nothing at a gale either (0.021 → 0.023). What it costs is the **intent**: "a storm doesn't mirror". A blow would start to mirror. ⚠️ Needs the shader's `Range(0,1)` widened, and must **not** be applied to the sharpness curve — a storm that mirrors *sharply* is a different picture from one carrying a broad smear of sky. | **0.055** measured (fade 1.12, blended master 0.623) — **not 0.088.** ⚠️ **1.12 does not reach the target this whole table is costed to.** Measured, 0.088 needs fade ≈ **1.9** at the blended master, or ≈ **1.6** with the master pinned at 0.70. The ladder: 1.00→0.046, 1.12→0.055, 1.50→0.075, 2.00→0.089, 4.00→0.107, 64→0.114 (the ceiling; 64 is the positive control, not a candidate). |  |
+    | **(b)** | a NEW `_SkyScatterFloor` at **0.077** | 0.331 | 0.208 | **0.088** | 0.098 | Nothing at a calm, by construction — it rises exactly as the mirror falls. Broadband, unsmeared sky: the rough sea gets lighter and *flatter*, not more mirror-like. Costs one new uniform, and this PR does **not** ship it. | **Not measurable by this plate** — `_SkyScatterFloor` does not exist in the shader, so there is nothing to override and no honest number to quote. Nearest measured neighbour: `_SkyReflectionStrength` zeroed costs **4.38 %** of the blow frame, so the sky path as it stands carries very little of the light — a 0.077 floor would be **new** light, not redistributed light. |  |
+    | **(c1)** | the shared body × **9.5** (`_PaletteDeep` / `_DeepBlueStrength`) | **0.755** | 0.326 | **0.088** | 0.199 | The only option that **cannot** be made free to your glass calm — it more than doubles it (0.331 → 0.755). Against that, the only one needing no new uniform and no widened range: two knobs you already have. | **Not measured at ×9.5** — the plate zeroes terms, it does not multiply them. What it did measure at this cell: `_PaletteGradeStrength` zeroed = **76.4 %** of the blow frame, `_PalettePullStrength` **11.0 %**, `_DeepBlueStrength` **5.3 %**. The body/palette group is **the largest thing in the blow frame**, well ahead of the reflection's 9.8 % — consistent with this row being able to reach the target, and with it being the one that cannot be made free to your calm. |  |
+    | **(c2)** | `Water_StormGrey`'s own master **+0.218** | 0.331 | 0.187 | **0.088** | 0.222 | Nothing at a calm (the storm mood's weight there is 0.000), but it lands hardest of all on the gale: 0.021 → **0.222**, 2.6× whatever it gives the blow. This is the one most likely to **flatten the storm's mood**. Cheapest to ship. | Measured as a **ceiling**. With the master pinned to `Water_StormGrey`'s **0.15**, walking the fade all the way to 64 tops the blow out at **0.028** — it never reaches 0.088 at *any* fade value. Pinned at **0.70** the same walk reaches **0.131** and crosses 0.088 at fade ≈ 1.6. ⭐ So at that material the **master is the binding constraint, not the fade**: (a) and (c2) are **not alternatives** there — without (c2), (a) cannot arrive. |  |
+    | **(d)** | `_SwellReadStrength` 0.35 → **0** — the swell read you set the onset for | 0.331 *(gated off already)* | not measured | **0.053** *(measured 4.40×)* | not measured | ⭐ **The only row on this table whose blow figure is a PHOTOGRAPH and not arithmetic** — 0.0098 → 0.0431 on the plate, and brighter at all four viewpoints and both hours. It is also the biggest single lever there is: **33× the whole reflection.** ⚠️ **But it is the one option that takes something away from you.** That band is the swell legibility you asked for on 2026-09-09; zeroing it costs 37 % of the plate's band contrast. A partial turn-down is not priced — only 0.35 and 0 were shot. **This is a trade between a brighter sea and a readable swell, and it is yours to make.** | **Re-photographed at this cell: 0.01114 → 0.04562 = 4.09×** (the 4.40× to the left was shot at a different cell and clock; the two agree). ⭐ **The comparison that decides this table:** at the dial's *declared* ceiling (fade 1.00), option (a) buys **+0.0349** and option (d) buys **+0.0345** — **the same light, to within 1 %**. (a) costs nothing you asked for; (d) costs 37 % of the swell-band contrast you asked for on 2026-09-09. |  |
 
     A quarter of the way back (blow → 0.044) and all the way back to light airs (blow → 0.176) are
     priced the same way in the PR body and in row 25. ⚠️ **(a) cannot reach all the way on its own**:
     at the widest setting tested it gets a blow to 0.163, not 0.176.
+    ⭐⭐ **MEASURED 2026-09-11 — the plate the owner asked for, before any knob.** The PROPOSAL
+    column above is a photograph, not arithmetic: one GPU plate at `ww-open`, mean tide, noon, shot
+    through a bare camera into an ARGBHalf target with the ADR 0013 day/night multiply replayed in C#
+    and **no URP Volume stack** — so these are the water's own output, **PRE-GRADE**. Rule on the
+    ratios, never on the absolutes. Plates and the full report:
+    [`docs/art/spikes/water-reflection-plate/`](../art/spikes/water-reflection-plate/README.md).
+
+    **Nothing shipped to take these numbers.** Every value swept is a `MaterialPropertyBlock` override
+    inside the fixture, restored after each shot — a property-block write is not clamped by a
+    `Range(0,1)` declaration, so the dial walks past 1.0 with **zero** change to the nine materials,
+    the shader or the production C#. The shipped look is bit-identical at the shipped values.
+
+    **The controls, because a comparator without a working sabotage measures nothing.** Noise floor:
+    the shipped frame re-shot 3×, worst departure **0.000068** (0.61 % of the frame) — EditMode
+    `_Time` is real time, so no row inside that is a number. Positive control: the 0.6→64 swing is
+    **1517×** the floor. Clamp discriminator: 1.0→64 still moves the blow by **0.0677**, which is how
+    we know the ceiling is an inspector clamp and not the shader. Master control: at fade 2.0 the 0.70
+    and 0.15 masters are **0.0781** apart. **Negative control:** the identical sweep at a glass calm
+    moves the frame by **0.00004** — 0.0 % of it, ratio blow : glass **2777×**. The knob reaches one
+    side of the comparison only.
+
+    **And the census that outranks every row above.** All 54 weight-like terms in the shader were
+    enumerated **at runtime** and zeroed one at a time — nothing hand-picked, because #829 named its
+    suspect by arithmetic and the plate then found `_SwellReadStrength`, never suspected, carrying most
+    of the blow. Ranked by share of the shipped blow frame: `_PaletteGradeStrength` **76.4 %**,
+    `_EnvelopeBandStrength` **59.6 %**, `_StormFoamLaneStrength` **27.4 %**, `_RippleStrength`
+    **18.2 %**, `_PalettePullStrength` **11.0 %**, and only then `_ReflectionStrength` at **9.8 %** —
+    the reflection is the **sixth** largest term in the frame. Zeroing all 54 *at once* still leaves
+    **135 %** of the shipped frame, so the weights are not where the darkness lives at all: the colour
+    anchors and the shape knobs are the floor no weight switches off. This corroborates the ⭐⭐ block
+    on row 6 — the reflection is real, and it is not the owner of the blow's darkness.
+
+    ⚠️ **One figure above is superseded.** “At the widest setting tested it gets a blow to 0.163”
+    was arithmetic; measured, the fade's ceiling is **0.114** at the blended master and **0.131** with
+    the master pinned at 0.70. (a) reaches *less* far on its own than that line claims.
+
+    **Register row 6 stands: ask, never choose.** The ruling column is blank on purpose. Nothing here
+    recommends an option, and no knob moved to produce it.
 
     ⭐ **The second thing to rule on — and, measured, the bigger one.** `_SwellReadStrength`, the
     swell read you set the onset for on 2026-09-09, can only ever make the water **darker**: it adds a
