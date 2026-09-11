@@ -48,6 +48,11 @@ namespace HiddenHarbours.Tools.RigBaking
         public const string DefAssetPath =
             "Assets/_Project/Resources/" + SeagullVisualDef.ResourcesPath + ".asset";
 
+        /// <summary>The one attractor in the drop's flock section this game can honour today. Looked
+        /// up BY ID rather than by position: the sidecar states six and an index would be a silent
+        /// mis-wire the day the drop reorders them.</summary>
+        public const string ShoalSurfaceAttractorId = "shoal_surface";
+
         public const string SheetPath =
             SeagullBaker.DefaultOutputFolder + "/" + SeagullBaker.SheetName + ".png";
 
@@ -199,6 +204,19 @@ namespace HiddenHarbours.Tools.RigBaking
                 g.FlockSwoopEveryMinSeconds, g.FlockSwoopEveryMaxSeconds,
                 g.FlockSpacingMetres, g.FlockAttractRadiusMetres, g.FlockFleeRadiusMetres,
                 g.FlockSettleAfterSeconds, g.FlockRegroupSeconds);
+
+            // The gull-to-fish block. The attractor is looked up BY ID rather than by position in the
+            // list: the sidecar states six and this game can honour exactly one, so an index would be a
+            // silent mis-wire the day the drop reorders them. An absent `shoal_surface` means the drop
+            // stopped naming it — weight 0, and the birds ignore the fish, rather than a guessed number.
+            float shoalAttract = 0f;
+            for (int i = 0; i < g.Attractors.Count; i++)
+            {
+                if (g.Attractors[i] == null || g.Attractors[i].Id != ShoalSurfaceAttractorId) continue;
+                shoalAttract = g.Attractors[i].Weight;
+                break;
+            }
+            def.EditorPopulateGullSplash(g.DiveCatchProbability, shoalAttract);
 
             EditorUtility.SetDirty(def);
             AssetDatabase.SaveAssets();

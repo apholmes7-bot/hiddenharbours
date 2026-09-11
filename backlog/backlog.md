@@ -470,6 +470,62 @@ leaves room for all three; none of them is asked for yet.
 
   Not urgent — the alarm is doing exactly what it was written to do, which is refuse to be silent.
 
+## Logged from the gull-splash lane (2026-09-11, unscheduled)
+
+The owner's ask on 2026-09-09 was **"fish react to it landing"**, and that is what shipped (PR 3 of
+the seagull arc): a gull coming down on water publishes `GullSplashed` and the visible schools bolt.
+Everything below was named by the drop's sidecar (`docs/art/rigs/gameplay/seagullIsoRig.gameplay.json`)
+or is an obvious next want, and was **deliberately not built** — either because the thing it attaches
+to does not exist in the game yet, or because the owner did not ask for it. Each was checked, not
+assumed; the grep is quoted so the next lane does not repeat the search.
+
+**The five flock attractors that have nothing to attach to.** `FLOCK.attractors` names six. Exactly
+one — `shoal_surface` (weight 0.5) — points at something this game has, and that one is wired. The
+other five are logged here:
+
+- **`gutting` (1.0) — "catch handling on deck".** A `guttingTable` *prop* exists
+  (`NineMileCreekDressing.cs:364`) and the character rig has a two-handed bench clip
+  (`CharacterVisualDef.cs:125`), but **nothing publishes "gutting is happening here, now"** — there is
+  no catch-handling activity with a position and a duration for a bird to fly to. Needs the activity
+  first, then one line in `GullFlock.PulledToShoal`.
+- **`chum` (1.0) — "discards over the side".** **Zero hits in the codebase.** There is no discard.
+- **`open_tub` (0.8) — "fish tub with lid off (fishTubRig.js)".** ⚠ **The lid state the weight is
+  conditioned on does not exist, and neither does the tub** — no `fishTub` anywhere in `Code/` or
+  `Data/`. The charter's instruction was to wire this *only if* the tote actually has a lid state; it
+  has neither a lid nor an object. Not built.
+- **`trawler_wake` (0.7) — "stern trawler under way".** `SternTrawler` exists as a *hull*
+  (`StPetersBuilder.cs:166`), but there is no wake behind a moving boat — the wake is the water lane's
+  PR F — and nothing marks a trawler as under way. Two dependencies, neither landed.
+- **`bait_bucket` (0.6) — "bucketRig.js bait".** Bait is flavour text on pot defs
+  (`NineMileCreekBuilder.cs:462`) and a named bait shed. There is no bucket object with a world
+  position.
+
+**Things the owner did not ask for and that were not built** (rule 8 — logged, not snuck in):
+
+- **A gull stealing a fish off the deck or out of a tote.** Reaches into the player's inventory; the
+  dive yield shipped as a *picture* precisely because the owner's ask was about fish reacting, not
+  about the player losing anything.
+- **Gulls fouling traps or gear.** Same: it costs the player something, and nothing asked for it.
+- **The dog reacting to the birds.** Cross-lane, unasked.
+- **The rig's true `dive` stoop.** The sidecar's dive yield is rolled at `splash` f2, which is the
+  frame the drop names. A bird that *folds and stoops* from height into the strike is a second arrival
+  animation and a second chain in the table — an art/rig piece, not a wiring one.
+- **The carried-fish sprite.** `dive_yield.catch_rig` names `fishIsoRig2.js` and the catch roll is
+  live (p 0.35, herring/mackerel), and a bird that wins the roll **visibly carries it off** — she
+  departs the water immediately rather than sitting on it. But she departs *empty-handed on screen*:
+  nothing draws a fish in the bill, because that needs a bill-anchored attachment point in the
+  seagull's own export, which the drop does not ship. The behaviour is right and the prop is missing.
+
+**And one that is a real gap in the shipped thing:** `FishSchoolPresenter` is the only listener, so a
+school that is not currently being presented does not flinch. That is correct for a picture and wrong
+the day anything else wants to know a gull hit the water. `GullSplashLog` is already the registry
+shape that fixes it (a late consumer reads the log rather than missing the signal) — it just is not
+installed anywhere but the presenter yet.
+
+⚠ **Fish bite rates are LEAVE** (owner, 2026-09-09). Nothing above may change the player's bite or
+catch probability; every item here moves a picture. If a future lane finds that one of them seems to
+require touching the bite roll, that is the signal to stop and ask, not to widen.
+
 ## Polish (deep backlog)
 
 Small, real, and not worth a branch of their own — pick one up when you are already in the file.

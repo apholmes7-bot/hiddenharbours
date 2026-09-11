@@ -153,10 +153,32 @@ namespace HiddenHarbours.Art
         [SerializeField, Tooltip("The sidecar's flee.regroup_s — also the ramp a bird takes to rejoin the wheel after a takeoff")]
         private float _flockRegroupSeconds = 8f;
 
+        [Header("GULL -> FISH (the drop's dive yield, and its one wireable attractor)")]
+        [SerializeField, Range(0f, 1f), Tooltip(
+            "The drop's WATER dive yield, README: p 0.35 (herring / mackerel). How often a strike onto " +
+            "a shoal showing at the surface comes up with a fish, so the bird carries it off instead of " +
+            "settling to float.\n\nA PICTURE and nothing more: no player inventory, no market and no " +
+            "counter reads this. 0 turns the yield off entirely.")]
+        private float _diveCatchProbability = 0.35f;
+
+        [SerializeField, Range(0f, 1f), Tooltip(
+            "The drop's FLOCK attractor `shoal_surface`, weight 0.5 (source: FishIso2.shoal at z > -0.2) " +
+            "— how hard a chosen landing spot is pulled toward fish showing at the surface, inside the " +
+            "flock's own attract radius. 0 = the birds ignore the fish entirely.\n\nIt is the only one " +
+            "of the drop's five attractors this game can honour today; gutting, the open tub, the trawler " +
+            "wake and the bait bucket name things that do not exist yet and are deliberately NOT wired.")]
+        private float _shoalAttractWeight01 = 0.5f;
+
         [NonSerialized] private SeagullBehaviour _behaviour;
         [NonSerialized] private Dictionary<string, StripEntry> _stripByState;
 
         // ── art facts ───────────────────────────────────────────────────────────────────────────
+
+        /// <summary>The drop's dive yield — see the field tooltip. A picture, never an economy.</summary>
+        public float DiveCatchProbability => _diveCatchProbability;
+
+        /// <summary>The drop's `shoal_surface` attractor weight — see the field tooltip.</summary>
+        public float ShoalAttractWeight01 => _shoalAttractWeight01;
 
         public int Directions => _directions;
         public int Columns => _columns;
@@ -391,6 +413,15 @@ namespace HiddenHarbours.Art
             _flockFleeRadiusMetres = fleeRadius; _flockSettleAfterSeconds = settleAfter;
             _flockRegroupSeconds = regroup;
             _behaviour = null;
+        }
+
+        /// <summary>Editor-only write path for the gull-to-fish block. Kept off
+        /// <see cref="EditorPopulateRules"/> deliberately: that call is already twenty-five positional
+        /// parameters, and two more unlabelled floats on the end is how a drop lands transposed.</summary>
+        internal void EditorPopulateGullSplash(float diveCatchProbability, float shoalAttractWeight01)
+        {
+            _diveCatchProbability = Mathf.Clamp01(diveCatchProbability);
+            _shoalAttractWeight01 = Mathf.Clamp01(shoalAttractWeight01);
         }
 #endif
     }

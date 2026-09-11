@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using HiddenHarbours.Core;
 
@@ -72,12 +73,30 @@ namespace HiddenHarbours.Art
             public double NextDecisionMilliseconds;
             public double AlightDeadlineMilliseconds;
             public double RockPhase;
+
+            /// <summary>The water arrival this bird has already burst for, or −1. One splash publishes
+            /// ONE <see cref="GullSplashed"/>: the burst frame is on screen for several ticks and the
+            /// fish must not be told four times that the same bird landed on them. It clears itself the
+            /// moment the bird is in anything that is not a water arrival, so the next splash fires
+            /// again.</summary>
+            public int BurstState;
+
+            /// <summary>She came up with a fish and has not taken it away yet.</summary>
+            public bool Carrying;
+
+            /// <summary>When to give the carry up if she cannot get airborne — a bird holding an intent
+            /// it can never satisfy is a bird that stops behaving.</summary>
+            public double CarryDepartByMilliseconds;
         }
 
         private Bird[] _birds;
         private SeagullFlockMath.SeagullFlockBird[] _wheel;
         private SeagullBehaviour _behaviour;
         private SeagullFlockMath.Mulberry32 _decisions;
+
+        /// <summary>Reused by both shoal reads — the attractor's "are there fish about?" and the burst's
+        /// "did she come down ON them?". One list, forever, like every other consumer of this seam.</summary>
+        private readonly List<FishSchool> _shoals = new List<FishSchool>(16);
 
         // The one clock in the whole system, and it is here rather than in the sim.
         private double _simMilliseconds;
@@ -146,6 +165,7 @@ namespace HiddenHarbours.Art
                     Shadow = shadow,
                     // Stagger the first decision across one settle window so the flock does not all
                     // make up its mind on the same tick.
+                    BurstState = -1,
                     NextDecisionMilliseconds = _decisions.Next() * settleMilliseconds,
                     RockPhase = _decisions.Next() * (Math.PI * 2.0),
                     Sim = new SeagullSimBird
@@ -228,9 +248,94 @@ namespace HiddenHarbours.Art
                 // Arriving turns an intent into a surface; both were already counted.
                 SeagullStateMachine.TryAlight(ref b.Sim, _behaviour);
 
+                // The water breaks here, between the step and the decision, so the signal carries the
+                // position the bird is drawn at on this very frame.
+                PublishSplash(b);
+
                 Decide(b, centreWorld, windHeading, roosting, ref settled, wanted);
                 Draw(b, tint, dayOpacity, seaState);
             }
+        }
+
+        // ── the splash the fish hear ────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// THE OWNER'S ASK, FROM THE BIRD'S SIDE (2026-09-09: <i>"fish react to it landing"</i>) —
+        /// publishes <see cref="GullSplashed"/> on the frame the water actually breaks.
+        ///
+        /// <para><b>The publish rule is read from the data, not from a state name.</b> Any arrival anim
+        /// whose chain target rests on water bursts: <see cref="SeagullBehaviour.ArrivalSurface"/> says
+        /// which, the sidecar's <c>water.splash_burst_frame</c> says when, and
+        /// <see cref="SeagullSplashMath.BurstFrame"/> clamps it into the row that is playing. Today that
+        /// is <c>splash</c> on frame 2 and a rig test pins it; the day the drop adds a second way down to
+        /// the water it fires too, with no edit here.</para>
+        ///
+        /// <para><b>Kind is the honest distinction.</b> A bird that came down inside a school showing at
+        /// the surface made a strike — <see cref="GullSplashKind.Dive"/>; one that hit open water just
+        /// put down — <see cref="GullSplashKind.Alight"/>. Both scatter the fish; only the first can come
+        /// up with one. That is also why the drop's dive yield is rolled here and nowhere else: a gull
+        /// cannot catch a fish where there are no fish.</para>
+        ///
+        /// <para><b>Nothing about the player is read or written.</b> Bite rate, catch weight and the
+        /// species roll are untouched by every line of this (owner's ruling 2026-09-09: fish bite rates
+        /// are LEAVE). The signal moves a picture.</para>
+        /// </summary>
+        private void PublishSplash(Bird b)
+        {
+            int state = b.Sim.State;
+            if (_behaviour.ArrivalSurface(state) != SeagullSurface.Water)
+            {
+                b.BurstState = -1;
+                return;
+            }
+
+            if (b.BurstState == state) return;                       // this splash already fired
+            if (b.Sim.Frame < SeagullSplashMath.BurstFrame(_behaviour.Water.SplashBurstFrame,
+                                                           _behaviour.Row(state).Frames)) return;
+            b.BurstState = state;
+
+            var at = new Vector2((float)b.Sim.X, (float)b.Sim.Y);
+            bool onShoal = OnSurfaceShoal(at);
+            EventBus.Publish(new GullSplashed(at, onShoal ? GullSplashKind.Dive
+                                                         : GullSplashKind.Alight));
+
+            if (!onShoal || _visual == null) return;
+            if (!SeagullSplashMath.RollsCatch(_config.Seed, b.Sim.X, b.Sim.Y, _simMilliseconds,
+                                              _visual.DiveCatchProbability)) return;
+
+            b.Carrying = true;
+            b.CarryDepartByMilliseconds =
+                _simMilliseconds + _behaviour.Flock.SettleAfterSeconds * 1000.0;
+        }
+
+        /// <summary>
+        /// Is this patch of water a school the bird can see into? The school owns its own nearness test
+        /// (<c>IFishSchools.SchoolsAt</c> returns the schools whose area CONTAINS the point), so there is
+        /// no second radius here to drift out of sync with it.
+        ///
+        /// <para>"Can see into" is the depth the player's own eyes stop at — <c>DepthDrop.ShallowsMaxMeters</c>,
+        /// the exact threshold at which the fish are drawn in full rather than dimmed. A gull strikes at
+        /// the fish you can see, which is the only version of this a player can read.</para>
+        /// </summary>
+        private bool OnSurfaceShoal(Vector2 where)
+        {
+            IFishSchools fish = GameServices.FishSchools;
+            if (fish == null) return false;
+
+            var clock = GameServices.Clock;
+            int n = fish.SchoolsAt(where, clock != null ? clock.TotalSeconds : 0.0, _shoals);
+            float surface = SurfaceDepthMetres();
+            for (int i = 0; i < n && i < _shoals.Count; i++)
+                if (_shoals[i].DepthMetres <= surface) return true;
+            return false;
+        }
+
+        /// <summary>How deep the water still counts as "at the surface", in metres.</summary>
+        private static float SurfaceDepthMetres()
+        {
+            GameConfig cfg = GameServices.Config;
+            DepthDropSettings d = cfg != null ? cfg.DepthDrop : DepthDropSettings.Default;
+            return d.ShallowsMaxMeters;
         }
 
         // ── deciding what a bird does next ──────────────────────────────────────────────────────────
@@ -260,6 +365,22 @@ namespace HiddenHarbours.Art
                     b.Sim.FlockBound = true;
                 }
                 return;
+            }
+
+            // SHE CAME UP WITH SOMETHING. A gull that has taken a fish does not sit on the water with
+            // it where the rest of the flock would rob her — she carries it off. Checked every tick and
+            // not on the settle window, because the picture only reads as a strike while the departure
+            // still belongs to the splash; and it is given up at the deadline so a bird that cannot get
+            // airborne from where it is never holds the intent forever.
+            if (b.Carrying && on != SeagullSurface.None)
+            {
+                if (SeagullStateMachine.CommandDepart(ref b.Sim, _behaviour))
+                {
+                    b.Carrying = false;
+                    settled--;
+                    return;
+                }
+                if (_simMilliseconds >= b.CarryDepartByMilliseconds) b.Carrying = false;
             }
 
             if (_simMilliseconds < b.NextDecisionMilliseconds) return;
@@ -340,6 +461,8 @@ namespace HiddenHarbours.Art
                 centre.x + (float)(u * 2.0 - 1.0) * _config.AreaHalfSize.x,
                 centre.y + (float)(v * 2.0 - 1.0) * _config.AreaHalfSize.y);
 
+            spot = PulledToShoal(spot, centre);
+
             SeagullSurface surface = SurfaceAt(spot);
             int arrival = surface switch
             {
@@ -356,6 +479,58 @@ namespace HiddenHarbours.Art
             b.AlightDeadlineMilliseconds =
                 _simMilliseconds + _behaviour.Flock.SettleAfterSeconds * 1000.0;
             return true;
+        }
+
+        /// <summary>
+        /// THE ONE ATTRACTOR THIS GAME CAN HONOUR — the drop's <c>shoal_surface</c>, weight 0.5.
+        ///
+        /// <para>A gull that can see fish showing at the surface comes down AT them rather than at a
+        /// random patch of sea, so the drawn spot is pulled toward the nearest surface school inside the
+        /// flock's own <c>attract_radius_m</c>. The weight is the pull, straight from the drop.</para>
+        ///
+        /// <para><b>It spends no randomness.</b> The two draws that choose the spot happen before this
+        /// and happen either way, so the decision stream does not fork on whether a shoal exists — two
+        /// flocks on one seed still fly the same flight, and a test that says so stays honest.</para>
+        ///
+        /// <para><b>It does not decide where the bird lands</b>, only where she looks:
+        /// <see cref="SurfaceAt"/> still gets the last word, and a pull that lands the spot on a rock is
+        /// refused exactly as a random one would be.</para>
+        ///
+        /// <para>The drop's other five attractors — gutting 1.0, chum 1.0, the open tub 0.8, the
+        /// trawler wake 0.7, the bait bucket 0.6 — name things that do not exist in the game today
+        /// (no catch handling on deck, no discards over the side, no tub with a lid state, no wake
+        /// behind a working trawler, no bait bucket). They are logged in the backlog, not built.</para>
+        /// </summary>
+        private Vector2 PulledToShoal(Vector2 spot, Vector2 centre)
+        {
+            float weight = _visual != null ? _visual.ShoalAttractWeight01 : 0f;
+            if (!(weight > 0f)) return spot;
+            if (!(GameServices.FishSchools is IFishSchoolView view)) return spot;
+
+            float reach = (float)_behaviour.Flock.AttractRadiusMetres;
+            if (!(reach > 0f)) return spot;
+
+            var clock = GameServices.Clock;
+            double now = clock != null ? clock.TotalSeconds : 0.0;
+            int n = view.SchoolsInView(
+                new Rect(centre.x - reach, centre.y - reach, reach * 2f, reach * 2f), now, _shoals);
+            if (n <= 0) return spot;
+
+            float surface = SurfaceDepthMetres();
+            float best = float.MaxValue;
+            Vector2 at = spot;
+            for (int i = 0; i < n && i < _shoals.Count; i++)
+            {
+                FishSchool school = _shoals[i];
+                if (school.DepthMetres > surface) continue;    // too deep to show, too deep to draw a bird
+                float d2 = (school.Centre - spot).sqrMagnitude;
+                if (d2 >= best) continue;
+                best = d2;
+                at = school.Centre;
+            }
+            if (best == float.MaxValue) return spot;
+
+            return Vector2.Lerp(spot, at, Mathf.Clamp01(weight));
         }
 
         private bool OutsideWorkingArea(Bird b, Vector2 centre)

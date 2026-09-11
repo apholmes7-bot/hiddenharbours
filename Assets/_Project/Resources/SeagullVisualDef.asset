@@ -688,3 +688,5 @@ MonoBehaviour:
   _flockFleeRadiusMetres: 2.5
   _flockSettleAfterSeconds: 20
   _flockRegroupSeconds: 8
+  _diveCatchProbability: 0.35
+  _shoalAttractWeight01: 0.5
