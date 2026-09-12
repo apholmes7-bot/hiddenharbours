@@ -152,6 +152,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Time.timeScale = 1f;   // ⚠ a STATIC: left at 0 it stops every test that follows
             if (GameServices.Clock != null) GameServices.Clock.TimeScale = 1f;
             if (_emitter != null) { _emitter.enabled = true; _emitter = null; }
+            RestoreLiftDials();     // the dials this class wrote on the RUNTIME water materials
+            RestoreLiftGlobals();   // and the real sea back, if a sabotage arm doctored the globals
 
             for (int i = 0; i < _parked.Count; i++)
                 if (_parked[i] != null) _parked[i].enabled = _parkedWas[i];
@@ -267,59 +269,19 @@ namespace HiddenHarbours.Tests.PlayMode
         IEnumerator ShootLeg(string subject, BoatHullDef hull, BoatVisualDef visual, bool forceSprite,
                              Leg leg, Vector2 start)
         {
-            // ── the boat, through the production path ────────────────────────────────────────────────
-            var go = new GameObject($"Photo[{subject}-{leg.Name}]");
-            _spawned.Add(go);
-            go.transform.position = new Vector3(start.x, start.y, 0f);
-            go.transform.rotation = Quaternion.Euler(0f, 0f, -leg.HeadingDeg);
-
-            var boat = go.AddComponent<BoatController>();   // RequireComponent brings the Rigidbody2D
-            boat.SetHull(hull);
-            boat.SetLocalSeabedDepth(40f);                  // she is in open water; never let her read aground
-            var rb = go.GetComponent<Rigidbody2D>();
-            rb.gravityScale = 0f; rb.linearDamping = 0f; rb.angularDamping = 0f;
-
-            var options = default(BoatHullSkinner.Options);
-            if (forceSprite) options.VariantOverride = BoatHullVariant.Sprite;
-            BoatHullSkinner.Rig rig = BoatHullSkinner.Apply(go, visual, boat, options);
-            Assert.IsTrue(rig.Skinned, $"{subject}: the skinner refused '{visual.Id}' — an unskinned hull " +
-                                       "draws no wake and photographs nothing.");
-
-            BoatHullVariant variant = rig.Presenter != null ? rig.Presenter.Variant : BoatHullVariant.Sprite;
-            if (forceSprite && variant != BoatHullVariant.Sprite)
-            {
-                Assert.Ignore($"SKIPPED, NOT VERIFIED — '{visual.Id}' could not be forced down the SPRITE " +
-                              "path, so the sprite-hull half of this photograph has no subject. Point it at " +
-                              "a visual that still ships sheets.");
-                yield break;
-            }
-
-            // IN FRAME IS NOT IN THE PICTURE for a mesh hull: she is only drawn once the facet renderer has
-            // been handed a hull id by the URP feature's registry.
-            if (variant == BoatHullVariant.Mesh)
-            {
-                var facet = rig.Visual != null ? rig.Visual.GetComponent<IsoFacetHullRenderer>() : null;
-                Assert.IsNotNull(facet, $"{subject}: mesh variant with no IsoFacetHullRenderer on the " +
-                                        "visual child — none of her would be in the plate.");
-                Assert.Greater(facet.HullId, 0, $"{subject}: the hull never registered with the facet " +
-                                                "feature, so she is IN FRAME but not IN THE PICTURE.");
-            }
-
-            // ── the two roots this leg is measured against ───────────────────────────────────────────
-            // The TRUTH is the transom as THE ONE ROOT computes it from her own pose — the thing all three
-            // families claim to be rooted on — taken off the physics root, the transform that carries her
-            // heading.
-            float riggedStern = variant == BoatHullVariant.Mesh && visual.HasHullMesh()
-                ? visual.HullMesh.WakeSternOffsetMeters : 0f;
-            float sternOffset = WakeRootMath.SternOffsetMeters(riggedStern, hull.LengthMeters);
-            float elevationDeg = variant == BoatHullVariant.Mesh && visual.HasHullMesh()
-                ? visual.HullMesh.ElevationDeg : visual.ArtBakeElevationDegrees;
-            float bandHalfWidth = Mathf.Max(0.5f, HullPresence.HalfBeamOf(hull, visual));
-
-            // The injector, if she has one. Its OWN transform is what FoamInjector reads — recorded LIVE
-            // rather than assumed, because which transform a component rides is exactly the sort of thing a
-            // photograph is taken to settle.
-            var injector = go.GetComponentInChildren<FoamInjector>(includeInactive: true);
+            // ── the boat, through the production path ────────────────────────────────
+            // ONE SETUP, shared with the lift arms below: two photographs of one boat must not be able
+            // to disagree about how she was rigged, and the only place that can be guaranteed is one
+            // place she is rigged.
+            Spawned she = Spawn(subject, hull, visual, forceSprite, leg, start);
+            GameObject go = she.Go;
+            BoatController boat = she.Boat;
+            Rigidbody2D rb = she.Rb;
+            BoatHullVariant variant = she.Variant;
+            float sternOffset = she.SternOffset;
+            float elevationDeg = she.ElevationDeg;
+            float bandHalfWidth = she.BandHalfWidth;
+            FoamInjector injector = she.Injector;
 
             // ── frame her, drive her, then stop the world ────────────────────────────────────────────
             // The frame is sized to the leg BEFORE she sails it: her path is a pure function of the leg
@@ -1154,6 +1116,1155 @@ namespace HiddenHarbours.Tests.PlayMode
             Object.DestroyImmediate(tex);
             Debug.Log($"[{PlateDir}] plate written: {path}");
         }
+
+        // ── ONE BOAT, SET UP ONCE ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Everything a leg needs to know about the boat it is photographing. Extracted the day the lift
+        /// arms needed the SAME hull rigged the SAME way as the foam arms: two photographs of one boat must
+        /// not be able to disagree about how she was set up, and the only way to guarantee that is for there
+        /// to be one setup.
+        /// </summary>
+        readonly struct Spawned
+        {
+            public readonly GameObject Go;
+            public readonly BoatController Boat;
+            public readonly Rigidbody2D Rb;
+            public readonly BoatHullVariant Variant;
+            public readonly float SternOffset;
+            public readonly float ElevationDeg;
+            public readonly float BandHalfWidth;
+            public readonly FoamInjector Injector;
+
+            public Spawned(GameObject go, BoatController boat, Rigidbody2D rb, BoatHullVariant variant,
+                           float sternOffset, float elevationDeg, float bandHalfWidth, FoamInjector injector)
+            {
+                Go = go; Boat = boat; Rb = rb; Variant = variant;
+                SternOffset = sternOffset; ElevationDeg = elevationDeg;
+                BandHalfWidth = bandHalfWidth; Injector = injector;
+            }
+        }
+
+        /// <summary>
+        /// Her, through the production path, with the two roots and the band width this fixture measures
+        /// against. An ordinary method rather than a coroutine because nothing in it waits on a frame —
+        /// and because <see cref="Assert.Ignore(string)"/> THROWS, the <c>return default</c> on the
+        /// sprite-path branch is a compiler formality that never executes.
+        /// </summary>
+        Spawned Spawn(string subject, BoatHullDef hull, BoatVisualDef visual, bool forceSprite,
+                      Leg leg, Vector2 start)
+        {
+            // ── the boat, through the production path ────────────────────────────────────────────────
+            var go = new GameObject($"Photo[{subject}-{leg.Name}]");
+            _spawned.Add(go);
+            go.transform.position = new Vector3(start.x, start.y, 0f);
+            go.transform.rotation = Quaternion.Euler(0f, 0f, -leg.HeadingDeg);
+
+            var boat = go.AddComponent<BoatController>();   // RequireComponent brings the Rigidbody2D
+            boat.SetHull(hull);
+            boat.SetLocalSeabedDepth(40f);                  // she is in open water; never let her read aground
+            var rb = go.GetComponent<Rigidbody2D>();
+            rb.gravityScale = 0f; rb.linearDamping = 0f; rb.angularDamping = 0f;
+
+            var options = default(BoatHullSkinner.Options);
+            if (forceSprite) options.VariantOverride = BoatHullVariant.Sprite;
+            BoatHullSkinner.Rig rig = BoatHullSkinner.Apply(go, visual, boat, options);
+            Assert.IsTrue(rig.Skinned, $"{subject}: the skinner refused '{visual.Id}' — an unskinned hull " +
+                                       "draws no wake and photographs nothing.");
+
+            BoatHullVariant variant = rig.Presenter != null ? rig.Presenter.Variant : BoatHullVariant.Sprite;
+            if (forceSprite && variant != BoatHullVariant.Sprite)
+            {
+                Assert.Ignore($"SKIPPED, NOT VERIFIED — '{visual.Id}' could not be forced down the SPRITE " +
+                              "path, so the sprite-hull half of this photograph has no subject. Point it at " +
+                              "a visual that still ships sheets.");
+                return default;
+            }
+
+            // IN FRAME IS NOT IN THE PICTURE for a mesh hull: she is only drawn once the facet renderer has
+            // been handed a hull id by the URP feature's registry.
+            if (variant == BoatHullVariant.Mesh)
+            {
+                var facet = rig.Visual != null ? rig.Visual.GetComponent<IsoFacetHullRenderer>() : null;
+                Assert.IsNotNull(facet, $"{subject}: mesh variant with no IsoFacetHullRenderer on the " +
+                                        "visual child — none of her would be in the plate.");
+                Assert.Greater(facet.HullId, 0, $"{subject}: the hull never registered with the facet " +
+                                                "feature, so she is IN FRAME but not IN THE PICTURE.");
+            }
+
+            // ── the two roots this leg is measured against ───────────────────────────────────────────
+            // The TRUTH is the transom as THE ONE ROOT computes it from her own pose — the thing all three
+            // families claim to be rooted on — taken off the physics root, the transform that carries her
+            // heading.
+            float riggedStern = variant == BoatHullVariant.Mesh && visual.HasHullMesh()
+                ? visual.HullMesh.WakeSternOffsetMeters : 0f;
+            float sternOffset = WakeRootMath.SternOffsetMeters(riggedStern, hull.LengthMeters);
+            float elevationDeg = variant == BoatHullVariant.Mesh && visual.HasHullMesh()
+                ? visual.HullMesh.ElevationDeg : visual.ArtBakeElevationDegrees;
+            float bandHalfWidth = Mathf.Max(0.5f, HullPresence.HalfBeamOf(hull, visual));
+
+            // The injector, if she has one. Its OWN transform is what FoamInjector reads — recorded LIVE
+            // rather than assumed, because which transform a component rides is exactly the sort of thing a
+            // photograph is taken to settle.
+            var injector = go.GetComponentInChildren<FoamInjector>(includeInactive: true);
+            return new Spawned(go, boat, rb, variant, sternOffset, elevationDeg, bandHalfWidth, injector);
+        }
+
+        // ── THE LIFT: how far the wake stands the water up (water PR F, register row 27) ───────────────
+
+        /// <summary>The water material's own amplitude dial. Zero is a bit-exact passthrough by
+        /// construction — <c>WakeLiftHeight</c> returns 0.0 from its first line — so the dial-0 arm is a
+        /// photograph of a sea with the feature ABSENT, not a sea with it turned down.</summary>
+        const string LiftAmplitudeProp = "_WakeLiftMetres";
+
+        /// <summary>The e-folding length astern. Also an exact passthrough at zero.</summary>
+        const string LiftDecayProp = "_WakeLiftDecayMetres";
+
+        /// <summary>The MEASURING dial: four times what ships, so the translation it asks for is tens of
+        /// pixels rather than single figures. The shipped value is photographed too, on its own arm, because
+        /// a feature measured only at a dial nobody plays at is unmeasured.</summary>
+        const float LiftProbeMetres = 1.0f;
+
+        /// <summary>What `Water.mat` ships (and every WaterPreset): the picture the player gets.</summary>
+        const float LiftShippedMetres = 0.25f;
+
+        /// <summary>The shipped decay. Held the same on every arm so amplitude is the only thing swept.
+        /// </summary>
+        const float LiftDecayMetres = 20f;
+
+        /// <summary>How much water the correlation patch covers ACROSS the track. Wide, because the lift
+        /// varies slowly across the wedge near the centreline and a wide patch is what carries enough
+        /// texture to localise a shift at all.</summary>
+        const float LiftPatchAcrossMetres = 3.0f;
+
+        /// <summary>And how much ALONG the track. Deliberately small: along-track is the axis the train's
+        /// phase runs on, so a tall patch would be sheared by the very gradient being measured rather than
+        /// translated by it. At 0.6 m against a 23 m wavelength the internal shear is a few per cent.
+        /// </summary>
+        const float LiftPatchAlongMetres = 0.60f;
+
+        /// <summary>⚠ A FEATURELESS PATCH IS REPORTED UNMEASURABLE, NEVER AS ZERO LIFT. Water with no
+        /// texture inside the patch has no translation to read, and a correlation peak found in noise would
+        /// be reported as a measurement. Luma standard deviation, 0…1.</summary>
+        const float LiftPatchContrastFloor = 0.002f;
+
+        /// <summary>And a match below this correlation is not a match. Most of what can go wrong here —
+        /// a patch straddling her hull, a patch on the shoreline, a patch on sprite foam that does not ride
+        /// the displacement — shows up as a poor peak rather than a wrong one.</summary>
+        const float LiftPatchNccFloor = 0.5f;
+
+        /// <summary>The water materials this fixture writes the dials on: RUNTIME INSTANCES ONLY, found by
+        /// asking which materials in the loaded scenes actually carry the property. Never an asset.</summary>
+        readonly List<Material> _liftMats = new List<Material>();
+
+        /// <summary>What each of them read before the first write (x = amplitude, y = decay), put back in
+        /// teardown so a later class never inherits this fixture's dials.</summary>
+        readonly List<Vector2> _liftWas = new List<Vector2>();
+
+        /// <summary>The sorted instance ids of <see cref="_liftMats"/>. The at-rest identity is only worth
+        /// anything if it is claimed on the SAME instances the dial was proven to reach at speed, so the set
+        /// is pinned rather than assumed.</summary>
+        string _liftMatSig;
+
+        /// <summary>The published wake-lift globals as they stood before the sabotage arm doctored them,
+        /// so teardown can put the real sea back whatever happens in between.</summary>
+        Vector4[] _liftRootWas;
+        Vector4[] _liftShapeWas;
+
+        int _patchHalfW, _patchHalfH, _searchPx;
+
+        /// <summary>
+        /// <b>How far the cape's wake lifts the water, in world metres.</b> Her mesh hull is the one the
+        /// owner is looking at, and the only variant fitted with a <see cref="FoamInjector"/> — so the only
+        /// one that publishes a wake-lift slot at all.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheCape_UnderWay_PhotographsHowFarTheWakeLiftsTheWater()
+        {
+            RequireAGraphicsDevice();   // FIRST, before any yield — see its own note
+            yield return PhotographLift("cape", CapeHullPath, CapeVisualPath);
+        }
+
+        /// <summary>
+        /// <b>And the dory, whose beam is a third of the cape's.</b> The wedge half-width and the root ramp
+        /// are both built off her half-beam, so she is the case that would catch a lift whose geometry was
+        /// pinned to one hull's numbers.
+        ///
+        /// <para>⚠ She is photographed as her DEFAULT variant, which is the mesh. A forced-sprite hull
+        /// carries no <see cref="FoamInjector"/> — only mesh hulls are fitted with one, by
+        /// <c>IsoFacetHullPresentationService.Install</c> — so she would publish no slot and draw no lift,
+        /// and the plate would have no subject. That is why this pair is cape+dory and not
+        /// mesh+sprite.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheDory_UnderWay_PhotographsHowFarTheWakeLiftsTheWater()
+        {
+            RequireAGraphicsDevice();   // FIRST, before any yield
+            yield return PhotographLift("dory", DoryHullPath, DoryVisualPath);
+        }
+
+        /// <summary>
+        /// <b>🔴 THE ACCEPTANCE INSTRUMENT FOR THE OWNER'S RULING.</b> 2026-09-11: <i>"i do want the wake to
+        /// lift the water and create visual waves."</i> What that became is measured here as a SURFACE
+        /// ELEVATION PROFILE IN WORLD METRES — the lift arm against a dial-0 arm, along and across her own
+        /// published track, per hull, at speed and at rest.
+        ///
+        /// <para><b>How a photograph becomes metres, exactly.</b> The shader adds the train to the same
+        /// <c>lift</c> the swell displaces and then does <c>ws.y += lift</c>: ONE METRE OF LIFT IS ONE METRE
+        /// OF WORLD Y. Nothing in the fragment stage changes — it paints AND clips at the UNDISPLACED
+        /// <c>ground</c> position — so the lift TRANSLATES the painted pattern upward instead of re-shading
+        /// it. Through an orthographic camera that translation is exactly
+        /// <c>dy_px × (2 × orthographicSize / height_px)</c> metres, with no isometric factor to guess. So
+        /// the measurement is a normalised cross-correlation of a patch of the DIAL-0 plate against the LIFT
+        /// plate, refined to sub-pixel by a parabola on the correlation peak: an optical-flow read of a
+        /// translation the renderer performed, not a brightness anybody has to interpret.</para>
+        ///
+        /// <para><b>⚠ EVERY PLATE IS HASHED BEFORE ANY RESULT IS CLAIMED, AND NO HASH IS REPORTED ALONE.</b>
+        /// N identical hashes across a swept property means the property never reached the renderer that
+        /// drew the plate — a finding about the instrument, not about the sea — so the sweep is asserted to
+        /// change the bytes before one metre is believed. And because a hash can only answer "did anything
+        /// change", every hash is reported beside the raw worst-channel delta that says HOW MUCH.</para>
+        ///
+        /// <para><b>And the renderer INSTANCE is identified first.</b>
+        /// <see cref="DisplacedWaterSurface"/> draws the sea's chunks through a runtime
+        /// <c>new Material(live)</c> whose resync from the asset is throttled on <c>Time.deltaTime</c> and
+        /// therefore DEAD at <c>Time.timeScale = 0</c>: writing <c>Water.mat</c> here would change nothing on
+        /// the plate and would dirty the owner's asset for nothing. Every material this fixture writes is
+        /// found by asking which ones actually carry the property, logged by name, instance id and the
+        /// GameObject carrying it, and anything the AssetDatabase owns is excluded by name.</para>
+        ///
+        /// <para><b>The prediction is the C# twin on the PUBLISHED slot</b>, never on numbers this fixture
+        /// guessed. The root, the unit heading, the gate, the wavelength and the half-beam are read back out
+        /// of the global uniform arrays — the very arrays the shader reads — so nothing about her stern
+        /// offset, elevation or churn radius is assumed. <see cref="WakeLiftMath"/> is pinned to the HLSL
+        /// line for line by the EditMode twin scrape, so a profile that tracks it is a profile of the
+        /// shader's own law.</para>
+        ///
+        /// <para><b>The fence, restated because this fixture could not test it if it were false:</b> the lift
+        /// is DRAWN and reaches no hull. Nothing here reads a force, a heave or a deck pose, because there is
+        /// nothing to read — whether a hull rides another hull's wash is a simulation change under ADR 0018
+        /// and is not in this PR.</para>
+        /// </summary>
+        IEnumerator PhotographLift(string subject, string hullPath, string visualPath)
+        {
+            BoatHullDef hull = LoadAsset<BoatHullDef>(hullPath);
+            BoatVisualDef visual = LoadAsset<BoatVisualDef>(visualPath);
+            if (hull == null || visual == null) yield break;   // LoadAsset has already ignored the case
+
+            yield return LoadRegion();
+            yield return SetHour(ShotHour);
+
+            // ONE leg, due north. An elevation profile needs no heading sweep: it is taken along and across
+            // HER OWN published heading, whichever that turns out to be, so a second heading would
+            // re-measure the same law through a rotated frame and spend the editor slot twice. North also
+            // lays the along-track axis along screen Y — which is the axis the lift displaces along — and
+            // the cross-track transect along screen X, which is what lets a patch be wide across the track
+            // and short along it.
+            var leg = new Leg("north-000", 0f, 0f);
+
+            if (!TryLegAnchors(1, out List<Vector2> anchors, out float depth))
+            {
+                Assert.Ignore("SKIPPED, NOT VERIFIED — no open water was found INSIDE " + SceneName +
+                              "'s own camera bounds deep enough to drive a boat round, so there is nothing " +
+                              "here that can be both sailed and photographed.");
+                yield break;
+            }
+
+            _rows.Add($"# {subject} LIFT — {SceneName}, hour {ShotHour:0.0}, open water " +
+                      $"({anchors[0].x:0.0}, {anchors[0].y:0.0}), {depth:0.0} m under her");
+            _rows.Add("# surface elevation in WORLD METRES: lift arm against dial-0 arm, by patch match");
+            yield return ShootLiftLeg(subject, hull, visual, leg, anchors[0], depth);
+            WriteMeasurements(subject + "-lift");
+        }
+
+        IEnumerator ShootLiftLeg(string subject, BoatHullDef hull, BoatVisualDef visual, Leg leg,
+                                 Vector2 start, float depth)
+        {
+            Spawned she = Spawn(subject, hull, visual, forceSprite: false, leg, start);
+            Assert.IsNotNull(she.Injector,
+                $"{subject}: she came up as {she.Variant} carrying NO FoamInjector, so she publishes no " +
+                "wake-lift slot and no sea can stand up behind her. Only mesh hulls are fitted with one " +
+                "(IsoFacetHullPresentationService.Install), so this photograph has no subject.");
+
+            // ⚠ THE LIFT IS DRAWN BY THE DISPLACED PASS AND BY NOTHING ELSE. The flat Universal2D pass
+            // carries no vertex displacement at all, so with the displaced sea off there is no plate that
+            // could show this feature — and a green arm would be a lie about the shipped picture.
+            DisplacedWaterSurface displaced = FindDisplacedSurface();
+            Assert.IsNotNull(displaced, $"{subject}: no DisplacedWaterSurface in the loaded region, so the " +
+                                        "sea is drawn by the flat pass, which has no vertex displacement " +
+                                        "and cannot draw a lift.");
+            Assert.IsTrue(displaced.Displaced,
+                $"{subject}: the displaced sea is OFF (GameConfig DisplacedWater.DefaultOn reads " +
+                $"{displaced.DefaultOn}), so the only pass that draws the lift is not running, and this " +
+                "plate could not show the feature whether it works or not.");
+
+            Bounds run = PredictRun(leg, start, 3f * she.BandHalfWidth + she.SternOffset + 2f);
+            yield return FrameOn(she.Go.transform, run);
+
+            // ⚠ FrameOn IS ENTERED ONCE PER LEG AND NEVER AGAIN. It RECORDS each CameraFollow's enabled
+            // state as it parks it, so a second call would record the parked `false` as the state to put
+            // back and leave the game's own camera dead for every class that runs after this one. The
+            // at-rest arms therefore RE-VERIFY the frame after the clock move rather than re-aiming it:
+            // same law — a plate arm must re-aim after every clock move — discharged by proof.
+            Vector3 framedAt = _cam.transform.position;
+            float framedSize = _cam.orthographicSize;
+
+            var track = new List<Vector2>(256);
+            var injRoot = new List<Vector2>(256);
+            yield return Drive(she.Go, she.Rb, leg, track, injRoot, she.SternOffset, she.ElevationDeg,
+                               she.Injector);
+            Assert.Greater(track.Count, 8, $"{subject}: the leg recorded {track.Count} track samples — she " +
+                                           "never got under way, so there is no wake to lift anything.");
+            Assert.IsFalse(she.Boat.IsAground, $"{subject}: she read AGROUND through the leg.");
+            AssertInFrame(subject, leg, she.Go.transform.position, track);
+
+            // NOW stop the sea. The swell animates on engine time and would otherwise move most of the
+            // plate between two arms that are supposed to differ only by a dial.
+            Time.timeScale = 0f;
+            for (int i = 0; i < 2; i++) yield return null;
+
+            // ⚠ AND HUSH THE SPRITE FAMILIES, THROUGH #835's OWN SEAMS. Families B and C are separate
+            // sprite renderers: they are NOT drawn by the water shader, so they do NOT ride the
+            // displacement, and a patch that lands on them is asked to find a translation in content that
+            // never translated. The advected sheet (family A) stays — it is composited INSIDE the water
+            // shader at the undisplaced ground position, so it rides the lift and is the best texture on
+            // the plate for reading one. The injector stays ENABLED for the same reason it must: disabling
+            // it hands her wake-lift slot back, and the feature under test would vanish with it.
+            Transform wakeRoot = FindWakeRoot(she.Go.name);
+            HushTheWakeSprites(subject, wakeRoot);
+
+            // ── WHO IS DRAWING THE WATER — before a single dial is written ─────────────────────────────
+            IdentifyTheDrawingWater(subject, "under way");
+            string sigAtSpeed = _liftMatSig;
+
+            // ── WHAT SHE PUBLISHED — read back out of the globals, never assumed ──────────────────────
+            Vector2 expectRoot = WakeRootMath.SternWorld((Vector2)she.Go.transform.position,
+                                                        (Vector2)she.Go.transform.up,
+                                                        she.SternOffset, she.ElevationDeg);
+            int slot = IdentifyTheLiftSlot(subject, "under way", expectRoot, out Vector4 root,
+                                          out Vector4 shape);
+            var rootXY = new Vector2(root.x, root.y);
+            var heading = new Vector2(root.z, root.w);
+            float gate = shape.x, lambda = shape.y, halfBeam = shape.z;
+            float rootError = Vector2.Distance(rootXY, expectRoot);
+            // ⚠ TWO ROOTS, AND ROW 38 IS ABOUT THEIR DISAGREEMENT. The publisher is FoamInjector, which
+            // computes the transom off ITS OWN transform and its own serialised stern offset; the fixture's
+            // reference is the same law taken off the transform that carries her heading. On a straight leg
+            // they agree to a few tens of centimetres, and through a turn they do not (row 38, finding 4) —
+            // so both distances are reported and the tolerance is scaled to the hull rather than guessed.
+            Vector2 injStern = WakeRootMath.SternWorld((Vector2)she.Injector.transform.position,
+                                                      (Vector2)she.Injector.transform.up,
+                                                      she.SternOffset, she.ElevationDeg);
+            float injError = Vector2.Distance(rootXY, injStern);
+            float rootBar = Mathf.Max(3f, 0.5f * hull.LengthMeters);
+
+            Assert.Greater(gate, 0f,
+                $"{subject}: slot {slot} is her nearest published root but its GATE reads {gate:0.0000} — " +
+                $"she was making {DriveSpeed:0.0} m/s and the wake channel should be wide open. Either the " +
+                $"pool ({FoamBuffer.MaxInjectors} slots, {LiveInjectorCount()} injectors alive in this " +
+                "region) was full when she claimed one, or nothing published at all.");
+            Assert.Greater(lambda, 0f, $"{subject}: the published transverse wavelength is {lambda:0.000} m, " +
+                                       "and the shader skips a slot that has no wavelength.");
+            Assert.AreEqual(1f, heading.magnitude, 1e-3f,
+                $"{subject}: the published heading ({heading.x:0.0000}, {heading.y:0.0000}) is not a UNIT " +
+                "vector, so the shader's along/across decomposition is scaled and every metre below it is " +
+                "wrong by that scale.");
+            Assert.Greater(halfBeam, 0f, $"{subject}: the published half-beam is {halfBeam:0.000} m, and the " +
+                                         "wedge has no width without one.");
+            Assert.Less(rootError, rootBar,
+                $"{subject}: the published root ({rootXY.x:0.00}, {rootXY.y:0.00}) is {rootError:0.000} m " +
+                $"from the transom THE ONE ROOT puts under her at the shutter ({expectRoot.x:0.00}, " +
+                $"{expectRoot.y:0.00}), against a bar of {rootBar:0.00} m (half her {hull.LengthMeters:0.0} m " +
+                $"length). It is {injError:0.000} m from the injector's own transom. The train is not rooted " +
+                "where the wake is.");
+
+            float mpp = MetresPerPixel;
+            float amp = LiftProbeMetres * gate;
+            float ampShipped = LiftShippedMetres * gate;
+            Debug.Log($"[{PlateDir}] {subject} LIFT: slot {slot}, published root ({rootXY.x:0.00}, " +
+                      $"{rootXY.y:0.00}) {rootError:0.000} m off the shutter transom, heading " +
+                      $"({heading.x:0.000}, {heading.y:0.000}), gate {gate:0.0000}, wavelength " +
+                      $"{lambda:0.000} m, half-beam {halfBeam:0.000} m. Plate {_w}x{_h} at {mpp:0.00000} m " +
+                      $"per pixel, so the measuring arm's {amp:0.000} m crest is {(amp / mpp):0.0} px. " +
+                      $"{LiveInjectorCount()} injectors alive, pool {FoamBuffer.MaxInjectors}. {depth:0.0} m " +
+                      "under her, so ShoreFade01 is taken as 1.0 — any fade below 1 is a uniform scale on " +
+                      "measured-against-predicted, which the envelope below allows for.");
+            _rows.Add($"slot {slot} | root ({rootXY.x:0.00}, {rootXY.y:0.00}) | root error {rootError:0.000} m " +
+                      $"| heading ({heading.x:0.000}, {heading.y:0.000}) | gate {gate:0.0000} | wavelength " +
+                      $"{lambda:0.000} m | half-beam {halfBeam:0.000} m | {mpp:0.00000} m/px | plate {_w}x{_h}");
+            _rows.Add($"dials: measuring arm {LiftProbeMetres:0.00} m x gate = {amp:0.000} m; shipped arm " +
+                      $"{LiftShippedMetres:0.00} m x gate = {ampShipped:0.000} m; decay {LiftDecayMetres:0.0} m");
+
+            // ── THE ARMS, all inside ONE frozen frame ─────────────────────────────────────────────────
+            // No yield between them, so nothing in the player loop can put a dial back between the write
+            // and the shutter — which is also why the runtime material copy cannot be resynced from the
+            // asset underneath us.
+            byte[] z = ShootLiftArm(subject, "Z  dial 0, the reference", 0f, 0f);
+            byte[] z2 = ShootLiftArm(subject, "Z2 dial 0 again, the instrument's own repeat", 0f, 0f);
+            byte[] l = ShootLiftArm(subject, "L  the lift, measuring dial", LiftProbeMetres, LiftDecayMetres);
+            byte[] p = ShootLiftArm(subject, "P  the lift, SHIPPED dial", LiftShippedMetres, LiftDecayMetres);
+
+            string hz = Hash(z), hz2 = Hash(z2), hl = Hash(l), hp = Hash(p);
+            float repeatDelta = WorstChannelDelta(z, z2, out int repeatPx);
+            float liftDelta = WorstChannelDelta(z, l, out int liftPx);
+            float shippedDelta = WorstChannelDelta(z, p, out int shippedPx);
+            _rows.Add($"HASH Z {hz} | Z2 {hz2} | L {hl} | P {hp}");
+            _rows.Add($"REPEAT Z vs Z2: worst channel delta {repeatDelta:0.00000}, {repeatPx} px differ — " +
+                      (hz == hz2 ? "and the hashes agree, so this pipeline repeats bit for bit"
+                                 : "and the hashes DIFFER, so this pipeline does NOT repeat bit for bit"));
+            _rows.Add($"REACHED THE RENDERER? Z vs L worst {liftDelta:0.00000} over {liftPx} px; " +
+                      $"Z vs P worst {shippedDelta:0.00000} over {shippedPx} px");
+
+            Assert.AreNotEqual(hz, hl,
+                $"{subject}: ⚠ IDENTICAL HASHES ACROSS A SWEPT DIAL. {LiftAmplitudeProp} was written to " +
+                $"{_liftMats.Count} runtime water material(s) — {_liftMatSig} — and the plate did not change " +
+                "one byte. The dial never reached the renderer that drew this picture, so nothing below " +
+                "this line would be a measurement of the sea; it would be a measurement of the instrument.");
+            Assert.AreNotEqual(hz, hp,
+                $"{subject}: the SHIPPED dial ({LiftShippedMetres:0.00} m) never reached the drawing " +
+                "renderer either, so what the player actually gets is unphotographed.");
+            Assert.Greater(liftDelta, Mathf.Max(4f * repeatDelta, 2f / 255f),
+                $"{subject}: the lift arm differs from dial 0 by {liftDelta:0.00000} against a repeat floor " +
+                $"of {repeatDelta:0.00000} — the plate changed, but by no more than this pipeline fails to " +
+                "repeat itself, which is not a lift.");
+
+            z2 = null;   // ~23 MB a plate; the repeat floor is measured, the bytes are not needed again
+
+            // ── THE PROFILES ──────────────────────────────────────────────────────────────────────────
+            var marks = new List<(Vector2 world, Color32 colour)>();
+
+            var along = new List<(float astern, float lateral)>();
+            for (int i = 0; i <= 24; i++) along.Add((i * lambda / 12f, 0f));
+            List<LiftSample> alongL = MeasureLift(subject, "ALONG the track, lateral 0, arm L", l, z,
+                                                 rootXY, heading, amp, lambda, halfBeam, LiftDecayMetres,
+                                                 along, marks, new Color32(80, 200, 255, 255));
+            List<LiftSample> alongP = MeasureLift(subject, "ALONG the track, lateral 0, arm P (SHIPPED dial)",
+                                                 p, z, rootXY, heading, ampShipped, lambda, halfBeam,
+                                                 LiftDecayMetres, along, null, default);
+            p = null;
+
+            float hw = WakeLiftMath.HalfWidth(lambda, halfBeam);
+            var across = new List<(float astern, float lateral)>();
+            for (int i = -12; i <= 12; i++) across.Add((lambda, i * 1.6f * hw / 12f));
+            List<LiftSample> acrossL = MeasureLift(subject,
+                $"ACROSS the track at one wavelength astern ({lambda:0.0} m), wedge half-width {hw:0.00} m, " +
+                "arm L", l, z, rootXY, heading, amp, lambda, halfBeam, LiftDecayMetres, across, marks,
+                new Color32(255, 200, 60, 255));
+
+            // AHEAD of the transom, past the root ramp, the honest train is EXACTLY zero: RootRamp01 is
+            // FoamBuffer.Profile(-astern, halfBeam), which closes completely one half-beam ahead of the
+            // root. Probes start two half-beams ahead so the whole patch — not just its centre — sits in
+            // the closed region. This is the guard the sabotage arm has to redden.
+            var ahead = new List<(float astern, float lateral)>();
+            for (int i = 1; i <= 6; i++) ahead.Add((-(2f * halfBeam + i * lambda / 16f), 0f));
+            List<LiftSample> aheadL = MeasureLift(subject, "AHEAD of the transom, arm L — must be ZERO", l, z,
+                                                 rootXY, heading, amp, lambda, halfBeam, LiftDecayMetres,
+                                                 ahead, marks, new Color32(160, 160, 160, 255));
+
+            int nAlong = Measurable(alongL);
+            float r = Pearson(alongL);
+            float rmsM = RmsMeasured(alongL), rmsP = RmsPredicted(alongL);
+            float peakM = PeakMeasured(alongL), peakP = PeakPredicted(alongL);
+            float outside = MaxAbsOutsideTheWedge(acrossL, halfBeam);
+            float aheadHonest = MaxAbsMeasured(aheadL);
+            float aheadBar = Mathf.Max(0.10f * amp, 2f * mpp);
+
+            _rows.Add($"HEADLINE arm L (dial {LiftProbeMetres:0.00} m x gate {gate:0.0000} = {amp:0.000} m): " +
+                      $"{nAlong} of {alongL.Count} along-track samples measurable, peak measured " +
+                      $"{peakM:0.000} m against predicted {peakP:0.000} m, rms {rmsM:0.0000} m against " +
+                      $"{rmsP:0.0000} m, Pearson r {r:0.000}");
+            _rows.Add($"HEADLINE arm P (SHIPPED {LiftShippedMetres:0.00} m x gate = {ampShipped:0.000} m): " +
+                      $"{Measurable(alongP)} of {alongP.Count} measurable, peak measured " +
+                      $"{PeakMeasured(alongP):0.000} m against predicted {PeakPredicted(alongP):0.000} m, " +
+                      $"Pearson r {Pearson(alongP):0.000}");
+            _rows.Add($"THE WEDGE: worst |lift| outside the half-width on the cross-track transect " +
+                      $"{outside:0.0000} m; AHEAD of the transom {aheadHonest:0.0000} m against a bar of " +
+                      $"{aheadBar:0.0000} m");
+
+            Assert.GreaterOrEqual(nAlong, 12,
+                $"{subject}: only {nAlong} of {alongL.Count} along-track samples were measurable — patch " +
+                "contrast or correlation below the floor. That is too few to call a profile, and it is a " +
+                "finding about this plate's texture rather than about the sea.");
+            Assert.Greater(r, 0.5f,
+                $"{subject}: the measured elevation profile and the C# twin's prediction correlate at " +
+                $"r = {r:0.000} over {nAlong} samples. The water moves, but not as the hull's own Kelvin " +
+                "train: an unrooted, wrong-signed or undecayed lift looks exactly like this.");
+            Assert.Greater(rmsM, 0.25f * rmsP,
+                $"{subject}: the measured profile's rms is {rmsM:0.0000} m against the twin's " +
+                $"{rmsP:0.0000} m — the sea is standing up, but by a small fraction of what the dial asked " +
+                "for.");
+            Assert.Less(rmsM, 4f * rmsP,
+                $"{subject}: the measured profile's rms is {rmsM:0.0000} m against the twin's " +
+                $"{rmsP:0.0000} m — far MORE than the dial asked for, so something else in the frame is " +
+                "moving too.");
+            Assert.Less(outside, Mathf.Max(0.12f * amp, 2f * mpp),
+                $"{subject}: {outside:0.0000} m of lift was measured OUTSIDE the wedge's own half-width, " +
+                "where FoamBuffer.Profile windows the train to exactly zero. The lift is not inside the " +
+                "Kelvin wedge it claims to be inside.");
+            Assert.Less(aheadHonest, aheadBar,
+                $"{subject}: {aheadHonest:0.0000} m of lift was measured AHEAD of her transom, past the root " +
+                "ramp, where the train is zero by construction. A wake ahead of the boat is the wrong sign.");
+
+            // ── THE SABOTAGE ARM ──────────────────────────────────────────────────────────────────────
+            // ⚠ A NEGATIVE DIAL WOULD MEASURE NOTHING. `WakeLiftHeight` returns 0.0 for any amplitude at
+            // or below zero, so a negative amplitude is a FIFTH exact passthrough — identical to arm Z, and
+            // a sabotage arm that cannot change the plate is a knob feeding both sides. The wrong lift is
+            // therefore built where a wrong lift would really live: in the PUBLISHED SLOT, with her heading
+            // reversed, so the same train is rooted at the same transom pointing the wrong way. The guard it
+            // has to redden is the one above — no lift ahead of the boat.
+            byte[] s = ShootSabotageArm(subject, slot, rootXY, heading, shape, out int sabSlot);
+            string hs = Hash(s);
+            float sabDelta = WorstChannelDelta(l, s, out int sabPx);
+            List<LiftSample> aheadS = MeasureLift(subject,
+                "AHEAD of the transom, SABOTAGE arm (her train, heading reversed) — must NOT be zero", s, z,
+                rootXY, heading, amp, lambda, halfBeam, LiftDecayMetres, ahead, null, default);
+            float aheadSab = MaxAbsMeasured(aheadS);
+            _rows.Add($"SABOTAGE: slot {sabSlot} published with heading ({-heading.x:0.000}, " +
+                      $"{-heading.y:0.000}); hash {hs}, differs from arm L by {sabDelta:0.00000} over " +
+                      $"{sabPx} px; |lift| ahead of the transom {aheadSab:0.0000} m against the honest " +
+                      $"{aheadHonest:0.0000} m and a bar of {aheadBar:0.0000} m");
+
+            Assert.AreNotEqual(hl, hs,
+                $"{subject}: the SABOTAGE arm drew the same bytes as the honest one. A reversed heading in " +
+                "the published slot changed nothing, so the slot's heading is not reaching the shader and " +
+                "the geometry guards above are measuring something they cannot see.");
+            Assert.Greater(aheadSab, 3f * aheadBar,
+                $"{subject}: ⚠ THE SABOTAGE ARM DID NOT REDDEN THE GUARD. A train rooted at her transom " +
+                $"and pointed the WRONG WAY put only {aheadSab:0.0000} m of lift ahead of her, against a " +
+                $"bar of {aheadBar:0.0000} m that the honest arm cleared at {aheadHonest:0.0000} m. The " +
+                "ahead-of-transom guard therefore proves nothing about the honest lift either.");
+            Assert.Greater(Measurable(aheadS), 1,
+                $"{subject}: the sabotage arm's verdict rests on {Measurable(aheadS)} measurable samples " +
+                "ahead of the transom, which is not enough to redden anything.");
+
+            SavePlate($"lift-{subject}-Z-dial0.png", z);
+            SavePlate($"lift-{subject}-S-sabotage.png", s);
+            RestoreLiftGlobals();
+            s = null;
+
+            RectInt crop = CropAround(track, she.Go.transform.position, she.BandHalfWidth);
+            var lines = new List<(List<Vector2> path, Color32 colour)> { (track, new Color32(255, 80, 80, 255)) };
+            SavePlate($"lift-{subject}-L-measuring-dial-annotated.png", Annotate(l, lines, marks, crop));
+            l = null;
+            z = null;
+
+            // ── AT REST: the wake-channel gate is the precedent, and it is exactly zero ───────────────
+            // ⚠ "AT REST" MEANS NO WAY ON THROUGH THE WATER, not a boat standing still on the ground.
+            // Production gates the lift on `(groundVelocity - sample.CurrentVector).magnitude` — speed
+            // through the water — so a hull parked in a running current is still making way and would
+            // still lift it. She is therefore set drifting AT the current, which is the only arrangement
+            // under which the gate this fixture claims to photograph is actually shut.
+            RestoreLiftDials();
+            Time.timeScale = 1f;
+            var env = GameServices.Environment;
+            Vector2 current = Vector2.zero;
+            if (env != null) current = env.Sample().CurrentVector;
+            for (int i = 0; i < 48; i++)
+            {
+                she.Rb.linearVelocity = current;
+                she.Rb.angularVelocity = 0f;
+                yield return null;
+            }
+            _rows.Add($"AT REST: drifting at the current ({current.x:0.000}, {current.y:0.000}) m/s, " +
+                      $"|current| {current.magnitude:0.000} m/s, so her speed THROUGH THE WATER is zero " +
+                      "while her ground speed is not");
+
+            Assert.AreEqual(framedSize, _cam.orthographicSize, 0.01f,
+                $"{subject}: the frame was {framedSize:0.00} m half-height for the arms at speed and reads " +
+                $"{_cam.orthographicSize:0.00} m for the at-rest arms — something re-aimed this camera " +
+                "while the clock ran on, and the two halves of this measurement were shot through " +
+                "different frames.");
+            Assert.Less(Vector3.Distance(framedAt, _cam.transform.position), 0.05f,
+                $"{subject}: the camera moved {Vector3.Distance(framedAt, _cam.transform.position):0.000} m " +
+                "between the arms at speed and the at-rest arms, so the two halves were shot through " +
+                "different frames.");
+            AssertPointInFrame(subject, leg, "the hull after the clock ran on for the at-rest arms",
+                               she.Go.transform.position);
+
+            Time.timeScale = 0f;
+            for (int i = 0; i < 2; i++) yield return null;
+
+            IdentifyTheDrawingWater(subject, "at rest");
+            Assert.AreEqual(sigAtSpeed, _liftMatSig,
+                $"{subject}: the water's drawing materials were {sigAtSpeed} when the dial was PROVEN to " +
+                $"reach them, and {_liftMatSig} now. The at-rest identity below would be claimed on " +
+                "instances that were never shown to respond to the dial at all — which is exactly the " +
+                "identical-hash trap this fixture exists to refuse.");
+
+            Vector2 restRoot = WakeRootMath.SternWorld((Vector2)she.Go.transform.position,
+                                                       (Vector2)she.Go.transform.up,
+                                                       she.SternOffset, she.ElevationDeg);
+            int restSlot = IdentifyTheLiftSlot(subject, "at rest", restRoot, out Vector4 root2,
+                                               out Vector4 shape2);
+            _rows.Add($"AT REST: slot {restSlot}, root ({root2.x:0.00}, {root2.y:0.00}), gate " +
+                      $"{shape2.x:0.000000}, wavelength {shape2.y:0.000000} m");
+            Assert.LessOrEqual(shape2.x, 1e-4f,
+                $"{subject}: at rest her published gate reads {shape2.x:0.000000}, not zero. The lift is " +
+                "multiplied by that gate, so a moored boat would stand her own wake up around herself.");
+
+            byte[] rz = ShootLiftArm(subject, "RZ at rest, dial 0", 0f, 0f);
+            byte[] rz2 = ShootLiftArm(subject, "RZ2 at rest, dial 0 again", 0f, 0f);
+            byte[] rl = ShootLiftArm(subject, "RL at rest, the lift", LiftProbeMetres, LiftDecayMetres);
+            string hrz = Hash(rz), hrz2 = Hash(rz2), hrl = Hash(rl);
+            float restRepeat = WorstChannelDelta(rz, rz2, out int restRepeatPx);
+            float restLift = WorstChannelDelta(rz, rl, out int restLiftPx);
+            _rows.Add($"AT REST HASH RZ {hrz} | RZ2 {hrz2} | RL {hrl}");
+            _rows.Add($"AT REST: RZ vs RZ2 worst {restRepeat:0.00000} over {restRepeatPx} px; RZ vs RL " +
+                      $"worst {restLift:0.00000} over {restLiftPx} px");
+
+            Assert.LessOrEqual(restLift, Mathf.Max(restRepeat, 1e-6f),
+                $"{subject}: at rest the {LiftProbeMetres:0.00} m dial changed the plate by " +
+                $"{restLift:0.00000} against a repeat floor of {restRepeat:0.00000}. The wake-channel gate " +
+                "is supposed to be exactly shut with no way on, and the same dial demonstrably reaches " +
+                $"these materials — it moved the water by {liftDelta:0.00000} at speed.");
+            if (hrz == hrz2)
+                Assert.AreEqual(hrz, hrl,
+                    $"{subject}: this pipeline repeats bit for bit (RZ and RZ2 hash the same), so the " +
+                    "at-rest arms must be BIT-IDENTICAL and not merely close. They are not.");
+
+            SavePlate($"lift-{subject}-RL-at-rest.png", rl);
+            rz = null; rz2 = null; rl = null;
+
+            RestoreLiftDials();
+            RestoreRig(wakeRoot, she.Injector);
+            Time.timeScale = 1f;
+        }
+
+        // ── the water, the slot, the dials ─────────────────────────────────────────────────────────────
+
+        /// <summary>⚠️ The displaced surface may ride a hidden host, which
+        /// <see cref="Object.FindFirstObjectByType{T}()"/> does not return — so the all-objects lookup is
+        /// the fallback, filtered to things that are actually in a loaded scene.</summary>
+        static DisplacedWaterSurface FindDisplacedSurface()
+        {
+            var live = Object.FindFirstObjectByType<DisplacedWaterSurface>();
+            if (live != null) return live;
+            foreach (DisplacedWaterSurface d in Resources.FindObjectsOfTypeAll<DisplacedWaterSurface>())
+                if (d != null && d.gameObject.scene.IsValid()) return d;
+            return null;
+        }
+
+        static int LiveInjectorCount()
+        {
+            int n = 0;
+            foreach (FoamInjector f in Resources.FindObjectsOfTypeAll<FoamInjector>())
+                if (f != null && f.gameObject.scene.IsValid() && f.enabled && f.gameObject.activeInHierarchy)
+                    n++;
+            return n;
+        }
+
+        /// <summary>Families B and C down, family A and the injector left alone — see the note at the call
+        /// site. Reaches the emitter through <see cref="Resources.FindObjectsOfTypeAll{T}"/> because its host
+        /// is <c>HideAndDontSave</c>.</summary>
+        void HushTheWakeSprites(string subject, Transform wakeRoot)
+        {
+            if (_emitter == null)
+            {
+                var hidden = Resources.FindObjectsOfTypeAll<BoatWakeEmitter>();
+                if (hidden != null && hidden.Length > 0) _emitter = hidden[0];
+                if (_emitter != null) _emitter.enabled = false;
+            }
+            if (wakeRoot == null)
+            {
+                Debug.Log($"[{PlateDir}] {subject}: no Wake[{subject}] rig to hush — the sprite families " +
+                          "are absent from this plate rather than switched off, which is reported here so " +
+                          "the patch match's texture is not mistaken for something it is not.");
+                return;
+            }
+            int off = 0;
+            foreach (Transform child in wakeRoot)
+            {
+                var r = child.GetComponent<Renderer>();
+                if (r != null && r.enabled) { r.enabled = false; off++; }
+            }
+            Debug.Log($"[{PlateDir}] {subject}: hushed {off} sprite renderer(s) under {wakeRoot.name} and " +
+                      "the emitter, so nothing drawn OUTSIDE the water shader is inside a measurement " +
+                      "patch. The injector stays enabled: disabling it hands her wake-lift slot back.");
+        }
+
+        /// <summary>
+        /// <b>⚠ IDENTIFY THE RENDERER INSTANCE BEFORE SWEEPING ITS PROPERTY.</b> The sea's chunks are drawn
+        /// through a runtime <c>new Material(live)</c>, so the asset on disk is not what draws and writing it
+        /// would change no pixel while dirtying the owner's file. Materials are found by asking which ones
+        /// CARRY the property rather than by shader name — a rename cannot hide from that — and anything the
+        /// AssetDatabase owns is excluded by name in the log, so the exclusion is auditable.
+        /// </summary>
+        void IdentifyTheDrawingWater(string subject, string when)
+        {
+            _liftMats.Clear();
+            _liftWas.Clear();
+            var seen = new HashSet<string>();
+            var ids = new List<string>();
+            int assetsSkipped = 0;
+
+            foreach (Renderer r in Resources.FindObjectsOfTypeAll<Renderer>())
+            {
+                if (r == null || !r.gameObject.scene.IsValid()) continue;
+                Material[] mats = r.sharedMaterials;
+                if (mats == null) continue;
+                foreach (Material m in mats)
+                {
+                    if (m == null || !m.HasProperty(LiftAmplitudeProp)) continue;
+#if UNITY_EDITOR
+                    if (AssetDatabase.Contains(m))
+                    {
+                        assetsSkipped++;
+                        Debug.Log($"[{PlateDir}] {subject} ({when}): SKIPPED the ASSET material '{m.name}' " +
+                                  $"on {HierarchyPath(r.transform)} — writing a dial on an asset dirties " +
+                                  "the owner's file and does not reach the runtime copy that draws.");
+                        continue;
+                    }
+#endif
+                    if (!seen.Add(m.GetEntityId().ToString())) continue;
+                    _liftMats.Add(m);
+                    _liftWas.Add(new Vector2(m.GetFloat(LiftAmplitudeProp), m.GetFloat(LiftDecayProp)));
+                    ids.Add(m.GetEntityId().ToString());
+                    Debug.Log($"[{PlateDir}] {subject} ({when}): WRITING '{m.name}' (shader " +
+                              $"'{(m.shader != null ? m.shader.name : "none")}', instance " +
+                              $"{m.GetEntityId()}) on {HierarchyPath(r.transform)} — enabled " +
+                              $"{r.enabled}, active {r.gameObject.activeInHierarchy}, scene " +
+                              $"'{r.gameObject.scene.name}', reads {LiftAmplitudeProp} " +
+                              $"{m.GetFloat(LiftAmplitudeProp):0.000} / {LiftDecayProp} " +
+                              $"{m.GetFloat(LiftDecayProp):0.000}");
+                }
+            }
+
+            ids.Sort();
+            _liftMatSig = string.Join(",", ids);
+            _rows.Add($"DRAWING WATER ({when}): {_liftMats.Count} runtime material(s) [{_liftMatSig}], " +
+                      $"{assetsSkipped} asset material(s) skipped");
+            Assert.Greater(_liftMats.Count, 0,
+                $"{subject} ({when}): not one RUNTIME material in the loaded scenes carries " +
+                $"{LiftAmplitudeProp} ({assetsSkipped} asset material(s) do, and those are never written). " +
+                "Either the property is gone from the shader, or the displaced surface is not instancing " +
+                "its material — and in both cases this fixture has nothing it can sweep.");
+        }
+
+        static string HierarchyPath(Transform t)
+        {
+            var sb = new StringBuilder(t.name);
+            for (Transform p = t.parent; p != null; p = p.parent) sb.Insert(0, p.name + "/");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Her slot, read back out of the GLOBAL UNIFORM ARRAYS — the very arrays the shader indexes, not
+        /// the C# pool that feeds them. Chosen by nearest published root, so the fixture never has to assume
+        /// which index she claimed.
+        /// </summary>
+        int IdentifyTheLiftSlot(string subject, string when, Vector2 expectRoot,
+                                out Vector4 root, out Vector4 shape)
+        {
+            Vector4[] roots = Shader.GetGlobalVectorArray(FoamShaderIds.WakeLiftRoot);
+            Vector4[] shapes = Shader.GetGlobalVectorArray(FoamShaderIds.WakeLiftShape);
+            Assert.IsNotNull(roots, $"{subject} ({when}): the global '{FoamShaderIds.WakeLiftRoot}' has " +
+                                    "never been uploaded, so the shader reads nothing and no hull can lift " +
+                                    "any water. Either nothing published, or the uniform was renamed out " +
+                                    "from under this fixture.");
+            Assert.IsNotNull(shapes, $"{subject} ({when}): the global '{FoamShaderIds.WakeLiftShape}' has " +
+                                     "never been uploaded.");
+            Assert.AreEqual(FoamBuffer.MaxInjectors, roots.Length,
+                $"{subject} ({when}): the uploaded root array is {roots.Length} long against a pool of " +
+                $"{FoamBuffer.MaxInjectors}. The shader's HH_WAKE_LIFT_MAX loop is a compile-time bound " +
+                "pinned to that pool, so a shorter upload means the shader reads past the end of it.");
+            Assert.AreEqual(roots.Length, shapes.Length,
+                $"{subject} ({when}): root and shape arrays disagree in length ({roots.Length} against " +
+                $"{shapes.Length}), so slot i does not mean the same hull in both.");
+
+            int best = -1;
+            float bestD = float.MaxValue;
+            for (int i = 0; i < roots.Length; i++)
+            {
+                var r = new Vector2(roots[i].x, roots[i].y);
+                var h = new Vector2(roots[i].z, roots[i].w);
+                if (h.sqrMagnitude <= 0f) continue;   // never claimed: no heading was ever written
+                float d = Vector2.Distance(r, expectRoot);
+                if (d < bestD) { bestD = d; best = i; }
+            }
+            Assert.GreaterOrEqual(best, 0,
+                $"{subject} ({when}): not one of the {roots.Length} slots carries a heading, so no hull " +
+                "has ever published a wake-lift root in this region.");
+
+            root = roots[best];
+            shape = shapes[best];
+            return best;
+        }
+
+        void SetLiftDials(float metres, float decay)
+        {
+            foreach (Material m in _liftMats)
+            {
+                if (m == null) continue;
+                m.SetFloat(LiftAmplitudeProp, metres);
+                m.SetFloat(LiftDecayProp, decay);
+            }
+        }
+
+        void RestoreLiftDials()
+        {
+            for (int i = 0; i < _liftMats.Count && i < _liftWas.Count; i++)
+            {
+                Material m = _liftMats[i];
+                if (m == null) continue;
+                m.SetFloat(LiftAmplitudeProp, _liftWas[i].x);
+                m.SetFloat(LiftDecayProp, _liftWas[i].y);
+            }
+        }
+
+        void RestoreLiftGlobals()
+        {
+            if (_liftRootWas != null) Shader.SetGlobalVectorArray(FoamShaderIds.WakeLiftRoot, _liftRootWas);
+            if (_liftShapeWas != null) Shader.SetGlobalVectorArray(FoamShaderIds.WakeLiftShape, _liftShapeWas);
+            _liftRootWas = null;
+            _liftShapeWas = null;
+        }
+
+        byte[] ShootLiftArm(string subject, string label, float metres, float decay)
+        {
+            SetLiftDials(metres, decay);
+            byte[] plate = Capture();
+            Debug.Log($"[{PlateDir}] {subject} arm {label}: {LiftAmplitudeProp} {metres:0.000}, " +
+                      $"{LiftDecayProp} {decay:0.0} on {_liftMats.Count} material(s), plate hash " +
+                      $"{Hash(plate)}");
+            return plate;
+        }
+
+        /// <summary>
+        /// The wrong lift, built where a wrong lift would really live: in the published slot. Her own train,
+        /// her own root, her heading REVERSED — so it stands the water up in front of her instead of behind
+        /// her. Written into a FREE slot where there is one, so the honest train is still drawn alongside it
+        /// and the ahead-of-transom probe reads the sabotage alone.
+        /// </summary>
+        byte[] ShootSabotageArm(string subject, int herSlot, Vector2 rootXY, Vector2 heading, Vector4 shape,
+                                out int sabSlot)
+        {
+            Vector4[] roots = Shader.GetGlobalVectorArray(FoamShaderIds.WakeLiftRoot);
+            Vector4[] shapes = Shader.GetGlobalVectorArray(FoamShaderIds.WakeLiftShape);
+            _liftRootWas = (Vector4[])roots.Clone();
+            _liftShapeWas = (Vector4[])shapes.Clone();
+
+            sabSlot = -1;
+            for (int i = 0; i < roots.Length; i++)
+                if (i != herSlot && shapes[i].x <= 0f && shapes[i].y <= 0f) { sabSlot = i; break; }
+            if (sabSlot < 0)
+            {
+                sabSlot = herSlot;
+                Debug.Log($"[{PlateDir}] {subject}: every slot in the pool is occupied, so the sabotage " +
+                          $"train OVERWRITES her own slot {herSlot} rather than joining it. The " +
+                          "ahead-of-transom probe reads the same reversed train either way.");
+            }
+
+            roots[sabSlot] = new Vector4(rootXY.x, rootXY.y, -heading.x, -heading.y);
+            shapes[sabSlot] = shape;
+            Shader.SetGlobalVectorArray(FoamShaderIds.WakeLiftRoot, roots);
+            Shader.SetGlobalVectorArray(FoamShaderIds.WakeLiftShape, shapes);
+
+            byte[] plate = ShootLiftArm(subject, $"S  SABOTAGE, slot {sabSlot}, heading reversed",
+                                        LiftProbeMetres, LiftDecayMetres);
+            return plate;
+        }
+
+        // ── the measurement: a translation the renderer performed ─────────────────────────────────────
+
+        /// <summary>Metres of world Y per plate pixel. Exact for an orthographic camera, which is what
+        /// makes a pixel shift a metre of surface elevation and not an estimate.</summary>
+        float MetresPerPixel => 2f * _cam.orthographicSize / _h;
+
+        readonly struct LiftSample
+        {
+            public readonly float Astern, Lateral;
+            public readonly Vector2 World;
+            public readonly float Measured, Predicted, Ncc;
+            public readonly bool Ok;
+            public readonly string Why;
+
+            public LiftSample(float astern, float lateral, Vector2 world, float measured, float predicted,
+                              float ncc, bool ok, string why)
+            {
+                Astern = astern; Lateral = lateral; World = world;
+                Measured = measured; Predicted = predicted; Ncc = ncc; Ok = ok; Why = why;
+            }
+        }
+
+        /// <summary>The patch, sized in METRES and converted, so a plate of a different size measures the
+        /// same water. The search window is sized to the amplitude being probed: a peak pinned to the edge
+        /// of its own window is reported unmeasurable rather than believed.</summary>
+        void SizeTheProbe(float amplitudeMetres)
+        {
+            float mpp = MetresPerPixel;
+            _patchHalfW = Mathf.Max(8, Mathf.RoundToInt(0.5f * LiftPatchAcrossMetres / mpp));
+            _patchHalfH = Mathf.Max(3, Mathf.RoundToInt(0.5f * LiftPatchAlongMetres / mpp));
+            _searchPx = Mathf.Clamp(Mathf.CeilToInt((1.8f * Mathf.Abs(amplitudeMetres) + 0.2f) / mpp),
+                                    24, 200);
+        }
+
+        /// <summary>
+        /// The inverse of the shader's own decomposition: <c>astern = -(d . heading)</c> and
+        /// <c>lateral = d.x·h.y - d.y·h.x</c>, solved for <c>d</c>. Written as the inverse rather than as a
+        /// second construction so a probe can never sit somewhere other than where the law says it is.
+        /// </summary>
+        static Vector2 TrainPoint(Vector2 rootXY, Vector2 heading, float astern, float lateral)
+            => rootXY - heading * astern + new Vector2(heading.y, -heading.x) * lateral;
+
+        List<LiftSample> MeasureLift(string subject, string label, byte[] arm, byte[] reference,
+                                     Vector2 rootXY, Vector2 heading, float amplitude, float wavelength,
+                                     float halfBeam, float decay,
+                                     List<(float astern, float lateral)> points,
+                                     List<(Vector2 world, Color32 colour)> marks, Color32 markColour)
+        {
+            SizeTheProbe(amplitude);
+            float mpp = MetresPerPixel;
+            var outSamples = new List<LiftSample>(points.Count);
+            _rows.Add($"# {subject}: {label}");
+            _rows.Add($"#   patch {2 * _patchHalfW + 1}x{2 * _patchHalfH + 1} px " +
+                      $"({2 * _patchHalfW * mpp:0.00} m across the track x {2 * _patchHalfH * mpp:0.00} m " +
+                      $"along it), search +/-{_searchPx} px (+/-{_searchPx * mpp:0.000} m)");
+
+            foreach ((float astern, float lateral) in points)
+            {
+                Vector2 world = TrainPoint(rootXY, heading, astern, lateral);
+                float predicted = WakeLiftMath.HeightAt(world, rootXY, heading, amplitude, wavelength,
+                                                        halfBeam, decay);
+                bool ok = ElevationMetresAt(arm, reference, world, out float measured, out float ncc,
+                                           out string why);
+                outSamples.Add(new LiftSample(astern, lateral, world, measured, predicted, ncc, ok, why));
+                if (ok)
+                {
+                    _rows.Add($"   astern {astern:0.00} m | lateral {lateral:0.00} m | measured " +
+                              $"{measured:0.0000} m | predicted {predicted:0.0000} m | ncc {ncc:0.000}");
+                    if (marks != null) marks.Add((world, markColour));
+                }
+                else
+                {
+                    _rows.Add($"   astern {astern:0.00} m | lateral {lateral:0.00} m | predicted " +
+                              $"{predicted:0.0000} m | {why}");
+                }
+            }
+            return outSamples;
+        }
+
+        /// <summary>
+        /// One elevation reading: how far UP the arm plate carries the patch of water the reference plate
+        /// draws at <paramref name="world"/>. Normalised cross-correlation over vertical shifts, refined by
+        /// a parabola on the peak. A positive shift is a positive lift, because the content the reference
+        /// draws at row <c>r</c> appears in the arm at <c>r + lift/mpp</c>.
+        /// </summary>
+        bool ElevationMetresAt(byte[] arm, byte[] reference, Vector2 world, out float metres, out float ncc,
+                               out string why)
+        {
+            metres = 0f;
+            ncc = 0f;
+            why = null;
+
+            Vector2 px = ToPixel(world);
+            int cx = Mathf.RoundToInt(px.x), cy = Mathf.RoundToInt(px.y);
+            int marginY = _searchPx + _patchHalfH + 2;
+            if (cx - _patchHalfW < 0 || cx + _patchHalfW >= _w || cy - marginY < 0 || cy + marginY >= _h)
+            {
+                why = $"OUT OF FRAME: the patch around pixel ({cx}, {cy}) does not fit inside {_w}x{_h} " +
+                      $"with a +/-{_searchPx} px search, so this point is skipped rather than clamped";
+                return false;
+            }
+
+            int nx = 2 * _patchHalfW + 1, ny = 2 * _patchHalfH + 1, n = nx * ny;
+            var refPatch = new float[n];
+            double sumA = 0, sumA2 = 0;
+            int k = 0;
+            for (int dy = -_patchHalfH; dy <= _patchHalfH; dy++)
+                for (int dx = -_patchHalfW; dx <= _patchHalfW; dx++)
+                {
+                    float v = Luma(reference, cx + dx, cy + dy);
+                    refPatch[k++] = v;
+                    sumA += v;
+                    sumA2 += (double)v * v;
+                }
+            double varA = sumA2 / n - (sumA / n) * (sumA / n);
+            float contrast = (float)System.Math.Sqrt(System.Math.Max(varA, 0.0));
+            if (contrast < LiftPatchContrastFloor)
+            {
+                why = $"UNMEASURABLE: the dial-0 patch carries {contrast:0.00000} luma of contrast, below " +
+                      $"the {LiftPatchContrastFloor:0.00000} floor — featureless water holds no " +
+                      "translation to read, and a peak found in that is noise reported as a measurement";
+                return false;
+            }
+
+            int shifts = 2 * _searchPx + 1;
+            var scores = new float[shifts];
+            int bestI = -1;
+            float best = -2f;
+            for (int i = 0; i < shifts; i++)
+            {
+                int d = i - _searchPx;
+                double sumB = 0, sumB2 = 0, sumAB = 0;
+                k = 0;
+                for (int dy = -_patchHalfH; dy <= _patchHalfH; dy++)
+                    for (int dx = -_patchHalfW; dx <= _patchHalfW; dx++)
+                    {
+                        float b = Luma(arm, cx + dx, cy + dy + d);
+                        sumB += b;
+                        sumB2 += (double)b * b;
+                        sumAB += (double)refPatch[k++] * b;
+                    }
+                double num = n * sumAB - sumA * sumB;
+                double den = System.Math.Sqrt(System.Math.Max(n * sumA2 - sumA * sumA, 0.0))
+                           * System.Math.Sqrt(System.Math.Max(n * sumB2 - sumB * sumB, 0.0));
+                scores[i] = den > 0.0 ? (float)(num / den) : 0f;
+                if (scores[i] > best) { best = scores[i]; bestI = i; }
+            }
+
+            ncc = best;
+            if (best < LiftPatchNccFloor)
+            {
+                why = $"UNMEASURABLE: the best correlation over the search was {best:0.000}, below the " +
+                      $"{LiftPatchNccFloor:0.00} floor — this patch is not the same water translated " +
+                      "(her hull, the shoreline and anything drawn outside the water shader all read " +
+                      "like this)";
+                return false;
+            }
+            if (bestI == 0 || bestI == shifts - 1)
+            {
+                why = $"UNMEASURABLE: the correlation peak sits on the edge of the +/-{_searchPx} px " +
+                      "search, so the true shift is larger than this window can see and any number here " +
+                      "would be the window's, not the water's";
+                return false;
+            }
+
+            // Sub-pixel by a parabola through the peak and its two neighbours.
+            float ym1 = scores[bestI - 1], y0 = scores[bestI], yp1 = scores[bestI + 1];
+            float denom = ym1 - 2f * y0 + yp1;
+            float sub = Mathf.Abs(denom) > 1e-9f ? 0.5f * (ym1 - yp1) / denom : 0f;
+            sub = Mathf.Clamp(sub, -1f, 1f);
+            metres = ((bestI - _searchPx) + sub) * MetresPerPixel;
+            return true;
+        }
+
+        float Luma(byte[] plate, int x, int y)
+        {
+            int i = (y * _w + x) * 4;
+            return (0.299f * plate[i] + 0.587f * plate[i + 1] + 0.114f * plate[i + 2]) / 255f;
+        }
+
+        /// <summary>
+        /// <b>⚠ THE HASH, AND WHY IT IS NEVER REPORTED ALONE.</b> A 64-bit FNV-1a over the plate's bytes.
+        /// The question a plate hash answers is "did ANY byte change when the dial moved" — the identical-hash
+        /// trap — and for that a non-cryptographic digest over 23 MB is both sufficient and cheap. Every hash
+        /// in this class is printed beside <see cref="WorstChannelDelta"/>, which says HOW MUCH changed, so
+        /// no claim ever rests on a digest by itself.
+        /// </summary>
+        static string Hash(byte[] plate)
+        {
+            ulong h = 14695981039346656037UL;
+            for (int i = 0; i < plate.Length; i++)
+            {
+                h ^= plate[i];
+                h *= 1099511628211UL;
+            }
+            return h.ToString("x16");
+        }
+
+        /// <summary>The biggest single-channel difference between two plates, 0…1, plus how many pixels
+        /// differ at all. Raw and symmetric on purpose: <c>NoiseFloor</c> carries a hard 0.01 floor that
+        /// would swallow an identity, and <c>HeadroomDelta</c> is one-sided.</summary>
+        static float WorstChannelDelta(byte[] a, byte[] b, out int changedPx)
+        {
+            int worst = 0, changed = 0;
+            int len = Mathf.Min(a.Length, b.Length);
+            for (int i = 0; i < len; i += 4)
+            {
+                int d = 0;
+                for (int c = 0; c < 3; c++)
+                {
+                    int e = a[i + c] - b[i + c];
+                    if (e < 0) e = -e;
+                    if (e > d) d = e;
+                }
+                if (d > 0) { changed++; if (d > worst) worst = d; }
+            }
+            changedPx = changed;
+            return worst / 255f;
+        }
+
+        // ── the statistics, over the MEASURABLE samples only ──────────────────────────────────────────
+
+        static int Measurable(List<LiftSample> s)
+        {
+            int n = 0;
+            foreach (LiftSample x in s) if (x.Ok) n++;
+            return n;
+        }
+
+        static float PeakMeasured(List<LiftSample> s)
+        {
+            float best = 0f;
+            foreach (LiftSample x in s) if (x.Ok && Mathf.Abs(x.Measured) > Mathf.Abs(best)) best = x.Measured;
+            return best;
+        }
+
+        static float PeakPredicted(List<LiftSample> s)
+        {
+            float best = 0f;
+            foreach (LiftSample x in s)
+                if (x.Ok && Mathf.Abs(x.Predicted) > Mathf.Abs(best)) best = x.Predicted;
+            return best;
+        }
+
+        static float RmsMeasured(List<LiftSample> s)
+        {
+            double sum = 0; int n = 0;
+            foreach (LiftSample x in s) if (x.Ok) { sum += (double)x.Measured * x.Measured; n++; }
+            return n == 0 ? 0f : (float)System.Math.Sqrt(sum / n);
+        }
+
+        static float RmsPredicted(List<LiftSample> s)
+        {
+            double sum = 0; int n = 0;
+            foreach (LiftSample x in s) if (x.Ok) { sum += (double)x.Predicted * x.Predicted; n++; }
+            return n == 0 ? 0f : (float)System.Math.Sqrt(sum / n);
+        }
+
+        static float MaxAbsMeasured(List<LiftSample> s)
+        {
+            float worst = 0f;
+            foreach (LiftSample x in s) if (x.Ok) worst = Mathf.Max(worst, Mathf.Abs(x.Measured));
+            return worst;
+        }
+
+        /// <summary>The worst lift measured where the train is windowed to EXACTLY zero — beyond the wedge's
+        /// own half-width at that distance astern. Only samples a comfortable margin outside are counted, so
+        /// a patch straddling the edge cannot be read as a violation.</summary>
+        static float MaxAbsOutsideTheWedge(List<LiftSample> s, float halfBeam)
+        {
+            float worst = 0f;
+            foreach (LiftSample x in s)
+            {
+                if (!x.Ok) continue;
+                float hw = WakeLiftMath.HalfWidth(x.Astern, halfBeam);
+                if (Mathf.Abs(x.Lateral) >= 1.15f * hw) worst = Mathf.Max(worst, Mathf.Abs(x.Measured));
+            }
+            return worst;
+        }
+
+        /// <summary>Pearson correlation of measured against predicted. The headline guard, because it asks
+        /// whether the water moved in the SHAPE the hull's own Kelvin train has — which an unrooted,
+        /// wrong-signed or undecayed lift does not.</summary>
+        static float Pearson(List<LiftSample> s)
+        {
+            double sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0;
+            int n = 0;
+            foreach (LiftSample x in s)
+            {
+                if (!x.Ok) continue;
+                double a = x.Measured, b = x.Predicted;
+                sx += a; sy += b; sxx += a * a; syy += b * b; sxy += a * b;
+                n++;
+            }
+            if (n < 3) return 0f;
+            double num = n * sxy - sx * sy;
+            double den = System.Math.Sqrt(System.Math.Max(n * sxx - sx * sx, 0.0))
+                       * System.Math.Sqrt(System.Math.Max(n * syy - sy * sy, 0.0));
+            return den > 0.0 ? (float)(num / den) : 0f;
+        }
+
 
         void WriteMeasurements(string subject)
         {
