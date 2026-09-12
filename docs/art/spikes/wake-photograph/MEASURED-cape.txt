@@ -1,0 +1,14 @@
+# cape — NineMileCreek, hour 11.0, open water (260.0, 75.0); (280.0, -65.0); (270.0, 235.0), 6.0 m
+# heading | family | drawn px | centroid world (x, y) | lateral offset from the swept track, m (+ = to PORT of the course) | that offset over the band's own half-width
+north-000          | ALL drawn   |    15235 | (   260.15,     89.99) |   -0.135 |   -0.06
+north-000          | A sheet     | NOTHING above the measured noise floor (0.0100 luma); strongest pixel in the crop 0.0000, mean 0.00000 over 1303542 px
+north-000          | B deposits  |     5071 | (   260.57,     90.15) |   -0.558 |   -0.23
+north-000          | C crests    |    10164 | (   259.96,     89.91) |   +0.053 |    0.02
+east-090           | ALL drawn   |    50458 | (   292.91,    -64.51) |   +0.493 |    0.21
+east-090           | A sheet     | NOTHING above the measured noise floor (0.0100 luma); strongest pixel in the crop 0.0000, mean 0.00000 over 4491642 px
+east-090           | B deposits  |    18521 | (   293.54,    -64.30) |   +0.704 |    0.29
+east-090           | C crests    |    31937 | (   292.62,    -64.61) |   +0.393 |    0.16
+turn-000-thru-088  | ALL drawn   |    21400 | (   274.63,    248.22) |   -0.168 |   -0.07
+turn-000-thru-088  | A sheet     | NOTHING above the measured noise floor (0.0100 luma); strongest pixel in the crop 0.0000, mean 0.00000 over 2400908 px
+turn-000-thru-088  | B deposits  |     8032 | (   275.20,    248.41) |   -0.329 |   -0.14
+turn-000-thru-088  | C crests    |    13368 | (   274.34,    248.12) |   -0.082 |   -0.03
