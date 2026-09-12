@@ -979,6 +979,14 @@ namespace HiddenHarbours.Player
             Pose = DeckRidePose.Level;
             RequestedStance = CharacterStance.Free;
 
+            // ⚠️ AND THE SWAP FLAG, which is a statement about THIS frame, not a latch. It is
+            // written in Apply() DOWNSTREAM of the ashore early-return above, so without this line a
+            // figure that took the draw aboard would leave the rider still claiming the sprite is held
+            // off long after she walked ashore and the figure stopped drawing — two published readouts
+            // disagreeing about one fact. Nothing in production branches on it, which is exactly why it
+            // has to be right: it is read by plates and guards, and a wrong readout reads as evidence.
+            SpriteSuppressed = false;
+
             // The body draws again — EXCEPT where the character is INSIDE something. At the helm that is
             // the pre-existing "taking the helm hides you" rule (ControlSwitcher's own drawn-on-root test)
             // restated by its new owner; DRIVING is the same rule on land (ADR 0035), and it is not
