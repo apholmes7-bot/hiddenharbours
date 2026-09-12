@@ -184,7 +184,13 @@ namespace HiddenHarbours.Art
         // the look, a hull's root belongs to the hull.)
         static readonly Vector4[] s_LiftRoot = new Vector4[FoamBuffer.MaxInjectors];
         static readonly Vector4[] s_LiftShape = new Vector4[FoamBuffer.MaxInjectors];
-        static readonly bool[] s_LiftSlotTaken = new bool[FoamBuffer.MaxInjectors];
+        // ⚠️ NOT a reservation table. The lift's slots are PACKED FRESH EVERY FRAME from the hulls
+        // that actually hand a wave in: s_LiftFrame is the frame the current packing belongs to,
+        // s_LiftCount how many of its slots are spoken for. Both reset on the first publish of a new
+        // frame, so nothing is held between frames and there is no reservation to leak.
+        static int s_LiftFrame = -1;
+        static int s_LiftCount;
+        static bool s_WarnedLiftOverCap;
 
         /// <summary>How many injectors are live and over water. The feature's cheap gate.</summary>
         public static int Count => s_Live.Count;
@@ -298,47 +304,28 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// Take a wake-lift slot for a hull that has just joined the water, or <c>-1</c> when all
-        /// <see cref="FoamBuffer.MaxInjectors"/> are taken (that hull draws no lift this stretch —
-        /// the same bound, for the same reason, as the foam's compile-time loop; the over-cap warning
-        /// on <see cref="CollectInjections"/> is the one place that says so out loud).
+        /// Zero every wake-lift slot and upload. ⚠️ The zeroing is the point: a hull hauled out,
+        /// teleported or destroyed must take her wake with her, and an un-zeroed slot would leave one
+        /// frame of stern wave standing in empty water for as long as the scene lived — the same
+        /// frozen-last-frame trap <see cref="BindIdle"/> exists for on the foam buffer.
         ///
-        /// <para>A SLOT, not an index into <see cref="s_Live"/>: the live list is compacted by
-        /// <c>List.Remove</c>, so an index cached in an injector would silently come to name another
-        /// hull's wake the moment a boat ahead of it was hauled out.</para>
+        /// <para>Clearing the WHOLE buffer is safe because the buffer is repacked from scratch every
+        /// frame anyway (<see cref="PublishWakeLift"/>): every hull still making way is back in it on
+        /// her next publish, so the living wakes lose at most the frame a boat left on.</para>
         /// </summary>
-        internal static int ClaimLiftSlot()
+        internal static void ClearWakeLift()
         {
-            for (int i = 0; i < s_LiftSlotTaken.Length; i++)
-            {
-                if (s_LiftSlotTaken[i]) continue;
-                s_LiftSlotTaken[i] = true;
-                s_LiftRoot[i] = Vector4.zero;
-                s_LiftShape[i] = Vector4.zero;
-                return i;
-            }
-            return -1;
-        }
-
-        /// <summary>
-        /// Give a slot back and ZERO it on the sea in the same call, setting <paramref name="slot"/>
-        /// to <c>-1</c>. ⚠️ The zeroing is the point: a hull hauled out, teleported or destroyed must
-        /// take her wake with her, and an un-zeroed slot would leave one frame of stern wave standing
-        /// in empty water for as long as the scene lived — the same frozen-last-frame trap
-        /// <see cref="BindIdle"/> exists for on the foam buffer.
-        /// </summary>
-        internal static void ReleaseLiftSlot(ref int slot)
-        {
-            if (slot < 0 || slot >= s_LiftSlotTaken.Length) { slot = -1; return; }
-            s_LiftSlotTaken[slot] = false;
-            s_LiftRoot[slot] = Vector4.zero;
-            s_LiftShape[slot] = Vector4.zero;
-            slot = -1;
+            System.Array.Clear(s_LiftRoot, 0, s_LiftRoot.Length);
+            System.Array.Clear(s_LiftShape, 0, s_LiftShape.Length);
+            s_LiftCount = 0;
+            s_LiftFrame = -1;
+            s_WarnedLiftOverCap = false;
             PublishLift();
         }
 
         /// <summary>
-        /// Publish one hull's stern wave train for this frame (water PR F, register row 27) — the
+        /// Hand one hull's stern wave train to THIS FRAME'S packing (water PR F, register row 27),
+        /// returning whether she got one of its slots — the
         /// transom root and heading it is drawn from, the wavelength that keeps station at her speed
         /// through the water, her churned half-beam, and her WAKE GATE.
         ///
@@ -352,20 +339,117 @@ namespace HiddenHarbours.Art
         /// injector's <c>wake01</c> — <c>FoamBuffer.Shape01</c> on speed through the water — which is
         /// already 0 for a hull lying to her mooring, bobbing, or carried along by the stream. A hull
         /// making no way keeps station with no wave, so both this and
-        /// <see cref="WakeLiftMath.TransverseWavelength"/> reach zero together and the shader's
-        /// per-slot skip takes the whole train out of the frame.</para>
+        /// <see cref="WakeLiftMath.TransverseWavelength"/> reach zero together — and a hull at zero
+        /// TAKES NO SLOT, so she is absent from the frame's packing and the shader never reads her.
+        ///
+        /// <para>⚠️ A hull can also be refused because the frame already holds
+        /// <see cref="FoamBuffer.MaxInjectors"/> STRONGER trains than hers: the cap is rationed by the
+        /// gate, not by arrival order. Returning false therefore means "not drawn this frame", never
+        /// "something went wrong", and a caller that needs to know must read the return value rather
+        /// than assume the publish landed.</para></para>
         /// </summary>
-        internal static void PublishWakeLift(int slot, Vector2 rootXY, Vector2 heading,
+        internal static bool PublishWakeLift(Vector2 rootXY, Vector2 heading,
                                              float wavelengthMetres, float halfBeamMetres,
                                              float gate01)
         {
-            if (slot < 0 || slot >= s_LiftShape.Length) return;
+            // 🔴 THE CAP IS RATIONED BY WHO IS LIFTING THE MOST WATER, NOT BY WHO ASKED FIRST.
+            // Nothing is reserved and nothing is held between frames: the packing is built fresh every
+            // frame from the hulls that hand a wave in.
+            //
+            // ⚠️ TWO EARLIER CUTS OF THIS CAP SHIPPED THE SAME SYMPTOM — the player's own boat drawing
+            // no wake at all in a populated region — for two different reasons, so the history is worth
+            // the lines it costs:
+            //
+            //   1. The first cut RESERVED: <c>ClaimLiftSlot</c> in the injector's OnEnable, held for the
+            //      component's life. NineMileCreek has 31 injectors alive against 8 slots, so the resident
+            //      fleet owned every slot at scene load and the one hull genuinely under way published
+            //      nothing, all session, while the acceptance fixture read a moored boat's root.
+            //   2. The second cut packed per frame in publish order — <see cref="CollectInjections"/>'s
+            //      own law for the foam, "a hull that is live but not actually churning claims no slot" —
+            //      and starved the very same hull for a subtler reason: SPEED THROUGH THE WATER IS NOT
+            //      SPEED OVER THE GROUND. A moored boat has the stream running past her, so her wake is
+            //      real, just tiny: NineMileCreek's 0.285 m/s of current measures as a 0.052 m train at
+            //      gate 0.095, and she publishes it every frame like everybody else. Thirty-one of those
+            //      ask before the player's boat does, and first-come-first-served gave them the whole cap
+            //      while she ran at 6 m/s.
+            //
+            // So the ration is the wake's OWN STRENGTH. Slots fill in publish order while there is room;
+            // once the cap is full a hull takes the WEAKEST slot, and only if her gate actually beats it.
+            // That needs no dial, no threshold and no new number — the gate is already this feature's
+            // amplitude, so "the eight biggest wakes in the frame are the eight that get drawn" is the
+            // whole rule, and it is what the owner would expect if asked. A tie keeps the incumbent, which
+            // is what stops a harbour full of identical bobbing hulls from trading slots every frame.
+            int frame = Time.frameCount;
+            bool rolled = s_LiftFrame != frame;
+            if (rolled)
+            {
+                s_LiftFrame = frame;
+                s_LiftCount = 0;
+                System.Array.Clear(s_LiftRoot, 0, s_LiftRoot.Length);
+                System.Array.Clear(s_LiftShape, 0, s_LiftShape.Length);
+            }
+
+            float gate = Mathf.Clamp01(gate01);
+            float lambda = Mathf.Max(wavelengthMetres, 0f);
+
+            // A hull making no way keeps station with no wave, so her gate and her wavelength reach zero
+            // together and she takes no slot at all — a harbour full of moored boats costs the fleet
+            // nothing. The upload is skipped unless THIS call is the one that rolled the frame, so a
+            // fleet of thirty-one still costs one array upload a frame, not thirty-one (rule 7);
+            // whoever rolled it has already pushed the cleared buffer.
+            if (gate <= 0f || lambda <= 0f)
+            {
+                if (rolled) PublishLift();
+                return false;
+            }
+
+            int slot;
+            if (s_LiftCount < s_LiftShape.Length)
+            {
+                slot = s_LiftCount++;
+            }
+            else
+            {
+                // THE RATION. Find the weakest train standing in the frame and take its slot if this
+                // hull's is stronger; `weakest` starts at her own gate so the comparison and the
+                // "did she win" test are the same test, and an exact tie leaves the incumbent alone.
+                slot = -1;
+                float weakest = gate;
+                for (int i = 0; i < s_LiftShape.Length; i++)
+                {
+                    if (s_LiftShape[i].x < weakest) { weakest = s_LiftShape[i].x; slot = i; }
+                }
+
+                // No silent caps: a truncation nobody is told about reads as "every boat lifts water".
+                // Warn-once per domain load (unlike the foam's, which re-arms off the live count — the
+                // number that overflows here is trains standing in ONE frame, which nothing tracks
+                // between frames, and inventing a counter to re-arm a log line is not worth a field).
+                // ⚠️ This fires in any populated harbour and that is not a fault: a moored fleet in a
+                // current really does have more live trains than the shader has slots. It says which
+                // ones got drawn, so the next reader does not have to discover the ration the hard way.
+                if (!s_WarnedLiftOverCap)
+                {
+                    s_WarnedLiftOverCap = true;
+                    Debug.LogWarning(
+                        $"[FoamInjectionRegistry] more than {FoamBuffer.MaxInjectors} hulls have a live " +
+                        "stern wave in the same frame. The strongest wakes own the slots and the weaker " +
+                        "trains are NOT drawn this frame — a moored fleet in a current is the usual cause, " +
+                        "and the boats actually making way outrank it. The cap is the water shader's " +
+                        "HH_WAKE_LIFT_MAX compile-time unroll; raise FoamBuffer.MaxInjectors and " +
+                        "HH_WAKE_LIFT_MAX together if a fleet ever needs more.");
+                }
+
+                if (slot < 0)
+                {
+                    if (rolled) PublishLift();
+                    return false;
+                }
+            }
+
             s_LiftRoot[slot] = new Vector4(rootXY.x, rootXY.y, heading.x, heading.y);
-            s_LiftShape[slot] = new Vector4(Mathf.Clamp01(gate01),
-                                            Mathf.Max(wavelengthMetres, 0f),
-                                            Mathf.Max(halfBeamMetres, 0f),
-                                            0f);
+            s_LiftShape[slot] = new Vector4(gate, lambda, Mathf.Max(halfBeamMetres, 0f), 0f);
             PublishLift();
+            return true;
         }
 
         /// <summary>Upload both arrays whole. Cheap, and the reason no writer needs to know whether it
@@ -399,6 +483,11 @@ namespace HiddenHarbours.Art
         {
             s_Live.Remove(injector);
             if (s_Live.Count <= FoamBuffer.MaxInjectors) s_WarnedOverCap = false;
+            // ⚠️ Takes her stern wave off the sea in the same call. The per-frame packing already
+            // drops a boat that stops publishing — but only once SOMEBODY ELSE publishes and rolls the
+            // frame, and the last hull to leave a region leaves nobody. That is the frozen-last-frame
+            // trap, and this is where it dies.
+            ClearWakeLift();
         }
 
         /// <summary>

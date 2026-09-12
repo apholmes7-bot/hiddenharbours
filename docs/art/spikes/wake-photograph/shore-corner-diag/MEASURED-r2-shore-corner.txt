@@ -1,0 +1,66 @@
+RIDER r2 — the shore corner. EVIDENCE ONLY; no fix, no cause proposed.
+SHOT FROM (34.70, 11.50), half-height 4.500 m, plate 3662x1600, 0.00563 m per pixel, hour 11.0, scene 'NineMileCreek'.
+CLOCK FROZEN at Time.timeSinceLevelLoad = 0.5834 s (timeScale 0) — LEG 4 walks the swash by DIAL at this held t, never by waiting, because consecutive shots land ~6.0 s apart against a ~6.25 s swash period and three serial plates are three readings of one moment (that folder's README).
+CENSUS  RUNTIME 'Water (Displaced)' (shader 'HiddenHarbours/Water', instance 568105589188012454) on Sea/DisplacedWaterMesh/Chunk_47_34 — renderer enabled True, active True, scene 'NineMileCreek', sorting 'Default':0, reads amp 1.0000 speed 0.1600 edge 0.6000 foamWidth 1.7400.
+CENSUS  ASSET   'Water' on Sea — NOT written.
+CENSUS  FLAT RENDERER (WaterSurface) on Sea — enabled False, active True. Its property block is what DisplacedWaterSurface copies onto every chunk, EVERY FRAME.
+CENSUS  DisplacedWaterSurface on Sea — Displaced True. When true the flat renderer is switched OFF and the sea is drawn by chunk meshes through a runtime material clone.
+CENSUS TOTAL: 38352 renderer(s) in the loaded scenes, 1681 carrying _SwashAmplitude, of which 1 distinct runtime material(s) and 1 asset material(s) (named above, skipped).
+PLATE r2-baseline  hash 6ac5a48122dcd120
+PLATE r2-baseline-repeat  hash 6ac5a48122dcd120
+SHUTTER REPEAT: worst channel 0.00000, 0 px differ. Every delta below is read against THIS, never against zero.
+LEG 2 — 63 renderer(s) overlap the frame; the 24 nearest the corner are A/B'd (enabled off, shoot, hash, on again), each read against the shutter repeat (0.00000).
+LEG 2  DRAWS  delta 0.17647 over 5859200 px — DayNightController/DayNightOverlay (material 'DayNight').
+LEG 2  DRAWS  delta 0.36471 over 5129 px — CreekFields/GrassChunk_c2_r10_t0 (material 'Grass').
+LEG 2  DRAWS  delta 0.29412 over 4838 px — CreekFields/GrassChunk_c2_r13_t0 (material 'Grass').
+LEG 2  DRAWS  delta 0.47843 over 2278 px — Shoreline/ShoreRocks/Rock_bs (material 'Sprite-Lit-Default').
+LEG 2  DRAWS  delta 0.45882 over 2077 px — Shoreline/ShorePlants/Glasswort (material 'LitShorePlant').
+LEG 2  DRAWS  delta 0.05882 over 3936 px — GullFlock/gull/SpriteShadow (material 'SpriteShadowShade').
+LEG 2  DRAWS  delta 0.43137 over 22982 px — CreekFields/GrassChunk_c2_r6_t0 (material 'Grass').
+LEG 2  DRAWS  delta 0.43137 over 28471 px — CreekFields/GrassChunk_c1_r10_t2 (material 'Grass').
+LEG 2  DRAWS  delta 0.43137 over 37144 px — CreekFields/GrassChunk_c1_r8_t2 (material 'Grass').
+LEG 2  DRAWS  delta 0.43137 over 28096 px — CreekFields/GrassChunk_c1_r12_t1 (material 'Grass').
+LEG 2  DRAWS  delta 0.43137 over 22982 px — CreekFields/GrassChunk_c1_r6_t1 (material 'Grass').
+LEG 2  DRAWS  delta 0.43137 over 31099 px — CreekFields/GrassChunk_c1_r9_t1 (material 'Grass').
+LEG 2  DRAWS  delta 0.40000 over 15701 px — Shoreline/ShorePlants/Glasswort (material 'LitShorePlant').
+LEG 2  DRAWS  delta 0.30196 over 20356 px — CreekFields/GrassChunk_c1_r11_t0 (material 'Grass').
+LEG 2  DRAWS  delta 0.05882 over 11120 px — GullFlock/gull/SpriteShadow (material 'SpriteShadowShade').
+LEG 2  DRAWS  delta 0.57255 over 70506 px — Sea/DisplacedWaterMesh/Chunk_25_18 (material 'Water (Displaced)', carries _SwashAmplitude).
+LEG 2  DRAWS  delta 0.40392 over 19495 px — CreekFields/GrassChunk_c1_r14_t0 (material 'Grass').
+LEG 2  DRAWS  delta 0.35294 over 21335 px — CreekFields/GrassChunk_c1_r10_t1 (material 'Grass').
+LEG 2  DRAWS  delta 0.39608 over 18837 px — Shoreline/ShoreContact (material 'Sprite-Lit-Default').
+LEG 2  DRAWS  delta 0.39608 over 25497 px — CreekFields/GrassChunk_c1_r7_t1 (material 'Grass').
+LEG 2  DRAWS  delta 0.39608 over 19029 px — CreekFields/GrassChunk_c1_r16_t1 (material 'Grass').
+LEG 2  DRAWS  delta 0.39608 over 26518 px — CreekFields/GrassChunk_c1_r12_t0 (material 'Grass').
+LEG 2  DRAWS  delta 0.39608 over 18837 px — CreekFields/GrassChunk_c1_r16_t0 (material 'Grass').
+LEG 2  DRAWS  delta 0.58824 over 1385271 px — Sea/DisplacedWaterMesh/Chunk_26_18 (material 'Water (Displaced)', carries _SwashAmplitude).
+LEG 2 VERDICT: 24 of 24 tested renderer(s) put pixels in this frame.
+PLATE r2-chan-material-frozen  hash 865ea3cf270cb714
+LEG 3  MATERIAL (frozen, 1 material(s))  delta 0.58824 over 37004 px.
+PLATE r2-chan-live-control-1  hash c2c645f4ec0c4ea6
+PLATE r2-chan-material-live  hash f0f837ea4da802ed
+PLATE r2-chan-live-control-2  hash 7fcb2a464c2cb3f7
+LEG 3  MATERIAL (clock running 0.60 s per arm)  delta 0.70980 over 1626821 px, against a control-to-control floor of 0.75686 over 1673984 px.
+PLATE r2-chan-propertyblock  hash e1be453735e22309
+LEG 3  PROPERTY BLOCK (frozen)  wrote 4.000, read back 4.000 — the write SURVIVED to the shutter; delta 0.75686 over 1597463 px.
+PLATE r2-chan-global  hash 2518ba54335861b7
+LEG 3  GLOBAL (frozen)  delta 0.75686 over 1563697 px. The global read 0.000 before this arm — the first spike's own reading, and these four keys are per-material CBUFFER members, never globals.
+LEG 3 VERDICT: the RUNTIME MATERIALS are the live channel at a frozen frame — this arm writes every material carrying the key, chunk clones included, and the first attempt wrote only the one a shader-name search finds first.
+LEG 4  through the MATERIAL channel, at held t = 3.3683 s. Four phases by dial; each shot three ways.
+PLATE r2-phase-0-shipped  hash 5616c1a2f446dff2
+PLATE r2-phase-0-foam-collapsed  hash 5616c1a2f446dff2
+PLATE r2-phase-0-wetedge-pinned  hash 0bfe8a5fa463a558
+LEG 4  phase-0 (speed 0.2969 = 1.000 cycles): foam collapsed moves 0.00000 over 0 px; wet edge pinned moves 0.69412 over 129420 px.
+PLATE r2-phase-1-shipped  hash 98cece07230b698e
+PLATE r2-phase-1-foam-collapsed  hash 98cece07230b698e
+PLATE r2-phase-1-wetedge-pinned  hash 4828883972a80667
+LEG 4  phase-1 (speed 0.3711 = 1.250 cycles): foam collapsed moves 0.00000 over 0 px; wet edge pinned moves 0.70588 over 78980 px.
+PLATE r2-phase-2-shipped  hash 6fa7934d046dfc8f
+PLATE r2-phase-2-foam-collapsed  hash 6fa7934d046dfc8f
+PLATE r2-phase-2-wetedge-pinned  hash 7c4d63203b5ec6af
+LEG 4  phase-2 (speed 0.4453 = 1.500 cycles): foam collapsed moves 0.00000 over 0 px; wet edge pinned moves 0.70588 over 27240 px.
+PLATE r2-phase-3-shipped  hash 91c4201b0b152374
+PLATE r2-phase-3-foam-collapsed  hash 91c4201b0b152374
+PLATE r2-phase-3-wetedge-pinned  hash 41a99116814ac32c
+LEG 4  phase-3 (speed 0.5196 = 1.750 cycles): foam collapsed moves 0.00000 over 0 px; wet edge pinned moves 0.70588 over 636 px.
+LEG 4  PHASE CHECK: the widest difference between any two of the four shipped phases is 0.74902, against a shutter repeat of 0.00000. The dial walked the pulse, so the split above is a split of a moving swash.

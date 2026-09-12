@@ -125,9 +125,6 @@ namespace HiddenHarbours.Art
         private readonly WaveFieldAnimator _animator = new WaveFieldAnimator();
 
         private bool _registered;
-        // This hull's WAKE LIFT slot in the registry's global arrays (water PR F, register row 27), or
-        // -1 while she is ashore or over the cap. Held for exactly as long as membership is.
-        private int _liftSlot = -1;
         private bool _primed;
         private Vector2 _previousPosition;
         private float _hullY;
@@ -534,7 +531,8 @@ namespace HiddenHarbours.Art
             if (_registered) return;
             FoamInjectionRegistry.Register(this);
             _registered = true;
-            _liftSlot = FoamInjectionRegistry.ClaimLiftSlot();
+            // No lift slot is claimed here, on purpose: the registry packs them per frame from the hulls
+            // that are actually making way, so joining the water reserves nothing (see PublishWakeLift).
         }
 
         private void Leave()
@@ -543,16 +541,16 @@ namespace HiddenHarbours.Art
             FoamInjectionRegistry.Unregister(this);
             _registered = false;
             _hasPending = false;
-            // Takes her stern wave off the sea in the same call — a wake standing in empty water
-            // after the boat is hauled out is the frozen-last-frame trap, and this is where it dies.
-            FoamInjectionRegistry.ReleaseLiftSlot(ref _liftSlot);
+            // Her stern wave comes off the sea inside Unregister — there is no per-hull slot to hand
+            // back, and the clearing is the registry's invariant to keep, not a caller's to remember.
         }
 
         /// <summary>
         /// Hand this hull's stern wave train to the water shader's vertex stage (water PR F, register
         /// row 27). Every argument is a number the foam buffer already made this frame — the transom
         /// root, her speed through the water, her churned half-beam, her wake gate — so the lift adds
-        /// no march, no history and no second field.
+        /// no march, no history and no second field. She is given a slot in THIS frame's packing only
+        /// if she is actually making way; a hull at rest is simply absent from it.
         ///
         /// <para>🔴 <b>DRAWN ONLY.</b> This is published for the water SHADER and read by nothing
         /// else. It is not on the <c>DisplacedSea</c> seam, so no hull, buoy, deck rider or seakeeping
@@ -561,14 +559,12 @@ namespace HiddenHarbours.Art
         /// </summary>
         private void PublishWakeLift(Vector2 root, float wavelengthMetres, float gate01)
         {
-            if (_liftSlot < 0) return;
             // The same forward direction the stern offset is measured along, so the train's axis and
             // its root can never disagree about which way she is pointing.
             Vector2 heading = (Vector2)transform.up;
             float mag = heading.magnitude;
             heading = mag > 1e-6f ? heading / mag : Vector2.up;
-            FoamInjectionRegistry.PublishWakeLift(_liftSlot, root, heading, wavelengthMetres,
-                                                  RadiusMeters, gate01);
+            FoamInjectionRegistry.PublishWakeLift(root, heading, wavelengthMetres, RadiusMeters, gate01);
         }
     }
 }

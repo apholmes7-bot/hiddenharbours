@@ -5,6 +5,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 using HiddenHarbours.Art;
 
 namespace HiddenHarbours.Tests.Art.EditMode
@@ -33,7 +34,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// — a rename cannot hide a changed number, and a changed number cannot hide behind a rename.</item>
     /// <item>THE PLUMBING — the dials are declared in both halves of the shader, the passthrough
     /// short-circuits before a slot is read, the lift enters the vertex stage beside the swell and nowhere
-    /// else, and the registry's slot pool claims, publishes, releases and refuses at its cap.</item>
+    /// else, and the registry PACKS ITS SLOTS PER FRAME from the hulls that are actually making way
+    /// — the cap bounds boats that are lifting water, not boats that exist.</item>
     /// </list>
     ///
     /// <para>CPU-only by construction: no GPU, no render, no device — so CI adjudicates every one of them.
@@ -273,14 +275,25 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "front of the boat, which is the one defect a plate would catch late and an owner " +
                 "immediately.");
 
-            // The same point, with her turned 90 degrees, must be bare; turned to face it, lifted.
+            // ⚠️ ASTERN IS MEASURED ALONG HER HEADING, NOT SOUTH ON THE MAP. The wedge turns with the
+            // boat, so the same patch of sea is her wake, her bow water or bare depending only on which
+            // way she is pointing. (This guard's first cut asserted that a hull steaming SOUTH lifts the
+            // sea six metres south of her transom — which is six metres AHEAD of her. The law was right
+            // and the guard was wrong; it had never been executed until the packing fix brought the
+            // EditMode suite up. Named here so it is not "corrected" back.)
             Vector2 point = new Vector2(0f, -6f);
             Assert.AreEqual(0f, WakeLiftMath.HeightAt(point, root, Vector2.right,
                                                       Amp, Lambda, Beam, Decay),
-                "Steaming east, the sea six metres SOUTH of her is outside her wedge.");
-            Assert.That(Mathf.Abs(WakeLiftMath.HeightAt(point, root, Vector2.down,
+                "Steaming east, the sea six metres SOUTH of her transom is ABEAM, not astern.");
+            Assert.AreEqual(0f, WakeLiftMath.HeightAt(point, root, Vector2.down,
+                                                      Amp, Lambda, Beam, Decay),
+                "Steaming SOUTH, that same sea is six metres AHEAD of her — still nothing.");
+            Assert.That(Mathf.Abs(WakeLiftMath.HeightAt(new Vector2(-6f, 0f), root, Vector2.right,
                                                         Amp, Lambda, Beam, Decay)),
-                Is.GreaterThan(0f), "Steaming south, that same sea is her own wake.");
+                Is.GreaterThan(0f),
+                "Steaming EAST, the sea six metres WEST of her transom IS her own wake: the wedge " +
+                "follows her heading through a quarter turn, which is the whole point of the frame " +
+                "change and the one place a sign slip could hide.");
         }
 
         /// <summary>Rule 5: recomputed every frame from published state, never saved and never random.
@@ -653,73 +666,272 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "'static lines' complaint of 2026-07-23 with amplitude added.");
         }
 
-        // ==== 6. THE SLOT POOL =======================================================================
+        // ==== 6. THE PER-FRAME PACKING ===============================================================
 
         /// <summary>
-        /// The publish path is the one FoamInjector already owns — one slot per hull, every writer
-        /// uploading the whole buffer (the GrassFootstep pattern), so the last writer's upload carries
-        /// every writer's frame and no ordering is assumed. These walk the pool's lifecycle without an
-        /// injector, and return it exactly as they found it.
+        /// 🔴 <b>The regression guard for the defect this feature shipped with in its first cut, and the
+        /// reason the packing is per-frame at all.</b>
+        ///
+        /// <para>That cut RESERVED: <c>FoamInjector.Join</c> claimed a slot and held it for the
+        /// component's life. The acceptance photograph caught what that means in a region that is
+        /// actually populated — NineMileCreek has 31 injectors alive against 8 slots, so the resident
+        /// fleet took every slot at scene load and the one boat genuinely under way (the player's)
+        /// published nothing at all, all session. Both lift arms read a MOORED boat's root, 60 m off the
+        /// transom, identically in both arms: the foreign-slot signature.</para>
+        ///
+        /// <para>The SECOND cut packed per frame instead, in publish order, on the law
+        /// <c>FoamInjectionRegistry.CollectInjections</c> applies to the foam: the cap bounds hulls that
+        /// are lifting water, not hulls that exist. ⚠️ It starved the same boat in the same region, and
+        /// THIS GUARD PASSED WHILE IT DID — because its first cut modelled a moored hull as gate 0,
+        /// wavelength 0, absent from the packing. She is not. Speed through the water is not speed over
+        /// the ground: NineMileCreek's current runs past every mooring at 0.285 m/s, which is a real
+        /// 0.052 m train at gate 0.095, published every frame by all 31 of them, and first-come-first-
+        /// served handed them the whole cap before the player's boat at 6 m/s ever asked.</para>
+        ///
+        /// <para>So the cap is RATIONED BY THE GATE: the eight strongest trains in the frame are the
+        /// eight the shader draws, and a tie keeps the incumbent. The numbers below are the measured
+        /// ones, which is the only reason this guard now bites.</para>
         /// </summary>
         [Test]
-        public void TheSlotPool_ClaimsReleasesAndRefusesAtItsCap()
+        public void AFleetAtHerMoorings_CannotCrowdTheOneHullUnderWayOutOfThePacking()
         {
-            var mine = new List<int>();
+            FoamInjectionRegistry.ClearWakeLift();
             try
             {
-                for (int i = 0; i < FoamBuffer.MaxInjectors + 2; i++)
+                // ⚠️ A BOAT AT HER MOORING PUBLISHES A REAL WAKE, AND THAT IS THE WHOLE DIFFICULTY.
+                // The first cut of this guard handed the moored fleet gate 0 and wavelength 0, and so it
+                // passed against a registry that still starved the player — because a moored boat is NOT
+                // at zero speed THROUGH THE WATER: the stream runs past her. The two numbers below are
+                // what the acceptance plate read back out of the shader globals in NineMileCreek
+                // (0.285 m/s of current = a 0.052 m train at gate 0.095). They are measured, not chosen
+                // to make this test pass, and that is the only reason it now bites.
+                const float mooredGate = 0.0950f;
+                const float mooredLambda = 0.052f;
+
+                LogAssert.Expect(LogType.Warning, new Regex("live stern wave in the same frame"));
+
+                // Twice the cap, all in ONE frame, every one of them with a live train.
+                for (int i = 0; i < FoamBuffer.MaxInjectors * 2; i++)
                 {
-                    int slot = FoamInjectionRegistry.ClaimLiftSlot();
-                    if (slot < 0) break;
-                    Assert.That(slot, Is.InRange(0, FoamBuffer.MaxInjectors - 1));
-                    Assert.IsFalse(mine.Contains(slot),
-                        "Two hulls were handed the SAME slot. Every writer must own its own, or one " +
-                        "boat's wake overwrites another's every frame.");
-                    mine.Add(slot);
+                    FoamInjectionRegistry.PublishWakeLift(new Vector2(312f + i, 64.8f), Vector2.up,
+                                                          mooredLambda, Beam, mooredGate);
                 }
 
-                Assert.AreEqual(FoamBuffer.MaxInjectors, mine.Count,
-                    "The pool must hand out exactly MaxInjectors slots before it refuses.");
-                Assert.AreEqual(-1, FoamInjectionRegistry.ClaimLiftSlot(),
-                    "Past the cap the pool must return -1 and the injector must simply publish no lift " +
-                    "— never wrap around onto another hull's slot, and never grow the array the shader " +
-                    "unrolls over.");
+                var underWay = new Vector2(260.01f, 94.93f);
+                Assert.IsTrue(FoamInjectionRegistry.PublishWakeLift(underWay, Vector2.up, Lambda, Beam, 0.8f),
+                    "THE ONE HULL UNDER WAY GOT NO SLOT. This is the shipped defect verbatim: the " +
+                    "player's own boat draws no wake lift in a populated region, because sixteen boats " +
+                    "bobbing at their moorings asked first.");
+
+                var cpuRoot = new Vector4[FoamBuffer.MaxInjectors];
+                var cpuShape = new Vector4[FoamBuffer.MaxInjectors];
+                FoamInjectionRegistry.ReadWakeLift(cpuRoot, cpuShape);
+
+                int hers = -1;
+                int bobbers = 0;
+                for (int i = 0; i < FoamBuffer.MaxInjectors; i++)
+                {
+                    if (Mathf.Abs(cpuRoot[i].x - underWay.x) < 1e-4f &&
+                        Mathf.Abs(cpuRoot[i].y - underWay.y) < 1e-4f) hers = i;
+                    else if (cpuShape[i].x > 0f) bobbers++;
+                }
+
+                Assert.GreaterOrEqual(hers, 0,
+                    "PublishWakeLift reported her packed and the UPLOADED buffer does not carry her root. " +
+                    "The return value and the arrays the shader actually reads have to be one story.");
+                Assert.AreEqual(0.8f, cpuShape[hers].x, 1e-6f, "...carrying her own gate, not a bobber's.");
+                Assert.AreEqual(Lambda, cpuShape[hers].y, 1e-4f, "...and her own wavelength.");
+                Assert.AreEqual(FoamBuffer.MaxInjectors - 1, bobbers,
+                    "She must displace exactly ONE moored boat. The cap is a ration, not a queue: " +
+                    "admitting the strongest train costs the fleet the weakest one and nothing more.");
             }
             finally
             {
-                for (int i = 0; i < mine.Count; i++)
-                {
-                    int slot = mine[i];
-                    FoamInjectionRegistry.ReleaseLiftSlot(ref slot);
-                    Assert.AreEqual(-1, slot, "ReleaseLiftSlot must clear the caller's handle too.");
-                }
+                FoamInjectionRegistry.ClearWakeLift();
             }
+        }
 
-            int again = FoamInjectionRegistry.ClaimLiftSlot();
-            Assert.That(again, Is.InRange(0, FoamBuffer.MaxInjectors - 1),
-                "After releasing, the pool must hand slots out again — a leaked slot is a wake standing " +
-                "on the sea with no boat under it.");
-            FoamInjectionRegistry.ReleaseLiftSlot(ref again);
+        /// <summary>
+        /// Slots are handed out in PUBLISH ORDER within a frame, each writer owning its own, and every
+        /// publish uploads the whole buffer (the <c>GrassFootstep</c> pattern) so no writer has to know
+        /// whether it ran first or last. The frame's packing then resets — exercised here through
+        /// <c>ClearWakeLift</c>, which is the same reset a frame roll performs.
+        /// </summary>
+        [Test]
+        public void ThePacking_HandsEveryMoverItsOwnSlot_AndResetsWithTheFrame()
+        {
+            FoamInjectionRegistry.ClearWakeLift();
+            try
+            {
+                var cpuRoot = new Vector4[FoamBuffer.MaxInjectors];
+                var cpuShape = new Vector4[FoamBuffer.MaxInjectors];
+
+                Assert.IsTrue(FoamInjectionRegistry.PublishWakeLift(new Vector2(1f, 2f), Vector2.up,
+                                                                    Lambda, Beam, 0.5f));
+                Assert.IsTrue(FoamInjectionRegistry.PublishWakeLift(new Vector2(3f, 4f), Vector2.right,
+                                                                    Lambda, Beam, 0.6f));
+                FoamInjectionRegistry.ReadWakeLift(cpuRoot, cpuShape);
+                Assert.AreEqual(new Vector4(1f, 2f, 0f, 1f), cpuRoot[0],
+                    "The first hull to publish in a frame owns slot 0.");
+                Assert.AreEqual(new Vector4(3f, 4f, 1f, 0f), cpuRoot[1],
+                    "The second owns slot 1 — two hulls must never be handed the same slot, or one " +
+                    "boat's wake overwrites the other's every frame.");
+
+                // The reset a frame roll performs: the WHOLE buffer, not just the counter. A reset that
+                // only moved the count would leave the previous frame's crests standing behind the
+                // movers of this one.
+                FoamInjectionRegistry.ClearWakeLift();
+                FoamInjectionRegistry.ReadWakeLift(cpuRoot, cpuShape);
+                for (int i = 0; i < FoamBuffer.MaxInjectors; i++)
+                {
+                    Assert.AreEqual(Vector4.zero, cpuRoot[i], $"Root slot {i} survived the reset.");
+                    Assert.AreEqual(Vector4.zero, cpuShape[i], $"Shape slot {i} survived the reset.");
+                }
+
+                Assert.IsTrue(FoamInjectionRegistry.PublishWakeLift(new Vector2(9f, 9f), Vector2.up,
+                                                                    Lambda, Beam, 1f));
+                FoamInjectionRegistry.ReadWakeLift(cpuRoot, cpuShape);
+                Assert.AreEqual(new Vector4(9f, 9f, 0f, 1f), cpuRoot[0],
+                    "After the reset the next mover starts again at slot 0 — a packing that kept " +
+                    "counting would walk off the cap with one boat on the water.");
+            }
+            finally
+            {
+                FoamInjectionRegistry.ClearWakeLift();
+            }
+        }
+
+        /// <summary>
+        /// Past the cap the extra movers draw nothing and the registry SAYS SO once. It must never wrap
+        /// onto another hull's slot, and never grow the array the shader unrolls over: the bound is the
+        /// shader's <c>HH_WAKE_LIFT_MAX</c> compile-time <c>#define</c>.
+        /// </summary>
+        [Test]
+        public void PastTheCap_TheExtraMoversDrawNothing_AndTheRegistrySaysSoOnce()
+        {
+            FoamInjectionRegistry.ClearWakeLift();   // also re-arms the warn-once
+            try
+            {
+                LogAssert.Expect(LogType.Warning,
+                                 new Regex("live stern wave in the same frame"));
+
+                var taken = new List<Vector2>();
+                int refused = 0;
+                for (int i = 0; i < FoamBuffer.MaxInjectors + 3; i++)
+                {
+                    var root = new Vector2(100f + i, 50f);
+                    if (FoamInjectionRegistry.PublishWakeLift(root, Vector2.up, Lambda, Beam, 1f))
+                        taken.Add(root);
+                    else
+                        refused++;
+                }
+
+                Assert.AreEqual(FoamBuffer.MaxInjectors, taken.Count,
+                    "Exactly MaxInjectors movers must be packed before the frame starts refusing.");
+                Assert.AreEqual(3, refused,
+                    "Every mover past the cap carries the SAME gate as the eight already standing, and an " +
+                    "exact tie must leave the incumbent alone — otherwise a harbour of identical hulls " +
+                    "trades slots every frame and the picture crawls for no reason.");
+
+                var cpuRoot = new Vector4[FoamBuffer.MaxInjectors];
+                var cpuShape = new Vector4[FoamBuffer.MaxInjectors];
+                FoamInjectionRegistry.ReadWakeLift(cpuRoot, cpuShape);
+                for (int i = 0; i < FoamBuffer.MaxInjectors; i++)
+                    Assert.AreEqual(taken[i].x, cpuRoot[i].x, 1e-4f,
+                        $"Slot {i} must still carry the {i}th mover — a wrap would have overwritten her " +
+                        "with a boat the shader already drew.");
+            }
+            finally
+            {
+                FoamInjectionRegistry.ClearWakeLift();
+            }
+        }
+
+        /// <summary>
+        /// THE RATION, on its own. Once the frame is full, a slot goes to the stronger wake and the
+        /// weakest standing train loses it — so the order hulls happen to update in cannot decide whose
+        /// wake the player sees. ⚠️ This is the guard the two shipped cuts of the cap both failed: a
+        /// reservation table failed it at scene load, and a first-come-first-served packing failed it in
+        /// any harbour, because a moored fleet in a current has 31 live trains and the shader has 8 slots.
+        /// </summary>
+        [Test]
+        public void TheRation_GoesToTheStrongestWakes_NotToWhoeverAskedFirst()
+        {
+            FoamInjectionRegistry.ClearWakeLift();
+            try
+            {
+                LogAssert.Expect(LogType.Warning, new Regex("live stern wave in the same frame"));
+
+                const float weak = 0.0950f;     // the measured moored publish, as above
+                const float weakLambda = 0.052f;
+
+                for (int i = 0; i < FoamBuffer.MaxInjectors; i++)
+                    Assert.IsTrue(FoamInjectionRegistry.PublishWakeLift(new Vector2(400f + i, 20f),
+                                                                        Vector2.up, weakLambda, Beam, weak),
+                        $"The first {FoamBuffer.MaxInjectors} trains fill the frame in publish order — " +
+                        "there is nothing to ration until the cap is reached.");
+
+                var cpuRoot = new Vector4[FoamBuffer.MaxInjectors];
+                var cpuShape = new Vector4[FoamBuffer.MaxInjectors];
+
+                // A stronger wake arrives with the cap full: she is drawn, and the fleet is down one.
+                var first = new Vector2(10f, 10f);
+                Assert.IsTrue(FoamInjectionRegistry.PublishWakeLift(first, Vector2.up, Lambda, Beam, 0.6f),
+                    "A hull under way was refused by a cap held entirely by bobbing moored boats.");
+                FoamInjectionRegistry.ReadWakeLift(cpuRoot, cpuShape);
+                Assert.AreEqual(1, CountGate(cpuShape, 0.6f), "Her gate must be in the packing exactly once.");
+                Assert.AreEqual(FoamBuffer.MaxInjectors - 1, CountGate(cpuShape, weak),
+                    "Exactly one weak train gives way.");
+
+                // And a SECOND, stronger still: the ration is not a one-off.
+                var second = new Vector2(20f, 20f);
+                Assert.IsTrue(FoamInjectionRegistry.PublishWakeLift(second, Vector2.up, Lambda, Beam, 0.9f),
+                    "The ration must keep working past the first eviction.");
+                FoamInjectionRegistry.ReadWakeLift(cpuRoot, cpuShape);
+                Assert.AreEqual(1, CountGate(cpuShape, 0.9f), "The second mover must be drawn too.");
+                Assert.AreEqual(1, CountGate(cpuShape, 0.6f),
+                    "...WITHOUT costing the first mover her slot: 0.6 beats 0.095, so the weakest train " +
+                    "standing is still a moored boat's and that is the one that must go.");
+                Assert.AreEqual(FoamBuffer.MaxInjectors - 2, CountGate(cpuShape, weak));
+
+                // A weak latecomer beats nothing and is simply not drawn.
+                Assert.IsFalse(FoamInjectionRegistry.PublishWakeLift(new Vector2(30f, 30f), Vector2.up,
+                                                                     weakLambda, Beam, weak),
+                    "A train no stronger than the weakest already standing must be refused — admitting " +
+                    "her would cost an equal wake its slot for nothing.");
+            }
+            finally
+            {
+                FoamInjectionRegistry.ClearWakeLift();
+            }
+        }
+
+        /// <summary>How many packed slots carry this gate. The ration moves hulls BETWEEN slots, so a
+        /// guard that pins a hull to an index would measure the packing's bookkeeping, not its rule.</summary>
+        static int CountGate(Vector4[] shapes, float gate)
+        {
+            int n = 0;
+            for (int i = 0; i < shapes.Length; i++) if (Mathf.Abs(shapes[i].x - gate) < 1e-6f) n++;
+            return n;
         }
 
         [Test]
         public void APublishedHull_ReachesTheGlobalArraysTheShaderReads()
         {
-            int slot = FoamInjectionRegistry.ClaimLiftSlot();
-            Assert.That(slot, Is.GreaterThanOrEqualTo(0));
+            FoamInjectionRegistry.ClearWakeLift();
             try
             {
                 var root = new Vector2(-14.5f, 62.25f);
                 var heading = new Vector2(0.6f, 0.8f);
-                FoamInjectionRegistry.PublishWakeLift(slot, root, heading, Lambda, Beam, 0.75f);
+                Assert.IsTrue(FoamInjectionRegistry.PublishWakeLift(root, heading, Lambda, Beam, 0.75f));
 
                 var cpuRoot = new Vector4[FoamBuffer.MaxInjectors];
                 var cpuShape = new Vector4[FoamBuffer.MaxInjectors];
                 FoamInjectionRegistry.ReadWakeLift(cpuRoot, cpuShape);
-                Assert.AreEqual(new Vector4(root.x, root.y, heading.x, heading.y), cpuRoot[slot],
+                Assert.AreEqual(new Vector4(root.x, root.y, heading.x, heading.y), cpuRoot[0],
                     "The transom and her heading must be published as they were given — the frame " +
                     "change in the shader assumes a UNIT heading and a world-metre root.");
-                Assert.AreEqual(new Vector4(0.75f, Lambda, Beam, 0f), cpuShape[slot],
+                Assert.AreEqual(new Vector4(0.75f, Lambda, Beam, 0f), cpuShape[0],
                     "The gate, the wavelength and the churned half-beam must arrive unmodified.");
 
                 // ⚠️ The array reaching the GLOBAL is the thing the shader reads — a CPU array that
@@ -731,32 +943,41 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.AreEqual(FoamBuffer.MaxInjectors, uploaded.Length,
                     "The whole buffer must upload, every publish: that is what lets every writer own a " +
                     "slot without assuming who uploads last.");
-                Assert.AreEqual(0.75f, uploaded[slot].x, 1e-6f, "The gate must reach the shader.");
-                Assert.AreEqual(Lambda, uploaded[slot].y, 1e-3f, "The wavelength must reach the shader.");
+                Assert.AreEqual(0.75f, uploaded[0].x, 1e-6f, "The gate must reach the shader.");
+                Assert.AreEqual(Lambda, uploaded[0].y, 1e-3f, "The wavelength must reach the shader.");
             }
             finally
             {
-                FoamInjectionRegistry.ReleaseLiftSlot(ref slot);
+                FoamInjectionRegistry.ClearWakeLift();
             }
         }
 
         [Test]
-        public void AReleasedSlot_IsZeroedSoNoWakeStandsWhereSheLeft()
+        public void AHullThatLeavesTheWater_TakesHerWakeWithHer()
         {
-            int slot = FoamInjectionRegistry.ClaimLiftSlot();
-            Assert.That(slot, Is.GreaterThanOrEqualTo(0));
-            FoamInjectionRegistry.PublishWakeLift(slot, new Vector2(3f, 4f), Vector2.up,
-                                                 Lambda, Beam, 1f);
-            int mine = slot;
-            FoamInjectionRegistry.ReleaseLiftSlot(ref slot);
+            FoamInjectionRegistry.ClearWakeLift();
+            Assert.IsTrue(FoamInjectionRegistry.PublishWakeLift(new Vector2(3f, 4f), Vector2.up,
+                                                                Lambda, Beam, 1f));
+
+            // What FoamInjectionRegistry.Unregister calls when the last hull leaves a region: the
+            // per-frame packing drops a boat that stops publishing, but only once somebody ELSE publishes
+            // and rolls the frame — and the last boat out leaves nobody.
+            FoamInjectionRegistry.ClearWakeLift();
 
             var cpuRoot = new Vector4[FoamBuffer.MaxInjectors];
             var cpuShape = new Vector4[FoamBuffer.MaxInjectors];
             FoamInjectionRegistry.ReadWakeLift(cpuRoot, cpuShape);
-            Assert.AreEqual(Vector4.zero, cpuShape[mine],
-                "A released slot must be ZEROED and re-uploaded. Leaving the last frame's values in " +
-                "place freezes a wake on the sea where the boat despawned — the frozen-last-frame trap " +
-                "this project has paid for in the foam buffer already.");
+            Assert.AreEqual(Vector4.zero, cpuShape[0],
+                "The buffer must be ZEROED and re-uploaded when the water empties. Leaving the last " +
+                "frame's values in place freezes a wake on the sea where the boat despawned — the " +
+                "frozen-last-frame trap this project has paid for in the foam buffer already.");
+            Assert.AreEqual(Vector4.zero, cpuRoot[0], "...root and shape both.");
+
+            Vector4[] uploaded = Shader.GetGlobalVectorArray(FoamShaderIds.WakeLiftShape);
+            Assert.IsNotNull(uploaded);
+            Assert.AreEqual(0f, uploaded[0].x, 1e-6f,
+                "The zeroing must UPLOAD. A cleared CPU array with a stale global is a wake still on " +
+                "the sea — and the only place that shows is the picture.");
         }
     }
 }
