@@ -4961,6 +4961,88 @@ with its own costs (it shrinks the boat, and the framing is per hull today).
 (ADR 0018's one-sea rule), so a longer swell moves the seakeeping with it — and register row 6's
 ride≠drawn question closes at the same time. That is a Tier B change and wants its own charter.
 
+## 38. The wake band is drawn OFF the boat's track — MEASURED, cause NOT named (register row 38)
+
+**The owner, twice.** 2026-09-06 — which became row 29 and #768 — and again **2026-09-11**, after that
+work landed: *"the wake still is not centered behind the boat, the foam is off centre."*
+
+**Status: MEASURED, cause NOT named. Structural → the owner rules. Nothing shipped, no look changed.**
+The measurement is the photograph fixture `Assets/Tests/PlayMode/WakeCentrePhotographPlayTests.cs`
+and its plates, **merged in #835** (`90a4d3db`); the raw numbers and the working notes stay in
+`docs/art/spikes/wake-photograph/` and are not restated here beyond the table.
+
+**The headline: the displacement belongs to ONE family, points in ONE FIXED WORLD DIRECTION (≈NE), and
+GROWS with age.** The obvious mechanism — the foam buffer's own wind/current drift — is **REFUTED**.
+
+### 38.1 What was measured
+
+Lateral offset of each foam family's drawn centroid from the transom's swept track, in **world metres**,
+`+` = to PORT. NineMileCreek, hour 11.0, open water, 6.0 m under her; plate 3662×1600, noise floor
+0.0100 luma.
+
+| hull | heading | ALL | A | B | C | B / band half-width |
+|---|---|---|---|---|---|---|
+| cape | 000 | −0.135 | none | **−0.558** | +0.053 | −0.23 |
+| cape | 090 | +0.493 | none | **+0.704** | +0.393 | 0.29 |
+| cape | turn 000→088 | −0.168 | none | **−0.329** | −0.082 | −0.14 |
+| dory | 000 | −0.163 | none | **−0.310** | −0.115 | −0.36 |
+| dory | 090 | +0.283 | none | **+0.614** | +0.153 | **0.72 ← worst** |
+| dory | turn 000→088 | −0.226 | none | **−0.242** | −0.219 | −0.29 |
+
+Cape: stern offset 6.400 m at 40.0°, band half-width 2.400 m. Dory: stern offset 2.250 m at 40.0°,
+band half-width 0.850 m.
+
+### 38.2 The four findings
+
+1. **B — the `BoatWakeEmitter` sprite deposits — is what displaces the band.** C (the crests) brackets
+   the track near-symmetrically at every heading.
+2. **On the two straight legs the displacement resolves to ONE WORLD DIRECTION.**
+   Heading 000 (course +y): B 0.558 m to **starboard** = world **+x**. Heading 090 (course +x):
+   B 0.704 m to **port** = world **+y**. Cape ≈ (+0.56, +0.70) m — about **0.90 m toward world NE**;
+   dory ≈ (+0.31, +0.61) m, about 0.69 m. *A fixed world direction is exactly what "sometimes left,
+   sometimes right" looks like from the helm* — which is why two reports a week apart read as one defect.
+3. **It GROWS with distance astern.** At the transom the deposits straddle the track; twenty metres
+   astern they are clear of it, same side, on both straight headings.
+4. **Through the turn the sheet's injector root path separates markedly from the swept track.** This
+   does not reach the player today (A draws nothing in either measured configuration), but it is a
+   disagreement #768 was meant to close.
+
+### 38.3 🔴 REFUTED — do not re-spend on it
+
+The foam buffer's wind/current drift (`FoamBuffer.AdvectCells` along the shared `FoamDriftDir()`,
+`FoamBuffer.DrawOrigin`) produces **exactly** the signature in finding 3, and **cannot** be the
+mechanism: that drift moves the **buffer**, which is family **A**. Family B is sprite deposits, and
+`BoatWakeEmitter.cs` carries **no drift term at all** — its deposits are never advected once laid.
+
+### 38.4 ⚠ OPEN, and it gates the rest: the "A = none" rows are not evidence
+
+The A isolation is **INERT**, and the rows must not be read as "the sheet is missing". The sheet is
+composited **inside** `HiddenHarboursWater.shader` (`WakeFoamCoverage`, gated on the material's
+`_WakeFoamStrength`, which is 0.85 in `Water.mat` and in all eight `WaterPresets`) — not by a render
+feature the fixture can switch. Toggling `FoamInjector` stops **new injection only**, so the sheet is
+identical in every arm including the bare one, and cancels exactly: `armA − bare` is **bit-identical**,
+peak 0.0000 over 1.3–4.5 million px. The control holds — ALL drawn = B + C to the exact pixel on all
+six shots.
+
+**So whether A reaches the picture at all is unanswered**, and both configurations that reported it as
+nothing had a **RenderTexture attached** — per-camera foam state keys on (camera entity id, resolution).
+
+### 38.5 Four candidates — and all four await the owner
+
+None of these is a look change chosen by a lane (rule 6):
+
+| | candidate | size |
+|---|---|---|
+| 1 | Confirm A reaches the picture on an **unmodified camera**, no RenderTexture | small |
+| 2 | Find what displaces B toward a fixed world direction **with age** | medium, a spike |
+| 3 | **Rule whether B should displace at all.** Leeway is real; the boat does not share it, and that is the part that reads as a defect | a ruling |
+| 4 | The turn-only root-path divergence, finding 4 | small |
+
+**Not this row:** *"i do want the wake to lift the water and create visual waves"* (owner, same message)
+— that is **register row 27**, built as water PR F and written up in §46. No displacement was built here,
+and PR F does not move the band: the lift reads the transom root the wake already publishes, so a band
+drawn off the track will be **lifted off the track too** until row 38 is ruled.
+
 ## 39. "Make it realistic" — and the reference that makes it realistic is FETCH, not Pierson–Moskowitz
 
 **Owner, 2026-09-06, ruling on row 30 after seeing that halving λ is only 0.71× the speed:**
@@ -5732,3 +5814,138 @@ nobody "fixes" the mirror back without a new ruling.
 The wind port used for the day sweep is not a second implementation to be trusted on faith: it
 reproduces the four editor-measured readings (2.10 / 0.90 / 1.28 / 2.77 m/s and 0.293 / 0.181 / 0.217
 / 0.341) to the digit, and the script refuses to print a single table row unless it does.
+
+## 46. The wake LIFTS the water — the hull's own wave train, drawn (register row 27, water PR F)
+
+**The owner, 2026-09-11:** *"i do want the wake to lift the water and create visual waves."*
+
+Row 27 had sat as an ask since 2026-09-09; this is it, built. Until now a wake was a **mark on** the
+sea: the advected foam buffer (§28), the ageing sheet (§29, §36), the dispersing stamp (§35), the one
+publisher (§40). Every one of them changes the sea's **colour**. None of them changes its **height**.
+Now the hull carries a wave train, and the water stands up in it.
+
+### 46.1 🔴 What it is, and what it is NOT
+
+**It is a DRAWN displacement.** The train is added inside `vertDisplaced`, to the same `lift` the swell
+displaces, in the same frame, faded by the same `ShoreFade01` — and it reaches **nothing else**.
+
+**It is NOT the ride.** It does not touch `DisplacedSea`, `DisplacedSeaState`, `ShoreFadeMath`, or any
+seam `BoatWaveMotion`, `MeshHullDriver` or a deck rider reads. **No hull rides another hull's wash.**
+That is a simulation change under **ADR 0018** (one sea, one force path) and needs its own PR and the
+owner's word; it is not smuggled in behind a look change. The fence is machine-checked, not merely
+stated: `WakeLiftMathTests.TheLift_IsDrawnOnly_AndNothingInCoreKnowsItsName` walks every `.cs` under
+`Assets/_Project/Code/Core/` and fails if any of them so much as names `WakeLift`.
+
+**ADR 0027 tier: A** — drawn-only, no new render target, no entry into the shared wave field. It moves
+vertices rather than only `col.rgb`, so it is the geometric edge of Tier A; it is explicitly **not
+Tier B**, because Tier B is defined by the hull riding the field, and this field no hull can read.
+
+### 46.2 The train: stationary phase, not a look
+
+The train is the **Kelvin wake**, and its numbers are derivations rather than dials. A wave keeps
+station with a hull at speed *V* when its phase speed matches the hull's component along the crest
+normal, `k(θ) = k₀/cos²θ` with `k₀ = g/V²`. Two members fall out:
+
+| member | crest normal | wavenumber | what it draws |
+|---|---|---|---|
+| transverse | θ = 0 | `k₀` | the combs straight across the track, λ = 2πV²/g |
+| divergent | θ_c = acos√(2/3) = **35.264390°** | `k₀ × 3/2` **exactly** | the arms along the wedge |
+
+θ_c is the angle that maximises the wedge half-angle `β(θ) = atan(sinθcosθ/(1+sin²θ))`, whose maximum
+**19.471221°** is the Kelvin half-angle — and this project already ships its tangent as
+`FoamBuffer.KelvinSlope` (`tan 19.5° = 0.3541186`). **So the lift's wedge and the foam's wedge are the
+same wedge, by derivation**, to 0.16%; the guard allows 0.5% and would catch the two parting company.
+
+The transverse wavelength is the **sea's own dispersion relation read backwards**:
+`WakeLiftMath.TransverseWavelength(V)` and `WaterDispersion.DeepPhaseSpeed(λ)` are exact inverses, and
+a test asserts the round trip at seven speeds. A wake that drifted off that relation would have stopped
+being the same water as the swell.
+
+Inside the wedge the train is windowed by `FoamBuffer.Profile` — the same falloff curve the foam
+disperses with — and ramped in over the hull's own half-beam so there is no step at the transom line.
+Astern it decays exponentially at the dialled e-folding length. `MemberShare = 0.5` is what makes the
+amplitude dial mean **crest height at the transom** rather than half of it.
+
+### 46.3 The publish path — extended, not duplicated
+
+Nothing new is marched or stored. Every number the lift needs was already computed each frame in
+`FoamInjector.LateUpdate`:
+
+| the lift needs | it already existed as |
+|---|---|
+| the transom, in world metres | `FoamBuffer.SternWorld()` — the root `WakeRootMath` has owned since #768 |
+| her speed through the water | `horizontalSpeed`, the same one that gates the foam |
+| her churned half-beam | `RadiusMeters` |
+| **0 at rest** | `wake01`, the wake-channel gate that is already exactly 0 at rest |
+
+Two new global uniform arrays carry it — `_HHWakeLiftRoot[i]` (xy = transom, zw = unit forward) and
+`_HHWakeLiftShape[i]` (x = gate, y = wavelength, z = half-beam) — **globals**, outside the per-material
+CBUFFER, for the same reason `_HHFoamBufferWorld` is: the displaced chunk renderers receive only a
+**copy** of the flat renderer's MaterialPropertyBlock (§22), so per-hull data has to be global to reach
+them. One slot per hull, and every writer uploads the whole buffer, so the last writer's upload carries
+every writer's frame — the `GrassFootstep` pattern, no ordering assumed.
+
+`HH_WAKE_LIFT_MAX` is a **compile-time** `#define` pinned to `FoamBuffer.MaxInjectors`, because an
+`[unroll]` over a runtime bound is a named magenta trap in this shader.
+
+### 46.4 The dials, and the passthrough that is structural
+
+Two, on the water material (rule 6, both labelled):
+
+| dial | range | ships at | 0 means |
+|---|---|---|---|
+| `_WakeLiftMetres` | 0 … 1.5 m | **0.25** | OFF |
+| `_WakeLiftDecayMetres` | 0 … 80 m | **20** | OFF |
+
+**Dial 0 is a bit-exact passthrough, by construction rather than by arithmetic luck.**
+`WakeLiftHeight` returns `0.0` from its first line when either dial is ≤ 0 — before a single slot is
+read — and the swell's own expression is untouched operation for operation. There are four such exact
+zeros: the amplitude at 0, the decay at 0, a hull **at rest** (no wavelength), and a hull with no beam.
+A moored boat draws nothing, and a plate shot at dial 0 is identical to one shot with the feature absent.
+
+**Why the material and not `GameConfig`:** the obvious homes — `DisplacedWater` / `DisplacedSeaState` —
+are precisely what the **ride** reads. Putting the lift there would have put it one field access from
+the force path. A material property is the strongest available fence: no Core type carries one.
+
+### 46.5 ⚠ The perceptual trap, named on purpose
+
+A Kelvin pattern is **quasi-steady in the hull's frame**: the crests keep station with her, so they are
+hull-locked, not world-locked. That is physically right, and it sits uncomfortably close to the owner's
+2026-07-23 complaint that *wakes are static lines*. Three things hold it apart: it exists **only while
+making way**, it **decays astern**, and families A/B/C still carry the world-anchored cue on top of it.
+If it still reads as locked, the alternative is a **world-anchored shed-crest** train — crests laid down
+at the transom and left in the water to decay in place, off the `FoamDispersal` six-node transom track
+that already exists. That is a different feature with a different cost, and it is the owner's to rank.
+
+### 46.6 The twin, and why it is scraped rather than trusted
+
+The law exists **twice** — `Assets/_Project/Code/Art/WakeLiftMath.cs` and the HLSL in
+`HiddenHarboursWater.shader` — because the shader draws it and the tests compute it. This repo has
+already paid for *a twin-parity test that pinned a twin against itself rather than against the thing
+that actually draws*, so `WakeLiftMathTests` reads **both source files**, extracts the six function
+bodies by brace matching, and compares them after nothing but a declared language mapping. The six
+HLSL functions are written line-for-line against the C#, **down to the local names**, to make that
+possible.
+
+And because a name mapping could otherwise launder a changed number, **every mapped constant's value is
+pinned separately** by parsing the shader's own `#define` literal against the C# it mirrors. A rename
+cannot hide a changed number, and a changed number cannot hide behind a rename.
+
+### 46.7 The acceptance instrument
+
+`Assets/Tests/PlayMode/WakeCentrePhotographPlayTests.cs` (§38's fixture, merged in #835) gains the
+lift arms: a **surface-elevation profile across the track, in world metres, lift arm vs dial-0 arm, per
+hull, at speed and at rest**. At rest the arms must be identical — the at-rest zero is an equality, not
+a tolerance. Every plate is hashed before any result is claimed; N identical hashes across a swept
+property means the property never reached the drawing renderer, which is a finding about the instrument
+and not about the sea. A **sabotage arm** is required and present: a wrong-signed lift (the train ahead
+of the boat), an unrooted one (the raw crests everywhere, with no wedge and no ramp), and one that never
+decays must each redden the guard, and do.
+
+⚠ A forced-**sprite** hull carries no `FoamInjector` at all — only mesh hulls get one, via
+`IsoFacetHullPresentationService.Install` — so she publishes no slot and draws no lift. The dory must be
+photographed as her default **mesh** variant.
+
+⚠ **Row 38 is not fixed by this, and is not made worse by it.** The lift reads the transom root the wake
+already publishes, so while the band is drawn off the track (§38) the lift stands off the track with it.
+That is one cause with two symptoms, and the cause is row 38's ruling to make.
