@@ -92,7 +92,11 @@ namespace HiddenHarbours.Tests.PlayMode
         /// chosen — the day/night multiply is fitted to <c>orthographicSize × aspect</c> every LateUpdate,
         /// so a plate shot at any other aspect wears the hour as a rectangle in the middle of the frame.
         /// </summary>
-        const int PlateHeightPx = 900;
+        // ⚠ Sized for the PULLED-BACK frame, not for the shipped zoom. A 4 s leg is ~24 m of track and
+        // the frame that holds it is ~55 m tall; at 900 px that is 16 px per metre, half the game's own
+        // 32. 1600 px puts it back near the density the art is authored at, and the width that follows
+        // from the camera's aspect stays inside what a render texture will take.
+        const int PlateHeightPx = 1600;
 
         /// <summary>The hour the picture is taken at. The owner's screenshot is a night one; the GEOMETRY
         /// under test is hour-independent (it is arithmetic on transforms), and daylight is the hour that
@@ -122,6 +126,13 @@ namespace HiddenHarbours.Tests.PlayMode
         readonly List<string> _rows = new List<string>();
 
         Camera _cam;
+        // Parked for the plate, put back in teardown. A LIST, because the camera this fixture
+        // photographs through is the persistent rig in DontDestroyOnLoad and the loaded region brings
+        // its own: parking the first one found left the other still writing the size.
+        readonly List<CameraFollow> _parked = new List<CameraFollow>();
+        readonly List<bool> _parkedWas = new List<bool>();
+        Behaviour _parkedPpc;        // the PixelPerfectCamera, ditto
+        bool _parkedPpcWas;
         RenderTexture _rt;
         int _w, _h;
         BoatWakeEmitter _emitter;
@@ -142,6 +153,11 @@ namespace HiddenHarbours.Tests.PlayMode
             if (GameServices.Clock != null) GameServices.Clock.TimeScale = 1f;
             if (_emitter != null) { _emitter.enabled = true; _emitter = null; }
 
+            for (int i = 0; i < _parked.Count; i++)
+                if (_parked[i] != null) _parked[i].enabled = _parkedWas[i];
+            _parked.Clear();
+            _parkedWas.Clear();
+            if (_parkedPpc != null) { _parkedPpc.enabled = _parkedPpcWas; _parkedPpc = null; }
             if (_cam != null) { _cam.targetTexture = null; _cam = null; }
             if (_rt != null) { _rt.Release(); Object.DestroyImmediate(_rt); _rt = null; }
             foreach (Object o in _spawned) if (o != null) Object.Destroy(o);
@@ -203,22 +219,6 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return LoadRegion();
             yield return SetHour(ShotHour);
 
-            if (!TryOpenWater(out Vector2 anchor, out float depth))
-            {
-                Assert.Ignore("SKIPPED, NOT VERIFIED — no run of open water was found in " + SceneName +
-                              " deep enough to drive a boat down, so there is nothing to photograph a wake " +
-                              "on. The region's tidal terrain either did not register or is dry along here.");
-                yield break;
-            }
-            Debug.Log($"[{PlateDir}] {subject}: open water at ({anchor.x:0.0}, {anchor.y:0.0}), " +
-                      $"{depth:0.0} m under her at this tide.");
-
-            _rows.Add($"# {subject} — {SceneName}, hour {ShotHour:0.0}, open water " +
-                      $"({anchor.x:0.0}, {anchor.y:0.0}), {depth:0.0} m");
-            _rows.Add("# heading | family | drawn px | centroid world (x, y) | lateral offset from the " +
-                      "swept track, m (+ = to PORT of the course) | that offset over the band's own " +
-                      "half-width");
-
             var legs = new[]
             {
                 new Leg("north-000", 0f, 0f),
@@ -226,11 +226,25 @@ namespace HiddenHarbours.Tests.PlayMode
                 new Leg("turn-000-thru-088", 0f, TurnRateDegPerSec),
             };
 
-            for (int i = 0; i < legs.Length; i++)
+            if (!TryLegAnchors(legs.Length, out List<Vector2> anchors, out float depth))
             {
-                Vector2 start = anchor + new Vector2(i * LegSpacingMetres, 0f);
-                yield return ShootLeg(subject, hull, visual, forceSprite, legs[i], start);
+                Assert.Ignore("SKIPPED, NOT VERIFIED — no open water was found INSIDE " + SceneName +
+                              "'s own camera bounds deep enough to drive a boat round, so there is nothing " +
+                              "that can be both sailed and photographed. The region's tidal terrain either " +
+                              "did not register, published no bounds, or is dry within a plate of the edge.");
+                yield break;
             }
+            string where = string.Join("; ", anchors.ConvertAll(a => $"({a.x:0.0}, {a.y:0.0})"));
+            Debug.Log($"[{PlateDir}] {subject}: open water at {where} — {depth:0.0} m under her at the " +
+                      "shallowest point any leg can reach, at this tide.");
+
+            _rows.Add($"# {subject} — {SceneName}, hour {ShotHour:0.0}, open water {where}, {depth:0.0} m");
+            _rows.Add("# heading | family | drawn px | centroid world (x, y) | lateral offset from the " +
+                      "swept track, m (+ = to PORT of the course) | that offset over the band's own " +
+                      "half-width");
+
+            for (int i = 0; i < legs.Length; i++)
+                yield return ShootLeg(subject, hull, visual, forceSprite, legs[i], anchors[i]);
 
             WriteMeasurements(subject);
         }
@@ -308,7 +322,12 @@ namespace HiddenHarbours.Tests.PlayMode
             var injector = go.GetComponentInChildren<FoamInjector>(includeInactive: true);
 
             // ── frame her, drive her, then stop the world ────────────────────────────────────────────
-            yield return FrameOn(go.transform);
+            // The frame is sized to the leg BEFORE she sails it: her path is a pure function of the leg
+            // and this fixture's constants, so the camera can be placed over the finished run rather than
+            // chase her through it. Padded by what the wake takes beyond her track — the stern offset she
+            // trails it from, and the band she lays either side of it.
+            Bounds run = PredictRun(leg, start, 3f * bandHalfWidth + sternOffset + 2f);
+            yield return FrameOn(go.transform, run);
 
             var track = new List<Vector2>(256);      // the transom's swept track — THE reference
             var injRoot = new List<Vector2>(256);    // where the sheet's own root actually went
@@ -352,8 +371,20 @@ namespace HiddenHarbours.Tests.PlayMode
             };
             if (injRoot.Count > 1) lines.Add((injRoot, new Color32(255, 210, 40, 255)));
 
+            // ⚠️ THE HEADLINE ROW, AND THE CONTROL FOR BOTH. Every family isolated on its own can be
+            // measured and still not answer what was asked: the owner is looking at ALL of the foam at
+            // once, so the centroid of everything the wake adds to the frame is the number his sentence
+            // is about. It doubles as the control on the isolations — if this draws no more pixels than
+            // B and C together, then whatever A is doing is not reaching the picture.
+            MeasureFamily(subject, leg, "ALL drawn", all, bare, floor, crop, track, bandHalfWidth,
+                          new Color32(255, 255, 255, 255), marks, required: true);
             MeasureFamily(subject, leg, "A sheet", armA, bare, floor, crop, track, bandHalfWidth,
-                          new Color32(80, 160, 255, 255), marks, injector != null);
+                          // ⚠️ NOT REQUIRED, AND THAT IS THE POINT. Whether the advected sheet draws
+                          // anything a camera can see is one of the questions this photograph exists to
+                          // answer; asserting it must draw would refuse to produce the plate in exactly
+                          // the case worth photographing. Its absence is recorded WITH the strongest
+                          // difference found in the crop, so "absent" and "faint" stay distinguishable.
+                          new Color32(80, 160, 255, 255), marks, required: false);
             MeasureFamily(subject, leg, "B deposits", armB, bare, floor, crop, track, bandHalfWidth,
                           new Color32(255, 90, 90, 255), marks, required: true);
             MeasureFamily(subject, leg, "C crests", armC, bare, floor, crop, track, bandHalfWidth,
@@ -410,16 +441,37 @@ namespace HiddenHarbours.Tests.PlayMode
         IEnumerator Drive(GameObject go, Rigidbody2D rb, Leg leg, List<Vector2> track, List<Vector2> injRoot,
                           float sternOffset, float elevationDeg, FoamInjector injector)
         {
+            // ⚠ ONE MOVER. The first cut advanced the transform by hand AND set the body's velocity to the
+            // same course, so she was integrated twice and covered ~68 m of a 4 s leg at 6 m/s — the head of
+            // her own track left the plate. The body is the mover, as it is in play; this fixture only steers
+            // her and sets the speed the emitters read off her.
+            //
+            // ⚠ AND THE FRAME IS SIZED TO THE LEG, never the leg to the frame. The first cut clipped the
+            // run to whatever the shipped zoom could hold, which was 5.3 m — too little driving to lay an
+            // advected sheet at all, so the sheet arm photographed an empty buffer. FrameOn parks the
+            // camera over the whole predicted path, so the leg runs its full length ON the plate.
+            float seconds = DriveSeconds;
+            Debug.Log($"[{PlateDir}] {leg.Name}: driving {seconds:0.00} s at {DriveSpeed:0.0} m/s " +
+                      $"= {seconds * DriveSpeed:0.0} m, inside a frame {_cam.orthographicSize * 2f:0.0} m tall.");
+
+            // ⚠️ AND THE LEG IS BOUNDED TOO. This loop advances on `Time.deltaTime`, and this very
+            // class sets `Time.timeScale = 0` to freeze the sea for the shutter: any path that reaches
+            // here with the clock still stopped would spin for ever on dt == 0. Fail, naming the clock.
+            float wall = Time.realtimeSinceStartup;
             float heading = leg.HeadingDeg;
-            for (float elapsed = 0f; elapsed < DriveSeconds; )
+            for (float elapsed = 0f; elapsed < seconds; )
             {
                 float dt = Time.deltaTime;
                 elapsed += dt;
+                Assert.Less(Time.realtimeSinceStartup - wall, seconds * 8f + 30f,
+                            $"{leg.Name}: the leg reached {elapsed:0.000} s of {seconds:0.0} s after " +
+                            $"{Time.realtimeSinceStartup - wall:0.0} s of wall clock — Time.timeScale is " +
+                            $"{Time.timeScale:0.000} and Time.deltaTime {dt:0.0000}, so the clock this " +
+                            "leg advances on is not running.");
 
                 heading += leg.TurnDegPerSec * dt;
                 go.transform.rotation = Quaternion.Euler(0f, 0f, -heading);
                 Vector2 course = (Vector2)go.transform.up * DriveSpeed;
-                go.transform.position += (Vector3)(course * dt);
                 rb.linearVelocity = course;
 
                 // THE REFERENCE, sampled the way production computes it, off the transform that carries her
@@ -432,6 +484,32 @@ namespace HiddenHarbours.Tests.PlayMode
                                                         sternOffset, elevationDeg));
                 yield return null;
             }
+        }
+
+        /// <summary>
+        /// Where this leg will go, before she sails it. The path is a pure function of the leg (heading,
+        /// turn rate) and this fixture's own constants, so the camera can be placed over the finished run
+        /// instead of chasing her through it — which is what photographing a WHOLE wake needs.
+        /// <para><c>pad</c> is the room the wake takes beyond her track: she trails it from a stern offset
+        /// behind the pose sampled here, and lays it a band's width either side.</para>
+        /// </summary>
+        static Bounds PredictRun(Leg leg, Vector2 start, float pad)
+        {
+            Vector2 min = start, max = start, p = start;
+            float heading = leg.HeadingDeg;
+            const float Step = 0.02f;
+            for (float t = 0f; t < DriveSeconds; t += Step)
+            {
+                heading += leg.TurnDegPerSec * Step;
+                float rad = heading * Mathf.Deg2Rad;   // heading 0 = +Y, 90 = +X, as Drive steers her
+                p += new Vector2(Mathf.Sin(rad), Mathf.Cos(rad)) * (DriveSpeed * Step);
+                min = Vector2.Min(min, p); max = Vector2.Max(max, p);
+            }
+            min -= new Vector2(pad, pad);
+            max += new Vector2(pad, pad);
+            var b = new Bounds();
+            b.SetMinMax(new Vector3(min.x, min.y, 0f), new Vector3(max.x, max.y, 0f));
+            return b;
         }
 
         static Transform FindWakeRoot(string boatName)
@@ -515,12 +593,22 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             double sumW = 0, sumX = 0, sumY = 0;
             int drawn = 0;
+
+            // ⚠️ WHAT THE FAMILY DREW BELOW THE FLOOR IS EVIDENCE TOO. "Nothing drawn" and "drawn, but
+            // a hundredth of a luma below the bar" are completely different answers about the same
+            // renderer, and only one of them means the family is absent. Both are carried out.
+            double sumAll = 0;
+            float peak = 0f;
+            int examined = 0;
             for (int y = crop.yMin; y < crop.yMax; y++)
             {
                 for (int x = crop.xMin; x < crop.xMax; x++)
                 {
                     int i = (y * _w + x) * 4;
                     float d = HeadroomDelta(arm, bare, i);
+                    examined++;
+                    sumAll += d;
+                    if (d > peak) peak = d;
                     if (d <= floor) continue;
                     drawn++;
                     sumW += d; sumX += d * (x + 0.5); sumY += d * (y + 0.5);
@@ -534,8 +622,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 // expected result and is recorded as such; a family that SHOULD be drawing and is not means
                 // the isolation switched off more than it meant to, and every number below it would be a
                 // number about an empty mask.
-                string note = $"{leg.Name,-18} | {family,-11} | NOTHING DRAWN above the measured noise " +
-                              $"floor ({floor:0.0000} luma) anywhere in the crop";
+                string note = $"{leg.Name,-18} | {family,-11} | NOTHING above the measured noise floor " +
+                              $"({floor:0.0000} luma); strongest pixel in the crop {peak:0.0000}, mean " +
+                              $"{(examined > 0 ? sumAll / examined : 0):0.00000} over {examined} px";
                 _rows.Add(note);
                 Debug.Log($"[{PlateDir}] {subject} | {note}");
                 Assert.IsFalse(required,
@@ -698,8 +787,27 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             // The region logs decor-import complaints that have nothing to do with wake foam.
             LogAssert.ignoreFailingMessages = true;
-            yield return SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
+
+            // ⚠️ EVERY WAIT IN A PLATE FIXTURE IS BOUNDED, AND IN WALL CLOCK. A bare
+            // `yield return LoadSceneAsync(…)` that never completes hangs the whole run with no output
+            // at all — one such stall cost fifteen minutes of a granted editor slot and produced not a
+            // single line to diagnose it from. A fixture may fail; it may not hang. The bound is
+            // realtime because this class also freezes `Time.timeScale`, and a budget denominated in
+            // scaled time is no budget at all.
+            Debug.Log($"[{PlateDir}] loading {SceneName}…");
+            float wall = Time.realtimeSinceStartup;
+            AsyncOperation op = SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
+            Assert.IsNotNull(op, $"SceneManager refused to start loading '{SceneName}' — it is most " +
+                                 "likely not in Build Settings, and there is no region to photograph.");
+            while (op != null && !op.isDone)
+            {
+                Assert.Less(Time.realtimeSinceStartup - wall, 180f,
+                            $"'{SceneName}' never finished loading: {op.progress:0.00} of the way in " +
+                            $"after 180 s of wall clock. Nothing below this ever ran.");
+                yield return null;
+            }
             for (int i = 0; i < 6; i++) yield return null;   // let the self-installing components register
+            Debug.Log($"[{PlateDir}] {SceneName} loaded in {Time.realtimeSinceStartup - wall:0.0} s.");
         }
 
         /// <summary>
@@ -745,31 +853,80 @@ namespace HiddenHarbours.Tests.PlayMode
                                      "some other time of day than the one this fixture names.");
         }
 
-        /// <summary>Somewhere with enough water under her to run three legs without licking a shoreline —
-        /// found by asking the region's OWN tidal terrain rather than by a coordinate typed into a test, and
-        /// probed along the whole span the legs will use rather than at a single point.</summary>
-        static bool TryOpenWater(out Vector2 water, out float depth)
+        private readonly struct Candidate
         {
-            water = default; depth = 0f;
+            public readonly Vector2 P;
+            public readonly float Clearance;
+            public Candidate(Vector2 p, float clearance) { P = p; Clearance = clearance; }
+        }
+
+        /// <summary>A start for each leg, with enough water round it to run without licking a shoreline —
+        /// found by asking the region's OWN tidal terrain rather than by a coordinate typed into a test.
+        ///
+        /// <para>⚠⚠ WHERE THE WATER IS DEEPEST IS NOT WHERE A PLATE CAN BE SHOT, because the camera is
+        /// clamped to the region. <c>CameraFollow.ApplyBounds</c> keeps the VIEW inside
+        /// <c>GameServices.CurrentRegionBounds</c>: park a boat outside them and the camera stops at the
+        /// edge while she keeps going, so she is photographed leaving her own picture. The first cut of
+        /// this search took the DEEPEST water within ±400 m — which for a 760×560 m creek is open sea
+        /// outside the region — and both cases duly failed on their own guards, the cape at pixel
+        /// y = 10417 on a 900 px plate and the sprite on a camera that never stopped moving. Search
+        /// INSIDE the bounds, inset by a plate's worth of framing.</para>
+        ///
+        /// <para>The legs are no longer strung along +X at <see cref="LegSpacingMetres"/>, which needed
+        /// ~280 m of continuous open water in a creek that has not got it. They are chosen independently
+        /// and only held APART, so no leg is photographed over another leg's foam.</para></summary>
+        static bool TryLegAnchors(int count, out List<Vector2> starts, out float depth)
+        {
+            starts = new List<Vector2>(); depth = 0f;
             ITidalTerrain terrain = GameServices.TidalTerrain;
             if (terrain == null) return false;
 
-            float best = 0f;
-            for (float x = -400f; x <= 400f; x += 10f)
+            Rect region = GameServices.CurrentRegionBounds;
+            if (region.width <= 1f || region.height <= 1f) return false;   // 0 = no camera has reported
+
+            const float EdgeInsetX = 70f;   // ≈ a plate half-width, so the bounds clamp never bites
+            const float EdgeInsetY = 45f;
+            float runRadius = DriveSeconds * DriveSpeed + 16f;
+
+            float minX = region.xMin + EdgeInsetX, maxX = region.xMax - EdgeInsetX;
+            float minY = region.yMin + EdgeInsetY, maxY = region.yMax - EdgeInsetY;
+            if (minX >= maxX || minY >= maxY) return false;
+
+            // Score each candidate by the SHALLOWEST point her run can reach, swept right round her —
+            // deep under the keel and dry 20 m on is a grounding, not a leg. She turns, so probe a disc.
+            var scored = new List<Candidate>();
+            for (float x = minX; x <= maxX; x += 10f)
             {
-                for (float y = -400f; y <= 400f; y += 10f)
+                for (float y = minY; y <= maxY; y += 10f)
                 {
                     var p = new Vector2(x, y);
                     float shallowest = float.MinValue;
-                    for (float d = 0f; d <= 2f * LegSpacingMetres + 40f; d += 20f)
-                        shallowest = Mathf.Max(shallowest, terrain.ElevationAt(p + new Vector2(d, 0f)));
-                    for (float d = 0f; d <= 40f; d += 10f)
-                        shallowest = Mathf.Max(shallowest, terrain.ElevationAt(p + new Vector2(0f, d)));
-                    if (shallowest < best) { best = shallowest; water = p; }
+                    for (int a = 0; a < 8; a++)
+                    {
+                        float th = a * Mathf.PI * 0.25f;
+                        var dir = new Vector2(Mathf.Cos(th), Mathf.Sin(th));
+                        for (float d = 0f; d <= runRadius; d += 10f)
+                            shallowest = Mathf.Max(shallowest, terrain.ElevationAt(p + dir * d));
+                    }
+                    if (-shallowest > 4f) scored.Add(new Candidate(p, -shallowest));
                 }
             }
-            depth = -best;
-            return depth > 4f;
+            if (scored.Count == 0) return false;
+            scored.Sort((l, r) => r.Clearance.CompareTo(l.Clearance));
+
+            float sep = Mathf.Min(LegSpacingMetres, 0.4f * Mathf.Min(maxX - minX, maxY - minY));
+            foreach (Candidate c in scored)
+            {
+                bool clear = true;
+                foreach (Vector2 s in starts)
+                    if ((s - c.P).sqrMagnitude < sep * sep) { clear = false; break; }
+                if (!clear) continue;
+
+                starts.Add(c.P);
+                depth = starts.Count == 1 ? c.Clearance : Mathf.Min(depth, c.Clearance);
+                if (starts.Count == count) return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -786,7 +943,7 @@ namespace HiddenHarbours.Tests.PlayMode
         /// that aspect every LateUpdate. Attach, let the overlay refit, and only then drive and freeze.
         /// </para>
         /// </summary>
-        IEnumerator FrameOn(Transform subject)
+        IEnumerator FrameOn(Transform subject, Bounds run)
         {
             var follow = Object.FindFirstObjectByType<CameraFollow>();
             if (follow == null)
@@ -814,6 +971,63 @@ namespace HiddenHarbours.Tests.PlayMode
                 _cam.targetTexture = _rt;
             }
 
+            // ⚠️ PARK THE GAME'S OWN CAMERA OVER THE WHOLE RUN. CameraFollow is the shipped framing, and
+            // at the shipped zoom the frame is 14.1 m tall: a 4 s leg does not fit in it, so the leg sized
+            // ITSELF down to 5.3 m and ended after 0.23 s — a quarter-second of driving lays no advected
+            // sheet at all, and family A was then measured against an empty buffer. The same component
+            // also LEADS her, which walked the head of her own track off the trailing edge twice.
+            //
+            // So the component comes off and the camera is placed over the leg's predicted path, sized to
+            // hold the whole of it. This is still THE GAME'S OWN CAMERA — same entity id, so the same
+            // primed per-camera foam state, the same shipped render path, the same grade — only held
+            // still and pulled back. Every shot records the size it was taken at (SHOT FROM … m per
+            // pixel), because a plate that cannot name its own scale cannot be ruled on.
+            //
+            // ⚠️ It must be DISABLED, not merely retargeted: CameraFollow writes orthographicSize back
+            // from its own _framingOrtho every LateUpdate, so a size set under a live component is stomped.
+            //
+            // ⚠️ AND EVERY ONE OF THEM, NOT THE FIRST ONE FOUND. The camera this photographs through is
+            // the persistent rig in DontDestroyOnLoad, and the loaded region installs its own follow as
+            // well; `FindFirstObjectByType` returned one of the two, and the other went on writing the
+            // size back to the shipped zoom. The plate then took the POSITION this fixture set and the
+            // SIZE the game wanted — a frame nobody chose. `FindObjectsOfTypeAll` because the rig is
+            // persistent and may be hidden; scene-bound only, so prefab assets on disk are left alone.
+            foreach (CameraFollow f in Resources.FindObjectsOfTypeAll<CameraFollow>())
+            {
+                if (f == null || !f.gameObject.scene.IsValid()) continue;
+                _parked.Add(f);
+                _parkedWas.Add(f.enabled);
+                f.enabled = false;
+            }
+            Debug.Log($"[{PlateDir}] parked {_parked.Count} CameraFollow(s) for the plate.");
+
+            // ⚠️ AND THE PIXEL-PERFECT CAMERA IS THE ONE THAT ACTUALLY PINS THE SIZE. Parking every
+            // CameraFollow was not enough: the size still read back 7.03125 m exactly, which is
+            // `refResolutionY / (2 × assetsPPU)` — a PixelPerfectCamera recomputing it every frame.
+            // CameraFollow owns that component's enabled state (it borrows it for feel effects), so
+            // parking the follow leaves the PPC running and the camera at the shipped zoom, and the
+            // plate would silently take this fixture's POSITION with the game's SIZE.
+            //
+            // Found by type NAME, not by type: PixelPerfectCamera lives in URP, and this test assembly
+            // sets `overrideReferences` — widening its reference surface to shoot one plate costs more
+            // than a name match. Pixel snapping is a FRAMING concern like the follow itself; what the
+            // plate must keep is the shipped render path, exposure and grade, and those are untouched.
+            foreach (Behaviour b in _cam.GetComponents<Behaviour>())
+            {
+                if (b == null || b.GetType().Name != "PixelPerfectCamera") continue;
+                _parkedPpc = b;
+                _parkedPpcWas = b.enabled;
+                b.enabled = false;
+                Debug.Log($"[{PlateDir}] parked the PixelPerfectCamera (was {_parkedPpcWas}).");
+                break;
+            }
+
+            float half = Mathf.Max(run.extents.y, run.extents.x / Mathf.Max(0.01f, _cam.aspect));
+            float want = Mathf.Max(2f, half);
+            _cam.orthographicSize = want;
+            _cam.transform.position =
+                new Vector3(run.center.x, run.center.y, _cam.transform.position.z);
+
             Vector3 lastPos = _cam.transform.position;
             float lastSize = _cam.orthographicSize;
             int still = 0, frames = 0;
@@ -829,6 +1043,16 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             Assert.Less(frames, 400, "the camera never stopped moving, so the overlay it is fitted to would " +
                                      "be a frame behind every plate below.");
+
+            // ⚠️ AND THE FRAME THIS FIXTURE ASKED FOR IS THE FRAME IT GOT. Some other component writing
+            // the size back is exactly the failure this plate exists to rule out elsewhere, so it is
+            // named here rather than photographed.
+            Assert.AreEqual(want, _cam.orthographicSize, 0.01f,
+                            $"the camera was sized to {want:0.00} m half-height to hold the whole run, but " +
+                            $"read back {_cam.orthographicSize:0.00} m — something still owns this camera's " +
+                            $"framing after {_parked.Count} CameraFollow(s) and " +
+                            $"{(_parkedPpc != null ? "the PixelPerfectCamera" : "no PixelPerfectCamera")} " +
+                            "were parked, and the plate would be shot through a frame nobody chose.");
             for (int i = 0; i < 6; i++) yield return null;   // let the overlay refit to the plate's aspect
         }
 

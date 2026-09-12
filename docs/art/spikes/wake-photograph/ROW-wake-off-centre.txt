@@ -1,0 +1,62 @@
+PROPOSED REGISTER ROW — the wake band is drawn off the boat's track
+  number NOT assigned by this lane: the last row numbered in docs/design/water-rendering.md is 32,
+  and rows 33/34 were ruled 2026-09-09 and live elsewhere. The seat assigns it.
+
+  subject   the drawn wake band sits laterally off the transom's swept track, by a displacement whose
+            SIGN FLIPS with heading. Owner's second report (2026-09-06 -> row 29 -> #768; again
+            2026-09-11: "the wake still is not centered behind the boat, the foam is off centre").
+  status    MEASURED, cause NOT named. Structural -> the owner rules. Nothing shipped.
+  evidence  docs/art/spikes/wake-photograph/  (photograph, six shots, two hulls, three headings)
+
+lateral offset of each family's drawn centroid from the swept track, world metres, + = to PORT
+
+  hull    heading           ALL      A        B         C       B / band half-width
+  cape    000               -0.135   none     -0.558    +0.053   -0.23
+  cape    090               +0.493   none     +0.704    +0.393    0.29
+  cape    turn 000->088     -0.168   none     -0.329    -0.082   -0.14
+  dory    000               -0.163   none     -0.310    -0.115   -0.36
+  dory    090               +0.283   none     +0.614    +0.153    0.72   <- worst
+  dory    turn 000->088     -0.226   none     -0.242    -0.219   -0.29
+
+  cape: stern offset 6.400 m at 40.0 deg, band half-width 2.400 m
+  dory: stern offset 2.250 m at 40.0 deg, band half-width 0.850 m
+  NineMileCreek, hour 11.0, open water, 6.0 m under her. Plate 3662x1600, noise floor 0.0100 luma.
+
+findings
+  1  B (BoatWakeEmitter sprite deposits) is what displaces the band. C (crests) brackets the track
+     near-symmetrically at every heading.
+  2  on the two straight legs the displacement resolves to ONE WORLD DIRECTION:
+       heading 000 (course +y): B 0.558 m to starboard  = world +x
+       heading 090 (course +x): B 0.704 m to port       = world +y
+     cape ~ (+0.56, +0.70) m, about 0.90 m toward world NE; dory ~ (+0.31, +0.61) m, about 0.69 m.
+     a fixed world direction is what "sometimes left, sometimes right" looks like from the helm.
+  3  the displacement GROWS with distance astern: at the transom the deposits straddle the track,
+     twenty metres astern they are clear of it, same side, both straight headings.
+  4  through the turn the sheet's injector root path separates markedly from the swept track. Does
+     not reach the player today (A draws nothing), but it is a disagreement #768 was meant to close.
+
+REFUTED, do not re-spend
+  the foam buffer's wind/current drift (FoamBuffer.AdvectCells along the shared FoamDriftDir(),
+  FoamBuffer.DrawOrigin) produces exactly the signature in finding 3 and CANNOT be the mechanism:
+  that drift moves the BUFFER, which is family A. Family B is sprite deposits and BoatWakeEmitter.cs
+  carries no drift term at all -- its deposits are never advected after they are laid.
+
+OPEN, and it gates the rest
+  the "A = none" rows are NOT evidence the sheet is missing. The isolation is INERT: the sheet is
+  composited inside the water shader (HiddenHarboursWater.shader, WakeFoamCoverage, gated on the
+  material's _WakeFoamStrength, which is 0.85 in Water.mat and all 8 WaterPresets), not by a render
+  feature the fixture can switch. Toggling FoamInjector stops new injection only, so the sheet is
+  identical in every arm including bare and cancels exactly. armA - bare is bit-identical: peak
+  0.0000 over 1.3-4.5 million px. Control: ALL drawn = B + C to the exact pixel on all six shots.
+  Whether A reaches the picture at all is unanswered, and both configurations that reported it as
+  nothing had a RenderTexture attached -- per-camera foam state keys on (camera entity id, res).
+
+candidates for the owner (none is a look change chosen by this lane -- rule 6)
+  1  confirm A reaches the picture on an unmodified camera, no RenderTexture      small
+  2  find what displaces B toward a fixed world direction with age                medium, a spike
+  3  rule whether B should displace at all (leeway is real; the boat does not      a ruling
+     share it, which is the part that reads as a defect)
+  4  the turn-only root-path divergence, finding 4                                 small
+
+NOT this row: "i do want the wake to lift the water and create visual waves" (owner, same message)
+  -- that is water PR F, register row 27. No displacement was built here.
