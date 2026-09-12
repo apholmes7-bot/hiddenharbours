@@ -304,6 +304,7 @@ MonoBehaviour:
   HullKeylineFlood: 0
   BoatLegacyCabinGlow: 0
   PixelGridSnap: 1
+  MeshCharacter: 0
   FoliageSilhouette: 1
   FoliageSilhouetteTint: {r: 0.94, g: 0.9, b: 0.82, a: 1}
   FoliageSilhouetteStrength: 0.55
