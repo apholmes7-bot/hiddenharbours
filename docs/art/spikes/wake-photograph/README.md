@@ -182,3 +182,11 @@ here are built from them; the 36 raw plates are 224 MB and are deliberately **no
 ⚠️ The filter parameters are named above because getting them wrong does not fail — it silently runs the
 **entire** PlayMode suite, which cannot complete on this box. Two fifteen-minute stalls were spent on
 exactly that before the parameter names were checked.
+
+## A sibling, not part of this measurement
+
+`shore-corner-diag/` is the lane charter's slot-rider: one diagnostic plate of the **shore-foam
+corner**, shot in the same slot because the editor was already open. It is evidence for a *later*
+charter (owner, same day: *"fine hairlines at corners when the wave pulses"*) and bears on nothing
+here. No cause and no register row come from it. Its own README records what it measured — and the
+wet-edge/foam channel split it was asked for and **failed** to deliver.
