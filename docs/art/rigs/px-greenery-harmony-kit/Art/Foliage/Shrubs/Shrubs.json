@@ -1,0 +1,80 @@
+{
+ "_note": "Baked by Art/_pxKitBake.js from Art/pxKit.js. Regenerate rather than hand-edit.",
+ "sheet": [
+  192,
+  320
+ ],
+ "cell": [
+  64,
+  64
+ ],
+ "pivot": "bottom-centre of the cell, 2 px up",
+ "texel": 1,
+ "ringless": true,
+ "light": {
+  "key": [
+   -0.5476772967888549,
+   -0.6572127561466258,
+   0.5178039896912809
+  ],
+  "rim": [
+   0.48055295402873055,
+   -0.2803225565167595,
+   -0.8309561496746799
+  ],
+  "note": "fixed upper-left key + back rim, view space (x right · y down · z toward camera), as TreeRig3.LIGHT — the bible's top-of-frame ruling is still open; PxLang.setKey flips every bake"
+ },
+ "channels": {
+  "albedo": "pre-lit at the fixed key, one band up/down at most",
+  "_unlit": "the authored bands, no directional light",
+  "_mask": "R key N·L · G rim · B height · A coverage",
+  "_normal": "R x · G y-up · B out"
+ },
+ "cols": "variant",
+ "rows": [
+  "alder",
+  "bayberry",
+  "wildrose",
+  "blueberry",
+  "juniper"
+ ],
+ "scale": 0.8,
+ "species": {
+  "alder": {
+   "metres": [
+    1.9,
+    1.9
+   ],
+   "note": "speckled alder — the swale shrub, a round basket on many stems"
+  },
+  "bayberry": {
+   "metres": [
+    1.7,
+    1.2
+   ],
+   "note": "bayberry — grey-green, wide and low, waxy grey berries"
+  },
+  "wildrose": {
+   "metres": [
+    1.5,
+    1.3
+   ],
+   "note": "wild rose — pink singles presented on the lit side"
+  },
+  "blueberry": {
+   "metres": [
+    1.2,
+    0.55
+   ],
+   "note": "lowbush blueberry — knee-high, red twigs, blue fruit"
+  },
+  "juniper": {
+   "metres": [
+    2.3,
+    0.7
+   ],
+   "note": "common juniper — a sprawling mat of blue-green scales"
+  }
+ },
+ "note": "Leaf-stamp baskets on a shell lit by the key, lower over upper, the dark between the leaves, real windows. Summer only; phenology is the shrub rig's."
+}

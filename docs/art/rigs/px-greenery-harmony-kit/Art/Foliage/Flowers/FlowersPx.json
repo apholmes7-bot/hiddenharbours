@@ -1,0 +1,53 @@
+{
+ "_note": "Baked by Art/_pxKitBake.js from Art/pxKit.js. Regenerate rather than hand-edit.",
+ "sheet": [
+  144,
+  200
+ ],
+ "cell": [
+  48,
+  40
+ ],
+ "pivot": "bottom-centre of the cell, 2 px up",
+ "texel": 1,
+ "ringless": true,
+ "light": {
+  "key": [
+   -0.5476772967888549,
+   -0.6572127561466258,
+   0.5178039896912809
+  ],
+  "rim": [
+   0.48055295402873055,
+   -0.2803225565167595,
+   -0.8309561496746799
+  ],
+  "note": "fixed upper-left key + back rim, view space (x right · y down · z toward camera), as TreeRig3.LIGHT — the bible's top-of-frame ruling is still open; PxLang.setKey flips every bake"
+ },
+ "channels": {
+  "albedo": "pre-lit at the fixed key, one band up/down at most",
+  "_unlit": "the authored bands, no directional light",
+  "_mask": "R key N·L · G rim · B height · A coverage",
+  "_normal": "R x · G y-up · B out"
+ },
+ "cols": [
+  "single",
+  "clump",
+  "patch"
+ ],
+ "rows": [
+  "buttercup",
+  "daisy",
+  "lupin",
+  "fireweed",
+  "queenanne"
+ ],
+ "species": {
+  "buttercup": "buttercup — a 3 px disc with a dark centre",
+  "daisy": "oxeye daisy — white disc, yellow centre",
+  "lupin": "lupin — a purple spike, paler at the tip",
+  "fireweed": "fireweed — magenta spike, the tall one",
+  "queenanne": "Queen Anne's lace — a flat lacy umbel on stalklets"
+ },
+ "note": "Static, one frame. single = one plant at true height · clump = 3–5 · patch = a low ground drift (lay on grass)."
+}

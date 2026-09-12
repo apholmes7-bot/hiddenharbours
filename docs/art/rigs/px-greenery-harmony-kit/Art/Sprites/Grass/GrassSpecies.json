@@ -1,0 +1,197 @@
+{
+  "sheet": "GrassSpecies.png",
+  "size": [
+    192,
+    144
+  ],
+  "note": "Static sprites. Rooted on the bottom row; height = how far blades climb. stiffness scales the wind/footstep bend (1 = a normal grass tuft).",
+  "baseRamp": [
+    "#283a22",
+    "#3a542a",
+    "#567834",
+    "#7ca248",
+    "#aac660"
+  ],
+  "rampRule": "Each species ramp is the base ramp with hue rotated and saturation scaled at identical lightness, so the runtime lush->straw tint stays coherent across species.",
+  "spikeRamp": [
+    "#392f23",
+    "#533c2b",
+    "#764936",
+    "#a05d4a",
+    "#c36a63"
+  ],
+  "species": {
+    "cattail": {
+      "label": "Cattail",
+      "latin": "Typha latifolia",
+      "biome": "freshwater marsh",
+      "ramp": [
+        "#25372a",
+        "#304e33",
+        "#3e6e3e",
+        "#5a9555",
+        "#7fb86e"
+      ]
+    },
+    "rush": {
+      "label": "Soft rush",
+      "latin": "Juncus effusus",
+      "biome": "wet edge, ditch",
+      "ramp": [
+        "#23392c",
+        "#2d5136",
+        "#387440",
+        "#4d9d52",
+        "#6ec066"
+      ]
+    },
+    "sedge": {
+      "label": "Tussock sedge",
+      "latin": "Carex stricta",
+      "biome": "wet meadow",
+      "ramp": [
+        "#2b3b21",
+        "#405529",
+        "#617a32",
+        "#8ba446",
+        "#bbc95d"
+      ]
+    },
+    "saltmeadow": {
+      "label": "Saltmeadow hay",
+      "latin": "Spartina patens",
+      "biome": "salt marsh",
+      "ramp": [
+        "#313725",
+        "#474e30",
+        "#6a6e3e",
+        "#949555",
+        "#b8af6e"
+      ]
+    },
+    "timothy": {
+      "label": "Timothy",
+      "latin": "Phleum pratense",
+      "biome": "hay meadow",
+      "ramp": [
+        "#283527",
+        "#384c32",
+        "#506a42",
+        "#71905a",
+        "#98b274"
+      ]
+    }
+  },
+  "frames": {
+    "GrassTuft_Cattail": {
+      "x": 0,
+      "y": 0,
+      "w": 32,
+      "h": 64,
+      "species": "cattail",
+      "class": "emergent",
+      "climb": 58,
+      "stiffness": 0.35,
+      "note": "four sword leaves, one spike"
+    },
+    "GrassTuft_CattailPair": {
+      "x": 32,
+      "y": 0,
+      "w": 32,
+      "h": 64,
+      "species": "cattail",
+      "class": "emergent",
+      "climb": 57,
+      "stiffness": 0.35,
+      "note": "two spikes, leaves raked right"
+    },
+    "GrassTuft_Rush": {
+      "x": 0,
+      "y": 64,
+      "w": 32,
+      "h": 48,
+      "species": "rush",
+      "class": "rush",
+      "climb": 42,
+      "stiffness": 0.5,
+      "note": "stiff leafless spray"
+    },
+    "GrassTuft_RushLean": {
+      "x": 32,
+      "y": 64,
+      "w": 32,
+      "h": 48,
+      "species": "rush",
+      "class": "rush",
+      "climb": 35,
+      "stiffness": 0.5,
+      "note": "whole spray raked, shorter"
+    },
+    "GrassTuft_Sedge": {
+      "x": 64,
+      "y": 64,
+      "w": 32,
+      "h": 48,
+      "species": "sedge",
+      "class": "tussock",
+      "climb": 38,
+      "stiffness": 0.85,
+      "note": "fountain, blades arch over"
+    },
+    "GrassTuft_Timothy": {
+      "x": 96,
+      "y": 64,
+      "w": 32,
+      "h": 48,
+      "species": "timothy",
+      "class": "culm",
+      "climb": 45,
+      "stiffness": 0.6,
+      "note": "bare culms, cylindrical heads"
+    },
+    "GrassTuft_TimothyLean": {
+      "x": 128,
+      "y": 64,
+      "w": 32,
+      "h": 48,
+      "species": "timothy",
+      "class": "culm",
+      "climb": 40,
+      "stiffness": 0.6,
+      "note": "three culms nodding downwind"
+    },
+    "GrassTuft_SedgeLow": {
+      "x": 0,
+      "y": 112,
+      "w": 32,
+      "h": 32,
+      "species": "sedge",
+      "class": "tussock",
+      "climb": 21,
+      "stiffness": 0.85,
+      "note": "32×32 — same fountain, half height"
+    },
+    "GrassTuft_Saltmeadow": {
+      "x": 32,
+      "y": 112,
+      "w": 64,
+      "h": 32,
+      "species": "saltmeadow",
+      "class": "mat",
+      "climb": 18,
+      "stiffness": 0.3,
+      "note": "64×32 — the cowlick, two whorls"
+    },
+    "GrassTuft_SaltmeadowSwirl": {
+      "x": 96,
+      "y": 112,
+      "w": 64,
+      "h": 32,
+      "species": "saltmeadow",
+      "class": "mat",
+      "climb": 19,
+      "stiffness": 0.3,
+      "note": "64×32 — one whorl, all combed left"
+    }
+  }
+}

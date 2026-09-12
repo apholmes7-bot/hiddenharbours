@@ -1,0 +1,2081 @@
+{
+  "schema": "hidden-harbours/greenery-gameplay@1",
+  "kit": "Greenery — shrubs, flowers, grass, shore plants, drift weed",
+  "generated": "Generated for the px + greenery + harmony drop. Art numbers are read from each family manifest; collision, occluder, hazard and speed are declared here and marked as such per entry.",
+  "derivedFrom": {
+    "Art/pxKit.js": "d13d65372cc968d8b9760b324feca2d8995479a7d483cd173cebeb8ec64c0a46",
+    "Art/pxKit2.js": "97e71d92029eebb813bd3d179da334a5b96da1614fb5178fbf119692bb53ac26",
+    "Art/pixelLanguage.js": "2d6fb8201e8454670aeec0abbe4cda2ae744f6a2902924da9357ce09b8242a4d",
+    "Art/flowerRig.js": "c8e7becd9c859ee424c096753ddcc2e2a6c8273895ee9984970fa625608b960d",
+    "Art/grassSpeciesRig.js": "43366e6d63ef2f2e444a6c9fe0a7295d515bef8f528bbd060d67b7235f66e47d",
+    "Art/grassTuftRig.js": "fabb6ecefdcef09c8f9e66a47af54ec84348282cbad3971b3c6ae3fdbffaa4b8",
+    "Art/shorePlantRig.js": "f766b8ac83c347759d9e2299b4a225eed83a76307aa05903eb346af3a8ab02a6",
+    "Art/driftWeedRig.js": "bcada722e4b0be37ee9389e3462a69ce18d59c11193095f10adc453934b0110c"
+  },
+  "units": {
+    "distance": "metres",
+    "ppu": 32,
+    "pivot": "bottom-centre ground contact unless a family says otherwise"
+  },
+  "legend": {
+    "block": "none = walk through · soft = push through at speed_mul · solid = collide",
+    "occluder": "true if the sprite should sort over and hide a body behind it (roughly: 1.2 m and up)",
+    "footstep_overlay": "a second sound layer over the ground material footstep, not a replacement",
+    "hazard": "thorn (rose) · slip (drained algae)"
+  },
+  "families": {
+    "shrubs_px": {
+      "sheet": "Art/Foliage/Shrubs/Shrubs.png",
+      "channels": [
+        "",
+        "_unlit",
+        "_mask",
+        "_normal"
+      ],
+      "cell": [
+        64,
+        64
+      ],
+      "pivot": "bottom-centre of the cell, 2 px up",
+      "scale": 0.8,
+      "cols": "3 variants",
+      "season": "summer only — phenology lives in Art/shrubIsoRig.js (8 phases: dormant catkin bloom leaf green fruit turn bare) and is NOT baked into this sheet",
+      "species": {
+        "alder": {
+          "width_m": 1.9,
+          "height_m": 1.9,
+          "note": "speckled alder — the swale shrub, a round basket on many stems",
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 0.95,
+            "block": "solid",
+            "speed_mul": 0.5
+          },
+          "occluder": true,
+          "hazard": null,
+          "footstep_overlay": "brush",
+          "gameplay_note": "Multi-stemmed and 1.9 m — the only shrub in the sheet that stops a body.",
+          "provenance": "width/height/note read from Shrubs.json; collision, occluder and hazard DECLARED."
+        },
+        "bayberry": {
+          "width_m": 1.7,
+          "height_m": 1.2,
+          "note": "bayberry — grey-green, wide and low, waxy grey berries",
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 0.85,
+            "block": "soft",
+            "speed_mul": 0.75
+          },
+          "occluder": true,
+          "hazard": null,
+          "footstep_overlay": "brush",
+          "gameplay_note": "Wide and low; pushes through with a cost.",
+          "provenance": "width/height/note read from Shrubs.json; collision, occluder and hazard DECLARED."
+        },
+        "wildrose": {
+          "width_m": 1.5,
+          "height_m": 1.3,
+          "note": "wild rose — pink singles presented on the lit side",
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 0.75,
+            "block": "soft",
+            "speed_mul": 0.6
+          },
+          "occluder": true,
+          "hazard": "thorn",
+          "footstep_overlay": "brush",
+          "gameplay_note": "Thorn hazard is the point of the species in a game.",
+          "provenance": "width/height/note read from Shrubs.json; collision, occluder and hazard DECLARED."
+        },
+        "blueberry": {
+          "width_m": 1.2,
+          "height_m": 0.55,
+          "note": "lowbush blueberry — knee-high, red twigs, blue fruit",
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 0.6,
+            "block": "none",
+            "speed_mul": 0.9
+          },
+          "occluder": false,
+          "hazard": null,
+          "footstep_overlay": "brush",
+          "gameplay_note": "Knee-high mat; walk straight over it.",
+          "provenance": "width/height/note read from Shrubs.json; collision, occluder and hazard DECLARED."
+        },
+        "juniper": {
+          "width_m": 2.3,
+          "height_m": 0.7,
+          "note": "common juniper — a sprawling mat of blue-green scales",
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 1.15,
+            "block": "soft",
+            "speed_mul": 0.7
+          },
+          "occluder": false,
+          "hazard": null,
+          "footstep_overlay": "brush",
+          "gameplay_note": "A sprawling mat 2.3 m across and 0.7 tall: wide footprint, no occlusion.",
+          "provenance": "width/height/note read from Shrubs.json; collision, occluder and hazard DECLARED."
+        }
+      }
+    },
+    "flowers_px": {
+      "sheet": "Art/Foliage/Flowers/FlowersPx.png",
+      "channels": [
+        "",
+        "_unlit",
+        "_mask",
+        "_normal"
+      ],
+      "cell": [
+        48,
+        40
+      ],
+      "pivot": "bottom-centre of the cell, 2 px up",
+      "tiers": [
+        "single",
+        "clump",
+        "patch"
+      ],
+      "species": [
+        "buttercup",
+        "daisy",
+        "lupin",
+        "fireweed",
+        "queenanne"
+      ],
+      "notes": {
+        "buttercup": "buttercup — a 3 px disc with a dark centre",
+        "daisy": "oxeye daisy — white disc, yellow centre",
+        "lupin": "lupin — a purple spike, paler at the tip",
+        "fireweed": "fireweed — magenta spike, the tall one",
+        "queenanne": "Queen Anne's lace — a flat lacy umbel on stalklets"
+      },
+      "collision": {
+        "shape": null,
+        "block": "none",
+        "speed_mul": 1
+      },
+      "occluder": false,
+      "footstep_overlay": "brush",
+      "states": "one frame, summer, no sway — the flower rig owns stages and sway",
+      "provenance": "geometry read from FlowersPx.json; collision/occluder DECLARED (herbaceous ground cover never blocks)."
+    },
+    "flowers_rig": {
+      "dir": "Art/Foliage/Flowers/",
+      "rig": "Art/flowerRig.js",
+      "rigSha256": "c8e7becd9c859ee424c096753ddcc2e2a6c8273895ee9984970fa625608b960d",
+      "tiers": {
+        "single": {
+          "cell": [
+            32,
+            48
+          ],
+          "pivot": [
+            16,
+            47
+          ]
+        },
+        "clump": {
+          "cell": [
+            48,
+            46
+          ],
+          "pivot": [
+            24,
+            45
+          ]
+        },
+        "patch": {
+          "cell": [
+            44,
+            26
+          ],
+          "pivot": [
+            22,
+            22
+          ]
+        }
+      },
+      "stages": [
+        "bud",
+        "full",
+        "seed"
+      ],
+      "sway_frames": 4,
+      "files": "Shipped as albedo only, one PNG per species/morph per tier (<Species><Tier>.png). No _unlit/_mask/_normal on this set — only the px sheet carries channels.",
+      "collision": {
+        "shape": null,
+        "block": "none",
+        "speed_mul": 1
+      },
+      "occluder": false,
+      "footstep_overlay": "brush",
+      "species": [
+        {
+          "key": "Lupin",
+          "latin": "Lupinus polyphyllus",
+          "height_px_single": 40,
+          "height_m": 1.25,
+          "morphs": [
+            "Purple",
+            "Pink",
+            "Blue",
+            "White"
+          ],
+          "provenance": "height read from flowerRig.js RAW[].ph at 32 px/m; collision DECLARED."
+        },
+        {
+          "key": "LadySlipper",
+          "latin": "Cypripedium acaule",
+          "height_px_single": 24,
+          "height_m": 0.75,
+          "morphs": null,
+          "provenance": "height read from flowerRig.js RAW[].ph at 32 px/m; collision DECLARED."
+        },
+        {
+          "key": "Fireweed",
+          "latin": "Chamaenerion angustifolium",
+          "height_px_single": 42,
+          "height_m": 1.31,
+          "morphs": [
+            "Magenta"
+          ],
+          "provenance": "height read from flowerRig.js RAW[].ph at 32 px/m; collision DECLARED."
+        },
+        {
+          "key": "QueenAnne",
+          "latin": "Daucus carota",
+          "height_px_single": 38,
+          "height_m": 1.19,
+          "morphs": null,
+          "provenance": "height read from flowerRig.js RAW[].ph at 32 px/m; collision DECLARED."
+        },
+        {
+          "key": "WildRose",
+          "latin": "Rosa virginiana",
+          "height_px_single": 30,
+          "height_m": 0.94,
+          "morphs": null,
+          "provenance": "height read from flowerRig.js RAW[].ph at 32 px/m; collision DECLARED."
+        },
+        {
+          "key": "Goldenrod",
+          "latin": "Solidago",
+          "height_px_single": 40,
+          "height_m": 1.25,
+          "morphs": [
+            "Gold"
+          ],
+          "provenance": "height read from flowerRig.js RAW[].ph at 32 px/m; collision DECLARED."
+        },
+        {
+          "key": "OxeyeDaisy",
+          "latin": "Leucanthemum vulgare",
+          "height_px_single": 32,
+          "height_m": 1,
+          "morphs": null,
+          "provenance": "height read from flowerRig.js RAW[].ph at 32 px/m; collision DECLARED."
+        },
+        {
+          "key": "BlueFlag",
+          "latin": "Iris versicolor",
+          "height_px_single": 38,
+          "height_m": 1.19,
+          "morphs": null,
+          "provenance": "height read from flowerRig.js RAW[].ph at 32 px/m; collision DECLARED."
+        },
+        {
+          "key": "Buttercup",
+          "latin": "Ranunculus / Trifolium",
+          "height_px_single": 22,
+          "height_m": 0.69,
+          "morphs": null,
+          "provenance": "height read from flowerRig.js RAW[].ph at 32 px/m; collision DECLARED."
+        }
+      ]
+    },
+    "grass": {
+      "dirs": [
+        "Art/Sprites/Grass/"
+      ],
+      "manifests": [
+        "GrassSpecies.json",
+        "GrassVarieties.json"
+      ],
+      "rigs": {
+        "Art/grassSpeciesRig.js": "43366e6d63ef2f2e444a6c9fe0a7295d515bef8f528bbd060d67b7235f66e47d",
+        "Art/grassTuftRig.js": "fabb6ecefdcef09c8f9e66a47af54ec84348282cbad3971b3c6ae3fdbffaa4b8"
+      },
+      "collision": {
+        "shape": null,
+        "block": "none",
+        "speed_mul": 0.95
+      },
+      "occluder": false,
+      "footstep_overlay": "brush",
+      "bend": "climb_px is how far the blades rise, i.e. how much bend the wind/footstep vertex shader applies; stiffness scales it (1 = an ordinary tuft). Both are read from the manifests.",
+      "frames": [
+        {
+          "name": "GrassTuft_Cattail",
+          "sheet": "GrassSpecies.png",
+          "cell": [
+            32,
+            64
+          ],
+          "species": "cattail",
+          "class": "emergent",
+          "climb_px": 58,
+          "height_m": 1.81,
+          "stiffness": 0.35,
+          "note": "four sword leaves, one spike"
+        },
+        {
+          "name": "GrassTuft_CattailPair",
+          "sheet": "GrassSpecies.png",
+          "cell": [
+            32,
+            64
+          ],
+          "species": "cattail",
+          "class": "emergent",
+          "climb_px": 57,
+          "height_m": 1.78,
+          "stiffness": 0.35,
+          "note": "two spikes, leaves raked right"
+        },
+        {
+          "name": "GrassTuft_Rush",
+          "sheet": "GrassSpecies.png",
+          "cell": [
+            32,
+            48
+          ],
+          "species": "rush",
+          "class": "rush",
+          "climb_px": 42,
+          "height_m": 1.31,
+          "stiffness": 0.5,
+          "note": "stiff leafless spray"
+        },
+        {
+          "name": "GrassTuft_RushLean",
+          "sheet": "GrassSpecies.png",
+          "cell": [
+            32,
+            48
+          ],
+          "species": "rush",
+          "class": "rush",
+          "climb_px": 35,
+          "height_m": 1.09,
+          "stiffness": 0.5,
+          "note": "whole spray raked, shorter"
+        },
+        {
+          "name": "GrassTuft_Sedge",
+          "sheet": "GrassSpecies.png",
+          "cell": [
+            32,
+            48
+          ],
+          "species": "sedge",
+          "class": "tussock",
+          "climb_px": 38,
+          "height_m": 1.19,
+          "stiffness": 0.85,
+          "note": "fountain, blades arch over"
+        },
+        {
+          "name": "GrassTuft_Timothy",
+          "sheet": "GrassSpecies.png",
+          "cell": [
+            32,
+            48
+          ],
+          "species": "timothy",
+          "class": "culm",
+          "climb_px": 45,
+          "height_m": 1.41,
+          "stiffness": 0.6,
+          "note": "bare culms, cylindrical heads"
+        },
+        {
+          "name": "GrassTuft_TimothyLean",
+          "sheet": "GrassSpecies.png",
+          "cell": [
+            32,
+            48
+          ],
+          "species": "timothy",
+          "class": "culm",
+          "climb_px": 40,
+          "height_m": 1.25,
+          "stiffness": 0.6,
+          "note": "three culms nodding downwind"
+        },
+        {
+          "name": "GrassTuft_SedgeLow",
+          "sheet": "GrassSpecies.png",
+          "cell": [
+            32,
+            32
+          ],
+          "species": "sedge",
+          "class": "tussock",
+          "climb_px": 21,
+          "height_m": 0.66,
+          "stiffness": 0.85,
+          "note": "32×32 — same fountain, half height"
+        },
+        {
+          "name": "GrassTuft_Saltmeadow",
+          "sheet": "GrassSpecies.png",
+          "cell": [
+            64,
+            32
+          ],
+          "species": "saltmeadow",
+          "class": "mat",
+          "climb_px": 18,
+          "height_m": 0.56,
+          "stiffness": 0.3,
+          "note": "64×32 — the cowlick, two whorls"
+        },
+        {
+          "name": "GrassTuft_SaltmeadowSwirl",
+          "sheet": "GrassSpecies.png",
+          "cell": [
+            64,
+            32
+          ],
+          "species": "saltmeadow",
+          "class": "mat",
+          "climb_px": 19,
+          "height_m": 0.59,
+          "stiffness": 0.3,
+          "note": "64×32 — one whorl, all combed left"
+        },
+        {
+          "name": "GrassTuft_Short2",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            32,
+            32
+          ],
+          "species": null,
+          "class": "short",
+          "climb_px": 16,
+          "height_m": 0.5,
+          "stiffness": null,
+          "note": "even fan, crest centred"
+        },
+        {
+          "name": "GrassTuft_Short3",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            32,
+            32
+          ],
+          "species": null,
+          "class": "short",
+          "climb_px": 16,
+          "height_m": 0.5,
+          "stiffness": null,
+          "note": "soft parting down the middle"
+        },
+        {
+          "name": "GrassTuft_Short4",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            32,
+            32
+          ],
+          "species": null,
+          "class": "short",
+          "climb_px": 16,
+          "height_m": 0.5,
+          "stiffness": null,
+          "note": "combed right, crest off-centre"
+        },
+        {
+          "name": "GrassTuft_Medium2",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            32,
+            32
+          ],
+          "species": null,
+          "class": "medium",
+          "climb_px": 21,
+          "height_m": 0.66,
+          "stiffness": null,
+          "note": "dome, crest centred"
+        },
+        {
+          "name": "GrassTuft_Medium3",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            32,
+            32
+          ],
+          "species": null,
+          "class": "medium",
+          "climb_px": 23,
+          "height_m": 0.72,
+          "stiffness": null,
+          "note": "wind-combed left"
+        },
+        {
+          "name": "GrassTuft_Medium4",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            32,
+            32
+          ],
+          "species": null,
+          "class": "medium",
+          "climb_px": 23,
+          "height_m": 0.72,
+          "stiffness": null,
+          "note": "parted, tall on both flanks"
+        },
+        {
+          "name": "GrassTuft_Tall2",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            32,
+            32
+          ],
+          "species": null,
+          "class": "tall",
+          "climb_px": 30,
+          "height_m": 0.94,
+          "stiffness": null,
+          "note": "twin leaders over a full body"
+        },
+        {
+          "name": "GrassTuft_Tall3",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            32,
+            32
+          ],
+          "species": null,
+          "class": "tall",
+          "climb_px": 30,
+          "height_m": 0.94,
+          "stiffness": null,
+          "note": "whole tuft raked right"
+        },
+        {
+          "name": "GrassTuft_Fringe",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            32,
+            32
+          ],
+          "species": null,
+          "class": "fringe",
+          "climb_px": 11,
+          "height_m": 0.34,
+          "stiffness": null,
+          "note": "six thin blades — feathers a grass/ground boundary"
+        },
+        {
+          "name": "GrassTuft_Fringe2",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            32,
+            32
+          ],
+          "species": null,
+          "class": "fringe",
+          "climb_px": 11,
+          "height_m": 0.34,
+          "stiffness": null,
+          "note": "five blades, one leader, sits left"
+        },
+        {
+          "name": "GrassTuft_Fringe3",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            32,
+            32
+          ],
+          "species": null,
+          "class": "fringe",
+          "climb_px": 7,
+          "height_m": 0.22,
+          "stiffness": null,
+          "note": "seven stubs, wide spaced — the thinnest step"
+        },
+        {
+          "name": "GrassTuft_SeedHead",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            32,
+            32
+          ],
+          "species": null,
+          "class": "medium",
+          "climb_px": 25,
+          "height_m": 0.78,
+          "stiffness": null,
+          "note": "late season — three seeding stalks over a tuft"
+        },
+        {
+          "name": "GrassTuft_Clump",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            64,
+            32
+          ],
+          "species": null,
+          "class": "clump",
+          "climb_px": 17,
+          "height_m": 0.53,
+          "stiffness": null,
+          "note": "broad low mound, three soft crests"
+        },
+        {
+          "name": "GrassTuft_ClumpBroad",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            64,
+            32
+          ],
+          "species": null,
+          "class": "clump",
+          "climb_px": 17,
+          "height_m": 0.53,
+          "stiffness": null,
+          "note": "flatter, crest right of centre"
+        },
+        {
+          "name": "GrassTuft_Marram",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            32,
+            48
+          ],
+          "species": null,
+          "class": "marram",
+          "climb_px": 45,
+          "height_m": 1.41,
+          "stiffness": null,
+          "note": "dune marram — tall, wispy, splayed"
+        },
+        {
+          "name": "GrassTuft_MarramLean",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            32,
+            48
+          ],
+          "species": null,
+          "class": "marram",
+          "climb_px": 46,
+          "height_m": 1.44,
+          "stiffness": null,
+          "note": "dune marram raked by the onshore wind"
+        },
+        {
+          "name": "GrassTuft_SeedHeadTall",
+          "sheet": "GrassVarieties.png",
+          "cell": [
+            32,
+            48
+          ],
+          "species": null,
+          "class": "marram",
+          "climb_px": 43,
+          "height_m": 1.34,
+          "stiffness": null,
+          "note": "late season, nodding stalks"
+        }
+      ],
+      "provenance": "every frame read from GrassSpecies.json / GrassVarieties.json; collision and the 0.95 brush cost DECLARED."
+    },
+    "shore_plants": {
+      "rig": "Art/shorePlantRig.js",
+      "rigSha256": "f766b8ac83c347759d9e2299b4a225eed83a76307aa05903eb346af3a8ab02a6",
+      "contract": "Art/shorePlantRig.contract.json",
+      "sheets": "NOT baked into this drop — the rig renders them (11.42 MB across 16 species × 4 variants × 2 seasons × 5 tides). Same as export/shore-plant-rig-kit; run the rig on the engine side or ask for a sheet bake.",
+      "seasons": [
+        "summer",
+        "autumn",
+        "winter"
+      ],
+      "stages": {
+        "new": 0.36,
+        "grown": 0.68,
+        "full": 1
+      },
+      "tide": {
+        "rangeM": 4,
+        "dryFallM": 0.85,
+        "steps": [
+          {
+            "key": "low",
+            "t": 0,
+            "waterM": 0
+          },
+          {
+            "key": "ebb",
+            "t": 0.3,
+            "waterM": 1.2
+          },
+          {
+            "key": "half",
+            "t": 0.55,
+            "waterM": 2.2
+          },
+          {
+            "key": "flood",
+            "t": 0.8,
+            "waterM": 3.2
+          },
+          {
+            "key": "high",
+            "t": 1,
+            "waterM": 4
+          }
+        ],
+        "derives": [
+          "lay",
+          "wet",
+          "submergence",
+          "swayMode"
+        ],
+        "input": "water height over the plant’s own ground = tideM - zone.base. Maps onto the painted seabed height plus the deterministic tide; no new sim.",
+        "waterRow": "row index in sprite space where the surface crosses. null when the surface is outside the sprite — read `submerged` to tell which side."
+      },
+      "zones": [
+        {
+          "key": "fringe",
+          "name": "Subtidal fringe",
+          "baseM": 0.15,
+          "substrate": "bedrock · kelp"
+        },
+        {
+          "key": "mid",
+          "name": "Mid intertidal",
+          "baseM": 1.55,
+          "substrate": "cobble · rock"
+        },
+        {
+          "key": "low",
+          "name": "Low marsh",
+          "baseM": 2.55,
+          "substrate": "creek mud"
+        },
+        {
+          "key": "high",
+          "name": "High marsh",
+          "baseM": 3.35,
+          "substrate": "peat sod · brackish"
+        },
+        {
+          "key": "upland",
+          "name": "Upland & dune",
+          "baseM": 4.65,
+          "substrate": "sand · headland"
+        }
+      ],
+      "keyline": "#101d21",
+      "keyline_defect": "The shore rig outlines every plant with KEYLINE #101d21; the pixel kit is ringless and has no black in any palette. Composited together, a rockweed is a black-edged sticker on a floor that cannot make that colour. harmonyScenes.js re-cuts the ring as band 0 of the plant own dominant colour; it belongs in the rig as an option (defect 05, open).",
+      "species": [
+        {
+          "key": "SugarKelp",
+          "name": "Sugar Kelp",
+          "latin": "Saccharina latissima",
+          "zone": "fringe",
+          "unit": "plant",
+          "algae": true,
+          "base_m": 0.15,
+          "height_m": 2.75,
+          "cell": [
+            142,
+            131
+          ],
+          "pivot": [
+            70,
+            88
+          ],
+          "limp": 0.92,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 2.22,
+            "block": "soft",
+            "speed_mul": 0.55
+          },
+          "occluder": true,
+          "hazard": "slip",
+          "tide": {
+            "covered_at_water_m": 2.9,
+            "awash_at_water_m": 0.15,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0.92); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        },
+        {
+          "key": "IrishMoss",
+          "name": "Irish Moss",
+          "latin": "Chondrus crispus",
+          "zone": "fringe",
+          "unit": "mat",
+          "algae": true,
+          "base_m": 0.15,
+          "height_m": 0.53,
+          "cell": [
+            56,
+            47
+          ],
+          "pivot": [
+            28,
+            31
+          ],
+          "limp": 0.5,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 0.88,
+            "block": "none",
+            "speed_mul": 0.85
+          },
+          "occluder": false,
+          "hazard": "slip",
+          "tide": {
+            "covered_at_water_m": 0.68,
+            "awash_at_water_m": 0.15,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0.5); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        },
+        {
+          "key": "Eelgrass",
+          "name": "Eelgrass",
+          "latin": "Zostera marina",
+          "zone": "fringe",
+          "unit": "clump",
+          "algae": false,
+          "base_m": 0.15,
+          "height_m": 1.44,
+          "cell": [
+            77,
+            69
+          ],
+          "pivot": [
+            38,
+            51
+          ],
+          "limp": 0.62,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 1.2,
+            "block": "soft",
+            "speed_mul": 0.65
+          },
+          "occluder": false,
+          "hazard": null,
+          "tide": {
+            "covered_at_water_m": 1.59,
+            "awash_at_water_m": 0.15,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0.62); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        },
+        {
+          "key": "KnottedWrack",
+          "name": "Knotted Wrack",
+          "latin": "Ascophyllum nodosum",
+          "zone": "mid",
+          "unit": "plant",
+          "algae": true,
+          "base_m": 1.55,
+          "height_m": 1.63,
+          "cell": [
+            98,
+            94
+          ],
+          "pivot": [
+            48,
+            64
+          ],
+          "limp": 0.84,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 1.53,
+            "block": "soft",
+            "speed_mul": 0.55
+          },
+          "occluder": true,
+          "hazard": "slip",
+          "tide": {
+            "covered_at_water_m": 3.18,
+            "awash_at_water_m": 1.55,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0.84); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        },
+        {
+          "key": "Bladderwrack",
+          "name": "Bladderwrack",
+          "latin": "Fucus vesiculosus",
+          "zone": "mid",
+          "unit": "plant",
+          "algae": true,
+          "base_m": 1.55,
+          "height_m": 1.06,
+          "cell": [
+            71,
+            69
+          ],
+          "pivot": [
+            35,
+            47
+          ],
+          "limp": 0.8,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 1.11,
+            "block": "soft",
+            "speed_mul": 0.55
+          },
+          "occluder": false,
+          "hazard": "slip",
+          "tide": {
+            "covered_at_water_m": 2.61,
+            "awash_at_water_m": 1.55,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0.8); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        },
+        {
+          "key": "SeaLettuce",
+          "name": "Sea Lettuce",
+          "latin": "Ulva lactuca",
+          "zone": "mid",
+          "unit": "mat",
+          "algae": true,
+          "base_m": 1.55,
+          "height_m": 0.47,
+          "cell": [
+            61,
+            55
+          ],
+          "pivot": [
+            30,
+            31
+          ],
+          "limp": 0.95,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 0.95,
+            "block": "none",
+            "speed_mul": 0.85
+          },
+          "occluder": false,
+          "hazard": "slip",
+          "tide": {
+            "covered_at_water_m": 2.02,
+            "awash_at_water_m": 1.55,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0.95); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        },
+        {
+          "key": "Cordgrass",
+          "name": "Saltmarsh Cordgrass",
+          "latin": "Spartina alterniflora",
+          "zone": "low",
+          "unit": "clump",
+          "algae": false,
+          "base_m": 2.55,
+          "height_m": 1.81,
+          "cell": [
+            70,
+            83
+          ],
+          "pivot": [
+            34,
+            70
+          ],
+          "limp": 0,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 1.09,
+            "block": "soft",
+            "speed_mul": 0.65
+          },
+          "occluder": true,
+          "hazard": null,
+          "tide": {
+            "covered_at_water_m": 4.36,
+            "awash_at_water_m": 2.55,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        },
+        {
+          "key": "Glasswort",
+          "name": "Glasswort",
+          "latin": "Salicornia maritima",
+          "zone": "low",
+          "unit": "mat",
+          "algae": false,
+          "base_m": 2.55,
+          "height_m": 0.47,
+          "cell": [
+            41,
+            40
+          ],
+          "pivot": [
+            20,
+            24
+          ],
+          "limp": 0,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 0.64,
+            "block": "none",
+            "speed_mul": 0.85
+          },
+          "occluder": false,
+          "hazard": null,
+          "tide": {
+            "covered_at_water_m": 3.02,
+            "awash_at_water_m": 2.55,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        },
+        {
+          "key": "SaltmeadowHay",
+          "name": "Saltmeadow Hay",
+          "latin": "Spartina patens",
+          "zone": "high",
+          "unit": "mat",
+          "algae": false,
+          "base_m": 3.35,
+          "height_m": 0.75,
+          "cell": [
+            82,
+            55
+          ],
+          "pivot": [
+            41,
+            29
+          ],
+          "limp": 0,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 1.28,
+            "block": "none",
+            "speed_mul": 0.85
+          },
+          "occluder": false,
+          "hazard": null,
+          "tide": {
+            "covered_at_water_m": 4.1,
+            "awash_at_water_m": 3.35,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        },
+        {
+          "key": "BlackRush",
+          "name": "Black Rush",
+          "latin": "Juncus gerardii",
+          "zone": "high",
+          "unit": "clump",
+          "algae": false,
+          "base_m": 3.35,
+          "height_m": 0.66,
+          "cell": [
+            40,
+            41
+          ],
+          "pivot": [
+            19,
+            29
+          ],
+          "limp": 0,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 0.63,
+            "block": "soft",
+            "speed_mul": 0.65
+          },
+          "occluder": false,
+          "hazard": null,
+          "tide": {
+            "covered_at_water_m": 4.01,
+            "awash_at_water_m": 3.35,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        },
+        {
+          "key": "Cattail",
+          "name": "Cattail",
+          "latin": "Typha latifolia",
+          "zone": "high",
+          "unit": "clump",
+          "algae": false,
+          "base_m": 3.35,
+          "height_m": 2.06,
+          "cell": [
+            90,
+            73
+          ],
+          "pivot": [
+            44,
+            60
+          ],
+          "limp": 0,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 1.41,
+            "block": "soft",
+            "speed_mul": 0.65
+          },
+          "occluder": true,
+          "hazard": null,
+          "tide": {
+            "covered_at_water_m": 5.41,
+            "awash_at_water_m": 3.35,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        },
+        {
+          "key": "Threesquare",
+          "name": "Threesquare Bulrush",
+          "latin": "Schoenoplectus pungens",
+          "zone": "high",
+          "unit": "clump",
+          "algae": false,
+          "base_m": 3.35,
+          "height_m": 1.13,
+          "cell": [
+            38,
+            52
+          ],
+          "pivot": [
+            18,
+            40
+          ],
+          "limp": 0,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 0.59,
+            "block": "soft",
+            "speed_mul": 0.65
+          },
+          "occluder": false,
+          "hazard": null,
+          "tide": {
+            "covered_at_water_m": 4.48,
+            "awash_at_water_m": 3.35,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        },
+        {
+          "key": "MarramGrass",
+          "name": "Marram Grass",
+          "latin": "Ammophila breviligulata",
+          "zone": "upland",
+          "unit": "clump",
+          "algae": false,
+          "base_m": 4.65,
+          "height_m": 1.03,
+          "cell": [
+            64,
+            66
+          ],
+          "pivot": [
+            31,
+            44
+          ],
+          "limp": 0,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 1,
+            "block": "soft",
+            "speed_mul": 0.65
+          },
+          "occluder": false,
+          "hazard": null,
+          "tide": {
+            "covered_at_water_m": 5.68,
+            "awash_at_water_m": 4.65,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        },
+        {
+          "key": "Bayberry",
+          "name": "Bayberry",
+          "latin": "Morella pensylvanica",
+          "zone": "upland",
+          "unit": "plant",
+          "algae": false,
+          "base_m": 4.65,
+          "height_m": 1.81,
+          "cell": [
+            78,
+            74
+          ],
+          "pivot": [
+            38,
+            64
+          ],
+          "limp": 0,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 1.22,
+            "block": "soft",
+            "speed_mul": 0.55
+          },
+          "occluder": true,
+          "hazard": null,
+          "tide": {
+            "covered_at_water_m": 6.46,
+            "awash_at_water_m": 4.65,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        },
+        {
+          "key": "SweetFern",
+          "name": "Sweet Fern",
+          "latin": "Comptonia peregrina",
+          "zone": "upland",
+          "unit": "plant",
+          "algae": false,
+          "base_m": 4.65,
+          "height_m": 1.16,
+          "cell": [
+            60,
+            60
+          ],
+          "pivot": [
+            29,
+            49
+          ],
+          "limp": 0,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 0.94,
+            "block": "soft",
+            "speed_mul": 0.55
+          },
+          "occluder": false,
+          "hazard": null,
+          "tide": {
+            "covered_at_water_m": 5.81,
+            "awash_at_water_m": 4.65,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        },
+        {
+          "key": "BeachPea",
+          "name": "Beach Pea",
+          "latin": "Lathyrus japonicus",
+          "zone": "upland",
+          "unit": "mat",
+          "algae": false,
+          "base_m": 4.65,
+          "height_m": 0.5,
+          "cell": [
+            76,
+            45
+          ],
+          "pivot": [
+            39,
+            23
+          ],
+          "limp": 0,
+          "collision": {
+            "shape": "ellipse",
+            "radius_m": 1.19,
+            "block": "none",
+            "speed_mul": 0.85
+          },
+          "occluder": false,
+          "hazard": null,
+          "tide": {
+            "covered_at_water_m": 5.15,
+            "awash_at_water_m": 4.65,
+            "note": "water height is measured over the plant own ground: tideM - zone.base. Below base_m the plant is drained and limp (limp 0); above base_m + height_m it is fully submerged."
+          },
+          "provenance": "zone/base/height/cell/pivot/limp/algae read from shorePlantRig.contract.json; collision, occluder and hazard DECLARED."
+        }
+      ]
+    },
+    "drift_weed": {
+      "dir": "Art/Sprites/Shore/Drift/",
+      "manifest": "DriftWeed.json",
+      "rig": "Art/driftWeedRig.js",
+      "rigSha256": "bcada722e4b0be37ee9389e3462a69ce18d59c11193095f10adc453934b0110c",
+      "derivedFromRigSha256_in_manifest": "bcada722e4b0be37ee9389e3462a69ce18d59c11193095f10adc453934b0110c",
+      "frame": {
+        "px": "cell-local, origin top-left, +x right, +y down-screen",
+        "m": "water-plane metres relative to buoy: mx=(x-buoy.x)/32, my=(y-buoy.y)/(32*0.72) (+y toward camera/south)",
+        "pivot": "buoy (buoyancy centre) — register the sprite to the water surface here"
+      },
+      "scale_px_per_m": 32,
+      "y_foreshorten": 0.72,
+      "ramp_rows": [
+        "living",
+        "golden",
+        "bleached"
+      ],
+      "collision": {
+        "shape": null,
+        "block": "none",
+        "speed_mul": 1
+      },
+      "occluder": false,
+      "in_water_only": true,
+      "snag_note": "Every variant publishes buoy (register to the water surface), snag points (exact frond-tip px + water-plane metres) and a dragTail. No catch radius is defined anywhere in the kit; DriftWeed.json _confirm proposes 0.1 m as the engine default — still unconfirmed.",
+      "species": [
+        {
+          "key": "Bladderwrack",
+          "name": "Bladderwrack",
+          "latin": "Fucus vesiculosus",
+          "sheet": "Bladderwrack.png",
+          "cell": [
+            48,
+            36
+          ],
+          "cols": 4,
+          "rows": 3,
+          "variants": [
+            {
+              "cell": 0,
+              "size_m": 0.9,
+              "buoy_px": [
+                24,
+                18
+              ],
+              "snags": [
+                {
+                  "px": [
+                    31,
+                    11
+                  ],
+                  "m": [
+                    0.219,
+                    -0.304
+                  ]
+                },
+                {
+                  "px": [
+                    20,
+                    26
+                  ],
+                  "m": [
+                    -0.125,
+                    0.347
+                  ]
+                },
+                {
+                  "px": [
+                    34,
+                    22
+                  ],
+                  "m": [
+                    0.313,
+                    0.174
+                  ]
+                }
+              ],
+              "dragTail": {
+                "px": [
+                  24,
+                  8
+                ],
+                "m": [
+                  0,
+                  -0.434
+                ]
+              }
+            },
+            {
+              "cell": 1,
+              "size_m": 1.25,
+              "buoy_px": [
+                24,
+                19
+              ],
+              "snags": [
+                {
+                  "px": [
+                    34,
+                    10
+                  ],
+                  "m": [
+                    0.313,
+                    -0.391
+                  ]
+                },
+                {
+                  "px": [
+                    9,
+                    23
+                  ],
+                  "m": [
+                    -0.469,
+                    0.174
+                  ]
+                },
+                {
+                  "px": [
+                    13,
+                    11
+                  ],
+                  "m": [
+                    -0.344,
+                    -0.347
+                  ]
+                }
+              ],
+              "dragTail": {
+                "px": [
+                  41,
+                  22
+                ],
+                "m": [
+                  0.531,
+                  0.13
+                ]
+              }
+            },
+            {
+              "cell": 2,
+              "size_m": 0.6,
+              "buoy_px": [
+                23,
+                18
+              ],
+              "snags": [
+                {
+                  "px": [
+                    25,
+                    24
+                  ],
+                  "m": [
+                    0.063,
+                    0.26
+                  ]
+                },
+                {
+                  "px": [
+                    31,
+                    17
+                  ],
+                  "m": [
+                    0.25,
+                    -0.043
+                  ]
+                },
+                {
+                  "px": [
+                    19,
+                    14
+                  ],
+                  "m": [
+                    -0.125,
+                    -0.174
+                  ]
+                }
+              ],
+              "dragTail": {
+                "px": [
+                  31,
+                  14
+                ],
+                "m": [
+                  0.25,
+                  -0.174
+                ]
+              }
+            },
+            {
+              "cell": 3,
+              "size_m": 1.05,
+              "buoy_px": [
+                23,
+                18
+              ],
+              "snags": [
+                {
+                  "px": [
+                    30,
+                    27
+                  ],
+                  "m": [
+                    0.219,
+                    0.391
+                  ]
+                },
+                {
+                  "px": [
+                    10,
+                    14
+                  ],
+                  "m": [
+                    -0.406,
+                    -0.174
+                  ]
+                },
+                {
+                  "px": [
+                    36,
+                    17
+                  ],
+                  "m": [
+                    0.406,
+                    -0.043
+                  ]
+                }
+              ],
+              "dragTail": {
+                "px": [
+                  18,
+                  7
+                ],
+                "m": [
+                  -0.156,
+                  -0.477
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "key": "SugarKelp",
+          "name": "Sugar Kelp",
+          "latin": "Saccharina latissima",
+          "sheet": "SugarKelp.png",
+          "cell": [
+            64,
+            36
+          ],
+          "cols": 3,
+          "rows": 3,
+          "variants": [
+            {
+              "cell": 0,
+              "size_m": 1.6,
+              "buoy_px": [
+                30,
+                18
+              ],
+              "snags": [
+                {
+                  "px": [
+                    9,
+                    19
+                  ],
+                  "m": [
+                    -0.656,
+                    0.043
+                  ]
+                },
+                {
+                  "px": [
+                    26,
+                    25
+                  ],
+                  "m": [
+                    -0.125,
+                    0.304
+                  ]
+                },
+                {
+                  "px": [
+                    30,
+                    13
+                  ],
+                  "m": [
+                    0,
+                    -0.217
+                  ]
+                }
+              ],
+              "dragTail": {
+                "px": [
+                  56,
+                  16
+                ],
+                "m": [
+                  0.813,
+                  -0.087
+                ]
+              }
+            },
+            {
+              "cell": 1,
+              "size_m": 2,
+              "buoy_px": [
+                29,
+                19
+              ],
+              "snags": [
+                {
+                  "px": [
+                    3,
+                    16
+                  ],
+                  "m": [
+                    -0.813,
+                    -0.13
+                  ]
+                },
+                {
+                  "px": [
+                    37,
+                    27
+                  ],
+                  "m": [
+                    0.25,
+                    0.347
+                  ]
+                }
+              ],
+              "dragTail": {
+                "px": [
+                  62,
+                  19
+                ],
+                "m": [
+                  1.031,
+                  0
+                ]
+              }
+            },
+            {
+              "cell": 2,
+              "size_m": 1.1,
+              "buoy_px": [
+                31,
+                17
+              ],
+              "snags": [
+                {
+                  "px": [
+                    16,
+                    17
+                  ],
+                  "m": [
+                    -0.469,
+                    0
+                  ]
+                },
+                {
+                  "px": [
+                    27,
+                    11
+                  ],
+                  "m": [
+                    -0.125,
+                    -0.26
+                  ]
+                }
+              ],
+              "dragTail": {
+                "px": [
+                  48,
+                  21
+                ],
+                "m": [
+                  0.531,
+                  0.174
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "key": "Eelgrass",
+          "name": "Eelgrass",
+          "latin": "Zostera marina",
+          "sheet": "Eelgrass.png",
+          "cell": [
+            32,
+            24
+          ],
+          "cols": 4,
+          "rows": 3,
+          "variants": [
+            {
+              "cell": 0,
+              "size_m": 0.7,
+              "buoy_px": [
+                17,
+                13
+              ],
+              "snags": [
+                {
+                  "px": [
+                    8,
+                    13
+                  ],
+                  "m": [
+                    -0.281,
+                    0
+                  ]
+                },
+                {
+                  "px": [
+                    18,
+                    17
+                  ],
+                  "m": [
+                    0.031,
+                    0.174
+                  ]
+                },
+                {
+                  "px": [
+                    22,
+                    13
+                  ],
+                  "m": [
+                    0.156,
+                    0
+                  ]
+                }
+              ],
+              "dragTail": {
+                "px": [
+                  18,
+                  6
+                ],
+                "m": [
+                  0.031,
+                  -0.304
+                ]
+              }
+            },
+            {
+              "cell": 1,
+              "size_m": 0.9,
+              "buoy_px": [
+                17,
+                12
+              ],
+              "snags": [
+                {
+                  "px": [
+                    19,
+                    2
+                  ],
+                  "m": [
+                    0.063,
+                    -0.434
+                  ]
+                },
+                {
+                  "px": [
+                    21,
+                    20
+                  ],
+                  "m": [
+                    0.125,
+                    0.347
+                  ]
+                },
+                {
+                  "px": [
+                    27,
+                    13
+                  ],
+                  "m": [
+                    0.313,
+                    0.043
+                  ]
+                }
+              ],
+              "dragTail": {
+                "px": [
+                  24,
+                  3
+                ],
+                "m": [
+                  0.219,
+                  -0.391
+                ]
+              }
+            },
+            {
+              "cell": 2,
+              "size_m": 0.45,
+              "buoy_px": [
+                16,
+                13
+              ],
+              "snags": [
+                {
+                  "px": [
+                    21,
+                    11
+                  ],
+                  "m": [
+                    0.156,
+                    -0.087
+                  ]
+                },
+                {
+                  "px": [
+                    16,
+                    9
+                  ],
+                  "m": [
+                    0,
+                    -0.174
+                  ]
+                }
+              ],
+              "dragTail": {
+                "px": [
+                  10,
+                  13
+                ],
+                "m": [
+                  -0.188,
+                  0
+                ]
+              }
+            },
+            {
+              "cell": 3,
+              "size_m": 0.8,
+              "buoy_px": [
+                17,
+                13
+              ],
+              "snags": [
+                {
+                  "px": [
+                    26,
+                    10
+                  ],
+                  "m": [
+                    0.281,
+                    -0.13
+                  ]
+                },
+                {
+                  "px": [
+                    16,
+                    6
+                  ],
+                  "m": [
+                    -0.031,
+                    -0.304
+                  ]
+                },
+                {
+                  "px": [
+                    8,
+                    13
+                  ],
+                  "m": [
+                    -0.281,
+                    0
+                  ]
+                }
+              ],
+              "dragTail": {
+                "px": [
+                  20,
+                  20
+                ],
+                "m": [
+                  0.094,
+                  0.304
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "key": "TornMat",
+          "name": "Torn Mat",
+          "latin": "mixed wrack raft",
+          "sheet": "TornMat.png",
+          "cell": [
+            64,
+            48
+          ],
+          "cols": 3,
+          "rows": 3,
+          "variants": [
+            {
+              "cell": 0,
+              "size_m": 1.4,
+              "buoy_px": [
+                35,
+                26
+              ],
+              "snags": [
+                {
+                  "px": [
+                    30,
+                    38
+                  ],
+                  "m": [
+                    -0.156,
+                    0.521
+                  ]
+                },
+                {
+                  "px": [
+                    24,
+                    25
+                  ],
+                  "m": [
+                    -0.344,
+                    -0.043
+                  ]
+                }
+              ],
+              "dragTail": {
+                "px": [
+                  39,
+                  11
+                ],
+                "m": [
+                  0.125,
+                  -0.651
+                ]
+              }
+            },
+            {
+              "cell": 1,
+              "size_m": 2,
+              "buoy_px": [
+                32,
+                23
+              ],
+              "snags": [
+                {
+                  "px": [
+                    40,
+                    7
+                  ],
+                  "m": [
+                    0.25,
+                    -0.694
+                  ]
+                },
+                {
+                  "px": [
+                    52,
+                    23
+                  ],
+                  "m": [
+                    0.625,
+                    0
+                  ]
+                },
+                {
+                  "px": [
+                    34,
+                    29
+                  ],
+                  "m": [
+                    0.063,
+                    0.26
+                  ]
+                }
+              ],
+              "dragTail": {
+                "px": [
+                  36,
+                  4
+                ],
+                "m": [
+                  0.125,
+                  -0.825
+                ]
+              }
+            },
+            {
+              "cell": 2,
+              "size_m": 1.15,
+              "buoy_px": [
+                33,
+                23
+              ],
+              "snags": [
+                {
+                  "px": [
+                    21,
+                    16
+                  ],
+                  "m": [
+                    -0.375,
+                    -0.304
+                  ]
+                },
+                {
+                  "px": [
+                    44,
+                    19
+                  ],
+                  "m": [
+                    0.344,
+                    -0.174
+                  ]
+                },
+                {
+                  "px": [
+                    39,
+                    30
+                  ],
+                  "m": [
+                    0.188,
+                    0.304
+                  ]
+                }
+              ],
+              "dragTail": {
+                "px": [
+                  16,
+                  28
+                ],
+                "m": [
+                  -0.531,
+                  0.217
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "provenance": "everything read from DriftWeed.json; collision DECLARED (a floating raft is a fouling volume, not a wall)."
+    }
+  },
+  "_excluded": {
+    "trees": "Art/Foliage/Trees — excluded by request (11 species).",
+    "harvest": "No pick/cut/forage hooks: not requested. They would hang off the species keys here.",
+    "sway": "No sway or phenology frames are baked in this drop. Shrub phenology is 8 phases in Art/shrubIsoRig.js, flower stages/sway are in Art/flowerRig.js, shore-plant sway is 4 frames × 3 modes in the rig."
+  },
+  "_confirm": {
+    "footprints": "Every collision radius is derived from the SPRITE cell or the published width, not from a measured trunk or stool. For soft and none that is harmless; for alder (the one solid) it is generous — halve it if bodies snag.",
+    "occluder_threshold": "1.2 m is a rule of thumb, not a ruling. Bayberry at 1.2 is the borderline case and is set true.",
+    "shore_sheets": "The shore-plant sheets are not in this drop, so nothing here has been checked against a baked sprite — only against the rig contract.",
+    "tide_and_grip": "Drained algae carry slip, and so does the rockweed GROUND material in TerrainPx.gameplay.json. Applying both on the same texel double-counts; let the ground material win."
+  }
+}

@@ -1,0 +1,1084 @@
+{
+  "schema": "hidden-harbours/terrain-gameplay@1",
+  "kit": "Pixel terrain pack (pass six)",
+  "generated": "Generated for the px + greenery + harmony drop. Regenerate rather than hand-edit: the art half is read from TerrainPx.json, the gameplay half is the declared table below.",
+  "derivedFrom": {
+    "Art/pxKit.js": "d13d65372cc968d8b9760b324feca2d8995479a7d483cd173cebeb8ec64c0a46",
+    "Art/pxKit2.js": "97e71d92029eebb813bd3d179da334a5b96da1614fb5178fbf119692bb53ac26",
+    "Art/pixelLanguage.js": "2d6fb8201e8454670aeec0abbe4cda2ae744f6a2902924da9357ce09b8242a4d"
+  },
+  "derivedFromNote": "Three hashes because three files own the result: pxKit + pxKit2 own the marks, pixelLanguage owns the key vector and the band ramps. Station/rowhouse precedent — stamp all the owners, never one.",
+  "units": {
+    "distance": "metres",
+    "ppu": 32,
+    "tile_px": [
+      256,
+      256
+    ],
+    "tile_m": 8,
+    "texel_px": 1
+  },
+  "light": {
+    "key": [
+      -0.5476772967888549,
+      -0.6572127561466258,
+      0.5178039896912809
+    ],
+    "rim": [
+      0.48055295402873055,
+      -0.2803225565167595,
+      -0.8309561496746799
+    ],
+    "note": "fixed upper-left key + back rim, view space, as TreeRig3.LIGHT; PxLang.setKey flips every bake"
+  },
+  "channels": {
+    "albedo": "pre-lit at the fixed key, one band up/down at most",
+    "_unlit": "the authored bands, no directional light",
+    "_mask": "R key N·L · G rim · B height NORMALISED PER TILE · A coverage",
+    "_normal": "R x · G y-up · B out",
+    "_blend": "R coverage order 1–255 · G height on blend.hKit (comparable between materials) · B mark id hash, 0 = matrix · A 255"
+  },
+  "valueLadder": "sand › foreshore › path › marram › shelf › ledge › ripple › oysterreef › dirt › rockweed › marsh › sedge › eelgrass › silt › grass › shingle › talus › mud › bank › musselbed › irishmoss",
+  "traverse_legend": {
+    "mode": "walk = ordinary floor · wade = normally under water, entered at a wading cost · face = a vertical/steep face material, never on the terrain mesh",
+    "speed_mul": "multiplier on base walk speed. grass = 1.00 is the reference; path is the only material above it.",
+    "footstep": "sound class: turf earth gravel sand wet_sand mud cobble rubble rock blades peat marsh weed shell",
+    "grip": "0–1, used for slide/slip rolls. rockweed 0.18 is the floor of the kit and irishmoss is next; path 0.92 is the ceiling.",
+    "vehicle": "cart / ATV passable. Foreshore is true because hard wet sand is a road; dry sand is not.",
+    "hazard": "slip (footing goes out) · cut (shell edges) · sinking (silt) · bog (mud) · turn_ankle (rolling stone) · fall (the lip above a bank)"
+  },
+  "materials": {
+    "grass": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2.4,
+        "lit": {
+          "lo": 0.36,
+          "hi": 0.78
+        },
+        "base": "#485d2f",
+        "L": 32,
+        "variants": [
+          "",
+          "_v2",
+          "_v3"
+        ],
+        "face": false,
+        "directional": false,
+        "rank": 0,
+        "fringe": "blade"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 1,
+        "footstep": "turf",
+        "grip": 0.85,
+        "vehicle": true,
+        "hazard": null,
+        "tide_state": "dry",
+        "note": "The reference surface. Everything else is quoted against it."
+      },
+      "paint": {
+        "markLead": 0.85,
+        "grain": 4,
+        "bias": 0.6
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "dirt": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2.4,
+        "lit": {
+          "lo": 0.38,
+          "hi": 0.78
+        },
+        "base": "#8b5c40",
+        "L": 40,
+        "variants": [
+          "",
+          "_v2",
+          "_v3"
+        ],
+        "face": false,
+        "directional": false,
+        "rank": 3,
+        "fringe": "crumb"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 1,
+        "footstep": "earth",
+        "grip": 0.8,
+        "vehicle": true,
+        "hazard": null,
+        "tide_state": "dry",
+        "note": "Trodden yard and bare field; same speed as turf, duller footfall."
+      },
+      "paint": {
+        "markLead": 0.3,
+        "grain": 5,
+        "bias": 0
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "path": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2,
+        "lit": {
+          "lo": 0.38,
+          "hi": 0.8
+        },
+        "base": "#a07a56",
+        "L": 51,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": false,
+        "rank": 3,
+        "fringe": "crumb"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 1.08,
+        "footstep": "gravel",
+        "grip": 0.92,
+        "vehicle": true,
+        "hazard": null,
+        "tide_state": "dry",
+        "note": "The only material faster than turf — that is what a made track is for."
+      },
+      "paint": {
+        "markLead": 0.25,
+        "grain": 6,
+        "bias": -0.2
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "mud": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2.6,
+        "lit": {
+          "lo": 0.38,
+          "hi": 0.78
+        },
+        "base": "#5a4433",
+        "L": 28,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": false,
+        "rank": 5,
+        "fringe": "crumb"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.55,
+        "footstep": "mud",
+        "grip": 0.35,
+        "vehicle": false,
+        "hazard": "bog",
+        "tide_state": "wet",
+        "note": "Suction, not friction: the cost is in lifting the foot."
+      },
+      "paint": {
+        "markLead": 0.2,
+        "grain": 4,
+        "bias": -0.8
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "sand": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2,
+        "lit": {
+          "lo": 0.4,
+          "hi": 0.8
+        },
+        "base": "#c9ab80",
+        "L": 69,
+        "variants": [
+          "",
+          "_v2",
+          "_v3"
+        ],
+        "face": false,
+        "directional": false,
+        "rank": 6,
+        "fringe": null
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.82,
+        "footstep": "sand",
+        "grip": 0.6,
+        "vehicle": false,
+        "hazard": null,
+        "tide_state": "dry",
+        "note": "Dry soft sand above the last high water; a cart bogs, a body does not."
+      },
+      "paint": {
+        "markLead": 0.15,
+        "grain": 5,
+        "bias": -0.4
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "shingle": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 3.2,
+        "lit": {
+          "lo": 0.4,
+          "hi": 0.76
+        },
+        "base": "#57504a",
+        "L": 32,
+        "variants": [
+          "",
+          "_v2",
+          "_v3"
+        ],
+        "face": false,
+        "directional": false,
+        "rank": 2,
+        "fringe": "stones"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.68,
+        "footstep": "cobble",
+        "grip": 0.45,
+        "vehicle": false,
+        "hazard": "turn_ankle",
+        "tide_state": "dry",
+        "note": "Cobbles roll under the foot. The berm is worse than the lag."
+      },
+      "paint": {
+        "markLead": 1,
+        "grain": 3,
+        "bias": 1.2
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "ledge": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2.8,
+        "lit": {
+          "lo": 0.4,
+          "hi": 0.76
+        },
+        "base": "#a25c40",
+        "L": 43,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": false,
+        "rank": 1,
+        "fringe": "lip"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.92,
+        "footstep": "rock",
+        "grip": 0.7,
+        "vehicle": false,
+        "hazard": null,
+        "tide_state": "intertidal_upper",
+        "note": "Dry red platform. Wet, read the rockweed row instead — the weed is the hazard, not the rock."
+      },
+      "paint": {
+        "markLead": 0.5,
+        "grain": 3,
+        "bias": 1.6
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "marram": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2.4,
+        "lit": {
+          "lo": 0.38,
+          "hi": 0.78
+        },
+        "base": "#6c8558",
+        "L": 47,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": true,
+        "rank": 0.5,
+        "fringe": "blade"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.72,
+        "footstep": "blades",
+        "grip": 0.7,
+        "vehicle": false,
+        "hazard": null,
+        "tide_state": "dry",
+        "note": "Loose dune sand under a stiff thatch. Trampling is what kills a dune; a cost here is the design lever."
+      },
+      "paint": {
+        "markLead": 0.85,
+        "grain": 4,
+        "bias": 0.4
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "foreshore": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2.2,
+        "lit": {
+          "lo": 0.4,
+          "hi": 0.8
+        },
+        "base": "#a87b5d",
+        "L": 52,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": false,
+        "rank": 6.5,
+        "fringe": "crumb"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.95,
+        "footstep": "wet_sand",
+        "grip": 0.78,
+        "vehicle": true,
+        "hazard": null,
+        "tide_state": "intertidal_low",
+        "note": "Hard-packed wet sand — the best walking on the whole shore, and the reason people use the flat as a road."
+      },
+      "paint": {
+        "markLead": 0.15,
+        "grain": 5,
+        "bias": -0.3
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "ripple": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2.2,
+        "lit": {
+          "lo": 0.4,
+          "hi": 0.78
+        },
+        "base": "#8a6448",
+        "L": 42,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": true,
+        "rank": 7,
+        "fringe": "crumb"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.9,
+        "footstep": "wet_sand",
+        "grip": 0.72,
+        "vehicle": false,
+        "hazard": null,
+        "tide_state": "intertidal_low",
+        "note": "Softer and wetter than the foreshore; troughs hold water."
+      },
+      "paint": {
+        "markLead": 0.1,
+        "grain": 6,
+        "bias": -0.5
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "silt": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2.4,
+        "lit": {
+          "lo": 0.38,
+          "hi": 0.76
+        },
+        "base": "#5c503f",
+        "L": 32,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": false,
+        "rank": 5.5,
+        "fringe": "crumb"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.42,
+        "footstep": "mud",
+        "grip": 0.3,
+        "vehicle": false,
+        "hazard": "sinking",
+        "tide_state": "intertidal_low",
+        "note": "Estuary silt. The worst footing in the kit that is still walkable."
+      },
+      "paint": {
+        "markLead": 0.12,
+        "grain": 4,
+        "bias": -0.9
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "shelf": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2.8,
+        "lit": {
+          "lo": 0.4,
+          "hi": 0.76
+        },
+        "base": "#7a7264",
+        "L": 45,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": false,
+        "rank": 1,
+        "fringe": "lip"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.9,
+        "footstep": "rock",
+        "grip": 0.62,
+        "vehicle": false,
+        "hazard": null,
+        "tide_state": "intertidal_mid",
+        "note": "Grey pavement with an algal film — a step under the dry ledge on grip."
+      },
+      "paint": {
+        "markLead": 0.5,
+        "grain": 3,
+        "bias": 1.5
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "talus": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 3.4,
+        "lit": {
+          "lo": 0.4,
+          "hi": 0.74
+        },
+        "base": "#6d4433",
+        "L": 31,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": false,
+        "rank": 1.5,
+        "fringe": "stones"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.5,
+        "footstep": "rubble",
+        "grip": 0.4,
+        "vehicle": false,
+        "hazard": "turn_ankle",
+        "tide_state": "dry",
+        "note": "Blocks that tessellate and shift. Passable on foot, never with a load."
+      },
+      "paint": {
+        "markLead": 1,
+        "grain": 3,
+        "bias": 1.8
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "bank": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 3.4,
+        "lit": {
+          "lo": 0.4,
+          "hi": 0.74
+        },
+        "base": "#5e3b2a",
+        "L": 26,
+        "variants": [
+          ""
+        ],
+        "face": true,
+        "directional": true,
+        "fringe": null
+      },
+      "traverse": {
+        "mode": "face",
+        "speed_mul": 0,
+        "footstep": "earth",
+        "grip": 0.35,
+        "vehicle": false,
+        "hazard": "fall",
+        "tide_state": "face",
+        "note": "FACE material — never on the terrain mesh. Not a floor: no route, and the lip above it is a fall."
+      },
+      "paint": {
+        "markLead": 0.4,
+        "grain": 5,
+        "bias": 1
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "marsh": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2.4,
+        "lit": {
+          "lo": 0.38,
+          "hi": 0.76
+        },
+        "base": "#5a6633",
+        "L": 36,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": true,
+        "rank": 4,
+        "fringe": "blade"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.48,
+        "footstep": "marsh",
+        "grip": 0.4,
+        "vehicle": false,
+        "hazard": null,
+        "tide_state": "intertidal_high",
+        "note": "Cordgrass on anoxic mud: creek-cut, soft between the stools."
+      },
+      "paint": {
+        "markLead": 0.85,
+        "grain": 4,
+        "bias": 0.3
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "sedge": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2.6,
+        "lit": {
+          "lo": 0.38,
+          "hi": 0.76
+        },
+        "base": "#546333",
+        "L": 35,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": false,
+        "rank": 0,
+        "fringe": "blade"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.6,
+        "footstep": "peat",
+        "grip": 0.5,
+        "vehicle": false,
+        "hazard": null,
+        "tide_state": "wet",
+        "note": "Tussocks on peat — the cost is stepping between them, not on them."
+      },
+      "paint": {
+        "markLead": 0.9,
+        "grain": 4,
+        "bias": 0.5
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "rockweed": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2.8,
+        "lit": {
+          "lo": 0.38,
+          "hi": 0.76
+        },
+        "base": "#6f5f26",
+        "L": 37,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": true,
+        "rank": 2.2,
+        "fringe": "blade"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.4,
+        "footstep": "weed",
+        "grip": 0.18,
+        "vehicle": false,
+        "hazard": "slip",
+        "tide_state": "intertidal_mid",
+        "note": "Drained Ascophyllum on rock is the single most slippery surface on this coast. Lowest grip in the kit by design."
+      },
+      "paint": {
+        "markLead": 0.7,
+        "grain": 4,
+        "bias": 0.2
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "musselbed": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 3,
+        "lit": {
+          "lo": 0.38,
+          "hi": 0.74
+        },
+        "base": "#363b49",
+        "L": 23,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": false,
+        "rank": 4.4,
+        "fringe": "stones"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.45,
+        "footstep": "shell",
+        "grip": 0.52,
+        "vehicle": false,
+        "hazard": "cut",
+        "tide_state": "intertidal_low",
+        "note": "Shell edges cut bare feet and soft boots; grip itself is fair."
+      },
+      "paint": {
+        "markLead": 1,
+        "grain": 3,
+        "bias": 0.9
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "oysterreef": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 3.2,
+        "lit": {
+          "lo": 0.38,
+          "hi": 0.74
+        },
+        "base": "#746e45",
+        "L": 42,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": false,
+        "rank": 4.4,
+        "fringe": "stones"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.35,
+        "footstep": "shell",
+        "grip": 0.48,
+        "vehicle": false,
+        "hazard": "cut",
+        "tide_state": "intertidal_low",
+        "note": "Cemented clusters standing on edge — worse than mussel, and the channels between them are holes."
+      },
+      "paint": {
+        "markLead": 1,
+        "grain": 3,
+        "bias": 1
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "eelgrass": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2.4,
+        "lit": {
+          "lo": 0.38,
+          "hi": 0.76
+        },
+        "base": "#466228",
+        "L": 33,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": true,
+        "rank": 4.6,
+        "fringe": "blade"
+      },
+      "traverse": {
+        "mode": "wade",
+        "speed_mul": 0.38,
+        "footstep": "weed",
+        "grip": 0.25,
+        "vehicle": false,
+        "hazard": null,
+        "tide_state": "subtidal",
+        "note": "Normally under water. Wading cost, not a walk cost."
+      },
+      "paint": {
+        "markLead": 0.75,
+        "grain": 4,
+        "bias": 0
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    },
+    "irishmoss": {
+      "art": {
+        "size": [
+          256,
+          256
+        ],
+        "metres": 8,
+        "texel": 1,
+        "grid": 256,
+        "relief": 2.6,
+        "lit": {
+          "lo": 0.36,
+          "hi": 0.74
+        },
+        "base": "#5a2a30",
+        "L": 22,
+        "variants": [
+          ""
+        ],
+        "face": false,
+        "directional": false,
+        "rank": 1.2,
+        "fringe": "blade"
+      },
+      "traverse": {
+        "mode": "walk",
+        "speed_mul": 0.45,
+        "footstep": "weed",
+        "grip": 0.22,
+        "vehicle": false,
+        "hazard": "slip",
+        "tide_state": "intertidal_low",
+        "note": "Cushions on cobble: slippery, and the cobble under them rolls."
+      },
+      "paint": {
+        "markLead": 0.75,
+        "grain": 5,
+        "bias": 0.2
+      },
+      "provenance": "art.* + paint.* read from Art/Textures/TerrainPx/TerrainPx.json (materials, rank, fringe, blend.materials). traverse.* is DECLARED by this file — see _confirm.declared."
+    }
+  },
+  "blend": {
+    "why": "Most of this terrain is painted, not tiled by hand, so every material has to survive arriving at partial weight. The failure mode is not subtle: cross-fading two banded palettes produces colour that is in neither of them, which is what pass two did and what the authored edge strips were built to replace. A paint tool must CHOOSE a material per texel and never average two of them.",
+    "hKit": [
+      -3,
+      9
+    ],
+    "heightGain": 10,
+    "choose": "For each material k painted at this texel, with weight w_k in 0..1:\n  order_k  = _blend.R                                         (1..255)\n  height_k = hKit[0] + _blend.G/255 * (hKit[1] - hKit[0])     (texels)\n  score_k  = w_k * 255 - order_k + heightGain * (height_k + bias_k)\nTake the material with the highest score and use its albedo unchanged. No mixing, no alpha.\nw_k * 255 >= order_k alone is the plain coverage test; the height term is what lets a stone keep its whole silhouette against sand instead of being nibbled at the frontier.",
+    "whyOrder": "Every texel of one authored mark carries the SAME order value, so a cobble, a tussock or a puddle arrives whole. The order is laid out along one wrapping noise field, so a half-weight patch is a blotch with a wandering frontier rather than a dither screen. markLead says which arrives first as the weight rises: 1 = the marks (a few cobbles land on the sand long before the grit does, which is how a shingle beach actually encroaches), 0 = the matrix (silt closes over the flat as a surface and its burrows come last).",
+    "frontier": {
+      "note": "Two rules recover the authored edge language per texel, so a painted boundary looks like a baked strip. Sample the winner at the four neighbours; let A be this texel's winner and B a neighbour's.",
+      "cutAndShade": "If A stands proud of B (height_A + bias_A > height_B + bias_B) and B is this texel, multiply B's albedo by shadeMul for shadeTexels texels on A's SOUTH and EAST sides — that is A's cut face throwing its shade downlight. Materials whose fringe is \"lip\" (ledge, shelf) throw lipTexels instead.",
+      "litRim": "On A's NORTH and WEST sides, multiply A's albedo by litRimMul on about half the frontier texels (hash the texel) — the broken lit rim where the higher material's edge faces the key.",
+      "shadeMul": 0.78,
+      "litRimMul": 1.14,
+      "shadeTexels": 2,
+      "lipTexels": 4,
+      "fringe": "The strips in Edges/ still carry the authored fringe (blades, crumbs, spilled stones) and are still the right thing along a boundary the level actually cares about. The frontier rules above are what a painted boundary gets for free."
+    },
+    "variants": "Where a material ships _v2/_v3, pick per tile at random so a painted field does not repeat every 8 m.",
+    "materials": {
+      "grass": {
+        "markLead": 0.85,
+        "grain": 4,
+        "bias": 0.6
+      },
+      "dirt": {
+        "markLead": 0.3,
+        "grain": 5,
+        "bias": 0
+      },
+      "path": {
+        "markLead": 0.25,
+        "grain": 6,
+        "bias": -0.2
+      },
+      "mud": {
+        "markLead": 0.2,
+        "grain": 4,
+        "bias": -0.8
+      },
+      "sand": {
+        "markLead": 0.15,
+        "grain": 5,
+        "bias": -0.4
+      },
+      "shingle": {
+        "markLead": 1,
+        "grain": 3,
+        "bias": 1.2
+      },
+      "ledge": {
+        "markLead": 0.5,
+        "grain": 3,
+        "bias": 1.6
+      },
+      "marram": {
+        "markLead": 0.85,
+        "grain": 4,
+        "bias": 0.4
+      },
+      "foreshore": {
+        "markLead": 0.15,
+        "grain": 5,
+        "bias": -0.3
+      },
+      "ripple": {
+        "markLead": 0.1,
+        "grain": 6,
+        "bias": -0.5
+      },
+      "silt": {
+        "markLead": 0.12,
+        "grain": 4,
+        "bias": -0.9
+      },
+      "shelf": {
+        "markLead": 0.5,
+        "grain": 3,
+        "bias": 1.5
+      },
+      "talus": {
+        "markLead": 1,
+        "grain": 3,
+        "bias": 1.8
+      },
+      "bank": {
+        "markLead": 0.4,
+        "grain": 5,
+        "bias": 1
+      },
+      "marsh": {
+        "markLead": 0.85,
+        "grain": 4,
+        "bias": 0.3
+      },
+      "sedge": {
+        "markLead": 0.9,
+        "grain": 4,
+        "bias": 0.5
+      },
+      "rockweed": {
+        "markLead": 0.7,
+        "grain": 4,
+        "bias": 0.2
+      },
+      "musselbed": {
+        "markLead": 1,
+        "grain": 3,
+        "bias": 0.9
+      },
+      "oysterreef": {
+        "markLead": 1,
+        "grain": 3,
+        "bias": 1
+      },
+      "eelgrass": {
+        "markLead": 0.75,
+        "grain": 4,
+        "bias": 0
+      },
+      "irishmoss": {
+        "markLead": 0.75,
+        "grain": 5,
+        "bias": 0.2
+      }
+    }
+  },
+  "edges": {
+    "manifest": "Art/Textures/TerrainPx/Edges/Edges.json",
+    "pairs": [
+      "GrassDirt",
+      "GrassPath",
+      "GrassSand",
+      "GrassShingle",
+      "GrassMud",
+      "DirtSand",
+      "ShingleSand",
+      "LedgeSand",
+      "GrassMarram",
+      "MarramSand",
+      "SandForeshore",
+      "ForeshoreRipple",
+      "LedgeRockweed",
+      "TalusShelf",
+      "MusselbedSilt",
+      "MarshSilt",
+      "Wrack"
+    ],
+    "contract": "A over B along a wandering line. A's side is opaque for its first 6 px — lay the strip so those rows sit inside the A tile and the engine's hard boundary falls under them. B's side is alpha except the marks. N = A above · S = A below · W = A left · E = A right; outer o<Q> = A fills quadrant Q, inner i<Q> = B fills it. Every orientation is baked with the key upper-left, so never rotate a strip.",
+    "painted": "A boundary the paint tool made does not need a strip — see TerrainPx.json blend.frontier. Use a strip where a level cares about the line.",
+    "note": "A strip is art, not collision: the traverse row of the material a texel resolves to is what gameplay reads, and the paint tool resolves every texel to exactly one material (blend.choose)."
+  },
+  "_excluded": {
+    "sandstone": "The face material (Art/pxTerrainRig.js, still a 2 px texel) and everything in Art/Tilesets/CliffPx are out of this drop by request. Bank is the only face material included, and it is marked mode:face — it is here because it is baked in TerrainPx, not because a body walks on it.",
+    "rock_px": "Art/Sprites/Shore/RockPx (the pass-three iso rock kit) is out of this drop by request. Art/Sprites/Scatter/Rocks.png — the pixel kit own boulder sheet from pass three — IS included; it is part of this kit, delete it if the exclusion was meant to cover it too.",
+    "walkable_masks": "No per-scene walkable mask: not requested. A mask is derivable from the painted material id per texel plus the traverse rows here."
+  },
+  "_confirm": {
+    "declared": "Every number under traverse is DECLARED, not measured — no rig carries footstep, grip or speed. They are ordered against each other so the set is internally consistent (path > grass > foreshore > sand > shingle > mud > silt; rockweed the slipperiest thing on the coast). Tune them as gameplay constants; the ordering is the art-side claim, the absolute values are not.",
+    "wet_tide": "tide_state names where a material normally sits, not a live wetness. A material below high water is dry at low tide and the shader knows it; grip does not currently move with the tide, and it probably should for ledge and shelf.",
+    "vehicle": "foreshore and path are the only surfaces a loaded cart crosses well. Marram is false to make trampling a cost; that is a design position, not a physical fact.",
+    "hazard_cut": "musselbed and oysterreef carry cut, which assumes a barefoot/soft-boot model. If footwear is not modelled, drop the flag rather than pricing it in speed."
+  }
+}
