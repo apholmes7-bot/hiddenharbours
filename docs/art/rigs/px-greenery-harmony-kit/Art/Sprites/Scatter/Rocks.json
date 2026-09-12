@@ -1,0 +1,53 @@
+{
+ "_note": "Baked by Art/_pxKitBake.js from Art/pxKit.js. Regenerate rather than hand-edit.",
+ "sheet": [
+  576,
+  168
+ ],
+ "cell": [
+  48,
+  56
+ ],
+ "pivot": "bottom-centre of the cell, 2 px up",
+ "texel": 1,
+ "ringless": true,
+ "light": {
+  "key": [
+   -0.5476772967888549,
+   -0.6572127561466258,
+   0.5178039896912809
+  ],
+  "rim": [
+   0.48055295402873055,
+   -0.2803225565167595,
+   -0.8309561496746799
+  ],
+  "note": "fixed upper-left key + back rim, view space (x right · y down · z toward camera), as TreeRig3.LIGHT — the bible's top-of-frame ruling is still open; PxLang.setKey flips every bake"
+ },
+ "channels": {
+  "albedo": "pre-lit at the fixed key, one band up/down at most",
+  "_unlit": "the authored bands, no directional light",
+  "_mask": "R key N·L · G rim · B height · A coverage",
+  "_normal": "R x · G y-up · B out"
+ },
+ "cols": "size × variant: 8px ×2 · 12px ×2 · 16px ×2 · 22px ×2 · 30px ×2 · 40px ×2",
+ "rows": [
+  "granite",
+  "sandstone",
+  "basalt"
+ ],
+ "metres": [
+  0.25,
+  0.38,
+  0.5,
+  0.69,
+  0.94,
+  1.25
+ ],
+ "kinds": {
+  "granite": "ice-dropped erratic — rounded, unbedded, feldspar flecks",
+  "sandstone": "the red bed as a slab — flat-topped, laminated down its face",
+  "basalt": "a fallen column — angular, a flat top, vertical joints"
+ },
+ "note": "Boulders — the kit's lump at boulder size: a dome on the top, the south wall in shade, a dark contact row. Pebbles for boundaries stay in Stones.png."
+}

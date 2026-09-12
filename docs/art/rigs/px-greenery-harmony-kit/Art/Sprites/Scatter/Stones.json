@@ -1,0 +1,22 @@
+{
+ "_note": "PxTerrain.scatter via Art/_pxBake.js",
+ "cell": [
+  28,
+  24
+ ],
+ "cols": "size px 3/4/5/6/8/10",
+ "rows": [
+  "grey",
+  "tan",
+  "red",
+  "dark"
+ ],
+ "pivot": "bottom-centre of the cell, 2 px up",
+ "texel": 2,
+ "channels": {
+  "albedo": "pre-lit at the fixed key, one band up/down at most",
+  "_unlit": "the authored bands, no directional light",
+  "_mask": "R key N·L · G rim · B height · A coverage",
+  "_normal": "R x · G y-up · B out"
+ }
+}

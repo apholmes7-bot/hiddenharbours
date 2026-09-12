@@ -1,0 +1,437 @@
+{
+ "_note": "Edge strips and corners, PxKit.strip / PxKit.corner, pass six (1 px texel). Regenerate rather than hand-edit.",
+ "texel": 1,
+ "size": {
+  "N": [
+   256,
+   24
+  ],
+  "S": [
+   256,
+   24
+  ],
+  "E": [
+   24,
+   256
+  ],
+  "W": [
+   24,
+   256
+  ],
+  "corner": [
+   48,
+   48
+  ]
+ },
+ "contract": "A over B along a wandering line. A's side is opaque for its first 6 px — lay the strip so those rows sit inside the A tile and the engine's hard boundary falls under them. B's side is alpha except the marks. N = A above · S = A below · W = A left · E = A right; outer o<Q> = A fills quadrant Q, inner i<Q> = B fills it. Every orientation is baked with the key upper-left, so never rotate a strip.",
+ "painted": "A boundary the paint tool made does not need a strip — see TerrainPx.json blend.frontier. Use a strip where a level cares about the line.",
+ "rank": {
+  "grass": 0,
+  "ledge": 1,
+  "shingle": 2,
+  "dirt": 3,
+  "path": 3,
+  "mud": 5,
+  "sand": 6,
+  "sedge": 0,
+  "marram": 0.5,
+  "shelf": 1,
+  "irishmoss": 1.2,
+  "talus": 1.5,
+  "rockweed": 2.2,
+  "marsh": 4,
+  "musselbed": 4.4,
+  "oysterreef": 4.4,
+  "eelgrass": 4.6,
+  "silt": 5.5,
+  "foreshore": 6.5,
+  "ripple": 7
+ },
+ "fringe": {
+  "grass": "blade",
+  "ledge": "lip",
+  "shingle": "stones",
+  "dirt": "crumb",
+  "path": "crumb",
+  "mud": "crumb",
+  "sedge": "blade",
+  "marram": "blade",
+  "marsh": "blade",
+  "eelgrass": "blade",
+  "rockweed": "blade",
+  "irishmoss": "blade",
+  "shelf": "lip",
+  "talus": "stones",
+  "musselbed": "stones",
+  "oysterreef": "stones",
+  "silt": "crumb",
+  "foreshore": "crumb",
+  "ripple": "crumb"
+ },
+ "light": {
+  "key": [
+   -0.5476772967888549,
+   -0.6572127561466258,
+   0.5178039896912809
+  ],
+  "rim": [
+   0.48055295402873055,
+   -0.2803225565167595,
+   -0.8309561496746799
+  ],
+  "note": "fixed upper-left key + back rim, view space, as TreeRig3.LIGHT; PxLang.setKey flips every bake"
+ },
+ "channels": {
+  "albedo": "pre-lit at the fixed key, one band up/down at most",
+  "_unlit": "the authored bands, no directional light",
+  "_mask": "R key N·L · G rim · B height NORMALISED PER TILE · A coverage",
+  "_normal": "R x · G y-up · B out",
+  "_blend": "R coverage order 1–255 · G height on blend.hKit (comparable between materials) · B mark id hash, 0 = matrix · A 255"
+ },
+ "strips": {
+  "GrassDirt": {
+   "over": "grass",
+   "under": "dirt",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ],
+   "fringe": "blade"
+  },
+  "GrassPath": {
+   "over": "grass",
+   "under": "path",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ],
+   "fringe": "blade"
+  },
+  "GrassSand": {
+   "over": "grass",
+   "under": "sand",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ],
+   "fringe": "blade"
+  },
+  "GrassShingle": {
+   "over": "grass",
+   "under": "shingle",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ],
+   "fringe": "blade"
+  },
+  "GrassMud": {
+   "over": "grass",
+   "under": "mud",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ],
+   "fringe": "blade"
+  },
+  "DirtSand": {
+   "over": "dirt",
+   "under": "sand",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ],
+   "fringe": "crumb"
+  },
+  "ShingleSand": {
+   "over": "shingle",
+   "under": "sand",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ],
+   "fringe": "stones"
+  },
+  "LedgeSand": {
+   "over": "ledge",
+   "under": "sand",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ],
+   "fringe": "lip"
+  },
+  "GrassMarram": {
+   "over": "grass",
+   "under": "marram",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ],
+   "fringe": "blade"
+  },
+  "MarramSand": {
+   "over": "marram",
+   "under": "sand",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ],
+   "fringe": "blade"
+  },
+  "SandForeshore": {
+   "over": "sand",
+   "under": "foreshore",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ]
+  },
+  "ForeshoreRipple": {
+   "over": "foreshore",
+   "under": "ripple",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ],
+   "fringe": "crumb"
+  },
+  "LedgeRockweed": {
+   "over": "ledge",
+   "under": "rockweed",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ],
+   "fringe": "lip"
+  },
+  "TalusShelf": {
+   "over": "talus",
+   "under": "shelf",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ],
+   "fringe": "stones"
+  },
+  "MusselbedSilt": {
+   "over": "musselbed",
+   "under": "silt",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ],
+   "fringe": "stones"
+  },
+  "MarshSilt": {
+   "over": "marsh",
+   "under": "silt",
+   "orientations": [
+    "N",
+    "S",
+    "E",
+    "W"
+   ],
+   "corners": [
+    "oNW",
+    "oNE",
+    "oSE",
+    "oSW",
+    "iNW",
+    "iNE",
+    "iSE",
+    "iSW"
+   ],
+   "fringe": "blade"
+  },
+  "Wrack": {
+   "over": null,
+   "under": "sand",
+   "orientations": [
+    "N",
+    "W"
+   ],
+   "note": "the last high tide's line — weed, straw, a shell, a pebble; lay it along the damp/dry boundary"
+  }
+ }
+}

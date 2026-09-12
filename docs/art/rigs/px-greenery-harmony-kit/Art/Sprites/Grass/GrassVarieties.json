@@ -1,0 +1,238 @@
+{
+  "sheet": "GrassVarieties.png",
+  "size": [
+    192,
+    144
+  ],
+  "palette": [
+    "#283a22",
+    "#3a542a",
+    "#567834",
+    "#7ca248",
+    "#aac660"
+  ],
+  "note": "STATIC sprites for the wind/footstep vertex shader. Every tuft is rooted on the bottom edge; climb = px the blades rise, i.e. how much bend the shader applies. Hard alpha, five-colour ramp only, no ground/shadow/outline pixels.",
+  "variants": [
+    {
+      "name": "GrassTuft_Short2",
+      "file": "GrassTuft_Short2.png",
+      "rect": [
+        0,
+        0,
+        32,
+        32
+      ],
+      "heightClass": "short",
+      "climb": 16,
+      "note": "even fan, crest centred"
+    },
+    {
+      "name": "GrassTuft_Short3",
+      "file": "GrassTuft_Short3.png",
+      "rect": [
+        32,
+        0,
+        32,
+        32
+      ],
+      "heightClass": "short",
+      "climb": 16,
+      "note": "soft parting down the middle"
+    },
+    {
+      "name": "GrassTuft_Short4",
+      "file": "GrassTuft_Short4.png",
+      "rect": [
+        64,
+        0,
+        32,
+        32
+      ],
+      "heightClass": "short",
+      "climb": 16,
+      "note": "combed right, crest off-centre"
+    },
+    {
+      "name": "GrassTuft_Medium2",
+      "file": "GrassTuft_Medium2.png",
+      "rect": [
+        96,
+        0,
+        32,
+        32
+      ],
+      "heightClass": "medium",
+      "climb": 21,
+      "note": "dome, crest centred"
+    },
+    {
+      "name": "GrassTuft_Medium3",
+      "file": "GrassTuft_Medium3.png",
+      "rect": [
+        128,
+        0,
+        32,
+        32
+      ],
+      "heightClass": "medium",
+      "climb": 23,
+      "note": "wind-combed left"
+    },
+    {
+      "name": "GrassTuft_Medium4",
+      "file": "GrassTuft_Medium4.png",
+      "rect": [
+        160,
+        0,
+        32,
+        32
+      ],
+      "heightClass": "medium",
+      "climb": 23,
+      "note": "parted, tall on both flanks"
+    },
+    {
+      "name": "GrassTuft_Tall2",
+      "file": "GrassTuft_Tall2.png",
+      "rect": [
+        0,
+        32,
+        32,
+        32
+      ],
+      "heightClass": "tall",
+      "climb": 30,
+      "note": "twin leaders over a full body"
+    },
+    {
+      "name": "GrassTuft_Tall3",
+      "file": "GrassTuft_Tall3.png",
+      "rect": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "heightClass": "tall",
+      "climb": 30,
+      "note": "whole tuft raked right"
+    },
+    {
+      "name": "GrassTuft_Fringe",
+      "file": "GrassTuft_Fringe.png",
+      "rect": [
+        64,
+        32,
+        32,
+        32
+      ],
+      "heightClass": "fringe",
+      "climb": 11,
+      "note": "six thin blades — feathers a grass/ground boundary"
+    },
+    {
+      "name": "GrassTuft_Fringe2",
+      "file": "GrassTuft_Fringe2.png",
+      "rect": [
+        96,
+        32,
+        32,
+        32
+      ],
+      "heightClass": "fringe",
+      "climb": 11,
+      "note": "five blades, one leader, sits left"
+    },
+    {
+      "name": "GrassTuft_Fringe3",
+      "file": "GrassTuft_Fringe3.png",
+      "rect": [
+        128,
+        32,
+        32,
+        32
+      ],
+      "heightClass": "fringe",
+      "climb": 7,
+      "note": "seven stubs, wide spaced — the thinnest step"
+    },
+    {
+      "name": "GrassTuft_SeedHead",
+      "file": "GrassTuft_SeedHead.png",
+      "rect": [
+        160,
+        32,
+        32,
+        32
+      ],
+      "heightClass": "medium",
+      "climb": 25,
+      "note": "late season — three seeding stalks over a tuft"
+    },
+    {
+      "name": "GrassTuft_Clump",
+      "file": "GrassTuft_Clump.png",
+      "rect": [
+        0,
+        64,
+        64,
+        32
+      ],
+      "heightClass": "clump",
+      "climb": 17,
+      "note": "broad low mound, three soft crests"
+    },
+    {
+      "name": "GrassTuft_ClumpBroad",
+      "file": "GrassTuft_ClumpBroad.png",
+      "rect": [
+        64,
+        64,
+        64,
+        32
+      ],
+      "heightClass": "clump",
+      "climb": 17,
+      "note": "flatter, crest right of centre"
+    },
+    {
+      "name": "GrassTuft_Marram",
+      "file": "GrassTuft_Marram.png",
+      "rect": [
+        0,
+        96,
+        32,
+        48
+      ],
+      "heightClass": "marram",
+      "climb": 45,
+      "note": "dune marram — tall, wispy, splayed"
+    },
+    {
+      "name": "GrassTuft_MarramLean",
+      "file": "GrassTuft_MarramLean.png",
+      "rect": [
+        32,
+        96,
+        32,
+        48
+      ],
+      "heightClass": "marram",
+      "climb": 46,
+      "note": "dune marram raked by the onshore wind"
+    },
+    {
+      "name": "GrassTuft_SeedHeadTall",
+      "file": "GrassTuft_SeedHeadTall.png",
+      "rect": [
+        64,
+        96,
+        32,
+        48
+      ],
+      "heightClass": "marram",
+      "climb": 43,
+      "note": "late season, nodding stalks"
+    }
+  ]
+}

@@ -1,0 +1,692 @@
+{
+ "_note": "Baked by Art/_pxKit3Bake.js from Art/pxKit.js + Art/pxKit2.js through Art/pixelLanguage.js. Pass six — the floor on a 1 px texel, and a _blend channel for the paint tool. Regenerate rather than hand-edit.",
+ "ppu": 32,
+ "texel": 1,
+ "grid": 256,
+ "tile": [
+  256,
+  256
+ ],
+ "metres": 8,
+ "light": {
+  "key": [
+   -0.5476772967888549,
+   -0.6572127561466258,
+   0.5178039896912809
+  ],
+  "rim": [
+   0.48055295402873055,
+   -0.2803225565167595,
+   -0.8309561496746799
+  ],
+  "note": "fixed upper-left key + back rim, view space, as TreeRig3.LIGHT; PxLang.setKey flips every bake"
+ },
+ "channels": {
+  "albedo": "pre-lit at the fixed key, one band up/down at most",
+  "_unlit": "the authored bands, no directional light",
+  "_mask": "R key N·L · G rim · B height NORMALISED PER TILE · A coverage",
+  "_normal": "R x · G y-up · B out",
+  "_blend": "R coverage order 1–255 · G height on blend.hKit (comparable between materials) · B mark id hash, 0 = matrix · A 255"
+ },
+ "detail": {
+  "pass": 6,
+  "texelWas": 2,
+  "texelNow": 1,
+  "gridWas": 128,
+  "gridNow": 256,
+  "note": "The floor now shares the sprites' 1 px texel, so it no longer reads one step coarser than what stands on it. Nothing in the engine contract moved: tiles are still 256 px = 8 m at 32 px/m, strips still 256×24, corners still 48×48. What changed is the texel grid inside them. Marks are authored in the old texels and scaled up by PxKit.DETAIL, so a cobble is the same 12 cm and has four times the texels to be a cobble with."
+ },
+ "valueLadder": "sand › foreshore › path › marram › shelf › ledge › ripple › oysterreef › dirt › rockweed › marsh › sedge › eelgrass › silt › grass › shingle › talus › mud › bank › musselbed › irishmoss",
+ "supersedes": "export/terrain-material-kit-v3 — every material in that kit is here in the pixel language except its Sandstone face (Art/pxTerrainRig.js). Also supersedes the pass-five 2 px-texel bake of these same filenames.",
+ "palette": {
+  "grass": "#485d2f",
+  "grassDry": "#5a5f2c",
+  "grassDamp": "#3f5e38",
+  "soil": "#77523a",
+  "straw": "#b7a066",
+  "stone": "#7d7b76",
+  "buttercup": "#e6c53c",
+  "clover": "#e8e2d0",
+  "selfheal": "#9a7cc4",
+  "dirt": "#8b5c40",
+  "peb": "#a29181",
+  "moss": "#5e733f",
+  "path": "#a07a56",
+  "gravel": "#8e8477",
+  "mud": "#5a4433",
+  "puddle": "#7c8a88",
+  "crust": "#7a6450",
+  "sand": "#c9ab80",
+  "damp": "#a88b67",
+  "grit": "#57504a",
+  "grey": "#7d7b76",
+  "tan": "#9b866d",
+  "red": "#8d5a46",
+  "dark": "#4c4844",
+  "ledge": "#a25c40",
+  "weed": "#5d6a2f",
+  "cob": "#8a837c",
+  "water": "#3d6470",
+  "ripple": "#8a6448",
+  "mineral": "#3a2b24",
+  "foreshore": "#a87b5d",
+  "runnel": "#7d543f",
+  "silt": "#5c503f",
+  "siltCrust": "#9d9382",
+  "anox": "#242219",
+  "shelfA": "#7a7264",
+  "shelfB": "#6e6558",
+  "shelfC": "#61594e",
+  "ledgeA": "#a86444",
+  "ledgeB": "#8a4f36",
+  "ledgeC": "#6d3f2c",
+  "talus": "#6d4433",
+  "till": "#5e3b2a",
+  "lichen": "#868a72",
+  "fucus": "#534926",
+  "marram": "#6c8558",
+  "marramDry": "#a89573",
+  "dune": "#bd9877",
+  "spartina": "#5a6633",
+  "thatch": "#736748",
+  "pan": "#9b9884",
+  "sedge": "#546333",
+  "peat": "#30251a",
+  "rush": "#3d5029",
+  "bank": "#5e3b2a",
+  "bankFresh": "#8d5c44",
+  "asco": "#6f5f26",
+  "ulva": "#4e7a2c",
+  "barn": "#98928a",
+  "rock": "#6d4433",
+  "mussel": "#363b49",
+  "musselOld": "#5d472a",
+  "bedMud": "#342d22",
+  "cultch": "#a49c8b",
+  "oyster": "#746e45",
+  "oysterFresh": "#9d9680",
+  "zostera": "#466228",
+  "zosOld": "#675833",
+  "siltSand": "#9a7659",
+  "chondrus": "#5a2a30",
+  "chondrusSun": "#6a5f2c",
+  "cobble": "#8a837c",
+  "shell": "#c5bca7"
+ },
+ "rank": {
+  "grass": 0,
+  "ledge": 1,
+  "shingle": 2,
+  "dirt": 3,
+  "path": 3,
+  "mud": 5,
+  "sand": 6,
+  "sedge": 0,
+  "marram": 0.5,
+  "shelf": 1,
+  "irishmoss": 1.2,
+  "talus": 1.5,
+  "rockweed": 2.2,
+  "marsh": 4,
+  "musselbed": 4.4,
+  "oysterreef": 4.4,
+  "eelgrass": 4.6,
+  "silt": 5.5,
+  "foreshore": 6.5,
+  "ripple": 7
+ },
+ "fringe": {
+  "grass": "blade",
+  "ledge": "lip",
+  "shingle": "stones",
+  "dirt": "crumb",
+  "path": "crumb",
+  "mud": "crumb",
+  "sedge": "blade",
+  "marram": "blade",
+  "marsh": "blade",
+  "eelgrass": "blade",
+  "rockweed": "blade",
+  "irishmoss": "blade",
+  "shelf": "lip",
+  "talus": "stones",
+  "musselbed": "stones",
+  "oysterreef": "stones",
+  "silt": "crumb",
+  "foreshore": "crumb",
+  "ripple": "crumb"
+ },
+ "materials": {
+  "grass": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2.4,
+   "lit": {
+    "lo": 0.36,
+    "hi": 0.78
+   },
+   "base": "#485d2f",
+   "L": 32,
+   "note": "The sward. One flat mid green; tussocks — the lump in turf, 5–9 texels — crowd in drifts steered by a slow field; a nap of blade ticks each with its shadow texel; worn hollows where the soil shows, torn and holed, their upper-left wall in shade; flowers as single warm texels in one-species drifts; a fieldstone. Lo is grazed and worn to soil; Hi is rank, with seed-heads on the big tussocks and the flowers thick. — PASS FIVE: the straw drift and the moss cushions in the damp hollows.",
+   "variants": [
+    "",
+    "_v2",
+    "_v3"
+   ]
+  },
+  "dirt": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2.4,
+   "lit": {
+    "lo": 0.38,
+    "hi": 0.78
+   },
+   "base": "#8b5c40",
+   "L": 40,
+   "note": "Trodden red earth — the yard, the bare field. Big pale crust plates, torn and holed, a band up (the packed dry skin); footprints and puddle scars as dark hollows with a lit lower-right wall; pebbles pressed flush; scuff dashes. No dark patches — the blobs are gone. Lo carries stubble and moss; Hi is churned into clods. — PASS FIVE: the pebble lag where the fines have blown out.",
+   "variants": [
+    "",
+    "_v2",
+    "_v3"
+   ]
+  },
+  "path": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2,
+   "lit": {
+    "lo": 0.38,
+    "hi": 0.8
+   },
+   "base": "#a07a56",
+   "L": 51,
+   "note": "The track. A step lighter than dirt and two lighter than grass, so a path is a line you can follow from across the screen. Polished pale plates where feet and tyres have packed it, fine gravel as its grain, a few hollows and scuffs. Lo is after rain — damp dark patches, puddle scars with a glint; Hi is bone dry with straw blown across it."
+  },
+  "mud": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2.6,
+   "lit": {
+    "lo": 0.38,
+    "hi": 0.78
+   },
+   "base": "#5a4433",
+   "L": 28,
+   "note": "Wet ground — the low corner of the yard, the creek margin, the flat behind the beach. Dark and cool; puddles as flat sky-coloured pools with the bank's shadow on their upper-left edge and one glint; boot and hoof prints as dark hollows with a lit rim; straw litter. Lo is drying — a cracked skin of Worley plates, pale crust curling on them; Hi is churned and flooded."
+  },
+  "sand": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2,
+   "lit": {
+    "lo": 0.4,
+    "hi": 0.8
+   },
+   "base": "#c9ab80",
+   "L": 69,
+   "note": "Flat ochre, brought down off white so the sprites still own the top of the value range. Grain steered by a slow field (density, not value), shell grit as a bright texel with its shade, a dark pebble now and then. Lo is damp — a film of sheen where the tide left, pale where it is drying; Hi is dry and wind-worked, the ripple as short broken crescents, never rows. — PASS FIVE: shell hash (2–3 texels, curved, with its shade) and heavy mineral winnowed into the lows.",
+   "variants": [
+    "",
+    "_v2",
+    "_v3"
+   ]
+  },
+  "shingle": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 3.2,
+   "lit": {
+    "lo": 0.4,
+    "hi": 0.76
+   },
+   "base": "#57504a",
+   "L": 32,
+   "note": "Cobbles you can count. Each is the lump — flat body, lit tip, dark seam, a cap on the big ones, a dark grit shadow under its foot — on a fine-gravel matrix. Half as many stones as pass two and twice the size, so they read as stones and not as static; the sorting field crowds them into a berm and thins them to a lag. Lo is pea gravel; Hi is cobble lag with big stones standing proud. — PASS FIVE: barnacle on the long-dry stones high in the berm, and the wet dark stones at the toe.",
+   "variants": [
+    "",
+    "_v2",
+    "_v3"
+   ]
+  },
+  "ledge": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2.8,
+   "lit": {
+    "lo": 0.4,
+    "hi": 0.76
+   },
+   "base": "#a25c40",
+   "L": 43,
+   "note": "The red wave-cut platform as slab benches — fewer, bigger, mostly one level, so it is a floor and not a mosaic. PASS FIVE: three stacked beds, each its own palette, so a plucked bench shows a different rock and not a darker one; barnacle on the longest-dry crowns; weed in the joints and the scour pans."
+  },
+  "marram": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2.4,
+   "lit": {
+    "lo": 0.38,
+    "hi": 0.78
+   },
+   "base": "#6c8558",
+   "L": 47,
+   "note": "Marram on the dune — the one upland material that is mostly sand. Every blade in the stand combs the same way, because the wind that built the dune only blows one way; that lean is the material and it is why marram takes no chunk offset. Open pink sand between the crowns with the wind's lineation on it, dead thatch collecting under a closed hummock. Lo is pioneer sprigs on bare sand; Hi is a closed hummock, heavy thatch, the sand gone."
+  },
+  "foreshore": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2.2,
+   "lit": {
+    "lo": 0.4,
+    "hi": 0.8
+   },
+   "base": "#a87b5d",
+   "L": 52,
+   "note": "The low-tide flat, DRY albedo — lighter and less red than the photographs, which are all of wet sand. Run the shader's wet band over it and it lands where it should; bake the wet in and the tide freezes. A working wave-ripple field with shell hash and a gravel lag in the troughs. Lo is planed — firm quiet sand, runnels only; Hi is megaripple, the lag heavy."
+  },
+  "ripple": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2.2,
+   "lit": {
+    "lo": 0.4,
+    "hi": 0.78
+   },
+   "base": "#8a6448",
+   "L": 42,
+   "note": "The inner flat, wetter and finer than the foreshore. The dark is heavy mineral — garnet and magnetite winnowed into the troughs — and it is why a PEI flat reads striped rather than orange; it never washes over the whole tile. Lo is relict, all but planed off; Hi is storm-built with a gravel lag in the troughs."
+  },
+  "silt": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2.4,
+   "lit": {
+    "lo": 0.38,
+    "hi": 0.76
+   },
+   "base": "#5c503f",
+   "L": 32,
+   "note": "Estuary silt — warm grey-brown, carrying the red beds it was eroded from; a green-grey silt reads as army canvas. Burrows are holes with their spoil thrown on one side, never rings; worm casts are coiled lumps. Lo is a soft fresh sheet barely drained; Hi is crusted and cracked into curled plates."
+  },
+  "shelf": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2.8,
+   "lit": {
+    "lo": 0.4,
+    "hi": 0.76
+   },
+   "base": "#7a7264",
+   "L": 45,
+   "note": "The grey wave-cut pavement, three stacked beds. Pluck a slab and the bed under it is a different rock, not a darker one — that is the whole read, and it is what pass four's single palette lost. Barnacle crusts the longest-dry crowns; the joints hold weed where water sits. Lo is intact pavement; Hi is stripped to the third bed with cobble on the benches."
+  },
+  "talus": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 3.4,
+   "lit": {
+    "lo": 0.4,
+    "hi": 0.74
+   },
+   "base": "#6d4433",
+   "L": 31,
+   "note": "The apron at the cliff toe — what a plan view gets at the foot of a cliff, never the face material. Talus TESSELLATES where shingle scatters: the blocks are Voronoi cells inset by a texel, so the joint between two blocks is one dark line and the blocks pack. A freshly fallen block is lighter than a settled one; lichen greys the long-settled uppers; the interstices stay damp and dark. Lo is a scatter of slabs on a gravel floor; Hi is a deep chaotic blockfield."
+  },
+  "bank": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 3.4,
+   "lit": {
+    "lo": 0.4,
+    "hi": 0.74
+   },
+   "base": "#5e3b2a",
+   "L": 26,
+   "note": "The soft cliff — unconsolidated red till. A FACE material: s runs along the cliff, t runs DOWN it, and the rills run down t. That is the one place in the kit where a directional feature is right, because a face has a direction; rotate the UVs and the geology is nonsense. Every rill wanders on a field that is periodic in t, so it still tiles. Lo is firm and faintly rilled; Hi is failing — deep gullies, clods at the toe, turf hanging over the top.",
+   "projection": "face — s along the cliff, t DOWN it. Never on the terrain mesh; what a plan view gets at the foot of a cliff is Talus."
+  },
+  "marsh": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2.4,
+   "lit": {
+    "lo": 0.38,
+    "hi": 0.76
+   },
+   "base": "#5a6633",
+   "L": 36,
+   "note": "Cordgrass on anoxic creek mud. Spartina is yellower, duller and stiffer than the upland sward, so the two never read as the same green. Lo is pioneer sprigs on open black mud; base is a closed sward; Hi is high marsh — dead thatch lying over, drift wrack, and evaporite salt pans where the water stood and left."
+  },
+  "sedge": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2.6,
+   "lit": {
+    "lo": 0.38,
+    "hi": 0.76
+   },
+   "base": "#546333",
+   "L": 35,
+   "note": "The freshwater edge — sedge tussocks on peat, with moss between. The tussock is the kit's own fountain of blades in a duller, yellower green; the ground under it is black peat, not soil. Lo is a short sedge lawn with the peat and moss showing; Hi is rank tussocks with heavy thatch and rush standing over them."
+  },
+  "rockweed": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2.8,
+   "lit": {
+    "lo": 0.38,
+    "hi": 0.76
+   },
+   "base": "#6f5f26",
+   "L": 37,
+   "note": "Ascophyllum on the exposed intertidal — olive going gold, the signature colour of a ledge at low water and nothing else in the kit is near it. The fronds are straps that all lie the way the last ebb laid them, drawn lower over upper, and the canopy KEEPS ITS GAPS: barnacled rock shows through, because a weed that fills every texel is a green floor. Lo is barnacled rock with scattered tufts; Hi is a deep drape with bladders and Ulva in the wet."
+  },
+  "musselbed": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 3,
+   "lit": {
+    "lo": 0.38,
+    "hi": 0.74
+   },
+   "base": "#363b49",
+   "L": 23,
+   "note": "The animals ARE the substrate, which is why a bed is a ground material and not scatter — at this scale a mussel is two texels. Every shell FILLS its cell: left as a small ellipse in the middle of one, a packed bed comes out as spilled rice. The lie is anisotropic, from a lattice with more rows than columns — never a sheared one. The floor is black-brown anoxic mud; a grey floor makes the bed read as gravel, so painting a bed thin over clean silt will never look like a thin bed — use the ladder. Lo is spat and scattered clumps; Hi is thick and hummocked with dead shell in the troughs."
+  },
+  "oysterreef": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 3.2,
+   "lit": {
+    "lo": 0.38,
+    "hi": 0.74
+   },
+   "base": "#746e45",
+   "L": 42,
+   "note": "Crassostrea in clusters, cemented and standing on edge, with the film of diatom and green algae a living reef always carries — a white oyster reef is a museum shell. The clusters are decided per cluster and drawn opaque, and the gaps between them are the channels. Lo is singles and cultch scattered on the mud; base is a working reef with the channels open; Hi is closed, the channels choked with mud."
+  },
+  "eelgrass": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2.4,
+   "lit": {
+    "lo": 0.38,
+    "hi": 0.76
+   },
+   "base": "#466228",
+   "L": 33,
+   "note": "Zostera on muddy sand, subtidal into the channel. The blades are long lax ribbons and every one of them lies the way the current last ran; the substrate is deliberately silted, because a clean sand floor under a thin bed reads as sand with green marks on it. Lo is sparse shoots on open sand; Hi is deep and epiphyte-crusted with last year's cut blades drifted in."
+  },
+  "irishmoss": {
+   "size": [
+    256,
+    256
+   ],
+   "metres": 8,
+   "texel": 1,
+   "grid": 256,
+   "relief": 2.6,
+   "lit": {
+    "lo": 0.36,
+    "hi": 0.74
+   },
+   "base": "#5a2a30",
+   "L": 22,
+   "note": "Chondrus on red cobble — dark wine-purple in the shade going olive-bronze where the sun has bleached it, and that SPREAD is the material, not a tint on it. The cushions fill their cells; the cobble under them is held down in value so a thin turf still reads as turf on rock. Lo is scattered cushions on barnacled cobble; Hi is a deep drape with the cobble hidden."
+  },
+  "sandstone": {
+   "size": [
+    384,
+    288
+   ],
+   "metres": [
+    12,
+    9
+   ],
+   "projection": "face",
+   "aspects": [
+    "W",
+    "SW",
+    "S",
+    "SE",
+    "E"
+   ],
+   "texel": 2,
+   "relief": 1.8,
+   "lit": {
+    "lo": 0.4,
+    "hi": 0.74
+   },
+   "note": "Face material, Art/pxTerrainRig.js PxTerrain.face. Sandstone_<Aspect>; the unsuffixed files are the S aspect. NOT re-baked in pass six — still a 2 px texel."
+  }
+ },
+ "blend": {
+  "why": "Most of this terrain is painted, not tiled by hand, so every material has to survive arriving at partial weight. The failure mode is not subtle: cross-fading two banded palettes produces colour that is in neither of them, which is what pass two did and what the authored edge strips were built to replace. A paint tool must CHOOSE a material per texel and never average two of them.",
+  "hKit": [
+   -3,
+   9
+  ],
+  "heightGain": 10,
+  "choose": "For each material k painted at this texel, with weight w_k in 0..1:\n  order_k  = _blend.R                                         (1..255)\n  height_k = hKit[0] + _blend.G/255 * (hKit[1] - hKit[0])     (texels)\n  score_k  = w_k * 255 - order_k + heightGain * (height_k + bias_k)\nTake the material with the highest score and use its albedo unchanged. No mixing, no alpha.\nw_k * 255 >= order_k alone is the plain coverage test; the height term is what lets a stone keep its whole silhouette against sand instead of being nibbled at the frontier.",
+  "whyOrder": "Every texel of one authored mark carries the SAME order value, so a cobble, a tussock or a puddle arrives whole. The order is laid out along one wrapping noise field, so a half-weight patch is a blotch with a wandering frontier rather than a dither screen. markLead says which arrives first as the weight rises: 1 = the marks (a few cobbles land on the sand long before the grit does, which is how a shingle beach actually encroaches), 0 = the matrix (silt closes over the flat as a surface and its burrows come last).",
+  "frontier": {
+   "note": "Two rules recover the authored edge language per texel, so a painted boundary looks like a baked strip. Sample the winner at the four neighbours; let A be this texel's winner and B a neighbour's.",
+   "cutAndShade": "If A stands proud of B (height_A + bias_A > height_B + bias_B) and B is this texel, multiply B's albedo by shadeMul for shadeTexels texels on A's SOUTH and EAST sides — that is A's cut face throwing its shade downlight. Materials whose fringe is \"lip\" (ledge, shelf) throw lipTexels instead.",
+   "litRim": "On A's NORTH and WEST sides, multiply A's albedo by litRimMul on about half the frontier texels (hash the texel) — the broken lit rim where the higher material's edge faces the key.",
+   "shadeMul": 0.78,
+   "litRimMul": 1.14,
+   "shadeTexels": 2,
+   "lipTexels": 4,
+   "fringe": "The strips in Edges/ still carry the authored fringe (blades, crumbs, spilled stones) and are still the right thing along a boundary the level actually cares about. The frontier rules above are what a painted boundary gets for free."
+  },
+  "variants": "Where a material ships _v2/_v3, pick per tile at random so a painted field does not repeat every 8 m.",
+  "materials": {
+   "grass": {
+    "markLead": 0.85,
+    "grain": 4,
+    "bias": 0.6
+   },
+   "dirt": {
+    "markLead": 0.3,
+    "grain": 5,
+    "bias": 0
+   },
+   "path": {
+    "markLead": 0.25,
+    "grain": 6,
+    "bias": -0.2
+   },
+   "mud": {
+    "markLead": 0.2,
+    "grain": 4,
+    "bias": -0.8
+   },
+   "sand": {
+    "markLead": 0.15,
+    "grain": 5,
+    "bias": -0.4
+   },
+   "shingle": {
+    "markLead": 1,
+    "grain": 3,
+    "bias": 1.2
+   },
+   "ledge": {
+    "markLead": 0.5,
+    "grain": 3,
+    "bias": 1.6
+   },
+   "marram": {
+    "markLead": 0.85,
+    "grain": 4,
+    "bias": 0.4
+   },
+   "foreshore": {
+    "markLead": 0.15,
+    "grain": 5,
+    "bias": -0.3
+   },
+   "ripple": {
+    "markLead": 0.1,
+    "grain": 6,
+    "bias": -0.5
+   },
+   "silt": {
+    "markLead": 0.12,
+    "grain": 4,
+    "bias": -0.9
+   },
+   "shelf": {
+    "markLead": 0.5,
+    "grain": 3,
+    "bias": 1.5
+   },
+   "talus": {
+    "markLead": 1,
+    "grain": 3,
+    "bias": 1.8
+   },
+   "bank": {
+    "markLead": 0.4,
+    "grain": 5,
+    "bias": 1
+   },
+   "marsh": {
+    "markLead": 0.85,
+    "grain": 4,
+    "bias": 0.3
+   },
+   "sedge": {
+    "markLead": 0.9,
+    "grain": 4,
+    "bias": 0.5
+   },
+   "rockweed": {
+    "markLead": 0.7,
+    "grain": 4,
+    "bias": 0.2
+   },
+   "musselbed": {
+    "markLead": 1,
+    "grain": 3,
+    "bias": 0.9
+   },
+   "oysterreef": {
+    "markLead": 1,
+    "grain": 3,
+    "bias": 1
+   },
+   "eelgrass": {
+    "markLead": 0.75,
+    "grain": 4,
+    "bias": 0
+   },
+   "irishmoss": {
+    "markLead": 0.75,
+    "grain": 5,
+    "bias": 0.2
+   }
+  }
+ }
+}
