@@ -616,6 +616,25 @@ namespace HiddenHarbours.Core
         /// read as a ghost rather than as a person with the light behind her.</summary>
         public static readonly Color DefaultFoliageSilhouetteTint = new Color(0.94f, 0.90f, 0.82f, 1f);
 
+        /// <summary>
+        /// Ship default — <b>OFF</b>, and it stays off until the shader look pass lands. The mesh
+        /// figure is measured 43–57% off the inked art (per-material gain alone is 53.61% of that
+        /// gap) and she carries no face at all, because the face is a raster stamp the mesh has no
+        /// geometry for. Shipping her on by default would be shipping a downgrade. OFF means the
+        /// sprite draws, exactly as it does today, down to the byte.
+        /// </summary>
+        public const bool DefaultMeshCharacter = false;
+
+        [Header("Mesh characters (ADR 0044 d — the skinned player, behind a switch)")]
+        [Tooltip("Draw the player as ONE SKINNED MESH through the iso facet pass while she is ABOARD, " +
+                 "instead of as a sprite? OFF is the shipped look and the default. This is a LOOK " +
+                 "PREVIEW, not a finished path: the mesh is about half a fidelity step off the inked " +
+                 "art until the shader look pass lands, and she has no eyes, brows or mouth, because " +
+                 "the face is a raster stamp that lives on the sprite and not in the geometry. " +
+                 "ASHORE she cannot draw at all however this is set — the facet pass is only " +
+                 "recorded while a mesh hull is on screen — so this switch does nothing on land.")]
+        public bool MeshCharacter = DefaultMeshCharacter;
+
         [Header("Foliage silhouette (the fisher read through dense woods)")]
         [Tooltip("Let the player read through foliage that draws in front of her? ON is the shipped " +
                  "look: trees and shrubs stay opaque and correctly sorted, and her shape shows through " +
