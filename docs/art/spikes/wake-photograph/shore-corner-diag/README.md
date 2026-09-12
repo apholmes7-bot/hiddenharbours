@@ -9,6 +9,14 @@ the **shore-foam corner** while the editor was already open, as evidence for a *
 for whoever the seat charters next. It is deliberately a sibling of the wake photograph rather than
 part of it — nothing in this folder bears on the wake being off centre.
 
+> **Update 2026-09-12 — this plate's sweep was retried, and the first one had missed the renderer.**
+> Water PR F shot the retry from its slot as rider r2:
+> [**RIDER-r2-which-channel-draws-the-corner.md**](RIDER-r2-which-channel-draws-the-corner.md), raw
+> numbers in [`MEASURED-r2-shore-corner.txt`](MEASURED-r2-shore-corner.txt). It identifies the
+> renderer that actually draws this corner's water, proves it by hashed A/B, finds the live channel,
+> and splits the pulse: **foam collapsed moves 0 px at every phase; the wet edge moves up to
+> 129 420.** The hairline is a wet-edge phenomenon. Still no fix and still no cause.
+
 ## What was shot
 
 A concave bend of the beach at NineMileCreek — where the shoreline turns from running south-south-east

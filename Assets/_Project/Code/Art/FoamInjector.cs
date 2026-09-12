@@ -289,6 +289,15 @@ namespace HiddenHarbours.Art
                 // the map. Start it again from where she actually is.
                 _trailCount = 0;
                 AppendTrail(position);
+                // She has no way through the water this frame that anything could measure, so she
+                // draws no stern wave — and saying so explicitly is what stops one frame of train
+                // standing at the position she jumped FROM.
+                //
+                // ⚠️ A STOPPED CLOCK IS NOT THAT CASE. dt == 0 is the acceptance fixture's shutter
+                // (Time.timeScale = 0 freezes the sea so a plate can be exposed) and a paused game;
+                // the sea is being held still deliberately, and the wake must hold with it. So the
+                // slot keeps what it already has whenever the only reason we are here is dt.
+                if (dt > 0f) PublishWakeLift(position, 0f, 0f);
                 return;
             }
 
@@ -343,6 +352,14 @@ namespace HiddenHarbours.Art
             // would drop that too.
             _hasPending = amount > 1e-5f || dispersal.IsActive;
             _pendingFrame = Time.frameCount;
+
+            // ---- THE WAKE LIFT (water PR F, register row 27) --------------------------------------
+            // The owner, 2026-09-11: "i do want the wake to lift the water and create visual waves."
+            // Same transom, same speed through the water, same gate the foam's wake channel rides —
+            // the stern wave train is the DRAWN consequence of numbers this method already holds, and
+            // it is published for the water shader's vertex stage alone.
+            PublishWakeLift(position, WakeLiftMath.TransverseWavelength(horizontalSpeed), wake01);
+
             _previousPosition = position;
         }
 
@@ -514,6 +531,8 @@ namespace HiddenHarbours.Art
             if (_registered) return;
             FoamInjectionRegistry.Register(this);
             _registered = true;
+            // No lift slot is claimed here, on purpose: the registry packs them per frame from the hulls
+            // that are actually making way, so joining the water reserves nothing (see PublishWakeLift).
         }
 
         private void Leave()
@@ -522,6 +541,30 @@ namespace HiddenHarbours.Art
             FoamInjectionRegistry.Unregister(this);
             _registered = false;
             _hasPending = false;
+            // Her stern wave comes off the sea inside Unregister — there is no per-hull slot to hand
+            // back, and the clearing is the registry's invariant to keep, not a caller's to remember.
+        }
+
+        /// <summary>
+        /// Hand this hull's stern wave train to the water shader's vertex stage (water PR F, register
+        /// row 27). Every argument is a number the foam buffer already made this frame — the transom
+        /// root, her speed through the water, her churned half-beam, her wake gate — so the lift adds
+        /// no march, no history and no second field. She is given a slot in THIS frame's packing only
+        /// if she is actually making way; a hull at rest is simply absent from it.
+        ///
+        /// <para>🔴 <b>DRAWN ONLY.</b> This is published for the water SHADER and read by nothing
+        /// else. It is not on the <c>DisplacedSea</c> seam, so no hull, buoy, deck rider or seakeeping
+        /// force can see it: whether other boats ride another's wash is a simulation change with its
+        /// own PR and its own helm verdict (ADR 0018, one sea / one force path).</para>
+        /// </summary>
+        private void PublishWakeLift(Vector2 root, float wavelengthMetres, float gate01)
+        {
+            // The same forward direction the stern offset is measured along, so the train's axis and
+            // its root can never disagree about which way she is pointing.
+            Vector2 heading = (Vector2)transform.up;
+            float mag = heading.magnitude;
+            heading = mag > 1e-6f ? heading / mag : Vector2.up;
+            FoamInjectionRegistry.PublishWakeLift(root, heading, wavelengthMetres, RadiusMeters, gate01);
         }
     }
 }

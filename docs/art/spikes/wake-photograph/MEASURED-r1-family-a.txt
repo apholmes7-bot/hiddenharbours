@@ -1,0 +1,18 @@
+# RIDER r1 — does family A (the advected foam sheet) reach the picture at all?
+# NineMileCreek, hour 11.0, open water (260.0, 75.0), 6.0 m under her — SPIKE, no bar, evidence only
+GATE: 1 runtime material(s) [568105589188428916] carry _WakeFoamStrength; shipped value on the first is 0.850
+REGISTRY before any write: LookStrength 0.850, ShouldRun True, 31 injector(s) alive
+arm RT-A-on: wrote 0.850, read back 0.850, registry LookStrength 0.850, ShouldRun True
+arm RT-A-off: wrote 0.000, read back 0.000, registry LookStrength 0.850, ShouldRun True
+arm RT-A-on-again (the repeat): wrote 0.850, read back 0.850, registry LookStrength 0.850, ShouldRun True
+HASH RT: on a390164d0136273b | off a390164d0136273b | on-again a390164d0136273b
+RT REPEAT on vs on-again: worst 0.00000 over 0 px — bit for bit
+RT SWEEP  on vs off:      worst 0.00000 over 0 px
+arm U-A-on: wrote 0.850, read back 0.850, registry LookStrength 0.850, ShouldRun True
+arm U-A-off: wrote 0.000, read back 0.000, registry LookStrength 0.850, ShouldRun True
+arm U-A-on-again (the repeat): wrote 0.850, read back 0.850, registry LookStrength 0.850, ShouldRun True
+BACK BUFFER 1307x571
+HASH U : on 32dd656e942a663f | off 1b92c18163451991 | on-again 1b92c18163451991
+U REPEAT  on vs on-again: worst 0.32157 over 299 px — NOT bit for bit
+U SWEEP   on vs off:      worst 0.32157 over 299 px
+VERDICT: 🔴 FAMILY A DID NOT CHANGE THE PLATE ON EITHER LEG. Either the advected sheet draws nothing for anybody, or _WakeFoamStrength never reached the renderer that draws — and the read-backs beside each arm are what separate those two, because an unreached property still reads back at the value it was written to on a material nothing renders.

@@ -167,6 +167,22 @@ Row 6 discipline: none of these is a look change chosen by this lane.
 | 3 | **Decide whether B should displace at all.** If some world-direction drift is wanted (foam does leeway in a real sea), the defect is that the *boat* does not share it, and the fix is a look ruling rather than a bug fix. | Whether this is a bug or a tuning. | a ruling |
 | 4 | **The turn-only divergence of the sheet's root path from the swept track** (finding 4). Invisible today because A draws nothing; becomes visible the moment candidate 1 is settled. | Whether #768's unification holds through a turn. | small |
 
+### Update 2026-09-12 — candidate 1 is SETTLED, and it is a red
+
+Water PR F shot it from its slot as rider r1:
+[**RIDER-r1-does-family-a-reach-the-picture.md**](RIDER-r1-does-family-a-reach-the-picture.md),
+raw numbers in [`MEASURED-r1-family-a.txt`](MEASURED-r1-family-a.txt).
+
+🔴 **Sweeping `_WakeFoamStrength` 0.850 → 0.000 changed nothing on EITHER leg — including an
+unmodified camera with no render texture attached.** The render-texture confound named above is
+ruled out: it was never the reason. The write landed (read-backs 0.850 / 0.000 / 0.850, registry
+LookStrength 0.850, ShouldRun True, 31 injectors alive) and the picture did not move.
+
+That does not yet name the cause, and candidate 4 stays blocked behind it. The open fork is stated
+in the rider's own file; rider r2 measured the fact that makes the second prong live — the displaced
+surface re-copies the flat renderer's property block onto every chunk **every frame**, so a write
+that reads back is not a write that renders.
+
 ## Re-running it
 
 The fixture is `Assets/Tests/PlayMode/WakeCentrePhotographPlayTests.cs`. It needs a **GPU** and
