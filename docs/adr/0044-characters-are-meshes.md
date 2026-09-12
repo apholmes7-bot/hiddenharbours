@@ -397,6 +397,26 @@ this PR leaves it EMPTY, and PR 3 flips it per state.
    above 16 rather than silently truncating. Widen the table, or split the preset.
 4. **PR 2 re-lands the presenter** that the retired `DeckCharacterMeshSpikeRig` stood in for,
    behind a Core `ICharacterMeshPresenter` seam.
+   **LANDED 2026-09-12 by the character-mesh-presenter PR**, with three things to record rather
+   than leave as a silent difference.
+   *The seam is not in Core.* It is `IDeckRiderFigure` in `HiddenHarbours.Player`. Its only
+   implementer and its only consumer — `DeckRiderMeshPresenter` and `DeckRiderVisual` — are both in
+   Player, so it crosses no module boundary; rule 4 asks for Core where one **is** crossed, and a
+   Core interface with one implementer and one caller would be an abstraction standing in for
+   nothing. If the CAST question in item 1 is ever answered yes, the seam moves to Core at that
+   point. That is the seat's call, not this PR's.
+   *`MeshStates` is authored here, not in a PR 3.* §4 says PR 1 leaves it empty and PR 3 flips it
+   per state; an empty list means the presenter can never draw, so no toggle-1 plate could exist and
+   the presenter would ship unverified. The capability switch the owner holds is therefore the other
+   one: `GameConfig.MeshCharacter`, **default false**. The shipped game still draws the sprite.
+   *The `mount*` spike, measured on the rig-7 skeleton.* §3.2 names the part `boot_R`/`boot_cuff_R`;
+   the exported skeleton's bone ids for it are `ankle_R`/`ankle_R_tip` — rig 7's own header calls
+   `ankle_L` "the boot shaft". Walking all 35 fisher clips in a chained ClearScript V8 host (control:
+   711 bind faces, the head-chain-missing shape being 454) puts the excursion at **23.7–356.7 m over
+   18 frames** — `mountUp` f5–f9, `mountDown` f5–f9, `mountCab` f7–f10, `mountCabDown` f6–f9 — carried
+   by 2 bones of the 45. Every one of the other 31 clips holds every bone inside **1.19 m**, so
+   `CharacterSkinPose.FenceMetres = 8` sits in an empty gap rather than on a judgement call. Filed,
+   not fixed: `docs/art/rigs/**` is the art-director's.
 
 ## 6. Guards
 

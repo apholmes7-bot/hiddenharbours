@@ -331,6 +331,63 @@ namespace HiddenHarbours.Player
         /// <summary>True when a rider child is wired at all. A rig without one is legal and inert.</summary>
         public bool HasRider => _riderRenderer != null;
 
+        // ------------------------------------------------------------------ the mesh-figure seam
+        //
+        // ⭐ ONE PUBLICATION, TWO CONSUMERS. Everything below is already computed for the sprite
+        // path and for the hull's twelve-slot deck-occupant protocol; it is exposed, not recomputed.
+        // The mesh presenter (ADR 0044 d) reads these and NEVER claims a slot, publishes a stand
+        // point or derives a heading of its own — a second authority for where the player is
+        // standing is exactly how the two paths would come to disagree, and then only one of them
+        // could be right.
+
+        /// <summary>The deck slot this rider holds on the hull she is aboard, or -1.</summary>
+        public int DeckOccupantSlot => _occupantSlot;
+
+        /// <summary>The id of hull geometry standing in FRONT of her, as the slot handed it back this
+        /// frame. 0 ashore, below decks, or on a hull that cannot answer.</summary>
+        public float DeckOccluderId => _occluderIdWritten;
+
+        /// <summary>The top of that id range — the pair is a RANGE test, not a compare.</summary>
+        public float DeckOccluderIdTop => _occluderTopWritten;
+
+        /// <summary>Where she is standing, in the hull's rig frame and in metres, exactly as published
+        /// to the occupant slot: <c>(deck x, deck y, deck height)</c>. This is the point the mesh
+        /// figure is placed at, so the mesh and the occlusion ranking can never part company.</summary>
+        public Vector3 DeckStandRigLocal { get; private set; }
+
+        /// <summary>The sprite renderer the ride pose is applied to — the frame a mesh figure hangs
+        /// its own transform off, so it inherits the rock, the sway and the lift for free.</summary>
+        public Transform RiderTransform => _riderRenderer != null ? _riderRenderer.transform : null;
+
+        /// <summary>The sprite whose stance, gait, facing and frame ARE the figure's inputs.</summary>
+        public IsoCharacterSprite Character => _character;
+
+        /// <summary>True while a figure override is drawing and the sprite is therefore held
+        /// disabled. False on every frame of the shipped path.</summary>
+        public bool SpriteSuppressed { get; private set; }
+
+        /// <summary>
+        /// The hull presenter under her RIGHT NOW — the same answer <see cref="LiveHull"/> gives the
+        /// occupant slot, published so a figure can find the drawing renderer without opening a second
+        /// search of the scene.
+        ///
+        /// <para>One resolver, two consumers. If the mesh figure ever hung off its own lookup, a boat
+        /// re-skinned under her feet would move the occluder and leave the figure on the old hull, and
+        /// the two would be right about different boats.</para>
+        /// </summary>
+        public IBoatHullPresenter LiveHullPresenter => LiveHull();
+
+        /// <summary>
+        /// Hand the rider a figure that draws INSTEAD of the sprite, or null to give the sprite back.
+        ///
+        /// <para>Null is the shipped state and the default, and with it every write below is the write
+        /// that was there before — which is what makes the toggle-0 plate byte-identical rather
+        /// than merely similar.</para>
+        /// </summary>
+        public void SetFigureOverride(IDeckRiderFigure figure) => _figure = figure;
+
+        private IDeckRiderFigure _figure;
+
         // ---- wiring -------------------------------------------------------------------------------
 
         /// <summary>Wire the rider in one call (the editor builder / tests).</summary>
@@ -490,7 +547,18 @@ namespace HiddenHarbours.Player
         /// the mode switch and from every LateUpdate.</summary>
         private void Apply()
         {
-            if (!Aboard() || _riderRenderer == null || !isActiveAndEnabled)
+            // ⭐ THE FIGURE IS TICKED HERE, AND ONLY HERE. StateContext() ran in Update() and has
+            // already published this frame's stance, deck bearing and stand point; this is LateUpdate.
+            // So the figure reads finished values, not last frame's — and it reads them at the same
+            // seam the sprite does, which is the whole point of there being one authority.
+            //
+            // It is told whether she is aboard rather than asked to work it out, because "aboard" is
+            // this component's word and a second opinion about it is a second bug.
+            EnsureMeshFigure();
+            bool aboard = Aboard() && _riderRenderer != null && isActiveAndEnabled;
+            if (_figure != null) _figure.PoseForRider(this, aboard);
+
+            if (!aboard)
             {
                 StandDown();
                 return;
@@ -516,7 +584,12 @@ namespace HiddenHarbours.Player
                 _riderRenderer.color = _bodyRenderer.color;
                 if (_bodyRenderer.enabled) _bodyRenderer.enabled = false;   // one figure, not two
             }
-            if (!_riderRenderer.enabled) _riderRenderer.enabled = true;
+            // ONE FIGURE, NOT TWO — the same rule the body renderer is disabled under, one level
+            // up. A mesh figure that has taken the draw holds the sprite off; with no override the
+            // expression collapses to the enable that was always here.
+            bool suppress = _figure != null && _figure.DrawsInsteadOfSprite;
+            SpriteSuppressed = suppress;
+            if (_riderRenderer.enabled == suppress) _riderRenderer.enabled = !suppress;
 
             // (2) RIDE. The rock the hull is drawing, in the rider's own tuned amplitudes.
             DeckRidePose pose = ReadRide();
@@ -612,7 +685,11 @@ namespace HiddenHarbours.Player
 
                     Vector2 stand = _deckWalk != null ? _deckWalk.DeckLocalPosition : Vector2.zero;
                     float height = _deckWalk != null ? _deckWalk.DeckHeightMeters : 0f;
-                    slots.Set(_occupantSlot, this, new Vector3(stand.x, stand.y, height), !below);
+                    // Held as well as published: the mesh figure is PLACED at this point, and
+                    // taking it from anywhere but the line that feeds the slot would be the second
+                    // authority this seam exists to avoid.
+                    DeckStandRigLocal = new Vector3(stand.x, stand.y, height);
+                    slots.Set(_occupantSlot, this, DeckStandRigLocal, !below);
                     if (!below)
                     {
                         occluderId = slots.OccluderId(_occupantSlot);
@@ -782,6 +859,32 @@ namespace HiddenHarbours.Player
         /// <para>One <c>GetComponent</c> per read and no allocation (rule 7) — the cost every other
         /// consumer of this seam already pays (<see cref="BoatCleats"/>, the deck containers).</para>
         /// </summary>
+        /// <summary>
+        /// Add the mesh presenter the first time the switch is on AND this character actually has a
+        /// baked skin — never before.
+        ///
+        /// <para><b>This is what makes toggle 0 byte-identical rather than nearly so.</b> With
+        /// <c>GameConfig.MeshCharacter</c> off the component is not merely inert, it does not exist:
+        /// nothing is added, <c>_figure</c> stays null, and every expression that mentions a figure
+        /// collapses to the line that was there before this PR. There is no code path in the off state
+        /// that the shipped build did not already run.</para>
+        ///
+        /// <para>It is done here rather than in the editor builder on purpose: adding it to the player
+        /// prefab would commit a scene change to ship a switch that defaults to off, and would put the
+        /// mesh path in front of everyone the moment the asset loaded.</para>
+        /// </summary>
+        private void EnsureMeshFigure()
+        {
+            if (_figure != null) return;
+            GameConfig config = GameServices.Config;
+            if (config == null || !config.MeshCharacter) return;
+            if (_character == null) return;
+            CharacterVisualDef visual = _character.Visual;
+            if (visual == null || visual.Skin == null) return;
+            // The presenter registers itself through SetFigureOverride in OnEnable.
+            gameObject.AddComponent<DeckRiderMeshPresenter>();
+        }
+
         private IBoatHullPresenter LiveHull()
         {
             if (_boatRoot == null) return _hull;
@@ -875,6 +978,14 @@ namespace HiddenHarbours.Player
             _deckTracked = false;
             Pose = DeckRidePose.Level;
             RequestedStance = CharacterStance.Free;
+
+            // ⚠️ AND THE SWAP FLAG, which is a statement about THIS frame, not a latch. It is
+            // written in Apply() DOWNSTREAM of the ashore early-return above, so without this line a
+            // figure that took the draw aboard would leave the rider still claiming the sprite is held
+            // off long after she walked ashore and the figure stopped drawing — two published readouts
+            // disagreeing about one fact. Nothing in production branches on it, which is exactly why it
+            // has to be right: it is read by plates and guards, and a wrong readout reads as evidence.
+            SpriteSuppressed = false;
 
             // The body draws again — EXCEPT where the character is INSIDE something. At the helm that is
             // the pre-existing "taking the helm hides you" rule (ControlSwitcher's own drawn-on-root test)

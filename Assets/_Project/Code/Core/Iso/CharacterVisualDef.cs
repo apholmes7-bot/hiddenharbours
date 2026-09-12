@@ -483,6 +483,19 @@ namespace HiddenHarbours.Core
         public CharacterClipSheets ReachStowHClip = new CharacterClipSheets
         { FrameCount = 6, FramesPerSecond = 1000f / 100f, Loops = false };
 
+        // ---- the SKINNED MESH of the same character (ADR 0044 d) -----------------------------------
+
+        [Header("Skinned mesh (ADR 0044 d — the same character, as geometry)")]
+        [Tooltip("The baked CharacterSkinDef for THIS character: one bind mesh, one skeleton, one clip " +
+                 "per rig row. Drawn instead of the sheets while she is ABOARD a facet mesh hull and " +
+                 "GameConfig.MeshCharacter is on — ashore the iso facet pass is not recorded at all, so " +
+                 "there is nothing to draw her through and the sheets keep the picture. " +
+                 "It lives HERE, beside the sheets, because it is the same person: one art def, one " +
+                 "answer to 'what does she look like', and no way for the mesh and the sheets to drift " +
+                 "into describing two different characters. Leave it empty and the mesh path is simply " +
+                 "not available for this character — no error, no placeholder, the sheets draw.")]
+        public CharacterSkinDef Skin;
+
         // ---- the all-or-nothing gates + lookups (pure; EditMode-testable without a scene) ----------
 
         /// <summary>The sheet for a gait (never null — an unwired gait returns an empty array).</summary>

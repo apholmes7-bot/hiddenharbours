@@ -18,10 +18,16 @@ namespace HiddenHarbours.Tools.RigBaking
     /// compression trick — it is the observation that every pose of a character is the same 2,992
     /// vertices in a different arrangement, so the vertices need storing once.</para>
     ///
-    /// <para><b>This does not switch the game over.</b> <see cref="CharacterMeshDef"/> stays exactly
-    /// as it is and stays the fallback; <see cref="CharacterSkinDef.MeshStates"/> is left EMPTY, so
-    /// nothing draws from this def until a presenter proves parity and the owner rules on it.
-    /// Retiring a baked sheet is a capability change.</para>
+    /// <para><b>This does not switch the game over, and a re-bake never switches it either.</b>
+    /// <see cref="CharacterMeshDef"/> stays exactly as it is and stays the fallback. A FRESH bake — one
+    /// with no committed asset to refresh — leaves <see cref="CharacterSkinDef.MeshStates"/> EMPTY, so
+    /// nothing draws from a def this baker invented on its own.</para>
+    ///
+    /// <para>The per-state switch is AUTHORED ON THE COMMITTED ASSET (ADR 0041), by the presenter PR
+    /// that proved those states draw. <see cref="Compose"/> refreshes the existing def IN PLACE, and the
+    /// <c>??=</c> that fills the list is load-bearing: it assigns only when there is nothing there, so a
+    /// re-bake refreshes the ART and leaves the owner's switch exactly where he left it. Retiring a
+    /// baked sheet is a capability change.</para>
     ///
     /// <para><b>The face is missing and will be until a presenter re-adds it.</b> Rig 6 draws eyes,
     /// brows and mouth as a raster STAMP over the head quad (<c>HeadIso.stamp</c>), not as geometry.
@@ -394,7 +400,11 @@ namespace HiddenHarbours.Tools.RigBaking
             def.MaxInfluences = skin.MaxInfluences;
             def.Clips = clips.ToArray();
 
-            // MeshStates stays EMPTY: this PR bakes the art, it does not switch the game over.
+            // ⚠ LOAD-BEARING `??=`. MeshStates is the ADR 0041 per-state switch, and it is authored on
+            // the COMMITTED asset, not here — refreshing the art must never move the owner's switch.
+            // `??=` assigns only when Compose built this def from nothing, so a re-bake of the committed
+            // fisher preserves whatever states are turned on. A plain `=` would switch the mesh back off
+            // on the next art drop, and the only symptom would be the sprite quietly reappearing.
             def.MeshStates ??= Array.Empty<string>();
 
             def.BindMesh = built.Mesh;
