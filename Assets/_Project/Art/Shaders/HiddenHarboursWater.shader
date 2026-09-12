@@ -1053,6 +1053,32 @@ Shader "HiddenHarbours/Water"
         _WakeFoamWhiteHold   ("Wake foam: age it stays white until", Range(0,1)) = 0.12
         _WakeFoamBlueReach   ("Wake foam: age it reaches the shallow blue", Range(0,1)) = 0.45
         _WakeFoamDeepReach   ("Wake foam: age it reaches the mid blue", Range(0,1)) = 0.85
+
+        // ---- THE WAKE LIFT (water PR F, register row 27) -----------------------------------------
+        // The owner, 2026-09-11: "i do want the wake to lift the water and create visual waves."
+        //
+        // Every wake family before this one was PAINT on a flat sea. This one MOVES the sea: the
+        // DISPLACED surface's vertex stage adds a deterministic stern wave train behind every hull
+        // making way, in the same frame and the same expression the swell is displaced by. C# twin:
+        // WakeLiftMath (Art) — WakeLiftMathTests reads these lines and fails red on drift.
+        //
+        // 🔴 DRAWN ONLY. The train never enters WaveFieldSample, never reaches the height read, and is
+        // not on the DisplacedSea seam, so nothing rides it: whether other hulls should ride another's
+        // wash is a SIMULATION change with its own PR and its own helm verdict (ADR 0018, one sea /
+        // one force path). These two dials live HERE, on the material, and not in GameConfig for
+        // exactly that reason — no Core type carries them, so nothing outside this shader can read
+        // them even by accident.
+        //
+        // ⚠️ EITHER dial at 0 is a BIT-EXACT passthrough: WakeLiftHeight returns before it looks at a
+        // single slot, and the surviving expression is the one that shipped, operation for operation.
+        // The amplitude is in DRAWN METRES and is deliberately NOT multiplied by _WaveExaggeration —
+        // exaggeration means "draw the simulated sea taller than it is", and this train has no
+        // simulated twin to be taller than. What the dial says is what a plate measures.
+        _WakeLiftMetres      ("Wake lift: crest height at the transom (m, 0 = OFF)", Range(0,1.5)) = 0.25
+        // The train's e-folding length astern. The physical transverse system decays as s^-1/2 and the
+        // divergent as s^-1/3; one owner-facing length replaces both (rule 6). At the shipped 20 m a
+        // 6 m/s hull (23 m wavelength) shows about three crests before the sea is flat again.
+        _WakeLiftDecayMetres ("Wake lift: metres astern it decays over (0 = OFF)", Range(0,80)) = 20
     }
 
     SubShader
@@ -1263,6 +1289,26 @@ Shader "HiddenHarbours/Water"
             // belongs to the CAMERA, not to any one water renderer. UNSET reads as all-zero, and
             // z <= 0 is the "never published" branch — no foam, never a grey wash.
             float4 _HHFoamBufferWorld;
+
+            // ---- THE WAKE LIFT's per-hull state (water PR F, register row 27) ----------------------
+            // One slot per hull making way, published by FoamInjectionRegistry.PublishWakeLift from the
+            // taps FoamInjector already owns. GLOBALS (outside the per-material CBUFFER) like
+            // _HHFoamBufferWorld and for the same reason: a hull's wake belongs to the HULL, not to any
+            // one water renderer, and the displaced chunks only ever receive a copy of the flat
+            // renderer's property block.
+            //   _HHWakeLiftRoot[i]  : xy = her transom in world m, zw = her unit forward direction.
+            //   _HHWakeLiftShape[i] : x = the wake gate 0..1 (0 at rest), y = the transverse wavelength
+            //                         (m) that keeps station at her speed THROUGH THE WATER,
+            //                         z = her churned half-beam (m), w unused.
+            // x or y at 0 is an UNUSED SLOT and the loop skips it — which is also exactly how a boat
+            // lying to her mooring costs nothing. UNSET reads as all-zero, i.e. no hull anywhere.
+            //
+            // ⚠️ HH_WAKE_LIFT_MAX is a COMPILE-TIME bound, pinned to FoamBuffer.MaxInjectors by
+            // WakeLiftMathTests. It must never become a runtime uniform: [unroll] over a runtime bound
+            // is a named magenta trap in this project (WaterShaderCompileGuardTests).
+            #define HH_WAKE_LIFT_MAX 8
+            float4 _HHWakeLiftRoot[HH_WAKE_LIFT_MAX];
+            float4 _HHWakeLiftShape[HH_WAKE_LIFT_MAX];
 
             // ---- WIND FETCH (ADR 0027 #1) — globals, published by WaveFieldBridge.PublishFetchGlobals ------
             // How far the wind has blown over open water before it reaches this pixel. Lee shores go calm,
@@ -1605,6 +1651,11 @@ Shader "HiddenHarbours/Water"
                 float  _WakeFoamWhiteHold;
                 float  _WakeFoamBlueReach;
                 float  _WakeFoamDeepReach;
+                // Water PR F (register row 27) — the WAKE LIFT's two dials. Either at 0 is the exact
+                // passthrough. Read by vertDisplaced only; the flat Universal2D pass carries no
+                // displacement of any kind, so it reads them not at all.
+                float  _WakeLiftMetres;
+                float  _WakeLiftDecayMetres;
                 // ADR 0027 #10 — the capillary ripple band (default OFF: _RippleStrength 0).
                 float  _RippleStrength;
                 float  _RippleWavelength;
@@ -2102,6 +2153,159 @@ Shader "HiddenHarbours/Water"
                 if (depth <= 0.0) return 0.0;
                 float t = saturate(depth / max(band, 1e-4));
                 return t * t * (3.0 - 2.0 * t);
+            }
+
+            // ==== THE WAKE LIFT (water PR F, register row 27) — HLSL twin of Code/Art/WakeLiftMath.cs ====
+            //
+            // The owner, 2026-09-11: "i do want the wake to lift the water and create visual waves."
+            //
+            // 🔴 DRAWN ONLY. This height enters ONE expression, the lift in vertDisplaced, and nothing
+            // else. It is not on the DisplacedSea seam, so no hull, deck rider or force path can read it,
+            // by accident or otherwise. Whether other boats RIDE a wash is a simulation question under
+            // ADR 0018 (one sea, one force path): it needs its own PR and the owner's word, and it is
+            // FENCED OUT of this one.
+            //
+            // Twin discipline, the same law as ShoreFade01 above: every constant and every line here has a
+            // named counterpart in WakeLiftMath, and WakeLiftMathTests scrapes BOTH files to pin them.
+            // Change one, change the other in the SAME commit.
+            //
+            // The pattern is Kelvin's, taken at STATIONARY PHASE: a member whose crest normal sits at theta
+            // to the track keeps station behind the hull when k(theta) = k0/cos^2(theta), k0 = g/V^2. Two
+            // members are drawn — theta = 0, the TRANSVERSE train, wavelength 2*pi*V^2/g (what a following
+            // sea shows), and theta = theta_c = acos(sqrt(2/3)) ~ 35.264 deg, the DIVERGENT arms, which is
+            // the theta that maximises the sideways angle beta = atan(sin*cos/(1+sin^2)) = 19.471 deg — the
+            // Kelvin half-angle this project already ships as FoamBuffer.KelvinSlope. Their wavenumber
+            // ratio is 1/cos^2(theta_c) = 3/2 EXACTLY, which is why no dial appears for it.
+            //
+            // Gravity does NOT appear below: the wavelength that keeps station arrives per-hull in
+            // shape.y, computed once on the C# side by WakeLiftMath.TransverseWavelength from her speed
+            // THROUGH THE WATER. WaterDispersion.DeepPhaseSpeed is that function's exact inverse, so this
+            // train rides the sea's own dispersion relation rather than a look constant.
+            // ⚠️ The five functions below are written LINE FOR LINE against their C# counterparts, down
+            // to the local names, so WakeLiftMathTests can scrape both files and compare the bodies after
+            // nothing but a language mapping (Mathf.Max -> max, FoamBuffer.Profile -> WakeProfile01, and
+            // the five constants below). The VALUE of each constant is pinned separately, by parsing the
+            // literal out of this file and asserting it against the C# it mirrors — so a laundered
+            // rename cannot hide a changed number, and a changed number cannot hide behind a rename.
+            #define HH_WAKE_TWO_PI       6.28318548    // 2f * Mathf.PI, to the last float bit
+            #define HH_KELVIN_SLOPE      0.35411857    // tan(19.5 deg) — twin of FoamBuffer.KelvinSlope
+            #define HH_WAKE_DIV_COS      0.81649658    // cos(theta_c) = sqrt(2/3)
+            #define HH_WAKE_DIV_SIN      0.57735027    // sin(theta_c) = sqrt(1/3)
+            #define HH_WAKE_DIV_K_RATIO  1.5           // 1/cos^2(theta_c), exact
+            #define HH_WAKE_MEMBER_SHARE 0.5           // two members sharing the ONE amplitude dial
+
+            // Twin: FoamBuffer.Profile — this project's ONE falloff curve, here in its third copy (the C#,
+            // HiddenHarboursFoamBufferAdvect's FoamProfile01, and this). Flat out to the half, smooth to
+            // nothing at the full width, exactly 0 for a zero width. A NEGATIVE distance reads as a flat
+            // 1, which is what makes the root ramp below a one-liner.
+            // (`float half` shadows a type name deliberately: the C# local is called `half`, the twin
+            // scrape compares locals, and this file already ships one such local in the surf stage.)
+            float WakeProfile01(float distance, float halfWidth)
+            {
+                if (halfWidth <= 0.0) return 0.0;
+                float half = halfWidth * 0.5;
+                if (distance <= half) return 1.0;
+                if (distance >= halfWidth) return 0.0;
+                float t = (distance - half) / half;
+                return 1.0 - (3.0 * t * t - 2.0 * t * t * t);
+            }
+
+            // Twin: WakeLiftMath.HalfWidth — the Kelvin WEDGE. Her churned half-beam at the transom,
+            // opening astern at the half-angle, so the lift can never reach outside the foam's own bound.
+            float WakeHalfWidth(float asternMetres, float halfBeamMetres)
+            {
+                return max(halfBeamMetres, 0.0)
+                       + HH_KELVIN_SLOPE * max(asternMetres, 0.0);
+            }
+
+            // Twin: WakeLiftMath.Fall — ONE e-folding length standing in for the true s^-1/2 and s^-1/3
+            // spreading decays, because the owner gets ONE decay dial and a dial he can feel beats a law
+            // he cannot. Named as an approximation in WakeLiftMath's own doc, not hidden here. Decay 0
+            // returns 0, not 1 and not a NaN — that is the second dial's passthrough.
+            float WakeFall(float asternMetres, float decayMetres)
+            {
+                if (decayMetres <= 0.0) return 0.0;
+                return exp(-max(asternMetres, 0.0) / decayMetres);
+            }
+
+            // Twin: WakeLiftMath.RootRamp01 — nothing stands AHEAD of her transom, and the first crest
+            // does not arrive as a step: the curve above, read backwards over her own half-beam.
+            float WakeRootRamp01(float asternMetres, float halfBeamMetres)
+            {
+                return WakeProfile01(-asternMetres, max(halfBeamMetres, 0.0));
+            }
+
+            // Twin: WakeLiftMath.TrainHeight — the whole law. `asternMetres` is metres BEHIND her transom
+            // along her heading (negative is ahead of it, under the hull), `lateralMetres` off the track.
+            // Everything in, and out, is world metres: what a plate measures is what the dial says.
+            float WakeTrainHeight(float asternMetres, float lateralMetres,
+                                  float amplitudeMetres, float wavelengthMetres,
+                                  float halfBeamMetres, float decayMetres)
+            {
+                // Four independent passthroughs, each an EXACT zero rather than a small number: the dial
+                // at 0, the decay at 0, a hull at rest (no wavelength), and a hull with no beam.
+                if (amplitudeMetres <= 0.0 || wavelengthMetres <= 0.0
+                    || halfBeamMetres <= 0.0 || decayMetres <= 0.0) return 0.0;
+
+                float astern = asternMetres;
+                float lateral = abs(lateralMetres);
+
+                // OUTSIDE THE WEDGE FIRST. Everything past the caustic is bare sea, and saying so before
+                // any trigonometry is both the cheap branch and the honest one.
+                float window = WakeProfile01(lateral, WakeHalfWidth(astern, halfBeamMetres));
+                if (window <= 0.0) return 0.0;
+
+                float ramp = WakeRootRamp01(astern, halfBeamMetres);
+                if (ramp <= 0.0) return 0.0;
+
+                float k0 = HH_WAKE_TWO_PI / wavelengthMetres;
+                float transverse = cos(k0 * astern);
+                float divergent = cos(k0 * HH_WAKE_DIV_K_RATIO
+                                      * (astern * HH_WAKE_DIV_COS + lateral * HH_WAKE_DIV_SIN));
+
+                return amplitudeMetres * ramp * window * WakeFall(astern, decayMetres)
+                       * HH_WAKE_MEMBER_SHARE * (transverse + divergent);
+            }
+
+            // Twin: WakeLiftMath.HeightAt — the frame change, written once on each side so a test can
+            // walk the sea in world coordinates exactly as this vertex stage does.
+            float WakeHeightAt(float2 worldXY, float2 rootXY, float2 heading,
+                               float amplitudeMetres, float wavelengthMetres,
+                               float halfBeamMetres, float decayMetres)
+            {
+                float2 d = worldXY - rootXY;
+                // Astern is MINUS the heading; lateral is the 2D cross product with it. Both are exact
+                // for a unit heading, and a degenerate (zero) heading falls out as astern = lateral = 0,
+                // which the wedge window then treats as the centreline at the transom.
+                float astern = -(d.x * heading.x + d.y * heading.y);
+                float lateral = d.x * heading.y - d.y * heading.x;
+                return WakeTrainHeight(astern, lateral, amplitudeMetres, wavelengthMetres,
+                                       halfBeamMetres, decayMetres);
+            }
+
+            // Every hull making way, summed. This loop is the ONLY part with no C# twin — it is plumbing,
+            // not law, and what it plumbs is pinned instead by the registry's own slot tests.
+            //
+            // ⚠️ EITHER dial at 0 returns exactly 0.0 before a single slot is READ — the bit-exact
+            // passthrough the charter requires, made STRUCTURAL rather than arithmetic, the same shape as
+            // the fetch march's `_WaveFetchParams.x == 0` skip. A boat lying to her mooring costs nothing
+            // either: her gate (shape.x) and her wavelength (shape.y) both reach exactly 0 at rest with no
+            // way on, and the per-slot skip fires on either of them. The gate multiplies the AMPLITUDE
+            // rather than the result, so a gated-down hull leaves the law untouched and only quieter.
+            float WakeLiftHeight(float2 worldXY)
+            {
+                if (_WakeLiftMetres <= 0.0 || _WakeLiftDecayMetres <= 0.0) return 0.0;
+                float total = 0.0;
+                [unroll]
+                for (int i = 0; i < HH_WAKE_LIFT_MAX; i++)
+                {
+                    float4 shape = _HHWakeLiftShape[i];
+                    if (shape.x <= 0.0 || shape.y <= 0.0) continue;   // unused slot, or a hull at rest
+                    float4 root = _HHWakeLiftRoot[i];
+                    total += WakeHeightAt(worldXY, root.xy, root.zw, _WakeLiftMetres * shape.x,
+                                          shape.y, shape.z, _WakeLiftDecayMetres);
+                }
+                return total;
             }
 
 
@@ -5778,7 +5982,18 @@ Shader "HiddenHarbours/Water"
                 WaveFieldSample(ground, vFreqScale, vFetchEnv, vHeight, vSlope, vCrest, vPrimCos);
 
                 float stillDepth = _WaterLevel - SeabedElevationLod(ground);
-                float lift = vHeight * _WaveExaggeration * ShoreFade01(stillDepth, _ShoreFadeBand);
+                float fade = ShoreFade01(stillDepth, _ShoreFadeBand);
+                float lift = vHeight * _WaveExaggeration * fade;   // UNCHANGED, operation for operation
+
+                // ⭐ THE WAKE LIFT (water PR F, row 27) — the hull's own wave train, in the SAME frame the
+                // swell displaces, added to the SAME height. Exactly 0.0 at either dial's passthrough and
+                // for every hull at rest, so the sea a dial-0 plate photographs is bit-identical.
+                //   * NOT multiplied by _WaveExaggeration: exaggeration means "draw the simulated sea
+                //     taller than it is", and this train has no simulated twin to be taller than. The dial
+                //     is in DRAWN metres, which is what makes an elevation plate readable.
+                //   * DOES carry `fade`, so the train dies at the walkable waterline exactly as the swell
+                //     does. Anything else would tear the coast that ShoreFade01 exists to keep whole.
+                lift += WakeLiftHeight(ground) * fade;
 
                 ws.y += lift;
                 ws.z += (ground.y - _HeightWorldMin.y) * _WaterIsoDepth.x - lift * _WaterIsoDepth.y;

@@ -171,6 +171,21 @@ namespace HiddenHarbours.Art
         static bool s_WarnedOverCap;
         static bool s_IdleBound;
 
+        // ---- THE WAKE LIFT's publish (water PR F, register row 27) ------------------------------
+        // Two global float4 arrays, one slot per live injector, uploaded by whichever injector runs
+        // its LateUpdate last — the GrassFootstep pattern exactly: every writer owns its own slot and
+        // uploads the whole buffer, so the last writer's upload already carries every writer's frame,
+        // and there is no ordering assumption and no separate publisher host to keep alive.
+        //
+        // ⚠️ GLOBAL, not per-material: the water shader's VERTEX stage reads these, and the displaced
+        // sea is drawn by chunk renderers that only ever receive a COPY of the flat renderer's
+        // property block. A per-material write would reach one of the two passes and not the other.
+        // (It is also why the two DIALS are material properties and these are not: a dial belongs to
+        // the look, a hull's root belongs to the hull.)
+        static readonly Vector4[] s_LiftRoot = new Vector4[FoamBuffer.MaxInjectors];
+        static readonly Vector4[] s_LiftShape = new Vector4[FoamBuffer.MaxInjectors];
+        static readonly bool[] s_LiftSlotTaken = new bool[FoamBuffer.MaxInjectors];
+
         /// <summary>How many injectors are live and over water. The feature's cheap gate.</summary>
         public static int Count => s_Live.Count;
 
@@ -280,6 +295,97 @@ namespace HiddenHarbours.Art
         internal static void NotePublished()
         {
             s_IdleBound = false;
+        }
+
+        /// <summary>
+        /// Take a wake-lift slot for a hull that has just joined the water, or <c>-1</c> when all
+        /// <see cref="FoamBuffer.MaxInjectors"/> are taken (that hull draws no lift this stretch —
+        /// the same bound, for the same reason, as the foam's compile-time loop; the over-cap warning
+        /// on <see cref="CollectInjections"/> is the one place that says so out loud).
+        ///
+        /// <para>A SLOT, not an index into <see cref="s_Live"/>: the live list is compacted by
+        /// <c>List.Remove</c>, so an index cached in an injector would silently come to name another
+        /// hull's wake the moment a boat ahead of it was hauled out.</para>
+        /// </summary>
+        internal static int ClaimLiftSlot()
+        {
+            for (int i = 0; i < s_LiftSlotTaken.Length; i++)
+            {
+                if (s_LiftSlotTaken[i]) continue;
+                s_LiftSlotTaken[i] = true;
+                s_LiftRoot[i] = Vector4.zero;
+                s_LiftShape[i] = Vector4.zero;
+                return i;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// Give a slot back and ZERO it on the sea in the same call, setting <paramref name="slot"/>
+        /// to <c>-1</c>. ⚠️ The zeroing is the point: a hull hauled out, teleported or destroyed must
+        /// take her wake with her, and an un-zeroed slot would leave one frame of stern wave standing
+        /// in empty water for as long as the scene lived — the same frozen-last-frame trap
+        /// <see cref="BindIdle"/> exists for on the foam buffer.
+        /// </summary>
+        internal static void ReleaseLiftSlot(ref int slot)
+        {
+            if (slot < 0 || slot >= s_LiftSlotTaken.Length) { slot = -1; return; }
+            s_LiftSlotTaken[slot] = false;
+            s_LiftRoot[slot] = Vector4.zero;
+            s_LiftShape[slot] = Vector4.zero;
+            slot = -1;
+            PublishLift();
+        }
+
+        /// <summary>
+        /// Publish one hull's stern wave train for this frame (water PR F, register row 27) — the
+        /// transom root and heading it is drawn from, the wavelength that keeps station at her speed
+        /// through the water, her churned half-beam, and her WAKE GATE.
+        ///
+        /// <para><b>Everything here is already computed.</b> <see cref="FoamInjector"/> works all four
+        /// out each <c>LateUpdate</c> for the foam buffer — the transom (not the origin), the speed
+        /// through the water (not over the ground), the half-beam from the hull's watertight width,
+        /// and the wake channel's own gate. This publish adds no march, no history and no second
+        /// field: it forwards the taps that exist.</para>
+        ///
+        /// <para><b>The gate is what makes at-rest exactly zero.</b> <paramref name="gate01"/> is the
+        /// injector's <c>wake01</c> — <c>FoamBuffer.Shape01</c> on speed through the water — which is
+        /// already 0 for a hull lying to her mooring, bobbing, or carried along by the stream. A hull
+        /// making no way keeps station with no wave, so both this and
+        /// <see cref="WakeLiftMath.TransverseWavelength"/> reach zero together and the shader's
+        /// per-slot skip takes the whole train out of the frame.</para>
+        /// </summary>
+        internal static void PublishWakeLift(int slot, Vector2 rootXY, Vector2 heading,
+                                             float wavelengthMetres, float halfBeamMetres,
+                                             float gate01)
+        {
+            if (slot < 0 || slot >= s_LiftShape.Length) return;
+            s_LiftRoot[slot] = new Vector4(rootXY.x, rootXY.y, heading.x, heading.y);
+            s_LiftShape[slot] = new Vector4(Mathf.Clamp01(gate01),
+                                            Mathf.Max(wavelengthMetres, 0f),
+                                            Mathf.Max(halfBeamMetres, 0f),
+                                            0f);
+            PublishLift();
+        }
+
+        /// <summary>Upload both arrays whole. Cheap, and the reason no writer needs to know whether it
+        /// ran first or last (<c>GrassFootstep.Publish</c>, same lesson: one array per instance made
+        /// the last writer WIN instead of the last writer UPLOAD).</summary>
+        static void PublishLift()
+        {
+            Shader.SetGlobalVectorArray(FoamShaderIds.WakeLiftRoot, s_LiftRoot);
+            Shader.SetGlobalVectorArray(FoamShaderIds.WakeLiftShape, s_LiftShape);
+        }
+
+        /// <summary>
+        /// The published wake-lift slots, for tests and for the acceptance fixture: the root/heading
+        /// vector and the shape vector exactly as the shader will read them. Read-only by
+        /// construction (the arrays are copied out), so no caller can write the sea's state.
+        /// </summary>
+        internal static void ReadWakeLift(Vector4[] root, Vector4[] shape)
+        {
+            if (root != null) System.Array.Copy(s_LiftRoot, root, Mathf.Min(root.Length, s_LiftRoot.Length));
+            if (shape != null) System.Array.Copy(s_LiftShape, shape, Mathf.Min(shape.Length, s_LiftShape.Length));
         }
 
         internal static void Register(FoamInjector injector)
@@ -417,5 +523,21 @@ namespace HiddenHarbours.Art
         /// (m), <c>w</c> = the envelope half-width (m). The tail's age mark rides
         /// <c>_HHFoamInjectShape[i].w</c>, which PR 11a left unused.</summary>
         public static readonly int DispersalShape = Shader.PropertyToID("_HHFoamDispShape");
+
+        /// <summary>
+        /// Water PR F (register row 27): per-slot WAKE LIFT root — <c>xy</c> = the transom in world
+        /// metres (<c>FoamBuffer.SternWorld</c>, the same point the foam is shed from), <c>zw</c> = the
+        /// hull's unit forward direction. Mirrored as <c>_HHWakeLiftRoot</c> in the water shader.
+        /// </summary>
+        public static readonly int WakeLiftRoot = Shader.PropertyToID("_HHWakeLiftRoot");
+
+        /// <summary>
+        /// Water PR F: per-slot WAKE LIFT shape — <c>x</c> = the wake gate 0..1 (0 at rest),
+        /// <c>y</c> = the transverse wavelength (m) that keeps station at her speed through the water,
+        /// <c>z</c> = her churned half-beam (m), <c>w</c> unused. <b>x or y at 0 is an unused slot</b>
+        /// and the shader's loop skips it — which is also how a hull lying to her mooring costs
+        /// nothing. Mirrored as <c>_HHWakeLiftShape</c> in the water shader.
+        /// </summary>
+        public static readonly int WakeLiftShape = Shader.PropertyToID("_HHWakeLiftShape");
     }
 }
