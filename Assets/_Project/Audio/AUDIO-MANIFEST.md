@@ -25,7 +25,7 @@ serialized reference on a component any more, so slotting a sound never touches 
 
 | Bus | Director field | Notes |
 |---|---|---|
-| Ambience | `_ambienceVolume` | calm bed, gulls, aboard boat bed (oar/water **or** outboard engine), wind tell |
+| Ambience | `_ambienceVolume` | calm bed, moderate/rough sea layers, gulls, aboard boat bed (oar/water **or** outboard engine), wind tell, distant foghorn |
 | SFX | `_sfxVolume` | one-shot cues (sting, warmth) |
 | Music | `_musicVolume` | reserved — no music cue wired yet (future) |
 
@@ -59,10 +59,13 @@ idles when moored and revs underway.
 | Director field | Committed clip | Loop? | Bus | Role / trigger | Now playing |
 |---|---|---|---|---|---|
 | `_calmBed`    | `Ambient/calm_sea_bed.ogg`  | yes | Ambience | always-on calm-sea wash | **real** — LICENSES.md row 1 |
+| `_moderateSeaBed` | `Ambient/moderate_sea_bed.ogg` | yes | Ambience | fades in on continuous `EnvironmentSample.SeaState01` from 0.18 to 0.55, fades out by 0.82 | **real** — LICENSES.md row 21 |
+| `_roughSeaBed` | `Ambient/rough_sea_bed.ogg` | yes | Ambience | fades in on continuous `SeaState01` from 0.52 to 0.92, taking over the moderate texture | **real** — LICENSES.md row 22 |
 | `_gulls`      | `Ambient/gulls.ogg`         | yes | Ambience | sparse gull calls over the bed | **real** — LICENSES.md row 2 |
 | `_hullRow`    | — | yes | Ambience | oar-stroke / water bed — **aboard a rowed hull (the dory)**; crossfades with the engine bed on a swap | `ProceduralAudio.HullRow` — **slot held**: no CC0 rowing recording found, owner shopping list in LICENSES.md |
 | `_outboardEngine` | `Ambient/outboard_engine.wav` | yes | Ambience | looping outboard-engine bed — **aboard an engine boat (the punt and up)**; pitch + volume rise with speed over ground | **real** — LICENSES.md row 3 |
 | `_windTell`   | `Ambient/wind_tell.wav`     | yes | Ambience | **the SACRED rising-wind tell** — loudness driven by wind strength, audible *before* trouble (P1) | **real** — LICENSES.md row 4 |
+| `_foghorn`   | `SFX/foghorn.wav` | no | Ambience | one distant horn on each 90-second **game-clock** boundary while `EnvironmentSample.Visibility < 0.35` (0 = thick fog); no wall-time or RNG | **real** — LICENSES.md row 23 |
 | `_catchSting` | — | no  | SFX | bright sting on `FishCaught` | `ProceduralAudio.CatchSting` — **slot held**: musical, waits for the score (foley guide §9) |
 | `_homeWarmth` | — | no  | SFX | "made it home" warmth on `CatchSold` / coming ashore | `ProceduralAudio.HomeWarmth` — **slot held**, as above |
 | `_landingHit` | `SFX/landing_hit.wav` | no  | SFX | **the landing frame** — `JuiceMomentCue(Landing)`, the frame the fish leaves the water (with the hit-stop and the splash; juice charter §4.1/§4.5) | **real** — LICENSES.md row 18. A low thump under `_landedFlourish`, which fires on the same frame: two registers, one hit |
@@ -92,7 +95,7 @@ prefab later) — every layer has a tooltip'd 0..1 level (`_fishingVolume` maste
 | `_bottomSettle` | `SFX/bottom_settle.wav` | no | the slack **bottom tell** opens pre-bite — "you felt bottom" | **real** — LICENSES.md row 14 |
 | `_bobberPlop` | `SFX/bobber_plop.wav` | no | the **cast-path** bite tell (`Bite` with `Depth01 = 0`) | **real** — LICENSES.md row 12 |
 | `_rodKnock` | `SFX/rod_knock.wav` | no | the **depth-path** bite tell (`Bite` with `Depth01 > 0`) — the deep rod-tip knock, in the rod, not the UI | **real** — LICENSES.md row 13 |
-| `_strainGroanLoop` | `SFX/strain_groan.wav` | yes | the continuous line-strain groan — gain rides `Tension01^1.6` (the "ease off!" voice), pitch tightens with tension; services the **legacy `Fighting`** phase too | **real** — LICENSES.md row 7. The **weakest fit** in the set: an even low drone, not a rope under load. First to re-source. |
+| `_strainGroanLoop` | `SFX/strain_groan.wav` | yes | the line-strain creaks — gain rides `Tension01^1.6` (the "ease off!" voice), pitch tightens with tension; services the **legacy `Fighting`** phase too | **real, re-sourced** — LICENSES.md row 7. Four distinct wood-under-load squeaks per loop replace the even drone. |
 | `_reelClickLoop` | `SFX/reel_clicks.ogg` | yes | reel clicks **only while gaining** (`Landing01` rising) | **real** — LICENSES.md row 8 |
 | `_slackRelease` | `SFX/slack_release.wav` | no | the mid-fight slack window opens — the diegetic "PULL now" (§3) | **real** — LICENSES.md row 15 |
 | `_surfaceThrashLoop` | `SFX/surface_thrash.ogg` | yes | she's up (`FightSurface`) — swells with `RodBend01` + her dart speed, **pans on her offset** | **real** — LICENSES.md row 9 |
@@ -121,6 +124,9 @@ the owning lanes rather than reached across:
 - **A `PropulsionType` on `ActiveBoatChanged`** (Boats/Player + Core). The aboard boat bed picks oars-vs-
   engine from the hull **id** because the signal carries no propulsion type and the Audio asmdef is
   Core-only (see the boat-bed flag above). A Core propulsion field would remove the id heuristic.
+- **A precipitation/rain amount** (gameplay-systems / Core). `EnvironmentSample` has wind, sea state,
+  and visibility but no precipitation signal; a rain bed cannot honestly follow it yet. The Audio lane
+  does not derive rain from fog or wind. Add the signal in the owning lane before sourcing rain audio.
 - **RESOLVED (juice PR 3) — a distinct `CatchSold` reward cue.** `_saleChime` is the sale's slot and now
   carries a real recording (`SFX/sale_chime.wav`, LICENSES.md row 19). It is **foley** — coins changing
   hands — which is why it could ship while `_catchSting` and `_homeWarmth` stay held: a coin sound has no
@@ -130,5 +136,5 @@ the owning lanes rather than reached across:
 
 ## Wishlist (future, not wired this round)
 - A light **music** stem for the harbour / title (would slot onto the Music bus).
-- Per-sea-state ambience variants (Glass → Storm) layered with the wind tell.
+- More per-sea-state regional variants after the moderate/rough layers are tuned by the owner's ears.
 - A distinct **grounding** alarm on `BoatGrounded` (P5) — a follow-up once the warning palette exists.
