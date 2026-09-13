@@ -3,13 +3,15 @@
   const E=globalThis.CastViewerEngine,H=globalThis.CharacterHeadStudy;
   const bounds=__BOUNDS__, cast=E.cast.map(k=>E.create(k));
   const beforeCast=new Map(E.cast.map(k=>[k,E.create(k,{finish:false,headStudy:globalThis.CharacterHeadPass04})]));
+  const previousCast=new Map(E.cast.map(k=>[k,E.create(k,{headStudy:globalThis.CharacterHeadPass05})]));
   const state={anim:'idle',u:0,seconds:0,angle:25,speed:1,ppm:64,playing:false,spinning:false,spinStart:0,spinElapsed:0,selected:'fisher',view:'cast',expr:'auto',talk:false,wardrobe:'original',pass:'after'};
-  const W=globalThis.CharacterWardrobeProof,wardrobes=new Map(),beforeWardrobes=new Map();
+  const W=globalThis.CharacterWardrobeProof,wardrobes=new Map(),beforeWardrobes=new Map(),previousWardrobes=new Map();
   if(W){
     for(const preset of W.presets){
       const option=document.createElement('option');option.value=preset.Id;option.textContent=preset.DisplayName;
       $('[data-wardrobe]').append(option);wardrobes.set(preset.Id,W.create(cast.find(c=>c.key==='fisher'),preset.Recipe));
       beforeWardrobes.set(preset.Id,W.create(beforeCast.get('fisher'),preset.Recipe));
+      previousWardrobes.set(preset.Id,W.create(previousCast.get('fisher'),preset.Recipe));
     }
   }
   const gallery=$('[data-gallery]'),cards=new Map();
@@ -36,8 +38,9 @@
   function render(){
     const begin=performance.now(),visible=state.view==='cast'?cast:cast.filter(c=>c.key===state.selected);
     for(const [i,base] of visible.entries()){
-      const outfitMap=state.pass==='before'?beforeWardrobes:wardrobes;
-      const c=base.key==='fisher'&&state.wardrobe!=='original'?outfitMap.get(state.wardrobe):state.pass==='before'?beforeCast.get(base.key):base;
+      const outfitMap=state.pass==='before'?beforeWardrobes:state.pass==='previous'?previousWardrobes:wardrobes;
+      const person=state.pass==='before'?beforeCast.get(base.key):state.pass==='previous'?previousCast.get(base.key):base;
+      const c=base.key==='fisher'&&state.wardrobe!=='original'?outfitMap.get(state.wardrobe):person;
       const posed=E.pose(c,state.anim,state.u);
       const options={anim:state.anim,seed:17+E.cast.indexOf(c.key)*31,talk:state.talk};if(state.expr!=='auto')options.expr=state.expr;
       const face=(c.headStudy||H).life(state.seconds,options);

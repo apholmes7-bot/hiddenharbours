@@ -1,4 +1,4 @@
-// Reproducible pass04/pass05 visual comparison and body-finish safety checks. Node stdlib only.
+// Reproducible pass04/pass06 visual comparison and body-finish safety checks. Node stdlib only.
 const fs=require('fs'),path=require('path'),crypto=require('crypto'),assert=require('assert/strict');
 const {loadStudy}=require('./load-study.cjs'),{raster,png}=require('./sources/face-render.cjs');
 const dir=__dirname,out=path.join(dir,'review','character-finish');fs.mkdirSync(out,{recursive:true});
@@ -44,7 +44,7 @@ for(const key of cast){
     eq(afterPose.bones,controlPose.bones,key+'/'+clip+' body finish must retain animation/contact anchors');report.BonePosePairs++;
     for(const i of protectedFaces){eq(afterPose.faces[i].v,controlPose.faces[i].v,key+'/'+clip+' protected posed geometry');report.ProtectedVertexSamples+=afterPose.faces[i].v.length;}
     for(const [ix,pose] of [beforePose,afterPose].entries())for(const f of pose.faces)for(const p of f.v){assert(p.every(Number.isFinite),key+'/'+clip+' nonfinite vertex');merge(bounds[ix],p);}
-    assert.equal(afterPose.faces.length,beforePose.faces.length,key+' pass04/pass05 comparison requires matching topology');
+    assert.equal(afterPose.faces.length,beforePose.faces.length,key+' pass04/pass06 comparison requires matching topology');
     afterPose.faces.forEach((f,i)=>{
       assert(f.v.length>=3,key+'/'+clip+' malformed polygon');
       for(let t=1;t<f.v.length-1;t++){
@@ -63,7 +63,7 @@ for(const key of cast){
   }
 }
 assert.equal(report.NewDegenerateTriangles.length,0,'Body finish introduced degenerate triangles');
-assert.equal(report.NewDegenerateTrianglesSincePass04.length,0,'Pass05 introduced degenerate triangles relative to pass04');
+assert.equal(report.NewDegenerateTrianglesSincePass04.length,0,'Pass06 introduced degenerate triangles relative to pass04');
 
 // Pixel labels keep the exported PNGs understandable without the companion HTML.
 const font={
@@ -109,7 +109,7 @@ function plate(kind,views,ppm,name){
   }
   const zoom=ppm===32?2:1,cellW=(Math.ceil((frame.maxX-frame.minX)*ppm)+4)*zoom+6,cellH=(Math.ceil((frame.maxY-frame.minY)*ppm)+4)*zoom+14;
   const left=62,top=32,board=canvas(left+cellW*views.length*2,top+cellH*cast.length);
-  label(board,'PASS04 A / PASS05 B - '+name+' - '+ppm+' PX/M',4,4);
+  label(board,'PASS04 A / PASS06 B - '+name+' - '+ppm+' PX/M',4,4);
   views.forEach((v,i)=>{label(board,(v.label||String(v.angle))+' A',left+i*2*cellW,18);label(board,(v.label||String(v.angle))+' B',left+(i*2+1)*cellW,18);});
   cast.forEach((key,row)=>{label(board,key,3,top+row*cellH+4);views.forEach((view,column)=>[0,1].forEach(pass=>{
     paste(board,picture(pass,key,ppm,view,kind,frame),left+(column*2+pass)*cellW,top+row*cellH,zoom);
@@ -132,5 +132,5 @@ report.Limits=['Anchor equality covers authored rig bones and preserved hand/foo
  'Raster crop is fixed across before/after and all cast for each plate. No scaling per character. The32px/m crops are enlarged2x using nearest-neighbour display only.',
  'All35 animation clips are sampled13 times per cast for geometry/anchors. Raster clipping is checked on the published turn/action plates, not every possible continuous pose.'];
 fs.writeFileSync(path.join(out,'comparison-measurements.json'),JSON.stringify(report,null,2)+'\n');
-fs.writeFileSync(path.join(out,'comparison.html'),'<!doctype html><html lang="en"><meta charset="utf-8"><title>Character finish04 /05</title><style>body{background:#e7eade;color:#253a3b;font:16px system-ui;margin:24px}img{image-rendering:pixelated;max-width:100%;height:auto}p{max-width:90ch}section{margin:32px 0}</style><h1>Character finish · pass04 / pass05</h1><p>Each pair is A: preserved pass04, B: current pass05. All ten cast members, 40° orthographic preview camera, identical pose/time and metre scale. 64px/m preferred detail;32px/m game-density check enlarged2x for display. This is offline art evidence, not Unity acceptance.</p>'+report.Plates.map(p=>'<section><h2>'+p.File+'</h2><img src="'+p.File+'" alt="'+p.File+'; paired before/after all ten cast members"></section>').join('')+'<p>'+report.Limits.join(' ')+'</p></html>');
+fs.writeFileSync(path.join(out,'comparison.html'),'<!doctype html><html lang="en"><meta charset="utf-8"><title>Character finish04 /06</title><style>body{background:#e7eade;color:#253a3b;font:16px system-ui;margin:24px}img{image-rendering:pixelated;max-width:100%;height:auto}p{max-width:90ch}section{margin:32px 0}</style><h1>Character finish · pass04 / pass06</h1><p>Each pair is A: preserved pass04, B: current pass06. All ten cast members, 40° orthographic preview camera, identical pose/time and metre scale. 64px/m preferred detail;32px/m game-density check enlarged2x for display. This is offline art evidence, not Unity acceptance.</p>'+report.Plates.map(p=>'<section><h2>'+p.File+'</h2><img src="'+p.File+'" alt="'+p.File+'; paired before/after all ten cast members"></section>').join('')+'<p>'+report.Limits.join(' ')+'</p></html>');
 console.log(JSON.stringify({Passed:true,Output:path.join(out,'comparison.html'),PosePairs:report.PosePairs,BonePosePairs:report.BonePosePairs,ProtectedVertexSamples:report.ProtectedVertexSamples,RasterChecks:report.RasterChecks,NewDegenerateTriangles:report.NewDegenerateTriangles.length,Clipped:report.ClippedRasters.length,Empty:report.EmptyRasters.length}));

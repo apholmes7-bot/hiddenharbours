@@ -2,8 +2,8 @@
 
 This is the versioned, offline authoring study for **CW01**, the first stage of the
 13 September character creator/wardrobe request. It preserves the ten rig presets
-and all 35 animations from the owner's cast viewer, with pass05 facial and garment
-refinement across the cast and a bounded Fisher clothing assembly proof. **It does not implement the in-game creator,
+and all 35 animations from the owner's cast viewer, with pass05 garment/jaw refinement,
+pass06 eye revision and a bounded Fisher clothing assembly proof. **It does not implement the in-game creator,
 wardrobe, purchases, appearance save, or production expressive face renderer.**
 
 ## Build and inspect
@@ -15,6 +15,8 @@ node docs/art/character-workbench/build-viewer.cjs
 node docs/art/character-workbench/wardrobe-validate.cjs
 node docs/art/character-workbench/check-face-and-boots.cjs
 node docs/art/character-workbench/check-face-beauty.cjs
+node docs/art/character-workbench/check-eye-refinement.cjs
+node docs/art/character-workbench/review-eyes.cjs
 node docs/art/character-workbench/check-character-finish.cjs
 node docs/art/character-workbench/review-faces.cjs
 node docs/art/character-workbench/compare-character-finish.cjs
@@ -26,6 +28,8 @@ PNG and detailed JSON reports are ignored by Git; all required source is here.
 The viewer build reads the individual authored fit/garment JSON files directly;
 it does not depend on a generated catalogue from an earlier validation run.
 The complete all-cast finish comparison is `review/character-finish/comparison.html`.
+The direct previous/revised eye comparison is `review/eyes/eye-comparison.html`;
+`review/eyes/owner-eyes-64.png` is the compact labeled close-up sheet.
 The optional original browser runner, `check-viewer.cjs`, needs Playwright and Edge;
 it is not required to build. It was **not rerun** for CW01 because the available
 browser tool rejected local-file navigation. Static raster comparisons were viewed
@@ -35,7 +39,7 @@ directly with the image tool; browser interaction/layout acceptance remains pend
   inspection densities; the geometry stays in metres and the game's PPU stays 32.
 - Play/pause, frame scrub and 360° drag/turntable remain available. Single actions
   stop at their endpoint; the viewer pauses when its tab is hidden.
-- **Art pass** switches between the preceding pass04 and the refined pass05, holding
+- **Art pass** switches between original pass04, previous eyes pass05 and revised eyes pass06, holding
   the current rotation, expression, animation time and density. The initial view is a
   relaxed idle at a 25° turn, making the character volumes easier to inspect.
 - Inspect a character for the full body and enlarged head; choose one of eight
@@ -46,7 +50,7 @@ directly with the image tool; browser interaction/layout acceptance remains pend
   its own garment tailoring and finish; those edits do not grant interchangeable fits.
 
 The comparison uses 0°, 35°, 90°, 145°, 180°, 270° and 325° turns at 64 and 32 px/m.
-Each pair is **pass 04 before, pass 05 after**. PNG rows are Fisher, Ginny, Skipper,
+Each pair is **pass 04 before, pass 06 after**. PNG rows are Fisher, Ginny, Skipper,
 Nan, Deck boss, Packer, Cutter, Deckhand, Wharf boy and Wharf girl. Expressions have
 a separate before/after comparison. The camera is the inherited 40° orthographic
 art preview, not a capture of the current in-world camera.
@@ -54,7 +58,21 @@ art preview, not a capture of the current in-world camera.
 surprise, effort, weary; columns Fisher 64 before/after, Fisher 32 before/after,
 Deck boss 64 before/after and Deck boss 32 before/after.
 
-## What changed in pass05
+## Eye revision after owner review
+
+The owner rejected the pass05 eyes. Its pixel-count checks caught isolated white marks,
+but did not establish an appealing eye design: the large rectangular pupil and dark
+outer halves could read as flat slots or an unfocused gaze.
+
+Pass06 uses rounded openings with a gently capped upper lid, smaller round pupils,
+balanced light corners, warmer eye ink and a slightly closer eye/brow placement.
+The opening, iris and pupil share the same physical surface at every density. Head
+geometry, mouth, identity choices and face animation timing are unchanged from pass05.
+The previous face is preserved in `sources/face-rig-pass05.js` for direct comparison.
+`review-eyes.cjs` and `EYE-REFINEMENT-REVIEW.md` cover this eye-specific revision;
+the historical `check-face-beauty.cjs` still validates pass04/pass05 separately.
+
+## What changed in pass05 (preceding finish)
 
 Eyes now use a clear dark pupil/iris cluster and a restrained warm sclera. The old
 subpixel pupil could disappear between raster samples, leaving a disconnected white
@@ -81,7 +99,7 @@ Production camera/shader appearance remains unverified.
 `sources/` contains snapshots from the 13 September cast viewer:
 `C:/Users/aphol/.codex/visualizations/2026/09/13/01a09bee-b46e-74c1-9638-96c10598fd2c/cast-viewer`.
 The original 03 face is kept in `face-rig-pass03.js`; `face-rig.js` is the editable
-05 study. `face-render.cjs` now uses a small standard-library PNG writer, removing
+06 study; passes 04 and 05 are also preserved for comparison. `face-render.cjs` uses a small standard-library PNG writer, removing
 the earlier machine-specific Sharp dependency. `load-study.cjs` centralizes loading.
 
 The frozen rig 7 snapshot is the original production source. The inherited viewer
@@ -128,7 +146,7 @@ node docs/art/character-workbench/compare-character-finish.cjs
 ```
 
 Open the generated `review/character-finish/comparison.html` to compare preserved
-pass04 with pass05 across all ten characters, eight headings, selected work/vehicle
+pass04 with pass06 across all ten characters, eight headings, selected work/vehicle
 poses, and 64/32 px/m body and face plates. All inputs are checked in; no historical
 checkout or image package is required. Generated PNGs and measurement JSON stay in
 the ignored review folder.

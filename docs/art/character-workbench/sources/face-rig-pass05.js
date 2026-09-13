@@ -1,9 +1,8 @@
-/* Hidden Harbours — eye refinement 06. Original HeadIso provides customization geometry.
+/* Hidden Harbours — character finish 05. Original HeadIso provides customization geometry.
    Face marks are a head-local surface material, not camera-facing cards or displaced eye blocks.
    Coordinates are metres. A shared front-surface UV layout keeps every facial landmark centered. */
 (function(root){
- const C={headScale:.97,pixelPhaseX:.5,eyeX:.067,eyeZ:.050,eyeW:.062,eyeH:.060,browZ:.103,
-  eyeTop:.38,lashH:.009,closedLidH:.010,pupilW:.018,pupilH:.024,irisW:.0255,irisH:.033,irisLower:.012,gazeX:.008,gazeY:.007,
+ const C={headScale:.97,pixelPhaseX:.5,eyeX:.071,eyeZ:.053,eyeW:.061,eyeH:.043,browZ:.103,
   mouthZ:-.100,mouthStepX:.029,mouthStepZ:.030,uvBottom:-.225,uvHeight:.46,
   blinkMin:2.4,blinkSpan:2.0,blinkDuration:.19};
  const EXPRESSIONS={
@@ -95,26 +94,24 @@
   const x=(u-.5)*.38,st=state||EXPRESSIONS.neutral,b=build||{},gx=clamp((st.gaze||[0,0])[0],-1,1),gy=clamp((st.gaze||[0,0])[1],-1,1);
   for(const side of [-1,1]){
    const ex=side*C.eyeX,dx=x-ex;
-   const shape=b.eyeShape||'round',half=C.eyeW*.5*(shape==='wide'?1.12:shape==='sharp'?.96:1);
-   const height=C.eyeH*(shape==='wide'?1.12:shape==='narrow'?.78:shape==='droop'?.90:1);
+   const shape=b.eyeShape||'round',width=C.eyeW*(shape==='wide'?1.15:shape==='sharp'?.96:1),half=width/2;
+   let height=C.eyeH*(shape==='wide'?1.18:shape==='narrow'?.66:shape==='droop'?.85:1);
    const socketCurve=(Math.sqrt(Math.max(0,1-(x/.16)**2))-Math.sqrt(1-(C.eyeX/.16)**2))*.108*Math.tan(40*Math.PI/180);
-   const lid=clamp(st.lid||0,0,1),eyeZ=C.eyeZ+socketCurve+(shape==='droop'?-side*dx*.12:shape==='sharp'?side*dx*.14:0);
-   // Rounded corners and a gently capped upper lid shape the opening. The iris
-   // sits in its centre; neither outer half is forced dark, keeping neutral gaze focused.
-   const nx=dx/half,curve=Math.sqrt(Math.max(0,1-nx*nx)),closedZ=eyeZ-height*.18+height*.12*nx*nx;
-   // Both rims meet the same closed curve, avoiding a disappearing socket then
-   // a vertically displaced dash in the last blink frame.
-   const bottom=(eyeZ-height*.48*curve)*(1-lid)+closedZ*lid;
-   const top=(eyeZ+height*Math.min(C.eyeTop,.52*curve))*(1-lid)+closedZ*lid;
-   if(Math.abs(dx)<half){
-    if(lid>.87){if(Math.abs(z-closedZ)<C.closedLidH)return 1;}
-    else if(z>=bottom&&z<=top){
-     if(z>top-C.lashH&&side*dx>-.020)return 1;
-     const pupilX=gx*C.gazeX,pupilZ=eyeZ+gy*C.gazeY;
-     if(((dx-pupilX)/C.pupilW)**2+((z-pupilZ)/C.pupilH)**2<1)return 10;
-     // The lower iris colour carries the opening beneath the pupil. This keeps
-     // an oblique low-density eye connected without filling its upper light corners.
-     if(((dx-pupilX)/C.irisW)**2+((z-pupilZ+C.irisLower)/C.irisH)**2<1)return 3;
+   const lid=clamp(st.lid||0,0,1),eyeZ=C.eyeZ+socketCurve+(shape==='droop'?-side*dx*.20:shape==='sharp'?side*dx*.22:0);
+   const open=height*(1-lid),bottom=eyeZ-height*.70,top=bottom+open;
+   if(Math.abs(dx)<=half){
+    if(lid>.87){if(Math.abs(z-(bottom+height*.25))<.010)return 1;}
+    else if(z>=bottom&&z<=top+.006){
+     if(z>top)return 1;
+     // Rounded eye corners remain only skin; the sockets never move with pupil gaze.
+     if(Math.abs(dx)>half*.83&&z<bottom+.010)return 0;
+     if(st.cheek&&side*dx>0&&z<bottom+.008)return 9;
+     // A dark vertical cluster survives 32 px/m sampling; a thin white wedge gives
+     // gaze at 64 without turning low-density eyes into disconnected white blocks.
+     // Colour moves inside the same socket. This is one metre-space design at all densities.
+     const pupilX=gx*.009,pupilZ=bottom+open*.50+gy*.007;
+     if(Math.abs(dx-pupilX)<.020&&Math.abs(z-pupilZ)<height*.48)return 10;
+     if(Math.abs(dx-pupilX)<.025||side*dx>0)return 3;
      return 2;
     }
    }
@@ -147,9 +144,9 @@
  }
  function colours(build){const H=root.HeadIso,M=H.makeMats(build).MATS,s=M.skin.ramp,h=M.hair.ramp;
   const rgb=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)),mid=rgb(s[3]);const dark=mid[0]*.2126+mid[1]*.7152+mid[2]*.0722<105;
-  const iris=rgb(M.iris.ramp[0]),ink=rgb('#292627'),irisShade='#'+iris.map((v,i)=>Math.round(v*.38+ink[i]*.62).toString(16).padStart(2,'0')).join('');
+  const iris=rgb(M.iris.ramp[0]),ink=rgb('#243038'),irisShade='#'+iris.map((v,i)=>Math.round(v*.4+ink[i]*.6).toString(16).padStart(2,'0')).join('');
   const lip=dark?s[2]:s[0];
-  return [null,'#292627',dark?'#c9baa0':'#d9c8ab',irisShade,h[0],lip,'#492b2c','#e7d4ab',s[2],s[3],'#292627'];
+  return [null,'#243038',dark?'#c9baa0':'#d9c8ab',irisShade,h[0],lip,'#492b2c','#e7d4ab',s[2],s[3],'#243038'];
  }
  root.CharacterHeadStudy={C,EXPRESSIONS,BROWS,AUTO,life,poseState,createHead,sample,colours};
 })(globalThis);

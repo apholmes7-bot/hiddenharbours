@@ -16,6 +16,16 @@ const E=context.CastViewerEngine,characters=E.cast.map(k=>E.create(k)),bounds={}
 const beforeCharacters=E.cast.map(k=>({...E.create(k,{finish:false,headStudy:context.CharacterHeadPass04}),variantId:'before'}));
 const W=context.CharacterWardrobeProof,variants=W?W.presets.map(p=>({...W.create(characters.find(c=>c.key==='fisher'),p.Recipe),variantId:p.Id})):[];
 const beforeVariants=W?W.presets.map(p=>({...W.create(beforeCharacters.find(c=>c.key==='fisher'),p.Recipe),variantId:'before_'+p.Id})):[];
+// Pass05 is an eye-material comparison with the same geometry as pass06. Assert
+// that contract before sharing crops; a later shape edit must expand the pose matrix.
+for(const current of characters){
+  const previous=E.create(current.key,{headStudy:context.CharacterHeadPass05});
+  for(const field of ['faces','bind','build','mats'])if(JSON.stringify(previous[field])!==JSON.stringify(current[field]))throw Error('Previous-eye comparison changed '+field+' for '+current.key);
+  if(W&&current.key==='fisher')for(const preset of W.presets){
+    const a=W.create(previous,preset.Recipe),b=W.create(current,preset.Recipe);
+    if(a.headStudy!==context.CharacterHeadPass05||JSON.stringify(a.faces)!==JSON.stringify(b.faces))throw Error('Previous eyes lost wardrobe/geometry continuity');
+  }
+}
 for(const anim of Object.keys(E.animations)){
   let radius=0,minZ=Infinity,maxZ=-Infinity;
   for(const c of characters.concat(beforeCharacters,variants,beforeVariants)){

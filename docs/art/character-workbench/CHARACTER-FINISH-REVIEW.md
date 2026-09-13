@@ -1,5 +1,10 @@
 # Character finish 05: independent comparison
 
+**Superseded eye design:** the owner subsequently rejected pass05's eyes. Its eye
+pixel counts below are historical technical evidence, not art approval. See
+`EYE-REFINEMENT-REVIEW.md` for the pass05/pass06 eye revision. The full-cast script
+now regenerates pass04/pass06 plates; the garment and jaw finish remains pass05.
+
 Run `node docs/art/character-workbench/compare-character-finish.cjs` from the repository
 root. It writes labeled PNG plates, a comparison HTML page and measurement JSON under
 ignored `review/character-finish/`. All inputs are source-controlled; the before side

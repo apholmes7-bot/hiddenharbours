@@ -4,6 +4,10 @@ Owner request, 2026-09-13: charming characters with the craft expected of a prem
 expressed through low-poly forms and pixel art. This extends CW-01 before production intake.
 It serves P3: memorable people who belong to the working coast.
 
+Owner correction: **"The eyes do not look good."** Pass06 must revise the flat dark
+openings and unfocused gaze seen in pass05, and compare directly with that preserved
+face. Technical readability counts are not a substitute for judging the expression.
+
 ## Art direction
 
 The pass-04 comparison shows bright, disconnected eye pixels at 32 px/m, pinched lower faces,

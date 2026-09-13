@@ -230,3 +230,8 @@ rasters in that sample matrix. Existing cap degeneracies and the awkward isolate
 remain recorded in [the review](../art/character-workbench/CHARACTER-FINISH-REVIEW.md).
 These results do not establish Unity facial rendering or boat/tool/seat contact. Production
 integration must account for the new face-material index and all contributing finish source hashes.
+
+The owner rejected pass05's eye appearance. Pass06 replaces its rectangular dark fill with
+rounded openings, capped upper lids, smaller pupils and balanced light corners. The preserved
+pass05 head provides an eye-only comparison; geometry and animation timing remain identical.
+The historical pixel counts above do not constitute approval of that eye design.

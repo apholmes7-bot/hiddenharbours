@@ -1,8 +1,8 @@
-// Functional face-only checks, with body finish disabled to isolate the art change.
+// Historical pass04/pass05 face checks. Current eyes are covered by check-eye-refinement.cjs.
 const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert/strict'),crypto=require('crypto');
 const dir=__dirname,{context:c}=require('./load-study.cjs').loadStudy({finishPass:'before'});
 const Before=c.CharacterHeadStudy;
-vm.runInContext(fs.readFileSync(path.join(dir,'sources/face-rig.js'),'utf8'),c);
+vm.runInContext(fs.readFileSync(path.join(dir,'sources/face-rig-pass05.js'),'utf8'),c);
 const After=c.CharacterHeadStudy,E=c.CastViewerEngine,plain=x=>JSON.parse(JSON.stringify(x));
 const expressions=Object.keys(After.EXPRESSIONS);
 assert.equal(expressions.length,8);
