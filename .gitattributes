@@ -217,3 +217,13 @@ docs/art/rigs/gameplay/seagullIsoRig.gameplay.json text eol=lf
 # merge battery; a checkout with autocrlf on would otherwise hand it back with CRLF and it would not start.
 *.sh                    text eol=lf
 tools/gauntlet/**       text eol=lf
+
+# The Rock Px kit (Rock Iso, pass three — drop of 2026-09-11) stamps derivedFromRigSha256 over the
+# rig's bytes AS WRITTEN, which are LF, into all EIGHTEEN of its JSONs, and RockPxKitContractTests
+# re-hashes the working-tree rig against that pin. The test normalises CRLF -> LF itself, but
+# `sha256sum` and the art director's own toolchain do not -- so pin the working-tree form, the same
+# reasoning as the sail and seagull kits above, and the kit stays verifiable on any machine.
+docs/art/rigs/rock-px-kit/**                          text eol=lf
+Assets/_Project/Art/Sprites/Shore/RockPx/*.json       text eol=lf
+Assets/_Project/Art/Sprites/Shore/RockPx/sidecar/*.json text eol=lf
+Assets/_Project/Art/Sprites/Shore/RockPx/seat/*.json  text eol=lf

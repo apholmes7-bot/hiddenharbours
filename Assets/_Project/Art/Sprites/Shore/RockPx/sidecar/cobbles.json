@@ -1,0 +1,977 @@
+{
+ "exportSymbol": "PxRockIso2",
+ "derivedFromRigSha256": "3b6ec36d7891893c1b970859b5e9de4c744c6404540d3b888ab3a0119615d58c",
+ "form": "cobbles",
+ "name": "Cobble Cluster",
+ "role": "heap",
+ "note": "Storm cobbles, the filler. Heavily battered five-sided stones at three calibres — two or three tones each, which is all a 6 px stone can carry — with the biggest one riding up on the others.",
+ "cell": [
+  58,
+  32
+ ],
+ "sheet": {
+  "cols": 8,
+  "rows": 3,
+  "colAxis": "4 variants then the same 4 mirrored",
+  "rowAxis": [
+   "dry",
+   "wet",
+   "awash"
+  ]
+ },
+ "pivot": "bottom-centre ground contact",
+ "stones": {
+  "granite": [
+   {
+    "id": "cobblesA",
+    "variant": 0,
+    "sizeM": 1,
+    "topM": 0.22,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.4,
+      "ry": 0.22,
+      "ground": {
+       "x": 29,
+       "y": 24
+      }
+     },
+     "perch": {
+      "x": 38,
+      "y": 18,
+      "zM": 0.19,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 41,
+       "y": 21,
+       "zM": 0.11
+      },
+      {
+       "x": 16,
+       "y": 24,
+       "zM": 0.05
+      },
+      {
+       "x": 30,
+       "y": 17,
+       "zM": 0.14
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 22,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 24
+     }
+    },
+    "params": {
+     "seed": 9301,
+     "sizeM": 1,
+     "turn": 0.2,
+     "n": 7
+    }
+   },
+   {
+    "id": "cobblesB",
+    "variant": 1,
+    "sizeM": 1.4,
+    "topM": 0.18,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.37,
+      "ry": 0.24,
+      "ground": {
+       "x": 29,
+       "y": 25
+      }
+     },
+     "perch": {
+      "x": 30,
+      "y": 16,
+      "zM": 0.15,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 18,
+       "y": 19,
+       "zM": 0.12
+      },
+      {
+       "x": 33,
+       "y": 17,
+       "zM": 0.15
+      },
+      {
+       "x": 41,
+       "y": 24,
+       "zM": 0.04
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 23,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 25
+     }
+    },
+    "params": {
+     "seed": 9302,
+     "sizeM": 1.4,
+     "turn": 1.5,
+     "n": 11
+    }
+   },
+   {
+    "id": "cobblesC",
+    "variant": 2,
+    "sizeM": 0.7,
+    "topM": 0.22,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.32,
+      "ry": 0.12,
+      "ground": {
+       "x": 29,
+       "y": 27
+      }
+     },
+     "perch": {
+      "x": 23,
+      "y": 22,
+      "zM": 0.19,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 17,
+       "y": 25,
+       "zM": 0.06
+      },
+      {
+       "x": 38,
+       "y": 23,
+       "zM": 0.07
+      },
+      {
+       "x": 35,
+       "y": 29,
+       "zM": 0.01
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 25,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 27
+     }
+    },
+    "params": {
+     "seed": 9303,
+     "sizeM": 0.7,
+     "turn": 3.1,
+     "n": 5
+    }
+   },
+   {
+    "id": "cobblesD",
+    "variant": 3,
+    "sizeM": 1.8,
+    "topM": 0.22,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.64,
+      "ry": 0.34,
+      "ground": {
+       "x": 29,
+       "y": 21
+      }
+     },
+     "perch": {
+      "x": 29,
+      "y": 23,
+      "zM": 0.18,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 9,
+       "y": 20,
+       "zM": 0.09
+      },
+      {
+       "x": 49,
+       "y": 23,
+       "zM": 0.05
+      },
+      {
+       "x": 37,
+       "y": 14,
+       "zM": 0.1
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 19,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 21
+     }
+    },
+    "params": {
+     "seed": 9304,
+     "sizeM": 1.8,
+     "turn": 4.7,
+     "n": 14
+    }
+   }
+  ],
+  "quartzite": [
+   {
+    "id": "cobblesA",
+    "variant": 0,
+    "sizeM": 1,
+    "topM": 0.22,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.4,
+      "ry": 0.22,
+      "ground": {
+       "x": 29,
+       "y": 24
+      }
+     },
+     "perch": {
+      "x": 38,
+      "y": 18,
+      "zM": 0.19,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 41,
+       "y": 21,
+       "zM": 0.11
+      },
+      {
+       "x": 16,
+       "y": 24,
+       "zM": 0.05
+      },
+      {
+       "x": 30,
+       "y": 17,
+       "zM": 0.14
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 22,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 24
+     }
+    },
+    "params": {
+     "seed": 9301,
+     "sizeM": 1,
+     "turn": 0.2,
+     "n": 7
+    }
+   },
+   {
+    "id": "cobblesB",
+    "variant": 1,
+    "sizeM": 1.4,
+    "topM": 0.18,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.37,
+      "ry": 0.24,
+      "ground": {
+       "x": 29,
+       "y": 25
+      }
+     },
+     "perch": {
+      "x": 30,
+      "y": 16,
+      "zM": 0.15,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 18,
+       "y": 19,
+       "zM": 0.12
+      },
+      {
+       "x": 33,
+       "y": 17,
+       "zM": 0.15
+      },
+      {
+       "x": 41,
+       "y": 24,
+       "zM": 0.04
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 23,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 25
+     }
+    },
+    "params": {
+     "seed": 9302,
+     "sizeM": 1.4,
+     "turn": 1.5,
+     "n": 11
+    }
+   },
+   {
+    "id": "cobblesC",
+    "variant": 2,
+    "sizeM": 0.7,
+    "topM": 0.22,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.32,
+      "ry": 0.12,
+      "ground": {
+       "x": 29,
+       "y": 27
+      }
+     },
+     "perch": {
+      "x": 23,
+      "y": 22,
+      "zM": 0.19,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 17,
+       "y": 25,
+       "zM": 0.06
+      },
+      {
+       "x": 38,
+       "y": 23,
+       "zM": 0.07
+      },
+      {
+       "x": 35,
+       "y": 29,
+       "zM": 0.01
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 25,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 27
+     }
+    },
+    "params": {
+     "seed": 9303,
+     "sizeM": 0.7,
+     "turn": 3.1,
+     "n": 5
+    }
+   },
+   {
+    "id": "cobblesD",
+    "variant": 3,
+    "sizeM": 1.8,
+    "topM": 0.22,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.64,
+      "ry": 0.34,
+      "ground": {
+       "x": 29,
+       "y": 21
+      }
+     },
+     "perch": {
+      "x": 29,
+      "y": 23,
+      "zM": 0.18,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 9,
+       "y": 20,
+       "zM": 0.09
+      },
+      {
+       "x": 49,
+       "y": 23,
+       "zM": 0.05
+      },
+      {
+       "x": 37,
+       "y": 14,
+       "zM": 0.1
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 19,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 21
+     }
+    },
+    "params": {
+     "seed": 9304,
+     "sizeM": 1.8,
+     "turn": 4.7,
+     "n": 14
+    }
+   }
+  ],
+  "sandstone": [
+   {
+    "id": "cobblesA",
+    "variant": 0,
+    "sizeM": 1,
+    "topM": 0.22,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.4,
+      "ry": 0.22,
+      "ground": {
+       "x": 29,
+       "y": 24
+      }
+     },
+     "perch": {
+      "x": 38,
+      "y": 18,
+      "zM": 0.19,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 41,
+       "y": 21,
+       "zM": 0.11
+      },
+      {
+       "x": 16,
+       "y": 24,
+       "zM": 0.05
+      },
+      {
+       "x": 30,
+       "y": 17,
+       "zM": 0.14
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 22,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 24
+     }
+    },
+    "params": {
+     "seed": 9301,
+     "sizeM": 1,
+     "turn": 0.2,
+     "n": 7
+    }
+   },
+   {
+    "id": "cobblesB",
+    "variant": 1,
+    "sizeM": 1.4,
+    "topM": 0.18,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.37,
+      "ry": 0.24,
+      "ground": {
+       "x": 29,
+       "y": 25
+      }
+     },
+     "perch": {
+      "x": 30,
+      "y": 16,
+      "zM": 0.15,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 18,
+       "y": 19,
+       "zM": 0.12
+      },
+      {
+       "x": 33,
+       "y": 17,
+       "zM": 0.15
+      },
+      {
+       "x": 41,
+       "y": 24,
+       "zM": 0.04
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 23,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 25
+     }
+    },
+    "params": {
+     "seed": 9302,
+     "sizeM": 1.4,
+     "turn": 1.5,
+     "n": 11
+    }
+   },
+   {
+    "id": "cobblesC",
+    "variant": 2,
+    "sizeM": 0.7,
+    "topM": 0.22,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.32,
+      "ry": 0.12,
+      "ground": {
+       "x": 29,
+       "y": 27
+      }
+     },
+     "perch": {
+      "x": 23,
+      "y": 22,
+      "zM": 0.19,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 17,
+       "y": 25,
+       "zM": 0.06
+      },
+      {
+       "x": 38,
+       "y": 23,
+       "zM": 0.07
+      },
+      {
+       "x": 35,
+       "y": 29,
+       "zM": 0.01
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 25,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 27
+     }
+    },
+    "params": {
+     "seed": 9303,
+     "sizeM": 0.7,
+     "turn": 3.1,
+     "n": 5
+    }
+   },
+   {
+    "id": "cobblesD",
+    "variant": 3,
+    "sizeM": 1.8,
+    "topM": 0.22,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.64,
+      "ry": 0.34,
+      "ground": {
+       "x": 29,
+       "y": 21
+      }
+     },
+     "perch": {
+      "x": 29,
+      "y": 23,
+      "zM": 0.18,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 9,
+       "y": 20,
+       "zM": 0.09
+      },
+      {
+       "x": 49,
+       "y": 23,
+       "zM": 0.05
+      },
+      {
+       "x": 37,
+       "y": 14,
+       "zM": 0.1
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 19,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 21
+     }
+    },
+    "params": {
+     "seed": 9304,
+     "sizeM": 1.8,
+     "turn": 4.7,
+     "n": 14
+    }
+   }
+  ],
+  "till": [
+   {
+    "id": "cobblesA",
+    "variant": 0,
+    "sizeM": 1,
+    "topM": 0.22,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.4,
+      "ry": 0.22,
+      "ground": {
+       "x": 29,
+       "y": 24
+      }
+     },
+     "perch": {
+      "x": 38,
+      "y": 18,
+      "zM": 0.19,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 41,
+       "y": 21,
+       "zM": 0.11
+      },
+      {
+       "x": 16,
+       "y": 24,
+       "zM": 0.05
+      },
+      {
+       "x": 30,
+       "y": 17,
+       "zM": 0.14
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 22,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 24
+     }
+    },
+    "params": {
+     "seed": 9301,
+     "sizeM": 1,
+     "turn": 0.2,
+     "n": 7
+    }
+   },
+   {
+    "id": "cobblesB",
+    "variant": 1,
+    "sizeM": 1.4,
+    "topM": 0.18,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.37,
+      "ry": 0.24,
+      "ground": {
+       "x": 29,
+       "y": 25
+      }
+     },
+     "perch": {
+      "x": 30,
+      "y": 16,
+      "zM": 0.15,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 18,
+       "y": 19,
+       "zM": 0.12
+      },
+      {
+       "x": 33,
+       "y": 17,
+       "zM": 0.15
+      },
+      {
+       "x": 41,
+       "y": 24,
+       "zM": 0.04
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 23,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 25
+     }
+    },
+    "params": {
+     "seed": 9302,
+     "sizeM": 1.4,
+     "turn": 1.5,
+     "n": 11
+    }
+   },
+   {
+    "id": "cobblesC",
+    "variant": 2,
+    "sizeM": 0.7,
+    "topM": 0.22,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.32,
+      "ry": 0.12,
+      "ground": {
+       "x": 29,
+       "y": 27
+      }
+     },
+     "perch": {
+      "x": 23,
+      "y": 22,
+      "zM": 0.19,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 17,
+       "y": 25,
+       "zM": 0.06
+      },
+      {
+       "x": 38,
+       "y": 23,
+       "zM": 0.07
+      },
+      {
+       "x": 35,
+       "y": 29,
+       "zM": 0.01
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 25,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 27
+     }
+    },
+    "params": {
+     "seed": 9303,
+     "sizeM": 0.7,
+     "turn": 3.1,
+     "n": 5
+    }
+   },
+   {
+    "id": "cobblesD",
+    "variant": 3,
+    "sizeM": 1.8,
+    "topM": 0.22,
+    "cell": [
+     58,
+     32
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.64,
+      "ry": 0.34,
+      "ground": {
+       "x": 29,
+       "y": 21
+      }
+     },
+     "perch": {
+      "x": 29,
+      "y": 23,
+      "zM": 0.18,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 9,
+       "y": 20,
+       "zM": 0.09
+      },
+      {
+       "x": 49,
+       "y": 23,
+       "zM": 0.05
+      },
+      {
+       "x": 37,
+       "y": 14,
+       "zM": 0.1
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 19,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 29,
+      "y": 21
+     }
+    },
+    "params": {
+     "seed": 9304,
+     "sizeM": 1.8,
+     "turn": 4.7,
+     "n": 14
+    }
+   }
+  ]
+ }
+}

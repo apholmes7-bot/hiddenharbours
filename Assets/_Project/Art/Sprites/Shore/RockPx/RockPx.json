@@ -1,0 +1,399 @@
+{
+ "exportSymbol": "PxRockIso2",
+ "derivedFromRigSha256": "3b6ec36d7891893c1b970859b5e9de4c744c6404540d3b888ab3a0119615d58c",
+ "kit": "Rock Iso, pass three",
+ "rig": "Art/pxRockIso2.js",
+ "ppu": 32,
+ "texel": 1,
+ "camera": {
+  "name": "ADR-0006/0022",
+  "view": "3/4 from the south, orthographic",
+  "elevDeg": 40,
+  "depthSquash": 0.6428,
+  "heightScale": 0.766,
+  "note": "+y north. Depth key runs along the view axis and is packed in the mask's B channel."
+ },
+ "pivot": "bottom-centre GROUND CONTACT — the tile the rock stands on, not the bbox centre",
+ "sheet": {
+  "cols": 8,
+  "rows": 3,
+  "colAxis": "4 variants then the same 4 mirrored",
+  "rowAxis": [
+   "dry",
+   "wet",
+   "awash"
+  ],
+  "naming": "<Form>_<stone>[_<dress>].png, bare unsuffixed"
+ },
+ "channels": {
+  "albedo": "RGBA, binary alpha, no AA. The key band is already in it.",
+  "unlit": "the same texels with the key band removed — relight this one",
+  "mask": "R = key light · G = back rim · B = view-axis depth · A = coverage",
+  "normal": "view-space normal, R = x · G = y-up · B = toward camera",
+  "blend": "seat decals only — R = material weight · G = mark lead · B = mark id · A = 255"
+ },
+ "shading": [
+  "Sort and occlude on mask.B, not on the sprite's y — a skerry's far head is behind its near one inside one sheet cell.",
+  "Relight = unlit x a THREE-step band (multipliers 0.76 / 1.00 / 1.24), not a smooth ramp. Smooth ramps stop it being pixel art.",
+  "The dynamic key NUDGES the baked band, it does not replace it: take the band from mask.R (>200 lit, <90 shade), take a wanted band from saturate(N.L) (>0.84 lit, <0.30 shade), and move the baked one at most ONE step toward it. Recomputing the band from N.L alone bands the mark relief too and the rock dissolves into speckle.",
+  "mask.G is a back rim, already keyline-correct at 2 px. Add dusk/lantern rim to it, do not replace it.",
+  "Wet and awash rows are ALBEDO changes, not shader ones. Crossfade rows on the tide clock; do not tint the dry row.",
+  "Water, foam, spray and tide-pool fill are NOT baked. The pool rect in the sidecar is where to put them."
+ ],
+ "stones": [
+  {
+   "key": "sandstone",
+   "name": "Red Sandstone",
+   "note": "The red bed in the round. Massive units stand proud and carry the light, laminated packets are recessive and flaggy, the block ends gated joints down a side. Same sequence as the cliff."
+  },
+  {
+   "key": "till",
+   "name": "Boulder Clay",
+   "note": "Cemented boulder clay — a matrix lump with clasts standing out of it as lit stones. Almost unbedded; erodes to a blunt nose, never a sheer face."
+  },
+  {
+   "key": "basalt",
+   "name": "Basalt",
+   "note": "Columnar. Identity sits on the column, never the segment: each column its own tone and its own segment cracks. Orange Xanthoria on the sunlit W/SW facets only."
+  },
+  {
+   "key": "granite",
+   "name": "Granite",
+   "note": "Ice-dropped. Unbedded — sheeting joints instead, a few long shallow shells off the top — coarse feldspar fleck, the bluntest form set in the kit. Still planes, never a dome."
+  },
+  {
+   "key": "quartzite",
+   "name": "Quartzite",
+   "note": "Pale and brittle. Breaks to sharp shards with bright quartz veins along the facet breaks; the angular form set, and the one that keeps its corners."
+  }
+ ],
+ "tides": [
+  "dry",
+  "wet",
+  "awash"
+ ],
+ "dress": [
+  "bare",
+  "barnacled",
+  "weeded"
+ ],
+ "seats": [
+  "grass",
+  "dirt",
+  "path",
+  "mud",
+  "sand",
+  "shingle",
+  "ledge",
+  "marram",
+  "foreshore",
+  "silt",
+  "shelf",
+  "talus",
+  "rockweed",
+  "water"
+ ],
+ "bury": {
+  "grass": 3,
+  "shingle": 3,
+  "sand": 2,
+  "dirt": 2,
+  "mud": 2,
+  "path": 2,
+  "silt": 2,
+  "marram": 3,
+  "foreshore": 2,
+  "talus": 3,
+  "rockweed": 2,
+  "shelf": 1,
+  "ledge": 1,
+  "water": 0
+ },
+ "forms": [
+  {
+   "key": "erratic",
+   "name": "Erratic",
+   "role": "mass",
+   "cell": [
+    56,
+    50
+   ],
+   "nativeStone": "granite",
+   "stones": [
+    "granite",
+    "sandstone",
+    "basalt",
+    "quartzite",
+    "till"
+   ],
+   "sidecar": "sidecar/erratic.json"
+  },
+  {
+   "key": "block",
+   "name": "Fallen Block",
+   "role": "mass",
+   "cell": [
+    56,
+    54
+   ],
+   "nativeStone": "sandstone",
+   "stones": [
+    "granite",
+    "sandstone",
+    "basalt",
+    "quartzite",
+    "till"
+   ],
+   "sidecar": "sidecar/block.json"
+  },
+  {
+   "key": "perched",
+   "name": "Perched Block",
+   "role": "mass",
+   "cell": [
+    58,
+    62
+   ],
+   "nativeStone": "granite",
+   "stones": [
+    "granite",
+    "sandstone",
+    "basalt",
+    "quartzite",
+    "till"
+   ],
+   "sidecar": "sidecar/perched.json"
+  },
+  {
+   "key": "slab",
+   "name": "Tabular Slab",
+   "role": "flat",
+   "cell": [
+    74,
+    42
+   ],
+   "nativeStone": "sandstone",
+   "stones": [
+    "sandstone",
+    "granite",
+    "basalt",
+    "quartzite",
+    "till"
+   ],
+   "sidecar": "sidecar/slab.json"
+  },
+  {
+   "key": "fin",
+   "name": "Fin",
+   "role": "mass",
+   "cell": [
+    46,
+    66
+   ],
+   "nativeStone": "quartzite",
+   "stones": [
+    "granite",
+    "sandstone",
+    "basalt",
+    "quartzite",
+    "till"
+   ],
+   "sidecar": "sidecar/fin.json"
+  },
+  {
+   "key": "wedge",
+   "name": "Wedge",
+   "role": "mass",
+   "cell": [
+    54,
+    56
+   ],
+   "nativeStone": "quartzite",
+   "stones": [
+    "granite",
+    "sandstone",
+    "basalt",
+    "quartzite",
+    "till"
+   ],
+   "sidecar": "sidecar/wedge.json"
+  },
+  {
+   "key": "cloven",
+   "name": "Cloven Stack",
+   "role": "mass",
+   "cell": [
+    62,
+    86
+   ],
+   "nativeStone": "sandstone",
+   "stones": [
+    "granite",
+    "sandstone",
+    "basalt",
+    "quartzite",
+    "till"
+   ],
+   "sidecar": "sidecar/cloven.json"
+  },
+  {
+   "key": "knuckle",
+   "name": "Bedrock Knuckle",
+   "role": "seam",
+   "cell": [
+    70,
+    38
+   ],
+   "nativeStone": "sandstone",
+   "stones": [
+    "sandstone",
+    "granite",
+    "basalt",
+    "quartzite",
+    "till"
+   ],
+   "sidecar": "sidecar/knuckle.json"
+  },
+  {
+   "key": "bench",
+   "name": "Bedrock Bench",
+   "role": "seam",
+   "cell": [
+    98,
+    46
+   ],
+   "nativeStone": "sandstone",
+   "stones": [
+    "sandstone",
+    "granite",
+    "basalt",
+    "quartzite",
+    "till"
+   ],
+   "sidecar": "sidecar/bench.json"
+  },
+  {
+   "key": "shelf",
+   "name": "Pool Shelf",
+   "role": "flat",
+   "cell": [
+    82,
+    46
+   ],
+   "nativeStone": "sandstone",
+   "stones": [
+    "sandstone",
+    "granite",
+    "basalt",
+    "quartzite",
+    "till"
+   ],
+   "sidecar": "sidecar/shelf.json"
+  },
+  {
+   "key": "prisms",
+   "name": "Columnar Cluster",
+   "role": "mass",
+   "cell": [
+    66,
+    62
+   ],
+   "nativeStone": "basalt",
+   "stones": [
+    "granite",
+    "sandstone",
+    "basalt",
+    "quartzite",
+    "till"
+   ],
+   "sidecar": "sidecar/prisms.json"
+  },
+  {
+   "key": "scree",
+   "name": "Scree Pile",
+   "role": "heap",
+   "cell": [
+    78,
+    46
+   ],
+   "nativeStone": "quartzite",
+   "stones": [
+    "quartzite",
+    "sandstone",
+    "granite",
+    "till"
+   ],
+   "sidecar": "sidecar/scree.json"
+  },
+  {
+   "key": "cobbles",
+   "name": "Cobble Cluster",
+   "role": "heap",
+   "cell": [
+    58,
+    32
+   ],
+   "nativeStone": "granite",
+   "stones": [
+    "quartzite",
+    "sandstone",
+    "granite",
+    "till"
+   ],
+   "sidecar": "sidecar/cobbles.json"
+  },
+  {
+   "key": "skerry",
+   "name": "Skerry",
+   "role": "water",
+   "cell": [
+    102,
+    46
+   ],
+   "nativeStone": "basalt",
+   "stones": [
+    "basalt",
+    "granite",
+    "sandstone"
+   ],
+   "sidecar": "sidecar/skerry.json"
+  },
+  {
+   "key": "spine",
+   "name": "Bedrock Spine",
+   "role": "seam",
+   "cell": [
+    122,
+    42
+   ],
+   "nativeStone": "sandstone",
+   "stones": [
+    "sandstone",
+    "granite",
+    "basalt",
+    "quartzite",
+    "till"
+   ],
+   "sidecar": "sidecar/spine.json"
+  },
+  {
+   "key": "apron",
+   "name": "Talus Apron",
+   "role": "heap",
+   "cell": [
+    116,
+    58
+   ],
+   "nativeStone": "till",
+   "stones": [
+    "quartzite",
+    "sandstone",
+    "granite",
+    "till"
+   ],
+   "sidecar": "sidecar/apron.json"
+  }
+ ],
+ "sheetCount": 225,
+ "pngCount": 900
+}

@@ -1,0 +1,769 @@
+{
+ "exportSymbol": "PxRockIso2",
+ "derivedFromRigSha256": "3b6ec36d7891893c1b970859b5e9de4c744c6404540d3b888ab3a0119615d58c",
+ "form": "skerry",
+ "name": "Skerry",
+ "role": "water",
+ "note": "Awash hazard: two to four heads breaking an IRREGULAR sea plane, so the waterline wanders with the swell instead of guillotining the rock at one screen row. Ships a hazard radius, not a collision mesh.",
+ "cell": [
+  102,
+  46
+ ],
+ "sheet": {
+  "cols": 8,
+  "rows": 3,
+  "colAxis": "4 variants then the same 4 mirrored",
+  "rowAxis": [
+   "dry",
+   "wet",
+   "awash"
+  ]
+ },
+ "pivot": "bottom-centre ground contact",
+ "stones": {
+  "basalt": [
+   {
+    "id": "skerryA",
+    "variant": 0,
+    "sizeM": 2.2,
+    "topM": 0.65,
+    "cell": [
+     102,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.94,
+      "ry": 0.35,
+      "ground": {
+       "x": 51,
+       "y": 34
+      }
+     },
+     "perch": {
+      "x": 53,
+      "y": 21,
+      "zM": 0.59,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 24,
+       "y": 16,
+       "zM": 0.53
+      },
+      {
+       "x": 83,
+       "y": 33,
+       "zM": 0.21
+      },
+      {
+       "x": 62,
+       "y": 17,
+       "zM": 0.56
+      }
+     ],
+     "hazard": {
+      "x": 51,
+      "y": 30,
+      "rM": 1.27
+     },
+     "pool": null,
+     "weedLine": {
+      "y": 30,
+      "zM": 0.2
+     },
+     "pivot": {
+      "x": 51,
+      "y": 34
+     }
+    },
+    "params": {
+     "seed": 9401,
+     "sizeM": 2.2,
+     "turn": 0.4,
+     "n": 3,
+     "wl": 0.3
+    }
+   },
+   {
+    "id": "skerryB",
+    "variant": 1,
+    "sizeM": 3,
+    "topM": 0.87,
+    "cell": [
+     102,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.9,
+      "ry": 0.31,
+      "ground": {
+       "x": 51,
+       "y": 34
+      }
+     },
+     "perch": {
+      "x": 31,
+      "y": 14,
+      "zM": 0.8,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 77,
+       "y": 10,
+       "zM": 0.73
+      },
+      {
+       "x": 26,
+       "y": 10,
+       "zM": 0.8
+      }
+     ],
+     "hazard": {
+      "x": 51,
+      "y": 25,
+      "rM": 1.22
+     },
+     "pool": null,
+     "weedLine": {
+      "y": 25,
+      "zM": 0.37
+     },
+     "pivot": {
+      "x": 51,
+      "y": 34
+     }
+    },
+    "params": {
+     "seed": 9402,
+     "sizeM": 3,
+     "turn": 1.9,
+     "n": 4,
+     "wl": 0.42
+    }
+   },
+   {
+    "id": "skerryC",
+    "variant": 2,
+    "sizeM": 1.6,
+    "topM": 0.47,
+    "cell": [
+     102,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.58,
+      "ry": 0.19,
+      "ground": {
+       "x": 51,
+       "y": 36
+      }
+     },
+     "perch": {
+      "x": 51,
+      "y": 27,
+      "zM": 0.42,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 31,
+       "y": 30,
+       "zM": 0.22
+      },
+      {
+       "x": 66,
+       "y": 26,
+       "zM": 0.39
+      },
+      {
+       "x": 63,
+       "y": 38,
+       "zM": 0.1
+      }
+     ],
+     "hazard": {
+      "x": 51,
+      "y": 34,
+      "rM": 0.78
+     },
+     "pool": null,
+     "weedLine": {
+      "y": 34,
+      "zM": 0.1
+     },
+     "pivot": {
+      "x": 51,
+      "y": 36
+     }
+    },
+    "params": {
+     "seed": 9403,
+     "sizeM": 1.6,
+     "turn": 3.4,
+     "n": 2,
+     "wl": 0.22
+    }
+   },
+   {
+    "id": "skerryD",
+    "variant": 3,
+    "sizeM": 2.6,
+    "topM": 0.86,
+    "cell": [
+     102,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.89,
+      "ry": 0.23,
+      "ground": {
+       "x": 51,
+       "y": 34
+      }
+     },
+     "perch": {
+      "x": 33,
+      "y": 19,
+      "zM": 0.73,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 21,
+       "y": 24,
+       "zM": 0.51
+      },
+      {
+       "x": 78,
+       "y": 24,
+       "zM": 0.39
+      }
+     ],
+     "hazard": {
+      "x": 51,
+      "y": 23,
+      "rM": 1.2
+     },
+     "pool": null,
+     "weedLine": {
+      "y": 23,
+      "zM": 0.43
+     },
+     "pivot": {
+      "x": 51,
+      "y": 34
+     }
+    },
+    "params": {
+     "seed": 9404,
+     "sizeM": 2.6,
+     "turn": 5.1,
+     "n": 3,
+     "wl": 0.5
+    }
+   }
+  ],
+  "granite": [
+   {
+    "id": "skerryA",
+    "variant": 0,
+    "sizeM": 2.2,
+    "topM": 0.65,
+    "cell": [
+     102,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.94,
+      "ry": 0.35,
+      "ground": {
+       "x": 51,
+       "y": 34
+      }
+     },
+     "perch": {
+      "x": 53,
+      "y": 21,
+      "zM": 0.59,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 24,
+       "y": 16,
+       "zM": 0.53
+      },
+      {
+       "x": 83,
+       "y": 33,
+       "zM": 0.21
+      },
+      {
+       "x": 62,
+       "y": 17,
+       "zM": 0.56
+      }
+     ],
+     "hazard": {
+      "x": 51,
+      "y": 30,
+      "rM": 1.27
+     },
+     "pool": null,
+     "weedLine": {
+      "y": 30,
+      "zM": 0.2
+     },
+     "pivot": {
+      "x": 51,
+      "y": 34
+     }
+    },
+    "params": {
+     "seed": 9401,
+     "sizeM": 2.2,
+     "turn": 0.4,
+     "n": 3,
+     "wl": 0.3
+    }
+   },
+   {
+    "id": "skerryB",
+    "variant": 1,
+    "sizeM": 3,
+    "topM": 0.87,
+    "cell": [
+     102,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.9,
+      "ry": 0.31,
+      "ground": {
+       "x": 51,
+       "y": 34
+      }
+     },
+     "perch": {
+      "x": 31,
+      "y": 14,
+      "zM": 0.8,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 77,
+       "y": 10,
+       "zM": 0.73
+      },
+      {
+       "x": 26,
+       "y": 10,
+       "zM": 0.8
+      }
+     ],
+     "hazard": {
+      "x": 51,
+      "y": 25,
+      "rM": 1.22
+     },
+     "pool": null,
+     "weedLine": {
+      "y": 25,
+      "zM": 0.37
+     },
+     "pivot": {
+      "x": 51,
+      "y": 34
+     }
+    },
+    "params": {
+     "seed": 9402,
+     "sizeM": 3,
+     "turn": 1.9,
+     "n": 4,
+     "wl": 0.42
+    }
+   },
+   {
+    "id": "skerryC",
+    "variant": 2,
+    "sizeM": 1.6,
+    "topM": 0.47,
+    "cell": [
+     102,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.58,
+      "ry": 0.19,
+      "ground": {
+       "x": 51,
+       "y": 36
+      }
+     },
+     "perch": {
+      "x": 51,
+      "y": 27,
+      "zM": 0.42,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 31,
+       "y": 30,
+       "zM": 0.22
+      },
+      {
+       "x": 66,
+       "y": 26,
+       "zM": 0.39
+      },
+      {
+       "x": 63,
+       "y": 38,
+       "zM": 0.1
+      }
+     ],
+     "hazard": {
+      "x": 51,
+      "y": 34,
+      "rM": 0.78
+     },
+     "pool": null,
+     "weedLine": {
+      "y": 34,
+      "zM": 0.1
+     },
+     "pivot": {
+      "x": 51,
+      "y": 36
+     }
+    },
+    "params": {
+     "seed": 9403,
+     "sizeM": 1.6,
+     "turn": 3.4,
+     "n": 2,
+     "wl": 0.22
+    }
+   },
+   {
+    "id": "skerryD",
+    "variant": 3,
+    "sizeM": 2.6,
+    "topM": 0.86,
+    "cell": [
+     102,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.89,
+      "ry": 0.23,
+      "ground": {
+       "x": 51,
+       "y": 34
+      }
+     },
+     "perch": {
+      "x": 33,
+      "y": 19,
+      "zM": 0.73,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 21,
+       "y": 24,
+       "zM": 0.51
+      },
+      {
+       "x": 78,
+       "y": 24,
+       "zM": 0.39
+      }
+     ],
+     "hazard": {
+      "x": 51,
+      "y": 23,
+      "rM": 1.2
+     },
+     "pool": null,
+     "weedLine": {
+      "y": 23,
+      "zM": 0.43
+     },
+     "pivot": {
+      "x": 51,
+      "y": 34
+     }
+    },
+    "params": {
+     "seed": 9404,
+     "sizeM": 2.6,
+     "turn": 5.1,
+     "n": 3,
+     "wl": 0.5
+    }
+   }
+  ],
+  "sandstone": [
+   {
+    "id": "skerryA",
+    "variant": 0,
+    "sizeM": 2.2,
+    "topM": 0.65,
+    "cell": [
+     102,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.94,
+      "ry": 0.35,
+      "ground": {
+       "x": 51,
+       "y": 34
+      }
+     },
+     "perch": {
+      "x": 53,
+      "y": 21,
+      "zM": 0.59,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 24,
+       "y": 16,
+       "zM": 0.53
+      },
+      {
+       "x": 83,
+       "y": 33,
+       "zM": 0.21
+      },
+      {
+       "x": 62,
+       "y": 17,
+       "zM": 0.56
+      }
+     ],
+     "hazard": {
+      "x": 51,
+      "y": 30,
+      "rM": 1.27
+     },
+     "pool": null,
+     "weedLine": {
+      "y": 30,
+      "zM": 0.2
+     },
+     "pivot": {
+      "x": 51,
+      "y": 34
+     }
+    },
+    "params": {
+     "seed": 9401,
+     "sizeM": 2.2,
+     "turn": 0.4,
+     "n": 3,
+     "wl": 0.3
+    }
+   },
+   {
+    "id": "skerryB",
+    "variant": 1,
+    "sizeM": 3,
+    "topM": 0.87,
+    "cell": [
+     102,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.9,
+      "ry": 0.31,
+      "ground": {
+       "x": 51,
+       "y": 34
+      }
+     },
+     "perch": {
+      "x": 31,
+      "y": 14,
+      "zM": 0.8,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 77,
+       "y": 10,
+       "zM": 0.73
+      },
+      {
+       "x": 26,
+       "y": 10,
+       "zM": 0.8
+      }
+     ],
+     "hazard": {
+      "x": 51,
+      "y": 25,
+      "rM": 1.22
+     },
+     "pool": null,
+     "weedLine": {
+      "y": 25,
+      "zM": 0.37
+     },
+     "pivot": {
+      "x": 51,
+      "y": 34
+     }
+    },
+    "params": {
+     "seed": 9402,
+     "sizeM": 3,
+     "turn": 1.9,
+     "n": 4,
+     "wl": 0.42
+    }
+   },
+   {
+    "id": "skerryC",
+    "variant": 2,
+    "sizeM": 1.6,
+    "topM": 0.47,
+    "cell": [
+     102,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.58,
+      "ry": 0.19,
+      "ground": {
+       "x": 51,
+       "y": 36
+      }
+     },
+     "perch": {
+      "x": 51,
+      "y": 27,
+      "zM": 0.42,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 31,
+       "y": 30,
+       "zM": 0.22
+      },
+      {
+       "x": 66,
+       "y": 26,
+       "zM": 0.39
+      },
+      {
+       "x": 63,
+       "y": 38,
+       "zM": 0.1
+      }
+     ],
+     "hazard": {
+      "x": 51,
+      "y": 34,
+      "rM": 0.78
+     },
+     "pool": null,
+     "weedLine": {
+      "y": 34,
+      "zM": 0.1
+     },
+     "pivot": {
+      "x": 51,
+      "y": 36
+     }
+    },
+    "params": {
+     "seed": 9403,
+     "sizeM": 1.6,
+     "turn": 3.4,
+     "n": 2,
+     "wl": 0.22
+    }
+   },
+   {
+    "id": "skerryD",
+    "variant": 3,
+    "sizeM": 2.6,
+    "topM": 0.86,
+    "cell": [
+     102,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.89,
+      "ry": 0.23,
+      "ground": {
+       "x": 51,
+       "y": 34
+      }
+     },
+     "perch": {
+      "x": 33,
+      "y": 19,
+      "zM": 0.73,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 21,
+       "y": 24,
+       "zM": 0.51
+      },
+      {
+       "x": 78,
+       "y": 24,
+       "zM": 0.39
+      }
+     ],
+     "hazard": {
+      "x": 51,
+      "y": 23,
+      "rM": 1.2
+     },
+     "pool": null,
+     "weedLine": {
+      "y": 23,
+      "zM": 0.43
+     },
+     "pivot": {
+      "x": 51,
+      "y": 34
+     }
+    },
+    "params": {
+     "seed": 9404,
+     "sizeM": 2.6,
+     "turn": 5.1,
+     "n": 3,
+     "wl": 0.5
+    }
+   }
+  ]
+ }
+}
