@@ -2,7 +2,7 @@
   "kit": "vehicle-rig-pack/otter-8x8",
   "rig": "amphibIsoRig.js",
   "exportSymbol": "AmphibIso",
-  "rigSha256": "af6edea2fd32a2b703c430a1854a1d37983bae73e8cffd02eeed50ed7423ad0d",
+  "rigSha256": "0815c67a372f1fa9e1f6e1ae88f89d7973b6e7628709b09f748d576494183d4a",
   "body": "otter8x8",
   "label": "Otter 8x8",
   "kind": "amphibious_xtv",
@@ -292,7 +292,7 @@
       179,
       167
     ],
-    "crop_note": "pack from union_everything (76,63,179,167) to hold every fitting, pose and the afloat attitude in one atlas cell; union_at_rest is the tight default build."
+    "crop_note": "Pack from union_everything (76,63,179,167) to hold the measured fittings, open hatch and afloat attitude; union_at_rest is the tight default build."
   },
   "articulation": {
     "roll": {
@@ -374,12 +374,12 @@
         "_note": "that is what the spin cue does: a quarter-turn of side split is 45deg of yaw, exactly one facing step."
       },
       "painted_bbox_over_sweep": [
-        76,
+        75,
         65,
-        179,
-        154
+        180,
+        155
       ],
-      "cost": "the painted union grows to 104 x 90 px over a +/-22.5 sweep"
+      "cost": "the painted union is 106 x 91 px over a +/-22.5 degree sweep across all eight facings, sampled every 1.125 degrees; identical on the pre-review rig"
     }
   },
   "paints": [

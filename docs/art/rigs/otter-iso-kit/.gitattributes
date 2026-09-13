@@ -1,0 +1,2 @@
+# The contract hashes the source bytes, including line endings.
+amphibIsoRig.js text eol=lf
