@@ -1,0 +1,47 @@
+{
+  "SchemaVersion": 1,
+  "Id": "garment.fisher_long_shirt",
+  "DisplayName": "Long sleeve work shirt",
+  "Category": "top",
+  "OccupiedSlots": [
+    "top"
+  ],
+  "CoverageTags": [
+    "identity.forearms"
+  ],
+  "CompatibilityTags": [
+    "fisher_study"
+  ],
+  "IncompatibleTags": [],
+  "Fits": [
+    {
+      "FitId": "fit.character_fisher_study_v1",
+      "SourceSectionIds": [
+        "fisher_study.shirt_long"
+      ]
+    }
+  ],
+  "Colourways": [
+    {
+      "Id": "colourway.long_shirt_ochre",
+      "DisplayName": "Ochre",
+      "MaterialRoles": [
+        {
+          "SourceMaterial": "shirt",
+          "Role": "cloth",
+          "RampId": "ramp.shirt.ochre"
+        },
+        {
+          "SourceMaterial": "sleeve",
+          "Role": "cloth",
+          "RampId": "ramp.shirt.ochre"
+        }
+      ]
+    }
+  ],
+  "Price": 24,
+  "SellerIds": [
+    "seller.leblancs"
+  ],
+  "StarterGrant": false
+}

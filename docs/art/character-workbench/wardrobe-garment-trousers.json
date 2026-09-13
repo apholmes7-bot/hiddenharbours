@@ -1,0 +1,45 @@
+{
+  "SchemaVersion": 1,
+  "Id": "garment.fisher_work_trousers",
+  "DisplayName": "Work trousers",
+  "Category": "bottom",
+  "OccupiedSlots": [
+    "bottom"
+  ],
+  "CoverageTags": [],
+  "CompatibilityTags": [
+    "fisher_study"
+  ],
+  "IncompatibleTags": [],
+  "Fits": [
+    {
+      "FitId": "fit.character_fisher_study_v1",
+      "SourceSectionIds": [
+        "fisher_study.trousers"
+      ]
+    }
+  ],
+  "Colourways": [
+    {
+      "Id": "colourway.work_trousers_navy",
+      "DisplayName": "Navy",
+      "MaterialRoles": [
+        {
+          "SourceMaterial": "over",
+          "Role": "cloth",
+          "RampId": "ramp.outfit.navy"
+        },
+        {
+          "SourceMaterial": "overD",
+          "Role": "patch",
+          "RampId": "ramp.outfit.navy"
+        }
+      ]
+    }
+  ],
+  "Price": 30,
+  "SellerIds": [
+    "seller.leblancs"
+  ],
+  "StarterGrant": false
+}

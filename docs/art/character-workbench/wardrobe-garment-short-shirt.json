@@ -1,0 +1,45 @@
+{
+  "SchemaVersion": 1,
+  "Id": "garment.fisher_work_shirt",
+  "DisplayName": "Work shirt",
+  "Category": "top",
+  "OccupiedSlots": [
+    "top"
+  ],
+  "CoverageTags": [],
+  "CompatibilityTags": [
+    "fisher_study"
+  ],
+  "IncompatibleTags": [],
+  "Fits": [
+    {
+      "FitId": "fit.character_fisher_study_v1",
+      "SourceSectionIds": [
+        "fisher_study.shirt_short"
+      ]
+    }
+  ],
+  "Colourways": [
+    {
+      "Id": "colourway.work_shirt_slate",
+      "DisplayName": "Slate",
+      "MaterialRoles": [
+        {
+          "SourceMaterial": "shirt",
+          "Role": "cloth",
+          "RampId": "ramp.shirt.navy"
+        },
+        {
+          "SourceMaterial": "sleeve",
+          "Role": "cloth",
+          "RampId": "ramp.shirt.navy"
+        }
+      ]
+    }
+  ],
+  "Price": 18,
+  "SellerIds": [
+    "seller.leblancs"
+  ],
+  "StarterGrant": true
+}

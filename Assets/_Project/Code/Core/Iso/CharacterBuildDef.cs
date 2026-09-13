@@ -25,7 +25,10 @@ namespace HiddenHarbours.Core
     /// structural axes integrated — an overlay baked over one body does not composite onto another
     /// (ADR 0029, Outcome B). A <c>Garment</c> field here would be a Def promising art that does not
     /// exist, resolving to a silently different body at the point of use. If a later pass-7 export
-    /// isolates layers, those fields are an append-only addition to this asset.</para>
+    /// isolates layers, those fields are an append-only addition to this asset. The CW-01 mesh
+    /// workbench now measures explicit fitted parts using CharacterAppearanceRecipe and
+    /// CharacterGarmentDef (ADR 0029 amendment). Those contracts do not change this legacy
+    /// sprite recipe or promise that its Visual can draw modular mesh clothing.</para>
     ///
     /// <para><b>An empty colour key means "the preset's own".</b> A build is an override list, not a
     /// full specification, so <c>{preset: nan}</c> with nothing else is a complete, legal build and

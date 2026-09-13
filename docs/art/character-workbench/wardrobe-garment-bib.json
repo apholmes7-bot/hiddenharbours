@@ -1,0 +1,52 @@
+{
+  "SchemaVersion": 1,
+  "Id": "garment.fisher_bib_overalls",
+  "DisplayName": "Bib overalls",
+  "Category": "outerwear",
+  "OccupiedSlots": [
+    "bottom",
+    "outerwear"
+  ],
+  "CoverageTags": [],
+  "CompatibilityTags": [
+    "fisher_study"
+  ],
+  "IncompatibleTags": [],
+  "Fits": [
+    {
+      "FitId": "fit.character_fisher_study_v1",
+      "SourceSectionIds": [
+        "fisher_study.trousers",
+        "fisher_study.bib"
+      ]
+    }
+  ],
+  "Colourways": [
+    {
+      "Id": "colourway.bib_teal",
+      "DisplayName": "Teal",
+      "MaterialRoles": [
+        {
+          "SourceMaterial": "over",
+          "Role": "oilskin",
+          "RampId": "ramp.outfit.teal"
+        },
+        {
+          "SourceMaterial": "overD",
+          "Role": "patch",
+          "RampId": "ramp.outfit.teal"
+        },
+        {
+          "SourceMaterial": "brass",
+          "Role": "hardware",
+          "RampId": "ramp.shirt.ochre"
+        }
+      ]
+    }
+  ],
+  "Price": 48,
+  "SellerIds": [
+    "seller.leblancs"
+  ],
+  "StarterGrant": true
+}
