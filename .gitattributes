@@ -227,3 +227,8 @@ docs/art/rigs/rock-px-kit/**                          text eol=lf
 Assets/_Project/Art/Sprites/Shore/RockPx/*.json       text eol=lf
 Assets/_Project/Art/Sprites/Shore/RockPx/sidecar/*.json text eol=lf
 Assets/_Project/Art/Sprites/Shore/RockPx/seat/*.json  text eol=lf
+
+# Waterfront bake/gameplay contracts hash the source bytes on every platform.
+docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js text eol=lf
+docs/art/rigs/iso-rig-pack/wharf-kit-iso/gameplay/*.json text eol=lf
+Assets/_Project/Art/Sprites/Wharf/Iso/*.json text eol=lf

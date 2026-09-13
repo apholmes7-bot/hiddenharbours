@@ -293,7 +293,7 @@
   // ============================ FITTINGS, IN METRES ==========================================
   // side: +1 = the water edge at y = +Wd/2, -1 = shore edge. Every number here is a real dimension.
   const FIT = {
-    ladder : { w:0.45, rung:0.30, railT:0.05, below:1.00 },  // 0.45 m wide, rungs at 300 mm, 1 m below LLW
+    ladder : { w:0.45, rung:0.30, railT:0.05, below:1.00, floatBelow:1.00, grab:0.65, access:0.70 },
     tyre   : { od:1.00, sec:0.28 },                          // truck tyre fender
     foam   : { od:0.55, len:1.10 },                          // poly foam fender
     cleat  : { len:0.50, h:0.22 },                           // galvanised horn cleat (heavy wharf pattern)
@@ -301,9 +301,17 @@
     ring   : { od:0.30, plate:0.42 },
     rail   : { h:1.05, mid:0.55, post:0.10, span:1.80, pipeR:0.024 },
     dolphin: { r:0.175, spread:0.55, above:1.20 },           // 3-pile cluster
+    fastening: { radius:0.025, height:0.018, plate:0.12 },
   };
+  // A fixed ladder reaches below chart datum. A swim ladder is a rigid fitting on the raft:
+  // its foot stays one metre below the water, rather than telescoping through the tidal range.
+  function ladderBottom(s, T){ return (s.family === 'float' ? T.w - FIT.ladder.floatBelow : -FIT.ladder.below); }
+  function fasteningAt(out, x, y, z){
+    const f = FIT.fastening;
+    pipe(out, x, y, f.radius, z, z+f.height, 'galv', 0.25, 6);
+  }
   function ladderAt(out, x, yFace, side, deckZ, T, s){
-    const L = FIT.ladder, botZ = -L.below, hw = L.w/2, y = yFace + side*0.06;
+    const L = FIT.ladder, botZ = ladderBottom(s,T), hw = L.w/2, y = yFace + side*0.06;
     for(const sx of [-1, 1]){
       const px = x + sx*hw;
       for(const g of zSplit(botZ, deckZ - 0.06, 'galv', T, s)){
@@ -312,6 +320,17 @@
       }
       // top bend over the curb onto the deck
       beam(out, [px, y, deckZ-0.06], [px, yFace - side*0.10, deckZ+0.02], 0.026, matAtZ(deckZ,'galv',T,s), 0.25, 6);
+      if(s.details){
+        const landY = yFace-side*0.28, p = FIT.fastening.plate/2;
+        beam(out, [px,y,deckZ-0.06], [px,y,deckZ+L.grab], 0.026, 'galv', 0.15, 6);
+        beam(out, [px,y,deckZ+L.grab], [px,landY,deckZ+L.grab], 0.026, 'galv', 0.25, 6);
+        beam(out, [px,landY,deckZ+L.grab], [px,landY,deckZ+0.02], 0.026, 'galv', 0.15, 6);
+        box(out,px-p,px+p,landY-p,landY+p,deckZ,deckZ+0.012,'iron',-0.3);
+        fasteningAt(out,px,landY,deckZ+0.012);
+        // Small worn yellow shoulders identify the opening without painting a stripe across it.
+        decalZ(out,deckZ+0.004,px+sx*0.10-0.055,px+sx*0.10+0.055,
+          yFace-side*0.50,yFace-side*0.12,'yel',-0.25,rustTex(),false,0.03);
+      }
     }
     let z = botZ + 0.10;
     while(z < deckZ - 0.10){ const m = matAtZ(z, 'galv', T, s);
@@ -347,6 +366,8 @@
     const P = (dx,dy)=>[x + dx*ca - dy*sa, y + dx*sa + dy*ca];
     const bp = P(0,0);
     box(out, bp[0]-hl*0.62, bp[0]+hl*0.62, bp[1]-0.085, bp[1]+0.085, deckZ, deckZ+0.045, 'iron', -0.55);
+    for(const dx of [-hl*0.48,hl*0.48]) for(const dy of [-0.055,0.055]){
+      const p=P(dx,dy); fasteningAt(out,p[0],p[1],deckZ+0.045); }
     for(const sx of [-1,1]){ const p = P(sx*hl*0.46, 0);
       pipe(out, p[0], p[1], 0.038, deckZ+0.03, deckZ+c.h-0.045, 'galv', 0.15, 8); }
     const a = P(-hl,0), b = P(hl,0);
@@ -355,6 +376,8 @@
   function bollardAt(out, x, y, deckZ){
     const B = FIT.bollard;
     pipe(out, x, y, B.flange, deckZ, deckZ+0.05, 'iron', 0.05, 12);
+    for(let i=0;i<4;i++){ const a=Math.PI/4+i*Math.PI/2;
+      fasteningAt(out,x+Math.cos(a)*B.flange*0.78,y+Math.sin(a)*B.flange*0.78,deckZ+0.05); }
     for(let i=0;i<4;i++){ const z0 = deckZ+0.05 + i*(B.h-0.16)/4, z1 = z0 + (B.h-0.16)/4;
       const r0 = B.rBase + (B.rTop-B.rBase)*(i/4);
       tube(out, [x,y,z0], [x,y,z1], r0, 12, i===2?'galv':'iron', i===2?0.3:0, null, false); }
@@ -423,17 +446,47 @@
   }
 
   // ============================ DECK ASSEMBLIES ==============================================
-  const DECK = { plank:0.055, stringer:[0.10,0.30], cap:[0.30,0.25], curb:[0.16,0.20] };
+  const DECK = { plank:0.055, stringer:[0.10,0.30], cap:[0.30,0.25], curb:[0.16,0.20],
+    repairEvery:8, repairWidth:0.18, repairLength:0.90, cornerPlate:0.18 };
+  function deckDetails(out,x0,x1,y0,y1,top,s){
+    if(!s.details) return;
+    const count=Math.max(1,Math.floor((x1-x0)/DECK.repairEvery));
+    for(let i=0;i<count;i++){
+      // Repairs hug the shore-side boards, leaving the ladder approach and working edge readable.
+      const x=x0+(x1-x0)*(i+0.35)/count, y=y0+0.30;
+      const end=Math.min(y+DECK.repairLength,y1-0.30);
+      decalZ(out,top+0.002,x-DECK.repairWidth/2,x+DECK.repairWidth/2,y,end,'wood',-0.35,sawnTex(),false,0.01);
+      for(const yy of [y+0.07,end-0.07]) fasteningAt(out,x,yy,top+0.003);
+    }
+    const p=DECK.cornerPlate;
+    for(const x of [x0+p,x1-p]) for(const y of [y0+p,y1-p]){
+      decalZ(out,top+0.003,x-p/2,x+p/2,y-p/2,y+p/2,'iron',-0.2,rustTex(),false,0.01);
+      fasteningAt(out,x,y,top+0.004);
+    }
+  }
+  function accessRuns(s, x0, x1){
+    const ladders=placements(s,frame(s)).ladders, runs=[];
+    let start=x0;
+    for(const l of ladders.slice().sort((a,b)=>a.x-b.x)){
+      const a=Math.max(x0,l.x-FIT.ladder.access/2), b=Math.min(x1,l.x+FIT.ladder.access/2);
+      if(a>start) runs.push([start,a]); start=Math.max(start,b); }
+    if(start<x1) runs.push([start,x1]); return runs;
+  }
+  function deckCurb(out,x0,x1,y0,y1,top,height,s){
+    for(const [a,b] of accessRuns(s,x0,x1))
+      box(out,a,b,y0,y1,top,top+height,s.curb==='yellow'?'yel':'wood',0.18,sawnTex());
+  }
   // planked deck surface + perimeter fascia. Deck planks run ACROSS the wharf (seams along +X).
   function plankDeck(out, x0,x1, y0,y1, topZ, s, curbSide){
     const t = DECK.plank;
     slab(out, [[x0,y0],[x1,y0],[x1,y1],[x0,y1]], topZ, 'plank', 0.12, plankTex(0.20));
+    deckDetails(out,x0,x1,y0,y1,topZ,s);
     wall(out, x0,y1, x1,y1, topZ-t, topZ, 'plank', grainTex(0.20), -0.1);
     wall(out, x1,y0, x0,y0, topZ-t, topZ, 'plank', grainTex(0.20), -0.35);
     wall(out, x1,y1, x1,y0, topZ-t, topZ, 'plank', grainTex(0.20), 0.0);
     wall(out, x0,y0, x0,y1, topZ-t, topZ, 'plank', grainTex(0.20), -0.2);
     if(curbSide){ const c = DECK.curb, y = curbSide > 0 ? y1 - c[0]/2 : y0 + c[0]/2;
-      box(out, x0, x1, y-c[0]/2, y+c[0]/2, topZ, topZ+c[1], s.curb==='yellow'?'yel':'wood', 0.18, sawnTex()); }
+      deckCurb(out,x0,x1,y-c[0]/2,y+c[0]/2,topZ,c[1],s); }
   }
   function underFrame(out, x0,x1, y0,y1, topZ, s, T){
     const st = DECK.stringer, z1 = topZ - DECK.plank, z0 = z1 - st[1];
@@ -448,12 +501,12 @@
   // fits, each berth gets its own ladder at mid-berth and its fenders out at the quarters — which
   // is also what keeps a fender from ever landing on a ladder.
   const BOATS = [
-    { id:'dory',    label:'dory',           loa:4.9,  beam:1.60, freeboard:0.55 },
-    { id:'punt',    label:'punt',           loa:5.5,  beam:1.80, freeboard:0.60 },
-    { id:'skiff',   label:'console skiff',  loa:6.5,  beam:2.20, freeboard:0.75 },
-    { id:'lobster', label:'lobster boat',   loa:10.7, beam:4.30, freeboard:1.15 },
-    { id:'packet',  label:'coastal packet', loa:14.5, beam:4.60, freeboard:1.60 },
-    { id:'dragger', label:'side dragger',   loa:18.0, beam:5.60, freeboard:1.90 },
+    { id:'dory',    label:'dory',           loa:4.5,  beam:1.60, freeboard:0.55 },
+    { id:'punt',    label:'punt',           loa:5.2,  beam:1.80, freeboard:0.60 },
+    { id:'skiff',   label:'console skiff',  loa:7.0,  beam:2.20, freeboard:0.75 },
+    { id:'lobster', label:'lobster boat',   loa:12.0, beam:4.00, freeboard:1.15 },
+    { id:'packet',  label:'coastal packet', loa:60.0, beam:11.0, freeboard:1.60 },
+    { id:'dragger', label:'side dragger',   loa:25.0, beam:7.00, freeboard:1.90 },
   ];
   const BERTH_CLR = 1.4;                                    // metres of water between hulls
   // Pack the face with the best MIX of hulls, not just repeats of one: a 24 m quay takes a packet
@@ -481,7 +534,7 @@
       return { list: [], cls: null, faceLen: L, clearance: BERTH_CLR };
     const only = BOATS.find(b => b.id === s.berth) || null;
     let pack = packBerths(L, only, 0, {}).slice().sort((a,b)=> b.loa - a.loa);   // big boat at the deep end
-    if(!pack.length) pack = [only || BOATS[0]];                                  // a short face still berths something
+    // A short connector module is not a berth: never claim that a hull fits by truncating its slot.
     const used = pack.reduce((a,c)=> a + c.loa + BERTH_CLR, 0);
     const gap = Math.max(0, (L - used) / (pack.length + 1));
     let cursor = -L/2 + gap, list = [];
@@ -674,7 +727,7 @@
           for(let x = -hx + cu; x < hx - 0.01; x += cu) for(const y of [-hy + cu*0.5, hy - cu*0.5])
             pipe(out, x, y, 0.045, top, top + 0.035, 'hdpeDeck', 0.3, 6);
           if(s.curb !== 'none' && s.curb === 'yellow')
-            box(out, -hx, hx, hy-0.14, hy, top, top+0.14, 'yel', 0.2, null, true);
+            deckCurb(out,-hx,hx,hy-0.14,hy,top,0.14,s);
         } else {
         // perimeter frame + cross joists
         box(out, -hx, hx, hy-0.10, hy, fz0, fz1, 'wood', 0.05, sawnTex(), true);
@@ -694,8 +747,9 @@
           slab(out, [[cxx-bw/2,-bd/2],[cxx+bw/2,-bd/2],[cxx+bw/2,bd/2],[cxx-bw/2,bd/2]], z0, matAtZ(z0,'poly',T,s), -0.9);
         }
         slab(out, [[-hx,-hy],[hx,-hy],[hx,hy],[-hx,hy]], top, 'plank', 0.12, plankTex(0.20));
+        deckDetails(out,-hx,hx,-hy,hy,top,s);
         if(s.curb !== 'none'){ const c = DECK.curb;
-          box(out, -hx, hx, hy-c[0], hy, top, top+c[1]*0.7, s.curb==='yellow'?'yel':'wood', 0.2, sawnTex()); }
+          deckCurb(out,-hx,hx,hy-c[0],hy,top,c[1]*0.7,s); }
         }
         }
         // ⚠️⚠️ THE HOOP RIDES AND ROCKS; THE PILE DOES NEITHER. A guide hoop is a sliding collar
@@ -833,10 +887,13 @@
         const steps = Math.max(6, Math.round(L/0.9));
         for(let i=0;i<steps;i++){
           const xa = -hx + L*(i/steps), xb = -hx + L*((i+1)/steps);
-          const ya = -hy + 0.15, yb = hy - 0.15;
+          const edges = bw ? [-hy+0.15,0,hy-0.15] : [-hy+0.15,hy-0.15];
+          for(let j=0;j<edges.length-1;j++){
+          const ya=edges[j], yb=edges[j+1];
           const m = matAtZ((zPlane(ya)+zPlane(yb))/2, SM, T, s);
           out.push(F([[xa,ya,zPlane(ya)-0.16],[xb,ya,zPlane(ya)-0.16],[xb,yb,zPlane(yb)-0.16],[xa,yb,zPlane(yb)-0.16]], m, -0.5, 0,
             [[xa,ya],[xb,ya],[xb,yb],[xa,yb]], rockTex()));
+          }
         }
         // two grades on a jittered lattice: filter stone first, armour over it, all faceted
         for(const g of [{ r:[0.14,0.22], step:0.30, lift:-0.05, b:-0.95 },
@@ -887,7 +944,7 @@
     pileR: 0.16, brace: true, capIron: true, curb: 'wood', fenderPiles: true,
     rail: 'none', railSides: ['shore','ends'], guidePiles: true, guideAbove: 1.6, chain: true,
     slipRails: true, run: null, toeZ: null, freeboard: 0.40,
-    fittings: null, weather: 0.35, variant: 0, frame: 0, growth: null, clipBelowWater: false,
+    fittings: null, weather: 0.35, variant: 0, frame: 0, growth: null, clipBelowWater: false, details: true,
     // ---- style axes (every default is the original look; these only ADD variants) ----
     berth: null,          // null = auto-size berths to the longest hull that fits; or a BOATS id
     face: 'concrete',     // quay:  concrete | steelSheet | timberSheet
@@ -1017,7 +1074,7 @@
       // and the last rung is the brow at lowest, whatever coast this is baked for.
       s.rung = opts.rung != null ? clampI(opts.rung, 0, GANGWAY_RUNGS - 1) : null;
       s.floatDeckZ = s.rung != null ? s.deckZ - gangwayDrops(s)[s.rung]
-                   : opts.floatDeckZ != null ? opts.floatDeckZ : s.tide + 0.40;
+                   : opts.floatDeckZ != null ? opts.floatDeckZ : s.tide + s.freeboard;
       s.deckZ = clampF(s.deckZ, s.floatDeckZ + 0.15, s.floatDeckZ + s.run*0.92);
     }
     if(family === 'slipway'){
@@ -1045,11 +1102,13 @@
 
     if(B.list.length){
       const lad = B.list.map(b => b.ladderX);
-      for(const x of lad.slice(0, n(f.ladder, lad))) P.ladders.push({ x, y:hy, side:1, topZ:top, botZ:-FIT.ladder.below });
+      for(const x of lad.slice(0, n(f.ladder, lad))) P.ladders.push({ x, y:hy, side:1, topZ:top, botZ:ladderBottom(s,T) });
       const ty = [], fo = [];
       for(const b of B.list){ ty.push(b.fenderX[0], b.fenderX[1]); fo.push(b.fenderX[1]); }
-      for(const x of ty.slice(0, n(f.tyre, ty))) P.tyres.push({ x, y:hy, side:1, top: fenderTop(0.28) });
       for(const x of fo.slice(0, n(f.foam, fo))) P.foams.push({ x, y:hy, side:1, top: fenderTop(0.20) });
+      // Foam replaces a tyre at its station; two solids cannot occupy one hanging point.
+      const clearTy=ty.filter(x=>!P.foams.some(g=>Math.abs(g.x-x)<(FIT.tyre.od+FIT.foam.od)/2));
+      for(const x of clearTy.slice(0,n(f.tyre,clearTy))) P.tyres.push({ x,y:hy,side:1,top:fenderTop(0.28) });
     } else {
       for(const x of spread(f.ladder === 'auto' ? 1 : f.ladder, 1.0)) P.ladders.push({ x, y:hy, side:1, topZ:top, botZ:-FIT.ladder.below });
       for(const x of spread(f.tyre === 'auto' ? 2 : f.tyre, 0.9)) P.tyres.push({ x, y:hy, side:1, top: fenderTop(0.28) });
@@ -1077,7 +1136,13 @@
     if(s.rail && s.rail !== 'none'){
       const R = s.railSides || [];
       if(R.indexOf('shore') >= 0) P.rails.push([-hx+0.1, -hy+0.08, hx-0.1, -hy+0.08]);
-      if(R.indexOf('water') >= 0) P.rails.push([-hx+0.1,  hy-0.08, hx-0.1,  hy-0.08]);
+      if(R.indexOf('water') >= 0){
+        let start=-hx+0.1;
+        for(const l of P.ladders.slice().sort((a,b)=>a.x-b.x)){
+          const a=Math.max(-hx+0.1,l.x-FIT.ladder.access/2), b=Math.min(hx-0.1,l.x+FIT.ladder.access/2);
+          if(a>start) P.rails.push([start,hy-0.08,a,hy-0.08]); start=Math.max(start,b); }
+        if(start<hx-0.1) P.rails.push([start,hy-0.08,hx-0.1,hy-0.08]);
+      }
       if(R.indexOf('ends')  >= 0){ P.rails.push([-hx+0.08, -hy+0.1, -hx+0.08, hy-0.1]); P.rails.push([hx-0.08, -hy+0.1, hx-0.08, hy-0.1]); }
     }
     return Object.assign(P, { L, hx, hy, top, berths:B });

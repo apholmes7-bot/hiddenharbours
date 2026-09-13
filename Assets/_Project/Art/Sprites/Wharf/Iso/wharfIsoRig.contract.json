@@ -1,7 +1,7 @@
 {
   "rig": "wharfIsoRig",
   "version": 1,
-  "generated": "measured from docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js in a standalone V8 host at rig-default dimensions, tide and clearance (tideRange 4.4, clearance 0.8 — Hillsborough Bay). The cell is PARAMETRIC: these numbers hold for a bake at the rig's defaults and for no other, so re-measure rather than trusting them after any authoring change. 17 -> 19 keys: gangway and floatPiles are new, and timberFloat MOVED (300x348 -> 199x195) because its guide piles, mooring chain and seabed block left it for floatPiles — one sprite could not hold a raft that rides and furniture that is driven into the seabed, and the rig had always tagged exactly those `fixed`.",
+  "generated": "Measured by tools/wharf-review.mjs from all rendered facings and gangway rungs at defaults. Metres, 32 PPU, CCW sheet order, pivot-aligned buffer union. See docs/art/wharf-review-2026-09-13.md.",
   "projection": {
     "ppu": 32,
     "elev": 40,
@@ -41,8 +41,7 @@
     "w": 3784,
     "h": 470,
     "maxDim": 3784,
-    "headroomToCap": 312,
-    "note": "A texture cap binds on the LONGEST SIDE, not on area — size import headroom off THIS, not off worstSheet (which is the worst by area). Cells are parametric, so re-measure rather than trusting either field after an authoring change. The gangway's 9-rung sheet is the worst by AREA and does NOT take this field: 3636 px is still inside sheetedPier's 3784, so the family's binding side is unchanged — but its own headroom is 460 px and a rung is 404 of them, so the ladder cannot be lengthened without re-packing."
+    "headroomToCap": 312
   },
   "count": 19,
   "cells": [
@@ -166,7 +165,7 @@
     {
       "key": "timberFloat",
       "cellW": 213,
-      "cellH": 202,
+      "cellH": 160,
       "pivotX": 106,
       "pivotY": 145,
       "note": "The raft AND its sliding hoops. A guide hoop is bolted to the raft and slides up the pile as the tide takes her, so it rides; only the pile itself stands. The rig's `fixed` tag could not make that split on its own - it answers whether a thing ROCKS with the raft, and a hoop on a pile does not rock and does ride.",
@@ -174,7 +173,7 @@
         "cols": 8,
         "rows": 1,
         "sheetW": 1704,
-        "sheetH": 202
+        "sheetH": 160
       }
     },
     {
@@ -299,5 +298,6 @@
         "sheetH": 848
       }
     }
-  ]
+  ],
+  "derivedFromRigSha256": "4928657c3e8e353dc1fcdf4a3be3f1514ee41b38dea88b68eeae6a6c64c989f9"
 }
