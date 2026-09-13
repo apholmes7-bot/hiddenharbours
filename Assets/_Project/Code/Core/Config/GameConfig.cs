@@ -617,22 +617,37 @@ namespace HiddenHarbours.Core
         public static readonly Color DefaultFoliageSilhouetteTint = new Color(0.94f, 0.90f, 0.82f, 1f);
 
         /// <summary>
-        /// Ship default — <b>OFF</b>, and it stays off until the shader look pass lands. The mesh
-        /// figure is measured 43–57% off the inked art (per-material gain alone is 53.61% of that
-        /// gap) and she carries no face at all, because the face is a raster stamp the mesh has no
-        /// geometry for. Shipping her on by default would be shipping a downgrade. OFF means the
-        /// sprite draws, exactly as it does today, down to the byte.
+        /// Ship default — <b>ON</b>, by the owner's 2026-09-12 ruling ("ship it on"), taken with
+        /// the look debt below written down and accepted: he wants her in play before the shader
+        /// pass lands. ON draws her as ONE skinned mesh while she is ABOARD a mesh hull. OFF is
+        /// still exactly the sprite, down to the byte — this stayed a switch, not a fork.
+        ///
+        /// <para>The debt the ruling accepts: the mesh is measured 43–57% off the inked art
+        /// (per-material gain alone is 53.61% of that gap) and she carries no face at all,
+        /// because the face is a raster stamp the mesh has no geometry for.</para>
+        ///
+        /// <para>⚠ And the POSE debt, which is the one a playtest finds first: rig 7 baked
+        /// <c>idle</c>, <c>walk</c>, <c>run</c> and <c>balance</c> — no helm clip and no oars
+        /// clip. Walking the deck she is right (<c>balance</c>). At the helm or at the oars
+        /// <c>CharacterSkinStateMap.StateKeyFor</c> asks for the GAIT key before the stance is
+        /// ever consulted, so she draws a standing <c>idle</c> — while the sprite she replaced
+        /// draws a seated helm pose and a rowing pose from FisherIso's own sheets. That is a
+        /// step BACK on those two stances, and <c>FellBackToGait</c> does not flag it, because
+        /// nothing fell back. The fix is an ANIMS row, not a pose invented in the presenter.</para>
         /// </summary>
-        public const bool DefaultMeshCharacter = false;
+        public const bool DefaultMeshCharacter = true;
 
         [Header("Mesh characters (ADR 0044 d — the skinned player, behind a switch)")]
         [Tooltip("Draw the player as ONE SKINNED MESH through the iso facet pass while she is ABOARD, " +
-                 "instead of as a sprite? OFF is the shipped look and the default. This is a LOOK " +
-                 "PREVIEW, not a finished path: the mesh is about half a fidelity step off the inked " +
-                 "art until the shader look pass lands, and she has no eyes, brows or mouth, because " +
-                 "the face is a raster stamp that lives on the sprite and not in the geometry. " +
-                 "ASHORE she cannot draw at all however this is set — the facet pass is only " +
-                 "recorded while a mesh hull is on screen — so this switch does nothing on land.")]
+                 "instead of as a sprite? ON is the shipped look and the default (owner ruling " +
+                 "2026-09-12), and it ships with known debt: the mesh is about half a fidelity " +
+                 "step off the inked art until the shader look pass lands, and she has no eyes, " +
+                 "brows or mouth, because the face is a raster stamp that lives on the sprite and " +
+                 "not in the geometry. Rig 7 baked no helm and no oars clip either, so at the " +
+                 "wheel and at the oars she stands in a plain idle where the sprite sat and " +
+                 "rowed. ASHORE she cannot draw at all however this is set — the facet pass is " +
+                 "only recorded while a mesh hull is on screen — so this switch does nothing on " +
+                 "land. Turn it OFF and the sprite is back exactly, down to the byte.")]
         public bool MeshCharacter = DefaultMeshCharacter;
 
         [Header("Foliage silhouette (the fisher read through dense woods)")]
