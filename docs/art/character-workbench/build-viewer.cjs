@@ -43,10 +43,15 @@ for(const anim of Object.keys(E.animations)){
 fs.writeFileSync(path.join(dir,'cast-validation.json'),JSON.stringify({cast:characters.map(c=>({key:c.key,bones:c.bind.bones.length,faces:c.faces.length})),wardrobeVariants:variants.map(c=>({id:c.variantId,faces:c.faces.length})),animations:Object.keys(E.animations),poseSamples:checks.length*13,previewBootGuard:true,productionBootPortPending:true,outliers,checks,bounds},null,2));
 if(outliers.length)throw Error('Geometry escaped the four-metre pose envelope: '+JSON.stringify(outliers));
 if(checks.some(c=>!c.finite||!c.solverEqual))throw Error('Cast pose validation failed');
-const controller=fs.readFileSync(path.join(dir,'viewer-controller.js'),'utf8').replace('__BOUNDS__',JSON.stringify(bounds));
-const fragment=fs.readFileSync(path.join(dir,'viewer-template.html'),'utf8').replace('__DEPENDENCIES__',dependencies).replace('__ENGINE__',engine).replace('__WARDROBE__',wardrobe).replace('__RASTER__',raster).replace('__CONTROLLER__',controller);
-fs.writeFileSync(path.join(dir,'hidden-harbours-cast.html'),fragment);
+// Replacement callbacks preserve literal JS strings such as regex endings `$'`.
+// Passing source as a replacement string interprets those as replacement tokens.
+const controller=fs.readFileSync(path.join(dir,'viewer-gestures.js'),'utf8')+'\n'+fs.readFileSync(path.join(dir,'viewer-controller.js'),'utf8').replace('__BOUNDS__',()=>JSON.stringify(bounds));
+const fragment=fs.readFileSync(path.join(dir,'viewer-template.html'),'utf8').replace('__DEPENDENCIES__',()=>dependencies).replace('__ENGINE__',()=>engine).replace('__WARDROBE__',()=>wardrobe).replace('__RASTER__',()=>raster).replace('__CONTROLLER__',()=>controller);
 const css=fs.readFileSync(path.join(dir,'standalone.css'),'utf8');
-const page=fs.readFileSync(path.join(dir,'standalone-template.html'),'utf8').replace('__CSS__',css).replace('__VIEWER__',fragment);
+const page=fs.readFileSync(path.join(dir,'standalone-template.html'),'utf8').replace('__CSS__',()=>css).replace('__VIEWER__',()=>fragment);
+const scripts=[...page.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)];
+if(scripts.length!==1)throw Error('Expected one complete inline viewer script');
+new vm.Script(scripts[0][1],{filename:'generated-viewer.js'});
+fs.writeFileSync(path.join(dir,'hidden-harbours-cast.html'),fragment);
 fs.writeFileSync(path.join(dir,'Hidden-Harbours-Cast-Viewer.html'),page);
 console.log(JSON.stringify({characters:characters.length,wardrobeVariants:variants.length,animations:Object.keys(E.animations).length,poseSamples:checks.length*13,valid:checks.every(c=>c.finite&&c.solverEqual),bytes:Buffer.byteLength(fragment)}));

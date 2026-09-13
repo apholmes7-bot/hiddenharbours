@@ -12,6 +12,7 @@ From the repository root, with Node.js (standard modules only):
 
 ```powershell
 node docs/art/character-workbench/build-viewer.cjs
+node docs/art/character-workbench/check-viewer-gestures.cjs
 node docs/art/character-workbench/wardrobe-validate.cjs
 node docs/art/character-workbench/check-face-and-boots.cjs
 node docs/art/character-workbench/check-face-beauty.cjs
@@ -93,6 +94,38 @@ the finish module while using the same rig/clip inputs, so the comparison holds 
 and scale constant. At 32 px/m, occluded/profile eyes still naturally simplify.
 See `CHARACTER-FINISH-REVIEW.md` for measured gains and the inherited motion limits.
 Production camera/shader appearance remains unverified.
+
+## iPhone review viewer
+
+The [private character viewer](https://hidden-harbours-character-viewer.apholmes7.chatgpt.site)
+is hosted for the owner. Open it in Safari and sign in with the same ChatGPT account
+if prompted. Its source is this workbench; rebuilding the offline page remains supported.
+
+At widths up to 700 px the viewer starts with an enlarged face, Face / Full body
+tabs, previous/next character buttons, and folded Animation & appearance controls.
+Horizontal drags turn the character; vertical swipes scroll, and pinch zoom remains
+available. Controls have 48 px touch targets, form text stays at 16 px, and the page
+accounts for screen safe areas. The cast gallery uses two columns on phones. Desktop
+retains the full gallery and simultaneous body/face inspection. Preview density
+remains 64 px/m; these layout changes do not alter the art or the game's PPU.
+
+Before/previous-pass characters and wardrobe combinations are created on demand.
+Only the selected face/body canvas renders on phones. Nine Node gesture checks cover
+taps, direction intent, pointer ownership, cancellation, pinch and recovery. They do
+not test browser layout or real touch hardware; physical iPhone and browser acceptance
+remain pending. An optional feature-detected WebMCP `inspect_character` tool uses the
+same selection path; no supporting WebMCP context was available to verify its contract.
+
+The build compiles the final embedded JavaScript before writing the page. Template
+substitutions use callbacks so literal JavaScript replacement tokens cannot corrupt
+the generated script. This fixes a packaging failure that pose checks alone missed.
+
+The private Site is project `appgprj_6aa7294cb19c81918e3906196133b53c`, with a separate
+deployment checkout at `C:/hh-character-viewer-site`. Its committed static entrypoint
+is `dist/index.html`, copied from the generated standalone viewer. Reuse this Site
+for future viewer updates and retain owner-private access. Deployment succeeded on
+13 September 2026. Hosting does not establish physical iPhone or production Unity
+acceptance.
 
 ## Source provenance and boot correction
 
