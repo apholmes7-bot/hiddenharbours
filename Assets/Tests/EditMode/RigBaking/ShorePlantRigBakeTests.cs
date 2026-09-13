@@ -74,6 +74,31 @@ namespace HiddenHarbours.Tests.RigBaking
         // =====================================================================================
 
         [Test]
+        public void TheLiveShorePlantRigResolvesATideByNameAndRefusesAnUnknownOne()
+        {
+            Assert.AreEqual("low,ebb,half,flood,high", _host.EvaluateString("ShorePlants.TIDE_KEYS.join(',')"));
+
+            foreach (string key in new[] { "low", "ebb", "half", "flood", "high" })
+            {
+                Assert.IsTrue(_host.EvaluateBool($"isFinite(ShorePlants.tideOf('{key}').waterM)"),
+                    $"tideOf('{key}') produced a non-finite water level — the string key was not resolved.");
+                Assert.IsTrue(_host.EvaluateBool($"isFinite(ShorePlants.tideOf('{key}').t)"));
+            }
+
+            Assert.AreEqual(0.0, _host.EvaluateNumber("ShorePlants.tideOf('low').waterM"), 1e-9);
+            Assert.AreEqual(2.2, _host.EvaluateNumber("ShorePlants.tideOf('half').waterM"), 1e-9);
+            Assert.AreEqual(
+                _host.EvaluateNumber("ShorePlants.tideOf('high').waterM"),
+                _host.EvaluateNumber("ShorePlants.tideOf(1).waterM"), 1e-9,
+                "a named tide and its numeric equivalent must land on the same water level");
+
+            Assert.IsTrue(
+                _host.EvaluateBool("(function(){ try { ShorePlants.tideOf('neap'); return false; } " +
+                                   "catch (e) { return true; } })()"),
+                "An unknown tide name must THROW. Silently coercing it to NaN is the bug this regression prevents.");
+        }
+
+        [Test]
         public void TheRigInstalls_AndDeclaresTheSameAxesAsTheContract()
         {
             Debug.Log($"[plant-bake] engine: {_host.EngineName}");
