@@ -23,8 +23,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// ~5 cm window, so <c>d(depth + edgeSwash)/d(depth)</c> went NEGATIVE and the clip stopped describing
     /// one edge: it drew the shallow band the bore arm still held, dropped the middle where the cosmetic arm
     /// had taken over and retreated, then drew again past it — a ribbon of water stranded a finger's width
-    /// off the sheet. On <c>PLATE-shore-corner.png</c>: 405 of 480 columns cut, the stranded piece 5 px
-    /// (0.047 m) wide standing 33 px (0.309 m) clear.</para>
+    /// off the sheet. On <c>PLATE-shore-corner.png</c> — the r1 diagnostic plate, 1280×960 across a 9.0 m
+    /// half-height frame, so <b>0.009375 m per pixel</b>; the r2 sweep re-shot that same camera at
+    /// 3662×1600, a finer 0.00563 m/px, which is why the two records quote different scales — 405 of 480
+    /// columns cut, the stranded piece 5 px (0.047 m) wide standing 33 px (0.309 m) clear.</para>
     ///
     /// <para><b>The law these tests pin.</b> <c>depth ↦ depth + DrawnEdgeShift(…)</c> must be strictly
     /// increasing, because that — and only that — is what makes the drawn water ONE PIECE with a single
@@ -59,23 +61,35 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private const float SurfStrength = 1f;
         private const float RunUpStrength = 1f;
 
-        // The sea state at the r2 frame. The slope below is the FLOORED one the shader multiplies by;
-        // both readings are already well above _ShoreSlopeFloor 0.15, so the floor never binds here.
+        // A calm sea state — the regime the owner's "sometimes smooth" lives in. Choppiness(s) == s, so
+        // this IS the sea-state axis. It gates the COSMETIC arm's amplitude only, and a calmer sea makes the
+        // inversion harder to reach, not easier, so the witness below is not leaning on this number.
         private const float Chop = 0.12f;
         private const float SeaStateLo = 0.10f;
         private const float SeaStateHi = 0.60f;
         private const float CalmGate = 0.70f;
 
-        /// <summary>BOTH ends of the seabed slope measured across the r2 corner's beach band, 0.48…1.00 m/m.
-        /// Both are swept because the slope is what scales the cosmetic swash: at 0.48 it tops out at
-        /// 0.223 m, at 1.00 it saturates the 0.35 m cap. A guard that took only the gentle end would be
-        /// picking the reading that makes its own argument easy.</summary>
-        private static readonly float[] ShoreSlopes = { 0.48f, 1.00f };
+        /// <summary>The seabed slope the shader actually applies across the r2 corner's beach band,
+        /// measured off the committed height map rather than guessed.
+        ///
+        /// <para>Reproducing <c>SeabedSlopeMag</c> — the central difference of
+        /// <c>NineMileCreekSeabed_HeightTex.png</c> over ±<c>_ShoreSampleStep</c> 0.4 m, bilinear, elevation
+        /// −6…+6 m over a 760×560 m rect — sampled at 0.05 m over the r2 frame (camera (34.70, 11.50),
+        /// half-height 4.5 m, 4:3) and kept to the 3,246 samples within one <c>_SwashMaxEdgeShift</c> of the
+        /// waterline: the raw slope runs <b>0.240 … 4.309 m/m</b>, median 0.663. The shader then applies
+        /// <c>max(saturate(raw), _ShoreSlopeFloor)</c>, so what the swash is actually multiplied by spans
+        /// <b>0.240 … 1.000</b>, and 17.5 % of the band sits at the 1.0 ceiling.</para>
+        ///
+        /// <para>All three are swept because the slope is what scales the cosmetic swash, and so decides how
+        /// far the two arms of the blend can differ. Sweeping one reading — particularly a gentle one, which
+        /// shrinks the cosmetic arm — would be picking the number that makes this fixture's own argument
+        /// easy.</para></summary>
+        private static readonly float[] ShoreSlopes = { 0.240f, 0.663f, 1.000f };
 
         // ---- the ramp a GPU-free guard can build: a straight beach through the waterline -------------
         private const float DepthMin = -0.40f;      // past the wash's reach on the dry side
         private const float DepthMax = 1.20f;       // past the deepest break band measured
-        private const float DepthStep = 0.0005f;    // 0.5 mm — ~19x finer than a plate pixel (9.4 mm)
+        private const float DepthStep = 0.0005f;    // 0.5 mm — ~19x finer than a diagnostic-plate px (9.4 mm)
         private const float ClipEpsilon = 1e-4f;    // the shader's own clip(… + 1e-4)
 
         // The swash carries a half-frequency partial, so the composite beat is 2/speed = 12.5 s, not 6.25.
@@ -321,25 +335,28 @@ namespace HiddenHarbours.Tests.Art.EditMode
             string what = Environment.NewLine + table;
 
             // What EVERY row must show is the inversion itself: depth -> depth + edgeSwash going backwards.
-            // That is the mechanism, and the table above has it at every band and both slopes.
+            // That is the mechanism, and the table above has it at all nine rows — every band, every slope,
+            // down to -0.0001 m at the gentlest measured beach.
             for (int i = 0; i < rows; i++)
                 Assert.Less(steps[i], 0f,
                     $"depth + edgeSwash never went backwards at {label[i]} — that inversion IS the " +
                     $"mechanism, so if it is gone this fixture no longer reproduces the defect.{what}");
 
             // Whether the inversion also DISCONNECTS the sheet depends on how steeply the gate falls
-            // against the ramp. As measured that is five rows of six — every band at slope 1.00, and the
-            // narrowest band at 0.48; the two gentle-slope wide bands invert without parting. The claim
-            // asserted is therefore the one the table supports: the shipped composition CAN cut, which is
-            // what keeps the law above from passing vacuously. Asking EVERY row to cut would be asking this
-            // ramp for a number it did not produce.
+            // against the ramp, and that scales with the beach. As measured it is five rows of nine: all
+            // three bands at the 1.00 saturation ceiling, two of three at the median 0.663, and NONE at the
+            // gentlest measured 0.240, where every band inverts without ever parting. That gradient is the
+            // owner's "sometimes" in numbers — the corner is where this shore steepens. The claim asserted
+            // is therefore the one the table supports: the shipped composition CAN cut, which is what keeps
+            // the law above from passing vacuously. Asking EVERY row to cut would be asking this ramp for a
+            // number it did not produce.
             Assert.GreaterOrEqual(Mathf.Max(pieces), 2,
                 "No swept row cuts the drawn sea any more. This witness is the only thing keeping the " +
                 "one-piece law above from passing vacuously: if the composition has moved, re-derive both " +
                 $"halves rather than deleting this one.{what}");
             Assert.Greater(Mathf.Max(stranded), 0.02f,
                 "The widest stranded ribbon is too narrow to be the defect the owner reported — the plate's " +
-                $"was 0.047 m, five pixels at the r2 frame's 0.009375 m/px.{what}");
+                $"was 0.047 m, five pixels at the diagnostic plate's 0.009375 m/px.{what}");
 
             // The plate's own bare stretch was 0.309 m (33 px). This ramp does not reach that and is not
             // asked to: the plate's gap is measured ACROSS a corner, where two shores' wash reaches cross and
@@ -347,7 +364,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // exists at all, and is wider than a player could mistake for a seam — two plate pixels.
             Assert.Greater(Mathf.Max(gaps), 0.02f,
                 "No swept row leaves bare ground between the ribbon and the sheet. Two plate pixels " +
-                $"(0.019 m at the r2 frame) is the floor for a stretch a player could read as sand.{what}");
+                $"(0.019 m at the diagnostic plate) is the floor for a stretch a player could read as " +
+                $"sand.{what}");
         }
 
         // ==== (3) the reference depth, and the shader that must still be asking at it ==================
