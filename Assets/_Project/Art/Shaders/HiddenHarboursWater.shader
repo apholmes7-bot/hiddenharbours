@@ -2668,6 +2668,12 @@ Shader "HiddenHarbours/Water"
                 return lerp(depths.z, depths.y, saturate((e - lee) / max(mid - lee, 1e-4)));
             }
 
+            // The depth the DRAWN EDGE asks the break gate at. Same BreakerMath.MinDepthMeters pin the
+            // surf block already uses when it projects a dry fragment back to the waterline (l.4608):
+            // the edge is a SHORE quantity, and asking the gate at the fragment's own depth is what cut
+            // the drawn water in two at a corner (2026-09-13; see the wet-edge block).
+            #define SURF_EDGE_REF_DEPTH 0.02
+
             // Twin: BreakerMath.Breaking01FromContour. The smooth break GATE — 1 where the water is
             // shallower than the break depth, 0 out past the gate's outer edge.
             // ⚠️ A GATE, never a scale on the whitewater age. It saturates at 1, which is correct for
@@ -4781,7 +4787,35 @@ Shader "HiddenHarbours/Water"
                 // the gate). _SurfRunUpStrength = 0 (or no surf here) is the previous edge exactly.
                 float boreEdgeBlend = saturate(surfBreaking * saturate(_SurfStrength) * saturate(_SurfRunUpStrength));
                 float boreEdgeShift = clamp(surfRunUpM, -saturate(_SwashMaxEdgeShift), saturate(_SwashMaxEdgeShift));
-                edgeSwash = lerp(edgeSwash, boreEdgeShift, boreEdgeBlend);
+                // ⚠️ The EDGE's blend is a SHORE quantity, asked ONCE at the wet edge's own reference depth
+                // — never at the fragment's. (2026-09-13, the shore-corner hairline: "very fine line effect
+                // at corners when the waves pulses in and out".) surfBreaking falls 1 -> 0 across the break
+                // band, and on a sheltered shore SolveBreakDepth puts that entire band within CENTIMETRES of
+                // the waterline — far narrower than the metres of level the two arms differ by. Weighted with
+                // it, this lerp ran a swing of up to 2*_SwashMaxEdgeShift through a ~0.05 m window, so
+                // d(depth + edgeSwash)/d(depth) went NEGATIVE and the clip stopped describing one edge: it
+                // drew the shallow band the bore arm still held, dropped the middle where the cosmetic arm
+                // had taken over and retreated, then drew again past it — a ribbon of water stranded a
+                // finger's width off the sheet. Measured on PLATE-shore-corner.png: 405 of 480 columns cut,
+                // the stranded piece 5 px (0.047 m) wide standing 33 px (0.309 m) clear of the sheet.
+                // Asked at SURF_EDGE_REF_DEPTH the blend is constant along the shore normal, edgeSwash is
+                // single-valued in depth, and the drawn surface is ONE PIECE. That is ADR 0040 rev 3's own
+                // "yield on the bore, not on the gate" — which weighting by the gate had exactly inverted.
+                //
+                // On the DRY side this is bit-identical to what shipped, and the predicate below is why:
+                // inside the wash's reach the block above already pins surfEvalDepth to this same reference
+                // for depth <= 0, and beyond that reach the block never ran, so the blend is forced to 0 and
+                // the edge is the cosmetic swash exactly as before. The run-up and the drain between crests
+                // are untouched — the change is confined to refusing to cut the wet band out from
+                // under them. boreEdgeBlend itself keeps the fragment gate on purpose: the foam fringe reads
+                // it below, and the foam families are not this change's business.
+                // Twin: WaterSurface.BoreEdgeBlend / WaterSurface.DrawnEdgeShift, pinned by
+                // WaterDrawnEdgeOnePieceTests (CI has no GPU; the law is arithmetic, so it is testable).
+                float edgeBoreBlend = (depth > -surfBeachReach)
+                    ? saturate(SurfBreaking01(SURF_EDGE_REF_DEPTH, waveFetchEnv)
+                               * saturate(_SurfStrength) * saturate(_SurfRunUpStrength))
+                    : 0.0;                                  // the surf block's own reach gate (l.4609)
+                edgeSwash = lerp(edgeSwash, boreEdgeShift, edgeBoreBlend);
                 clip(depth + edgeSwash + 1e-4);
 
                 float dt = saturate((depth - _ShallowDepth) / max(_DeepDepth - _ShallowDepth, 1e-3));
