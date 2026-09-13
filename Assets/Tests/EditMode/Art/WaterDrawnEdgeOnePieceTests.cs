@@ -16,15 +16,15 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// draft on 09-12 and traced by r2 to the WET EDGE rather than to any foam family.
     ///
     /// <para><b>The defect.</b> The drawn edge is <c>clip(depth + edgeSwash)</c>, and <c>edgeSwash</c> was
-    /// <c>lerp(cosmeticSwash, boreRunUp, boreEdgeBlend)</c> with the blend read at THE FRAGMENT'S OWN DEPTH.
+    /// <c>lerp(cosmeticSwash, boreRunUp, blend)</c> with the blend read at THE FRAGMENT'S OWN DEPTH.
     /// The break gate falls 1 → 0 across the break band; on a sheltered shore <c>SolveBreakDepth</c> lands
     /// that whole band within CENTIMETRES of the waterline, far narrower than the metres of level the two
     /// arms differ by. Weighting with it therefore ran a swing of up to 2·<c>_SwashMaxEdgeShift</c> through a
     /// ~5 cm window, so <c>d(depth + edgeSwash)/d(depth)</c> went NEGATIVE and the clip stopped describing
     /// one edge: it drew the shallow band the bore arm still held, dropped the middle where the cosmetic arm
     /// had taken over and retreated, then drew again past it — a ribbon of water stranded a finger's width
-    /// off the sheet. On <c>PLATE-shore-corner.png</c> — the r1 diagnostic plate, 1280×960 across a 9.0 m
-    /// half-height frame, so <b>0.009375 m per pixel</b>; the r2 sweep re-shot that same camera at
+    /// off the sheet. On <c>PLATE-shore-corner.png</c> — the r1 diagnostic plate, 1280×960 across a 9.0 m-TALL
+    /// frame (half-height 4.5 m), so <b>0.009375 m per pixel</b>; the r2 sweep re-shot that same camera at
     /// 3662×1600, a finer 0.00563 m/px, which is why the two records quote different scales — 405 of 480
     /// columns cut, the stranded piece 5 px (0.047 m) wide standing 33 px (0.309 m) clear.</para>
     ///
@@ -399,9 +399,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "that feeds it, and the dry side stops being bit-identical.");
 
             // The FENCE: foam families A/B/C are not this change's business. The foam fringe keeps reading
-            // the fragment-depth blend it has always read.
-            StringAssert.Contains("surfRunUpM, boreEdgeBlend)", src,
-                "The foam fringe no longer reads boreEdgeBlend. The wet-edge fix deliberately left the foam's " +
+            // the fragment-depth blend it has always read — only its NAME changed, boreEdgeBlend →
+            // boreFoamBlend, so the EDGE's shore-referenced blend could take the name it is named for and
+            // BreakerBoreLookTests could keep pinning its lerp verbatim. Both halves are pinned below, so a
+            // rename cannot quietly turn into a behaviour change.
+            StringAssert.Contains(
+                "float boreFoamBlend = saturate(surfBreaking * saturate(_SurfStrength) * saturate(_SurfRunUpStrength));",
+                src,
+                "The foam's blend is no longer the fragment-depth expression it shipped with. This fix moved " +
+                "the EDGE's gate to a reference depth and nothing else — the foam keeps its own gate exactly.");
+            StringAssert.Contains("surfRunUpM, boreFoamBlend)", src,
+                "The foam fringe no longer reads boreFoamBlend. The wet-edge fix deliberately left the foam's " +
                 "own gate alone; moving it is a different charter.");
         }
 
@@ -423,7 +431,22 @@ namespace HiddenHarbours.Tests.Art.EditMode
                             float t = PhaseAt(p);
                             for (int i = 0; i < dryCount; i++)
                             {
-                                float depth = DepthMin + i * DepthStep;
+                                // The Min is not padding — it is what "the dry side" MEANS, and this
+                                // guard already cost one red CI run for want of it. DepthMin + 800*DepthStep
+                                // is exactly 0f only if the product is ROUNDED TO float32 before the add.
+                                // ECMA-335 §III.1.1.1 lets a runtime keep float32 intermediates in a wider
+                                // internal type until they are stored to a float32 location, and the one this
+                                // runs on does: the same expression evaluates to +1.30385e-08 m — thirteen
+                                // NANOMETRES past the waterline, into the wet band.
+                                //
+                                // That one sample is ground this fix is SUPPOSED to change. Asked at the
+                                // fragment's own depth, 1.3e-08 m sits below every BreakDepth here, so the
+                                // shipped gate saturates at exactly 1 and the shipped edge snaps to the whole
+                                // run-up (0.03 m); the repaired edge asks at the 0.02 m pin, reads 0.93628,
+                                // and lands on 0.02559429 m. Both numbers are the ones CI printed. Letting a
+                                // rounding artifact decide whether a DRY-side guard steps onto the WET side
+                                // makes it assert the exact opposite of the change it is guarding.
+                                float depth = Mathf.Min(DepthMin + i * DepthStep, 0f);
                                 float shipped = ShippedShift(depth, t, noise, band, slope);
                                 float repaired = FixedShift(depth, t, noise, band, slope);
                                 if (shipped != repaired)

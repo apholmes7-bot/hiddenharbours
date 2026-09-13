@@ -2668,12 +2668,6 @@ Shader "HiddenHarbours/Water"
                 return lerp(depths.z, depths.y, saturate((e - lee) / max(mid - lee, 1e-4)));
             }
 
-            // The depth the DRAWN EDGE asks the break gate at. Same BreakerMath.MinDepthMeters pin the
-            // surf block already uses when it projects a dry fragment back to the waterline (l.4608):
-            // the edge is a SHORE quantity, and asking the gate at the fragment's own depth is what cut
-            // the drawn water in two at a corner (2026-09-13; see the wet-edge block).
-            #define SURF_EDGE_REF_DEPTH 0.02
-
             // Twin: BreakerMath.Breaking01FromContour. The smooth break GATE — 1 where the water is
             // shallower than the break depth, 0 out past the gate's outer edge.
             // ⚠️ A GATE, never a scale on the whitewater age. It saturates at 1, which is correct for
@@ -2924,6 +2918,16 @@ Shader "HiddenHarbours/Water"
             }
 
             // ==== TWIN B (end) ====
+
+            // The depth the DRAWN EDGE asks the break gate at. Same BreakerMath.MinDepthMeters pin the
+            // surf block already uses when it projects a dry fragment back to the waterline (l.4618):
+            // the edge is a SHORE quantity, and asking the gate at the fragment’s own depth is what cut
+            // the drawn water in two at a corner (2026-09-13; see the wet-edge block).
+            // ⚠️ Deliberately OUTSIDE the TWIN B region above. HiddenHarboursFoamBufferAdvect.shader
+            // copies that region byte-for-byte (BreakerDepositTests pins it), and the advect pass draws no
+            // water edge, so a define added inside the twin costs the advect shader a mandatory edit and
+            // buys it nothing. The drawn edge is this shader’s alone; its reference depth lives here.
+            #define SURF_EDGE_REF_DEPTH 0.02
 
             // Posterize the surf like every other band here, dithering the step edges off the same
             // world-locked Bayer cell the foam edge and the ripple bands use. Smooth surf reads as
@@ -4785,7 +4789,7 @@ Shader "HiddenHarbours/Water"
                 // already capped at the swash's own ceiling — and drains between crests; elsewhere the
                 // cosmetic swash keeps its beat (the fringe-supersede precedent: yield on the bore, not on
                 // the gate). _SurfRunUpStrength = 0 (or no surf here) is the previous edge exactly.
-                float boreEdgeBlend = saturate(surfBreaking * saturate(_SurfStrength) * saturate(_SurfRunUpStrength));
+                float boreFoamBlend = saturate(surfBreaking * saturate(_SurfStrength) * saturate(_SurfRunUpStrength));
                 float boreEdgeShift = clamp(surfRunUpM, -saturate(_SwashMaxEdgeShift), saturate(_SwashMaxEdgeShift));
                 // ⚠️ The EDGE's blend is a SHORE quantity, asked ONCE at the wet edge's own reference depth
                 // — never at the fragment's. (2026-09-13, the shore-corner hairline: "very fine line effect
@@ -4807,15 +4811,15 @@ Shader "HiddenHarbours/Water"
                 // for depth <= 0, and beyond that reach the block never ran, so the blend is forced to 0 and
                 // the edge is the cosmetic swash exactly as before. The run-up and the drain between crests
                 // are untouched — the change is confined to refusing to cut the wet band out from
-                // under them. boreEdgeBlend itself keeps the fragment gate on purpose: the foam fringe reads
+                // under them. boreFoamBlend keeps the FRAGMENT gate on purpose — the foam fringe reads
                 // it below, and the foam families are not this change's business.
                 // Twin: WaterSurface.BoreEdgeBlend / WaterSurface.DrawnEdgeShift, pinned by
                 // WaterDrawnEdgeOnePieceTests (CI has no GPU; the law is arithmetic, so it is testable).
-                float edgeBoreBlend = (depth > -surfBeachReach)
+                float boreEdgeBlend = (depth > -surfBeachReach)
                     ? saturate(SurfBreaking01(SURF_EDGE_REF_DEPTH, waveFetchEnv)
                                * saturate(_SurfStrength) * saturate(_SurfRunUpStrength))
-                    : 0.0;                                  // the surf block's own reach gate (l.4609)
-                edgeSwash = lerp(edgeSwash, boreEdgeShift, edgeBoreBlend);
+                    : 0.0;                                  // the surf block's own reach gate (l.4613)
+                edgeSwash = lerp(edgeSwash, boreEdgeShift, boreEdgeBlend);
                 clip(depth + edgeSwash + 1e-4);
 
                 float dt = saturate((depth - _ShallowDepth) / max(_DeepDepth - _ShallowDepth, 1e-3));
@@ -5396,7 +5400,7 @@ Shader "HiddenHarbours/Water"
                 // CONTOUR excursion in metres — on a gently painted bar the run-up no longer sweeps a
                 // metres-wide worm tongue (the 2026-07-23 swirl defect); a steep edge keeps today's look.
                 float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only
-                                                 surfRunUpM, boreEdgeBlend);   // …and the foam rides the bore's wash too
+                                                 surfRunUpM, boreFoamBlend);   // …and the foam rides the bore's wash too
                 // ---- DITHER the band edge (owner judge pass 2026-08-01: "the shoreline foam sometimes gets
                 // these artifact lines"). foamEdge is an ISO-CONTOUR of foamDepth, and foamDepth descends
                 // from the seabed height TEXTURE — 8 bits over a -4..+6 m range, i.e. 3.91 cm per code,

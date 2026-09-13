@@ -2079,8 +2079,10 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// <b>The blend that hands the drawn edge from the cosmetic swash to the bore's run-up</b> — the
-        /// shader's <c>edgeBoreBlend</c>. ADR 0040 rev 3: where a bore is alive the drawn edge rides its
-        /// run-up and drains between crests; elsewhere the cosmetic swash keeps its beat.
+        /// shader's <c>boreEdgeBlend</c> — and ONLY that one. The shader's foam fringe keeps its own
+        /// separate <c>boreFoamBlend</c>, still read at the fragment's depth; the foam families are a
+        /// different charter. ADR 0040 rev 3: where a bore is alive the drawn edge rides its run-up and
+        /// drains between crests; elsewhere the cosmetic swash keeps its beat.
         ///
         /// <para><b>⚠️ <paramref name="breakingAtReferenceDepth01"/> must be the break gate read at
         /// <see cref="DrawnEdgeReferenceDepthMeters"/> — never at the fragment's own depth.</b> That is the
