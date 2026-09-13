@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: c18a1a46db96a1b2f4d225661c0d9ba8
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 765576091732588432
+    second: logCribMiddle_0
+  - first:
+      213: 161555987248077335
+    second: logCribMiddle_1
+  - first:
+      213: 532804735167452334
+    second: logCribMiddle_2
+  - first:
+      213: 703475307713624716
+    second: logCribMiddle_3
+  - first:
+      213: 82147894441787932
+    second: logCribMiddle_4
+  - first:
+      213: 403271973157578258
+    second: logCribMiddle_5
+  - first:
+      213: 1075741710679911247
+    second: logCribMiddle_6
+  - first:
+      213: 995738269872327357
+    second: logCribMiddle_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: logCribMiddle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 386
+        width: 346
+        height: 386
+      alignment: 9
+      pivot: {x: 0.49710982658959535, y: 0.37305699481865284}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be32ed7026863a68516bc92a8b306c2c
+      internalID: 765576091732588432
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: logCribMiddle_1
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 386
+        width: 346
+        height: 386
+      alignment: 9
+      pivot: {x: 0.49710982658959535, y: 0.37305699481865284}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d6887f4eddc31d3b70b716dee42bbf4
+      internalID: 161555987248077335
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: logCribMiddle_2
+      rect:
+        serializedVersion: 2
+        x: 692
+        y: 386
+        width: 346
+        height: 386
+      alignment: 9
+      pivot: {x: 0.49710982658959535, y: 0.37305699481865284}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 374d58752014d08243222042a6f5accf
+      internalID: 532804735167452334
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: logCribMiddle_3
+      rect:
+        serializedVersion: 2
+        x: 1038
+        y: 386
+        width: 346
+        height: 386
+      alignment: 9
+      pivot: {x: 0.49710982658959535, y: 0.37305699481865284}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17da050226027917fbf58fbcf957f70e
+      internalID: 703475307713624716
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: logCribMiddle_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 346
+        height: 386
+      alignment: 9
+      pivot: {x: 0.49710982658959535, y: 0.37305699481865284}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d52bc5ecfd0bdf6a87c74a31f5cbce87
+      internalID: 82147894441787932
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: logCribMiddle_5
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 0
+        width: 346
+        height: 386
+      alignment: 9
+      pivot: {x: 0.49710982658959535, y: 0.37305699481865284}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 087578fe154fd8d0c11ce6ac3886b9be
+      internalID: 403271973157578258
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: logCribMiddle_6
+      rect:
+        serializedVersion: 2
+        x: 692
+        y: 0
+        width: 346
+        height: 386
+      alignment: 9
+      pivot: {x: 0.49710982658959535, y: 0.37305699481865284}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c4aa77087f6d93181c7aa96ac244ffc
+      internalID: 1075741710679911247
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: logCribMiddle_7
+      rect:
+        serializedVersion: 2
+        x: 1038
+        y: 0
+        width: 346
+        height: 386
+      alignment: 9
+      pivot: {x: 0.49710982658959535, y: 0.37305699481865284}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8038b9ac9d09931120cab8a018c6488a
+      internalID: 995738269872327357
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID: 8289cc52dcb01bc67d631f426585c5a3
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      logCribMiddle_0: 765576091732588432
+      logCribMiddle_1: 161555987248077335
+      logCribMiddle_2: 532804735167452334
+      logCribMiddle_3: 703475307713624716
+      logCribMiddle_4: 82147894441787932
+      logCribMiddle_5: 403271973157578258
+      logCribMiddle_6: 1075741710679911247
+      logCribMiddle_7: 995738269872327357
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

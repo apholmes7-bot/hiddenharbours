@@ -196,18 +196,18 @@
      1
     ],
     "bayLen": [
-     4,
-     10,
+     3,
+     14,
      6
     ],
     "width": [
      0.8,
-     1.2,
+     1.4,
      0.95
     ],
     "deckZ": [
      1.2,
-     6,
+     8,
      2.8
     ]
    }
@@ -254,7 +254,7 @@
     ],
     "width": [
      2.5,
-     7,
+     32,
      4
     ],
     "deckZ": [
@@ -334,6 +334,27 @@
   "quay": {
    "family": "quay",
    "label": "concrete quay",
+   "module": {
+    "base": "quay",
+    "part": "single",
+    "run": 12,
+    "depth": 7,
+    "deckZ": 5.2,
+    "negativeOpen": false,
+    "positiveOpen": false,
+    "negative": [
+     -6,
+     0,
+     5.2
+    ],
+    "positive": [
+     6,
+     0,
+     5.2
+    ],
+    "bleed": 0.03125,
+    "motion": "standalone"
+   },
    "footprint": {
     "w": 12,
     "d": 7
@@ -656,6 +677,27 @@
   "pier": {
    "family": "pier",
    "label": "timber pile pier",
+   "module": {
+    "base": "pier",
+    "part": "single",
+    "run": 11.2,
+    "depth": 4.2,
+    "deckZ": 5.2,
+    "negativeOpen": false,
+    "positiveOpen": false,
+    "negative": [
+     -5.6,
+     0,
+     5.2
+    ],
+    "positive": [
+     5.6,
+     0,
+     5.2
+    ],
+    "bleed": 0.03125,
+    "motion": "standalone"
+   },
    "footprint": {
     "w": 11.2,
     "d": 4.2
@@ -945,6 +987,27 @@
   "crib": {
    "family": "crib",
    "label": "stone-filled crib wharf",
+   "module": {
+    "base": "crib",
+    "part": "single",
+    "run": 9.600000000000001,
+    "depth": 5,
+    "deckZ": 5.2,
+    "negativeOpen": false,
+    "positiveOpen": false,
+    "negative": [
+     -4.800000000000001,
+     0,
+     5.2
+    ],
+    "positive": [
+     4.800000000000001,
+     0,
+     5.2
+    ],
+    "bleed": 0.03125,
+    "motion": "standalone"
+   },
    "footprint": {
     "w": 9.6,
     "d": 5
@@ -1162,6 +1225,27 @@
   "float": {
    "family": "float",
    "label": "floating dock",
+   "module": {
+    "base": "float",
+    "part": "single",
+    "run": 6,
+    "depth": 2.4,
+    "deckZ": 2.8200000000000003,
+    "negativeOpen": false,
+    "positiveOpen": false,
+    "negative": [
+     -3,
+     0,
+     2.8200000000000003
+    ],
+    "positive": [
+     3,
+     0,
+     2.8200000000000003
+    ],
+    "bleed": 0.03125,
+    "motion": "standalone"
+   },
    "footprint": {
     "w": 6,
     "d": 2.4
@@ -1408,6 +1492,27 @@
   "gangway": {
    "family": "gangway",
    "label": "gangway ramp",
+   "module": {
+    "base": "gangway",
+    "part": "single",
+    "run": 12,
+    "depth": 0.95,
+    "deckZ": 5.2,
+    "negativeOpen": false,
+    "positiveOpen": false,
+    "negative": [
+     -6,
+     0,
+     5.2
+    ],
+    "positive": [
+     6,
+     0,
+     5.2
+    ],
+    "bleed": 0.03125,
+    "motion": "standalone"
+   },
    "footprint": {
     "w": 12,
     "d": 0.95
@@ -1522,6 +1627,27 @@
   "slipway": {
    "family": "slipway",
    "label": "slipway",
+   "module": {
+    "base": "slipway",
+    "part": "single",
+    "run": 10,
+    "depth": 3.6,
+    "deckZ": 2.9,
+    "negativeOpen": false,
+    "positiveOpen": false,
+    "negative": [
+     -5,
+     0,
+     2.9
+    ],
+    "positive": [
+     5,
+     0,
+     2.9
+    ],
+    "bleed": 0.03125,
+    "motion": "standalone"
+   },
    "footprint": {
     "w": 10,
     "d": 3.6
@@ -1657,6 +1783,27 @@
   "riprap": {
    "family": "riprap",
    "label": "armour-stone edge",
+   "module": {
+    "base": "riprap",
+    "part": "single",
+    "run": 12,
+    "depth": 4,
+    "deckZ": 5.2,
+    "negativeOpen": false,
+    "positiveOpen": false,
+    "negative": [
+     -6,
+     0,
+     5.2
+    ],
+    "positive": [
+     6,
+     0,
+     5.2
+    ],
+    "bleed": 0.03125,
+    "motion": "standalone"
+   },
    "footprint": {
     "w": 12,
     "d": 4
@@ -2510,7 +2657,7 @@
    "family": "riprap",
    "stone": "granite",
    "mound": "breakwater",
-   "width": 6,
+   "width": null,
    "bays": 6
   },
   "sheetCell": {
@@ -2520,6 +2667,174 @@
    "width": 5,
    "bays": 5,
    "deckZ": 2.6
+  },
+  "logCribStart": {
+   "family": "crib",
+   "cap": "plank",
+   "part": "start",
+   "moduleBase": "logCrib"
+  },
+  "logCribMiddle": {
+   "family": "crib",
+   "cap": "plank",
+   "part": "middle",
+   "moduleBase": "logCrib"
+  },
+  "logCribEnd": {
+   "family": "crib",
+   "cap": "plank",
+   "part": "end",
+   "moduleBase": "logCrib"
+  },
+  "timberFloatStart": {
+   "family": "float",
+   "hull": "timber",
+   "guidePiles": false,
+   "chain": false,
+   "pileHoops": true,
+   "part": "start",
+   "moduleBase": "timberFloat",
+   "rock": false
+  },
+  "timberFloatMiddle": {
+   "family": "float",
+   "hull": "timber",
+   "guidePiles": false,
+   "chain": false,
+   "pileHoops": true,
+   "part": "middle",
+   "moduleBase": "timberFloat",
+   "rock": false
+  },
+  "timberFloatEnd": {
+   "family": "float",
+   "hull": "timber",
+   "guidePiles": false,
+   "chain": false,
+   "pileHoops": true,
+   "part": "end",
+   "moduleBase": "timberFloat",
+   "rock": false
+  },
+  "tallPierStart": {
+   "family": "pier",
+   "deckZ": 2.8,
+   "bays": 5,
+   "bayLen": 2.8,
+   "width": 4.2,
+   "struct": "open",
+   "brace": true,
+   "part": "start",
+   "moduleBase": "tallPier"
+  },
+  "tallPierMiddle": {
+   "family": "pier",
+   "deckZ": 2.8,
+   "bays": 5,
+   "bayLen": 2.8,
+   "width": 4.2,
+   "struct": "open",
+   "brace": true,
+   "part": "middle",
+   "moduleBase": "tallPier"
+  },
+  "tallPierEnd": {
+   "family": "pier",
+   "deckZ": 2.8,
+   "bays": 5,
+   "bayLen": 2.8,
+   "width": 4.2,
+   "struct": "open",
+   "brace": true,
+   "part": "end",
+   "moduleBase": "tallPier"
+  },
+  "concreteQuayStart": {
+   "family": "quay",
+   "face": "concrete",
+   "bays": 5,
+   "bayLen": 3.2,
+   "width": 8,
+   "part": "start",
+   "moduleBase": "concreteQuay"
+  },
+  "concreteQuayMiddle": {
+   "family": "quay",
+   "face": "concrete",
+   "bays": 5,
+   "bayLen": 3.2,
+   "width": 8,
+   "part": "middle",
+   "moduleBase": "concreteQuay"
+  },
+  "concreteQuayEnd": {
+   "family": "quay",
+   "face": "concrete",
+   "bays": 5,
+   "bayLen": 3.2,
+   "width": 8,
+   "part": "end",
+   "moduleBase": "concreteQuay"
+  },
+  "breakwaterStart": {
+   "family": "riprap",
+   "stone": "granite",
+   "mound": "breakwater",
+   "width": null,
+   "bays": 6,
+   "part": "start",
+   "moduleBase": "breakwater"
+  },
+  "breakwaterMiddle": {
+   "family": "riprap",
+   "stone": "granite",
+   "mound": "breakwater",
+   "width": null,
+   "bays": 6,
+   "part": "middle",
+   "moduleBase": "breakwater"
+  },
+  "breakwaterEnd": {
+   "family": "riprap",
+   "stone": "granite",
+   "mound": "breakwater",
+   "width": null,
+   "bays": 6,
+   "part": "end",
+   "moduleBase": "breakwater"
+  },
+  "plasticFloatStart": {
+   "family": "float",
+   "hull": "plastic",
+   "curb": "yellow",
+   "part": "start",
+   "moduleBase": "plasticFloat",
+   "guidePiles": false,
+   "chain": false,
+   "pileHoops": true,
+   "rock": false
+  },
+  "plasticFloatMiddle": {
+   "family": "float",
+   "hull": "plastic",
+   "curb": "yellow",
+   "part": "middle",
+   "moduleBase": "plasticFloat",
+   "guidePiles": false,
+   "chain": false,
+   "pileHoops": true,
+   "rock": false
+  },
+  "plasticFloatEnd": {
+   "family": "float",
+   "hull": "plastic",
+   "curb": "yellow",
+   "part": "end",
+   "moduleBase": "plasticFloat",
+   "guidePiles": false,
+   "chain": false,
+   "pileHoops": true,
+   "rock": false
   }
  },
  "boats": [
@@ -2571,5 +2886,385 @@
   "rule": "the working face is packed with the best MIX of hulls (utilisation first, then largest hull served); every berth gets its own ladder at mid-berth and its fenders out at the quarters, which is what keeps a fender off a ladder head",
   "ladders": "fittings.ladder:'auto' = one per berth"
  },
- "derivedFromRigSha256": "4928657c3e8e353dc1fcdf4a3be3f1514ee41b38dea88b68eeae6a6c64c989f9"
+ "derivedFromRigSha256": "4831166b93a0facae96d9195764f637d927312a90e6e9a6e87642452681d618e",
+ "modules": {
+  "logCribStart": {
+   "base": "logCrib",
+   "part": "start",
+   "run": 9.600000000000001,
+   "depth": 5,
+   "deckZ": 5.2,
+   "negativeOpen": false,
+   "positiveOpen": true,
+   "negative": [
+    -4.800000000000001,
+    0,
+    5.2
+   ],
+   "positive": [
+    4.800000000000001,
+    0,
+    5.2
+   ],
+   "bleed": 0.03125,
+   "motion": "standalone"
+  },
+  "logCribMiddle": {
+   "base": "logCrib",
+   "part": "middle",
+   "run": 9.600000000000001,
+   "depth": 5,
+   "deckZ": 5.2,
+   "negativeOpen": true,
+   "positiveOpen": true,
+   "negative": [
+    -4.800000000000001,
+    0,
+    5.2
+   ],
+   "positive": [
+    4.800000000000001,
+    0,
+    5.2
+   ],
+   "bleed": 0.03125,
+   "motion": "standalone"
+  },
+  "logCribEnd": {
+   "base": "logCrib",
+   "part": "end",
+   "run": 9.600000000000001,
+   "depth": 5,
+   "deckZ": 5.2,
+   "negativeOpen": true,
+   "positiveOpen": false,
+   "negative": [
+    -4.800000000000001,
+    0,
+    5.2
+   ],
+   "positive": [
+    4.800000000000001,
+    0,
+    5.2
+   ],
+   "bleed": 0.03125,
+   "motion": "standalone"
+  },
+  "timberFloatStart": {
+   "base": "timberFloat",
+   "part": "start",
+   "run": 6,
+   "depth": 2.4,
+   "deckZ": 2.8200000000000003,
+   "negativeOpen": false,
+   "positiveOpen": true,
+   "negative": [
+    -3,
+    0,
+    2.8200000000000003
+   ],
+   "positive": [
+    3,
+    0,
+    2.8200000000000003
+   ],
+   "bleed": 0.03125,
+   "motion": "shared-platform"
+  },
+  "timberFloatMiddle": {
+   "base": "timberFloat",
+   "part": "middle",
+   "run": 6,
+   "depth": 2.4,
+   "deckZ": 2.8200000000000003,
+   "negativeOpen": true,
+   "positiveOpen": true,
+   "negative": [
+    -3,
+    0,
+    2.8200000000000003
+   ],
+   "positive": [
+    3,
+    0,
+    2.8200000000000003
+   ],
+   "bleed": 0.03125,
+   "motion": "shared-platform"
+  },
+  "timberFloatEnd": {
+   "base": "timberFloat",
+   "part": "end",
+   "run": 6,
+   "depth": 2.4,
+   "deckZ": 2.8200000000000003,
+   "negativeOpen": true,
+   "positiveOpen": false,
+   "negative": [
+    -3,
+    0,
+    2.8200000000000003
+   ],
+   "positive": [
+    3,
+    0,
+    2.8200000000000003
+   ],
+   "bleed": 0.03125,
+   "motion": "shared-platform"
+  },
+  "tallPierStart": {
+   "base": "tallPier",
+   "part": "start",
+   "run": 14,
+   "depth": 4.2,
+   "deckZ": 2.8,
+   "negativeOpen": false,
+   "positiveOpen": true,
+   "negative": [
+    -7,
+    0,
+    2.8
+   ],
+   "positive": [
+    7,
+    0,
+    2.8
+   ],
+   "bleed": 0.03125,
+   "motion": "standalone"
+  },
+  "tallPierMiddle": {
+   "base": "tallPier",
+   "part": "middle",
+   "run": 14,
+   "depth": 4.2,
+   "deckZ": 2.8,
+   "negativeOpen": true,
+   "positiveOpen": true,
+   "negative": [
+    -7,
+    0,
+    2.8
+   ],
+   "positive": [
+    7,
+    0,
+    2.8
+   ],
+   "bleed": 0.03125,
+   "motion": "standalone"
+  },
+  "tallPierEnd": {
+   "base": "tallPier",
+   "part": "end",
+   "run": 14,
+   "depth": 4.2,
+   "deckZ": 2.8,
+   "negativeOpen": true,
+   "positiveOpen": false,
+   "negative": [
+    -7,
+    0,
+    2.8
+   ],
+   "positive": [
+    7,
+    0,
+    2.8
+   ],
+   "bleed": 0.03125,
+   "motion": "standalone"
+  },
+  "concreteQuayStart": {
+   "base": "concreteQuay",
+   "part": "start",
+   "run": 16,
+   "depth": 8,
+   "deckZ": 5.2,
+   "negativeOpen": false,
+   "positiveOpen": true,
+   "negative": [
+    -8,
+    0,
+    5.2
+   ],
+   "positive": [
+    8,
+    0,
+    5.2
+   ],
+   "bleed": 0.03125,
+   "motion": "standalone"
+  },
+  "concreteQuayMiddle": {
+   "base": "concreteQuay",
+   "part": "middle",
+   "run": 16,
+   "depth": 8,
+   "deckZ": 5.2,
+   "negativeOpen": true,
+   "positiveOpen": true,
+   "negative": [
+    -8,
+    0,
+    5.2
+   ],
+   "positive": [
+    8,
+    0,
+    5.2
+   ],
+   "bleed": 0.03125,
+   "motion": "standalone"
+  },
+  "concreteQuayEnd": {
+   "base": "concreteQuay",
+   "part": "end",
+   "run": 16,
+   "depth": 8,
+   "deckZ": 5.2,
+   "negativeOpen": true,
+   "positiveOpen": false,
+   "negative": [
+    -8,
+    0,
+    5.2
+   ],
+   "positive": [
+    8,
+    0,
+    5.2
+   ],
+   "bleed": 0.03125,
+   "motion": "standalone"
+  },
+  "breakwaterStart": {
+   "base": "breakwater",
+   "part": "start",
+   "run": 18,
+   "depth": 18.1,
+   "deckZ": 5.2,
+   "negativeOpen": false,
+   "positiveOpen": true,
+   "negative": [
+    -9,
+    0,
+    5.2
+   ],
+   "positive": [
+    9,
+    0,
+    5.2
+   ],
+   "bleed": 0.03125,
+   "motion": "standalone"
+  },
+  "breakwaterMiddle": {
+   "base": "breakwater",
+   "part": "middle",
+   "run": 18,
+   "depth": 18.1,
+   "deckZ": 5.2,
+   "negativeOpen": true,
+   "positiveOpen": true,
+   "negative": [
+    -9,
+    0,
+    5.2
+   ],
+   "positive": [
+    9,
+    0,
+    5.2
+   ],
+   "bleed": 0.03125,
+   "motion": "standalone"
+  },
+  "breakwaterEnd": {
+   "base": "breakwater",
+   "part": "end",
+   "run": 18,
+   "depth": 18.1,
+   "deckZ": 5.2,
+   "negativeOpen": true,
+   "positiveOpen": false,
+   "negative": [
+    -9,
+    0,
+    5.2
+   ],
+   "positive": [
+    9,
+    0,
+    5.2
+   ],
+   "bleed": 0.03125,
+   "motion": "standalone"
+  },
+  "plasticFloatStart": {
+   "base": "plasticFloat",
+   "part": "start",
+   "run": 6,
+   "depth": 2.4,
+   "deckZ": 2.8200000000000003,
+   "negativeOpen": false,
+   "positiveOpen": true,
+   "negative": [
+    -3,
+    0,
+    2.8200000000000003
+   ],
+   "positive": [
+    3,
+    0,
+    2.8200000000000003
+   ],
+   "bleed": 0.03125,
+   "motion": "shared-platform"
+  },
+  "plasticFloatMiddle": {
+   "base": "plasticFloat",
+   "part": "middle",
+   "run": 6,
+   "depth": 2.4,
+   "deckZ": 2.8200000000000003,
+   "negativeOpen": true,
+   "positiveOpen": true,
+   "negative": [
+    -3,
+    0,
+    2.8200000000000003
+   ],
+   "positive": [
+    3,
+    0,
+    2.8200000000000003
+   ],
+   "bleed": 0.03125,
+   "motion": "shared-platform"
+  },
+  "plasticFloatEnd": {
+   "base": "plasticFloat",
+   "part": "end",
+   "run": 6,
+   "depth": 2.4,
+   "deckZ": 2.8200000000000003,
+   "negativeOpen": true,
+   "positiveOpen": false,
+   "negative": [
+    -3,
+    0,
+    2.8200000000000003
+   ],
+   "positive": [
+    3,
+    0,
+    2.8200000000000003
+   ],
+   "bleed": 0.03125,
+   "motion": "shared-platform"
+  }
+ }
 }

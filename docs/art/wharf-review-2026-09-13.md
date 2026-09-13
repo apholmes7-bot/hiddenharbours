@@ -3,7 +3,38 @@
 Owner request: review docks, piers, wharves, floating docks and breakwaters against character/boat
 scale, find defects, and add aesthetic detail. Pillars P2 (physical scale) and P3 (working coast).
 
-## Result
+## Larger modular pass
+
+The six main constructions now have Start, Middle and End variants: log crib, timber float,
+tall pier, concrete quay, rock breakwater and plastic float. Eighteen new sheets bring the
+kit to 37 sheets / 360 cells. A middle has no internal return walls or end rails. Only the
+outer pieces are capped; breakwater ends slope down within their footprint.
+
+Use **Hidden Harbours → Art → Build Modular Wharf Run** to create a reusable prefab run.
+The editor tool reads structural length from the bake contract, chooses the end pieces, and
+places centres using `(cos(facing), -sin(facing) × sin(40°)) × length`. Texture dimensions
+include ladders, fenders and empty crop space and must never be used as the joining pitch.
+The deck has a one-pixel underlap and flush splice plates to cover raster rounding at joins.
+
+Connected floats bake level and use one shared platform for motion. Their separate guide
+piles remain fixed; the existing Nine Mile Creek tide follower and gangways are retained.
+The harbour builder now chooses end/middle variants, including reversed-facing runs.
+
+The owner’s current saved Nine Mile Creek layout has 38 log-crib sections and eight float
+bays. Its measured centre spacing already covers each run, but all 46 used standalone
+sprites. The narrowly scoped migration changes only those sprite references and backs up
+the scene first. It preserves positions, collision, tide components and unrelated local work.
+The PR’s older saved scene lacks the complete seven-run layout; it is deliberately not
+replaced with the owner’s newer unpublished scene. Rebuilding uses the updated builder.
+
+Additional construction detail includes staggered board joints and nail heads, diagonal
+pier bracing, bolted crib and float frame straps, concrete expansion joints and drainage
+grates. The breakwater now has a 1.6 m crest, 1.25:1 side slopes and an 18.1 m overall
+width at the default height. All dimensions remain metres at 32 PPU.
+
+![Three connected sections of each construction, with character and dory scale references](wharf-modules-2026-09-13.png)
+
+## Initial review
 
 The ISO structure kit is metric and its main dimensions are appropriate for the shared characters
 and small craft. All 83 inspected waterfront textures use 32 PPU, Point filtering and no mipmaps.
@@ -18,7 +49,7 @@ waterline or occlusion alignment; the live Unity bridge was unavailable.
 | Low pier | 10.4 × 3 m, deck at 1.3 m above datum |
 | Tall pier | 14 × 4.2 m, deck at 2.8 m above datum |
 | Concrete quay module | 16 × 8 m, deck at 5.2 m above datum |
-| Rock breakwater module | 18 × 6 m; steep crest profile |
+| Rock breakwater module | 18 × 18.1 m; 1.6 m crest and sloping end heads |
 | Ladder | 0.45 m wide, rungs 0.30 m apart, grab rails 0.65 m above deck |
 | Rail / bollard / tyre | 1.05 m high / 0.75 m high / 1 m outside diameter |
 
@@ -87,7 +118,7 @@ node tools/wharf-review.mjs --check
 node tools/wharf-review.mjs --preview after
 ```
 
-`--check` covers 216 cells, sheet pixels and dimensions, slice rectangles and pivots, source SHA,
+`--check` covers 360 cells, open internal faces, all eight socket directions, raster join coverage, sheet pixels and dimensions, slice rectangles and pivots, source SHA,
 gameplay samples, boat lengths, berth fit, five tide levels, fender separation, ladder rigidity,
 rail access, freeboard overrides, solid crest backing, binary alpha, deterministic renders and the
 4096 texture limit. `--bake` stages every rendered result in memory before writing, then refreshes
@@ -96,3 +127,21 @@ the atlas metadata without changing GUIDs, sprite IDs or file IDs. PNGs remain c
 Unity EditMode/PlayMode, in-game tide sweeps and a playable-build check were not run: Unity was
 open but Pipeline reported no reachable server. Reimport the changed assets and run the existing
 ISO bake/wharf tests plus a low/high-water visual check before merging.
+
+The App.Editor assembly and both affected test assemblies compile with Unity 6000.5.0f1’s
+Roslyn compiler and the project’s existing response files (no errors; unrelated existing
+deprecation warnings). Node checks pass. Unity EditMode/PlayMode execution and in-game
+visual verification remain unavailable because the installed Pipeline server is unreachable.
+
+Additional reproduction:
+
+```text
+node tools/wharf-modules-plate.mjs 1
+node tools/wharf-modules-plate.mjs 2
+node tools/wharf-module-scene.mjs --check <working-project-path>
+node tools/wharf-module-scene.mjs --apply <working-project-path>
+```
+
+The scene migration refuses missing groups, changed construction, scaled sections, bent runs,
+or an actual spacing gap larger than one pixel. It is idempotent after application. It targets
+the observed seven-run Nine Mile Creek layout, not arbitrary legacy harbour scenes.

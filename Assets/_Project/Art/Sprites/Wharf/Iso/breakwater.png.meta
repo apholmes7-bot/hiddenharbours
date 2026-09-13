@@ -138,11 +138,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 525
-        width: 605
-        height: 525
+        y: 551
+        width: 823
+        height: 551
       alignment: 9
-      pivot: {x: 0.49917355, y: 0.40380952}
+      pivot: {x: 0.4993924665856622, y: 0.5517241379310345}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: breakwater_1
       rect:
         serializedVersion: 2
-        x: 605
-        y: 525
-        width: 605
-        height: 525
+        x: 823
+        y: 551
+        width: 823
+        height: 551
       alignment: 9
-      pivot: {x: 0.49917355, y: 0.40380952}
+      pivot: {x: 0.4993924665856622, y: 0.5517241379310345}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: breakwater_2
       rect:
         serializedVersion: 2
-        x: 1210
-        y: 525
-        width: 605
-        height: 525
+        x: 1646
+        y: 551
+        width: 823
+        height: 551
       alignment: 9
-      pivot: {x: 0.49917355, y: 0.40380952}
+      pivot: {x: 0.4993924665856622, y: 0.5517241379310345}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: breakwater_3
       rect:
         serializedVersion: 2
-        x: 1815
-        y: 525
-        width: 605
-        height: 525
+        x: 2469
+        y: 551
+        width: 823
+        height: 551
       alignment: 9
-      pivot: {x: 0.49917355, y: 0.40380952}
+      pivot: {x: 0.4993924665856622, y: 0.5517241379310345}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -227,10 +227,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 605
-        height: 525
+        width: 823
+        height: 551
       alignment: 9
-      pivot: {x: 0.49917355, y: 0.40380952}
+      pivot: {x: 0.4993924665856622, y: 0.5517241379310345}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: breakwater_5
       rect:
         serializedVersion: 2
-        x: 605
+        x: 823
         y: 0
-        width: 605
-        height: 525
+        width: 823
+        height: 551
       alignment: 9
-      pivot: {x: 0.49917355, y: 0.40380952}
+      pivot: {x: 0.4993924665856622, y: 0.5517241379310345}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: breakwater_6
       rect:
         serializedVersion: 2
-        x: 1210
+        x: 1646
         y: 0
-        width: 605
-        height: 525
+        width: 823
+        height: 551
       alignment: 9
-      pivot: {x: 0.49917355, y: 0.40380952}
+      pivot: {x: 0.4993924665856622, y: 0.5517241379310345}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: breakwater_7
       rect:
         serializedVersion: 2
-        x: 1815
+        x: 2469
         y: 0
-        width: 605
-        height: 525
+        width: 823
+        height: 551
       alignment: 9
-      pivot: {x: 0.49917355, y: 0.40380952}
+      pivot: {x: 0.4993924665856622, y: 0.5517241379310345}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

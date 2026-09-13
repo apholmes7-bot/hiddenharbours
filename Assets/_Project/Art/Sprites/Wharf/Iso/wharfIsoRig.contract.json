@@ -43,7 +43,7 @@
     "maxDim": 3784,
     "headroomToCap": 312
   },
-  "count": 19,
+  "count": 37,
   "cells": [
     {
       "key": "lowPier",
@@ -56,6 +56,27 @@
         "rows": 1,
         "sheetW": 2816,
         "sheetH": 301
+      },
+      "module": {
+        "base": "lowPier",
+        "part": "single",
+        "run": 10.4,
+        "depth": 3,
+        "deckZ": 1.3,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -5.2,
+          0,
+          1.3
+        ],
+        "positive": [
+          5.2,
+          0,
+          1.3
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -69,6 +90,27 @@
         "rows": 1,
         "sheetW": 3776,
         "sheetH": 411
+      },
+      "module": {
+        "base": "tallPier",
+        "part": "single",
+        "run": 14,
+        "depth": 4.2,
+        "deckZ": 2.8,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -7,
+          0,
+          2.8
+        ],
+        "positive": [
+          7,
+          0,
+          2.8
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -82,6 +124,27 @@
         "rows": 1,
         "sheetW": 3784,
         "sheetH": 470
+      },
+      "module": {
+        "base": "sheetedPier",
+        "part": "single",
+        "run": 14,
+        "depth": 4.6,
+        "deckZ": 5.2,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -7,
+          0,
+          5.2
+        ],
+        "positive": [
+          7,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -95,6 +158,27 @@
         "rows": 1,
         "sheetW": 3760,
         "sheetH": 470
+      },
+      "module": {
+        "base": "steelPier",
+        "part": "single",
+        "run": 14,
+        "depth": 4.6,
+        "deckZ": 5.2,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -7,
+          0,
+          5.2
+        ],
+        "positive": [
+          7,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -108,6 +192,27 @@
         "rows": 2,
         "sheetW": 2284,
         "sheetH": 1048
+      },
+      "module": {
+        "base": "concreteQuay",
+        "part": "single",
+        "run": 16,
+        "depth": 8,
+        "deckZ": 5.2,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -8,
+          0,
+          5.2
+        ],
+        "positive": [
+          8,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -121,6 +226,27 @@
         "rows": 2,
         "sheetW": 2132,
         "sheetH": 1022
+      },
+      "module": {
+        "base": "torbayQuay",
+        "part": "single",
+        "run": 16,
+        "depth": 7,
+        "deckZ": 5.2,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -8,
+          0,
+          5.2
+        ],
+        "positive": [
+          8,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -134,6 +260,27 @@
         "rows": 2,
         "sheetW": 2024,
         "sheetH": 980
+      },
+      "module": {
+        "base": "timberQuay",
+        "part": "single",
+        "run": 15,
+        "depth": 6.5,
+        "deckZ": 5.2,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -7.5,
+          0,
+          5.2
+        ],
+        "positive": [
+          7.5,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -147,6 +294,27 @@
         "rows": 1,
         "sheetW": 2800,
         "sheetH": 386
+      },
+      "module": {
+        "base": "logCrib",
+        "part": "single",
+        "run": 9.600000000000001,
+        "depth": 5,
+        "deckZ": 5.2,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -4.800000000000001,
+          0,
+          5.2
+        ],
+        "positive": [
+          4.800000000000001,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -160,12 +328,33 @@
         "rows": 1,
         "sheetW": 2800,
         "sheetH": 386
+      },
+      "module": {
+        "base": "cappedCrib",
+        "part": "single",
+        "run": 9.600000000000001,
+        "depth": 5,
+        "deckZ": 5.2,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -4.800000000000001,
+          0,
+          5.2
+        ],
+        "positive": [
+          4.800000000000001,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
       "key": "timberFloat",
       "cellW": 213,
-      "cellH": 160,
+      "cellH": 161,
       "pivotX": 106,
       "pivotY": 145,
       "note": "The raft AND its sliding hoops. A guide hoop is bolted to the raft and slides up the pile as the tide takes her, so it rides; only the pile itself stands. The rig's `fixed` tag could not make that split on its own - it answers whether a thing ROCKS with the raft, and a hoop on a pile does not rock and does ride.",
@@ -173,7 +362,28 @@
         "cols": 8,
         "rows": 1,
         "sheetW": 1704,
-        "sheetH": 160
+        "sheetH": 161
+      },
+      "module": {
+        "base": "timberFloat",
+        "part": "single",
+        "run": 6,
+        "depth": 2.4,
+        "deckZ": 2.8200000000000003,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -3,
+          0,
+          2.8200000000000003
+        ],
+        "positive": [
+          3,
+          0,
+          2.8200000000000003
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -188,6 +398,27 @@
         "rows": 1,
         "sheetW": 2392,
         "sheetH": 348
+      },
+      "module": {
+        "base": "plasticFloat",
+        "part": "single",
+        "run": 6,
+        "depth": 2.4,
+        "deckZ": 2.8200000000000003,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -3,
+          0,
+          2.8200000000000003
+        ],
+        "positive": [
+          3,
+          0,
+          2.8200000000000003
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -201,6 +432,27 @@
         "rows": 4,
         "sheetW": 2310,
         "sheetH": 3628
+      },
+      "module": {
+        "base": "floatSet",
+        "part": "single",
+        "run": 6,
+        "depth": 2.4,
+        "deckZ": 2.8200000000000003,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -3,
+          0,
+          2.8200000000000003
+        ],
+        "positive": [
+          3,
+          0,
+          2.8200000000000003
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -214,6 +466,27 @@
         "rows": 4,
         "sheetW": 2310,
         "sheetH": 3628
+      },
+      "module": {
+        "base": "plasticSet",
+        "part": "single",
+        "run": 6,
+        "depth": 2.4,
+        "deckZ": 2.8200000000000003,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -3,
+          0,
+          2.8200000000000003
+        ],
+        "positive": [
+          3,
+          0,
+          2.8200000000000003
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -228,6 +501,27 @@
         "rows": 1,
         "sheetW": 2400,
         "sheetH": 348
+      },
+      "module": {
+        "base": "floatPiles",
+        "part": "single",
+        "run": 6,
+        "depth": 2.4,
+        "deckZ": 2.8200000000000003,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -3,
+          0,
+          2.8200000000000003
+        ],
+        "positive": [
+          3,
+          0,
+          2.8200000000000003
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -244,6 +538,27 @@
         "rows": 9,
         "sheetW": 3256,
         "sheetH": 3636
+      },
+      "module": {
+        "base": "gangway",
+        "part": "single",
+        "run": 12,
+        "depth": 0.95,
+        "deckZ": 5.2,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -6,
+          0,
+          5.2
+        ],
+        "positive": [
+          6,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -257,6 +572,27 @@
         "rows": 1,
         "sheetW": 3312,
         "sheetH": 418
+      },
+      "module": {
+        "base": "graniteEdge",
+        "part": "single",
+        "run": 12,
+        "depth": 4,
+        "deckZ": 5.2,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -6,
+          0,
+          5.2
+        ],
+        "positive": [
+          6,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -270,19 +606,61 @@
         "rows": 1,
         "sheetW": 3312,
         "sheetH": 418
+      },
+      "module": {
+        "base": "redEdge",
+        "part": "single",
+        "run": 12,
+        "depth": 4,
+        "deckZ": 5.2,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -6,
+          0,
+          5.2
+        ],
+        "positive": [
+          6,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
       "key": "breakwater",
-      "cellW": 605,
-      "cellH": 525,
-      "pivotX": 302,
-      "pivotY": 313,
+      "cellW": 823,
+      "cellH": 551,
+      "pivotX": 411,
+      "pivotY": 247,
       "sheet": {
         "cols": 4,
         "rows": 2,
-        "sheetW": 2420,
-        "sheetH": 1050
+        "sheetW": 3292,
+        "sheetH": 1102
+      },
+      "module": {
+        "base": "breakwater",
+        "part": "single",
+        "run": 18,
+        "depth": 18.1,
+        "deckZ": 5.2,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -9,
+          0,
+          5.2
+        ],
+        "positive": [
+          9,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
       }
     },
     {
@@ -296,8 +674,641 @@
         "rows": 2,
         "sheetW": 2060,
         "sheetH": 848
+      },
+      "module": {
+        "base": "sheetCell",
+        "part": "single",
+        "run": 15,
+        "depth": 5,
+        "deckZ": 2.6,
+        "negativeOpen": false,
+        "positiveOpen": false,
+        "negative": [
+          -7.5,
+          0,
+          2.6
+        ],
+        "positive": [
+          7.5,
+          0,
+          2.6
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
+      }
+    },
+    {
+      "key": "logCribStart",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 1400,
+        "sheetH": 772
+      },
+      "cellW": 350,
+      "cellH": 386,
+      "pivotX": 174,
+      "pivotY": 242,
+      "module": {
+        "base": "logCrib",
+        "part": "start",
+        "run": 9.600000000000001,
+        "depth": 5,
+        "deckZ": 5.2,
+        "negativeOpen": false,
+        "positiveOpen": true,
+        "negative": [
+          -4.800000000000001,
+          0,
+          5.2
+        ],
+        "positive": [
+          4.800000000000001,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
+      }
+    },
+    {
+      "key": "logCribMiddle",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 1384,
+        "sheetH": 772
+      },
+      "cellW": 346,
+      "cellH": 386,
+      "pivotX": 172,
+      "pivotY": 242,
+      "module": {
+        "base": "logCrib",
+        "part": "middle",
+        "run": 9.600000000000001,
+        "depth": 5,
+        "deckZ": 5.2,
+        "negativeOpen": true,
+        "positiveOpen": true,
+        "negative": [
+          -4.800000000000001,
+          0,
+          5.2
+        ],
+        "positive": [
+          4.800000000000001,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
+      }
+    },
+    {
+      "key": "logCribEnd",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 1400,
+        "sheetH": 772
+      },
+      "cellW": 350,
+      "cellH": 386,
+      "pivotX": 174,
+      "pivotY": 242,
+      "module": {
+        "base": "logCrib",
+        "part": "end",
+        "run": 9.600000000000001,
+        "depth": 5,
+        "deckZ": 5.2,
+        "negativeOpen": true,
+        "positiveOpen": false,
+        "negative": [
+          -4.800000000000001,
+          0,
+          5.2
+        ],
+        "positive": [
+          4.800000000000001,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
+      }
+    },
+    {
+      "key": "timberFloatStart",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 852,
+        "sheetH": 320
+      },
+      "cellW": 213,
+      "cellH": 160,
+      "pivotX": 106,
+      "pivotY": 144,
+      "module": {
+        "base": "timberFloat",
+        "part": "start",
+        "run": 6,
+        "depth": 2.4,
+        "deckZ": 2.8200000000000003,
+        "negativeOpen": false,
+        "positiveOpen": true,
+        "negative": [
+          -3,
+          0,
+          2.8200000000000003
+        ],
+        "positive": [
+          3,
+          0,
+          2.8200000000000003
+        ],
+        "bleed": 0.03125,
+        "motion": "shared-platform"
+      }
+    },
+    {
+      "key": "timberFloatMiddle",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 852,
+        "sheetH": 320
+      },
+      "cellW": 213,
+      "cellH": 160,
+      "pivotX": 106,
+      "pivotY": 144,
+      "module": {
+        "base": "timberFloat",
+        "part": "middle",
+        "run": 6,
+        "depth": 2.4,
+        "deckZ": 2.8200000000000003,
+        "negativeOpen": true,
+        "positiveOpen": true,
+        "negative": [
+          -3,
+          0,
+          2.8200000000000003
+        ],
+        "positive": [
+          3,
+          0,
+          2.8200000000000003
+        ],
+        "bleed": 0.03125,
+        "motion": "shared-platform"
+      }
+    },
+    {
+      "key": "timberFloatEnd",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 852,
+        "sheetH": 320
+      },
+      "cellW": 213,
+      "cellH": 160,
+      "pivotX": 106,
+      "pivotY": 144,
+      "module": {
+        "base": "timberFloat",
+        "part": "end",
+        "run": 6,
+        "depth": 2.4,
+        "deckZ": 2.8200000000000003,
+        "negativeOpen": true,
+        "positiveOpen": false,
+        "negative": [
+          -3,
+          0,
+          2.8200000000000003
+        ],
+        "positive": [
+          3,
+          0,
+          2.8200000000000003
+        ],
+        "bleed": 0.03125,
+        "motion": "shared-platform"
+      }
+    },
+    {
+      "key": "tallPierStart",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 1888,
+        "sheetH": 822
+      },
+      "cellW": 472,
+      "cellH": 411,
+      "pivotX": 235,
+      "pivotY": 225,
+      "module": {
+        "base": "tallPier",
+        "part": "start",
+        "run": 14,
+        "depth": 4.2,
+        "deckZ": 2.8,
+        "negativeOpen": false,
+        "positiveOpen": true,
+        "negative": [
+          -7,
+          0,
+          2.8
+        ],
+        "positive": [
+          7,
+          0,
+          2.8
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
+      }
+    },
+    {
+      "key": "tallPierMiddle",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 1848,
+        "sheetH": 816
+      },
+      "cellW": 462,
+      "cellH": 408,
+      "pivotX": 230,
+      "pivotY": 225,
+      "module": {
+        "base": "tallPier",
+        "part": "middle",
+        "run": 14,
+        "depth": 4.2,
+        "deckZ": 2.8,
+        "negativeOpen": true,
+        "positiveOpen": true,
+        "negative": [
+          -7,
+          0,
+          2.8
+        ],
+        "positive": [
+          7,
+          0,
+          2.8
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
+      }
+    },
+    {
+      "key": "tallPierEnd",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 1884,
+        "sheetH": 822
+      },
+      "cellW": 471,
+      "cellH": 411,
+      "pivotX": 235,
+      "pivotY": 225,
+      "module": {
+        "base": "tallPier",
+        "part": "end",
+        "run": 14,
+        "depth": 4.2,
+        "deckZ": 2.8,
+        "negativeOpen": true,
+        "positiveOpen": false,
+        "negative": [
+          -7,
+          0,
+          2.8
+        ],
+        "positive": [
+          7,
+          0,
+          2.8
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
+      }
+    },
+    {
+      "key": "concreteQuayStart",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 2280,
+        "sheetH": 1048
+      },
+      "cellW": 570,
+      "cellH": 524,
+      "pivotX": 284,
+      "pivotY": 310,
+      "module": {
+        "base": "concreteQuay",
+        "part": "start",
+        "run": 16,
+        "depth": 8,
+        "deckZ": 5.2,
+        "negativeOpen": false,
+        "positiveOpen": true,
+        "negative": [
+          -8,
+          0,
+          5.2
+        ],
+        "positive": [
+          8,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
+      }
+    },
+    {
+      "key": "concreteQuayMiddle",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 2280,
+        "sheetH": 1048
+      },
+      "cellW": 570,
+      "cellH": 524,
+      "pivotX": 284,
+      "pivotY": 310,
+      "module": {
+        "base": "concreteQuay",
+        "part": "middle",
+        "run": 16,
+        "depth": 8,
+        "deckZ": 5.2,
+        "negativeOpen": true,
+        "positiveOpen": true,
+        "negative": [
+          -8,
+          0,
+          5.2
+        ],
+        "positive": [
+          8,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
+      }
+    },
+    {
+      "key": "concreteQuayEnd",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 2288,
+        "sheetH": 1048
+      },
+      "cellW": 572,
+      "cellH": 524,
+      "pivotX": 285,
+      "pivotY": 310,
+      "module": {
+        "base": "concreteQuay",
+        "part": "end",
+        "run": 16,
+        "depth": 8,
+        "deckZ": 5.2,
+        "negativeOpen": true,
+        "positiveOpen": false,
+        "negative": [
+          -8,
+          0,
+          5.2
+        ],
+        "positive": [
+          8,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
+      }
+    },
+    {
+      "key": "breakwaterStart",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 3308,
+        "sheetH": 1250
+      },
+      "cellW": 827,
+      "cellH": 625,
+      "pivotX": 413,
+      "pivotY": 319,
+      "module": {
+        "base": "breakwater",
+        "part": "start",
+        "run": 18,
+        "depth": 18.1,
+        "deckZ": 5.2,
+        "negativeOpen": false,
+        "positiveOpen": true,
+        "negative": [
+          -9,
+          0,
+          5.2
+        ],
+        "positive": [
+          9,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
+      }
+    },
+    {
+      "key": "breakwaterMiddle",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 3324,
+        "sheetH": 1258
+      },
+      "cellW": 831,
+      "cellH": 629,
+      "pivotX": 415,
+      "pivotY": 323,
+      "module": {
+        "base": "breakwater",
+        "part": "middle",
+        "run": 18,
+        "depth": 18.1,
+        "deckZ": 5.2,
+        "negativeOpen": true,
+        "positiveOpen": true,
+        "negative": [
+          -9,
+          0,
+          5.2
+        ],
+        "positive": [
+          9,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
+      }
+    },
+    {
+      "key": "breakwaterEnd",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 3360,
+        "sheetH": 1260
+      },
+      "cellW": 840,
+      "cellH": 630,
+      "pivotX": 419,
+      "pivotY": 324,
+      "module": {
+        "base": "breakwater",
+        "part": "end",
+        "run": 18,
+        "depth": 18.1,
+        "deckZ": 5.2,
+        "negativeOpen": true,
+        "positiveOpen": false,
+        "negative": [
+          -9,
+          0,
+          5.2
+        ],
+        "positive": [
+          9,
+          0,
+          5.2
+        ],
+        "bleed": 0.03125,
+        "motion": "standalone"
+      }
+    },
+    {
+      "key": "plasticFloatStart",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 856,
+        "sheetH": 320
+      },
+      "cellW": 214,
+      "cellH": 160,
+      "pivotX": 106,
+      "pivotY": 144,
+      "module": {
+        "base": "plasticFloat",
+        "part": "start",
+        "run": 6,
+        "depth": 2.4,
+        "deckZ": 2.8200000000000003,
+        "negativeOpen": false,
+        "positiveOpen": true,
+        "negative": [
+          -3,
+          0,
+          2.8200000000000003
+        ],
+        "positive": [
+          3,
+          0,
+          2.8200000000000003
+        ],
+        "bleed": 0.03125,
+        "motion": "shared-platform"
+      }
+    },
+    {
+      "key": "plasticFloatMiddle",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 856,
+        "sheetH": 320
+      },
+      "cellW": 214,
+      "cellH": 160,
+      "pivotX": 106,
+      "pivotY": 144,
+      "module": {
+        "base": "plasticFloat",
+        "part": "middle",
+        "run": 6,
+        "depth": 2.4,
+        "deckZ": 2.8200000000000003,
+        "negativeOpen": true,
+        "positiveOpen": true,
+        "negative": [
+          -3,
+          0,
+          2.8200000000000003
+        ],
+        "positive": [
+          3,
+          0,
+          2.8200000000000003
+        ],
+        "bleed": 0.03125,
+        "motion": "shared-platform"
+      }
+    },
+    {
+      "key": "plasticFloatEnd",
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 856,
+        "sheetH": 320
+      },
+      "cellW": 214,
+      "cellH": 160,
+      "pivotX": 106,
+      "pivotY": 144,
+      "module": {
+        "base": "plasticFloat",
+        "part": "end",
+        "run": 6,
+        "depth": 2.4,
+        "deckZ": 2.8200000000000003,
+        "negativeOpen": true,
+        "positiveOpen": false,
+        "negative": [
+          -3,
+          0,
+          2.8200000000000003
+        ],
+        "positive": [
+          3,
+          0,
+          2.8200000000000003
+        ],
+        "bleed": 0.03125,
+        "motion": "shared-platform"
       }
     }
   ],
-  "derivedFromRigSha256": "4928657c3e8e353dc1fcdf4a3be3f1514ee41b38dea88b68eeae6a6c64c989f9"
+  "derivedFromRigSha256": "4831166b93a0facae96d9195764f637d927312a90e6e9a6e87642452681d618e"
 }

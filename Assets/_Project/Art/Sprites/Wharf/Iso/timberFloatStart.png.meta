@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 2c7f83747cf78fce4f25a91e51391fe7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1005320660415102361
+    second: timberFloatStart_0
+  - first:
+      213: 893344325005824710
+    second: timberFloatStart_1
+  - first:
+      213: 341312631946657514
+    second: timberFloatStart_2
+  - first:
+      213: 1060353402329610481
+    second: timberFloatStart_3
+  - first:
+      213: 480026210281223275
+    second: timberFloatStart_4
+  - first:
+      213: 299000818515937290
+    second: timberFloatStart_5
+  - first:
+      213: 586496815320108981
+    second: timberFloatStart_6
+  - first:
+      213: 871443143394220369
+    second: timberFloatStart_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: timberFloatStart_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 160
+        width: 213
+        height: 160
+      alignment: 9
+      pivot: {x: 0.49765258215962443, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc25288cf277269f6fff4c8b48428875
+      internalID: 1005320660415102361
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: timberFloatStart_1
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 160
+        width: 213
+        height: 160
+      alignment: 9
+      pivot: {x: 0.49765258215962443, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c95a80730df521613471d7264fc7c9f2
+      internalID: 893344325005824710
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: timberFloatStart_2
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 160
+        width: 213
+        height: 160
+      alignment: 9
+      pivot: {x: 0.49765258215962443, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c182d4fdf9676c5ea7cc6003537b31e
+      internalID: 341312631946657514
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: timberFloatStart_3
+      rect:
+        serializedVersion: 2
+        x: 639
+        y: 160
+        width: 213
+        height: 160
+      alignment: 9
+      pivot: {x: 0.49765258215962443, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b2e926378a06a76e090b1731b6f7dd0
+      internalID: 1060353402329610481
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: timberFloatStart_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 213
+        height: 160
+      alignment: 9
+      pivot: {x: 0.49765258215962443, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 424b59780a0167bb9d7a46c06ab54b95
+      internalID: 480026210281223275
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: timberFloatStart_5
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 0
+        width: 213
+        height: 160
+      alignment: 9
+      pivot: {x: 0.49765258215962443, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5c912e7fbcb36d3c7ce652c14645cb9
+      internalID: 299000818515937290
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: timberFloatStart_6
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 0
+        width: 213
+        height: 160
+      alignment: 9
+      pivot: {x: 0.49765258215962443, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a79445e7ae33a6c2fad32349c249b5ac
+      internalID: 586496815320108981
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: timberFloatStart_7
+      rect:
+        serializedVersion: 2
+        x: 639
+        y: 0
+        width: 213
+        height: 160
+      alignment: 9
+      pivot: {x: 0.49765258215962443, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 246aae2847f82d06f0c94d5372645f91
+      internalID: 871443143394220369
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID: 0c144c01988d6da4a05da9d6365a9c57
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      timberFloatStart_0: 1005320660415102361
+      timberFloatStart_1: 893344325005824710
+      timberFloatStart_2: 341312631946657514
+      timberFloatStart_3: 1060353402329610481
+      timberFloatStart_4: 480026210281223275
+      timberFloatStart_5: 299000818515937290
+      timberFloatStart_6: 586496815320108981
+      timberFloatStart_7: 871443143394220369
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

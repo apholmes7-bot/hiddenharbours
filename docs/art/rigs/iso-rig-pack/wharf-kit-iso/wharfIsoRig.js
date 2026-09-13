@@ -174,8 +174,15 @@
       tex?[[0,0],[xe-xs,0],[xe-xs,ye-ys],[0,ye-ys]]:null, tex||null, flat)); }
 
   // ---- textures ----
-  function plankTex(p){ p=p||0.20; return (u,v)=>{ const f=((u%p)+p)%p; if(f<0.028) return -2;
-    return hash2(Math.floor(u/p)|0, Math.floor(v*2.4)|0)<0.42?-1:0; }; }
+  function plankTex(p){ p=p||0.20; return (u,v)=>{
+    const board=Math.floor(u/p), f=((u%p)+p)%p, stagger=((board%3)+3)%3*0.8;
+    const end=((v+stagger)%2.4+2.4)%2.4;
+    if(f<0.022 || end<0.025) return -2;
+    if((end<0.085 || end>2.345) && (Math.abs(f-p*0.27)<0.014 || Math.abs(f-p*0.73)<0.014)) return -2.4;
+    const tone=hash2(board,Math.floor((v+stagger)/2.4));
+    const grain=hash2(board*7+Math.floor(f*65),Math.floor(v*3));
+    return (tone<0.25?-0.65:tone>0.82?0.35:0)+(grain<0.14?-0.7:0);
+  }; }
   function grainTex(p){ p=p||0.28; return (u,v)=>{ const f=((v%p)+p)%p; if(f<0.03) return -2;
     return hash2(Math.floor(v/p)|0, Math.floor(u*3)|0)<0.5?0:-1; }; }
   function sawnTex(){ return (u,v)=>{ const h=hash2(Math.floor(u*7)|0, Math.floor(v*22)|0); return h<0.3?-1:(h>0.9?1:0); }; }
@@ -448,6 +455,32 @@
   // ============================ DECK ASSEMBLIES ==============================================
   const DECK = { plank:0.055, stringer:[0.10,0.30], cap:[0.30,0.25], curb:[0.16,0.20],
     repairEvery:8, repairWidth:0.18, repairLength:0.90, cornerPlate:0.18 };
+  const JOIN = { bleed:1/PX, plateWidth:0.16, plateDepth:0.28 };
+  const CONSTRUCTION = { braceRadius:0.075, strapWidth:0.14, strapHeight:0.30,
+    crestWidth:1.6, armourSlope:1.25, filterStep:0.44, armourStep:0.88 };
+  function faceStrap(out,x,y,side,z,T,s){
+    if(!s.details) return;
+    const c=CONSTRUCTION;
+    decalY(out,y,side,x-c.strapWidth/2,x+c.strapWidth/2,z-c.strapHeight/2,z+c.strapHeight/2,
+      matAtZ(z,'iron',T,s),-0.05,rustTex(),false,0.03);
+    for(const dz of [-0.09,0.09]) tube(out,[x,y+side*0.025,z+dz],[x,y+side*0.045,z+dz],
+      FIT.fastening.radius,6,matAtZ(z+dz,'galv',T,s),0.2,null,true);
+  }
+  function concreteDetails(out,hx,hy,top,s){
+    if(!s.details) return;
+    for(let i=1;i<s.bays;i++){
+      const x=-hx+i*s.bayLen;
+      decalZ(out,top+0.003,x-0.0125,x+0.0125,-hy+0.07,hy-0.07,'concS',-0.7,null,true,0.01);
+    }
+    for(let i=0;i<s.bays;i++){
+      const x=-hx+(i+0.5)*s.bayLen, y=-hy+0.6;
+      decalZ(out,top+0.003,x-0.36,x+0.36,y-0.14,y+0.14,'iron',-1,null,true,0.01);
+      for(let j=0;j<7;j++){
+        const xx=x-0.31+j*0.62/6;
+        decalZ(out,top+0.005,xx-0.012,xx+0.012,y-0.115,y+0.115,'galv',-0.45,null,true,0.01);
+      }
+    }
+  }
   function deckDetails(out,x0,x1,y0,y1,top,s){
     if(!s.details) return;
     const count=Math.max(1,Math.floor((x1-x0)/DECK.repairEvery));
@@ -593,8 +626,9 @@
           sheetWall(out, -hx, -hy, -hx, hy, base, top, sheet, T, s, -0.3);
           box(out, -hx-0.04, hx+0.04, -hy-0.04, hy+0.04, top-0.22, top, 'conc', 0.10, formTex(0.5));
           slab(out, [[-hx-0.04,-hy-0.04],[hx+0.04,-hy-0.04],[hx+0.04,hy+0.04],[-hx-0.04,hy+0.04]], top, 'conc', 0.06, formTex(0.9));
+          concreteDetails(out,hx,hy,top,s);
           if(s.curb !== 'none'){ const c = DECK.curb;      // Torbay's yellow bull rail rides the cap
-            box(out, -hx, hx, hy-c[0]-0.02, hy-0.02, top, top+c[1], s.curb==='yellow'?'yel':'wood', 0.20, sawnTex()); }
+            deckCurb(out,-hx,hx,hy-c[0]-0.02,hy-0.02,top,c[1],s); }
           return;
         }
         // mass body, band-split so the tide frame reads on every wetted face
@@ -605,6 +639,7 @@
         // coping: cast slab standing 0.24 proud of the body, oversailing 60 mm
         box(out, -hx-0.06, hx+0.06, -hy-0.06, hy+0.06, top-0.24, top, 'conc', 0.10, formTex(0.5));
         slab(out, [[-hx-0.06,-hy-0.06],[hx+0.06,-hy-0.06],[hx+0.06,hy+0.06],[-hx-0.06,hy+0.06]], top, 'conc', 0.06, formTex(0.9));
+        concreteDetails(out,hx,hy,top,s);
         // timber rubbing strake + vertical fender piles on the working face
         if(s.fenderPiles) for(let i=0;i<=s.bays;i++){ const x = -hx + i*s.bayLen;
           bandedPile(out, x, hy+0.16, 0.14, Math.max(base, -0.9), top-0.30, 'pole', T, s, 9); }
@@ -648,6 +683,18 @@
           const wz = Math.max(s.mudZ + 0.5, Math.min(pileTop - 0.9, T.mid + 0.55));
           for(const g of zSplit(wz-0.09, wz+0.09, 'wood', T, s))
             box(out, -hx-0.05, hx+0.05, y - (y>0?0.02:0.16) , y + (y>0?0.16:0.02), g.a, g.b, g.mat, -0.2, sawnTex(), true);
+          if(s.details){
+            const side=y>0?1:-1, fy=y+side*0.17;
+            for(let i=0;i<=s.bays;i++) faceStrap(out,-hx+i*s.bayLen,fy,side,wz,T,s);
+            if(s.struct!=='sheeted') for(let i=0;i<s.bays;i++){
+              const xa=-hx+i*s.bayLen, xb=xa+s.bayLen;
+              const lo=Math.max(s.mudZ+0.35,wz-0.55), hi=pileTop-0.22;
+              if(hi-lo<0.35) continue;
+              const za=i%2?hi:lo, zb=i%2?lo:hi;
+              beam(out,[xa,fy,za],[xb,fy,zb],CONSTRUCTION.braceRadius,matAtZ((za+zb)/2,'wood',T,s),-0.15,6);
+              faceStrap(out,xa,fy+side*0.08,side,za,T,s); faceStrap(out,xb,fy+side*0.08,side,zb,T,s);
+            }
+          }
         }
         // sheeted variant: close the working face below the deck so it reads as a solid wharf
         if(s.struct === 'sheeted'){
@@ -694,13 +741,18 @@
           slab(out, cap, fillZ + rr*0.45*0.7, m, 0.25, rockTex());
         }
         // deck bearers over the crib, then planking
+        if(s.details) for(let i=0;i<=s.bays;i++) for(const side of [-1,1]){
+          const x=-hx+i*s.bayLen,y=side*(hy+0.12);
+          for(const z of [cribTop-0.45,Math.max(base+0.6,T.mid)]) faceStrap(out,x,y,side,z,T,s);
+        }
         for(let i=0;i<=s.bays;i++){ const x = -hx + i*s.bayLen;
           box(out, x-0.14, x+0.14, -hy+0.1, hy-0.1, cribTop, top - DECK.plank, matAtZ(cribTop,'wood',T,s), 0.0, sawnTex(), true); }
         if(s.cap === 'concrete'){
           box(out, -hx-0.05, hx+0.05, -hy-0.05, hy+0.05, top - 0.26, top, 'conc', 0.08, formTex(0.5));
           slab(out, [[-hx-0.05,-hy-0.05],[hx+0.05,-hy-0.05],[hx+0.05,hy+0.05],[-hx-0.05,hy+0.05]], top, 'conc', 0.06, formTex(0.9));
+          concreteDetails(out,hx,hy,top,s);
           if(s.curb !== 'none'){ const c = DECK.curb;
-            box(out, -hx, hx, hy-c[0], hy, top, top+c[1], s.curb==='yellow'?'yel':'wood', 0.18, sawnTex()); }
+            deckCurb(out,-hx,hx,hy-c[0],hy,top,c[1],s); }
         } else plankDeck(out, -hx, hx, -hy, hy, top, s, s.curb === 'none' ? 0 : 1);
       } },
 
@@ -748,6 +800,10 @@
         }
         slab(out, [[-hx,-hy],[hx,-hy],[hx,hy],[-hx,hy]], top, 'plank', 0.12, plankTex(0.20));
         deckDetails(out,-hx,hx,-hy,hy,top,s);
+        if(s.details) for(const side of [-1,1]){
+          const y=side*hy;
+          for(let i=0;i<=s.bays;i++) faceStrap(out,-hx+i*s.bayLen,y,side,(fz0+fz1)/2,T,s);
+        }
         if(s.curb !== 'none'){ const c = DECK.curb;
           deckCurb(out,-hx,hx,hy-c[0],hy,top,c[1]*0.7,s); }
         }
@@ -854,16 +910,24 @@
       } },
 
     riprap: { label:'armour-stone edge', note:'graded rock — revetment, breakwater mound or sheet-pile cell',
-      dims:{ bays:[2,8,4], bayLen:[2,4,3], width:[2.5,7,4], deckZ:[0.8,4,2.2] },
+      dims:{ bays:[2,8,4], bayLen:[2,4,3], width:[2.5,32,4], deckZ:[0.8,4,2.2] },
       build(out, s, T){
         const L = s.bays*s.bayLen, hx = L/2, crest = s.deckZ, toe = s.mudZ, hy = s.width/2;
         const rnd = mulberry32(s.variant*4441 + 907);
         const SM = s.stone === 'sandstone' ? 'sandst' : 'stone';      // PEI red, or grey granite
         const cell = s.mound === 'sheetCell', bw = s.mound === 'breakwater';
         // the face: a revetment slopes one way, a breakwater mounds both ways off a centre crest
-        const zPlane = bw
-          ? (y)=> crest - (Math.abs(y) / hy) * (crest - toe) * 0.92
-          : (y)=> crest - ((y + hy) / s.width) * (crest - toe);
+        const zPlane = (y,x=0)=>{
+          const cross=bw ? crest-Math.max(0,Math.abs(y)-s.crestWidth/2)/(hy-s.crestWidth/2)*(crest-toe)
+            : crest-((y+hy)/s.width)*(crest-toe);
+          if(!bw) return cross;
+          // End pieces have an armoured sloping head within their footprint. Internal ends retain
+          // the complete cross-section, so a middle can repeat without a dip at every join.
+          let end=crest;
+          if(s.part==='single'||s.part==='start') end=Math.min(end,toe+(x+hx)/s.armourSlope);
+          if(s.part==='single'||s.part==='end') end=Math.min(end,toe+(hx-x)/s.armourSlope);
+          return Math.min(cross,end);
+        };
         if(cell){
           // driven sheet-pile cell, rock-filled and capped — the harbour breakwater arm
           const capZ = crest - 0.55;
@@ -887,24 +951,24 @@
         const steps = Math.max(6, Math.round(L/0.9));
         for(let i=0;i<steps;i++){
           const xa = -hx + L*(i/steps), xb = -hx + L*((i+1)/steps);
-          const edges = bw ? [-hy+0.15,0,hy-0.15] : [-hy+0.15,hy-0.15];
+          const edges = bw ? [-hy+0.15,-s.crestWidth/2,0,s.crestWidth/2,hy-0.15] : [-hy+0.15,hy-0.15];
           for(let j=0;j<edges.length-1;j++){
           const ya=edges[j], yb=edges[j+1];
           const m = matAtZ((zPlane(ya)+zPlane(yb))/2, SM, T, s);
-          out.push(F([[xa,ya,zPlane(ya)-0.16],[xb,ya,zPlane(ya)-0.16],[xb,yb,zPlane(yb)-0.16],[xa,yb,zPlane(yb)-0.16]], m, -0.5, 0,
+          out.push(F([[xa,ya,zPlane(ya,xa)-0.16],[xb,ya,zPlane(ya,xb)-0.16],[xb,yb,zPlane(yb,xb)-0.16],[xa,yb,zPlane(yb,xa)-0.16]], m, -0.5, 0,
             [[xa,ya],[xb,ya],[xb,yb],[xa,yb]], rockTex()));
           }
         }
         // two grades on a jittered lattice: filter stone first, armour over it, all faceted
-        for(const g of [{ r:[0.14,0.22], step:0.30, lift:-0.05, b:-0.95 },
-                        { r:[0.34,0.58], step:0.72, lift:0.08, b:0.0 }]){
+        for(const g of [{ r:[0.18,0.30], step:bw?CONSTRUCTION.filterStep:0.30, lift:-0.05, b:-0.95 },
+                        { r:bw?[0.42,0.76]:[0.34,0.58], step:bw?CONSTRUCTION.armourStep:0.72, lift:0.08, b:0.0 }]){
           const nx = Math.max(2, Math.round(L / g.step)), ny = Math.max(2, Math.round(s.width / g.step));
           for(let j=0;j<ny;j++) for(let i=0;i<nx;i++){
             const jx = (rnd()-0.5)*g.step*1.05, jy = (rnd()-0.5)*g.step*0.85;
             const x = -hx + (i+0.5)*(L/nx) + jx, y = -hy + (j+0.5)*(s.width/ny) + jy;
             if(x < -hx || x > hx || y < -hy || y > hy) continue;
             const rr = g.r[0] + Math.pow(rnd(), 1.6)*(g.r[1]-g.r[0]);
-            const zs = zPlane(y) + g.lift + rr*0.30 + (rnd()-0.5)*0.16;
+            const zs = zPlane(y,x) + g.lift + rr*0.30 + (rnd()-0.5)*0.16;
             if(zs > crest + 0.14) continue;
             const crown = rubbleStone(out, x, y, zs, rr, matAtZ(zs, SM, T, s), rnd, g.b);
             if(s.growth.weed && Math.abs(zs - T.weedTop) < 0.28 && rnd() < 0.45) weedFringe(out, x, y, rr*0.8, crown - rr*0.3, s);
@@ -961,6 +1025,7 @@
     // the consequence as a named trade (at Nine Mile Creek the piles rose and fell 4.4 m with the dock).
     // `raft` splits the family into its two cells: the raft alone, and its fixed furniture alone.
     raft: true,           // float: draw the RAFT. false = the seabed-driven furniture only (floatPiles)
+    part:'single', crestWidth:CONSTRUCTION.crestWidth, armourSlope:CONSTRUCTION.armourSlope,
     pileHoops: null,      // float: the sliding collars. null = follow guidePiles (the original look)
     rung: null,           // gangway: index into the slope ladder — see gangwayDrops()
   };
@@ -1038,9 +1103,17 @@
     gangway:      { family:'gangway', run:12 },
     graniteEdge:  { family:'riprap', stone:'granite',   mound:'revetment' },
     redEdge:      { family:'riprap', stone:'sandstone', mound:'revetment' },
-    breakwater:   { family:'riprap', stone:'granite',   mound:'breakwater', width:6, bays:6 },
+    breakwater:   { family:'riprap', stone:'granite',   mound:'breakwater', width:null, bays:6 },
     sheetCell:    { family:'riprap', stone:'granite',   mound:'sheetCell', width:5, bays:5, deckZ:2.6 },
   };
+  // End sections share the middle's footprint/pitch. They close only the OUTER return; they are
+  // not a whole capped block repeated at every seam. Existing preset names remain standalone.
+  const MODULE_BASES=['logCrib','timberFloat','tallPier','concreteQuay','breakwater','plasticFloat'];
+  for(const base of MODULE_BASES) for(const part of ['start','middle','end']){
+    const key=base+part[0].toUpperCase()+part.slice(1);
+    PRESETS[key]=Object.assign({},PRESETS[base],{part,moduleBase:base});
+    if(PRESETS[base].family==='float') Object.assign(PRESETS[key],{guidePiles:false,chain:false,pileHoops:true,rock:false});
+  }
   function resolve(family, opts){
     opts = opts || {};
     if(PRESETS[family]){ opts = Object.assign({}, PRESETS[family], opts); family = PRESETS[family].family; }
@@ -1083,6 +1156,12 @@
       s.deckZ = clampF(s.deckZ, s.toeZ + 0.6, s.toeZ + s.run*0.35);
     }
     s.mudZ = Math.min(s.mudZ, -0.35);
+    s.part=['single','start','middle','end'].indexOf(s.part)>=0?s.part:'single';
+    if(s.family==='float' && s.part!=='single') s.rock=false; // the WHOLE assembled platform supplies motion
+    if(s.family==='riprap' && s.mound==='breakwater'){
+      if(opts.width==null) s.width=Math.min(D.width[1],s.crestWidth+2*(s.deckZ-s.mudZ)*s.armourSlope);
+      s.crestWidth=Math.max(0.3,Math.min(s.width-0.6,s.crestWidth));
+    }
     return s;
   }
   const clampF = (v,a,b)=> Math.max(a, Math.min(b, +v || 0));
@@ -1110,8 +1189,10 @@
       const clearTy=ty.filter(x=>!P.foams.some(g=>Math.abs(g.x-x)<(FIT.tyre.od+FIT.foam.od)/2));
       for(const x of clearTy.slice(0,n(f.tyre,clearTy))) P.tyres.push({ x,y:hy,side:1,top:fenderTop(0.28) });
     } else {
-      for(const x of spread(f.ladder === 'auto' ? 1 : f.ladder, 1.0)) P.ladders.push({ x, y:hy, side:1, topZ:top, botZ:-FIT.ladder.below });
-      for(const x of spread(f.tyre === 'auto' ? 2 : f.tyre, 0.9)) P.tyres.push({ x, y:hy, side:1, top: fenderTop(0.28) });
+      for(const x of spread(f.ladder === 'auto' ? 1 : f.ladder, 1.0)) P.ladders.push({ x, y:hy, side:1, topZ:top, botZ:ladderBottom(s,T) });
+      for(const x of spread(f.tyre === 'auto' ? 2 : f.tyre, 0.55))
+        if(P.ladders.every(l=>Math.abs(l.x-x)>FIT.tyre.od/2+FIT.ladder.w/2+0.1) &&
+          P.tyres.every(t=>Math.abs(t.x-x)>=FIT.tyre.od)) P.tyres.push({x,y:hy,side:1,top:fenderTop(0.28)});
       for(const x of spread(f.foam === 'auto' ? 1 : f.foam, 1.4)) P.foams.push({ x, y:hy, side:1, top: fenderTop(0.20) });
     }
     // deck hardware: stations every ~1.3 m, ladders AND fenders reserved first
@@ -1143,7 +1224,10 @@
           if(a>start) P.rails.push([start,hy-0.08,a,hy-0.08]); start=Math.max(start,b); }
         if(start<hx-0.1) P.rails.push([start,hy-0.08,hx-0.1,hy-0.08]);
       }
-      if(R.indexOf('ends')  >= 0){ P.rails.push([-hx+0.08, -hy+0.1, -hx+0.08, hy-0.1]); P.rails.push([hx-0.08, -hy+0.1, hx-0.08, hy-0.1]); }
+      if(R.indexOf('ends')>=0){
+        if(s.part==='single'||s.part==='start') P.rails.push([-hx+0.08,-hy+0.1,-hx+0.08,hy-0.1]);
+        if(s.part==='single'||s.part==='end') P.rails.push([hx-0.08,-hy+0.1,hx-0.08,hy-0.1]);
+      }
     }
     return Object.assign(P, { L, hx, hy, top, berths:B });
   }
@@ -1256,16 +1340,65 @@
     return { data, w:W, h:H, px:ox, py:oy, wet };
   }
 
-  function render(family, dir, opts){
-    opts = (typeof opts === 'number') ? { elev:opts } : (opts || {});
-    const s = resolve(family, opts), T = frame(s), B = camBasis({ dir, elev:opts.elev });
-    const out = [];
+  function joinProfile(s,y){
+    if(s.family!=='riprap') return s.deckZ;
+    if(s.mound==='breakwater') return s.deckZ-Math.max(0,Math.abs(y)-s.crestWidth/2)/(s.width/2-s.crestWidth/2)*(s.deckZ-s.mudZ);
+    return s.deckZ-((y+s.width/2)/s.width)*(s.deckZ-s.mudZ);
+  }
+  function clipAtJoin(face,x,positive){
+    // Clip geometry and its UVs together. No cap is generated on an internal join plane.
+    const src=face.v.map((p,i)=>({p,uv:face.uv?face.uv[i]:null})), result=[];
+    const inside=a=>positive?a.p[0]<=x+1e-8:a.p[0]>=x-1e-8;
+    for(let i=0;i<src.length;i++){
+      const a=src[(i+src.length-1)%src.length],b=src[i],ai=inside(a),bi=inside(b);
+      if(ai!==bi){
+        const t=(x-a.p[0])/(b.p[0]-a.p[0]);
+        result.push({p:a.p.map((v,j)=>j===0?x:v+(b.p[j]-v)*t),uv:a.uv?a.uv.map((v,j)=>v+(b.uv[j]-v)*t):null});
+      }
+      if(bi) result.push(b);
+    }
+    if(result.length<3 || result.every(v=>Math.abs(v.p[0]-x)<1e-7)) return null;
+    return Object.assign({},face,{v:result.map(v=>v.p),uv:face.uv?result.map(v=>v.uv):null});
+  }
+  function modularFaces(faces,s){
+    if(s.part==='single') return faces;
+    const hx=s.bays*s.bayLen/2,hy=s.width/2;
+    const open=[];
+    if(s.part!=='start') open.push([-hx,false]);
+    if(s.part!=='end') open.push([hx,true]);
+    for(const [x,positive] of open) faces=faces.map(f=>clipAtJoin(f,x,positive)).filter(Boolean);
+    // A one-pixel underlap closes raster rounding cracks at diagonal joins. It is visual coverage,
+    // not spacing: the two metric sockets remain exactly one structural run apart.
+    for(const [x] of open){
+      const rock=s.family==='riprap', concrete=s.family==='quay'||s.cap==='concrete';
+      const mat=rock?(s.stone==='sandstone'?'sandst':'stone'):s.hull==='plastic'?'hdpeDeck':concrete?'conc':'plank';
+      const ys=rock&&s.mound==='breakwater'?[-hy,-s.crestWidth/2,s.crestWidth/2,hy]:[-hy,hy];
+      for(let i=0;i<ys.length-1;i++){
+        const a=ys[i],b=ys[i+1],z0=joinProfile(s,a)-(rock?0.16:0.003),z1=joinProfile(s,b)-(rock?0.16:0.003);
+        faces.push(F([[x-JOIN.bleed,a,z0],[x+JOIN.bleed,a,z0],[x+JOIN.bleed,b,z1],[x-JOIN.bleed,b,z1]],mat,0.06));
+      }
+      if(s.details&&!rock) for(const y of [-hy+0.32,hy-0.32]){
+        decalZ(faces,s.deckZ+0.004,x-JOIN.plateWidth/2,x+JOIN.plateWidth/2,y-JOIN.plateDepth/2,y+JOIN.plateDepth/2,'iron',-0.3,rustTex(),false,0.01);
+        for(const dx of [-0.04,0.04]) fasteningAt(faces,x+dx,y,s.deckZ+0.005);
+      }
+    }
+    return faces;
+  }
+  function geometry(family,opts){
+    const s=resolve(family,opts||{}),T=frame(s);
+    let out=[];
     s._rockPt = rockXform(s, T);
     FAMILIES[s.family].build(out, s, T);
     if(s.family !== 'riprap' && s.family !== 'gangway') addFittings(out, s, T);
     const rk = rockXform(s, T);
     if(rk) for(const f of out) if(!f.fixed) f.v = f.v.map(rk);
-    return bake(out, B, makeMats(s), s, T);
+    out=modularFaces(out,s);
+    return {faces:out,s,T};
+  }
+  function render(family, dir, opts){
+    opts=(typeof opts==='number')?{elev:opts}:(opts||{});
+    const g=geometry(family,opts),B=camBasis({dir,elev:opts.elev});
+    return bake(g.faces,B,makeMats(g.s),g.s,g.T);
   }
 
   // ============================ GAMEPLAY =====================================================
@@ -1314,7 +1447,7 @@
       angleDeg:+(Math.atan2(rz0 - rz1, L) * 180/Math.PI).toFixed(1),
       zAtX:'z0 + (z1 - z0) * ((x + L/2) / L)',
       submergedFrom: rz1 < T.w ? +(-hx + L * ((rz0 - T.w)/(rz0 - rz1))).toFixed(2) : null }); }
-    if(s.family === 'float') walk[0].rock = { rollDeg:0.85, pitchDeg:0.55, heaveM:0.022, frames:8, locked:true };
+    if(s.family === 'float') walk[0].rock = { rollDeg:s.rock===false?0:0.85, pitchDeg:s.rock===false?0:0.55, heaveM:s.rock===false?0:0.022, frames:s.rock===false?1:8, locked:true };
     // where a hull meets a ramp: the gangway's landing, the slipway's water edge at THIS tide
     const ends = ramp ? (s.family === 'gangway'
       ? { hinge:{ x:+(-hx).toFixed(2), z:+rz0.toFixed(2), fixedTo:'deck' },
@@ -1324,6 +1457,10 @@
           launchable: T.w > rz1 + 0.35 }) : null;
     return {
       family: s.family, label: FAMILIES[s.family].label,
+      module: { base:s.moduleBase||family, part:s.part, run:L, depth:s.width, deckZ:top,
+        negativeOpen:s.part==='middle'||s.part==='end',positiveOpen:s.part==='middle'||s.part==='start',
+        negative:[-hx,0,top],positive:[hx,0,top],bleed:JOIN.bleed,
+        motion:s.family==='float'&&s.part!=='single'?'shared-platform':'standalone' },
       footprint: { w:+L.toFixed(2), d:+s.width.toFixed(2) },
       deckZ:+top.toFixed(2), waterZ:+T.w.toFixed(2), tideRange:+T.R.toFixed(2),
       freeboard:+drop.toFixed(2), mudZ:s.mudZ,
@@ -1381,5 +1518,5 @@
       cap:['plank','concrete'], hull:['timber','plastic'], stone:['granite','sandstone'],
       mound:['revetment','breakwater','sheetCell'], curb:['wood','yellow','none'] },
     list, presets: ()=>Object.keys(PRESETS), resolve, frame, placements, berths, makeMats,
-    render, gameplay, anchors, project };
+    render, gameplay, anchors, project, geometry, MODULE_BASES, JOIN, CONSTRUCTION };
 })(typeof globalThis !== 'undefined' ? globalThis : window);

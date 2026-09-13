@@ -393,7 +393,7 @@ namespace HiddenHarbours.App.Editor
             int bays = Mathf.FloorToInt(NineMileCreekMainland.FloatRunLengthMetres / bay + 1e-4f);
             for (int i = 0; i < bays; i++)
                 list.Add(new FloatCourse(
-                    NineMileCreekQuayFace.FloatCourseKey,
+                    WharfModules.Key(NineMileCreekQuayFace.FloatCourseKey, i, bays),
                     new Vector2(NineMileCreekMainland.FloatRunWestX + bay * (i + 0.5f),
                                 NineMileCreekMainland.FloatRunY)));
             return list;

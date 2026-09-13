@@ -19,6 +19,22 @@ const W = host.WharfIso;
 const out = 'Temp/wharf-review';
 fs.mkdirSync(out, { recursive: true });
 const contract = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
+if (mode === '--bake') for (const base of W.MODULE_BASES) {
+  for (const part of ['Start','Middle','End']) {
+    const key=base+part;
+    if (!contract.cells.some(c=>c.key===key)) contract.cells.push({key,sheet:{cols:4,rows:2}});
+  }
+}
+function newMeta(key) {
+  const hash = value => crypto.createHash('sha256').update(`HiddenHarbours/wharf-modules/${value}`).digest('hex');
+  let meta=fs.readFileSync(`${assetDir}/logCrib.png.meta`,'utf8').replaceAll('logCrib_',`${key}_`);
+  const ids=[...meta.matchAll(/      internalID: (-?\d+)/g)].map(m=>m[1]);
+  for(let i=0;i<ids.length;i++) meta=meta.replaceAll(ids[i],BigInt(`0x${hash(`${key}/${i}`).slice(0,15)}`).toString());
+  let index=0;
+  return meta.replace(/^guid: \w+/m,`guid: ${hash(key).slice(0,32)}`)
+    .replace(/spriteID: \w+/g,()=>`spriteID: ${hash(`${key}/sprite/${index++}`).slice(0,32)}`)
+    .replace(/[ \t]+(?=\r?$)/gm,'');
+}
 const round = x => { // Mathf.RoundToInt: float32 input, ties to even.
   x = Math.fround(x);
   const lo = Math.floor(x);
@@ -168,7 +184,37 @@ if (mode === '--preview') {
     assert(r[2] <= l.x - W.FIT.ladder.access/2 || r[0] >= l.x + W.FIT.ladder.access/2, 'rail crosses ladder access');
   const coreS = W.resolve('breakwater', {}), faces = [];
   W.FAMILIES.riprap.build(faces, coreS, W.frame(coreS));
-  assert(faces[0].v.some(v => v[1] === 0 && Math.abs(v[2] - coreS.deckZ + 0.16) < 1e-6), 'mound core misses crest');
+  assert(faces.some(f=>f.v.some(v => v[1] === 0 && Math.abs(v[2] - coreS.deckZ + 0.16) < 1e-6)), 'mound core misses crest');
+  for(const base of W.MODULE_BASES) for(const part of ['Start','Middle','End']) {
+    const key=base+part, g=W.gameplay(key,{}), m=g.module;
+    assert.equal(m.negativeOpen,part!=='Start'); assert.equal(m.positiveOpen,part!=='End');
+    assert.equal(m.positive[0]-m.negative[0],m.run);
+    for(let dir=0;dir<8;dir++) {
+      const left=W.project(dir,m.negative),right=W.project(dir,m.positive),step=W.project(dir,[m.run,0,0]);
+      assert(Math.abs(right.x-left.x-step.x)<1e-6 && Math.abs(right.y-left.y-step.y)<1e-6,`${key}: socket projection`);
+    }
+    if(base.includes('Float')) assert.equal(W.resolve(key,{}).rock,false,'connected float rocks apart');
+    const geom=W.geometry(key,{});
+    for(const f of geom.faces) for(const [open,x] of [[m.negativeOpen,m.negative[0]],[m.positiveOpen,m.positive[0]]])
+      if(open) assert(!f.v.every(v=>Math.abs(v[0]-x)<1e-7),`${key}: internal return cap`);
+  }
+  for(const base of W.MODULE_BASES.filter(b=>b!=='breakwater')) for(let dir=0;dir<8;dir++) {
+    const m=W.gameplay(base+'Middle',{}).module;
+    const items=['Start','Middle'].map((part,i)=>{
+      const c=W.render(base+part,dir),p=W.project(dir,[i*m.run,0,0]);
+      return {c,x:round(p.x-c.px),y:round(p.y-c.py)};
+    });
+    for(const y of [-m.depth/2+0.4,0,m.depth/2-0.4]) for(const dx of [-0.06,0,0.06]) {
+      const p=W.project(dir,[m.run/2+dx,y,m.deckZ]);
+      const covered=items.some(({c,x,y})=>{
+        for(let oy=-1;oy<=1;oy++)for(let ox=-1;ox<=1;ox++){
+          const sx=round(p.x)-x+ox,sy=round(p.y)-y+oy;
+          if(sx>=0&&sy>=0&&sx<c.w&&sy<c.h&&c.data[(sy*c.w+sx)*4+3])return true;
+        } return false;
+      });
+      assert(covered,`${base}/${dir}: visible deck gap at joining sockets`);
+    }
+  }
   const a = W.render('timberFloat', 3), b = W.render('timberFloat', 3);
   assert(Buffer.from(a.data).equals(Buffer.from(b.data)), 'render is not deterministic');
   for (let i=3;i<a.data.length;i+=4) assert(a.data[i] === 0 || a.data[i] === 255, 'non-binary alpha');
@@ -178,15 +224,16 @@ if (mode === '--preview') {
     assert.equal(contract.derivedFromRigSha256,sha,'stale bake contract hash');
     assert.equal(side.derivedFromRigSha256,sha,'stale gameplay sidecar hash');
     for(const key of W.list()) assert.equal(JSON.stringify(side.samples[key]),JSON.stringify(W.gameplay(key,{})),`${key}: stale gameplay sample`);
+    for(const key of W.list()) assert.equal(JSON.stringify(side.families[key].dims),JSON.stringify(W.FAMILIES[key].dims),`${key}: stale dimensional limits`);
   }
 
   const results = [];
   for (const c of contract.cells) {
     const p = packed(c.key,c);
     const metaPath = `${assetDir}/${c.key}.png.meta`;
-    let meta = fs.readFileSync(metaPath,'utf8');
+    let meta = fs.existsSync(metaPath) ? fs.readFileSync(metaPath,'utf8') : newMeta(c.key);
     const idBefore = [...meta.matchAll(/(?:spriteID|internalID): .+/g)].map(m=>m[0]);
-    const next = { ...c, ...p.spec, sheet:{...c.sheet, sheetW:p.width, sheetH:p.height} };
+    const next = { ...c, ...p.spec, module:W.gameplay(c.key,{}).module, sheet:{...c.sheet, sheetW:p.width, sheetH:p.height} };
     let slices = 0;
     meta = meta.replace(/(    - serializedVersion: 2\r?\n      name: ([^\r\n]+)\r?\n)([\s\S]*?)(?=    - serializedVersion: 2\r?\n      name:|    outline:)/g,
       (all, head, name, body) => {
@@ -217,8 +264,8 @@ if (mode === '--preview') {
   if(mode === '--bake') {
     // All keys have rendered and passed shape/cap/identity checks before writing any game asset.
     for(const {c,next,p,meta,metaPath} of results){
-      const pngPath=`${assetDir}/${c.key}.png`, old=decodePng(fs.readFileSync(pngPath));
-      if(old.width!==p.width || old.height!==p.height || !Buffer.from(p.rgba).equals(old.rgba))
+      const pngPath=`${assetDir}/${c.key}.png`, old=fs.existsSync(pngPath)?decodePng(fs.readFileSync(pngPath)):null;
+      if(!old || old.width!==p.width || old.height!==p.height || !Buffer.from(p.rgba).equals(old.rgba))
         fs.writeFileSync(pngPath,encodePng(p.rgba,p.width,p.height));
       if(['cellW','cellH','pivotX','pivotY'].some(k=>next[k]!==c[k])) fs.writeFileSync(metaPath,meta);
       Object.assign(c,next);
@@ -229,6 +276,7 @@ if (mode === '--preview') {
     const maxDim=Math.max(longest.sheet.sheetW,longest.sheet.sheetH);
     contract.worstSheetByMaxDim={key:longest.key,w:longest.sheet.sheetW,h:longest.sheet.sheetH,maxDim,headroomToCap:contract.importSizeCap-maxDim};
     contract.generated='Measured by tools/wharf-review.mjs from all rendered facings and gangway rungs at defaults. Metres, 32 PPU, CCW sheet order, pivot-aligned buffer union. See docs/art/wharf-review-2026-09-13.md.';
+    contract.count=contract.cells.length;
     contract.derivedFromRigSha256=crypto.createHash('sha256').update(fs.readFileSync(rigPath)).digest('hex');
     fs.writeFileSync(contractPath,JSON.stringify(contract,null,2)+'\n');
     const sidePath=path.dirname(rigPath)+'/gameplay/wharfIsoRig.gameplay.json';
@@ -236,6 +284,8 @@ if (mode === '--preview') {
     side.derivedFromRigSha256=contract.derivedFromRigSha256;
     side.fittings=W.FIT; side.deck=W.DECK; side.fittingDefaults=W.FIT_DEFAULT;
     side.presets=W.PRESETS; side.boats=W.BOATS;
+    for(const key of W.list()) side.families[key].dims=W.FAMILIES[key].dims;
+    side.modules=Object.fromEntries(W.MODULE_BASES.flatMap(base=>['Start','Middle','End'].map(part=>[base+part,W.gameplay(base+part,{}).module])));
     for(const key of W.list()) side.samples[key]=W.gameplay(key,{});
     for(const row of side.tideResponse.rows){
       const g=W.gameplay('pier',{tide:row.tide,tideRange:1.8,clearance:1,bays:4,bayLen:2.8,width:4.2});
@@ -244,7 +294,7 @@ if (mode === '--preview') {
     }
     fs.writeFileSync(sidePath,JSON.stringify(side,null,1)+'\n');
   }
-  console.log(`${mode}: 19 sheets / 216 cells; boat lengths, tide sweep, rigid float ladders, fender separation, berth fit, access, gangway freeboard, crest backing, determinism, 4096 cap and sprite identities passed.`);
+  console.log(`${mode}: ${contract.cells.length} sheets / ${contract.cells.reduce((n,c)=>n+8*(c.rungs||1),0)} cells; boat lengths, tide sweep, module sockets/caps, rigid floats, fender separation, berth fit, access, gangway freeboard, crest backing, determinism, 4096 cap and sprite identities passed.`);
 } else {
   throw new Error('Use --preview [label], --baseline, --check or --bake');
 }

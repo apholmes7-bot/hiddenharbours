@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 7cac584894724c6c31ab37c24d795644
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 200440155435293208
+    second: plasticFloatStart_0
+  - first:
+      213: 1136449544352674131
+    second: plasticFloatStart_1
+  - first:
+      213: 877563236065193899
+    second: plasticFloatStart_2
+  - first:
+      213: 243879185411524777
+    second: plasticFloatStart_3
+  - first:
+      213: 813346203475170669
+    second: plasticFloatStart_4
+  - first:
+      213: 654169062358516796
+    second: plasticFloatStart_5
+  - first:
+      213: 702653272645552832
+    second: plasticFloatStart_6
+  - first:
+      213: 833048379589248222
+    second: plasticFloatStart_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: plasticFloatStart_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 160
+        width: 214
+        height: 160
+      alignment: 9
+      pivot: {x: 0.4953271028037383, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bc773957dc5e2b97c3a66cbc609d1c1
+      internalID: 200440155435293208
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: plasticFloatStart_1
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 160
+        width: 214
+        height: 160
+      alignment: 9
+      pivot: {x: 0.4953271028037383, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56a5a655bda340af450889aade3316e2
+      internalID: 1136449544352674131
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: plasticFloatStart_2
+      rect:
+        serializedVersion: 2
+        x: 428
+        y: 160
+        width: 214
+        height: 160
+      alignment: 9
+      pivot: {x: 0.4953271028037383, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cab36679f5c7ea3fe288f3e5bbd1ccd
+      internalID: 877563236065193899
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: plasticFloatStart_3
+      rect:
+        serializedVersion: 2
+        x: 642
+        y: 160
+        width: 214
+        height: 160
+      alignment: 9
+      pivot: {x: 0.4953271028037383, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 563eebcb80c9ebcf2bd05d4b829ce432
+      internalID: 243879185411524777
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: plasticFloatStart_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 214
+        height: 160
+      alignment: 9
+      pivot: {x: 0.4953271028037383, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1909ab31339ee473ccb03224177837bf
+      internalID: 813346203475170669
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: plasticFloatStart_5
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 0
+        width: 214
+        height: 160
+      alignment: 9
+      pivot: {x: 0.4953271028037383, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f3be8f1b257bf1045dc3d90dd65ab2e
+      internalID: 654169062358516796
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: plasticFloatStart_6
+      rect:
+        serializedVersion: 2
+        x: 428
+        y: 0
+        width: 214
+        height: 160
+      alignment: 9
+      pivot: {x: 0.4953271028037383, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0db7ffc79f71dc7e5c64c0d224bd0daf
+      internalID: 702653272645552832
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: plasticFloatStart_7
+      rect:
+        serializedVersion: 2
+        x: 642
+        y: 0
+        width: 214
+        height: 160
+      alignment: 9
+      pivot: {x: 0.4953271028037383, y: 0.09999999999999998}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79bfd3267a765c5861c1311b982b6ce3
+      internalID: 833048379589248222
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID: b47f35b4fcfa503353e4f1fea1914168
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      plasticFloatStart_0: 200440155435293208
+      plasticFloatStart_1: 1136449544352674131
+      plasticFloatStart_2: 877563236065193899
+      plasticFloatStart_3: 243879185411524777
+      plasticFloatStart_4: 813346203475170669
+      plasticFloatStart_5: 654169062358516796
+      plasticFloatStart_6: 702653272645552832
+      plasticFloatStart_7: 833048379589248222
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:
