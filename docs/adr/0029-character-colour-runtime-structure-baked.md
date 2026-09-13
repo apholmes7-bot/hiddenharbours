@@ -215,5 +215,18 @@ but its actual render-pass cost must be measured through the existing facet rend
   `WornOutfitId` appearance and grant previously available wardrobe choices while fresh games use
   limited starter grants. See [CW-01–04](../../backlog/character-creator-and-wardrobe.md).
 
-The nine non-Fisher bodies remain their original garment/proportion designs. The face refinement
-and isolated 35-animation checks are not proof of Unity facial rendering or boat/tool/seat contact.
+### Cast finish pass 05 (13 September 2026)
+
+The owner's [beauty and clarity pass](../art/briefs/character-finish-pass05.md) refines all ten
+presets with explicit garment volumes, clothing/hat ramps, softer lower jaws and more readable
+eye clusters. Editable `character-finish.json` parameters preserve identities, physical heights,
+skeletons, topology, weights and protected hand/foot/attachment geometry. They do not grant the
+nine non-Fisher bodies an interchangeable clothing fit. Fisher remains the only modular proof fit.
+
+The source-controlled pass04 face and an optional finish layer make the before/after comparison
+reproducible at an identical pose and scale. The independent comparison checks 4,550 pose pairs
+and 960 selected rasters at 64/32 px/m; it finds no new degenerate triangles or clipped/empty
+rasters in that sample matrix. Existing cap degeneracies and the awkward isolated mid-mount pose
+remain recorded in [the review](../art/character-workbench/CHARACTER-FINISH-REVIEW.md).
+These results do not establish Unity facial rendering or boat/tool/seat contact. Production
+integration must account for the new face-material index and all contributing finish source hashes.

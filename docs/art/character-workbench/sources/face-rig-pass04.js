@@ -1,9 +1,9 @@
-/* Hidden Harbours — character finish 05. Original HeadIso provides customization geometry.
+/* Hidden Harbours — minor head refinement 04. Original HeadIso provides customization geometry.
    Face marks are a head-local surface material, not camera-facing cards or displaced eye blocks.
    Coordinates are metres. A shared front-surface UV layout keeps every facial landmark centered. */
 (function(root){
- const C={headScale:.97,pixelPhaseX:.5,eyeX:.071,eyeZ:.053,eyeW:.061,eyeH:.043,browZ:.103,
-  mouthZ:-.100,mouthStepX:.029,mouthStepZ:.030,uvBottom:-.225,uvHeight:.46,
+ const C={headScale:.97,pixelPhaseX:.5,eyeX:.071,eyeZ:.053,eyeW:.065,eyeH:.035,browZ:.102,
+  mouthZ:-.108,mouthStepX:.029,mouthStepZ:.030,uvBottom:-.225,uvHeight:.46,
   blinkMin:2.4,blinkSpan:2.0,blinkDuration:.19};
  const EXPRESSIONS={
   neutral:{brow:0,raise:0,lid:0,mouth:'neutral'},smile:{brow:0,raise:0,lid:.12,mouth:'smile',cheek:1},
@@ -47,16 +47,6 @@
   const H=root.HeadIso,b={...build},center=hc||[0,0,0],scale=C.headScale*(build.headSize||1);
   b.jaw=b.jaw||(b.sex==='m'?1.12:.92);
   let F=H.facesOf(center,b,{gaze:[0,0],lid:0,brow:0,mouth:'neutral'},1,scale).map(f=>({...f,v:f.v.map(p=>p.slice()),part:'head'}));
-  // Deliberate chin planes rather than a long pinched point. The taper acts on the
-  // same lower-face coordinates in skin, beard and hanging hair, preserving contact.
-  // Eye line, crown, ear attachments and every skeleton/head anchor stay fixed.
-  const chinLift=b.sex==='f'?.022:b.age==='child'?.018:.014;
-  const chinWidth=b.sex==='f'?.32:.20;
-  for(const f of F)for(const p of f.v){
-    const z=(p[2]-center[2])/scale,t=clamp((-z-.110)/.102,0,1),smooth=t*t*(3-2*t);
-    p[0]=center[0]+(p[0]-center[0])*(1+chinWidth*smooth);
-    p[2]+=chinLift*smooth*scale;
-  }
   // Original customization geometry stays available; the un-hatted mop gets a clean swept shell.
   if(b.hairStyle==='mop'&&(!b.hat||b.hat==='none')){
    F=F.filter(f=>f.mat!=='hair');const prof=H.skullProf(1,1,b.jaw||1.1),rings=[];
@@ -87,7 +77,7 @@
   return F;
  }
  // Palette indices for an atlas/material: 0 transparent, 1 lash, 2 sclera, 3 iris,
- // 4 brow, 5 lip, 6 mouth interior, 7 tooth, 8 lower lip, 9 lid skin, 10 pupil.
+ // 4 brow, 5 lip, 6 mouth interior, 7 tooth, 8 lower lip, 9 lid skin.
  function sample(u,v,state,build){
   const z=C.uvBottom+v*C.uvHeight;
   // The same physical x and z anchors are sampled on the curved front skin at every heading.
@@ -101,17 +91,14 @@
    const open=height*(1-lid),bottom=eyeZ-height*.70,top=bottom+open;
    if(Math.abs(dx)<=half){
     if(lid>.87){if(Math.abs(z-(bottom+height*.25))<.010)return 1;}
-    else if(z>=bottom&&z<=top+.006){
-     if(z>top)return 1;
+    else if(z>=bottom&&z<=top+.010){
+     if(z>top-.003)return 1;
      // Rounded eye corners remain only skin; the sockets never move with pupil gaze.
      if(Math.abs(dx)>half*.83&&z<bottom+.010)return 0;
      if(st.cheek&&side*dx>0&&z<bottom+.008)return 9;
-     // A dark vertical cluster survives 32 px/m sampling; a thin white wedge gives
-     // gaze at 64 without turning low-density eyes into disconnected white blocks.
-     // Colour moves inside the same socket. This is one metre-space design at all densities.
-     const pupilX=gx*.009,pupilZ=bottom+open*.50+gy*.007;
-     if(Math.abs(dx-pupilX)<.020&&Math.abs(z-pupilZ)<height*.48)return 10;
-     if(Math.abs(dx-pupilX)<.025||side*dx>0)return 3;
+     const pupilX=gx*(half-.016),pupilZ=bottom+open*.49+gy*.007;
+     if(Math.abs(dx-pupilX)<.011&&Math.abs(z-pupilZ)<.014)return 1;
+     if(Math.abs(dx-pupilX)<.015&&Math.abs(z-pupilZ)<.018)return 3;
      return 2;
     }
    }
@@ -125,9 +112,9 @@
   const mx=x,jaw=b.jaw||(b.sex==='m'?1.12:.92),jT=(C.mouthZ+.146)/.068;
   const mouthRx=.108*jaw+(.140-.108*jaw)*jT,mouthRy=.084+.016*jT;
   const mouthCurve=mouthRy*(Math.sqrt(Math.max(0,1-(mx/mouthRx)**2))-1)*Math.tan(40*Math.PI/180);
-  const mz=z-C.mouthZ-mouthCurve,mouth=st.mouth||'neutral',lip=.012,w=.048;
+  const mz=z-C.mouthZ-mouthCurve,mouth=st.mouth||'neutral',lip=.009,w=.048;
   if(Math.abs(mx)<.070&&Math.abs(mz)<.060){
-   if(mouth==='neutral'||mouth==='closed'){const line=Math.abs(mx)>.026?.003:0;if(Math.abs(mx)<.037&&Math.abs(mz-line)<.014)return 5;}
+   if(mouth==='neutral'||mouth==='closed'){if(Math.abs(mx)<.034&&Math.abs(mz)<lip)return 5;}
    else if(mouth==='smile'){const line=Math.abs(mx)>.021?.024:-.010;if(Math.abs(mx)<.052&&Math.abs(mz-line)<.012)return 5;}
    else if(mouth==='frown'){const line=.016-.029*Math.pow(Math.abs(mx)/w,1.3);if(Math.abs(mx)<w&&Math.abs(mz-line)<lip)return 5;}
    else if(mouth==='worry'){const line=.009-Math.abs(mx)*.29+mx*.13;if(Math.abs(mx)<.039&&Math.abs(mz-line)<lip)return 5;}
@@ -145,8 +132,7 @@
  function colours(build){const H=root.HeadIso,M=H.makeMats(build).MATS,s=M.skin.ramp,h=M.hair.ramp;
   const rgb=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)),mid=rgb(s[3]);const dark=mid[0]*.2126+mid[1]*.7152+mid[2]*.0722<105;
   const iris=rgb(M.iris.ramp[0]),ink=rgb('#243038'),irisShade='#'+iris.map((v,i)=>Math.round(v*.4+ink[i]*.6).toString(16).padStart(2,'0')).join('');
-  const lip=dark?s[2]:s[0];
-  return [null,'#243038',dark?'#c9baa0':'#d9c8ab',irisShade,h[0],lip,'#492b2c','#e7d4ab',s[2],s[3],'#243038'];
+  return [null,'#243038',dark?'#e4d6b8':'#ead8b4',irisShade,h[0],s[0],'#492b2c','#e7d4ab',s[2],s[3]];
  }
  root.CharacterHeadStudy={C,EXPRESSIONS,BROWS,AUTO,life,poseState,createHead,sample,colours};
 })(globalThis);

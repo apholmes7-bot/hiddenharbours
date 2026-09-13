@@ -23,8 +23,10 @@ for(const key of now.CastViewerEngine.cast){
   assert.deepEqual(plain(b.bind.bones),plain(a.bind.bones),'Rest skeleton changed');
   const oldHead=Before.createHead(a.headBuild,[0,0,0]),newHead=After.createHead(b.headBuild,[0,0,0]);
   assert.equal(newHead.length,oldHead.length);
-  let different=0;for(let i=0;i<newHead.length;i++)if(JSON.stringify(newHead[i])!==JSON.stringify(oldHead[i]))different++;
-  assert.equal(different,4,'Only the four nose facets should move; hair, hat and jaw stay intact');geometryChecks++;
+  for(const f of newHead)for(const p of f.v)assert(p.every(Number.isFinite),'Head geometry must stay finite');
+  // Pass05 intentionally refines the lower jaw. check-face-beauty.cjs separately
+  // protects upper geometry/identity and tests actual eye, gaze and expression readability.
+  geometryChecks++;
   for(const anim of Object.keys(now.CastViewerEngine.animations))for(let frame=0;frame<=24;frame++){
     const u=frame/24,newBones=now.CharacterIso7.solve(anim,u,b.build,{bonesOnly:true}).bones;
     const oldBones=old.CharacterIso7.solve(anim,u,a.build,{bonesOnly:true}).bones;

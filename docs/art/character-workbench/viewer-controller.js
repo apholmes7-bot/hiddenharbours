@@ -2,12 +2,14 @@
   const root=document.getElementById('hh-cast-viewer'), $=s=>root.querySelector(s);
   const E=globalThis.CastViewerEngine,H=globalThis.CharacterHeadStudy;
   const bounds=__BOUNDS__, cast=E.cast.map(k=>E.create(k));
-  const state={anim:'walk',u:0,seconds:0,angle:0,speed:1,ppm:64,playing:false,spinning:false,spinStart:0,spinElapsed:0,selected:'fisher',view:'cast',expr:'auto',talk:false,wardrobe:'original'};
-  const W=globalThis.CharacterWardrobeProof,wardrobes=new Map();
+  const beforeCast=new Map(E.cast.map(k=>[k,E.create(k,{finish:false,headStudy:globalThis.CharacterHeadPass04})]));
+  const state={anim:'idle',u:0,seconds:0,angle:25,speed:1,ppm:64,playing:false,spinning:false,spinStart:0,spinElapsed:0,selected:'fisher',view:'cast',expr:'auto',talk:false,wardrobe:'original',pass:'after'};
+  const W=globalThis.CharacterWardrobeProof,wardrobes=new Map(),beforeWardrobes=new Map();
   if(W){
     for(const preset of W.presets){
       const option=document.createElement('option');option.value=preset.Id;option.textContent=preset.DisplayName;
       $('[data-wardrobe]').append(option);wardrobes.set(preset.Id,W.create(cast.find(c=>c.key==='fisher'),preset.Recipe));
+      beforeWardrobes.set(preset.Id,W.create(beforeCast.get('fisher'),preset.Recipe));
     }
   }
   const gallery=$('[data-gallery]'),cards=new Map();
@@ -26,7 +28,7 @@
     let w,h,cx,cy;
     if(headCenter){w=h=Math.ceil(ppm*.72);cx=w/2+.5;cy=h/2;faces=faces.filter(f=>f.part==='head').map(f=>({...f,v:f.v.map(v=>v.map((x,i)=>x-headCenter[i]))}));}
     else {w=Math.ceil(bb.width*ppm)+2*p;h=Math.ceil(bb.height*ppm)+2*p;cx=w/2+.5;cy=p-bb.minY*ppm;}
-    const result=raster(faces,c.mats,{w,h,cx,cy,scale:ppm,angle:state.angle,elev,mode:'proposal',outline:true,surface:(u,v)=>H.sample(u,v,st,c.headBuild),surfaceColours:c.colours});
+    const result=raster(faces,c.mats,{w,h,cx,cy,scale:ppm,angle:state.angle,elev,mode:'proposal',outline:true,surface:(u,v)=>(c.headStudy||H).sample(u,v,st,c.headBuild),surfaceColours:c.colours});
     // Rasterize at the chosen density; pixelated CSS preserves hard edges when fitting the cell.
     canvas.width=w;canvas.height=h;canvas.getContext('2d').putImageData(new ImageData(result.pixels,w,h),0,0);
   }
@@ -34,10 +36,11 @@
   function render(){
     const begin=performance.now(),visible=state.view==='cast'?cast:cast.filter(c=>c.key===state.selected);
     for(const [i,base] of visible.entries()){
-      const c=base.key==='fisher'&&state.wardrobe!=='original'?wardrobes.get(state.wardrobe):base;
+      const outfitMap=state.pass==='before'?beforeWardrobes:wardrobes;
+      const c=base.key==='fisher'&&state.wardrobe!=='original'?outfitMap.get(state.wardrobe):state.pass==='before'?beforeCast.get(base.key):base;
       const posed=E.pose(c,state.anim,state.u);
       const options={anim:state.anim,seed:17+E.cast.indexOf(c.key)*31,talk:state.talk};if(state.expr!=='auto')options.expr=state.expr;
-      const face=H.life(state.seconds,options);
+      const face=(c.headStudy||H).life(state.seconds,options);
       if(state.view==='cast')draw(cards.get(c.key),posed.faces,c,face);
       else {draw($('[data-body]'),posed.faces,c,face);draw($('[data-head]'),posed.faces,c,face,posed.head);}
     }
@@ -76,6 +79,7 @@
   $('[data-wardrobe]').addEventListener('change',e=>{state.wardrobe=e.target.value;status();render();});
   $('[data-speed]').addEventListener('change',e=>state.speed=+e.target.value);
   $('[data-density]').addEventListener('change',e=>{state.ppm=+e.target.value;render();});
+  $('[data-pass]').addEventListener('change',e=>{state.pass=e.target.value;render();});
   $('[data-angle]').addEventListener('input',e=>{state.angle=+e.target.value;state.spinning=false;status();render();});
   $('[data-frame]').addEventListener('input',e=>{state.u=+e.target.value/1000;state.seconds=state.u*E.animations[state.anim].frames*E.animations[state.anim].ms/1000;state.playing=false;status();render();});
   $('[data-expression]').addEventListener('change',e=>{state.expr=e.target.value;render();});

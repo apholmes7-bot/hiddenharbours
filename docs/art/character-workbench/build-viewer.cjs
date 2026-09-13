@@ -13,10 +13,12 @@ if(fs.existsSync(path.join(dir,'wardrobe-assembly.js'))){
 }
 else throw Error('Missing wardrobe-assembly.js: the clothing study is a required part of this workbench');
 const E=context.CastViewerEngine,characters=E.cast.map(k=>E.create(k)),bounds={},checks=[],outliers=[];
+const beforeCharacters=E.cast.map(k=>({...E.create(k,{finish:false,headStudy:context.CharacterHeadPass04}),variantId:'before'}));
 const W=context.CharacterWardrobeProof,variants=W?W.presets.map(p=>({...W.create(characters.find(c=>c.key==='fisher'),p.Recipe),variantId:p.Id})):[];
+const beforeVariants=W?W.presets.map(p=>({...W.create(beforeCharacters.find(c=>c.key==='fisher'),p.Recipe),variantId:'before_'+p.Id})):[];
 for(const anim of Object.keys(E.animations)){
   let radius=0,minZ=Infinity,maxZ=-Infinity;
-  for(const c of characters.concat(variants)){
+  for(const c of characters.concat(beforeCharacters,variants,beforeVariants)){
     let finite=true;for(let i=0;i<=12;i++){
       const posed=E.pose(c,anim,i/12);
       for(const f of posed.faces)for(const p of f.v){finite=finite&&p.every(Number.isFinite);const r=Math.hypot(p[0],p[1]);if(r>4&&!outliers.some(x=>x.cast===c.key&&x.anim===anim&&x.part===f.part))outliers.push({cast:c.key,anim,part:f.part,u:i/12,r});radius=Math.max(radius,r);minZ=Math.min(minZ,p[2]);maxZ=Math.max(maxZ,p[2]);}

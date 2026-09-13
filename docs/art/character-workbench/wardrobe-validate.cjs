@@ -152,7 +152,7 @@ for(const garment of catalog.Garments)for(const colourway of garment.Colourways)
   assert.deepStrictEqual(plain(W.resolveRamp(role.RampId)),expected,'Preview ramp must come from production palette data');
 }
 const sources=['../rigs/characterIsoRig7.js','../rigs/character/options.json','sources/eyeIsoRig.js','sources/headIsoRig3.js','sources/characterIsoRig6.js',
-  'sources/characterIsoRig7.js','boot-segment-fix.cjs','sources/characterIsoRig6.hands.js','sources/proposal.js','sources/face-rig.js','sources/face-render.cjs','cast-engine.js','load-study.cjs','wardrobe-assembly.js','wardrobe-validate.cjs','wardrobe-recipes.json',
+  'sources/characterIsoRig7.js','boot-segment-fix.cjs','sources/characterIsoRig6.hands.js','sources/proposal.js','sources/face-rig-pass04.js','sources/face-rig.js','sources/face-render.cjs','character-finish.js','character-finish.json','cast-engine.js','load-study.cjs','wardrobe-assembly.js','wardrobe-validate.cjs','wardrobe-recipes.json',
   'wardrobe-fit-fisher.json',...fs.readdirSync(dir).filter(f=>/^wardrobe-garment-.*\.json$/.test(f))];
 const frames=Object.values(E.animations).reduce((n,a)=>n+a.frames,0);
 const report={SchemaVersion:1,Scope:'Editor/review proof only; no Unity bake, runtime garment assembly, creator, purchases or save integration.',

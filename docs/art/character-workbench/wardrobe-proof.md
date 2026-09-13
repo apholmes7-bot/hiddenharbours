@@ -6,6 +6,11 @@ cast viewer's wardrobe selector keeps rotation, animation and frame scrubbing. B
 looks were also rendered at eight headings at 64 px/m and 32 px/m; the metre scale is
 unchanged. This is the CW01 authoring proof, not the production creator or shop.
 
+The later cast finish pass tailors Fisher's source body before either outfit is
+assembled. Both recipes use the same adjusted source sections and unchanged skeleton;
+the source report includes `character-finish.js` and its authored per-preset tuning.
+The broader cast finish does not make any other preset a compatible wardrobe fit.
+
 Run `node docs/art/character-workbench/wardrobe-validate.cjs`, then
 `node docs/art/character-workbench/build-viewer.cjs`. The first command regenerates
 `wardrobe-catalog.json`, `wardrobe-measurements.json`, the four turntable PNGs and
@@ -65,7 +70,7 @@ The actual index buffer can be 16-bit; the estimate deliberately uses the baker'
 32-bit accounting. These are layout estimates, not a Unity profiler capture.
 
 On this Node 24 Windows host, after 20 warmups and across 100 swaps, median cached
-assembly times were **1.05 ms starter / 0.80 ms mixed** and P95 **1.43 / 1.13 ms**.
+assembly times were **0.98 ms starter / 0.90 ms mixed** and P95 **1.39 / 1.09 ms**.
 The generated report retains exact samples' summary and source hashes. Timings exclude
 Unity objects, GPU upload, renderer setup and shader state. Production facial UV/state
 rendering, deformation normals and gameplay contact remain CW02 measurements; the

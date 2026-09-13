@@ -2,8 +2,8 @@
 
 This is the versioned, offline authoring study for **CW01**, the first stage of the
 13 September character creator/wardrobe request. It preserves the ten rig presets
-and all 35 animations from the owner's cast viewer, with minor face polish and a
-bounded Fisher clothing assembly proof. **It does not implement the in-game creator,
+and all 35 animations from the owner's cast viewer, with pass05 facial and garment
+refinement across the cast and a bounded Fisher clothing assembly proof. **It does not implement the in-game creator,
 wardrobe, purchases, appearance save, or production expressive face renderer.**
 
 ## Build and inspect
@@ -14,7 +14,10 @@ From the repository root, with Node.js (standard modules only):
 node docs/art/character-workbench/build-viewer.cjs
 node docs/art/character-workbench/wardrobe-validate.cjs
 node docs/art/character-workbench/check-face-and-boots.cjs
+node docs/art/character-workbench/check-face-beauty.cjs
+node docs/art/character-workbench/check-character-finish.cjs
 node docs/art/character-workbench/review-faces.cjs
+node docs/art/character-workbench/compare-character-finish.cjs
 ```
 
 Open the generated `Hidden-Harbours-Cast-Viewer.html` in a browser; it works offline.
@@ -22,6 +25,7 @@ Open `review/face-comparison.html` for the before/after comparison. Generated HT
 PNG and detailed JSON reports are ignored by Git; all required source is here.
 The viewer build reads the individual authored fit/garment JSON files directly;
 it does not depend on a generated catalogue from an earlier validation run.
+The complete all-cast finish comparison is `review/character-finish/comparison.html`.
 The optional original browser runner, `check-viewer.cjs`, needs Playwright and Edge;
 it is not required to build. It was **not rerun** for CW01 because the available
 browser tool rejected local-file navigation. Static raster comparisons were viewed
@@ -31,15 +35,18 @@ directly with the image tool; browser interaction/layout acceptance remains pend
   inspection densities; the geometry stays in metres and the game's PPU stays 32.
 - Play/pause, frame scrub and 360° drag/turntable remain available. Single actions
   stop at their endpoint; the viewer pauses when its tab is hidden.
+- **Art pass** switches between the preceding pass04 and the refined pass05, holding
+  the current rotation, expression, animation time and density. The initial view is a
+  relaxed idle at a 25° turn, making the character volumes easier to inspect.
 - Inspect a character for the full body and enlarged head; choose one of eight
   expressions or speaking. Pupils move in fixed sockets, with staged blinks and
   occasional double blinks; four speech mouths retain the expression's brows.
 - Fisher offers original clothing, the assembled starter set and the mixed set.
-  This prototype supports **only the Fisher fit**. Other cast members retain their
-  original clothing; they are not approved modular fits.
+  This prototype supports **only the Fisher modular fit**. Every cast preset receives
+  its own garment tailoring and finish; those edits do not grant interchangeable fits.
 
 The comparison uses 0°, 35°, 90°, 145°, 180°, 270° and 325° turns at 64 and 32 px/m.
-Each pair is **pass 03 before, pass 04 after**. PNG rows are Fisher, Ginny, Skipper,
+Each pair is **pass 04 before, pass 05 after**. PNG rows are Fisher, Ginny, Skipper,
 Nan, Deck boss, Packer, Cutter, Deckhand, Wharf boy and Wharf girl. Expressions have
 a separate before/after comparison. The camera is the inherited 40° orthographic
 art preview, not a capture of the current in-world camera.
@@ -47,27 +54,34 @@ art preview, not a capture of the current in-world camera.
 surprise, effort, weary; columns Fisher 64 before/after, Fisher 32 before/after,
 Deck boss 64 before/after and Deck boss 32 before/after.
 
-## What changed in the face
+## What changed in pass05
 
-The eye centres move inward 2 mm per side; eye width/height shrink 2 mm. The dark
-pupil core shrinks 2 mm and retains a distinct iris border and sclera. Neutral brows
-move up 4 mm and expressive slopes remain explicit. The resting mouth widens 8 mm;
-the nose tip recedes 5 mm, with a slightly narrower lower base. All remain surface
-material landmarks attached to the head; there are no camera-facing eye cards.
+Eyes now use a clear dark pupil/iris cluster and a restrained warm sclera. The old
+subpixel pupil could disappear between raster samples, leaving a disconnected white
+square. The new material remains fixed on the head surface at both densities; there
+are no camera-facing cards or changes to world scale. Softer, wider lower-jaw planes
+and a clearer resting mouth make the neutral face less pinched. Expression, blink,
+gaze and speech timing remain; the pupil has its own append-only face-material index.
 
-The original expression/blink/gaze/speech functions and cast identity recipes are
-unchanged. Jaw transitions, fringe, hair/hat contact, beard-mouth overlap, dark and
-light skin were reviewed at both densities and retained; only four nose facets
-change geometry. Fisher retains the earlier body study. The other nine bodies have
-**not** been individually redesigned. At 32 px/m some pupil and mouth detail still
-collapses into single pixels. Production camera/shader appearance is unverified.
+All ten presets receive explicit garment tailoring: chest, sleeves, leg volumes,
+boot shafts and relevant skirt/apron shapes. Garment ramps and hat colours have a
+coherent value hierarchy; selected skin/hair colours, body identities, skeletons,
+physical heights and protected hand/foot/attachment geometry remain unchanged.
+No mesh faces are added. `character-finish.json` contains the editable per-preset
+parameters and material roles; `character-finish.js` applies them before skinning.
+
+The preceding face is preserved in `sources/face-rig-pass04.js`. The before path skips
+the finish module while using the same rig/clip inputs, so the comparison holds pose
+and scale constant. At 32 px/m, occluded/profile eyes still naturally simplify.
+See `CHARACTER-FINISH-REVIEW.md` for measured gains and the inherited motion limits.
+Production camera/shader appearance remains unverified.
 
 ## Source provenance and boot correction
 
 `sources/` contains snapshots from the 13 September cast viewer:
 `C:/Users/aphol/.codex/visualizations/2026/09/13/01a09bee-b46e-74c1-9638-96c10598fd2c/cast-viewer`.
 The original 03 face is kept in `face-rig-pass03.js`; `face-rig.js` is the editable
-04 study. `face-render.cjs` now uses a small standard-library PNG writer, removing
+05 study. `face-render.cjs` now uses a small standard-library PNG writer, removing
 the earlier machine-specific Sharp dependency. `load-study.cjs` centralizes loading.
 
 The frozen rig 7 snapshot is the original production source. The inherited viewer
@@ -94,14 +108,33 @@ CW01's no-Unity checks pass: 57,600 preserved face state samples; 8,750 pose sam
 (10 cast × 35 animations × 25 times); 17,500 boot cuff segment checks. The old solver
 reaches a 494.89985 m absolute cuff coordinate; corrected preview peaks at 1.14763 m
 in that sample matrix. 3,089 sampled cuffs differ. Rest skeletons remain identical
-for all ten presets, and only the four nose facets differ in the head geometry.
+for all ten presets. The pass05 face test separately checks its intended jaw edits,
+unchanged upper head geometry, expression masks and sampled eye readability.
 
-The viewer build checks 5,460 poses (ten original cast presets plus two Fisher
-clothing variants × 35 animations × 13 times), finite geometry, a four-metre radial
-envelope, and bone-only/full-solver parity at u=0.37 for each of the 420 cast/variant
-and animation pairs. These are selected pose checks, not proof
+The viewer build checks both art passes for the ten cast presets and two Fisher
+clothing variants across 35 animations and 13 times (10,920 pose samples), finite
+geometry, a four-metre radial envelope, and bone-only/full-solver parity at u=0.37.
+These are selected pose checks, not proof
 of contact against tools, seats, vehicles or boats, nor a Unity performance result.
 See `wardrobe-proof.md` for assembly measurements and the supported fit boundary.
 
 No source here ships as a runtime JS dependency. The full create/buy/equip/reload
 acceptance loop remains pending in the subsequent CW stages.
+
+## Reproduce the full-cast finish comparison
+
+```powershell
+node docs/art/character-workbench/compare-character-finish.cjs
+```
+
+Open the generated `review/character-finish/comparison.html` to compare preserved
+pass04 with pass05 across all ten characters, eight headings, selected work/vehicle
+poses, and 64/32 px/m body and face plates. All inputs are checked in; no historical
+checkout or image package is required. Generated PNGs and measurement JSON stay in
+the ignored review folder.
+
+The frozen run passed 4,550 pose pairs and 960 raster checks with no new degenerate
+triangles or clipped/empty renders. It preserves 7,880,600 protected vertex samples
+against the body-off control. See [the independent review](CHARACTER-FINISH-REVIEW.md)
+for visual findings, the inherited zero-area source triangles, and the unresolved
+dismount/contact limits.

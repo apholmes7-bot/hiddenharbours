@@ -8,6 +8,11 @@ The objective is **create → enter the world → try on → buy → own → equ
 The owner has already requested this feature; historical creator deferrals do not require a
 second request. A review viewer or palette picker alone does not meet the objective.
 
+**Owner follow-up, 2026-09-13:** finish the cast for beauty and clarity in its low-poly pixel-art
+form. [Pass 05's art brief](../docs/art/briefs/character-finish-pass05.md) adds coordinated facial,
+garment silhouette and material refinement across all ten presets, with a direct pass-04 comparison.
+This is part of CW-01's art source delivery; modular clothing fits remain explicitly bounded.
+
 ## Delivery and acceptance
 
 | Item | Owner | Status | Acceptance |
