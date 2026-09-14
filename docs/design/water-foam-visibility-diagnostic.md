@@ -1,15 +1,18 @@
 # Persistent foam: draw-channel diagnostic
 
 Prepared 2026-09-13 after the owner's instruction to proceed with water fidelity.
-Base: `70969b684e6bf4d0581c8e7ea5c7e35e5de31a8c`.
+Original base: `70969b684e6bf4d0581c8e7ea5c7e35e5de31a8c`.
+Updated 2026-09-14 to include settled main `5f691b43420cb5a52dbd292b8cc59fa75693d489`
+(#842), via merge `a7097ecd`. Diagnostic preparation commit: `fa8d5e27`.
 Owner role: gameplay-systems / rendering plumbing. Pillar P1.
 
 ## Status
 
 Prepared and compiled without launching Unity. **Not rendered or visually verified.**
 No production code, shader, scene, material, boat data, or savegame changed.
-The new fixture is independent preparation while PR #842 holds the water shader and
-its editor slot. It does not claim that any water effect has been fixed.
+The new fixture was prepared independently while PR #842 held the water shader and
+its editor slot. #842 has now merged. This diagnostic still has no editor-slot grant
+and does not claim that any foam effect has been fixed.
 
 Worktree: `C:/hh-codex-water-foam`, branch `codex/water-foam-visibility`.
 LFS hydration was deliberately skipped in this source-only checkout. Do not open it
@@ -91,12 +94,22 @@ together, rather than declaring a missing texture from that CPU read alone.
 
 ## Next permitted execution
 
-PR #842 must complete its visual repair and release the shader/check-out. Alex owns
-the machine-wide editor slot; the truck was already queued next. An empty process
-list is not a slot grant. Do not switch `C:/hh-water7` away from the shoreline lane.
+PR #842 merged on 2026-09-14 at 16:21:50Z as `5f691b43`. GitHub verification found both
+checks successful on `5db6f792f12783396256364995e9799ee9d1ef52`, run `34783222968`.
+Alex's relay reports its slot returned and temporary riders verified stripped.
+Alex owns the machine-wide editor slot: the truck is next, then the foam diagnostic
+after its editor is closed, its PID is named/verified, and Alex grants the next run.
+An empty process list is not a slot grant. Do not switch another lane's checkout.
 
-After release, incorporate settled main into this branch and transfer these named
-test/doc changes to the agreed hydrated test checkout. Before opening Unity, record
+The requested sequence has been relayed to Codex v18: run this diagnostic first,
+then have the existing Claude family-A wire PR consume the evidence instead of
+repeating its first sweep. No concurrent shader work and no replacement lane was
+launched. Await v18's sequencing confirmation before transferring the diagnostic.
+
+Settled main has been incorporated without conflicts; the existing photograph,
+injector, injection registry, and displaced-surface source files did not change
+between the original base and #842. After release and sequencing confirmation,
+transfer these named test/doc changes to the agreed hydrated test checkout. Before opening Unity, record
 its clean shader and exact HEAD, confirm no conflicting editor, and bank/compare
 the live owner save. Do not restore a different lane's fixture residue as the owner
 save. Filter to the exact method above, with a 30-minute hard timeout. Confirm XML
