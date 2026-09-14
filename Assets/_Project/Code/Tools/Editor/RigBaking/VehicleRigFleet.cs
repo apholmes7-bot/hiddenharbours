@@ -1915,8 +1915,11 @@ namespace HiddenHarbours.Tools.RigBaking
                 },
                 azimuthAftAnchor: "hitch", azimuthForeAnchor: "hoodLatch",
                 bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
-                vehicleDefPath: "Assets/_Project/Data/Vehicles/Modern3500.asset",
-                vehicleId: "vehicle.modern_3500",
+                // ⚠️ NO def and NO vehicleId — deliberately. She is registered ART, not a machine
+                // the world can place: her bake is excused in NotBaked below, and a VehicleDef is a
+                // Data asset that the bake writes. Hand-authoring one to fill this argument would be
+                // inventing the very output the blocker prevents. Her def arrives with her mesh, in
+                // the PR that lands the folded palette.
                 label: "Modern 3500"),
         };
 
@@ -1971,10 +1974,6 @@ namespace HiddenHarbours.Tools.RigBaking
             // blocked: 9 ramps against the shader's 16, one shared 256×192 cell, and both azimuth
             // oracles agreeing counter-clockwise on every body.
             "enduro250", "trike200", "utilityQuad",
-            // The Modern 3500 — Codex drop 2026-09-13, baked on intake in the same PR that lands
-            // her kit. A SECOND dually, not a revision: `dually3500` at the top of this list keeps
-            // her own mesh and her own def, untouched by that drop.
-            "modern3500",
         };
 
         /// <summary>
@@ -2007,10 +2006,28 @@ namespace HiddenHarbours.Tools.RigBaking
         public static readonly IReadOnlyDictionary<string, string> NotBaked =
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
-                // Three entries have lived here and all three left the way an entry here should —
-                // deleted, not reworded. The last was the hightop van's stamp refusal
+                // Three entries lived here before this one and all three left the way an entry here
+                // should — deleted, not reworded. The last was the hightop van's stamp refusal
                 // (2026-08-27, discharged the same day when upstream's re-stamp landed and her
                 // full digest matched her rig — see the git history of SidecarHashRefused).
+
+                // ⭐⭐ THE FOURTH, AND IT IS THE OTTER'S BLOCKER AGAIN — eleven times over.
+                ["modern3500"] =
+                    "She paints 27 colour ramps and USES every one, against the facet shader's " +
+                    "float4[16] _RampMeta. MEASURED on intake through this repo's own V8 " +
+                    "(2026-09-14, rig d70056fe…): 2802 faces, 27 materials declared, 27 used, zero " +
+                    "unused — so the filter-to-used reconstruction that saved the Dually (17 " +
+                    "declared / 16 used) and the zodiac (18 / 14) buys nothing here, and " +
+                    "VehicleMeshDef.IsUsable would refuse the result. Folding every key that " +
+                    "resolves to a byte-identical ramp AND polish reaches 19; also folding " +
+                    "`sidewall` into `rubber` (identical ramp, polish .05 against none) reaches 18. " +
+                    "The last two merges change pixels, so — exactly as with the Otter (#558 until " +
+                    "the art merge of 2026-08-19) — this is an ART fix and no vehicle-side change " +
+                    "can lift it. ⚠️ Any fold rewrites modern3500.rig.js and therefore MOVES the " +
+                    "rig hash her contract and her sidecar both pin, so it arrives as a re-issued " +
+                    "drop and never as an edit to docs/art/rigs/**. " +
+                    "Modern3500KitProbeTests.HerPaletteDoesNotFitTheFacetShader measures the number " +
+                    "on every CI run: when it reads 16, delete this entry rather than rewording it.",
             };
 
         /// <summary>

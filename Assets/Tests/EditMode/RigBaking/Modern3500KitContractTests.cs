@@ -338,7 +338,6 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.That(her.ScriptPath, Is.EqualTo(RigPath));
             Assert.That(her.SidecarPath, Is.EqualTo(SidecarPath));
             Assert.That(her.GlobalName, Is.EqualTo("ModernTruck3500"));
-            Assert.That(her.VehicleId, Is.EqualTo("vehicle.modern_3500"));
             Assert.That(her.MeshId, Is.EqualTo("vehiclemesh.modern_3500"));
 
             VehicleRigFleet.Vehicle dually = VehicleRigFleet.Vehicles.Single(v => v.Key == "dually3500");
@@ -349,8 +348,6 @@ namespace HiddenHarbours.Tests.RigBaking
                          (her.GlobalName,     dually.GlobalName,     "global name"),
                          (her.MeshAssetPath,  dually.MeshAssetPath,  "mesh asset"),
                          (her.MeshId,         dually.MeshId,         "mesh id"),
-                         (her.VehicleDefPath, dually.VehicleDefPath, "def asset"),
-                         (her.VehicleId,      dually.VehicleId,      "vehicle id"),
                      })
                 Assert.That(mine, Is.Not.EqualTo(hers),
                     $"The Modern 3500 shares the older Dually's {what}. She is a SECOND truck — the " +
@@ -422,5 +419,69 @@ namespace HiddenHarbours.Tests.RigBaking
                     "and the roll axes come up empty.");
             }
         }
+        // =========================================================================================
+        //  HER LEDGER — registered art, and an excused bake
+        // =========================================================================================
+
+        /// <summary>
+        /// ⭐⭐ <b>She is registered and her bake is EXCUSED, and the pairing is the tripwire.</b> Her
+        /// palette does not fit the facet shader — the measurement lives in
+        /// <see cref="Modern3500KitProbeTests"/> and the argument on her
+        /// <c>VehicleRigFleet.NotBaked</c> entry — so this PR lands her art and nothing else.
+        ///
+        /// <para>Asserted in BOTH directions on purpose. If she ever appears in <c>Baked</c> without
+        /// the excuse being deleted, two tables are disagreeing about the same truck; if the excuse
+        /// is deleted while she is still over the cap, the next fleet bake fails on her again and
+        /// takes every other vehicle's exit code with it.</para>
+        /// </summary>
+        [Test]
+        public void HerBakeIsExcused_WithAReasonThatCarriesTheMeasurement()
+        {
+            Assert.That(VehicleRigFleet.Baked, Does.Not.Contain("modern3500"),
+                "she is listed as baked, but no Modern 3500 mesh was ever produced — the bake of " +
+                "2026-09-14 failed on her and nothing has lifted the cause. Listing her here makes " +
+                "VehicleMeshAssetBaker attempt her every run and fail the whole fleet bake.");
+
+            Assert.That(VehicleRigFleet.NotBaked.ContainsKey("modern3500"), Is.True,
+                "her excuse is gone. If the art fold landed, that is the right direction — but it " +
+                "also means baking her, and Modern3500KitProbeTests measures whether she fits yet.");
+
+            string reason = VehicleRigFleet.NotBaked["modern3500"];
+            foreach (string owed in new[] { "27", "16", "_RampMeta", "art" })
+                Assert.That(reason, Does.Contain(owed),
+                    $"her NotBaked reason no longer says '{owed}'. A refusal that loses its " +
+                    "measurement rots into folklore, which is the one thing this table exists to " +
+                    "prevent — entries here leave by DELETION, never by rewording.");
+        }
+
+        /// <summary>
+        /// <b>She wears no <c>VehicleDef</c>, and that is deliberate rather than forgotten.</b> A def
+        /// is a Data asset, and the charter this intake was run under is explicit that Data assets
+        /// come out of the repo's own bake tooling. Hand-authoring one to fill the argument would be
+        /// inventing the exact output the blocker prevents — and <c>VehicleDef.IsUsable</c> refuses a
+        /// def with no mesh anyway, so it would buy a row in a table and nothing the world can place.
+        ///
+        /// <para>The Otter took the other road (a def from #558 with a null mesh) because her
+        /// mechanics were already authored and under test. Nothing of the Modern 3500's gameplay
+        /// exists yet — placement, purchasability and trips are all a later PR — so there is nothing
+        /// for a def to carry.</para>
+        /// </summary>
+        [Test]
+        public void SheWearsNoDefUntilSomethingCanBakeHerOne()
+        {
+            VehicleRigFleet.Vehicle her = Her();
+
+            Assert.That(string.IsNullOrEmpty(her.VehicleDefPath), Is.True,
+                $"her row now names def '{her.VehicleDefPath}'. If it was baked, delete her " +
+                "NotBaked entry in the same commit — EveryRegisteredVehiclesDef_HasAMeshExactlyWhen" +
+                "HerBakeIsNotExcused pairs the two and will say so. If it was hand-authored, it is " +
+                "a Data asset that no tool produced.");
+
+            Assert.That(string.IsNullOrEmpty(her.VehicleId), Is.True,
+                "her row now claims a vehicle id. Ids are append-only and stable, so one is spent " +
+                "the moment it ships — do not burn `vehicle.modern_3500` on a row that cannot be " +
+                "placed.");
+        }
+
     }
 }
