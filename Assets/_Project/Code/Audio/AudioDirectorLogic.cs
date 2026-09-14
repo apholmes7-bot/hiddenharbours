@@ -75,6 +75,44 @@ namespace HiddenHarbours.Audio
         public static float CalmBedGain(float windTell01)
             => Mathf.Lerp(1f, CalmBedFloor, Mathf.Clamp01(windTell01));
 
+        // The calm wash remains present; these two layers introduce the first audible water movement
+        // and then replace it with a heavier surf texture as the continuous sea state rises.
+        public const float ModerateSeaOnset01 = 0.18f;
+        public const float ModerateSeaFull01 = 0.55f;
+        public const float ModerateSeaRelease01 = 0.82f;
+        public const float RoughSeaOnset01 = 0.52f;
+        public const float RoughSeaFull01 = 0.92f;
+
+        private static float Band01(float value, float start, float end)
+            => Mathf.Clamp01((value - start) / (end - start));
+
+        public static float ModerateSeaGain(float seaState01)
+            => Band01(seaState01, ModerateSeaOnset01, ModerateSeaFull01)
+               * (1f - Band01(seaState01, ModerateSeaFull01, ModerateSeaRelease01));
+
+        public static float RoughSeaGain(float seaState01)
+            => Band01(seaState01, RoughSeaOnset01, RoughSeaFull01);
+
+        // A fixed game-clock grid is reproducible after save/load, independent of render frame rate,
+        // wall time, and polling cadence. Fog entering mid-slot waits for the next boundary; a
+        // save/load time jump skips missed boundaries instead of replaying a stale horn.
+        public const float FoghornVisibilityThreshold = 0.35f;
+        public const double FoghornIntervalSeconds = 90d;
+        public const float FoghornAmbienceGain = 0.35f;
+
+        public static bool FoghornDue(float visibility, double previousGameSeconds, double gameSeconds)
+        {
+            if (float.IsNaN(visibility) || visibility >= FoghornVisibilityThreshold ||
+                double.IsNaN(previousGameSeconds) || double.IsNaN(gameSeconds) ||
+                double.IsInfinity(previousGameSeconds) || double.IsInfinity(gameSeconds) ||
+                previousGameSeconds < 0d || gameSeconds < previousGameSeconds ||
+                gameSeconds - previousGameSeconds > FoghornIntervalSeconds)
+                return false;
+
+            return System.Math.Floor(previousGameSeconds / FoghornIntervalSeconds)
+                   < System.Math.Floor(gameSeconds / FoghornIntervalSeconds);
+        }
+
         // ---- event -> cue map ---------------------------------------------------------------
 
         /// <summary>The cue a discrete game moment should fire.</summary>

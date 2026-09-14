@@ -10,6 +10,8 @@ namespace HiddenHarbours.Audio
     /// EXISTING Core signals, and adapts the soundscape:
     /// <list type="bullet">
     ///   <item>a calm-sea + gull AMBIENT BED (always),</item>
+    ///   <item>moderate and rough water beds following continuous sea state,</item>
+    ///   <item>a sparse, game-clock-scheduled foghorn when visibility falls,</item>
     ///   <item>a propulsion-aware BOAT BED while aboard — the hand-rowed dory gets an oar-stroke/water
     ///   bed, an engine boat gets a looping outboard bed; the two crossfade on a swap, and the engine
     ///   rides the boat's speed over ground,</item>
@@ -85,6 +87,11 @@ namespace HiddenHarbours.Audio
         [SerializeField] private AudioClip _digStrike;    // JuiceMomentCue(DigStrike)
         [SerializeField] private AudioClip _castEntry;    // JuiceMomentCue(CastEntry)
 
+        [Header("Sea state and visibility")]
+        [SerializeField] private AudioClip _moderateSeaBed;
+        [SerializeField] private AudioClip _roughSeaBed;
+        [SerializeField] private AudioClip _foghorn;
+
         // ---- runtime sources ----------------------------------------------------------------
         private AudioSource _bed;     // calm-sea bed (ambience)
         private AudioSource _gull;    // gull layer (ambience)
@@ -93,6 +100,9 @@ namespace HiddenHarbours.Audio
         private AudioSource _tell;    // rising-wind tell (ambience, wind-driven)
         private AudioSource _cue;     // one-shot stings/warmth (sfx)
         private AudioSource _music;   // music bus (reserved — no stem yet; volume + duck are live)
+        private AudioSource _moderateSea;
+        private AudioSource _roughSea;
+        private AudioSource _fogHorn;
 
         // ---- state --------------------------------------------------------------------------
         private ControlMode _mode = ControlMode.OnFoot;
@@ -106,6 +116,9 @@ namespace HiddenHarbours.Audio
         private float _duck;          // 0..1, set by a cue, decays per frame
         private float _envTimer;
         private bool _subscribed;
+        private float _seaState01;
+        private double _lastFogGameSeconds;
+        private bool _hasFogClockSample;
 
         // ---- lifecycle ----------------------------------------------------------------------
 
@@ -157,6 +170,9 @@ namespace HiddenHarbours.Audio
             if (set.SaleChime      != null) _saleChime      = set.SaleChime;
             if (set.DigStrike      != null) _digStrike      = set.DigStrike;
             if (set.CastEntry      != null) _castEntry      = set.CastEntry;
+            if (set.ModerateSeaBed  != null) _moderateSeaBed = set.ModerateSeaBed;
+            if (set.RoughSeaBed     != null) _roughSeaBed    = set.RoughSeaBed;
+            if (set.Foghorn        != null) _foghorn        = set.Foghorn;
         }
 
         private void OnEnable()  => Subscribe();
@@ -211,21 +227,42 @@ namespace HiddenHarbours.Audio
             if (_envTimer <= 0f)
             {
                 _envTimer = _envSampleHz > 0f ? 1f / _envSampleHz : 0.25f;
-                SampleWind();
+                SampleEnvironment();
                 SampleBoat();
             }
 
             ApplyMix();
         }
 
-        private void SampleWind()
+        private void SampleEnvironment()
         {
             var env = GameServices.Environment;
-            if (env == null) { _tell01 = 0f; _tellActive = false; return; }
+            if (env == null)
+            {
+                _tell01 = 0f;
+                _tellActive = false;
+                _seaState01 = 0f;
+                _hasFogClockSample = false;
+                return;
+            }
 
-            float wind = env.Sample().WindVector.magnitude;
+            var sample = env.Sample();
+            float wind = sample.WindVector.magnitude;
             _tellActive = AudioDirectorLogic.TellActive(wind, _tellActive);
             _tell01 = _tellActive ? AudioDirectorLogic.WindTell01(wind) : 0f;
+            _seaState01 = sample.SeaState01;
+
+            var clock = GameServices.Clock;
+            if (clock != null)
+            {
+                double now = clock.TotalSeconds;
+                if (_hasFogClockSample &&
+                    AudioDirectorLogic.FoghornDue(sample.Visibility, _lastFogGameSeconds, now))
+                    _fogHorn?.PlayOneShot(_foghorn);
+                _lastFogGameSeconds = now;
+                _hasFogClockSample = true;
+            }
+            else _hasFogClockSample = false;
 
             // High-water mark of the tell while ON THE BOAT (deck or helm — Build 5) — it's how worrying
             // the sea got this trip, which decides whether coming ashore earns the home-exhale.
@@ -250,6 +287,9 @@ namespace HiddenHarbours.Audio
 
             if (_bed  != null) _bed.volume  = ambDucked * bedGain;
             if (_gull != null) _gull.volume = ambDucked * bedGain * 0.7f;
+            if (_moderateSea != null) _moderateSea.volume = ambDucked * AudioDirectorLogic.ModerateSeaGain(_seaState01);
+            if (_roughSea != null) _roughSea.volume = ambDucked * AudioDirectorLogic.RoughSeaGain(_seaState01);
+            if (_fogHorn != null) _fogHorn.volume = amb * AudioDirectorLogic.FoghornAmbienceGain;
 
             // Aboard propulsion beds ride the ambience bus and are NOT ducked (you're on the water);
             // they crossfade by level, and the engine swells + lifts pitch with speed over ground.
@@ -332,6 +372,9 @@ namespace HiddenHarbours.Audio
             _tell   = MakeSource("WindTell", _windTell,       loop: true,  play: true);
             _cue    = MakeSource("Cue",      null,            loop: false, play: false);
             _music  = MakeSource("Music",    null,            loop: true,  play: false); // bus ready; stem slots in later
+            _moderateSea = MakeSource("ModerateSea", _moderateSeaBed, loop: true, play: true);
+            _roughSea = MakeSource("RoughSea", _roughSeaBed, loop: true, play: true);
+            _fogHorn = MakeSource("Foghorn", null, loop: false, play: false);
         }
 
         private AudioSource MakeSource(string name, AudioClip clip, bool loop, bool play)
@@ -359,6 +402,9 @@ namespace HiddenHarbours.Audio
             if (_windTell       == null) _windTell       = ProceduralAudio.WindTell();
             if (_catchSting     == null) _catchSting     = ProceduralAudio.CatchSting();
             if (_homeWarmth     == null) _homeWarmth     = ProceduralAudio.HomeWarmth();
+            if (_moderateSeaBed == null) _moderateSeaBed = ProceduralAudio.ModerateSeaBed();
+            if (_roughSeaBed    == null) _roughSeaBed    = ProceduralAudio.RoughSeaBed();
+            if (_foghorn        == null) _foghorn        = ProceduralAudio.Foghorn();
         }
     }
 }

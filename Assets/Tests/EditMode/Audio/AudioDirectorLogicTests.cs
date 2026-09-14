@@ -84,6 +84,54 @@ namespace HiddenHarbours.Tests.Audio
                 "the bed makes room for the warning (P1)");
         }
 
+        [Test]
+        public void SeaBeds_CrossfadeAcrossContinuousSeaState()
+        {
+            Assert.AreEqual(0f, AudioDirectorLogic.ModerateSeaGain(0f), Eps);
+            Assert.AreEqual(0f, AudioDirectorLogic.RoughSeaGain(0f), Eps);
+            Assert.AreEqual(0f, AudioDirectorLogic.ModerateSeaGain(AudioDirectorLogic.ModerateSeaOnset01), Eps);
+            Assert.AreEqual(1f, AudioDirectorLogic.ModerateSeaGain(AudioDirectorLogic.ModerateSeaFull01), Eps);
+            Assert.AreEqual(0f, AudioDirectorLogic.RoughSeaGain(AudioDirectorLogic.RoughSeaOnset01), Eps);
+            Assert.AreEqual(1f, AudioDirectorLogic.RoughSeaGain(AudioDirectorLogic.RoughSeaFull01), Eps);
+            Assert.AreEqual(0f, AudioDirectorLogic.ModerateSeaGain(AudioDirectorLogic.ModerateSeaRelease01), Eps);
+            Assert.Greater(AudioDirectorLogic.ModerateSeaGain(0.7f), 0f);
+            Assert.Greater(AudioDirectorLogic.RoughSeaGain(0.7f), 0f);
+            Assert.AreEqual(1f, AudioDirectorLogic.CalmBedGain(0f), Eps,
+                "the calm wash remains present at every sea state");
+        }
+
+        [Test]
+        public void Foghorn_OnlySoundsAtGameClockBoundaryInThickFog()
+        {
+            double interval = AudioDirectorLogic.FoghornIntervalSeconds;
+            float fog = AudioDirectorLogic.FoghornVisibilityThreshold - 0.01f;
+            Assert.IsFalse(AudioDirectorLogic.FoghornDue(fog, 0d, interval - 0.01d));
+            Assert.IsTrue(AudioDirectorLogic.FoghornDue(fog, interval - 0.01d, interval));
+            Assert.IsFalse(AudioDirectorLogic.FoghornDue(AudioDirectorLogic.FoghornVisibilityThreshold,
+                interval - 0.01d, interval));
+            Assert.IsFalse(AudioDirectorLogic.FoghornDue(1f, interval - 0.01d, interval));
+            Assert.IsFalse(AudioDirectorLogic.FoghornDue(fog, interval, interval + 0.01d));
+            Assert.IsFalse(AudioDirectorLogic.FoghornDue(fog, 0d, interval * 4d),
+                "loading a save or jumping far forward must not replay missed horns");
+        }
+
+        [Test]
+        public void FoghornSchedule_IsRepeatableAndDoesNotFireOnBackwardSeek()
+        {
+            double interval = AudioDirectorLogic.FoghornIntervalSeconds;
+            float fog = 0f;
+            for (int pulse = 1; pulse <= 20; pulse++)
+            {
+                double boundary = pulse * interval;
+                bool first = AudioDirectorLogic.FoghornDue(fog, boundary - 0.25d, boundary + 0.25d);
+                bool repeated = AudioDirectorLogic.FoghornDue(fog, boundary - 0.25d, boundary + 0.25d);
+                Assert.IsTrue(first, $"game-clock pulse {pulse} should sound");
+                Assert.AreEqual(first, repeated, "same clock samples give the same decision");
+                Assert.IsFalse(AudioDirectorLogic.FoghornDue(fog, boundary + 1d, boundary - 1d),
+                    "seeking backward is not a new pulse");
+            }
+        }
+
         // ---- event → cue map ----------------------------------------------------------------
 
         [Test]

@@ -37,3 +37,6 @@ MonoBehaviour:
   SlackRelease: {fileID: 8300000, guid: 3f0dfc284fc641cfb5a3ff4156673023, type: 3}
   SnapSting: {fileID: 8300000, guid: d42abd056cfc4ee2b01624a4b0bb408e, type: 3}
   LandedFlourish: {fileID: 8300000, guid: ea327cf1ad4a4eb68b896cc171d57743, type: 3}
+  ModerateSeaBed: {fileID: 8300000, guid: 7d7a9499825640b6a9ddf17f86a6aa53, type: 3}
+  RoughSeaBed: {fileID: 8300000, guid: 4865b82de0eb423582b74d2e45f9e12d, type: 3}
+  Foghorn: {fileID: 8300000, guid: 0eb1b6ef1f234313a52b3ac1f46a28f2, type: 3}
