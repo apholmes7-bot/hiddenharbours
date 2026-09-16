@@ -124,9 +124,11 @@ it back.
   interior cannot bake through the existing baker; it needs an adapter or a baker of its own.
 - **`anchors()` no longer returns `roomH`.** `EvaluateNumber` on a JS `undefined` throws
   `InvalidCastException` inside `System.Convert.ToDouble` — it does not return NaN.
-- **The `floor` option stops applying while the companion is on.** `FLOORS` still declares
+- **The `floor` option is inert while the companion is on.** `FLOORS` still declares
   `plank, wideBoard, checker, stoneFlag, painted`, but with `CoastalPass` enabled all five render
-  byte-identically. With it disabled they differ. Reported, not patched.
+  byte-identically; with it disabled they differ. `coastalPass.js` `cottage()` drops every face on
+  the floor layer (line 241) and lays its own fixed tile-hall / oak-parlour bands (line 246). The
+  host still honours the option — the companion discards the result. Reported, not patched.
 - **The door anchor moved.** `HouseIso.anchors().door` now follows where the door is drawn (the +X
   eave on `(default)`, `redSaltbox` and `dormerCape`) rather than the +Y gable it always claimed.
   This is a fix to a shipped inconsistency, but it moves interior registration and is awaiting an

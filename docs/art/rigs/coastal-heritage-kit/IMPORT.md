@@ -116,6 +116,17 @@ plus `iterparse`; the 245 MB PlayMode sibling was never downloaded.
 | 1 `AMisspelledKeyChangesNothing…` | the `floor` option stops applying with the companion on | **finding — needs a ruling** |
 | 1 `TheRoomDeclaresHowFarItIsToTheFloorAbove…` | `anchors().roomH` is gone; contract stale | needs a re-bake |
 
+**Re-measured on `5e75036c`** (run 35053588764), after the four fixes and the package re-pin:
+EditMode **12740 total / 12482 passed / 8 failed / 250 skipped**; PlayMode **894 / 854 / 0 failed /
+40 skipped**; the scene-export job **green**. The eight are exactly the residue above — six on the
+door anchor (the probe refusal on `EveryRoomCropsSmallEnoughToPackUnderTheImportCap`,
+`TheCropMovesThePivotWithIt…` and `TheShellsDoorIsOnPlusY…`, the guard
+`TheRigStillRoutesItsDoorTheWayTheGableRuleAssumes`, and the registration pair
+`TheRoomStandsUnderItsShellAtAFacingOffsetOfFour` /
+`TheBuildingProbeWouldMeasureTheRoomBackwards…`), one on the `floor` option, one on the missing
+`roomH`. **Skipped is unchanged at 250 and PlayMode is unmoved from the 09-15 stamp** — nothing was
+silenced and nothing else moved.
+
 ### The door anchor was wrong on `main` before this drop
 
 Measured `HouseIso.anchors(dir, opts).door` travel between dir 0 and dir 4, on this branch:
@@ -145,8 +156,15 @@ owner-visible and touches St Peters. **Not decided in this lane.**
 | `InteriorIso.render(0,{floor:'stoneFlag'})` | `f842d004d522` | `b00f7c064f79` |
 | `InteriorIso.render(0,{})` | `f842d004d522` | `807a3f1e155c` |
 
-`FLOORS` is unchanged in both revisions — five finishes still declared, one rendered. Reported rather
-than patched; it is the pass's call.
+`FLOORS` is unchanged in both revisions — five finishes still declared, one rendered.
+
+The mechanism: `coastalPass.js` `cottage()` drops every face on the floor layer (`line 241`) and then
+lays its own fixed bands (`line 246`, `tile` hall + `oak` parlour on the ground, `oak` upstairs). The
+host rig still honours `floor` and renders it faithfully; the companion discards the result. That is
+a deliberate authored floor, not an accident — but it leaves five documented options inert and
+anything setting `floor:` silently ignored. Either derive the band palette from `b.floor`, or take
+`floor` off the option surface while the pass is on. Reported rather than patched; it is the pass's
+design call.
 
 ## What is not here
 
