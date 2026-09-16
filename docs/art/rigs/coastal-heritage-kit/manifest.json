@@ -1,0 +1,143 @@
+{
+  "bundle": "manor-house-coastal-heritage-pass-03",
+  "generatedAt": "2026-09-16T01:45:48.323Z",
+  "contents": {
+    "designs": [
+      "Manor Iso.dc.html",
+      "Manor Interiors.dc.html",
+      "House Iso.dc.html",
+      "Cottage Interior Iso.dc.html",
+      "Interior Props Iso.dc.html"
+    ],
+    "rigs": [
+      "Art/manorIsoRig.js",
+      "Art/interiorPropRig.js",
+      "Art/manorUnitIsoRig.js",
+      "Art/houseIsoRig.js",
+      "Art/interiorIsoRig.js",
+      "Art/wharfBuildingRig.js",
+      "Art/coastalPass.js"
+    ],
+    "sidecars": [
+      "sidecars/manorIsoRig.params.json",
+      "sidecars/interiorPropRig.params.json",
+      "sidecars/manorUnitIsoRig.params.json",
+      "sidecars/houseIsoRig.params.json",
+      "sidecars/interiorIsoRig.params.json",
+      "sidecars/wharfBuildingRig.params.json",
+      "sidecars/coastalPass.params.json"
+    ],
+    "layouts": [
+      "layout-proposals/keeperKitchen.layout.json",
+      "layout-proposals/cottageLoft.layout.json",
+      "layout-proposals/capeAttic.layout.json",
+      "layout-proposals/seasideParlor.layout.json",
+      "layout-proposals/farmhouseHall.layout.json"
+    ]
+  },
+  "rigHashes": {
+    "Art/manorIsoRig.js": "eb59dcbfae10a47ae72d9e5193b789dcee4e5c1b8cb7b3d827d6db9f28dd1241",
+    "Art/interiorPropRig.js": "a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6",
+    "Art/manorUnitIsoRig.js": "d8bfad68a876f491a642b8aaeb5c7df65cc741c931e7ba2d8a9e3f561cecaf7b",
+    "Art/houseIsoRig.js": "4b28a464c87153c0d271789b583a485333c1fceb2ffa1b650b44d8258ba6ea66",
+    "Art/interiorIsoRig.js": "ef06a219a23686349dd96f63e5ca00ba72cf380954686263a3f1576fe80bafc1",
+    "Art/wharfBuildingRig.js": "76dbecb0e1ccadfbcacc66b9ec5787d2ebff8112b7d5976668fa953a08ed8163",
+    "Art/coastalPass.js": "cb0293833991f726742ad98aa4d169888293779b000192d8543e02b12bade780"
+  },
+  "dcRigs": {
+    "Manor Iso.dc.html": [
+      "Art/manorIsoRig.js",
+      "Art/interiorPropRig.js",
+      "Art/coastalPass.js"
+    ],
+    "Manor Interiors.dc.html": [
+      "Art/manorIsoRig.js",
+      "Art/interiorPropRig.js",
+      "Art/manorUnitIsoRig.js",
+      "Art/coastalPass.js"
+    ],
+    "House Iso.dc.html": [
+      "Art/houseIsoRig.js",
+      "Art/interiorPropRig.js",
+      "Art/coastalPass.js"
+    ],
+    "Cottage Interior Iso.dc.html": [
+      "Art/interiorIsoRig.js",
+      "Art/houseIsoRig.js",
+      "Art/wharfBuildingRig.js",
+      "Art/interiorPropRig.js",
+      "Art/coastalPass.js"
+    ],
+    "Interior Props Iso.dc.html": [
+      "Art/interiorPropRig.js",
+      "Art/interiorIsoRig.js",
+      "Art/coastalPass.js"
+    ]
+  },
+  "sidecarSummary": [
+    {
+      "file": "sidecars/manorIsoRig.params.json",
+      "sym": "ManorIso",
+      "kb": 383,
+      "presets": 6,
+      "api": 7
+    },
+    {
+      "file": "sidecars/interiorPropRig.params.json",
+      "sym": "PropIso",
+      "kb": 21,
+      "presets": 0,
+      "api": 8
+    },
+    {
+      "file": "sidecars/manorUnitIsoRig.params.json",
+      "sym": "ManorUnitIso",
+      "kb": 1997,
+      "presets": 7,
+      "api": 9
+    },
+    {
+      "file": "sidecars/houseIsoRig.params.json",
+      "sym": "HouseIso",
+      "kb": 36,
+      "presets": 5,
+      "api": 4
+    },
+    {
+      "file": "sidecars/interiorIsoRig.params.json",
+      "sym": "InteriorIso",
+      "kb": 139,
+      "presets": 8,
+      "api": 7
+    },
+    {
+      "file": "sidecars/wharfBuildingRig.params.json",
+      "sym": "WharfBuilding",
+      "kb": 27,
+      "presets": 7,
+      "api": 3
+    },
+    {
+      "file": "sidecars/coastalPass.params.json",
+      "sym": "CoastalPass",
+      "kb": 3,
+      "presets": 0,
+      "api": 3
+    }
+  ],
+  "notes": [
+    "Each sidecar carries derivedFromRigSha256, taken from the rig bytes in this bundle — rehash Art/<rig>.js and compare to verify stamp and source agree.",
+    "Sidecars hold every published parameter: constants, enumerations, colour ramps, lookup tables, and each preset resolved through resolved()/dims()/shell()/units() plus anchors() at all eight facings.",
+    "Open any .dc.html directly from this folder; relative paths to Art/ and support.js are preserved. Typefaces load from Google Fonts, so text falls back to a serif offline."
+  ],
+  "renderSignatureSha256": "57e59da887ab14e1ced3627ab75c2d07c64a4e27bf3903cf4adfbbb2058b0a08",
+  "integration": {
+    "loadOrder": [
+      "Art/interiorPropRig.js",
+      "Art/coastalPass.js",
+      "host rig files (ManorIso before ManorUnitIso)"
+    ],
+    "disable": "CoastalPass.enabled = false, or coastalPass:false in render options",
+    "previousPass": "Hidden-Harbours-manor-house-review-2026-09-13/revised"
+  }
+}

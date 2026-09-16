@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+<script src="Art/interiorPropRig.js"></script>
+<script src="Art/coastalPass.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/interiorIsoRig.js?v=3"></script>
+<script src="Art/houseIsoRig.js?v=2"></script>
+<script src="Art/wharfBuildingRig.js?v=2"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;} a:hover{color:#a9e7dd;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:1060px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Interior</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;INTERIOR&nbsp;ISO&nbsp;&middot;&nbsp;FOOTPRINT-DRIVEN&nbsp;OPEN-DOLLHOUSE&nbsp;SHELL&nbsp;(M2&nbsp;BAKE&nbsp;&middot;&nbsp;PHASE&nbsp;1)</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:420px;text-align:right;line-height:1.45;">The room is the building seen from inside. Pick the BUILDING and the room inherits that shell&rsquo;s footprint, roofline, sash, door &amp; chimney &mdash; a net-shed interior is shack-sized, and a cape&rsquo;s upper storey sits under its real roof. The two camera-side walls drop away; all 8 facings bake from one model.</div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
+
+    <!-- STAGE -->
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ canvasRef }}" width="620" height="520"></canvas>
+        <div style="position:absolute;left:11px;top:10px;font-size:10px;letter-spacing:0.14em;color:rgba(231,236,235,0.9);background:rgba(11,18,22,0.6);padding:3px 8px;">{{ stateLine }}</div>
+        <div style="position:absolute;right:11px;top:10px;font-size:10px;letter-spacing:0.12em;color:rgba(200,168,106,0.9);">{{ scaleLine }}</div>
+      </div>
+
+      <!-- turntable -->
+      <div style="display:flex;gap:14px;align-items:center;">
+        <div onClick="{{ rotL }}" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8634;</div>
+        <div style="width:120px;display:flex;flex-direction:column;align-items:center;gap:1px;">
+          <div style="font-family:'IM Fell English SC',serif;font-size:26px;line-height:1;color:#eef3f2;">{{ compass }}</div>
+          <div style="font-size:10px;letter-spacing:0.14em;color:#7f8c90;">{{ compassDeg }}</div>
+        </div>
+        <div onClick="{{ rotR }}" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8635;</div>
+      </div>
+
+      <!-- direction chips -->
+      <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:452px;">
+        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="8">
+          <div onClick="{{ c.onClick }}" style="min-width:38px;text-align:center;padding:6px 9px;font-size:11px;letter-spacing:0.08em;cursor:pointer;user-select:none;color:{{ c.fg }};background:{{ c.bg }};border:1px solid {{ c.bd }};">{{ c.label }}</div>
+        </sc-for>
+      </div>
+
+      <!-- toggles + sliders -->
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:452px;">
+        <sc-for list="{{ stageToggles }}" as="t" hint-placeholder-count="3">
+          <div onClick="{{ t.onClick }}" style="padding:7px 12px;font-size:10px;letter-spacing:0.09em;cursor:pointer;user-select:none;border:1px solid {{ t.bd }};color:{{ t.fg }};background:{{ t.bg }};">{{ t.label }}</div>
+        </sc-for>
+        <div style="display:flex;flex-direction:column;gap:4px;width:120px;">
+          <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>ZOOM</span><span style="color:#9aa6aa;">{{ zoom }}&times;</span></div>
+          <input type="range" min="0.35" max="1" step="0.05" value="{{ zoom }}" onInput="{{ onZoom }}" />
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;width:120px;">
+          <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>CAM ANGLE</span><span style="color:#9aa6aa;">{{ elev }}&deg;</span></div>
+          <input type="range" min="30" max="50" step="1" value="{{ elev }}" onInput="{{ onElev }}" />
+        </div>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.06em;text-align:center;max-width:452px;line-height:1.6;">pre-rendered 3D &middot; fixed &frac34; camera &middot; 45&deg; steps &middot; floor-centre origin pinned &mdash; <span style="color:#e0b13a;">FIRE</span> &amp; lamplight are runtime overlays; <span style="color:#e0b13a;">WALK-BEHIND</span> composites the room from <b>renderLayers</b> and ghosts the divider a figure steps behind &middot; 32&nbsp;px = 1&nbsp;m, true to the fleet &amp; the house rig</div>
+    </div>
+
+    <!-- BUILDER -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:344px;">
+
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Room preset</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;">
+          <sc-for list="{{ presetChips }}" as="p" hint-placeholder-count="7">
+            <div onClick="{{ p.onClick }}" style="padding:6px 10px;font-size:10px;letter-spacing:0.06em;cursor:pointer;user-select:none;color:{{ p.fg }};background:{{ p.bg }};border:1px solid {{ p.bd }};">{{ p.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#2ba39a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Room build</div></div>
+        <div style="border:1px solid #243137;padding:12px 13px;display:flex;flex-direction:column;gap:12px;">
+
+          <sc-for list="{{ chipRows }}" as="row" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div style="font-size:9px;letter-spacing:0.12em;color:#6f7e83;">{{ row.name }}</div>
+              <div style="display:flex;gap:5px;flex-wrap:wrap;">
+                <sc-for list="{{ row.opts }}" as="p" hint-placeholder-count="4">
+                  <div onClick="{{ p.onClick }}" style="padding:5px 9px;font-size:10px;letter-spacing:0.06em;cursor:pointer;user-select:none;color:{{ p.fg }};background:{{ p.bg }};border:1px solid {{ p.bd }};">{{ p.label }}</div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#6f7e83;"><span>WALL HUE &middot; paper / paint</span><span style="color:#9aa6aa;">{{ paperCur }}</span></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <sc-for list="{{ paperSwatches }}" as="s" hint-placeholder-count="6">
+                <div onClick="{{ s.onClick }}" title="{{ s.name }}" style="width:30px;height:20px;background:{{ s.col }};cursor:pointer;border:{{ s.border }};box-shadow:{{ s.glow }};"></div>
+              </sc-for>
+            </div>
+          </div>
+
+          <sc-for list="{{ sliders }}" as="s" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#6f7e83;"><span>{{ s.name }}</span><span style="color:#9aa6aa;">{{ s.disp }}</span></div>
+              <input type="range" min="{{ s.min }}" max="{{ s.max }}" step="{{ s.step }}" value="{{ s.val }}" onInput="{{ s.onInput }}" />
+            </div>
+          </sc-for>
+
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <sc-for list="{{ flagToggles }}" as="t" hint-placeholder-count="2">
+              <div onClick="{{ t.onClick }}" style="padding:6px 11px;font-size:10px;letter-spacing:0.07em;cursor:pointer;user-select:none;border:1px solid {{ t.bd }};color:{{ t.fg }};background:{{ t.bg }};">{{ t.label }}</div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;letter-spacing:0.03em;">Every axis rebuilds &amp; re-lights the same 3D room &mdash; no re-drawing. BUILDING sets the footprint range, roofline &amp; finish from the paired exterior preset; SIZE then moves shell and room together. STOREY&nbsp;=&nbsp;UNDER&nbsp;ROOF trades the flat ceiling for knee walls, the real roof slope &amp; dormers. Colours are KTC ramps; trim, casings &amp; wainscot stay white. Free-standing furniture &amp; appliances arrive as separate prop rigs (Phase 3).</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div onClick="{{ downloadDirs }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; 8-DIR SHEET &middot; THIS ROOM</div>
+        <div onClick="{{ downloadOne }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; SINGLE CELL &middot; {{ compass }} FACING</div>
+        <a href="Art/interiorIsoRig.js" download="interiorIsoRig.js" style="font-size:9.5px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; RIG SOURCE &middot; interiorIsoRig.js</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHELL ↔ ROOM -->
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">SHELL&nbsp;&harr;&nbsp;ROOM&nbsp;&middot;&nbsp;THE&nbsp;SAME&nbsp;BUILDING</div>
+      <div style="font-size:9.5px;color:#5f6e73;">{{ pairLine }}</div>
+    </div>
+    <div style="border:1px solid #243137;background:#0e181d;padding:14px;overflow-x:auto;">
+      <canvas ref="{{ pairRef }}" width="820" height="252"></canvas>
+    </div>
+    <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;">Left is the exterior rig at this room&rsquo;s SIZE, ROOFLINE &amp; weather; right is the room, lifted to its storey so the floors register. Same facing, so the walls the shell shows you are exactly the two the room drops. Footprint, eave, ridge, sash, front door &amp; chimney are read from one set of numbers &mdash; change SIZE and both move together.</div>
+  </div>
+
+  <!-- DIRECTION SHEET -->
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">DIRECTION&nbsp;SHEET&nbsp;&middot;&nbsp;Art/Sprites/Interiors/InteriorIso.png</div>
+      <div style="font-size:9.5px;color:#5f6e73;">{{ sheetDims }} &middot; floor-centre pivot pinned each cell &middot; N NE E SE S SW W NW</div>
+    </div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;padding:14px;">
+      <canvas ref="{{ sheetRef }}" width="1020" height="300"></canvas>
+    </div>
+    <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;">The diagonal facings (NE/SE/SW/NW) open a clean two-wall corner toward the camera &mdash; the money shots, matching the reference. The orthogonal facings (N/E/S/W) look straight at a back wall with the sides receding edge-on. The cutaway swaps automatically: whichever two walls face the camera are dropped.</div>
+  </div>
+
+  <!-- ROOMS FROM ONE FOOTPRINT -->
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">EVERY&nbsp;PRESET&nbsp;FROM&nbsp;ONE&nbsp;RIG</div>
+      <div style="font-size:9.5px;color:#5f6e73;">one room per building &amp; storey, common floor line &mdash; each is the same model re-skinned &amp; re-sized</div>
+    </div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;padding:14px;">
+      <canvas ref="{{ roomsRef }}" width="1020" height="330"></canvas>
+    </div>
+  </div>
+
+  <!-- META + PALETTE -->
+  <div style="width:100%;max-width:1060px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:320px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Sheet</div></div>
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ meta }}" as="row" hint-placeholder-count="9">
+          <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ row.border }};background:#0f191e;">{{ row.k }}</div>
+          <div style="padding:6px 11px;color:#c4cdcd;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.v }}</div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:320px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#b49a74;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Palette &middot; this room, KTC</div></div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <sc-for list="{{ ramps }}" as="r" hint-placeholder-count="6">
+          <div style="display:flex;align-items:center;gap:9px;">
+            <div style="width:74px;font-size:9px;letter-spacing:0.08em;color:#6f7e83;">{{ r.name }}</div>
+            <div style="display:flex;gap:2px;flex:1;">
+              <sc-for list="{{ r.cols }}" as="c" hint-placeholder-count="6">
+                <div title="{{ c }}" style="flex:1;height:15px;background:{{ c }};"></div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;letter-spacing:0.03em;">Walls are the harbour body ramps as paper/paint; floors are honey plank, slate checker or plinth stone; wainscot, casings &amp; crown are trim white. Night is a warm-lamp ramp transform &mdash; no new colours invented.</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1060, &quot;height&quot;: 1860 },
+  &quot;dir&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;SE&quot;, &quot;options&quot;: [&quot;N&quot;,&quot;NE&quot;,&quot;E&quot;,&quot;SE&quot;,&quot;S&quot;,&quot;SW&quot;,&quot;W&quot;,&quot;NW&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Preview&quot; },
+  &quot;type&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;cottage&quot;, &quot;options&quot;: [&quot;cottage&quot;,&quot;farmhouse&quot;,&quot;cape&quot;,&quot;saltbox&quot;,&quot;netShed&quot;,&quot;barn&quot;,&quot;fishPlant&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Building&quot; },
+  &quot;storey&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;ground&quot;, &quot;options&quot;: [&quot;ground&quot;,&quot;upper&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Building&quot; },
+  &quot;shape&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;gable&quot;, &quot;options&quot;: [&quot;gable&quot;,&quot;cape&quot;,&quot;gambrel&quot;,&quot;saltbox&quot;,&quot;shed&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Building&quot; },
+  &quot;size&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.20, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Building&quot; },
+  &quot;floor&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;checker&quot;, &quot;options&quot;: [&quot;plank&quot;,&quot;wideBoard&quot;,&quot;checker&quot;,&quot;stoneFlag&quot;,&quot;painted&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;wall&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;plaster&quot;, &quot;options&quot;: [&quot;plaster&quot;,&quot;wainscot&quot;,&quot;wallpaper&quot;,&quot;board&quot;,&quot;stud&quot;,&quot;stone&quot;,&quot;brick&quot;,&quot;block&quot;,&quot;corrugated&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;paper&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;cream&quot;, &quot;options&quot;: [&quot;greyShingle&quot;,&quot;white&quot;,&quot;cream&quot;,&quot;red&quot;,&quot;sage&quot;,&quot;blue&quot;,&quot;gold&quot;,&quot;plum&quot;,&quot;rustOrange&quot;,&quot;mustard&quot;,&quot;teal&quot;,&quot;galv&quot;,&quot;rustMetal&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;wainscot&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;windows&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;twoOverTwo&quot;, &quot;options&quot;: [&quot;sixOverSix&quot;,&quot;twoOverTwo&quot;,&quot;fourOverFour&quot;,&quot;oneOverOne&quot;,&quot;arched&quot;,&quot;industrial&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;winDensity&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.55, &quot;min&quot;: 0.1, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;dividers&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 1, &quot;min&quot;: 0, &quot;max&quot;: 2, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;dormers&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 0, &quot;min&quot;: 0, &quot;max&quot;: 3, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;stairs&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;none&quot;, &quot;options&quot;: [&quot;none&quot;,&quot;straight&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;beams&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;hearth&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;weather&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.3, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;night&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Preview&quot; },
+  &quot;zoom&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.55, &quot;min&quot;: 0.35, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;unit&quot;: &quot;×&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Preview&quot; },
+  &quot;elev&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 40, &quot;min&quot;: 30, &quot;max&quot;: 50, &quot;step&quot;: 1, &quot;unit&quot;: &quot;°&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Preview&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.ORDER = ['N','NE','E','SE','S','SW','W','NW'];
+    const dirIdx=(d)=>{ const i=this.ORDER.indexOf(d); return i<0?3:i; };
+    const saved=this._load();
+    const D = (typeof window!=='undefined') && window.InteriorIso;
+    this.CW = D?D.W:1180; this.CH = D?D.H:900; this.PVX = D?D.pivot.x:590; this.PVY = D?D.pivot.y:560;
+    this.state = {
+      dir:   saved.dir   ?? dirIdx(props.dir ?? 'SE'),
+      zoom:  saved.zoom  ?? (props.zoom ?? 0.55),
+      elev:  saved.elev  ?? (props.elev ?? 40),
+      fire:  saved.fire  ?? true,
+      night: saved.night ?? (props.night ?? false),
+      showPivot: saved.showPivot ?? false,
+      build: Object.assign({
+        type:'cottage', storey:'ground', shape:'gable',
+        size:0.20, floor:'checker', wall:'plaster', paper:'cream',
+        wainscot:true, windows:'twoOverTwo', winDensity:0.55, dividers:1, hearth:true, dormers:0,
+        stairs:'none', beams:false, weather:0.3,
+      }, saved.build ?? {}),
+      player: saved.player ?? false,
+      cut: saved.cut ?? false,
+    };
+    this._cells={}; this._cellsKey=''; this._lc={}; this._lKey=''; this._pt=0; this._t0=performance.now();
+    this.canvasRef=(n)=>{ if(!n||n===this._cv)return; this._cv=n; this._ctx=n.getContext('2d'); this._rebuild(); };
+    this.sheetRef =(n)=>{ if(!n||n===this._sh)return; this._sh=n; this._shctx=n.getContext('2d'); this._drawSheet(); };
+    this.roomsRef =(n)=>{ if(!n||n===this._rm)return; this._rm=n; this._rmctx=n.getContext('2d'); this._drawRooms(); };
+    this.pairRef  =(n)=>{ if(!n||n===this._pr)return; this._pr=n; this._prctx=n.getContext('2d'); this._drawPair(); };
+  }
+  _load(){ try{ return JSON.parse(localStorage.getItem('hh.interiorIso')||'{}'); }catch(e){ return {}; } }
+  _save(){ try{ localStorage.setItem('hh.interiorIso', JSON.stringify(this.state)); }catch(e){} }
+  _rig(){ return (typeof window!=='undefined') && window.InteriorIso; }
+
+  componentDidMount(){
+    this._iv=setInterval(()=>{ if(!this._ctx||!this._ready) return;
+      if(this.state.player){ this._pt=(this._pt+0.006)%1; this._drawStage(); }
+      else if(this.state.fire){ this._drawStage(); } }, 80);
+    this._tryReady();
+  }
+  componentDidUpdate(prev){
+    const s={};
+    if(prev.dir!==this.props.dir && this.props.dir!=null){ const i=this.ORDER.indexOf(this.props.dir); if(i>=0&&i!==this.state.dir) s.dir=i; }
+    ['zoom','elev','night'].forEach(k=>{ if(prev[k]!==this.props[k] && this.props[k]!=null && this.props[k]!==this.state[k]) s[k]=this.props[k]; });
+    ['type','storey','shape','size','floor','wall','paper','wainscot','windows','winDensity','dividers','dormers','stairs','beams','hearth','weather'].forEach(k=>{
+      if(prev[k]!==this.props[k] && this.props[k]!=null && this.props[k]!==this.state.build[k]) s.build=Object.assign({},this.state.build,s.build,{[k]:this.props[k]}); });
+    if(Object.keys(s).length) this.setState(s, ()=>{ this._save(); this._rebuild(); });
+  }
+  componentWillUnmount(){ if(this._iv) clearInterval(this._iv); if(this._deb) clearTimeout(this._deb); }
+
+  // the rig scripts land after the first paint — re-render once they're in so every rig-derived
+  // control (presets, finishes, TYPES) fills in, and poll a few beats for the two exterior rigs
+  _tryReady(){
+    if(this._rig()){
+      const first=!this._ready; this._ready=true; this._rebuild();
+      if(first){ this.forceUpdate(); this._waitExt(0); }
+    } else if(!this._ready){ setTimeout(()=>this._tryReady(),80); }
+  }
+  _waitExt(n){ if(this._extRig() || n>40) { this._drawPair(); return; } setTimeout(()=>this._waitExt(n+1), 120); }
+  _key(){ return this.state.elev+'|'+this.state.night+'|'+JSON.stringify(this.state.build); }
+  _opts(){ return Object.assign({}, this.state.build, { elev:this.state.elev, night:this.state.night }); }
+
+  _renderCell(dir){
+    const D=this._rig(); const cv=document.createElement('canvas'); cv.width=D.W; cv.height=D.H;
+    cv.getContext('2d').putImageData(new ImageData(D.render(dir, this._opts()), D.W, D.H), 0, 0);
+    return cv;
+  }
+  _rebuild(){
+    if(!this._rig()){ this._tryReady(); return; }
+    const key=this._key();
+    if(this._cellsKey!==key){ this._cells={}; this._cellsKey=key; }
+    if(!this._cells[this.state.dir]) this._cells[this.state.dir]=this._renderCell(this.state.dir);
+    this._ready=true;
+    this._drawStage();
+    if(this._deb) clearTimeout(this._deb);
+    this._drawPair();
+    this._deb=setTimeout(()=>{ if(this._cellsKey!==key) return;
+      for(let d=0;d<8;d++) if(!this._cells[d]) this._cells[d]=this._renderCell(d);
+      this._drawSheet(); this._drawRooms();
+    }, 60);
+  }
+
+  // ---- SHELL ↔ ROOM: the paired exterior rig rendered from the same numbers -------------
+  _extRig(){ const D=this._rig(); if(!D) return null;
+    const T=D.TYPES[this.state.build.type]||D.TYPES.cottage;
+    const R = T.fam==='house' ? (typeof window!=='undefined'&&window.HouseIso) : (typeof window!=='undefined'&&window.WharfBuilding);
+    return (R && R.PRESETS && R.PRESETS[T.ext]) ? {R, T} : null;
+  }
+  _extOpts(){ const E=this._extRig(); if(!E) return null;
+    const b=this.state.build, o=Object.assign({}, E.R.PRESETS[E.T.ext], {
+      size:b.size, weather:b.weather, night:this.state.night, elev:this.state.elev, windows:b.windows });
+    if(E.R.SHAPES && E.R.SHAPES.indexOf(b.shape)>=0){ o.shape=b.shape; o.pitch=undefined; delete o.pitch; }
+    if(E.T.fam==='house' && b.dormers!=null) o.dormers=b.dormers|0;
+    return o;
+  }
+  _extCell(){ const E=this._extRig(); if(!E) return null;
+    const o=this._extOpts(), k=JSON.stringify(o)+'|'+this.state.dir+'|'+E.T.ext;
+    if(this._exKey===k && this._exCv) return {cv:this._exCv, R:E.R};
+    const R=E.R, cv=document.createElement('canvas'); cv.width=R.W; cv.height=R.H;
+    cv.getContext('2d').putImageData(new ImageData(R.render(this.state.dir, o), R.W, R.H), 0, 0);
+    this._exKey=k; this._exCv=cv; return {cv, R};
+  }
+  _drawPair(){
+    if(!this._prctx||!this._ready) return;
+    const D=this._rig(), ctx=this._prctx, W=this._pr.width, H=this._pr.height;
+    ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,W,H);
+    const ex=this._extCell(); if(!ex) return;
+    const cell=this._cells[this.state.dir]||(this._cells[this.state.dir]=this._renderCell(this.state.dir));
+    const dm=D.dims(Object.assign({}, this.state.build)), ce=Math.cos(this.state.elev*Math.PI/180);
+    // one scale for both, so metres read the same on each side
+    const S=0.46;
+    const gradeY=Math.round(H-40);
+    const lay=(cv,R,pv,cxp,lift)=>{ ctx.drawImage(cv, Math.round(cxp-pv.x*S), Math.round(gradeY-pv.y*S-lift), cv.width*S, cv.height*S); };
+    const xL=Math.round(W*0.30), xR=Math.round(W*0.72);
+    ctx.strokeStyle='rgba(127,214,201,0.16)'; ctx.setLineDash([3,4]); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(20,gradeY+0.5); ctx.lineTo(W-20,gradeY+0.5); ctx.stroke(); ctx.setLineDash([]);
+    lay(ex.cv, ex.R, ex.R.pivot, xL, 0);
+    lay(cell, D, {x:this.PVX,y:this.PVY}, xR, dm.storeyZ*ce*32*S);       // lift the room to its storey
+    ctx.font='10px ui-monospace,monospace'; ctx.textAlign='center';
+    ctx.fillStyle='#8a969b'; ctx.fillText('SHELL · '+this.ORDER[this.state.dir], xL, 17);
+    ctx.fillStyle='#7fd6c9'; ctx.fillText('ROOM · '+this.ORDER[this.state.dir], xR, 17);
+    ctx.fillStyle='#5f6e73'; ctx.textAlign='right';
+    ctx.fillText('grade · z 0', W-14, gradeY-7);
+    ctx.textAlign='center';
+    ctx.fillStyle='rgba(201,168,106,0.85)';
+    ctx.fillText(dm.Wd.toFixed(1)+' × '+dm.Ln.toFixed(1)+' m  ·  eave '+(dm.fH+dm.wallH).toFixed(1)+' m', W/2, 18);
+    ctx.textAlign='left';
+  }
+
+  _bgStage(ctx,W,H){
+    if(this.state.night){
+      const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#0a0f16'); g.addColorStop(1,'#12100c');
+      ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    } else {
+      const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#0e181d'); g.addColorStop(1,'#141d20');
+      ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    }
+  }
+  _drawStage(){
+    if(!this._ctx||!this._ready) return;
+    const ctx=this._ctx, W=this._cv.width, H=this._cv.height, z=this.state.zoom;
+    ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,W,H);
+    this._bgStage(ctx,W,H);
+    const gx=Math.round(W/2), gy=Math.round(H*0.58);
+    const D=this._rig(), an=D?D.anchors(this.state.dir,this._opts()):{Wd:8,Ln:9,lamps:[]};
+    // drop shadow under the footprint
+    ctx.save(); ctx.globalAlpha=this.state.night?0.5:0.34; ctx.fillStyle='#05090c';
+    ctx.beginPath(); ctx.ellipse(gx,gy+6,(an.Wd*0.66)*z*32*0.5,(an.Ln*0.30)*z*32*0.5,0,0,Math.PI*2); ctx.fill(); ctx.restore();
+    // ROOM: single cached cell, or the layered occlusion demo with a walking figure
+    if(this.state.player && D && D.renderLayers){ this._drawPlayerScene(ctx, gx, gy, z, an); }
+    else { const cell=this._cells[this.state.dir]||(this._cells[this.state.dir]=this._renderCell(this.state.dir));
+      ctx.drawImage(cell, Math.round(gx-this.PVX*z), Math.round(gy-this.PVY*z), this.CW*z, this.CH*z); }
+    // warm lamplight pools at night
+    if(this.state.night && an.lamps){
+      for(const l of an.lamps){ const lx=gx+(l.x-this.PVX)*z, ly=gy+(l.y-this.PVY)*z;
+        const g=ctx.createRadialGradient(lx,ly,2,lx,ly,60*z); g.addColorStop(0,'rgba(240,190,100,0.22)'); g.addColorStop(1,'rgba(240,190,100,0)');
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(lx,ly,60*z,0,Math.PI*2); ctx.fill(); }
+    }
+    // fire flicker on the hearth anchor
+    if(this.state.fire && an.hearth){
+      const t=(performance.now()-this._t0)/1000, fl=0.7+0.3*Math.sin(t*11)+0.12*Math.sin(t*23);
+      const hx=gx+(an.hearth.x-this.PVX)*z, hy=gy+(an.hearth.y-this.PVY)*z;
+      const g=ctx.createRadialGradient(hx,hy,1,hx,hy,44*z*fl); g.addColorStop(0,'rgba(246,180,80,'+(0.4*fl).toFixed(3)+')'); g.addColorStop(1,'rgba(246,150,60,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(hx,hy,44*z*fl,0,Math.PI*2); ctx.fill();
+    }
+    if(this.state.showPivot){
+      ctx.fillStyle='rgba(240,90,80,0.9)'; ctx.fillRect(gx-0.5,gy-6,1,12); ctx.fillRect(gx-6,gy-0.5,12,1);
+    }
+  }
+
+  _layersFor(dir){
+    const D=this._rig(), key=this._key();
+    if(this._lKey!==key){ this._lc={}; this._lKey=key; }
+    if(!this._lc[dir]){ const LR=D.renderLayers(dir, this._opts());
+      this._lc[dir]={ anchors:LR.anchors, layers:LR.layers.map(l=>{
+        const s=document.createElement('canvas'); s.width=LR.W; s.height=LR.H; s.getContext('2d').putImageData(new ImageData(l.rgba,LR.W,LR.H),0,0);
+        const g=document.createElement('canvas'); g.width=LR.W; g.height=LR.H; g.getContext('2d').putImageData(new ImageData(D.ghost(l.rgba,0.24),LR.W,LR.H),0,0);
+        return { id:l.id, kind:l.kind, s, g }; }) }; }
+    return this._lc[dir];
+  }
+  _drawPlayerScene(ctx, gx, gy, z, an){
+    const D=this._rig(), LC=this._layersFor(this.state.dir), Ln=an.Ln, px=-0.4;
+    const py = -Ln*0.30 + Ln*0.60*(0.5-0.5*Math.cos(this._pt*2*Math.PI));
+    const foot=D.project(this.state.dir,[px,py,0]), head=D.project(this.state.dir,[px,py,1.7]);
+    const dx=Math.round(gx-this.PVX*z), dy=Math.round(gy-this.PVY*z), cw=this.CW*z, ch=this.CH*z;
+    const blit=(cv)=>ctx.drawImage(cv, dx, dy, cw, ch);
+    for(const l of LC.layers) if(l.kind!=='divider') blit(l.s);        // shell (far walls, floor, fixtures)
+    const back=[], front=[];
+    for(const l of LC.layers){ if(l.kind!=='divider') continue; const o=LC.anchors.occluders.find(o=>o.id===l.id);
+      const by=o?(o.base[0].y+o.base[1].y)/2:1e9; (foot.y<by-3?front:back).push(l); }  // nearer-than-figure → ghost
+    for(const l of back) blit(l.s);
+    this._drawWalker(ctx, gx+(foot.x-this.PVX)*z, gy+(foot.y-this.PVY)*z, gy+(head.y-this.PVY)*z, z);
+    for(const l of front) if(!this.state.cut) blit(l.g);        // FADE → stipple; CUT → drop the layer entirely
+    ctx.fillStyle=front.length?'#e0b13a':'#7fd6c9'; ctx.font='10px ui-monospace,monospace';
+    ctx.fillText(front.length?(this.state.cut?'\u2702 divider cut away \u00b7 figure behind it':'\u2593 divider faded \u00b7 figure behind it'):'figure in front of the divider', 12, this._cv.height-14);
+  }
+  _drawWalker(ctx, fx, fy, hy, z){
+    const w=15*z, bodyTop=hy+(fy-hy)*0.34;
+    ctx.fillStyle='rgba(0,0,0,0.34)'; ctx.beginPath(); ctx.ellipse(fx,fy,w*0.75,w*0.3,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#8f2f22'; ctx.beginPath(); ctx.moveTo(fx-w/2,fy); ctx.lineTo(fx+w/2,fy); ctx.lineTo(fx+w*0.42,bodyTop); ctx.lineTo(fx-w*0.42,bodyTop); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#e7c281'; ctx.beginPath(); ctx.arc(fx, bodyTop-w*0.15, w*0.5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#5a3320'; ctx.beginPath(); ctx.arc(fx, bodyTop-w*0.34, w*0.54, Math.PI, 0); ctx.fill();
+  }
+  _checker(ctx,x,y,fw,fh,S){ const c=16; for(let yy=0;yy<fh;yy+=c)for(let xx=0;xx<fw;xx+=c){ ctx.fillStyle=(((xx/c|0)+(yy/c|0))&1)?'#16232b':'#111d23'; ctx.fillRect(x+xx*S,y+yy*S,Math.min(c,fw-xx)*S,Math.min(c,fh-yy)*S); } }
+  _drawSheet(){
+    if(!this._shctx||!this._ready) return;
+    const ctx=this._shctx, S=0.30, gap=6, cw=this.CW*S, ch=this.CH*S, step=cw*0.62;
+    this._sh.width=Math.ceil(12+8*step+ (cw-step)); this._sh.height=Math.ceil(ch+24);
+    ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,this._sh.width,this._sh.height);
+    for(let d=0; d<8; d++){
+      const x=6+d*step, y=4;
+      if(d===this.state.dir){ ctx.fillStyle='rgba(127,214,201,0.10)'; ctx.fillRect(x+cw*0.16,y,cw*0.68,ch); }
+      const cell=this._cells[d]; if(cell) ctx.drawImage(cell, x,y, cw,ch);
+      ctx.fillStyle = d===this.state.dir ? '#cfeee8' : '#6f7e83';
+      ctx.font='10px ui-monospace,monospace'; ctx.textAlign='center';
+      ctx.fillText(this.ORDER[d], x+cw/2, y+ch+15);
+    }
+    ctx.textAlign='left';
+  }
+  _drawRooms(){
+    if(!this._rmctx||!this._ready) return;
+    const D=this._rig(); const S=0.28; const keys=Object.keys(D.PRESETS);
+    const cw=D.W*S, step=cw*0.6;
+    this._rm.width=Math.ceil(14+keys.length*step+(cw-step)); this._rm.height=Math.ceil(D.H*S+22);
+    const ctx=this._rmctx, W=this._rm.width, H=this._rm.height;
+    ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,W,H);
+    let x=8;
+    for(const k of keys){
+      const cv=document.createElement('canvas'); cv.width=D.W; cv.height=D.H;
+      cv.getContext('2d').putImageData(new ImageData(D.render(3, Object.assign({elev:this.state.elev,night:this.state.night},{preset:k})), D.W, D.H),0,0);
+      ctx.drawImage(cv, x, 2, D.W*S, D.H*S);
+      ctx.fillStyle='#6f7e83'; ctx.font='10px ui-monospace,monospace'; ctx.textAlign='center';
+      ctx.fillText(k.replace(/([A-Z])/g,' $1').trim(), x+cw/2, H-6);
+      x += step;
+    }
+    ctx.textAlign='left';
+  }
+
+  _rot(d){ this.setState({dir:(this.state.dir+d+8)%8}, ()=>{ this._save(); this._rebuild(); }); }
+  _setDir(d){ this.setState({dir:d}, ()=>{ this._save(); this._rebuild(); }); }
+  _setB(patch){ this.setState({build:Object.assign({},this.state.build,patch)}, ()=>{ this._save(); this._rebuild(); }); }
+  // picking a building adopts ITS footprint, roofline, finish, sash & hue — the exterior leads
+  _setType(k){ const D=this._rig(), T=D.TYPES[k]; if(!T) return;
+    this._setB({ type:k, shape:T.shape, wall:T.finish, paper:T.paper, floor:T.floor,
+      windows:T.windows, winDensity:T.winD, wainscot:!!T.wainscot, beams:!!T.beams,
+      dormers:T.dormers||0, size:T.extSize!=null?T.extSize:this.state.build.size,
+      hearth:T.fam==='house' ? this.state.build.hearth : false }); }
+  _setPreset(k){ const D=this._rig(); this.setState({build:Object.assign({},this.state.build,D.PRESETS[k])}, ()=>{ this._save(); this._rebuild(); }); }
+  _toggle(k){ this.setState({[k]:!this.state[k]}, ()=>{ this._save(); this._rebuild(); }); }
+  _togglePlayer(){ const on=!this.state.player;
+    const build=(on && (this.state.build.dividers|0)<1) ? Object.assign({},this.state.build,{dividers:1}) : this.state.build;
+    this.setState({player:on, build}, ()=>{ this._save(); this._rebuild(); }); }
+  _toggleB(k){ this._setB({[k]:!this.state.build[k]}); }
+
+  _saveCanvas(cv,name){ cv.toBlob((b)=>{ if(!b)return; const url=URL.createObjectURL(b); const a=document.createElement('a');
+    a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),2000); }); }
+  _downloadDirs(){ const D=this._rig(); for(let d=0;d<8;d++) if(!this._cells[d]) this._cells[d]=this._renderCell(d);
+    const cv=document.createElement('canvas'); cv.width=this.CW*8; cv.height=this.CH; const c=cv.getContext('2d');
+    for(let d=0;d<8;d++) c.drawImage(this._cells[d], d*this.CW, 0); this._saveCanvas(cv,'InteriorIso_'+this.state.build.wall+'.png'); }
+  _downloadOne(){ const cell=this._cells[this.state.dir]||this._renderCell(this.state.dir); this._saveCanvas(cell,'InteriorIso_'+this.state.build.wall+'_'+this.ORDER[this.state.dir]+'.png'); }
+
+  renderVals(){
+    const D=this._rig(), st=this.state, b=st.build;
+    const on={fg:'#0b1216',bg:'#7fd6c9',bd:'#7fd6c9'}, off={fg:'#aeb9bb',bg:'#141f25',bd:'#2f444c'};
+    const gold={fg:'#0b1216',bg:'#e0b13a',bd:'#e0b13a'};
+    const mk=(label,sel,fn,style)=>Object.assign({label,onClick:fn}, sel?(style||on):off);
+    const chips=this.ORDER.map((name,d)=>mk(name, d===st.dir, ()=>this._setDir(d)));
+    const presetChips = D ? Object.keys(D.PRESETS).map(k=>mk(k.replace(/([A-Z])/g,' $1').trim(), false, ()=>this._setPreset(k), gold)) : [];
+    const chip=(label,val,cur,key)=>mk(label, cur===val, ()=>this._setB({[key]:val}));
+    const winLabel={sixOverSix:'6/6',twoOverTwo:'2/2',fourOverFour:'4/4',oneOverOne:'1/1',arched:'ARCHED'};
+    const wallLabel={plaster:'PLASTER',wainscot:'WAINSCOT',wallpaper:'WALLPAPER',board:'SHIPLAP',stud:'FRAMING',stone:'STONE',brick:'BRICK'};
+    const floorLabel={plank:'PLANK',wideBoard:'WIDE BOARD',checker:'CHECKER',stoneFlag:'STONE FLAG',painted:'PAINTED'};
+    const T = D ? (D.TYPES[b.type]||D.TYPES.cottage) : null;
+    const shapeLabel={gable:'GABLE',cape:'CAPE',gambrel:'GAMBREL',saltbox:'SALTBOX',shed:'SHED'};
+    const chipRows=[
+      { name:'BUILDING  ·  the exterior this room is inside',
+        opts:(D?Object.keys(D.TYPES):[]).map(k=>mk((D.TYPES[k].label||k).toUpperCase(), k===b.type, ()=>this._setType(k), gold)) },
+      { name:'STOREY', opts:[
+        mk('GROUND', (b.storey||'ground')==='ground', ()=>this._setB({storey:'ground'})),
+        mk('UNDER ROOF', b.storey==='upper', ()=>this._setB({storey:'upper'})) ] },
+      { name:'ROOFLINE  ·  shared with the shell', opts:(D?D.SHAPES:['gable']).map(s=>chip(shapeLabel[s]||s.toUpperCase(),s,b.shape||'gable','shape')) },
+      { name:'FLOOR', opts:(D?D.FLOORS:['plank']).map(f=>chip(floorLabel[f]||f.toUpperCase(),f,b.floor,'floor')) },
+      { name:'WALL FINISH', opts:(D?D.WALLS:['plaster']).map(w=>chip(wallLabel[w]||w.toUpperCase(),w,b.wall,'wall')) },
+      { name:'WINDOWS', opts:(D?D.WINDOWS:['sixOverSix']).map(w=>chip(winLabel[w]||w.toUpperCase(),w,b.windows,'windows')) },
+      { name:'STAIRS', opts:(D?D.STAIRS:['none']).map(s=>chip(s.toUpperCase(),s,b.stairs||'none','stairs')) },
+    ];
+    const bodyKeys = D?Object.keys(D.BODY):[];
+    const paperSwatches = bodyKeys.map(k=>{ const ramp=D&&D.BODY[k]; const col=ramp?ramp[3]:'#888'; const sel=k===b.paper;
+      return { name:k, col, onClick:()=>this._setB({paper:k}), border: sel?'2px solid #eef3f2':'1px solid #2f444c', glow: sel?'0 0 0 1px #0b1216 inset':'none' }; });
+    const slider=(name,val,min,max,step,fn,disp)=>({name,val,min,max,step,onInput:fn,disp});
+    const dm = D ? D.dims(Object.assign({}, b)) : {Wd:6,Ln:7,wallH:3.6,fH:0.55,plate:2.5,peakZ:2.5,storeyZ:0.55};
+    const sizeDisp = dm.Wd.toFixed(1)+'×'+dm.Ln.toFixed(1)+' m';
+    const sliders=[
+      slider('SIZE  ·  '+(T?T.label:'room')+' range', b.size, 0, 1, 0.05, (e)=>this._setB({size:+e.target.value}), sizeDisp),
+      slider('WINDOW DENSITY', b.winDensity, 0.1, 1, 0.05, (e)=>this._setB({winDensity:+e.target.value}), Math.round(b.winDensity*100)+'%'),
+      slider('INTERIOR DIVIDERS  ·  rooms', b.dividers||0, 0, 2, 1, (e)=>this._setB({dividers:+e.target.value}), ''+(b.dividers||0)),
+      slider('DORMERS  ·  under-roof only', b.dormers||0, 0, 3, 1, (e)=>this._setB({dormers:+e.target.value}), b.storey==='upper'?''+(b.dormers||0):'—'),
+      slider('WEATHER  ·  fresh → grimy', b.weather, 0, 1, 0.05, (e)=>this._setB({weather:+e.target.value}), Math.round(b.weather*100)+'%'),
+    ];
+    const flagToggles=[
+      mk(b.wainscot?'■ WAINSCOT DADO':'□ WAINSCOT DADO', b.wainscot, ()=>this._toggleB('wainscot')),
+      mk(b.beams?'■ CEILING BEAMS':'□ CEILING BEAMS', b.beams, ()=>this._toggleB('beams')),
+      mk(b.hearth?'■ HEARTH':'□ HEARTH', b.hearth, ()=>this._toggleB('hearth'), gold),
+    ];
+    const stageToggles=[
+      mk(st.fire?'■ FIRE':'▶ FIRE', st.fire, ()=>this._toggle('fire'), gold),
+      mk(st.player?'■ WALK-BEHIND':'□ WALK-BEHIND', st.player, ()=>this._togglePlayer(), gold),
+      mk(st.cut?'✂ CUT AWAY':'▓ FADE', st.cut, ()=>this._toggle('cut'), st.cut?gold:on),
+      mk(st.night?'☾ NIGHT':'☀ DAY', st.night, ()=>this._toggle('night')),
+      mk('PIVOT', st.showPivot, ()=>this._toggle('showPivot')),
+    ];
+    const border='1px solid #243137';
+    const extRig = T ? (T.fam==='house'?'houseIsoRig.js':'wharfBuildingRig.js') : '—';
+    const meta=[
+      {k:'CELL', v:this.CW+' × '+this.CH+' · 8 dirs', border:'none'},
+      {k:'PIVOT', v:'floor centre ('+this.PVX+', '+this.PVY+')', border},
+      {k:'CAMERA', v:'elev '+st.elev+'° · 45° steps · fleet-true', border},
+      {k:'INSIDE', v:(T?T.label:'—')+' → '+(T?T.ext:'—')+' · '+extRig, border},
+      {k:'FOOTPRINT', v:'32 px = 1 m → '+dm.Wd.toFixed(1)+'×'+dm.Ln.toFixed(1)+' m (exterior formula)', border},
+      {k:'STOREY', v:(b.storey==='upper'?'under roof':'ground')+' · floor '+dm.storeyZ.toFixed(2)+' m over grade · plate '+dm.plate.toFixed(2)+' m'+(dm.peakZ>dm.plate+0.01?' · peak '+dm.peakZ.toFixed(2)+' m':''), border},
+      {k:'ROOFLINE', v:(shapeLabel[b.shape]||b.shape||'gable').toLowerCase()+' · pitch '+(T?T.pitch:1)+' — the ceiling IS the shell roof'+(b.dormers&&b.storey==='upper'?' · '+b.dormers+' dormer'+(b.dormers>1?'s':''):''), border},
+      {k:'OPENINGS', v:'door +Y · chimney −Y · sash 0.82×1.15 m at sill +1.0 m — all exterior-matched', border},
+      {k:'SHELL', v:b.wall+' walls · '+b.floor+' floor'+(b.wainscot?' · wainscot':''), border},
+      {k:'CUTAWAY', v:'open dollhouse · 2 camera walls dropped · roof cut back past the ridge', border},
+      {k:'LIGHT', v:'upper-left key · dither · no AA'+(st.night?' · lamplit':''), border},
+      {k:'ANCHORS', v:'floor · door · hearth · peak · lamps · occluders · fH/storeyZ (baked px + metres)', border},
+      {k:'LAYERS', v:'renderLayers → floor · walls (per side) · roof · dividers · fixtures — fade one behind the player', border},
+      {k:'SOURCE', v:'Art/interiorIsoRig.js (re-bakeable)', border},
+    ];
+    const paperRamp = D?(D.BODY[b.paper]||D.BODY.cream):[];
+    const floorRamp = D ? (b.floor==='checker'?D.TILE : b.floor==='stoneFlag'?D.STONE : D.FLOORWOOD) : [];
+    const ramps = D ? [
+      {name:'WALL', cols:paperRamp},
+      {name:'FLOOR', cols:floorRamp},
+      {name:'WOOD/DADO', cols:D.WOOD},
+      {name:'TRIM', cols:D.TRIM},
+      {name:'GLASS', cols:st.night?['#141d2b','#233247','#3d5570']:['#7d9ea6','#a1c2c6','#cfe6e8']},
+      {name:'KEYLINE', cols:[D.KEY]},
+    ] : [];
+    return {
+      canvasRef:this.canvasRef, sheetRef:this.sheetRef, roomsRef:this.roomsRef, pairRef:this.pairRef,
+      pairLine:(T?T.label:'—')+'  ·  '+(T?T.ext:'—')+'  ·  '+extRig+'  ·  '+sizeDisp+'  ·  '+(b.storey==='upper'?'under roof':'ground floor'),
+      rotL:()=>this._rot(-1), rotR:()=>this._rot(1),
+      compass:this.ORDER[st.dir], compassDeg:(st.dir*45)+'° · facing',
+      stateLine:(wallLabel[b.wall]||b.wall).toUpperCase()+'  ·  '+this.ORDER[st.dir]+'  ·  '+(st.dir*45)+'°',
+      scaleLine:this.CW+'×'+this.CH+' · '+st.zoom+'×',
+      sheetDims:(8*this.CW)+'×'+this.CH+' · 8×('+this.CW+'×'+this.CH+')',
+      chips, presetChips, chipRows, paperSwatches, paperCur:b.paper, sliders, flagToggles, stageToggles,
+      zoom:st.zoom, onZoom:(e)=>this.setState({zoom:+e.target.value}, ()=>{ this._save(); this._drawStage(); }),
+      elev:st.elev, onElev:(e)=>this.setState({elev:+e.target.value}, ()=>{ this._save(); this._rebuild(); }),
+      downloadDirs:()=>this._downloadDirs(), downloadOne:()=>this._downloadOne(),
+      meta, ramps,
+    };
+  }
+}
+</script>
+</body>
+</html>

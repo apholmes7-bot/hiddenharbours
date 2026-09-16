@@ -1,0 +1,176 @@
+{
+  "schema": "coastal-art-pass/1",
+  "rig": "Art/coastalPass.js",
+  "exportSymbol": "CoastalPass",
+  "derivedFromRigSha256": "cb0293833991f726742ad98aa4d169888293779b000192d8543e02b12bade780",
+  "generatedAt": "2026-09-16T01:45:48.323Z",
+  "api": {
+    "apply": "fn(6)",
+    "cottagePlan": "fn(1)",
+    "cottageStair": "fn(1)"
+  },
+  "version": "3.1.0",
+  "palettes": {
+    "slate": [
+      "#14232c",
+      "#21323b",
+      "#2d414b",
+      "#3b505b",
+      "#4b626c",
+      "#607782"
+    ],
+    "stone": [
+      "#403f36",
+      "#56554a",
+      "#6c6b5c",
+      "#83816e",
+      "#9c9880",
+      "#b5af93"
+    ],
+    "join": [
+      "#273b36",
+      "#344c44",
+      "#486153",
+      "#617761",
+      "#7b8e73",
+      "#9eaa8b"
+    ],
+    "ivory": [
+      "#575747",
+      "#6e6b55",
+      "#89846a",
+      "#a7a082",
+      "#c3b997",
+      "#dbceaa"
+    ],
+    "oak": [
+      "#30271d",
+      "#463727",
+      "#604b33",
+      "#7a6141",
+      "#927850",
+      "#b2996d"
+    ],
+    "brass": [
+      "#40341e",
+      "#5e4c29",
+      "#7d6837",
+      "#a08a4e",
+      "#bca565",
+      "#d6c48b"
+    ],
+    "iron": [
+      "#19262b",
+      "#26383d",
+      "#3a4d50",
+      "#516566",
+      "#687d79",
+      "#899790"
+    ],
+    "warm": [
+      "#83522b",
+      "#b4793c",
+      "#d5a156",
+      "#ebc87b",
+      "#f4dfa4",
+      "#fff0c0"
+    ],
+    "leaf": [
+      "#213b33",
+      "#304b3b",
+      "#405f47",
+      "#547754",
+      "#6c8b60",
+      "#829969"
+    ],
+    "clay": [
+      "#483b2d",
+      "#62503a",
+      "#7e6748",
+      "#9d815c",
+      "#b69a70",
+      "#cbb58d"
+    ],
+    "green": [
+      "#243d38",
+      "#334f47",
+      "#466659",
+      "#5c7b67",
+      "#77957b",
+      "#93ad91"
+    ],
+    "red": [
+      "#422a2c",
+      "#5b3637",
+      "#754547",
+      "#915a59",
+      "#ab7570",
+      "#c28f83"
+    ],
+    "blue": [
+      "#2b4148",
+      "#3b5660",
+      "#4f6e79",
+      "#69858b",
+      "#85a0a0",
+      "#a4b9b1"
+    ],
+    "linen": [
+      "#5b5846",
+      "#747059",
+      "#90886c",
+      "#aca286",
+      "#c5b99a",
+      "#ddd0b3"
+    ],
+    "tile": [
+      "#4a524d",
+      "#5d675d",
+      "#737c6c",
+      "#8b917d",
+      "#a5a993",
+      "#bdbea5"
+    ]
+  },
+  "tuning": {
+    "floorTexture": 0.48,
+    "trimAge": 0.58,
+    "cutawayHeight": 1.15,
+    "approachRadius": 0.28,
+    "routeHalfWidth": 0.44,
+    "wallMargin": 0.13,
+    "propGap": 0.06,
+    "pipeWidth": 0.075,
+    "gutterWidth": 0.12,
+    "lanternHeight": 0.38
+  },
+  "roomColours": {
+    "drawing": "green",
+    "library": "green",
+    "study": "blue",
+    "dining": "red",
+    "morning": "linen",
+    "billiard": "green",
+    "bed": "blue",
+    "nursery": "linen",
+    "servant": "linen",
+    "dressing": "linen",
+    "bath": "tile",
+    "wc": "tile",
+    "kitchen": "tile",
+    "scullery": "tile",
+    "pantry": "linen",
+    "vestibule": "linen",
+    "landing": "linen",
+    "stairhall": "linen",
+    "passage": "linen"
+  },
+  "defaultEnabled": true,
+  "requires": [
+    "Art/interiorPropRig.js"
+  ],
+  "notes": [
+    "Materials and decorative geometry are applied before each host rasterizer.",
+    "Cottage layout metadata is obtained from InteriorIso.furnishings(options)."
+  ]
+}

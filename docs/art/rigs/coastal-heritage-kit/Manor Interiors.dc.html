@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+<script src="Art/coastalPass.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/manorIsoRig.js"></script>
+<script src="Art/interiorPropRig.js"></script>
+<script src="Art/manorUnitIsoRig.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;} a:hover{color:#a9e7dd;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:1120px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Manor &middot; Inside</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;BUILDING&nbsp;CLASS&nbsp;4&nbsp;&middot;&nbsp;MANOR&nbsp;INTERIOR&nbsp;&middot;&nbsp;REGISTERED&nbsp;UNDER&nbsp;<a href="Manor Iso.dc.html">MANOR&nbsp;ISO</a></div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:440px;text-align:right;line-height:1.45;">It measures nothing. Wall thickness, every level&rsquo;s floor and ceiling, the accent&rsquo;s own drum and every baked opening come from the exterior shell, so the window you sit under indoors is the sash you see from the street.</div>
+  </div>
+
+  <div style="width:100%;max-width:1120px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
+
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ canvasRef }}" width="620" height="742"></canvas>
+        <div style="position:absolute;left:11px;top:10px;font-size:10px;letter-spacing:0.14em;color:rgba(231,236,235,0.9);background:rgba(11,18,22,0.6);padding:3px 8px;">{{ stateLine }}</div>
+        <div style="position:absolute;right:11px;top:10px;font-size:10px;letter-spacing:0.12em;color:rgba(200,168,106,0.9);">{{ scaleLine }}</div>
+        <div style="position:absolute;left:11px;bottom:10px;font-size:10px;letter-spacing:0.1em;color:rgba(174,185,187,0.75);">{{ dimLine }}</div>
+        <div style="position:absolute;right:11px;bottom:10px;font-size:10px;letter-spacing:0.1em;color:rgba(127,214,201,0.85);">{{ bakeLine }}</div>
+      </div>
+
+      <div style="display:flex;gap:14px;align-items:center;">
+        <div onClick="{{ rotL }}" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8634;</div>
+        <div style="width:120px;display:flex;flex-direction:column;align-items:center;gap:1px;">
+          <div style="font-family:'IM Fell English SC',serif;font-size:26px;line-height:1;color:#eef3f2;">{{ compass }}</div>
+          <div style="font-size:10px;letter-spacing:0.14em;color:#7f8c90;">{{ compassDeg }}</div>
+        </div>
+        <div onClick="{{ rotR }}" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8635;</div>
+      </div>
+
+      <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:620px;">
+        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="8">
+          <div onClick="{{ c.onClick }}" style="min-width:38px;text-align:center;padding:6px 9px;font-size:11px;letter-spacing:0.08em;cursor:pointer;user-select:none;color:{{ c.fg }};background:{{ c.bg }};border:1px solid {{ c.bd }};">{{ c.label }}</div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:620px;">
+        <sc-for list="{{ viewChips }}" as="t" hint-placeholder-count="6">
+          <div onClick="{{ t.onClick }}" style="padding:7px 12px;font-size:10px;letter-spacing:0.09em;cursor:pointer;user-select:none;border:1px solid {{ t.bd }};color:{{ t.fg }};background:{{ t.bg }};">{{ t.label }}</div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:620px;">
+        <sc-for list="{{ levelChips }}" as="t" hint-placeholder-count="3">
+          <div onClick="{{ t.onClick }}" style="padding:6px 11px;font-size:10px;letter-spacing:0.07em;cursor:pointer;user-select:none;border:1px solid {{ t.bd }};color:{{ t.fg }};background:{{ t.bg }};">{{ t.label }}</div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;gap:24px;align-items:center;justify-content:center;max-width:620px;">
+        <div style="display:flex;flex-direction:column;gap:4px;width:150px;">
+          <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>ZOOM</span><span style="color:#9aa6aa;">{{ zoom }}&times;</span></div>
+          <input type="range" min="0.3" max="1.1" step="0.02" value="{{ zoom }}" onInput="{{ onZoom }}" />
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;width:150px;">
+          <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>CAM ANGLE</span><span style="color:#9aa6aa;">{{ elev }}&deg;</span></div>
+          <input type="range" min="30" max="50" step="1" value="{{ elev }}" onInput="{{ onElev }}" />
+        </div>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.06em;text-align:center;max-width:620px;line-height:1.6;">same origin, pivot, metres and &frac34; camera as the exterior bake &middot; near walls cut to a lip, partitions cut to waist height &middot; every stick of furniture is an <a href="Art/interiorPropRig.js" download="interiorPropRig.js">interiorPropRig</a> prop, placed by this rig &mdash; 32&nbsp;px = 1&nbsp;m</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;width:352px;">
+
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Style &middot; finishes follow the shell</div></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <sc-for list="{{ tierChips }}" as="p" hint-placeholder-count="2">
+            <div onClick="{{ p.onClick }}" style="padding:8px 12px;font-size:10.5px;letter-spacing:0.07em;cursor:pointer;user-select:none;color:{{ p.fg }};background:{{ p.bg }};border:1px solid {{ p.bd }};">{{ p.label }}</div>
+          </sc-for>
+        </div>
+        <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;letter-spacing:0.03em;">{{ tierBlurb }}</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#b49a74;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Preset</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;">
+          <sc-for list="{{ presetChips }}" as="p" hint-placeholder-count="7">
+            <div onClick="{{ p.onClick }}" style="padding:6px 10px;font-size:10px;letter-spacing:0.06em;cursor:pointer;user-select:none;color:{{ p.fg }};background:{{ p.bg }};border:1px solid {{ p.bd }};">{{ p.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#2ba39a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">The shell it registers under</div></div>
+        <div style="border:1px solid #243137;padding:12px 13px;display:flex;flex-direction:column;gap:12px;">
+          <sc-for list="{{ chipRows }}" as="row" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div style="font-size:9px;letter-spacing:0.12em;color:#6f7e83;">{{ row.name }}</div>
+              <div style="display:flex;gap:5px;flex-wrap:wrap;">
+                <sc-for list="{{ row.opts }}" as="p" hint-placeholder-count="3">
+                  <div onClick="{{ p.onClick }}" style="padding:5px 9px;font-size:10px;letter-spacing:0.06em;cursor:pointer;user-select:none;color:{{ p.fg }};background:{{ p.bg }};border:1px solid {{ p.bd }};">{{ p.label }}</div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+          <sc-for list="{{ sliders }}" as="s" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#6f7e83;"><span>{{ s.name }}</span><span style="color:#9aa6aa;">{{ s.disp }}</span></div>
+              <input type="range" min="{{ s.min }}" max="{{ s.max }}" step="{{ s.step }}" value="{{ s.val }}" onInput="{{ s.onInput }}" />
+            </div>
+          </sc-for>
+          <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;letter-spacing:0.03em;">Change the shell and the plan re-solves: bands and spine are measured off the reception plate, both flights are re-cut, the holes above them move with them, and every door finds a new jamb clear of the flights and the wall bands.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e0b13a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Plan checks</div></div>
+        <div style="border:1px solid #243137;display:flex;flex-direction:column;">
+          <sc-for list="{{ checks }}" as="c" hint-placeholder-count="4">
+            <div style="display:flex;gap:9px;align-items:baseline;padding:7px 11px;border-top:{{ c.border }};">
+              <div style="width:16px;flex:none;font-size:11px;color:{{ c.col }};">{{ c.mark }}</div>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <div style="font-size:10.5px;color:#c4cdcd;letter-spacing:0.06em;">{{ c.id }}</div>
+                <div style="font-size:9.5px;color:#7f8c90;line-height:1.5;">{{ c.note }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;letter-spacing:0.03em;">Access is walked, not asserted: a breadth-first search from the street through every door, cased opening and flight. A piece of furniture with nowhere clear to stand is left out and listed, never overlapped.</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div onClick="{{ downloadOne }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; SINGLE CELL &middot; {{ compass }} FACING</div>
+        <div onClick="{{ downloadDirs }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; 8-DIR SHEET &middot; BAKES ON DEMAND</div>
+        <a href="Art/manorUnitIsoRig.js" download="manorUnitIsoRig.js" style="font-size:9.5px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; RIG SOURCE &middot; manorUnitIsoRig.js</a>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1120px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">THE&nbsp;PLAN&nbsp;IT&nbsp;SOLVED</div>
+      <div style="font-size:9.5px;color:#5f6e73;">entrance elevation at the top &middot; walls, doorways and their swings, both flights, the hole each one needs above it, and every piece of furniture as its true footprint</div>
+    </div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;padding:14px;">
+      <canvas ref="{{ planRef }}" width="1200" height="360"></canvas>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <sc-for list="{{ legend }}" as="l" hint-placeholder-count="7">
+        <div style="display:flex;gap:6px;align-items:center;">
+          <div style="width:13px;height:9px;background:{{ l.col }};border:1px solid {{ l.bd }};"></div>
+          <div style="font-size:9px;letter-spacing:0.08em;color:#7f8c90;">{{ l.name }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1120px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:340px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Room schedule &middot; doors from the street</div></div>
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr auto auto;font-size:10.5px;">
+        <sc-for list="{{ schedule }}" as="row" hint-placeholder-count="12">
+          <div style="padding:5px 9px;color:#6f7e83;letter-spacing:0.06em;border-top:{{ row.border }};background:#0f191e;">{{ row.lv }}</div>
+          <div style="padding:5px 9px;color:#c4cdcd;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.kind }}</div>
+          <div style="padding:5px 9px;color:#8a969b;border-top:{{ row.border }};border-left:1px solid #243137;text-align:right;">{{ row.area }}</div>
+          <div style="padding:5px 9px;color:{{ row.col }};border-top:{{ row.border }};border-left:1px solid #243137;text-align:right;">{{ row.reach }}</div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:340px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#2ba39a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Registration &middot; what it read, what it publishes</div></div>
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ meta }}" as="row" hint-placeholder-count="11">
+          <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ row.border }};background:#0f191e;">{{ row.k }}</div>
+          <div style="padding:6px 11px;color:#c4cdcd;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.v }}</div>
+        </sc-for>
+      </div>
+      <div style="display:flex;align-items:center;gap:9px;margin-top:6px;"><div style="width:8px;height:8px;background:#b49a74;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">How the plan holds together</div></div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <sc-for list="{{ notes }}" as="n" hint-placeholder-count="6">
+          <div style="display:flex;gap:9px;align-items:baseline;">
+            <div style="width:82px;flex:none;font-size:9px;letter-spacing:0.08em;color:#8a969b;">{{ n.k }}</div>
+            <div style="font-size:10.5px;color:#9aa6aa;line-height:1.55;">{{ n.v }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;letter-spacing:0.03em;">{{ unplacedLine }}</div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1120, &quot;height&quot;: 1700 },
+  &quot;tier&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;secondEmpire&quot;, &quot;options&quot;: [&quot;secondEmpire&quot;,&quot;baronial&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Shell&quot; },
+  &quot;size&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.5, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.02, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Shell&quot; },
+  &quot;storeys&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 2, &quot;min&quot;: 2, &quot;max&quot;: 3, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Shell&quot; },
+  &quot;accent&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;tower&quot;, &quot;options&quot;: [&quot;tower&quot;,&quot;turret&quot;,&quot;none&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Shell&quot; },
+  &quot;bay&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;canted&quot;, &quot;options&quot;: [&quot;none&quot;,&quot;canted&quot;,&quot;oriel&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Shell&quot; },
+  &quot;porte&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Shell&quot; },
+  &quot;chimneys&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 2, &quot;min&quot;: 0, &quot;max&quot;: 3, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Shell&quot; },
+  &quot;focus&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;stack&quot;, &quot;options&quot;: [&quot;stack&quot;,&quot;level&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;View&quot; },
+  &quot;level&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 0, &quot;min&quot;: 0, &quot;max&quot;: 3, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;View&quot; },
+  &quot;furnish&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;View&quot; },
+  &quot;night&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;View&quot; },
+  &quot;zoom&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.56, &quot;min&quot;: 0.3, &quot;max&quot;: 1.1, &quot;step&quot;: 0.02, &quot;unit&quot;: &quot;×&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;View&quot; },
+  &quot;elev&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 40, &quot;min&quot;: 30, &quot;max&quot;: 50, &quot;step&quot;: 1, &quot;unit&quot;: &quot;°&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;View&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.ORDER=['N','NE','E','SE','S','SW','W','NW'];
+    const saved=this._load();
+    const R=(typeof window!=='undefined')&&window.ManorUnitIso;
+    this.CW=R?R.W:960; this.CH=R?R.H:1180; this.PVX=R?R.pivot.x:480; this.PVY=R?R.pivot.y:840;
+    const EXT=(typeof window!=='undefined')&&window.ManorIso;
+    this.state={
+      dir: saved.dir ?? 3,
+      zoom: saved.zoom ?? (props.zoom ?? 0.56),
+      elev: saved.elev ?? (props.elev ?? 40),
+      night: saved.night ?? (props.night ?? false),
+      outline: saved.outline ?? false,
+      furnish: saved.furnish ?? (props.furnish!==false),
+      focus: saved.focus ?? (props.focus ?? 'stack'),
+      level: saved.level ?? (props.level ?? 0),
+      build: Object.assign({ tier:'secondEmpire' }, (EXT?EXT.TIERS.secondEmpire:{}),
+        { size:0.5, storeys:2, accent:'tower', bay:'canted', porte:false, chimneys:2 }, saved.build ?? {}),
+    };
+    this._cells={}; this._cellsKey='';
+    this.canvasRef=(n)=>{ if(!n||n===this._cv)return; this._cv=n; this._ctx=n.getContext('2d'); this._rebuild(); };
+    this.planRef=(n)=>{ if(!n||n===this._pl)return; this._pl=n; this._plctx=n.getContext('2d'); this._drawPlan(); };
+  }
+  _load(){ try{ return JSON.parse(localStorage.getItem('hh.manorInterior')||'{}'); }catch(e){ return {}; } }
+  _save(){ try{ localStorage.setItem('hh.manorInterior', JSON.stringify(this.state)); }catch(e){} }
+  _rig(){ return (typeof window!=='undefined') && window.ManorUnitIso; }
+  _ext(){ return (typeof window!=='undefined') && window.ManorIso; }
+
+  componentDidMount(){ this._tryReady(); }
+  componentDidUpdate(prev){
+    const s={};
+    ['zoom','elev','night','furnish','focus','level'].forEach(k=>{
+      if(prev[k]!==this.props[k] && this.props[k]!=null && this.props[k]!==this.state[k]) s[k]=this.props[k]; });
+    ['tier','size','storeys','accent','bay','porte','chimneys'].forEach(k=>{
+      if(prev[k]!==this.props[k] && this.props[k]!=null && this.props[k]!==this.state.build[k])
+        s.build=Object.assign({},this.state.build,s.build,{[k]:this.props[k]}); });
+    if(Object.keys(s).length) this.setState(s, ()=>{ this._save(); this._rebuild(); });
+  }
+  componentWillUnmount(){ if(this._deb) clearTimeout(this._deb); }
+  _tryReady(){ if(this._rig()&&window.PropIso){ this._ready=true; this._rebuild(); }
+    else setTimeout(()=>this._tryReady(),90); }
+
+  _opts(){ return Object.assign({}, this.state.build, { level:this.state.level, focus:this.state.focus,
+    furnish:this.state.furnish, night:this.state.night, outline:this.state.outline, elev:this.state.elev }); }
+  _key(){ return JSON.stringify([this.state.build,this.state.level,this.state.focus,this.state.furnish,
+    this.state.night,this.state.outline,this.state.elev]); }
+
+  _renderCell(dir){
+    const R=this._rig(); const cv=document.createElement('canvas'); cv.width=R.W; cv.height=R.H;
+    cv.getContext('2d').putImageData(new ImageData(R.render(dir,this._opts()), R.W, R.H),0,0);
+    return cv;
+  }
+  _rebuild(){
+    if(!this._rig()||!window.PropIso){ this._tryReady(); return; }
+    const key=this._key();
+    if(this._cellsKey!==key){ this._cells={}; this._cellsKey=key; this._data=null; }
+    if(!this._cells[this.state.dir]) this._cells[this.state.dir]=this._renderCell(this.state.dir);
+    this._ready=true;
+    this._drawStage(); this._drawPlan();
+    // one facing per tick: a furnished stack of plates is a heavy cell, and eight in a row would
+    // lock the page the way the exterior sheet used to
+    if(this._deb) clearTimeout(this._deb);
+    let d=0;
+    const step=()=>{ if(this._cellsKey!==key) return;
+      while(d<8 && this._cells[d]) d++;
+      if(d>=8){ this.forceUpdate(); return; }
+      this._cells[d]=this._renderCell(d); this.forceUpdate();
+      this._deb=setTimeout(step,20); };
+    this._deb=setTimeout(step,140);
+  }
+  _payload(){
+    const R=this._rig();
+    if(!this._data || this._dataKey!==this._key()){
+      this._dataKey=this._key();
+      this._data={ plan:R.plan(this._opts()), audit:R.audit(this._opts()), interior:R.interior(this._opts()), dims:R.dims(this._opts()) };
+    }
+    return this._data;
+  }
+
+  _drawStage(){
+    if(!this._ctx||!this._ready) return;
+    const ctx=this._ctx, W=this._cv.width, H=this._cv.height, z=this.state.zoom;
+    ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,W,H);
+    const g=ctx.createLinearGradient(0,0,0,H);
+    if(this.state.night){ g.addColorStop(0,'#0a1119'); g.addColorStop(1,'#131e26'); }
+    else { g.addColorStop(0,'#14202a'); g.addColorStop(1,'#1d2c36'); }
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    const gx=Math.round(W/2), gy=Math.round(H*0.74);
+    ctx.save(); ctx.globalAlpha=0.30; ctx.fillStyle='#050c10';
+    ctx.beginPath(); ctx.ellipse(gx,gy+2,150*z,26*z,0,0,Math.PI*2); ctx.fill(); ctx.restore();
+    const cell=this._cells[this.state.dir]||(this._cells[this.state.dir]=this._renderCell(this.state.dir));
+    ctx.drawImage(cell, Math.round(gx-this.PVX*z), Math.round(gy-this.PVY*z), this.CW*z, this.CH*z);
+  }
+
+  // ---- the plan: proof that nothing overlaps anything, drawn from the same records the bake used
+  _seg(a0,a1,gaps){
+    let list=[[a0,a1]];
+    for(const gp of (gaps||[])){ const next=[];
+      for(const s of list){ if(gp[1]<=s[0]||gp[0]>=s[1]){ next.push(s); continue; }
+        if(gp[0]>s[0]+0.01) next.push([s[0],gp[0]]);
+        if(gp[1]<s[1]-0.01) next.push([gp[1],s[1]]); }
+      list=next; }
+    return list;
+  }
+  _drawPlan(){
+    if(!this._plctx||!this._ready) return;
+    const R=this._rig(), D=this._payload(), P=D.plan, IT=D.interior;
+    const S=15, pad=15, capH=20, box=P.box;
+    const cw=Math.ceil(box.Wi*S)+pad*2, ch=Math.ceil(box.Di*S)+pad*2+capH;
+    const n=P.levels.length;
+    this._pl.width=cw*n+10; this._pl.height=ch+8;
+    const ctx=this._plctx, H=this._pl.height;
+    ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,this._pl.width,H);
+    const FILL={ circ:'#182530', recep:'#2b2820', bed:'#212734', wet:'#1c2c2c', svc:'#242422' };
+    const kindOf=(k)=> (k==='vestibule'||k==='stairhall'||k==='landing'||k==='passage') ? 'circ'
+      : (k==='bath'||k==='wc') ? 'wet'
+      : (k==='bed'||k==='dressing'||k==='nursery') ? 'bed'
+      : (k==='kitchen'||k==='scullery'||k==='pantry'||k==='linen'||k==='servant'||k==='boxroom'||k==='store') ? 'svc'
+      : 'recep';
+    const SHORT={ vestibule:'HALL', stairhall:'STAIR HALL', landing:'LANDING', passage:'SERVICE',
+      drawing:'DRAWING', dining:'DINING', library:'LIBRARY', study:'STUDY', billiard:'BILLIARD',
+      morning:'MORNING', kitchen:'KITCHEN', scullery:'SCULLERY', pantry:'PANTRY', bed:'CHAMBER',
+      dressing:'DRESSING', bath:'BATH', wc:'WC', nursery:'NURSERY', servant:'SERVANT',
+      linen:'LINEN', boxroom:'BOX', store:'STORE' };
+    P.levels.forEach((lv,i)=>{
+      const ox=5+i*cw, oy=4;
+      const X=(x)=>ox+pad+(x-box.x0)*S, Y=(y)=>oy+pad+(box.y1-y)*S;
+      ctx.fillStyle='#0b1216'; ctx.fillRect(ox,oy,cw-4,ch);
+      // rooms
+      for(const r of lv.rooms){
+        const x0=X(r.x0), x1=X(r.x1), y0=Y(r.y1), y1=Y(r.y0);
+        ctx.fillStyle=FILL[kindOf(r.kind)]; ctx.fillRect(x0,y0,x1-x0,y1-y0);
+        ctx.strokeStyle='rgba(138,150,155,0.28)'; ctx.lineWidth=1;
+        ctx.strokeRect(x0+0.5,y0+0.5,x1-x0-1,y1-y0-1);
+      }
+      // furniture footprints — the whole point of the drawing
+      for(const bl of IT.blockers){
+        if(bl.level!==lv.index) continue;
+        if(bl.kind==='wall'||bl.kind==='stair'||bl.kind==='well') continue;
+        const x0=X(bl.x0), x1=X(bl.x1), y0=Y(bl.y1), y1=Y(bl.y0);
+        ctx.fillStyle='rgba(201,168,106,0.34)'; ctx.fillRect(x0,y0,x1-x0,y1-y0);
+        ctx.strokeStyle='rgba(201,168,106,0.8)'; ctx.lineWidth=1;
+        ctx.strokeRect(x0+0.5,y0+0.5,Math.max(1,x1-x0-1),Math.max(1,y1-y0-1));
+      }
+      // stairwell voids, hatched, with the arrival side left open
+      for(const v of lv.voids){
+        const x0=X(v.x0), x1=X(v.x1), y0=Y(v.y1), y1=Y(v.y0);
+        ctx.save(); ctx.beginPath(); ctx.rect(x0,y0,x1-x0,y1-y0); ctx.clip();
+        ctx.strokeStyle='rgba(224,177,58,0.55)'; ctx.lineWidth=1;
+        for(let k=-40;k<80;k+=5){ ctx.beginPath(); ctx.moveTo(x0+k,y0); ctx.lineTo(x0+k+40,y0+40); ctx.stroke(); }
+        ctx.restore();
+        ctx.strokeStyle='rgba(224,177,58,0.9)'; ctx.strokeRect(x0+0.5,y0+0.5,x1-x0-1,y1-y0-1);
+      }
+      // flights: treads + the direction of the climb
+      for(const st of lv.stairs){
+        const x0=X(st.x0), x1=X(st.x1), y0=Y(st.y1), y1=Y(st.y0);
+        ctx.fillStyle='rgba(127,214,201,0.14)'; ctx.fillRect(x0,y0,x1-x0,y1-y0);
+        ctx.strokeStyle='rgba(127,214,201,0.85)'; ctx.lineWidth=1;
+        ctx.strokeRect(x0+0.5,y0+0.5,x1-x0-1,y1-y0-1);
+        ctx.strokeStyle='rgba(127,214,201,0.45)';
+        for(let k=1;k<st.steps;k++){ const t=k/st.steps;
+          if(st.axis==='x'){ const xx=Math.round(x0+(x1-x0)*t)+0.5;
+            ctx.beginPath(); ctx.moveTo(xx,y0+1); ctx.lineTo(xx,y1-1); ctx.stroke(); }
+          else { const yy=Math.round(y0+(y1-y0)*t)+0.5;
+            ctx.beginPath(); ctx.moveTo(x0+1,yy); ctx.lineTo(x1-1,yy); ctx.stroke(); } }
+        ctx.fillStyle='#7fd6c9'; ctx.font='8px ui-monospace,monospace'; ctx.textAlign='center';
+        ctx.fillText('UP \u2192', (x0+x1)/2, (y0+y1)/2+3);
+      }
+      // walls: partitions with their door gaps cut out, then the shell
+      ctx.fillStyle='#8a969b';
+      const t=Math.max(2, Math.round(0.14*S));
+      for(const p of lv.parts){
+        for(const s of this._seg(p.a0,p.a1,p.gaps)){
+          if(s[1]-s[0]<0.03) continue;
+          if(p.axis==='x') ctx.fillRect(X(s[0]), Y(p.plane)-t/2, X(s[1])-X(s[0]), t);
+          else ctx.fillRect(X(p.plane)-t/2, Y(s[1]), t, Y(s[0])-Y(s[1]));
+        }
+      }
+      ctx.strokeStyle='#b7c2c4'; ctx.lineWidth=Math.max(2,Math.round(0.5*S*0.6));
+      ctx.strokeRect(X(lv.box.x0), Y(lv.box.y1), X(lv.box.x1)-X(lv.box.x0), Y(lv.box.y0)-Y(lv.box.y1));
+      // doorways: the gap, then the leaf and its swing
+      for(const d of lv.doors){
+        const isOpen=d.kind==='open';
+        ctx.strokeStyle = d.kind==='entry' ? '#e0b13a' : (d.kind==='service'||d.kind==='baize' ? '#c9a86a' : '#7fd6c9');
+        ctx.lineWidth=1;
+        if(d.axis==='x'){
+          const xa=X(d.c-d.clearW/2), xb=X(d.c+d.clearW/2), yy=Y(d.plane);
+          ctx.fillStyle='#0b1216'; ctx.fillRect(xa, yy-t/2-1, xb-xa, t+2);
+          ctx.beginPath(); ctx.moveTo(xa,yy); ctx.lineTo(xb,yy); ctx.stroke();
+          if(!isOpen){ ctx.beginPath(); ctx.arc(xa, yy, (xb-xa), -Math.PI/2, 0); ctx.stroke(); }
+        } else {
+          const ya=Y(d.c-d.clearW/2), yb=Y(d.c+d.clearW/2), xx=X(d.plane);
+          ctx.fillStyle='#0b1216'; ctx.fillRect(xx-t/2-1, yb, t+2, ya-yb);
+          ctx.beginPath(); ctx.moveTo(xx,ya); ctx.lineTo(xx,yb); ctx.stroke();
+          if(!isOpen){ ctx.beginPath(); ctx.arc(xx, yb, (ya-yb), Math.PI/2, Math.PI); ctx.stroke(); }
+        }
+      }
+      // the accent and the projecting bay: rooms that live outside the shell line
+      ctx.setLineDash([3,2]); ctx.strokeStyle='rgba(201,168,106,0.75)'; ctx.lineWidth=1;
+      if(lv.alcove){ const a=lv.alcove;
+        ctx.strokeRect(X(a.x0)+0.5, Y(a.y1)+0.5, X(a.x1)-X(a.x0)-1, Y(a.y0)-Y(a.y1)-1); }
+      if(lv.accent && lv.accent.kind==='tower'){ const a=lv.accent;
+        ctx.strokeRect(X(a.x0)+0.5, Y(a.y1)+0.5, X(a.x1)-X(a.x0)-1, Y(a.y0)-Y(a.y1)-1); }
+      if(lv.accent && lv.accent.kind==='turret'){ const a=lv.accent;
+        ctx.beginPath(); ctx.arc(X(a.cx), Y(a.cy), a.r*S, 0, Math.PI*2); ctx.stroke(); }
+      ctx.setLineDash([]);
+      // labels
+      ctx.textAlign='center'; ctx.font='7.5px ui-monospace,monospace';
+      for(const r of lv.rooms){
+        const cxp=(X(r.x0)+X(r.x1))/2, cyp=(Y(r.y0)+Y(r.y1))/2;
+        if((r.x1-r.x0)*S<34||(r.y1-r.y0)*S<16) continue;
+        ctx.fillStyle='rgba(231,236,235,0.72)';
+        ctx.fillText(SHORT[r.kind]||r.kind.toUpperCase(), cxp, cyp+2);
+        if((r.y1-r.y0)*S>30){ ctx.fillStyle='rgba(138,150,155,0.6)';
+          ctx.fillText(r.area.toFixed(0)+' m\u00b2', cxp, cyp+12); }
+      }
+      ctx.fillStyle=i===0?'#cfeee8':'#7f8c90'; ctx.font='9.5px ui-monospace,monospace'; ctx.textAlign='left';
+      ctx.fillText((lv.isAttic?'ROOF STOREY':(lv.index===0?'RECEPTION':'CHAMBER '+lv.index))+
+        '  \u00b7  '+lv.rooms.length+' rooms  \u00b7  '+lv.ceil.toFixed(2)+' m', ox+pad, oy+ch-6);
+    });
+    ctx.textAlign='left';
+  }
+
+  _saveCanvas(cv,name){ cv.toBlob((b)=>{ if(!b)return; const url=URL.createObjectURL(b); const a=document.createElement('a');
+    a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),2000); }); }
+  _downloadOne(){ const cell=this._cells[this.state.dir]||this._renderCell(this.state.dir);
+    this._saveCanvas(cell,'ManorInterior_'+this.state.build.tier+'_'+this.ORDER[this.state.dir]+'.png'); }
+  _downloadDirs(){ for(let d=0;d<8;d++) if(!this._cells[d]) this._cells[d]=this._renderCell(d);
+    const cv=document.createElement('canvas'); cv.width=this.CW*8; cv.height=this.CH; const c=cv.getContext('2d');
+    for(let d=0;d<8;d++) c.drawImage(this._cells[d], d*this.CW, 0);
+    this._saveCanvas(cv,'ManorInterior_'+this.state.build.tier+'_8dir.png'); }
+
+  _rot(d){ this.setState({dir:(this.state.dir+d+8)%8}, ()=>{ this._save(); this._rebuild(); }); }
+  _setB(patch){ this.setState({build:Object.assign({},this.state.build,patch)}, ()=>{ this._save(); this._rebuild(); }); }
+  _set(patch){ this.setState(patch, ()=>{ this._save(); this._rebuild(); }); }
+  _setTier(t){ const E=this._ext(), T=E?E.TIERS[t]:{};
+    this.setState({build:Object.assign({}, T, {tier:t, size:this.state.build.size, storeys:this.state.build.storeys,
+      chimneys:this.state.build.chimneys})}, ()=>{ this._save(); this._rebuild(); }); }
+  _setPreset(k){ const R=this._rig(), E=this._ext(), P=R.PRESETS[k], T=E?E.TIERS[P.tier]:{};
+    const b=Object.assign({}, T, P); const level=P.level!=null?P.level:0, focus=P.focus||'stack';
+    delete b.level; delete b.focus;
+    this.setState({build:b, level, focus}, ()=>{ this._save(); this._rebuild(); }); }
+
+  renderVals(){
+    const R=this._rig(), st=this.state, b=st.build;
+    const on={fg:'#0b1216',bg:'#7fd6c9',bd:'#7fd6c9'}, off={fg:'#aeb9bb',bg:'#141f25',bd:'#2f444c'};
+    const gold={fg:'#0b1216',bg:'#e0b13a',bd:'#e0b13a'}, sand={fg:'#0b1216',bg:'#c9a86a',bd:'#c9a86a'};
+    const mk=(label,sel,fn,style)=>Object.assign({label,onClick:fn}, sel?(style||on):off);
+    const chips=this.ORDER.map((name,d)=>mk(name, d===st.dir, ()=>this.setState({dir:d},()=>{this._save();this._rebuild();})));
+    const D=(R&&this._ready)?this._payload():null;
+    const P=D?D.plan:{levels:[],spine:{},box:{}}, AU=D?D.audit:{checks:[],rooms:[],unplacedProps:[]};
+    const IT=D?D.interior:{counts:{},openings:[],flues:[],levels:[],skipped:[]}, dm=D?D.dims:{};
+    const isBar=b.tier==='baronial';
+    const tierChips=(R&&this._ext())?Object.keys(this._ext().TIERS).map(k=>mk(
+      k==='secondEmpire'?'MANSARD MANOR \u00b7 PARQUET & MARBLE':'STONE MANOR \u00b7 FLAGS & LIMEWASH',
+      b.tier===k, ()=>this._setTier(k), gold)):[];
+    const tierBlurb = isBar
+      ? 'Flagged halls, limewashed walls, oak boards and an oak-panelled dado; a stone chimneypiece in every principal room, and the back stair doing most of the work. The turret opens off the front chamber as a round closet, and the oriel is a window seat one storey up.'
+      : 'Parquet in the rooms, marble in the halls, a papered wall over an oak dado with a picture rail above it; marble mantels with overmantel glass, and the entry tower carrying a porch below and a balcony room above. The canted bay is a window seat two storeys tall.';
+    const presetChips=R?Object.keys(R.PRESETS).map(k=>mk(k.replace(/([A-Z])/g,' $1').trim(), false, ()=>this._setPreset(k), sand)):[];
+    const chipRows=[
+      { name:'VERTICAL ACCENT \u00b7 A ROOM, NOT A BUMP', opts:[
+        mk('ENTRY TOWER', b.accent==='tower', ()=>this._setB({accent:'tower'})),
+        mk('ROUND TURRET', b.accent==='turret', ()=>this._setB({accent:'turret'})),
+        mk('NONE', b.accent==='none', ()=>this._setB({accent:'none'}))] },
+      { name:'PROJECTING BAY \u00b7 AN ALCOVE INSIDE', opts:[
+        mk('NONE', b.bay==='none', ()=>this._setB({bay:'none'})),
+        mk('CANTED', b.bay==='canted', ()=>this._setB({bay:'canted'})),
+        mk('STONE ORIEL', b.bay==='oriel', ()=>this._setB({bay:'oriel'}))] },
+      { name:'CARRIAGE ENTRANCE', opts:[
+        mk('PORTE-COCH\u00c8RE INTO THE HALL', !!b.porte, ()=>this._setB({porte:!b.porte}))] },
+    ];
+    const slider=(name,val,min,max,step,fn,disp)=>({name,val,min,max,step,onInput:fn,disp});
+    const sliders=[
+      slider('SIZE \u00b7 seat \u2192 grand seat', b.size, 0, 1, 0.02, (e)=>this._setB({size:+e.target.value}),
+        (dm.Wd||0).toFixed(1)+'\u00d7'+(dm.Ln||0).toFixed(1)+' m'),
+      slider('MASONRY STOREYS', b.storeys, 2, 3, 1, (e)=>this._setB({storeys:+e.target.value}), b.storeys+' + roof'),
+      slider('STACKS \u00b7 two flues each per level', b.chimneys, 0, 3, 1, (e)=>this._setB({chimneys:+e.target.value}),
+        (IT.flues?IT.flues.length:0)+' hearths'),
+    ];
+    const viewChips=[
+      mk(st.focus==='stack'?'\u25a0 WHOLE HOUSE':'\u25a1 WHOLE HOUSE', st.focus==='stack', ()=>this._set({focus:'stack'})),
+      mk(st.focus==='level'?'\u25a0 ONE PLATE':'\u25a1 ONE PLATE', st.focus==='level', ()=>this._set({focus:'level'})),
+      mk(st.furnish?'\u25a0 FURNISHED':'\u25a1 BARE SHELL', st.furnish, ()=>this._set({furnish:!st.furnish}), gold),
+      mk(st.night?'\u263e NIGHT':'\u2600 DAY', st.night, ()=>this._set({night:!st.night})),
+      mk(st.outline?'\u25a0 KEYLINE':'\u25a1 KEYLINE', st.outline, ()=>this._set({outline:!st.outline})),
+    ];
+    const levelChips=(P.levels||[]).map(lv=>mk(
+      (lv.isAttic?'ROOF STOREY':(lv.index===0?'RECEPTION':'CHAMBER '+lv.index))+' \u00b7 '+lv.ceil.toFixed(2)+' m',
+      st.focus==='level' && st.level===lv.index,
+      ()=>this._set({level:lv.index, focus:'level'})));
+    const border='1px solid #243137';
+    const checks=(AU.checks||[]).map((c,i)=>({ id:c.id.replace(/_/g,' ').toUpperCase(), note:c.note,
+      mark:c.ok?'\u25cf':'\u25b2', col:c.ok?'#7fd6c9':'#e0b13a', border:i?border:'none' }));
+    const schedule=(AU.rooms||[]).map((r,i)=>({
+      lv:(P.levels[r.level]&&P.levels[r.level].isAttic)?'ROOF':('L'+r.level),
+      kind:r.id.replace(/^l\d+_/,'').replace(/_/g,' '),
+      area:r.area.toFixed(1)+' m\u00b2',
+      reach:r.reachable?(r.doors+' doors'):'NO ROUTE',
+      col:r.reachable?'#8a969b':'#e0603a', border:i?border:'none' }));
+    const sp=P.spine||{};
+    const meta=[
+      {k:'CELL', v:this.CW+' \u00d7 '+this.CH+' \u00b7 pivot ('+this.PVX+', '+this.PVY+')', border:'none'},
+      {k:'PLATE', v:(dm.Wd||0).toFixed(1)+' \u00d7 '+(dm.Ln||0).toFixed(1)+' m inside the walls \u00b7 '+(dm.area||0).toFixed(0)+' m\u00b2 over '+(P.levels||[]).length+' levels', border},
+      {k:'SPINE', v:'front hall, stair hall, service passage \u00b7 spine '+(sp.sw||0).toFixed(2)+' m \u00b7 hall '+(sp.hallW||0).toFixed(2)+' m wide', border},
+      {k:'MAIN FLIGHT', v:(sp.mainRun||0).toFixed(2)+' m run \u00b7 '+(sp.mainRise*1000||0).toFixed(0)+' mm rise on '+(sp.mainGoing*1000||0).toFixed(0)+' mm going', border},
+      {k:'BACK STAIR', v:(sp.svcRun||0).toFixed(2)+' m run \u00b7 '+(sp.svcGoing*1000||0).toFixed(0)+' mm going \u00b7 basement to roof storey', border},
+      {k:'WALKWAY', v:(sp.walkMid||0).toFixed(2)+' m clear past the main flight \u00b7 '+(sp.walkRear||0).toFixed(2)+' m past the back stair', border},
+      {k:'DOORS', v:(IT.counts&&IT.counts.doors||0)+' thresholds \u00b7 '+(IT.openings||[]).length+' openings read off the shell', border},
+      {k:'FURNITURE', v:(IT.counts&&IT.counts.props||0)+' pieces \u00b7 '+(IT.counts&&IT.counts.anchors||0)+' use anchors \u00b7 '+(IT.flues||[]).length+' hearths', border},
+      {k:'SKIPPED', v:(IT.skipped&&IT.skipped.length)?IT.skipped.map(s=>s.id+' ('+s.headroom+' m)').join(', '):'none', border},
+      {k:'SOURCE', v:'Art/manorUnitIsoRig.js \u00b7 props from Art/interiorPropRig.js', border},
+    ];
+    const notes=[
+      {k:'THE SPINE', v:'front hall, stair hall and service passage line up on the entrance axis on every level, so the corridor is the same route upstairs as down'},
+      {k:'THE FLIGHTS', v:'both run across their band against a wall no room opens through \u2014 the main one along the stair hall\u2019s front wall, the back stair along the rear outer wall. A flight laid along the spine wall would seal off the rooms behind it'},
+      {k:'ABOVE THEM', v:'each flight publishes the hole it needs; that hole is cut from the plate above, ringed with a balustrade on three sides, and left open where you step off'},
+      {k:'THE DOORS', v:'a jamb is chosen by sliding along the wall until it clears the flights, the wall bands and the room corners; a room that cannot find one is reported, not fudged'},
+      {k:'THE FURNITURE', v:'walls, doorways, flights, wells and hearths are keep-clear rectangles before the first prop lands; a piece against a wall faces into the room, a headboard faces the wall, and the seating takes the wall opposite the fire'},
+      {k:'THE HEARTHS', v:'flues sit on the inboard band walls, back to back, so two rooms share one stack \u2014 which is where the exterior\u2019s stacks stand'},
+    ];
+    const legend=[
+      {name:'CIRCULATION', col:'#182530', bd:'#3a4a52'},
+      {name:'RECEPTION', col:'#2b2820', bd:'#4a4536'},
+      {name:'CHAMBER', col:'#212734', bd:'#3a4252'},
+      {name:'BATH / WC', col:'#1c2c2c', bd:'#37504f'},
+      {name:'SERVICE', col:'#242422', bd:'#43433c'},
+      {name:'FURNITURE', col:'rgba(201,168,106,0.34)', bd:'#c9a86a'},
+      {name:'FLIGHT', col:'rgba(127,214,201,0.14)', bd:'#7fd6c9'},
+      {name:'STAIRWELL ABOVE', col:'rgba(224,177,58,0.18)', bd:'#e0b13a'},
+    ];
+    const unp=(AU.unplacedProps||[]);
+    const unplacedLine = unp.length
+      ? 'Left out rather than overlapped: '+unp.slice(0,4).map(u=>u.prop+' in '+u.room.replace(/^l\d+_/,'')).join(', ')+(unp.length>4?' and '+(unp.length-4)+' more':'')+'.'
+      : 'Every piece of furniture the programme called for found a clear slot on every level.';
+    const baked=Object.keys(this._cells||{}).length;
+    return {
+      canvasRef:this.canvasRef, planRef:this.planRef,
+      rotL:()=>this._rot(-1), rotR:()=>this._rot(1),
+      compass:this.ORDER[st.dir], compassDeg:(st.dir*45)+'\u00b0 \u00b7 facing',
+      stateLine:(isBar?'STONE MANOR':'MANSARD MANOR')+'  \u00b7  '+(st.focus==='stack'?'WHOLE HOUSE':'ONE PLATE')+'  \u00b7  '+this.ORDER[st.dir],
+      scaleLine:this.CW+'\u00d7'+this.CH+' \u00b7 '+st.zoom.toFixed(2)+'\u00d7',
+      dimLine:(dm.Wd||0).toFixed(1)+' \u00d7 '+(dm.Ln||0).toFixed(1)+' m  \u00b7  '+(P.levels||[]).length+' levels  \u00b7  '+(AU.rooms||[]).length+' rooms',
+      bakeLine:baked>=8?'8/8 facings baked':(baked+'/8 baking\u2026'),
+      chips, tierChips, tierBlurb, presetChips, chipRows, sliders, viewChips, levelChips,
+      checks, schedule, meta, notes, legend, unplacedLine,
+      zoom:st.zoom, onZoom:(e)=>this.setState({zoom:+e.target.value}, ()=>{ this._save(); this._drawStage(); }),
+      elev:st.elev, onElev:(e)=>this.setState({elev:+e.target.value}, ()=>{ this._save(); this._rebuild(); }),
+      downloadOne:()=>this._downloadOne(), downloadDirs:()=>this._downloadDirs(),
+    };
+  }
+}
+</script>
+</body>
+</html>

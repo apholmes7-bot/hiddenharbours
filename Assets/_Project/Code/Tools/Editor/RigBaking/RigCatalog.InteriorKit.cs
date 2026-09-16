@@ -36,8 +36,14 @@ namespace HiddenHarbours.Tools.RigBaking
                 // Cell 1180×900 and eight facings: past the 2048 the village kit imports at, so the
                 // interior kit LIFTS its import cap and asserts native resolution instead
                 // (InteriorKit.ImportSizeCap).
+                // ⭐ The coastal-heritage COMPANION is a prerequisite (2026-09-15). The rig reads
+                // root.CoastalPass in seven places and, like every rig here, no-ops when it is
+                // absent — so without the declaration a domestic room bakes UNDRESSED and nothing
+                // says so. Naming it also pulls PropIso in ahead of the room, which furnishings()
+                // needs to size what it places.
                 ["interior"] = new RigEntry($"{RigFolder}/interiorIsoRig.js", "InteriorIso",
-                                            AzimuthConvention.CounterClockwise),
+                                            AzimuthConvention.CounterClockwise,
+                                            new[] { "coastalPass" }),
 
                 // The furniture that stands on that floor. Prop origin is the floor-centre of the
                 // prop's footprint — the same pivot convention as the room — so a prop drops onto a

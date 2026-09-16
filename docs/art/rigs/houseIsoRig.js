@@ -888,8 +888,24 @@
     let faces=build(b);
     const LC=root.BuildingLifecycle;                       // construction phase / dereliction pass
     if(LC && LC.active(opts)){ const r=LC.apply(faces, MATS, b, opts); faces=r.faces; b=r.b; }
+    if(root.CoastalPass) faces=root.CoastalPass.apply('house',faces,MATS,b,opts);
     const bufs=paint(faces, {dir, elev:opts.elev}, MATS);
     return toRGBA(post(bufs, b));
+  }
+  // Entrance selection mirrors build(): ell wing, porch, long wall, or central cross-gable.
+  // Metric records are additive; door remains the existing screen-space label/glow anchor.
+  function entrance(opts){
+    const b=resolve(opts||{}), hw=b.Wd/2, y1=b.Ln/2;
+    const bayOn=!!b.bay && b.shape!=='ell';
+    const hasPorch=(b.porch==='front'||b.porch==='wrap')&&!bayOn&&b.shape!=='cape';
+    let x=0, y=y1, axis='y', width=1.0, height=2.1;
+    if(b.shape==='ell'){
+      x=-hw+0.25+b.Wd*0.62/2; y=y1+b.Ln*0.42; width=0.95; height=2.05;
+    } else if(b.shape==='cape'||!hasPorch){
+      const ncg=Math.min(3,b.crossGable|0), cross=ncg>0&&ncg%2===1;
+      x=hw+(cross?0.6:0); y=0; axis='x'; width=cross?1.05:1.0; height=cross?2.15:2.1;
+    }
+    return {axis, facing:axis==='x'?'+X':'+Y', x,y,z:b.fH,width,height};
   }
   function anchors(dir, opts){
     opts=opts||{}; const b=resolve(opts), B=camBasis({dir,elev:opts.elev});
@@ -897,12 +913,13 @@
     const nc=Math.min(2,b.chimneys|0), ch=[];
     if(nc>=1) ch.push(pj(0.0, -b.Ln/2+b.Ln*0.22, b.ridgeZ+1.45));
     if(nc>=2) ch.push(pj(0.0,  b.Ln/2-b.Ln*0.18, b.ridgeZ+1.45));
-    return { chimneys:ch, door:pj(0,b.Ln/2,b.fH+1.0), ridge:pj(0,0,b.ridgeZ), Wd:b.Wd, Ln:b.Ln };
+    const e=entrance(opts);
+    return { chimneys:ch, door:pj(e.x,e.y,e.z+1.0), threshold:pj(e.x,e.y,e.z), entrance:e, ridge:pj(0,0,b.ridgeZ), Wd:b.Wd, Ln:b.Ln };
   }
   function project(dir, p, elev){ const v=projVert(p[0],p[1],p[2],camBasis({dir,elev})); return {x:v.sx,y:v.sy}; }
 
   root.HouseIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:groundY}, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'],
     SHAPES, SIDINGS, ROOFS, BODY, TRIM, ERAS, PRESETS, WINDOWS, KEY,
-    render, anchors, project };
+    render, anchors, project, entrance };
 })(typeof globalThis!=='undefined'?globalThis:window);

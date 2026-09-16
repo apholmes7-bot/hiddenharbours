@@ -1,0 +1,6179 @@
+{
+  "schema": "iso-rig-params/1",
+  "rig": "Art/interiorIsoRig.js",
+  "exportSymbol": "InteriorIso",
+  "derivedFromRigSha256": "ef06a219a23686349dd96f63e5ca00ba72cf380954686263a3f1576fe80bafc1",
+  "generatedAt": "2026-09-16T01:45:48.318Z",
+  "usedBy": [
+    "Cottage Interior Iso.dc.html",
+    "Interior Props Iso.dc.html"
+  ],
+  "constants": {
+    "W": 1180,
+    "H": 900,
+    "PX": 32,
+    "DIRS": 8,
+    "defaultElev": 40,
+    "KEY": "#1a1c22"
+  },
+  "enums": {
+    "order": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "FLOORS": [
+      "plank",
+      "wideBoard",
+      "checker",
+      "stoneFlag",
+      "painted"
+    ],
+    "WALLS": [
+      "plaster",
+      "wainscot",
+      "wallpaper",
+      "board",
+      "stud",
+      "stone",
+      "brick",
+      "block",
+      "corrugated"
+    ],
+    "WINDOWS": [
+      "sixOverSix",
+      "twoOverTwo",
+      "fourOverFour",
+      "oneOverOne",
+      "arched",
+      "industrial"
+    ],
+    "STAIRS": [
+      "none",
+      "straight"
+    ],
+    "SHAPES": [
+      "gable",
+      "cape",
+      "gambrel",
+      "saltbox",
+      "shed"
+    ],
+    "STOREYS": [
+      "ground",
+      "upper"
+    ]
+  },
+  "palettes": {
+    "BODY": {
+      "greyShingle": [
+        "#4c463f",
+        "#5d564c",
+        "#6f665a",
+        "#82786a",
+        "#968b7b",
+        "#a99d8c"
+      ],
+      "white": [
+        "#8c928c",
+        "#a6aaa2",
+        "#bfc2b9",
+        "#d5d8cf",
+        "#e7e9e0",
+        "#f3f4ec"
+      ],
+      "cream": [
+        "#8a6f3c",
+        "#a6884b",
+        "#c2a35f",
+        "#d8bd7c",
+        "#e9d59d",
+        "#f5e7c1"
+      ],
+      "red": [
+        "#4a130f",
+        "#671b14",
+        "#88271c",
+        "#a33124",
+        "#bd4230",
+        "#d25a42"
+      ],
+      "sage": [
+        "#3a4636",
+        "#4a5843",
+        "#5c6b52",
+        "#718063",
+        "#889777",
+        "#a1ae90"
+      ],
+      "blue": [
+        "#33454a",
+        "#43585d",
+        "#556d72",
+        "#6a848a",
+        "#849ea3",
+        "#a3b9bd"
+      ],
+      "gold": [
+        "#5e4a12",
+        "#7c6119",
+        "#987a26",
+        "#b39440",
+        "#c8ab5e",
+        "#dbc182"
+      ],
+      "plum": [
+        "#2e2333",
+        "#3f3047",
+        "#523f5d",
+        "#664f73",
+        "#7d648b",
+        "#9079a1"
+      ],
+      "rustOrange": [
+        "#5c2a10",
+        "#78380f",
+        "#95491a",
+        "#b05c27",
+        "#c67338",
+        "#d98d4f"
+      ],
+      "mustard": [
+        "#5e4a12",
+        "#7c6119",
+        "#987a26",
+        "#b39440",
+        "#c8ab5e",
+        "#dbc182"
+      ],
+      "teal": [
+        "#143a38",
+        "#1f4d4a",
+        "#2c625e",
+        "#3b7872",
+        "#4d8f88",
+        "#66a69d"
+      ],
+      "galv": [
+        "#464d51",
+        "#5a6267",
+        "#727c81",
+        "#8c979c",
+        "#a6b1b5",
+        "#c2cccf"
+      ],
+      "rustMetal": [
+        "#3a1c10",
+        "#552a17",
+        "#6e3a22",
+        "#8a4e2f",
+        "#a5643f",
+        "#bd7d52"
+      ]
+    },
+    "TRIM": [
+      "#9aa09a",
+      "#b4b8b0",
+      "#ccd0c7",
+      "#e0e2da",
+      "#eef0e8",
+      "#f8f9f2"
+    ],
+    "FLOORWOOD": [
+      "#563820",
+      "#6c472a",
+      "#855a36",
+      "#9e7247",
+      "#b78c5e",
+      "#cea679"
+    ],
+    "STONE": [
+      "#3a3d43",
+      "#494d54",
+      "#5b6067",
+      "#70757c",
+      "#868b91",
+      "#9ca1a6"
+    ],
+    "BRICK": [
+      "#3a201a",
+      "#552b20",
+      "#6e3728",
+      "#874634",
+      "#a05743",
+      "#b96b55"
+    ],
+    "TILE": [
+      "#20262b",
+      "#2b333a",
+      "#3a444c",
+      "#a9b0af",
+      "#c4cbc7",
+      "#dee3de"
+    ],
+    "PLASTER": [
+      "#6f6350",
+      "#877a63",
+      "#a2947a",
+      "#bcae92",
+      "#d3c6a9",
+      "#e7dcc2"
+    ],
+    "WOOD": [
+      "#4f3a24",
+      "#63492d",
+      "#785a39",
+      "#8f7049",
+      "#a6875d",
+      "#bd9f74"
+    ],
+    "CINDER": [
+      "#4a4842",
+      "#5f5d55",
+      "#77746a",
+      "#8f8b7f",
+      "#a4a094",
+      "#b8b3a6"
+    ],
+    "STEEL": [
+      "#2a2f33",
+      "#3c454b",
+      "#525c63",
+      "#6d777e",
+      "#889298",
+      "#a2acb1"
+    ]
+  },
+  "tables": {
+    "pivot": {
+      "x": 590,
+      "y": 560
+    },
+    "TYPES": {
+      "cottage": {
+        "fam": "house",
+        "ext": "shingleCottage",
+        "label": "cottage",
+        "shape": "gable",
+        "pitch": 0.95,
+        "extSize": 0.15,
+        "Wd": [
+          6,
+          2.4
+        ],
+        "Ln": [
+          7,
+          4.2
+        ],
+        "wallH": [
+          3.6,
+          2
+        ],
+        "fH": 0.55,
+        "finish": "plaster",
+        "paper": "cream",
+        "floor": "plank",
+        "windows": "twoOverTwo",
+        "winD": 0.55,
+        "wainscot": true,
+        "beams": false
+      },
+      "farmhouse": {
+        "fam": "house",
+        "ext": "whiteFarmhouse",
+        "label": "farmhouse",
+        "shape": "gable",
+        "pitch": 0.85,
+        "extSize": 0.7,
+        "Wd": [
+          6,
+          2.4
+        ],
+        "Ln": [
+          7,
+          4.2
+        ],
+        "wallH": [
+          3.6,
+          2
+        ],
+        "fH": 0.55,
+        "finish": "plaster",
+        "paper": "blue",
+        "floor": "plank",
+        "windows": "sixOverSix",
+        "winD": 0.6,
+        "wainscot": true,
+        "beams": false
+      },
+      "cape": {
+        "fam": "house",
+        "ext": "dormerCape",
+        "label": "cape",
+        "shape": "cape",
+        "pitch": 1.05,
+        "extSize": 0.5,
+        "Wd": [
+          6,
+          2.4
+        ],
+        "Ln": [
+          7,
+          4.2
+        ],
+        "wallH": [
+          3.6,
+          2
+        ],
+        "fH": 0.55,
+        "dormers": 3,
+        "finish": "plaster",
+        "paper": "cream",
+        "floor": "wideBoard",
+        "windows": "sixOverSix",
+        "winD": 0.5,
+        "wainscot": false,
+        "beams": true
+      },
+      "saltbox": {
+        "fam": "house",
+        "ext": "redSaltbox",
+        "label": "saltbox",
+        "shape": "saltbox",
+        "pitch": 0.8,
+        "extSize": 0.4,
+        "Wd": [
+          6,
+          2.4
+        ],
+        "Ln": [
+          7,
+          4.2
+        ],
+        "wallH": [
+          3.6,
+          2
+        ],
+        "fH": 0.55,
+        "finish": "wallpaper",
+        "paper": "red",
+        "floor": "plank",
+        "windows": "twoOverTwo",
+        "winD": 0.5,
+        "wainscot": false,
+        "beams": true
+      },
+      "netShed": {
+        "fam": "wharf",
+        "ext": "netShed",
+        "label": "net shed",
+        "shape": "gable",
+        "pitch": 1.3,
+        "extSize": 0.2,
+        "Wd": [
+          3.6,
+          1.4
+        ],
+        "Ln": [
+          4.5,
+          3
+        ],
+        "wallH": [
+          2.9,
+          1.1
+        ],
+        "fH": 0.4,
+        "finish": "stud",
+        "paper": "greyShingle",
+        "floor": "plank",
+        "windows": "twoOverTwo",
+        "winD": 0.35,
+        "wainscot": false,
+        "beams": true
+      },
+      "barn": {
+        "fam": "wharf",
+        "ext": "gambrelBarn",
+        "label": "barn",
+        "shape": "gambrel",
+        "pitch": 1,
+        "extSize": 0.6,
+        "Wd": [
+          5.2,
+          2.2
+        ],
+        "Ln": [
+          6.5,
+          4.5
+        ],
+        "wallH": [
+          3.6,
+          1.6
+        ],
+        "fH": 0.45,
+        "finish": "board",
+        "paper": "blue",
+        "floor": "wideBoard",
+        "windows": "twoOverTwo",
+        "winD": 0.3,
+        "wainscot": false,
+        "beams": true
+      },
+      "fishPlant": {
+        "fam": "wharf",
+        "ext": "fishPlant",
+        "label": "fish plant",
+        "shape": "gable",
+        "pitch": 0.72,
+        "extSize": 0.7,
+        "Wd": [
+          7.2,
+          2.6
+        ],
+        "Ln": [
+          10,
+          6
+        ],
+        "wallH": [
+          4,
+          1.6
+        ],
+        "fH": 0.6,
+        "finish": "block",
+        "paper": "galv",
+        "floor": "painted",
+        "windows": "industrial",
+        "winD": 0.5,
+        "wainscot": false,
+        "beams": true
+      }
+    },
+    "PRESETS": {
+      "keeperKitchen": {
+        "type": "cottage",
+        "storey": "ground",
+        "size": 0.2,
+        "floor": "checker",
+        "wall": "plaster",
+        "paper": "cream",
+        "wainscot": true,
+        "dividers": 1,
+        "hearth": true,
+        "weather": 0.3
+      },
+      "cottageLoft": {
+        "type": "cottage",
+        "storey": "upper",
+        "size": 0.2,
+        "floor": "plank",
+        "wall": "plaster",
+        "paper": "cream",
+        "wainscot": false,
+        "dividers": 0,
+        "beams": true,
+        "weather": 0.32
+      },
+      "capeAttic": {
+        "type": "cape",
+        "storey": "upper",
+        "size": 0.5,
+        "floor": "wideBoard",
+        "wall": "board",
+        "paper": "greyShingle",
+        "wainscot": false,
+        "dormers": 3,
+        "beams": true,
+        "weather": 0.38
+      },
+      "seasideParlor": {
+        "type": "farmhouse",
+        "storey": "ground",
+        "size": 0.42,
+        "floor": "wideBoard",
+        "wall": "wallpaper",
+        "paper": "sage",
+        "wainscot": true,
+        "dividers": 0,
+        "hearth": true,
+        "weather": 0.24
+      },
+      "farmhouseHall": {
+        "type": "farmhouse",
+        "storey": "ground",
+        "size": 0.72,
+        "floor": "plank",
+        "wall": "plaster",
+        "paper": "blue",
+        "wainscot": true,
+        "dividers": 2,
+        "hearth": true,
+        "stairs": "straight",
+        "weather": 0.18
+      },
+      "netLoft": {
+        "type": "netShed",
+        "storey": "upper",
+        "size": 0.55,
+        "floor": "wideBoard",
+        "wall": "board",
+        "paper": "greyShingle",
+        "wainscot": false,
+        "beams": true,
+        "weather": 0.55
+      },
+      "barnLoft": {
+        "type": "barn",
+        "storey": "upper",
+        "size": 0.6,
+        "floor": "plank",
+        "wall": "stud",
+        "paper": "greyShingle",
+        "wainscot": false,
+        "beams": true,
+        "weather": 0.5
+      },
+      "plantFloor": {
+        "type": "fishPlant",
+        "storey": "ground",
+        "size": 0.7,
+        "floor": "painted",
+        "wall": "block",
+        "paper": "galv",
+        "floorTone": "galv",
+        "beams": true,
+        "weather": 0.45
+      }
+    }
+  },
+  "api": {
+    "dims": "fn(1)",
+    "render": "fn(2)",
+    "renderLayers": "fn(2)",
+    "ghost": "fn(2)",
+    "anchors": "fn(2)",
+    "project": "fn(3)",
+    "furnishings": "fn(1)"
+  },
+  "presetCount": 8,
+  "presets": {
+    "keeperKitchen": {
+      "options": {
+        "type": "cottage",
+        "storey": "ground",
+        "size": 0.2,
+        "floor": "checker",
+        "wall": "plaster",
+        "paper": "cream",
+        "wainscot": true,
+        "dividers": 1,
+        "hearth": true,
+        "weather": 0.3
+      },
+      "dims": {
+        "Wd": 6.48,
+        "Ln": 7.84,
+        "wallH": 4,
+        "fH": 0.55,
+        "plate": 2.38,
+        "peakZ": 2.38,
+        "storeyZ": 0.55,
+        "ext": "shingleCottage",
+        "fam": "house"
+      },
+      "anchors": {
+        "N": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 479.368722
+          },
+          "hearth": {
+            "x": 590,
+            "y": 621.175345
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 538.16,
+              "y": 486.908128
+            },
+            {
+              "x": 641.84,
+              "y": 535.286894
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 486.32,
+                  "y": 482.659795
+                },
+                {
+                  "x": 693.68,
+                  "y": 482.659795
+                }
+              ],
+              "worldY": 3.76,
+              "topY": 424.31785
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 688.56,
+                  "y": 640.631278
+                },
+                {
+                  "x": 688.56,
+                  "y": 479.368722
+                }
+              ],
+              "worldY": 0,
+              "topY": 501.658055
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 491.44,
+                  "y": 640.631278
+                },
+                {
+                  "x": 491.44,
+                  "y": 479.368722
+                }
+              ],
+              "worldY": 0,
+              "topY": 501.658055
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 491.44,
+                  "y": 560
+                },
+                {
+                  "x": 688.56,
+                  "y": 560
+                }
+              ],
+              "worldY": 0,
+              "topY": 501.658055
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.38,
+          "peakZ": 2.38,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "NE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 501.300525,
+            "y": 502.985077
+          },
+          "hearth": {
+            "x": 670.779879,
+            "y": 599.667594
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 517.863795,
+              "y": 519.916959
+            },
+            {
+              "x": 644.39631,
+              "y": 507.001334
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 431.608081,
+                  "y": 552.436796
+                },
+                {
+                  "x": 578.233743,
+                  "y": 458.187637
+                }
+              ],
+              "worldY": 3.76,
+              "topY": 446.970272
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 748.391919,
+                  "y": 572.217484
+                },
+                {
+                  "x": 570.99297,
+                  "y": 458.187637
+                }
+              ],
+              "worldY": 0,
+              "topY": 456.860615
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 520.307556,
+                  "y": 604.79744
+                },
+                {
+                  "x": 659.692444,
+                  "y": 515.20256
+                }
+              ],
+              "worldY": 0,
+              "topY": 501.658055
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.38,
+          "peakZ": 2.38,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "E": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 464.56,
+            "y": 560
+          },
+          "hearth": {
+            "x": 704.24,
+            "y": 547.743289
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 539.824,
+              "y": 552.482748
+            },
+            {
+              "x": 615.088,
+              "y": 485.838529
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 469.68,
+                  "y": 626.644219
+                },
+                {
+                  "x": 469.68,
+                  "y": 493.355781
+                }
+              ],
+              "worldY": 3.76,
+              "topY": 501.658055
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 710.32,
+                  "y": 626.644219
+                },
+                {
+                  "x": 710.32,
+                  "y": 493.355781
+                }
+              ],
+              "worldY": -3.76,
+              "topY": 501.658055
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 715.44,
+                  "y": 496.646853
+                },
+                {
+                  "x": 464.56,
+                  "y": 496.646853
+                }
+              ],
+              "worldY": 0,
+              "topY": 438.304908
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 590,
+                  "y": 623.353147
+                },
+                {
+                  "x": 590,
+                  "y": 496.646853
+                }
+              ],
+              "worldY": 0,
+              "topY": 501.658055
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.38,
+          "peakZ": 2.38,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "SE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 501.300525,
+            "y": 617.014923
+          },
+          "hearth": {
+            "x": 670.779879,
+            "y": 495.818984
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 591.176626,
+              "y": 565.528898
+            },
+            {
+              "x": 571.083479,
+              "y": 484.195364
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 748.391919,
+                  "y": 552.436796
+                },
+                {
+                  "x": 601.766257,
+                  "y": 458.187637
+                }
+              ],
+              "worldY": -3.76,
+              "topY": 446.970272
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 609.00703,
+                  "y": 458.187637
+                },
+                {
+                  "x": 431.608081,
+                  "y": 572.217484
+                }
+              ],
+              "worldY": 0,
+              "topY": 456.860615
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 659.692444,
+                  "y": 604.79744
+                },
+                {
+                  "x": 520.307556,
+                  "y": 515.20256
+                }
+              ],
+              "worldY": 0,
+              "topY": 501.658055
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.38,
+          "peakZ": 2.38,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "S": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 640.631278
+          },
+          "hearth": {
+            "x": 590,
+            "y": 474.311232
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 641.84,
+              "y": 551.41315
+            },
+            {
+              "x": 538.16,
+              "y": 503.034383
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 693.68,
+                  "y": 482.659795
+                },
+                {
+                  "x": 486.32,
+                  "y": 482.659795
+                }
+              ],
+              "worldY": -3.76,
+              "topY": 424.31785
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 491.44,
+                  "y": 479.368722
+                },
+                {
+                  "x": 491.44,
+                  "y": 640.631278
+                }
+              ],
+              "worldY": 0,
+              "topY": 501.658055
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 688.56,
+                  "y": 479.368722
+                },
+                {
+                  "x": 688.56,
+                  "y": 640.631278
+                }
+              ],
+              "worldY": 0,
+              "topY": 501.658055
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 688.56,
+                  "y": 560
+                },
+                {
+                  "x": 491.44,
+                  "y": 560
+                }
+              ],
+              "worldY": 0,
+              "topY": 501.658055
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.38,
+          "peakZ": 2.38,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "SW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 678.699475,
+            "y": 617.014923
+          },
+          "hearth": {
+            "x": 509.220121,
+            "y": 495.818984
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 662.136205,
+              "y": 518.404318
+            },
+            {
+              "x": 535.60369,
+              "y": 531.319944
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 578.233743,
+                  "y": 458.187637
+                },
+                {
+                  "x": 431.608081,
+                  "y": 552.436796
+                }
+              ],
+              "worldY": -3.76,
+              "topY": 446.970272
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 570.99297,
+                  "y": 458.187637
+                },
+                {
+                  "x": 748.391919,
+                  "y": 572.217484
+                }
+              ],
+              "worldY": 0,
+              "topY": 456.860615
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 659.692444,
+                  "y": 515.20256
+                },
+                {
+                  "x": 520.307556,
+                  "y": 604.79744
+                }
+              ],
+              "worldY": 0,
+              "topY": 501.658055
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.38,
+          "peakZ": 2.38,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "W": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 715.44,
+            "y": 560
+          },
+          "hearth": {
+            "x": 475.76,
+            "y": 547.743289
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 640.176,
+              "y": 485.838529
+            },
+            {
+              "x": 564.912,
+              "y": 552.482748
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 710.32,
+                  "y": 493.355781
+                },
+                {
+                  "x": 710.32,
+                  "y": 626.644219
+                }
+              ],
+              "worldY": 3.76,
+              "topY": 501.658055
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 469.68,
+                  "y": 493.355781
+                },
+                {
+                  "x": 469.68,
+                  "y": 626.644219
+                }
+              ],
+              "worldY": -3.76,
+              "topY": 501.658055
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 464.56,
+                  "y": 496.646853
+                },
+                {
+                  "x": 715.44,
+                  "y": 496.646853
+                }
+              ],
+              "worldY": 0,
+              "topY": 438.304908
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 590,
+                  "y": 496.646853
+                },
+                {
+                  "x": 590,
+                  "y": 623.353147
+                }
+              ],
+              "worldY": 0,
+              "topY": 501.658055
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.38,
+          "peakZ": 2.38,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "NW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 678.699475,
+            "y": 502.985077
+          },
+          "hearth": {
+            "x": 509.220121,
+            "y": 599.667594
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 588.823374,
+              "y": 472.79238
+            },
+            {
+              "x": 608.916521,
+              "y": 554.125913
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 601.766257,
+                  "y": 458.187637
+                },
+                {
+                  "x": 748.391919,
+                  "y": 552.436796
+                }
+              ],
+              "worldY": 3.76,
+              "topY": 446.970272
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 431.608081,
+                  "y": 572.217484
+                },
+                {
+                  "x": 609.00703,
+                  "y": 458.187637
+                }
+              ],
+              "worldY": 0,
+              "topY": 456.860615
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 520.307556,
+                  "y": 515.20256
+                },
+                {
+                  "x": 659.692444,
+                  "y": 604.79744
+                }
+              ],
+              "worldY": 0,
+              "topY": 501.658055
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.38,
+          "peakZ": 2.38,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        }
+      }
+    },
+    "cottageLoft": {
+      "options": {
+        "type": "cottage",
+        "storey": "upper",
+        "size": 0.2,
+        "floor": "plank",
+        "wall": "plaster",
+        "paper": "cream",
+        "wainscot": false,
+        "dividers": 0,
+        "beams": true,
+        "weather": 0.32
+      },
+      "dims": {
+        "Wd": 6.48,
+        "Ln": 7.84,
+        "wallH": 4,
+        "fH": 0.55,
+        "plate": 1.38,
+        "peakZ": 3.96552,
+        "storeyZ": 3.17,
+        "ext": "shingleCottage",
+        "fam": "house"
+      },
+      "anchors": {
+        "N": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 479.368722
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 462.791534
+          },
+          "lamps": [
+            {
+              "x": 538.16,
+              "y": 504.067523
+            },
+            {
+              "x": 641.84,
+              "y": 552.44629
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 486.32,
+                  "y": 482.659795
+                },
+                {
+                  "x": 693.68,
+                  "y": 482.659795
+                }
+              ],
+              "worldY": 3.76,
+              "topY": 448.831272
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 688.56,
+                  "y": 640.631278
+                },
+                {
+                  "x": 688.56,
+                  "y": 479.368722
+                }
+              ],
+              "worldY": 0,
+              "topY": 526.171477
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 491.44,
+                  "y": 640.631278
+                },
+                {
+                  "x": 491.44,
+                  "y": 479.368722
+                }
+              ],
+              "worldY": 0,
+              "topY": 526.171477
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 3.17,
+          "plate": 1.38,
+          "peakZ": 3.96552,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "upper"
+        },
+        "NE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 501.300525,
+            "y": 502.985077
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 462.791534
+          },
+          "lamps": [
+            {
+              "x": 517.863795,
+              "y": 537.076355
+            },
+            {
+              "x": 644.39631,
+              "y": 524.160729
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 431.608081,
+                  "y": 552.436796
+                },
+                {
+                  "x": 578.233743,
+                  "y": 458.187637
+                }
+              ],
+              "worldY": 3.76,
+              "topY": 471.483694
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 748.391919,
+                  "y": 572.217484
+                },
+                {
+                  "x": 570.99297,
+                  "y": 458.187637
+                }
+              ],
+              "worldY": 0,
+              "topY": 481.374038
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 3.17,
+          "plate": 1.38,
+          "peakZ": 3.96552,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "upper"
+        },
+        "E": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 464.56,
+            "y": 560
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 462.791534
+          },
+          "lamps": [
+            {
+              "x": 539.824,
+              "y": 569.642144
+            },
+            {
+              "x": 615.088,
+              "y": 502.997924
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 469.68,
+                  "y": 626.644219
+                },
+                {
+                  "x": 469.68,
+                  "y": 493.355781
+                }
+              ],
+              "worldY": 3.76,
+              "topY": 526.171477
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 710.32,
+                  "y": 626.644219
+                },
+                {
+                  "x": 710.32,
+                  "y": 493.355781
+                }
+              ],
+              "worldY": -3.76,
+              "topY": 526.171477
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 715.44,
+                  "y": 496.646853
+                },
+                {
+                  "x": 464.56,
+                  "y": 496.646853
+                }
+              ],
+              "worldY": 0,
+              "topY": 462.818331
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 3.17,
+          "plate": 1.38,
+          "peakZ": 3.96552,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "upper"
+        },
+        "SE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 501.300525,
+            "y": 617.014923
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 462.791534
+          },
+          "lamps": [
+            {
+              "x": 591.176626,
+              "y": 582.688293
+            },
+            {
+              "x": 571.083479,
+              "y": 501.35476
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 748.391919,
+                  "y": 552.436796
+                },
+                {
+                  "x": 601.766257,
+                  "y": 458.187637
+                }
+              ],
+              "worldY": -3.76,
+              "topY": 471.483694
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 609.00703,
+                  "y": 458.187637
+                },
+                {
+                  "x": 431.608081,
+                  "y": 572.217484
+                }
+              ],
+              "worldY": 0,
+              "topY": 481.374038
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 3.17,
+          "plate": 1.38,
+          "peakZ": 3.96552,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "upper"
+        },
+        "S": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 640.631278
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 462.791534
+          },
+          "lamps": [
+            {
+              "x": 641.84,
+              "y": 568.572545
+            },
+            {
+              "x": 538.16,
+              "y": 520.193779
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 693.68,
+                  "y": 482.659795
+                },
+                {
+                  "x": 486.32,
+                  "y": 482.659795
+                }
+              ],
+              "worldY": -3.76,
+              "topY": 448.831272
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 491.44,
+                  "y": 479.368722
+                },
+                {
+                  "x": 491.44,
+                  "y": 640.631278
+                }
+              ],
+              "worldY": 0,
+              "topY": 526.171477
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 688.56,
+                  "y": 479.368722
+                },
+                {
+                  "x": 688.56,
+                  "y": 640.631278
+                }
+              ],
+              "worldY": 0,
+              "topY": 526.171477
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 3.17,
+          "plate": 1.38,
+          "peakZ": 3.96552,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "upper"
+        },
+        "SW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 678.699475,
+            "y": 617.014923
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 462.791534
+          },
+          "lamps": [
+            {
+              "x": 662.136205,
+              "y": 535.563714
+            },
+            {
+              "x": 535.60369,
+              "y": 548.479339
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 578.233743,
+                  "y": 458.187637
+                },
+                {
+                  "x": 431.608081,
+                  "y": 552.436796
+                }
+              ],
+              "worldY": -3.76,
+              "topY": 471.483694
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 570.99297,
+                  "y": 458.187637
+                },
+                {
+                  "x": 748.391919,
+                  "y": 572.217484
+                }
+              ],
+              "worldY": 0,
+              "topY": 481.374038
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 3.17,
+          "plate": 1.38,
+          "peakZ": 3.96552,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "upper"
+        },
+        "W": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 715.44,
+            "y": 560
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 462.791534
+          },
+          "lamps": [
+            {
+              "x": 640.176,
+              "y": 502.997924
+            },
+            {
+              "x": 564.912,
+              "y": 569.642144
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 710.32,
+                  "y": 493.355781
+                },
+                {
+                  "x": 710.32,
+                  "y": 626.644219
+                }
+              ],
+              "worldY": 3.76,
+              "topY": 526.171477
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 469.68,
+                  "y": 493.355781
+                },
+                {
+                  "x": 469.68,
+                  "y": 626.644219
+                }
+              ],
+              "worldY": -3.76,
+              "topY": 526.171477
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 464.56,
+                  "y": 496.646853
+                },
+                {
+                  "x": 715.44,
+                  "y": 496.646853
+                }
+              ],
+              "worldY": 0,
+              "topY": 462.818331
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 3.17,
+          "plate": 1.38,
+          "peakZ": 3.96552,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "upper"
+        },
+        "NW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 678.699475,
+            "y": 502.985077
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 462.791534
+          },
+          "lamps": [
+            {
+              "x": 588.823374,
+              "y": 489.951775
+            },
+            {
+              "x": 608.916521,
+              "y": 571.285309
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 601.766257,
+                  "y": 458.187637
+                },
+                {
+                  "x": 748.391919,
+                  "y": 552.436796
+                }
+              ],
+              "worldY": 3.76,
+              "topY": 471.483694
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 431.608081,
+                  "y": 572.217484
+                },
+                {
+                  "x": 609.00703,
+                  "y": 458.187637
+                }
+              ],
+              "worldY": 0,
+              "topY": 481.374038
+            }
+          ],
+          "Wd": 6.48,
+          "Ln": 7.84,
+          "fH": 0.55,
+          "storeyZ": 3.17,
+          "plate": 1.38,
+          "peakZ": 3.96552,
+          "type": "cottage",
+          "ext": "shingleCottage",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "upper"
+        }
+      }
+    },
+    "capeAttic": {
+      "options": {
+        "type": "cape",
+        "storey": "upper",
+        "size": 0.5,
+        "floor": "wideBoard",
+        "wall": "board",
+        "paper": "greyShingle",
+        "wainscot": false,
+        "dormers": 3,
+        "beams": true,
+        "weather": 0.38
+      },
+      "dims": {
+        "Wd": 7.2,
+        "Ln": 9.1,
+        "wallH": 4.6,
+        "fH": 0.55,
+        "plate": 1.5,
+        "peakZ": 4.6752,
+        "storeyZ": 3.35,
+        "ext": "dormerCape",
+        "fam": "house"
+      },
+      "anchors": {
+        "N": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 466.410124
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 445.394849
+          },
+          "lamps": [
+            {
+              "x": 532.4,
+              "y": 496.824956
+            },
+            {
+              "x": 647.6,
+              "y": 552.978882
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 474.8,
+                  "y": 469.701197
+                },
+                {
+                  "x": 705.2,
+                  "y": 469.701197
+                }
+              ],
+              "worldY": 4.39,
+              "topY": 432.931063
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 700.08,
+                  "y": 653.589876
+                },
+                {
+                  "x": 700.08,
+                  "y": 466.410124
+                }
+              ],
+              "worldY": 0,
+              "topY": 523.229867
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 479.92,
+                  "y": 653.589876
+                },
+                {
+                  "x": 479.92,
+                  "y": 466.410124
+                }
+              ],
+              "worldY": 0,
+              "topY": 523.229867
+            }
+          ],
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "fH": 0.55,
+          "storeyZ": 3.35,
+          "plate": 1.5,
+          "peakZ": 4.6752,
+          "type": "cape",
+          "ext": "dormerCape",
+          "fam": "house",
+          "shape": "cape",
+          "storey": "upper"
+        },
+        "NE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 487.045253,
+            "y": 493.821964
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 445.394849
+          },
+          "lamps": [
+            {
+              "x": 508.08875,
+              "y": 533.970014
+            },
+            {
+              "x": 651.3203,
+              "y": 521.316192
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 409.206938,
+                  "y": 548.509748
+                },
+                {
+                  "x": 572.124341,
+                  "y": 443.78846
+                }
+              ],
+              "worldY": 4.39,
+              "topY": 459.378971
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 770.793062,
+                  "y": 576.144532
+                },
+                {
+                  "x": 564.883567,
+                  "y": 443.78846
+                }
+              ],
+              "worldY": 0,
+              "topY": 473.196363
+            }
+          ],
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "fH": 0.55,
+          "storeyZ": 3.35,
+          "plate": 1.5,
+          "peakZ": 4.6752,
+          "type": "cape",
+          "ext": "dormerCape",
+          "fam": "house",
+          "shape": "cape",
+          "storey": "upper"
+        },
+        "E": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 444.4,
+            "y": 560
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 445.394849
+          },
+          "lamps": [
+            {
+              "x": 531.76,
+              "y": 571.285473
+            },
+            {
+              "x": 619.12,
+              "y": 497.23634
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 449.52,
+                  "y": 634.049133
+                },
+                {
+                  "x": 449.52,
+                  "y": 485.950867
+                }
+              ],
+              "worldY": 4.39,
+              "topY": 523.229867
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 730.48,
+                  "y": 634.049133
+                },
+                {
+                  "x": 730.48,
+                  "y": 485.950867
+                }
+              ],
+              "worldY": -4.39,
+              "topY": 523.229867
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 735.6,
+                  "y": 489.24194
+                },
+                {
+                  "x": 444.4,
+                  "y": 489.24194
+                }
+              ],
+              "worldY": 0,
+              "topY": 452.471807
+            }
+          ],
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "fH": 0.55,
+          "storeyZ": 3.35,
+          "plate": 1.5,
+          "peakZ": 4.6752,
+          "type": "cape",
+          "ext": "dormerCape",
+          "fam": "house",
+          "shape": "cape",
+          "storey": "upper"
+        },
+        "SE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 487.045253,
+            "y": 626.178036
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 445.394849
+          },
+          "lamps": [
+            {
+              "x": 589.547452,
+              "y": 586.912443
+            },
+            {
+              "x": 569.861599,
+              "y": 494.844978
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 770.793062,
+                  "y": 548.509748
+                },
+                {
+                  "x": 607.875659,
+                  "y": 443.78846
+                }
+              ],
+              "worldY": -4.39,
+              "topY": 459.378971
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 615.116433,
+                  "y": 443.78846
+                },
+                {
+                  "x": 409.206938,
+                  "y": 576.144532
+                }
+              ],
+              "worldY": 0,
+              "topY": 473.196363
+            }
+          ],
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "fH": 0.55,
+          "storeyZ": 3.35,
+          "plate": 1.5,
+          "peakZ": 4.6752,
+          "type": "cape",
+          "ext": "dormerCape",
+          "fam": "house",
+          "shape": "cape",
+          "storey": "upper"
+        },
+        "S": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 653.589876
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 445.394849
+          },
+          "lamps": [
+            {
+              "x": 647.6,
+              "y": 571.696857
+            },
+            {
+              "x": 532.4,
+              "y": 515.542932
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 705.2,
+                  "y": 469.701197
+                },
+                {
+                  "x": 474.8,
+                  "y": 469.701197
+                }
+              ],
+              "worldY": -4.39,
+              "topY": 432.931063
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 479.92,
+                  "y": 466.410124
+                },
+                {
+                  "x": 479.92,
+                  "y": 653.589876
+                }
+              ],
+              "worldY": 0,
+              "topY": 523.229867
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 700.08,
+                  "y": 466.410124
+                },
+                {
+                  "x": 700.08,
+                  "y": 653.589876
+                }
+              ],
+              "worldY": 0,
+              "topY": 523.229867
+            }
+          ],
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "fH": 0.55,
+          "storeyZ": 3.35,
+          "plate": 1.5,
+          "peakZ": 4.6752,
+          "type": "cape",
+          "ext": "dormerCape",
+          "fam": "house",
+          "shape": "cape",
+          "storey": "upper"
+        },
+        "SW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 692.954747,
+            "y": 626.178036
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 445.394849
+          },
+          "lamps": [
+            {
+              "x": 671.91125,
+              "y": 534.551799
+            },
+            {
+              "x": 528.6797,
+              "y": 547.205621
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 572.124341,
+                  "y": 443.78846
+                },
+                {
+                  "x": 409.206938,
+                  "y": 548.509748
+                }
+              ],
+              "worldY": -4.39,
+              "topY": 459.378971
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 564.883567,
+                  "y": 443.78846
+                },
+                {
+                  "x": 770.793062,
+                  "y": 576.144532
+                }
+              ],
+              "worldY": 0,
+              "topY": 473.196363
+            }
+          ],
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "fH": 0.55,
+          "storeyZ": 3.35,
+          "plate": 1.5,
+          "peakZ": 4.6752,
+          "type": "cape",
+          "ext": "dormerCape",
+          "fam": "house",
+          "shape": "cape",
+          "storey": "upper"
+        },
+        "W": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 735.6,
+            "y": 560
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 445.394849
+          },
+          "lamps": [
+            {
+              "x": 648.24,
+              "y": 497.23634
+            },
+            {
+              "x": 560.88,
+              "y": 571.285473
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 730.48,
+                  "y": 485.950867
+                },
+                {
+                  "x": 730.48,
+                  "y": 634.049133
+                }
+              ],
+              "worldY": 4.39,
+              "topY": 523.229867
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 449.52,
+                  "y": 485.950867
+                },
+                {
+                  "x": 449.52,
+                  "y": 634.049133
+                }
+              ],
+              "worldY": -4.39,
+              "topY": 523.229867
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 444.4,
+                  "y": 489.24194
+                },
+                {
+                  "x": 735.6,
+                  "y": 489.24194
+                }
+              ],
+              "worldY": 0,
+              "topY": 452.471807
+            }
+          ],
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "fH": 0.55,
+          "storeyZ": 3.35,
+          "plate": 1.5,
+          "peakZ": 4.6752,
+          "type": "cape",
+          "ext": "dormerCape",
+          "fam": "house",
+          "shape": "cape",
+          "storey": "upper"
+        },
+        "NW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 692.954747,
+            "y": 493.821964
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 445.394849
+          },
+          "lamps": [
+            {
+              "x": 590.452548,
+              "y": 481.60937
+            },
+            {
+              "x": 610.138401,
+              "y": 573.676836
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 607.875659,
+                  "y": 443.78846
+                },
+                {
+                  "x": 770.793062,
+                  "y": 548.509748
+                }
+              ],
+              "worldY": 4.39,
+              "topY": 459.378971
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 409.206938,
+                  "y": 576.144532
+                },
+                {
+                  "x": 615.116433,
+                  "y": 443.78846
+                }
+              ],
+              "worldY": 0,
+              "topY": 473.196363
+            }
+          ],
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "fH": 0.55,
+          "storeyZ": 3.35,
+          "plate": 1.5,
+          "peakZ": 4.6752,
+          "type": "cape",
+          "ext": "dormerCape",
+          "fam": "house",
+          "shape": "cape",
+          "storey": "upper"
+        }
+      }
+    },
+    "seasideParlor": {
+      "options": {
+        "type": "farmhouse",
+        "storey": "ground",
+        "size": 0.42,
+        "floor": "wideBoard",
+        "wall": "wallpaper",
+        "paper": "sage",
+        "wainscot": true,
+        "dividers": 0,
+        "hearth": true,
+        "weather": 0.24
+      },
+      "dims": {
+        "Wd": 7.008,
+        "Ln": 8.764,
+        "wallH": 4.44,
+        "fH": 0.55,
+        "plate": 2.512,
+        "peakZ": 2.512,
+        "storeyZ": 0.55,
+        "ext": "whiteFarmhouse",
+        "fam": "house"
+      },
+      "anchors": {
+        "N": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 469.86575
+          },
+          "hearth": {
+            "x": 590,
+            "y": 630.678317
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 533.936,
+              "y": 480.841899
+            },
+            {
+              "x": 646.064,
+              "y": 534.922448
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 477.872,
+                  "y": 473.156823
+                },
+                {
+                  "x": 702.128,
+                  "y": 473.156823
+                }
+              ],
+              "worldY": 4.222,
+              "topY": 411.579106
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 697.008,
+                  "y": 650.13425
+                },
+                {
+                  "x": 697.008,
+                  "y": 469.86575
+                }
+              ],
+              "worldY": 0,
+              "topY": 498.422283
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 482.992,
+                  "y": 650.13425
+                },
+                {
+                  "x": 482.992,
+                  "y": 469.86575
+                }
+              ],
+              "worldY": 0,
+              "topY": 498.422283
+            }
+          ],
+          "Wd": 7.008,
+          "Ln": 8.764,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.512,
+          "peakZ": 2.512,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "NE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 490.846659,
+            "y": 496.265461
+          },
+          "hearth": {
+            "x": 681.233745,
+            "y": 606.38721
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 510.695429,
+              "y": 516.883963
+            },
+            {
+              "x": 649.473903,
+              "y": 504.160326
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 415.180576,
+                  "y": 549.55696
+                },
+                {
+                  "x": 573.753515,
+                  "y": 447.62824
+                }
+              ],
+              "worldY": 4.222,
+              "topY": 437.014884
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 764.819424,
+                  "y": 575.097319
+                },
+                {
+                  "x": 566.512741,
+                  "y": 447.62824
+                }
+              ],
+              "worldY": 0,
+              "topY": 449.785063
+            }
+          ],
+          "Wd": 7.008,
+          "Ln": 8.764,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.512,
+          "peakZ": 2.512,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "E": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 449.776,
+            "y": 560
+          },
+          "hearth": {
+            "x": 719.024,
+            "y": 547.743289
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 533.9104,
+              "y": 552.932843
+            },
+            {
+              "x": 618.0448,
+              "y": 480.858354
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 454.896,
+                  "y": 632.074489
+                },
+                {
+                  "x": 454.896,
+                  "y": 487.925511
+                }
+              ],
+              "worldY": 4.222,
+              "topY": 498.422283
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 725.104,
+                  "y": 632.074489
+                },
+                {
+                  "x": 725.104,
+                  "y": 487.925511
+                }
+              ],
+              "worldY": -4.222,
+              "topY": 498.422283
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 730.224,
+                  "y": 491.216583
+                },
+                {
+                  "x": 449.776,
+                  "y": 491.216583
+                }
+              ],
+              "worldY": 0,
+              "topY": 429.638867
+            }
+          ],
+          "Wd": 7.008,
+          "Ln": 8.764,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.512,
+          "peakZ": 2.512,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "SE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 490.846659,
+            "y": 623.734539
+          },
+          "hearth": {
+            "x": 681.233745,
+            "y": 489.099368
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 589.981898,
+              "y": 567.871594
+            },
+            {
+              "x": 570.187434,
+              "y": 478.666511
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 764.819424,
+                  "y": 549.55696
+                },
+                {
+                  "x": 606.246485,
+                  "y": 447.62824
+                }
+              ],
+              "worldY": -4.222,
+              "topY": 437.014884
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 613.487259,
+                  "y": 447.62824
+                },
+                {
+                  "x": 415.180576,
+                  "y": 575.097319
+                }
+              ],
+              "worldY": 0,
+              "topY": 449.785063
+            }
+          ],
+          "Wd": 7.008,
+          "Ln": 8.764,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.512,
+          "peakZ": 2.512,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "S": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 650.13425
+          },
+          "hearth": {
+            "x": 590,
+            "y": 464.80826
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 646.064,
+              "y": 552.949298
+            },
+            {
+              "x": 533.936,
+              "y": 498.868748
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 702.128,
+                  "y": 473.156823
+                },
+                {
+                  "x": 477.872,
+                  "y": 473.156823
+                }
+              ],
+              "worldY": -4.222,
+              "topY": 411.579106
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 482.992,
+                  "y": 469.86575
+                },
+                {
+                  "x": 482.992,
+                  "y": 650.13425
+                }
+              ],
+              "worldY": 0,
+              "topY": 498.422283
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 697.008,
+                  "y": 469.86575
+                },
+                {
+                  "x": 697.008,
+                  "y": 650.13425
+                }
+              ],
+              "worldY": 0,
+              "topY": 498.422283
+            }
+          ],
+          "Wd": 7.008,
+          "Ln": 8.764,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.512,
+          "peakZ": 2.512,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "SW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 689.153341,
+            "y": 623.734539
+          },
+          "hearth": {
+            "x": 498.766255,
+            "y": 489.099368
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 669.304571,
+              "y": 516.907234
+            },
+            {
+              "x": 530.526097,
+              "y": 529.630871
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 573.753515,
+                  "y": 447.62824
+                },
+                {
+                  "x": 415.180576,
+                  "y": 549.55696
+                }
+              ],
+              "worldY": -4.222,
+              "topY": 437.014884
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 566.512741,
+                  "y": 447.62824
+                },
+                {
+                  "x": 764.819424,
+                  "y": 575.097319
+                }
+              ],
+              "worldY": 0,
+              "topY": 449.785063
+            }
+          ],
+          "Wd": 7.008,
+          "Ln": 8.764,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.512,
+          "peakZ": 2.512,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "W": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 730.224,
+            "y": 560
+          },
+          "hearth": {
+            "x": 460.976,
+            "y": 547.743289
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 646.0896,
+              "y": 480.858354
+            },
+            {
+              "x": 561.9552,
+              "y": 552.932843
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 725.104,
+                  "y": 487.925511
+                },
+                {
+                  "x": 725.104,
+                  "y": 632.074489
+                }
+              ],
+              "worldY": 4.222,
+              "topY": 498.422283
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 454.896,
+                  "y": 487.925511
+                },
+                {
+                  "x": 454.896,
+                  "y": 632.074489
+                }
+              ],
+              "worldY": -4.222,
+              "topY": 498.422283
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 449.776,
+                  "y": 491.216583
+                },
+                {
+                  "x": 730.224,
+                  "y": 491.216583
+                }
+              ],
+              "worldY": 0,
+              "topY": 429.638867
+            }
+          ],
+          "Wd": 7.008,
+          "Ln": 8.764,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.512,
+          "peakZ": 2.512,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "NW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 689.153341,
+            "y": 496.265461
+          },
+          "hearth": {
+            "x": 498.766255,
+            "y": 606.38721
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 590.018102,
+              "y": 465.919603
+            },
+            {
+              "x": 609.812566,
+              "y": 555.124686
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 606.246485,
+                  "y": 447.62824
+                },
+                {
+                  "x": 764.819424,
+                  "y": 549.55696
+                }
+              ],
+              "worldY": 4.222,
+              "topY": 437.014884
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 415.180576,
+                  "y": 575.097319
+                },
+                {
+                  "x": 613.487259,
+                  "y": 447.62824
+                }
+              ],
+              "worldY": 0,
+              "topY": 449.785063
+            }
+          ],
+          "Wd": 7.008,
+          "Ln": 8.764,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.512,
+          "peakZ": 2.512,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        }
+      }
+    },
+    "farmhouseHall": {
+      "options": {
+        "type": "farmhouse",
+        "storey": "ground",
+        "size": 0.72,
+        "floor": "plank",
+        "wall": "plaster",
+        "paper": "blue",
+        "wainscot": true,
+        "dividers": 2,
+        "hearth": true,
+        "stairs": "straight",
+        "weather": 0.18
+      },
+      "dims": {
+        "Wd": 7.728,
+        "Ln": 10.024,
+        "wallH": 5.04,
+        "fH": 0.55,
+        "plate": 2.692,
+        "peakZ": 2.692,
+        "storeyZ": 0.55,
+        "ext": "whiteFarmhouse",
+        "fam": "house"
+      },
+      "anchors": {
+        "N": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 456.907152
+          },
+          "hearth": {
+            "x": 590,
+            "y": 643.636916
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 528.176,
+              "y": 472.569768
+            },
+            {
+              "x": 651.824,
+              "y": 534.425477
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 466.352,
+                  "y": 460.198225
+                },
+                {
+                  "x": 713.648,
+                  "y": 460.198225
+                }
+              ],
+              "worldY": 4.852,
+              "topY": 394.208092
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 708.528,
+                  "y": 663.092848
+                },
+                {
+                  "x": 708.528,
+                  "y": 456.907152
+                }
+              ],
+              "worldY": 0,
+              "topY": 494.009867
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 471.472,
+                  "y": 663.092848
+                },
+                {
+                  "x": 471.472,
+                  "y": 456.907152
+                }
+              ],
+              "worldY": 0,
+              "topY": 494.009867
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 471.472,
+                  "y": 593.267258
+                },
+                {
+                  "x": 708.528,
+                  "y": 593.267258
+                }
+              ],
+              "worldY": -1.617333,
+              "topY": 527.277126
+            },
+            {
+              "id": "dv1",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 471.472,
+                  "y": 526.732742
+                },
+                {
+                  "x": 708.528,
+                  "y": 526.732742
+                }
+              ],
+              "worldY": 1.617333,
+              "topY": 460.742609
+            }
+          ],
+          "Wd": 7.728,
+          "Ln": 10.024,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.692,
+          "peakZ": 2.692,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "NE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 476.591386,
+            "y": 487.102348
+          },
+          "hearth": {
+            "x": 695.489018,
+            "y": 615.550323
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 500.920385,
+              "y": 512.748059
+            },
+            {
+              "x": 656.397892,
+              "y": 500.286225
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 392.779433,
+                  "y": 545.629912
+                },
+                {
+                  "x": 567.644112,
+                  "y": 433.229063
+                }
+              ],
+              "worldY": 4.852,
+              "topY": 423.439355
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 787.220567,
+                  "y": 579.024367
+                },
+                {
+                  "x": 560.403339,
+                  "y": 433.229063
+                }
+              ],
+              "worldY": 0,
+              "topY": 440.136583
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 542.784123,
+                  "y": 637.396789
+                },
+                {
+                  "x": 710.408028,
+                  "y": 529.650219
+                }
+              ],
+              "worldY": -1.617333,
+              "topY": 517.533372
+            },
+            {
+              "id": "dv1",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 469.591972,
+                  "y": 590.349781
+                },
+                {
+                  "x": 637.215877,
+                  "y": 482.603211
+                }
+              ],
+              "worldY": 1.617333,
+              "topY": 470.486363
+            }
+          ],
+          "Wd": 7.728,
+          "Ln": 10.024,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.692,
+          "peakZ": 2.692,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "E": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 429.616,
+            "y": 560
+          },
+          "hearth": {
+            "x": 739.184,
+            "y": 547.743289
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 525.8464,
+              "y": 553.546608
+            },
+            {
+              "x": 622.0768,
+              "y": 474.067206
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 434.736,
+                  "y": 639.479402
+                },
+                {
+                  "x": 434.736,
+                  "y": 480.520598
+                }
+              ],
+              "worldY": 4.852,
+              "topY": 494.009867
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 745.264,
+                  "y": 639.479402
+                },
+                {
+                  "x": 745.264,
+                  "y": 480.520598
+                }
+              ],
+              "worldY": -4.852,
+              "topY": 494.009867
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 750.384,
+                  "y": 483.81167
+                },
+                {
+                  "x": 429.616,
+                  "y": 483.81167
+                }
+              ],
+              "worldY": 0,
+              "topY": 417.821538
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 641.754667,
+                  "y": 636.18833
+                },
+                {
+                  "x": 641.754667,
+                  "y": 483.81167
+                }
+              ],
+              "worldY": -1.617333,
+              "topY": 494.009867
+            },
+            {
+              "id": "dv1",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 538.245333,
+                  "y": 636.18833
+                },
+                {
+                  "x": 538.245333,
+                  "y": 483.81167
+                }
+              ],
+              "worldY": 1.617333,
+              "topY": 494.009867
+            }
+          ],
+          "Wd": 7.728,
+          "Ln": 10.024,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.692,
+          "peakZ": 2.692,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "SE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 476.591386,
+            "y": 632.897652
+          },
+          "hearth": {
+            "x": 695.489018,
+            "y": 479.936255
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 588.352724,
+              "y": 571.06618
+            },
+            {
+              "x": 568.965553,
+              "y": 471.127165
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 787.220567,
+                  "y": 545.629912
+                },
+                {
+                  "x": 612.355888,
+                  "y": 433.229063
+                }
+              ],
+              "worldY": -4.852,
+              "topY": 423.439355
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 619.596661,
+                  "y": 433.229063
+                },
+                {
+                  "x": 392.779433,
+                  "y": 579.024367
+                }
+              ],
+              "worldY": 0,
+              "topY": 440.136583
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 710.408028,
+                  "y": 590.349781
+                },
+                {
+                  "x": 542.784123,
+                  "y": 482.603211
+                }
+              ],
+              "worldY": -1.617333,
+              "topY": 470.486363
+            },
+            {
+              "id": "dv1",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 637.215877,
+                  "y": 637.396789
+                },
+                {
+                  "x": 469.591972,
+                  "y": 529.650219
+                }
+              ],
+              "worldY": 1.617333,
+              "topY": 517.533372
+            }
+          ],
+          "Wd": 7.728,
+          "Ln": 10.024,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.692,
+          "peakZ": 2.692,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "S": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 663.092848
+          },
+          "hearth": {
+            "x": 590,
+            "y": 451.849662
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 651.824,
+              "y": 555.044046
+            },
+            {
+              "x": 528.176,
+              "y": 493.188338
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 713.648,
+                  "y": 460.198225
+                },
+                {
+                  "x": 466.352,
+                  "y": 460.198225
+                }
+              ],
+              "worldY": -4.852,
+              "topY": 394.208092
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 471.472,
+                  "y": 456.907152
+                },
+                {
+                  "x": 471.472,
+                  "y": 663.092848
+                }
+              ],
+              "worldY": 0,
+              "topY": 494.009867
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 708.528,
+                  "y": 456.907152
+                },
+                {
+                  "x": 708.528,
+                  "y": 663.092848
+                }
+              ],
+              "worldY": 0,
+              "topY": 494.009867
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 708.528,
+                  "y": 526.732742
+                },
+                {
+                  "x": 471.472,
+                  "y": 526.732742
+                }
+              ],
+              "worldY": -1.617333,
+              "topY": 460.742609
+            },
+            {
+              "id": "dv1",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 708.528,
+                  "y": 593.267258
+                },
+                {
+                  "x": 471.472,
+                  "y": 593.267258
+                }
+              ],
+              "worldY": 1.617333,
+              "topY": 527.277126
+            }
+          ],
+          "Wd": 7.728,
+          "Ln": 10.024,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.692,
+          "peakZ": 2.692,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "SW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 703.408614,
+            "y": 632.897652
+          },
+          "hearth": {
+            "x": 484.510982,
+            "y": 479.936255
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 679.079615,
+              "y": 514.865756
+            },
+            {
+              "x": 523.602108,
+              "y": 527.327589
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 567.644112,
+                  "y": 433.229063
+                },
+                {
+                  "x": 392.779433,
+                  "y": 545.629912
+                }
+              ],
+              "worldY": -4.852,
+              "topY": 423.439355
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 560.403339,
+                  "y": 433.229063
+                },
+                {
+                  "x": 787.220567,
+                  "y": 579.024367
+                }
+              ],
+              "worldY": 0,
+              "topY": 440.136583
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 637.215877,
+                  "y": 482.603211
+                },
+                {
+                  "x": 469.591972,
+                  "y": 590.349781
+                }
+              ],
+              "worldY": -1.617333,
+              "topY": 470.486363
+            },
+            {
+              "id": "dv1",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 710.408028,
+                  "y": 529.650219
+                },
+                {
+                  "x": 542.784123,
+                  "y": 637.396789
+                }
+              ],
+              "worldY": 1.617333,
+              "topY": 517.533372
+            }
+          ],
+          "Wd": 7.728,
+          "Ln": 10.024,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.692,
+          "peakZ": 2.692,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "W": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 750.384,
+            "y": 560
+          },
+          "hearth": {
+            "x": 440.816,
+            "y": 547.743289
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 654.1536,
+              "y": 474.067206
+            },
+            {
+              "x": 557.9232,
+              "y": 553.546608
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 745.264,
+                  "y": 480.520598
+                },
+                {
+                  "x": 745.264,
+                  "y": 639.479402
+                }
+              ],
+              "worldY": 4.852,
+              "topY": 494.009867
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 434.736,
+                  "y": 480.520598
+                },
+                {
+                  "x": 434.736,
+                  "y": 639.479402
+                }
+              ],
+              "worldY": -4.852,
+              "topY": 494.009867
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 429.616,
+                  "y": 483.81167
+                },
+                {
+                  "x": 750.384,
+                  "y": 483.81167
+                }
+              ],
+              "worldY": 0,
+              "topY": 417.821538
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 538.245333,
+                  "y": 483.81167
+                },
+                {
+                  "x": 538.245333,
+                  "y": 636.18833
+                }
+              ],
+              "worldY": -1.617333,
+              "topY": 494.009867
+            },
+            {
+              "id": "dv1",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 641.754667,
+                  "y": 483.81167
+                },
+                {
+                  "x": 641.754667,
+                  "y": 636.18833
+                }
+              ],
+              "worldY": 1.617333,
+              "topY": 494.009867
+            }
+          ],
+          "Wd": 7.728,
+          "Ln": 10.024,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.692,
+          "peakZ": 2.692,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "NW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 703.408614,
+            "y": 487.102348
+          },
+          "hearth": {
+            "x": 484.510982,
+            "y": 615.550323
+          },
+          "peak": null,
+          "lamps": [
+            {
+              "x": 591.647276,
+              "y": 456.547634
+            },
+            {
+              "x": 611.034447,
+              "y": 556.48665
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 612.355888,
+                  "y": 433.229063
+                },
+                {
+                  "x": 787.220567,
+                  "y": 545.629912
+                }
+              ],
+              "worldY": 4.852,
+              "topY": 423.439355
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 392.779433,
+                  "y": 579.024367
+                },
+                {
+                  "x": 619.596661,
+                  "y": 433.229063
+                }
+              ],
+              "worldY": 0,
+              "topY": 440.136583
+            },
+            {
+              "id": "dv0",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 469.591972,
+                  "y": 529.650219
+                },
+                {
+                  "x": 637.215877,
+                  "y": 637.396789
+                }
+              ],
+              "worldY": -1.617333,
+              "topY": 517.533372
+            },
+            {
+              "id": "dv1",
+              "kind": "divider",
+              "base": [
+                {
+                  "x": 542.784123,
+                  "y": 482.603211
+                },
+                {
+                  "x": 710.408028,
+                  "y": 590.349781
+                }
+              ],
+              "worldY": 1.617333,
+              "topY": 470.486363
+            }
+          ],
+          "Wd": 7.728,
+          "Ln": 10.024,
+          "fH": 0.55,
+          "storeyZ": 0.55,
+          "plate": 2.692,
+          "peakZ": 2.692,
+          "type": "farmhouse",
+          "ext": "whiteFarmhouse",
+          "fam": "house",
+          "shape": "gable",
+          "storey": "ground"
+        }
+      }
+    },
+    "netLoft": {
+      "options": {
+        "type": "netShed",
+        "storey": "upper",
+        "size": 0.55,
+        "floor": "wideBoard",
+        "wall": "board",
+        "paper": "greyShingle",
+        "wainscot": false,
+        "beams": true,
+        "weather": 0.55
+      },
+      "dims": {
+        "Wd": 4.37,
+        "Ln": 6.15,
+        "wallH": 3.505,
+        "fH": 0.4,
+        "plate": 0.85,
+        "peakZ": 3.23602,
+        "storeyZ": 3.23,
+        "ext": "netShed",
+        "fam": "wharf"
+      },
+      "anchors": {
+        "N": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 496.749699
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 480.674076
+          },
+          "lamps": [
+            {
+              "x": 555.04,
+              "y": 520.114393
+            },
+            {
+              "x": 624.96,
+              "y": 558.064574
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 520.08,
+                  "y": 500.040772
+                },
+                {
+                  "x": 659.92,
+                  "y": 500.040772
+                }
+              ],
+              "worldY": 2.915,
+              "topY": 479.204363
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 654.8,
+                  "y": 623.250301
+                },
+                {
+                  "x": 654.8,
+                  "y": 496.749699
+                }
+              ],
+              "worldY": 0,
+              "topY": 539.163591
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 525.2,
+                  "y": 623.250301
+                },
+                {
+                  "x": 525.2,
+                  "y": 496.749699
+                }
+              ],
+              "worldY": 0,
+              "topY": 539.163591
+            }
+          ],
+          "Wd": 4.37,
+          "Ln": 6.15,
+          "fH": 0.4,
+          "storeyZ": 3.23,
+          "plate": 0.85,
+          "peakZ": 3.23602,
+          "type": "netShed",
+          "ext": "netShed",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "upper"
+        },
+        "NE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 520.420693,
+            "y": 515.275283
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 480.674076
+          },
+          "lamps": [
+            {
+              "x": 537.447824,
+              "y": 543.414628
+            },
+            {
+              "x": 628.636315,
+              "y": 538.469456
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 474.600173,
+                  "y": 549.382425
+                },
+                {
+                  "x": 573.481986,
+                  "y": 485.822421
+                }
+              ],
+              "worldY": 2.915,
+              "topY": 496.766014
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 705.399827,
+                  "y": 575.271854
+                },
+                {
+                  "x": 566.241212,
+                  "y": 485.822421
+                }
+              ],
+              "worldY": 0,
+              "topY": 509.710729
+            }
+          ],
+          "Wd": 4.37,
+          "Ln": 6.15,
+          "fH": 0.4,
+          "storeyZ": 3.23,
+          "plate": 0.85,
+          "peakZ": 3.23602,
+          "type": "netShed",
+          "ext": "netShed",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "upper"
+        },
+        "E": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 491.6,
+            "y": 560
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 480.674076
+          },
+          "lamps": [
+            {
+              "x": 550.64,
+              "y": 567.886369
+            },
+            {
+              "x": 609.68,
+              "y": 522.942659
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 496.72,
+                  "y": 604.94371
+                },
+                {
+                  "x": 496.72,
+                  "y": 515.05629
+                }
+              ],
+              "worldY": 2.915,
+              "topY": 539.163591
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 683.28,
+                  "y": 604.94371
+                },
+                {
+                  "x": 683.28,
+                  "y": 515.05629
+                }
+              ],
+              "worldY": -2.915,
+              "topY": 539.163591
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 688.4,
+                  "y": 518.347363
+                },
+                {
+                  "x": 491.6,
+                  "y": 518.347363
+                }
+              ],
+              "worldY": 0,
+              "topY": 497.510954
+            }
+          ],
+          "Wd": 4.37,
+          "Ln": 6.15,
+          "fH": 0.4,
+          "storeyZ": 3.23,
+          "plate": 0.85,
+          "peakZ": 3.23602,
+          "type": "netShed",
+          "ext": "netShed",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "upper"
+        },
+        "SE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 520.420693,
+            "y": 604.724717
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 480.674076
+          },
+          "lamps": [
+            {
+              "x": 586.88873,
+              "y": 579.194401
+            },
+            {
+              "x": 579.195408,
+              "y": 520.57957
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 705.399827,
+                  "y": 549.382425
+                },
+                {
+                  "x": 606.518014,
+                  "y": 485.822421
+                }
+              ],
+              "worldY": -2.915,
+              "topY": 496.766014
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 613.758788,
+                  "y": 485.822421
+                },
+                {
+                  "x": 474.600173,
+                  "y": 575.271854
+                }
+              ],
+              "worldY": 0,
+              "topY": 509.710729
+            }
+          ],
+          "Wd": 4.37,
+          "Ln": 6.15,
+          "fH": 0.4,
+          "storeyZ": 3.23,
+          "plate": 0.85,
+          "peakZ": 3.23602,
+          "type": "netShed",
+          "ext": "netShed",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "upper"
+        },
+        "S": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 623.250301
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 480.674076
+          },
+          "lamps": [
+            {
+              "x": 624.96,
+              "y": 570.714634
+            },
+            {
+              "x": 555.04,
+              "y": 532.764454
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 659.92,
+                  "y": 500.040772
+                },
+                {
+                  "x": 520.08,
+                  "y": 500.040772
+                }
+              ],
+              "worldY": -2.915,
+              "topY": 479.204363
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 525.2,
+                  "y": 496.749699
+                },
+                {
+                  "x": 525.2,
+                  "y": 623.250301
+                }
+              ],
+              "worldY": 0,
+              "topY": 539.163591
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 654.8,
+                  "y": 496.749699
+                },
+                {
+                  "x": 654.8,
+                  "y": 623.250301
+                }
+              ],
+              "worldY": 0,
+              "topY": 539.163591
+            }
+          ],
+          "Wd": 4.37,
+          "Ln": 6.15,
+          "fH": 0.4,
+          "storeyZ": 3.23,
+          "plate": 0.85,
+          "peakZ": 3.23602,
+          "type": "netShed",
+          "ext": "netShed",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "upper"
+        },
+        "SW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 659.579307,
+            "y": 604.724717
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 480.674076
+          },
+          "lamps": [
+            {
+              "x": 642.552176,
+              "y": 547.4144
+            },
+            {
+              "x": 551.363685,
+              "y": 552.359571
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 573.481986,
+                  "y": 485.822421
+                },
+                {
+                  "x": 474.600173,
+                  "y": 549.382425
+                }
+              ],
+              "worldY": -2.915,
+              "topY": 496.766014
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 566.241212,
+                  "y": 485.822421
+                },
+                {
+                  "x": 705.399827,
+                  "y": 575.271854
+                }
+              ],
+              "worldY": 0,
+              "topY": 509.710729
+            }
+          ],
+          "Wd": 4.37,
+          "Ln": 6.15,
+          "fH": 0.4,
+          "storeyZ": 3.23,
+          "plate": 0.85,
+          "peakZ": 3.23602,
+          "type": "netShed",
+          "ext": "netShed",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "upper"
+        },
+        "W": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 688.4,
+            "y": 560
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 480.674076
+          },
+          "lamps": [
+            {
+              "x": 629.36,
+              "y": 522.942659
+            },
+            {
+              "x": 570.32,
+              "y": 567.886369
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 683.28,
+                  "y": 515.05629
+                },
+                {
+                  "x": 683.28,
+                  "y": 604.94371
+                }
+              ],
+              "worldY": 2.915,
+              "topY": 539.163591
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 496.72,
+                  "y": 515.05629
+                },
+                {
+                  "x": 496.72,
+                  "y": 604.94371
+                }
+              ],
+              "worldY": -2.915,
+              "topY": 539.163591
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 491.6,
+                  "y": 518.347363
+                },
+                {
+                  "x": 688.4,
+                  "y": 518.347363
+                }
+              ],
+              "worldY": 0,
+              "topY": 497.510954
+            }
+          ],
+          "Wd": 4.37,
+          "Ln": 6.15,
+          "fH": 0.4,
+          "storeyZ": 3.23,
+          "plate": 0.85,
+          "peakZ": 3.23602,
+          "type": "netShed",
+          "ext": "netShed",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "upper"
+        },
+        "NW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 659.579307,
+            "y": 515.275283
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 480.674076
+          },
+          "lamps": [
+            {
+              "x": 593.11127,
+              "y": 511.634626
+            },
+            {
+              "x": 600.804592,
+              "y": 570.249458
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 606.518014,
+                  "y": 485.822421
+                },
+                {
+                  "x": 705.399827,
+                  "y": 549.382425
+                }
+              ],
+              "worldY": 2.915,
+              "topY": 496.766014
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 474.600173,
+                  "y": 575.271854
+                },
+                {
+                  "x": 613.758788,
+                  "y": 485.822421
+                }
+              ],
+              "worldY": 0,
+              "topY": 509.710729
+            }
+          ],
+          "Wd": 4.37,
+          "Ln": 6.15,
+          "fH": 0.4,
+          "storeyZ": 3.23,
+          "plate": 0.85,
+          "peakZ": 3.23602,
+          "type": "netShed",
+          "ext": "netShed",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "upper"
+        }
+      }
+    },
+    "barnLoft": {
+      "options": {
+        "type": "barn",
+        "storey": "upper",
+        "size": 0.6,
+        "floor": "plank",
+        "wall": "stud",
+        "paper": "greyShingle",
+        "wainscot": false,
+        "beams": true,
+        "weather": 0.5
+      },
+      "dims": {
+        "Wd": 6.52,
+        "Ln": 9.2,
+        "wallH": 4.56,
+        "fH": 0.45,
+        "plate": 1.5,
+        "peakZ": 4.4584,
+        "storeyZ": 3.31,
+        "ext": "gambrelBarn",
+        "fam": "wharf"
+      },
+      "anchors": {
+        "N": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 465.381664
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 450.709359
+          },
+          "lamps": [
+            {
+              "x": 537.84,
+              "y": 496.413572
+            },
+            {
+              "x": 642.16,
+              "y": 553.184574
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 485.68,
+                  "y": 468.672736
+                },
+                {
+                  "x": 694.32,
+                  "y": 468.672736
+                }
+              ],
+              "worldY": 4.44,
+              "topY": 431.902603
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 689.2,
+                  "y": 654.618336
+                },
+                {
+                  "x": 689.2,
+                  "y": 465.381664
+                }
+              ],
+              "worldY": 0,
+              "topY": 523.229867
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 490.8,
+                  "y": 654.618336
+                },
+                {
+                  "x": 490.8,
+                  "y": 465.381664
+                }
+              ],
+              "worldY": 0,
+              "topY": 523.229867
+            }
+          ],
+          "Wd": 6.52,
+          "Ln": 9.2,
+          "fH": 0.45,
+          "storeyZ": 3.31,
+          "plate": 1.5,
+          "peakZ": 4.4584,
+          "type": "barn",
+          "ext": "gambrelBarn",
+          "fam": "wharf",
+          "shape": "gambrel",
+          "storey": "upper"
+        },
+        "NE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 485.913882,
+            "y": 493.094733
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 450.709359
+          },
+          "lamps": [
+            {
+              "x": 511.482863,
+              "y": 531.206536
+            },
+            {
+              "x": 647.699913,
+              "y": 523.934224
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 415.768889,
+                  "y": 542.837345
+                },
+                {
+                  "x": 563.299648,
+                  "y": 448.006401
+                }
+              ],
+              "worldY": 4.44,
+              "topY": 458.651739
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 764.231111,
+                  "y": 581.816935
+                },
+                {
+                  "x": 556.058875,
+                  "y": 448.006401
+                }
+              ],
+              "worldY": 0,
+              "topY": 478.141535
+            }
+          ],
+          "Wd": 6.52,
+          "Ln": 9.2,
+          "fH": 0.45,
+          "storeyZ": 3.31,
+          "plate": 1.5,
+          "peakZ": 4.4584,
+          "type": "barn",
+          "ext": "gambrelBarn",
+          "fam": "wharf",
+          "shape": "gambrel",
+          "storey": "upper"
+        },
+        "E": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 442.8,
+            "y": 560
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 450.709359
+          },
+          "lamps": [
+            {
+              "x": 531.12,
+              "y": 567.788708
+            },
+            {
+              "x": 619.44,
+              "y": 500.733105
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 447.92,
+                  "y": 627.055603
+                },
+                {
+                  "x": 447.92,
+                  "y": 492.944397
+                }
+              ],
+              "worldY": 4.44,
+              "topY": 523.229867
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 732.08,
+                  "y": 627.055603
+                },
+                {
+                  "x": 732.08,
+                  "y": 492.944397
+                }
+              ],
+              "worldY": -4.44,
+              "topY": 523.229867
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 737.2,
+                  "y": 496.235469
+                },
+                {
+                  "x": 442.8,
+                  "y": 496.235469
+                }
+              ],
+              "worldY": 0,
+              "topY": 459.465336
+            }
+          ],
+          "Wd": 6.52,
+          "Ln": 9.2,
+          "fH": 0.45,
+          "storeyZ": 3.31,
+          "plate": 1.5,
+          "peakZ": 4.4584,
+          "type": "barn",
+          "ext": "gambrelBarn",
+          "fam": "wharf",
+          "shape": "gambrel",
+          "storey": "upper"
+        },
+        "SE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 485.913882,
+            "y": 626.905267
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 450.709359
+          },
+          "lamps": [
+            {
+              "x": 585.248242,
+              "y": 584.73075
+            },
+            {
+              "x": 573.934534,
+              "y": 497.172117
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 764.231111,
+                  "y": 542.837345
+                },
+                {
+                  "x": 616.700352,
+                  "y": 448.006401
+                }
+              ],
+              "worldY": -4.44,
+              "topY": 458.651739
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 623.941125,
+                  "y": 448.006401
+                },
+                {
+                  "x": 415.768889,
+                  "y": 581.816935
+                }
+              ],
+              "worldY": 0,
+              "topY": 478.141535
+            }
+          ],
+          "Wd": 6.52,
+          "Ln": 9.2,
+          "fH": 0.45,
+          "storeyZ": 3.31,
+          "plate": 1.5,
+          "peakZ": 4.4584,
+          "type": "barn",
+          "ext": "gambrelBarn",
+          "fam": "wharf",
+          "shape": "gambrel",
+          "storey": "upper"
+        },
+        "S": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 654.618336
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 450.709359
+          },
+          "lamps": [
+            {
+              "x": 642.16,
+              "y": 572.108241
+            },
+            {
+              "x": 537.84,
+              "y": 515.337239
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 694.32,
+                  "y": 468.672736
+                },
+                {
+                  "x": 485.68,
+                  "y": 468.672736
+                }
+              ],
+              "worldY": -4.44,
+              "topY": 431.902603
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 490.8,
+                  "y": 465.381664
+                },
+                {
+                  "x": 490.8,
+                  "y": 654.618336
+                }
+              ],
+              "worldY": 0,
+              "topY": 523.229867
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 689.2,
+                  "y": 465.381664
+                },
+                {
+                  "x": 689.2,
+                  "y": 654.618336
+                }
+              ],
+              "worldY": 0,
+              "topY": 523.229867
+            }
+          ],
+          "Wd": 6.52,
+          "Ln": 9.2,
+          "fH": 0.45,
+          "storeyZ": 3.31,
+          "plate": 1.5,
+          "peakZ": 4.4584,
+          "type": "barn",
+          "ext": "gambrelBarn",
+          "fam": "wharf",
+          "shape": "gambrel",
+          "storey": "upper"
+        },
+        "SW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 694.086118,
+            "y": 626.905267
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 450.709359
+          },
+          "lamps": [
+            {
+              "x": 668.517137,
+              "y": 537.315278
+            },
+            {
+              "x": 532.300087,
+              "y": 544.587589
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 563.299648,
+                  "y": 448.006401
+                },
+                {
+                  "x": 415.768889,
+                  "y": 542.837345
+                }
+              ],
+              "worldY": -4.44,
+              "topY": 458.651739
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 556.058875,
+                  "y": 448.006401
+                },
+                {
+                  "x": 764.231111,
+                  "y": 581.816935
+                }
+              ],
+              "worldY": 0,
+              "topY": 478.141535
+            }
+          ],
+          "Wd": 6.52,
+          "Ln": 9.2,
+          "fH": 0.45,
+          "storeyZ": 3.31,
+          "plate": 1.5,
+          "peakZ": 4.4584,
+          "type": "barn",
+          "ext": "gambrelBarn",
+          "fam": "wharf",
+          "shape": "gambrel",
+          "storey": "upper"
+        },
+        "W": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 737.2,
+            "y": 560
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 450.709359
+          },
+          "lamps": [
+            {
+              "x": 648.88,
+              "y": 500.733105
+            },
+            {
+              "x": 560.56,
+              "y": 567.788708
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 732.08,
+                  "y": 492.944397
+                },
+                {
+                  "x": 732.08,
+                  "y": 627.055603
+                }
+              ],
+              "worldY": 4.44,
+              "topY": 523.229867
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 447.92,
+                  "y": 492.944397
+                },
+                {
+                  "x": 447.92,
+                  "y": 627.055603
+                }
+              ],
+              "worldY": -4.44,
+              "topY": 523.229867
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 442.8,
+                  "y": 496.235469
+                },
+                {
+                  "x": 737.2,
+                  "y": 496.235469
+                }
+              ],
+              "worldY": 0,
+              "topY": 459.465336
+            }
+          ],
+          "Wd": 6.52,
+          "Ln": 9.2,
+          "fH": 0.45,
+          "storeyZ": 3.31,
+          "plate": 1.5,
+          "peakZ": 4.4584,
+          "type": "barn",
+          "ext": "gambrelBarn",
+          "fam": "wharf",
+          "shape": "gambrel",
+          "storey": "upper"
+        },
+        "NW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 694.086118,
+            "y": 493.094733
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 450.709359
+          },
+          "lamps": [
+            {
+              "x": 594.751758,
+              "y": 483.791064
+            },
+            {
+              "x": 606.065466,
+              "y": 571.349696
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 616.700352,
+                  "y": 448.006401
+                },
+                {
+                  "x": 764.231111,
+                  "y": 542.837345
+                }
+              ],
+              "worldY": 4.44,
+              "topY": 458.651739
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 415.768889,
+                  "y": 581.816935
+                },
+                {
+                  "x": 623.941125,
+                  "y": 448.006401
+                }
+              ],
+              "worldY": 0,
+              "topY": 478.141535
+            }
+          ],
+          "Wd": 6.52,
+          "Ln": 9.2,
+          "fH": 0.45,
+          "storeyZ": 3.31,
+          "plate": 1.5,
+          "peakZ": 4.4584,
+          "type": "barn",
+          "ext": "gambrelBarn",
+          "fam": "wharf",
+          "shape": "gambrel",
+          "storey": "upper"
+        }
+      }
+    },
+    "plantFloor": {
+      "options": {
+        "type": "fishPlant",
+        "storey": "ground",
+        "size": 0.7,
+        "floor": "painted",
+        "wall": "block",
+        "paper": "galv",
+        "floorTone": "galv",
+        "beams": true,
+        "weather": 0.45
+      },
+      "dims": {
+        "Wd": 9.02,
+        "Ln": 14.2,
+        "wallH": 5.12,
+        "fH": 0.6,
+        "plate": 3.47,
+        "peakZ": 6.197648,
+        "storeyZ": 0.6,
+        "ext": "fishPlant",
+        "fam": "wharf"
+      },
+      "anchors": {
+        "N": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 413.958655
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 408.074438
+          },
+          "lamps": [
+            {
+              "x": 517.84,
+              "y": 442.04036
+            },
+            {
+              "x": 662.16,
+              "y": 529.665167
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 445.68,
+                  "y": 417.249728
+                },
+                {
+                  "x": 734.32,
+                  "y": 417.249728
+                }
+              ],
+              "worldY": 6.94,
+              "topY": 332.188153
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 729.2,
+                  "y": 706.041345
+                },
+                {
+                  "x": 729.2,
+                  "y": 413.958655
+                }
+              ],
+              "worldY": 0,
+              "topY": 474.938425
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 450.8,
+                  "y": 706.041345
+                },
+                {
+                  "x": 450.8,
+                  "y": 413.958655
+                }
+              ],
+              "worldY": 0,
+              "topY": 474.938425
+            }
+          ],
+          "Wd": 9.02,
+          "Ln": 14.2,
+          "fH": 0.6,
+          "storeyZ": 0.6,
+          "plate": 3.47,
+          "peakZ": 6.197648,
+          "type": "fishPlant",
+          "ext": "fishPlant",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "NE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 429.345339,
+            "y": 456.733175
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 408.074438
+          },
+          "lamps": [
+            {
+              "x": 474.71331,
+              "y": 491.948293
+            },
+            {
+              "x": 673.155757,
+              "y": 488.312137
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 330.916075,
+                  "y": 524.656565
+                },
+                {
+                  "x": 535.015377,
+                  "y": 393.464063
+                }
+              ],
+              "worldY": 6.94,
+              "topY": 373.998739
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 849.083925,
+                  "y": 599.997714
+                },
+                {
+                  "x": 527.774603,
+                  "y": 393.464063
+                }
+              ],
+              "worldY": 0,
+              "topY": 411.669314
+            }
+          ],
+          "Wd": 9.02,
+          "Ln": 14.2,
+          "fH": 0.6,
+          "storeyZ": 0.6,
+          "plate": 3.47,
+          "peakZ": 6.197648,
+          "type": "fishPlant",
+          "ext": "fishPlant",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "E": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 362.8,
+            "y": 560
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 408.074438
+          },
+          "lamps": [
+            {
+              "x": 499.12,
+              "y": 546.840451
+            },
+            {
+              "x": 635.44,
+              "y": 454.073344
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 367.92,
+                  "y": 652.767108
+                },
+                {
+                  "x": 367.92,
+                  "y": 467.232892
+                }
+              ],
+              "worldY": 6.94,
+              "topY": 474.938425
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 812.08,
+                  "y": 652.767108
+                },
+                {
+                  "x": 812.08,
+                  "y": 467.232892
+                }
+              ],
+              "worldY": -6.94,
+              "topY": 474.938425
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 817.2,
+                  "y": 470.523965
+                },
+                {
+                  "x": 362.8,
+                  "y": 470.523965
+                }
+              ],
+              "worldY": 0,
+              "topY": 385.46239
+            }
+          ],
+          "Wd": 9.02,
+          "Ln": 14.2,
+          "fH": 0.6,
+          "storeyZ": 0.6,
+          "plate": 3.47,
+          "peakZ": 6.197648,
+          "type": "fishPlant",
+          "ext": "fishPlant",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "SE": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 429.345339,
+            "y": 663.266825
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 408.074438
+          },
+          "lamps": [
+            {
+              "x": 576.762961,
+              "y": 574.561753
+            },
+            {
+              "x": 571.106107,
+              "y": 447.005407
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 849.083925,
+                  "y": 524.656565
+                },
+                {
+                  "x": 644.984623,
+                  "y": 393.464063
+                }
+              ],
+              "worldY": -6.94,
+              "topY": 373.998739
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 652.225397,
+                  "y": 393.464063
+                },
+                {
+                  "x": 330.916075,
+                  "y": 599.997714
+                }
+              ],
+              "worldY": 0,
+              "topY": 411.669314
+            }
+          ],
+          "Wd": 9.02,
+          "Ln": 14.2,
+          "fH": 0.6,
+          "storeyZ": 0.6,
+          "plate": 3.47,
+          "peakZ": 6.197648,
+          "type": "fishPlant",
+          "ext": "fishPlant",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "S": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 590,
+            "y": 706.041345
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 408.074438
+          },
+          "lamps": [
+            {
+              "x": 662.16,
+              "y": 558.873435
+            },
+            {
+              "x": 517.84,
+              "y": 471.248629
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 734.32,
+                  "y": 417.249728
+                },
+                {
+                  "x": 445.68,
+                  "y": 417.249728
+                }
+              ],
+              "worldY": -6.94,
+              "topY": 332.188153
+            },
+            {
+              "id": "wE",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 450.8,
+                  "y": 413.958655
+                },
+                {
+                  "x": 450.8,
+                  "y": 706.041345
+                }
+              ],
+              "worldY": 0,
+              "topY": 474.938425
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 729.2,
+                  "y": 413.958655
+                },
+                {
+                  "x": 729.2,
+                  "y": 706.041345
+                }
+              ],
+              "worldY": 0,
+              "topY": 474.938425
+            }
+          ],
+          "Wd": 9.02,
+          "Ln": 14.2,
+          "fH": 0.6,
+          "storeyZ": 0.6,
+          "plate": 3.47,
+          "peakZ": 6.197648,
+          "type": "fishPlant",
+          "ext": "fishPlant",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "SW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 750.654661,
+            "y": 663.266825
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 408.074438
+          },
+          "lamps": [
+            {
+              "x": 705.28669,
+              "y": 508.965502
+            },
+            {
+              "x": 506.844243,
+              "y": 512.601658
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 535.015377,
+                  "y": 393.464063
+                },
+                {
+                  "x": 330.916075,
+                  "y": 524.656565
+                }
+              ],
+              "worldY": -6.94,
+              "topY": 373.998739
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 527.774603,
+                  "y": 393.464063
+                },
+                {
+                  "x": 849.083925,
+                  "y": 599.997714
+                }
+              ],
+              "worldY": 0,
+              "topY": 411.669314
+            }
+          ],
+          "Wd": 9.02,
+          "Ln": 14.2,
+          "fH": 0.6,
+          "storeyZ": 0.6,
+          "plate": 3.47,
+          "peakZ": 6.197648,
+          "type": "fishPlant",
+          "ext": "fishPlant",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "W": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 817.2,
+            "y": 560
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 408.074438
+          },
+          "lamps": [
+            {
+              "x": 680.88,
+              "y": 454.073344
+            },
+            {
+              "x": 544.56,
+              "y": 546.840451
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 812.08,
+                  "y": 467.232892
+                },
+                {
+                  "x": 812.08,
+                  "y": 652.767108
+                }
+              ],
+              "worldY": 6.94,
+              "topY": 474.938425
+            },
+            {
+              "id": "wS",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 367.92,
+                  "y": 467.232892
+                },
+                {
+                  "x": 367.92,
+                  "y": 652.767108
+                }
+              ],
+              "worldY": -6.94,
+              "topY": 474.938425
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 362.8,
+                  "y": 470.523965
+                },
+                {
+                  "x": 817.2,
+                  "y": 470.523965
+                }
+              ],
+              "worldY": 0,
+              "topY": 385.46239
+            }
+          ],
+          "Wd": 9.02,
+          "Ln": 14.2,
+          "fH": 0.6,
+          "storeyZ": 0.6,
+          "plate": 3.47,
+          "peakZ": 6.197648,
+          "type": "fishPlant",
+          "ext": "fishPlant",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "ground"
+        },
+        "NW": {
+          "floor": {
+            "x": 590,
+            "y": 560
+          },
+          "door": {
+            "x": 750.654661,
+            "y": 456.733175
+          },
+          "hearth": null,
+          "peak": {
+            "x": 590,
+            "y": 408.074438
+          },
+          "lamps": [
+            {
+              "x": 603.237039,
+              "y": 426.352042
+            },
+            {
+              "x": 608.893893,
+              "y": 553.908388
+            }
+          ],
+          "occluders": [
+            {
+              "id": "wN",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 644.984623,
+                  "y": 393.464063
+                },
+                {
+                  "x": 849.083925,
+                  "y": 524.656565
+                }
+              ],
+              "worldY": 6.94,
+              "topY": 373.998739
+            },
+            {
+              "id": "wW",
+              "kind": "wall",
+              "base": [
+                {
+                  "x": 330.916075,
+                  "y": 599.997714
+                },
+                {
+                  "x": 652.225397,
+                  "y": 393.464063
+                }
+              ],
+              "worldY": 0,
+              "topY": 411.669314
+            }
+          ],
+          "Wd": 9.02,
+          "Ln": 14.2,
+          "fH": 0.6,
+          "storeyZ": 0.6,
+          "plate": 3.47,
+          "peakZ": 6.197648,
+          "type": "fishPlant",
+          "ext": "fishPlant",
+          "fam": "wharf",
+          "shape": "gable",
+          "storey": "ground"
+        }
+      }
+    }
+  },
+  "reviewParameters": {
+    "surfaceCalm": {
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "reviewValue": 0.65,
+      "purpose": "Optional quieter surface contrast; no change to geometry."
+    }
+  },
+  "runtimeDependencies": [
+    "Art/coastalPass.js",
+    "Art/interiorPropRig.js"
+  ],
+  "renderSignatureSha256": "57e59da887ab14e1ced3627ab75c2d07c64a4e27bf3903cf4adfbbb2058b0a08",
+  "renderDependencyHashes": {
+    "Art/manorIsoRig.js": "eb59dcbfae10a47ae72d9e5193b789dcee4e5c1b8cb7b3d827d6db9f28dd1241",
+    "Art/interiorPropRig.js": "a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6",
+    "Art/manorUnitIsoRig.js": "d8bfad68a876f491a642b8aaeb5c7df65cc741c931e7ba2d8a9e3f561cecaf7b",
+    "Art/houseIsoRig.js": "4b28a464c87153c0d271789b583a485333c1fceb2ffa1b650b44d8258ba6ea66",
+    "Art/interiorIsoRig.js": "ef06a219a23686349dd96f63e5ca00ba72cf380954686263a3f1576fe80bafc1",
+    "Art/wharfBuildingRig.js": "76dbecb0e1ccadfbcacc66b9ec5787d2ebff8112b7d5976668fa953a08ed8163",
+    "Art/coastalPass.js": "cb0293833991f726742ad98aa4d169888293779b000192d8543e02b12bade780"
+  }
+}

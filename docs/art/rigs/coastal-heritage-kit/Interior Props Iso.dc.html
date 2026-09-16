@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+<script src="Art/coastalPass.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/interiorPropRig.js"></script>
+<script src="Art/interiorIsoRig.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;} a:hover{color:#a9e7dd;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:1120px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Furnishings</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;INTERIOR&nbsp;PROP&nbsp;RIG&nbsp;&middot;&nbsp;FURNITURE&nbsp;&amp;&nbsp;APPLIANCES&nbsp;(PHASE&nbsp;3)</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:440px;text-align:right;line-height:1.45;">Free-standing pieces the compositor drops onto the interior floor grid. Same &frac34; camera, 45&deg; steps, 32&nbsp;px = 1&nbsp;m and upper-left key as the rooms &amp; the fleet &mdash; so a chair rotates in lockstep with the walls and the villagers beside it.</div>
+  </div>
+
+  <div style="width:100%;max-width:1120px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
+
+    <!-- STAGE -->
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ canvasRef }}" width="480" height="440"></canvas>
+        <div style="position:absolute;left:11px;top:10px;font-size:10px;letter-spacing:0.14em;color:rgba(231,236,235,0.9);background:rgba(11,18,22,0.6);padding:3px 8px;">{{ stateLine }}</div>
+        <div style="position:absolute;right:11px;top:10px;font-size:10px;letter-spacing:0.12em;color:rgba(200,168,106,0.9);">{{ footLine }}</div>
+      </div>
+
+      <div style="display:flex;gap:14px;align-items:center;">
+        <div onClick="{{ rotL }}" style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8634;</div>
+        <div style="width:118px;display:flex;flex-direction:column;align-items:center;gap:1px;">
+          <div style="font-family:'IM Fell English SC',serif;font-size:24px;line-height:1;color:#eef3f2;">{{ compass }}</div>
+          <div style="font-size:10px;letter-spacing:0.14em;color:#7f8c90;">{{ compassDeg }}</div>
+        </div>
+        <div onClick="{{ rotR }}" style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8635;</div>
+      </div>
+
+      <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:440px;">
+        <sc-for list="{{ dirChips }}" as="c" hint-placeholder-count="8">
+          <div onClick="{{ c.onClick }}" style="min-width:36px;text-align:center;padding:6px 9px;font-size:11px;letter-spacing:0.08em;cursor:pointer;user-select:none;color:{{ c.fg }};background:{{ c.bg }};border:1px solid {{ c.bd }};">{{ c.label }}</div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:440px;">
+        <sc-for list="{{ stageToggles }}" as="t" hint-placeholder-count="2">
+          <div onClick="{{ t.onClick }}" style="padding:7px 12px;font-size:10px;letter-spacing:0.09em;cursor:pointer;user-select:none;border:1px solid {{ t.bd }};color:{{ t.fg }};background:{{ t.bg }};">{{ t.label }}</div>
+        </sc-for>
+        <div style="display:flex;flex-direction:column;gap:4px;width:118px;">
+          <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>ZOOM</span><span style="color:#9aa6aa;">{{ zoom }}&times;</span></div>
+          <input type="range" min="0.6" max="1.8" step="0.05" value="{{ zoom }}" onInput="{{ onZoom }}" />
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;width:118px;">
+          <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>CAM ANGLE</span><span style="color:#9aa6aa;">{{ elev }}&deg;</span></div>
+          <input type="range" min="30" max="50" step="1" value="{{ elev }}" onInput="{{ onElev }}" />
+        </div>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.05em;text-align:center;max-width:440px;line-height:1.6;">pivot = floor-centre of the footprint, pinned to the room grid &middot; front face shows toward the room opening &middot; <span style="color:#e0b13a;">FIRE</span> on the stove is a runtime overlay</div>
+
+      <div style="display:flex;flex-direction:column;gap:7px;width:100%;max-width:300px;">
+        <div onClick="{{ downloadDirs }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; 8-DIR SHEET &middot; {{ selLabel }}</div>
+        <a href="Art/interiorPropRig.js" download="interiorPropRig.js" style="font-size:9.5px;letter-spacing:0.08em;padding:8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; RIG SOURCE &middot; interiorPropRig.js</a>
+      </div>
+    </div>
+
+    <!-- CATALOGUE + MATERIALS -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:412px;">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Catalogue &middot; {{ propCount }} pieces</div></div>
+        <sc-for list="{{ catalogue }}" as="grp" hint-placeholder-count="6">
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="font-size:9px;letter-spacing:0.14em;color:#6f7e83;">{{ grp.name }}</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;">
+              <sc-for list="{{ grp.items }}" as="p" hint-placeholder-count="4">
+                <div onClick="{{ p.onClick }}" style="padding:6px 10px;font-size:10.5px;letter-spacing:0.04em;cursor:pointer;user-select:none;color:{{ p.fg }};background:{{ p.bg }};border:1px solid {{ p.bd }};">{{ p.label }}</div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#2ba39a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Materials &amp; variants</div></div>
+        <div style="border:1px solid #243137;padding:12px 13px;display:flex;flex-direction:column;gap:12px;">
+
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="font-size:9px;letter-spacing:0.12em;color:#6f7e83;">WOOD TONE</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;">
+              <sc-for list="{{ woodChips }}" as="w" hint-placeholder-count="4">
+                <div onClick="{{ w.onClick }}" style="padding:5px 10px;font-size:10px;letter-spacing:0.05em;cursor:pointer;user-select:none;color:{{ w.fg }};background:{{ w.bg }};border:1px solid {{ w.bd }};">{{ w.label }}</div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#6f7e83;"><span>PAINT &middot; body</span><span style="color:#9aa6aa;">{{ paintCur }}</span></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+              <div onClick="{{ paintNone }}" style="height:20px;padding:0 8px;display:flex;align-items:center;font-size:9px;letter-spacing:0.06em;cursor:pointer;color:{{ noneFg }};background:{{ noneBg }};border:1px solid {{ noneBd }};">RAW WOOD</div>
+              <sc-for list="{{ paintSwatches }}" as="s" hint-placeholder-count="8">
+                <div onClick="{{ s.onClick }}" title="{{ s.name }}" style="width:26px;height:20px;background:{{ s.col }};cursor:pointer;border:{{ s.border }};"></div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#6f7e83;"><span>SOFT GOODS &middot; fabric</span><span style="color:#9aa6aa;">{{ fabricCur }}</span></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <sc-for list="{{ fabricSwatches }}" as="s" hint-placeholder-count="8">
+                <div onClick="{{ s.onClick }}" title="{{ s.name }}" style="width:26px;height:20px;background:{{ s.col }};cursor:pointer;border:{{ s.border }};"></div>
+              </sc-for>
+            </div>
+          </div>
+
+          <sc-if value="{{ hasWorktop }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#6f7e83;"><span>COUNTERTOP</span><span style="color:#9aa6aa;">{{ worktopCur }}</span></div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <sc-for list="{{ worktopSwatches }}" as="s" hint-placeholder-count="8">
+                  <div onClick="{{ s.onClick }}" title="{{ s.name }}" style="width:26px;height:20px;background:{{ s.col }};cursor:pointer;border:{{ s.border }};"></div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="font-size:9px;letter-spacing:0.12em;color:#6f7e83;">VARIANT</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;">
+              <sc-for list="{{ variantChips }}" as="v" hint-placeholder-count="2">
+                <div onClick="{{ v.onClick }}" style="padding:5px 10px;font-size:10px;letter-spacing:0.05em;cursor:pointer;user-select:none;color:{{ v.fg }};background:{{ v.bg }};border:1px solid {{ v.bd }};">{{ v.label }}</div>
+              </sc-for>
+            </div>
+          </div>
+
+          <sc-for list="{{ sliders }}" as="s" hint-placeholder-count="2">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#6f7e83;"><span>{{ s.name }}</span><span style="color:#9aa6aa;">{{ s.disp }}</span></div>
+              <input type="range" min="{{ s.min }}" max="{{ s.max }}" step="{{ s.step }}" value="{{ s.val }}" onInput="{{ s.onInput }}" />
+            </div>
+          </sc-for>
+
+          <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;letter-spacing:0.03em;">One parametric model per piece; wood/paint/fabric are KTC ramps shared with the rooms. Painted pieces keep raw-wood legs &amp; tops. Runs (counter, table, bench, shelf, rug) stretch on their long axis.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8-DIR SHEET -->
+  <div style="width:100%;max-width:1120px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">DIRECTION&nbsp;SHEET&nbsp;&middot;&nbsp;{{ selLabel }}</div>
+      <div style="font-size:9.5px;color:#5f6e73;">{{ sheetDims }} &middot; floor-centre pivot pinned each cell &middot; N NE E SE S SW W NW</div>
+    </div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;padding:14px;">
+      <canvas ref="{{ sheetRef }}" width="1040" height="160"></canvas>
+    </div>
+  </div>
+
+  <!-- FURNISHED ROOM -->
+  <div style="width:100%;max-width:1120px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;justify-content:space-between;">
+      <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+        <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">FURNISHED&nbsp;FROM&nbsp;ONE&nbsp;FOOTPRINT&nbsp;&middot;&nbsp;KEEPER&rsquo;S&nbsp;KITCHEN</div>
+        <div style="font-size:9.5px;color:#5f6e73;">shell + props on the shared floor grid, one camera &mdash; spins together</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div onClick="{{ sceneRotL }}" style="padding:5px 11px;font-size:12px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8634;</div>
+        <div onClick="{{ sceneRotR }}" style="padding:5px 11px;font-size:12px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8635;</div>
+      </div>
+    </div>
+    <div style="border:1px solid #243137;background:#0e181d;display:flex;justify-content:center;padding:8px;">
+      <canvas ref="{{ sceneRef }}" width="900" height="560"></canvas>
+    </div>
+    <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;">Placement is metric room-space (origin = floor centre); each prop drops at <b>InteriorIso.project(dir, x, y)</b> and depth-sorts against the shell. The compositor does exactly this at runtime &mdash; villagers slot in on the same grid.</div>
+  </div>
+
+  <!-- META + PALETTE -->
+  <div style="width:100%;max-width:1120px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:320px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Piece</div></div>
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ meta }}" as="row" hint-placeholder-count="7">
+          <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ row.border }};background:#0f191e;">{{ row.k }}</div>
+          <div style="padding:6px 11px;color:#c4cdcd;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.v }}</div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:320px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#b49a74;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Palette &middot; this piece</div></div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <sc-for list="{{ ramps }}" as="r" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:9px;">
+            <div style="width:72px;font-size:9px;letter-spacing:0.08em;color:#6f7e83;">{{ r.name }}</div>
+            <div style="display:flex;gap:2px;flex:1;">
+              <sc-for list="{{ r.cols }}" as="c" hint-placeholder-count="6">
+                <div title="{{ c }}" style="flex:1;height:15px;background:{{ c }};"></div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;letter-spacing:0.03em;">Cast iron, tin, brass, ceramic &amp; stone for the appliances; harbour body ramps for painted casework so kitchens read against their rooms.</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1120, &quot;height&quot;: 1580 },
+  &quot;prop&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;stove&quot;, &quot;options&quot;: [&quot;chair&quot;,&quot;stool&quot;,&quot;bench&quot;,&quot;armchair&quot;,&quot;table&quot;,&quot;roundTable&quot;,&quot;bed&quot;,&quot;dresser&quot;,&quot;wardrobe&quot;,&quot;shelf&quot;,&quot;seaChest&quot;,&quot;barrel&quot;,&quot;crate&quot;,&quot;rug&quot;,&quot;counter&quot;,&quot;stove&quot;,&quot;sink&quot;,&quot;wetSink&quot;,&quot;range&quot;,&quot;cupboard&quot;,&quot;washtub&quot;,&quot;icebox&quot;,&quot;hutch&quot;,&quot;tub&quot;,&quot;toilet&quot;,&quot;washstand&quot;,&quot;towelRail&quot;,&quot;mirror&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Preview&quot; },
+  &quot;night&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Preview&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.ORDER=['N','NE','E','SE','S','SW','W','NW'];
+    const D=(typeof window!=='undefined')&&window.PropIso;
+    this.CW=D?D.W:460; this.CH=D?D.H:460; this.PVX=D?D.pivot.x:230; this.PVY=D?D.pivot.y:330;
+    const saved=this._load();
+    this.state={
+      name: saved.name ?? (props.prop ?? 'stove'),
+      dir:  saved.dir ?? 1,
+      zoom: saved.zoom ?? 1.0,
+      elev: saved.elev ?? 40,
+      fire: saved.fire ?? true,
+      night: saved.night ?? (props.night ?? false),
+      sceneDir: saved.sceneDir ?? 1,
+      spec: Object.assign({ wood:'pine', paint:undefined, fabric:'red', fabric2:'cream', variant:0, len:0.4, weather:0.2 }, saved.spec ?? {}),
+    };
+    this._cells={}; this._ck=''; this._sc={}; this._sck=''; this._t0=performance.now();
+    this.canvasRef=(n)=>{ if(!n||n===this._cv)return; this._cv=n; this._ctx=n.getContext('2d'); this._rebuild(); };
+    this.sheetRef=(n)=>{ if(!n||n===this._sh)return; this._sh=n; this._shx=n.getContext('2d'); this._drawSheet(); };
+    this.sceneRef=(n)=>{ if(!n||n===this._sn)return; this._sn=n; this._snx=n.getContext('2d'); this._drawScene(); };
+  }
+  _load(){ try{ return JSON.parse(localStorage.getItem('hh.propIso')||'{}'); }catch(e){ return {}; } }
+  _save(){ try{ localStorage.setItem('hh.propIso', JSON.stringify(this.state)); }catch(e){} }
+  _rig(){ return (typeof window!=='undefined')&&window.PropIso; }
+  _room(){ return (typeof window!=='undefined')&&window.InteriorIso; }
+
+  componentDidMount(){
+    this._iv=setInterval(()=>{ if(this.state.fire && this._ctx && this._ready) this._drawStage(); }, 95);
+    this._tryReady();
+  }
+  componentWillUnmount(){ if(this._iv)clearInterval(this._iv); if(this._deb)clearTimeout(this._deb); }
+  _tryReady(){ if(this._rig()){ this._ready=true; this._rebuild(); } else if(!this._ready){ setTimeout(()=>this._tryReady(),80); } }
+
+  _spec(){ const P=this._rig().PROPS[this.state.name]||{}; const def=P.def||{};
+    const s=Object.assign({}, this.state.spec);
+    if(s.worktop===undefined) s.worktop = def.worktop || 'slate';
+    if(s.paint===undefined) s.paint = def.paint||null;   // undefined = follow the prop's default; null = raw wood
+    s.elev=this.state.elev; s.night=this.state.night; return s; }
+  _key(){ return this.state.name+'|'+this.state.elev+'|'+this.state.night+'|'+JSON.stringify(this.state.spec); }
+  _renderCell(dir){ const D=this._rig(), cv=document.createElement('canvas'); cv.width=D.W; cv.height=D.H;
+    cv.getContext('2d').putImageData(new ImageData(D.render(this.state.name,dir,this._spec()),D.W,D.H),0,0); return cv; }
+  _rebuild(){ if(!this._rig()){ this._tryReady(); return; }
+    const key=this._key(); if(this._ck!==key){ this._cells={}; this._ck=key; }
+    if(!this._cells[this.state.dir]) this._cells[this.state.dir]=this._renderCell(this.state.dir);
+    this._ready=true; this._drawStage();
+    if(this._deb) clearTimeout(this._deb);
+    this._deb=setTimeout(()=>{ if(this._ck!==key)return; for(let d=0;d<8;d++) if(!this._cells[d]) this._cells[d]=this._renderCell(d);
+      this._drawSheet(); this._drawScene(); }, 55);
+  }
+
+  _bg(ctx,W,H){ const g=ctx.createLinearGradient(0,0,0,H);
+    if(this.state.night){ g.addColorStop(0,'#0a0f16'); g.addColorStop(1,'#12100c'); } else { g.addColorStop(0,'#0e181d'); g.addColorStop(1,'#141d20'); }
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }
+  _drawStage(){ if(!this._ctx||!this._ready)return; const ctx=this._ctx, W=this._cv.width, H=this._cv.height, z=this.state.zoom, D=this._rig();
+    ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,W,H); this._bg(ctx,W,H);
+    const gx=Math.round(W/2), gy=Math.round(H*0.62);
+    const fp=D.footprint(this.state.name,this._spec());
+    ctx.save(); ctx.globalAlpha=this.state.night?0.5:0.32; ctx.fillStyle='#05090c';
+    ctx.beginPath(); ctx.ellipse(gx,gy+2,(fp.w*0.62)*z*16,(fp.d*0.62)*z*10,0,0,Math.PI*2); ctx.fill(); ctx.restore();
+    const cell=this._cells[this.state.dir]||(this._cells[this.state.dir]=this._renderCell(this.state.dir));
+    ctx.drawImage(cell, Math.round(gx-this.PVX*z), Math.round(gy-this.PVY*z), this.CW*z, this.CH*z);
+    if(this.state.fire && this.state.name==='stove'){ const t=(performance.now()-this._t0)/1000, fl=0.7+0.3*Math.sin(t*12)+0.1*Math.sin(t*27);
+      const fpt=D.project(this.state.dir,[0,-0.34,0.5]); const hx=gx+(fpt.x-this.PVX)*z, hy=gy+(fpt.y-this.PVY)*z;
+      const g=ctx.createRadialGradient(hx,hy,1,hx,hy,26*z*fl); g.addColorStop(0,'rgba(246,180,80,'+(0.42*fl).toFixed(3)+')'); g.addColorStop(1,'rgba(246,150,60,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(hx,hy,26*z*fl,0,Math.PI*2); ctx.fill(); }
+  }
+  _drawSheet(){ if(!this._shx||!this._ready)return; const D=this._rig(), S=0.30, cw=D.W*S, ch=D.H*S, step=cw*0.5;
+    this._sh.width=Math.ceil(12+7*step+cw); this._sh.height=Math.ceil(ch+22);
+    const ctx=this._shx; ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,this._sh.width,this._sh.height);
+    for(let d=0;d<8;d++){ const x=6+d*step, y=2;
+      if(d===this.state.dir){ ctx.fillStyle='rgba(127,214,201,0.1)'; ctx.fillRect(x+cw*0.12,y,cw*0.76,ch); }
+      if(this._cells[d]) ctx.drawImage(this._cells[d], x,y, cw,ch);
+      ctx.fillStyle=d===this.state.dir?'#cfeee8':'#6f7e83'; ctx.font='10px ui-monospace,monospace'; ctx.textAlign='center'; ctx.fillText(this.ORDER[d], x+cw/2, y+ch+15); }
+    ctx.textAlign='left';
+  }
+
+  _layout(hw,hl){ // metric room-space; +Y = back wall, -Y = camera opening. dOff spins a piece vs the scene.
+    return [
+      { name:'rug', x:0, y:-0.3, flat:true, spec:{fabric:'red',fabric2:'gold',len:0.2} },
+      { name:'counter', x:-0.4, y:hl-0.5, spec:{paint:'cream',len:0.35} },
+      { name:'stove', x:hw-1.15, y:hl-0.62, spec:{variant:1} },
+      { name:'sink', x:-hw+1.15, y:hl-0.55, spec:{paint:'blue'} },
+      { name:'icebox', x:hw-0.55, y:hl-2.1, spec:{paint:'white'} },
+      { name:'hutch', x:-hw+0.6, y:-1.4, dOff:2, spec:{paint:'sage'} },
+      { name:'table', x:0, y:-0.3, spec:{wood:'oak',len:0.1} },
+      { name:'chair', x:0, y:0.55, dOff:4, spec:{wood:'oak'} },
+      { name:'chair', x:-0.75, y:-0.35, dOff:2, spec:{wood:'oak'} },
+      { name:'stool', x:1.0, y:hl-0.62, spec:{wood:'pine'} },
+    ];
+  }
+  _sceneCell(name,dir,spec){ const D=this._rig(), cv=document.createElement('canvas'); cv.width=D.W; cv.height=D.H;
+    cv.getContext('2d').putImageData(new ImageData(D.render(name,dir,spec),D.W,D.H),0,0); return cv; }
+  _drawScene(){ if(!this._snx||!this._ready)return; const R=this._room(), D=this._rig(); const ctx=this._snx, W=this._sn.width, H=this._sn.height;
+    ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,W,H); this._bg(ctx,W,H);
+    if(!R){ ctx.fillStyle='#6f7e83'; ctx.font='12px monospace'; ctx.fillText('interiorIsoRig.js not loaded',20,30); return; }
+    const dir=this.state.sceneDir, ropts={preset:'keeperKitchen', elev:this.state.elev, night:this.state.night};
+    const z=0.62, gx=Math.round(W*0.5), gy=Math.round(H*0.66);
+    const an=R.anchors(dir,ropts), hw=an.Wd/2, hl=an.Ln/2;
+    // shell (cached)
+    const rkey=dir+'|'+this.state.night+'|'+this.state.elev;
+    if(this._sck!==rkey){ this._sc={}; this._sck=rkey; }
+    if(!this._sc.room){ const cv=document.createElement('canvas'); cv.width=R.W; cv.height=R.H;
+      cv.getContext('2d').putImageData(new ImageData(R.render(dir,ropts),R.W,R.H),0,0); this._sc.room=cv; }
+    ctx.drawImage(this._sc.room, Math.round(gx-R.pivot.x*z), Math.round(gy-R.pivot.y*z), R.W*z, R.H*z);
+    const origin=R.project(dir,[0,0,0]);
+    const items=this._layout(hw,hl).map(it=>{ const p=R.project(dir,[it.x,it.y,0]); return Object.assign({},it,{sy:p.y,ox:p.x-origin.x,oy:p.y-origin.y}); });
+    const flats=items.filter(i=>i.flat), solids=items.filter(i=>!i.flat).sort((a,b)=>a.sy-b.sy);
+    const blit=(it)=>{ const spec=Object.assign({elev:this.state.elev,night:this.state.night},it.spec||{});
+      const pdir=((dir+(it.dOff||0))%8+8)%8; const cell=this._sceneCell(it.name,pdir,spec);
+      const px=gx+it.ox*z, py=gy+it.oy*z; ctx.drawImage(cell, Math.round(px-D.pivot.x*z), Math.round(py-D.pivot.y*z), D.W*z, D.H*z); };
+    for(const it of flats) blit(it);
+    for(const it of solids) blit(it);
+    if(this.state.fire){ const t=(performance.now()-this._t0)/1000, fl=0.7+0.3*Math.sin(t*12); const st=items.find(i=>i.name==='stove');
+      if(st){ const fpt=R.project(dir,[st.x, st.y-0.34, 0.5]); const hx=gx+(fpt.x-origin.x)*z, hy=gy+(fpt.y-origin.y)*z;
+        const g=ctx.createRadialGradient(hx,hy,1,hx,hy,20*fl); g.addColorStop(0,'rgba(246,180,80,'+(0.4*fl).toFixed(3)+')'); g.addColorStop(1,'rgba(246,150,60,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(hx,hy,20*fl,0,7); ctx.fill(); } }
+  }
+
+  _sel(name){ this.setState({name, spec:Object.assign({}, this.state.spec, {variant:0, paint:undefined, worktop:undefined})}, ()=>{ this._save(); this._rebuild(); }); }
+  _rot(d){ this.setState({dir:(this.state.dir+d+8)%8}, ()=>{ this._save(); this._rebuild(); }); }
+  _setDir(d){ this.setState({dir:d}, ()=>{ this._save(); this._rebuild(); }); }
+  _setSpec(patch){ this.setState({spec:Object.assign({}, this.state.spec, patch)}, ()=>{ this._save(); this._rebuild(); }); }
+  _toggle(k){ this.setState({[k]:!this.state[k]}, ()=>{ this._save(); this._rebuild(); }); }
+  _sceneRot(d){ this.setState({sceneDir:(this.state.sceneDir+d+8)%8}, ()=>{ this._save(); this._drawScene(); }); }
+
+  _saveCanvas(cv,name){ cv.toBlob((b)=>{ if(!b)return; const u=URL.createObjectURL(b), a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(u),2000); }); }
+  _downloadDirs(){ for(let d=0;d<8;d++) if(!this._cells[d]) this._cells[d]=this._renderCell(d);
+    const cv=document.createElement('canvas'); cv.width=this.CW*8; cv.height=this.CH; const c=cv.getContext('2d');
+    for(let d=0;d<8;d++) c.drawImage(this._cells[d], d*this.CW,0); this._saveCanvas(cv,'PropIso_'+this.state.name+'.png'); }
+
+  renderVals(){
+    const D=this._rig(), st=this.state, sp=st.spec;
+    const on={fg:'#0b1216',bg:'#7fd6c9',bd:'#7fd6c9'}, off={fg:'#aeb9bb',bg:'#141f25',bd:'#2f444c'}, gold={fg:'#0b1216',bg:'#e0b13a',bd:'#e0b13a'};
+    const mk=(label,sel,fn,style)=>Object.assign({label,onClick:fn}, sel?(style||on):off);
+    const P = D ? (D.PROPS[st.name]||{}) : {};
+    const dirChips=this.ORDER.map((n,d)=>mk(n, d===st.dir, ()=>this._setDir(d)));
+    // catalogue grouped by cat
+    const catLabel={seating:'SEATING',tables:'TABLES',bed:'BED',storage:'STORAGE',kitchen:'KITCHEN',bath:'BATH',decor:'DECOR'};
+    const catalogue = D ? D.CATS.map(cat=>({ name:catLabel[cat]||cat.toUpperCase(),
+      items:D.list().filter(n=>D.PROPS[n].cat===cat).map(n=>mk(D.PROPS[n].label, n===st.name, ()=>this._sel(n), gold)) })).filter(g=>g.items.length) : [];
+    const woods = D?Object.keys(D.WOODS):['pine'];
+    const woodChips = woods.map(w=>mk(w.toUpperCase(), (sp.wood||'pine')===w, ()=>this._setSpec({wood:w})));
+    const curPaint = sp.paint===undefined ? (P.def&&P.def.paint||null) : sp.paint;
+    const bodyKeys = D?Object.keys(D.BODY):[];
+    const paintSwatches = bodyKeys.map(k=>{ const col=D?D.BODY[k][3]:'#888', selp=curPaint===k;
+      return { name:k, col, onClick:()=>this._setSpec({paint:k}), border:selp?'2px solid #eef3f2':'1px solid #2f444c' }; });
+    const fabricSwatches = bodyKeys.map(k=>{ const col=D?D.BODY[k][3]:'#888', self=(sp.fabric||'red')===k;
+      return { name:k, col, onClick:()=>this._setSpec({fabric:k}), border:self?'2px solid #eef3f2':'1px solid #2f444c' }; });
+    const hasWorktop = !!(P.def && P.def.worktop);
+    const curWorktop = sp.worktop===undefined ? (P.def&&P.def.worktop||'slate') : sp.worktop;
+    const worktopKeys = D?Object.keys(D.WORKTOPS):[];
+    const worktopSwatches = worktopKeys.map(k=>{ const col=D?D.WORKTOPS[k][3]:'#888', selw=curWorktop===k;
+      return { name:k, col, onClick:()=>this._setSpec({worktop:k}), border:selw?'2px solid #eef3f2':'1px solid #2f444c' }; });
+    const variants = P.variants||['default'];
+    const variantChips = variants.map((v,i)=>mk(String(v).toUpperCase(), (sp.variant||0)===i, ()=>this._setSpec({variant:i})));
+    const sliders=[];
+    if(P.run) sliders.push({ name:'LENGTH', val:sp.len, min:0, max:1, step:0.05, onInput:(e)=>this._setSpec({len:+e.target.value}), disp:Math.round((sp.len||0)*100)+'%' });
+    sliders.push({ name:'WEATHER · fresh → worn', val:sp.weather, min:0, max:1, step:0.05, onInput:(e)=>this._setSpec({weather:+e.target.value}), disp:Math.round((sp.weather||0)*100)+'%' });
+    const stageToggles=[
+      mk(st.fire?'■ FIRE':'▶ FIRE', st.fire, ()=>this._toggle('fire'), gold),
+      mk(st.night?'☾ NIGHT':'☀ DAY', st.night, ()=>this._toggle('night')),
+    ];
+    const noneSel = curPaint===null;
+    const fp = D?D.footprint(st.name,this._spec()):{w:1,d:1};
+    const border='1px solid #243137';
+    const woodRamp=D?(D.WOODS[sp.wood||'pine']||D.WOODS.pine):[];
+    const paintRamp=D&&curPaint?(D.BODY[curPaint]||[]):woodRamp;
+    const ramps = D?[
+      {name:'BODY', cols:paintRamp},
+      {name:'WOOD', cols:woodRamp},
+      {name:'IRON', cols:D.IRON},
+      {name:'BRASS', cols:D.BRASS},
+      {name:'FABRIC', cols:D.BODY[sp.fabric||'red']||[]},
+    ]:[];
+    const meta = D?[
+      {k:'PIECE', v:(P.label||st.name)+' · '+(P.cat||''), border:'none'},
+      {k:'FOOTPRINT', v:fp.w.toFixed(2)+' × '+fp.d.toFixed(2)+' m ('+Math.round(fp.w*32)+'×'+Math.round(fp.d*32)+' px)', border},
+      {k:'CELL', v:D.W+' × '+D.H+' · 8 dirs', border},
+      {k:'MATERIAL', v:(curPaint?('paint '+curPaint):('raw '+ (sp.wood||'pine')))+' · '+(P.variants?P.variants[sp.variant||0]:'-'), border},
+      {k:'CAMERA', v:'elev '+st.elev+'° · 45° steps · fleet-true', border},
+      {k:'PIVOT', v:'floor centre ('+this.PVX+', '+this.PVY+')', border},
+      {k:'SOURCE', v:'Art/interiorPropRig.js', border},
+    ]:[];
+    return {
+      canvasRef:this.canvasRef, sheetRef:this.sheetRef, sceneRef:this.sceneRef,
+      rotL:()=>this._rot(-1), rotR:()=>this._rot(1), sceneRotL:()=>this._sceneRot(-1), sceneRotR:()=>this._sceneRot(1),
+      compass:this.ORDER[st.dir], compassDeg:(st.dir*45)+'° · facing',
+      selLabel:(P.label||st.name), propCount:D?D.list().length:0,
+      stateLine:(P.label||st.name)+'  ·  '+this.ORDER[st.dir], footLine:fp.w.toFixed(1)+'×'+fp.d.toFixed(1)+' m',
+      sheetDims:(8*this.CW)+'×'+this.CH,
+      dirChips, catalogue, woodChips, paintSwatches, fabricSwatches, variantChips, sliders, stageToggles,
+      paintCur: curPaint||'raw wood', fabricCur: sp.fabric||'red',
+      hasWorktop, worktopSwatches, worktopCur: curWorktop,
+      paintNone:()=>this._setSpec({paint:null}), noneFg:noneSel?'#0b1216':'#aeb9bb', noneBg:noneSel?'#7fd6c9':'#141f25', noneBd:noneSel?'#7fd6c9':'#2f444c',
+      zoom:st.zoom, onZoom:(e)=>this.setState({zoom:+e.target.value},()=>{ this._save(); this._drawStage(); }),
+      elev:st.elev, onElev:(e)=>this.setState({elev:+e.target.value},()=>{ this._save(); this._rebuild(); }),
+      downloadDirs:()=>this._downloadDirs(), meta, ramps,
+    };
+  }
+}
+</script>
+</body>
+</html>

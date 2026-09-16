@@ -1,0 +1,1707 @@
+{
+  "schema": "iso-rig-params/1",
+  "rig": "Art/houseIsoRig.js",
+  "exportSymbol": "HouseIso",
+  "derivedFromRigSha256": "4b28a464c87153c0d271789b583a485333c1fceb2ffa1b650b44d8258ba6ea66",
+  "generatedAt": "2026-09-16T01:45:48.316Z",
+  "usedBy": [
+    "House Iso.dc.html",
+    "Cottage Interior Iso.dc.html"
+  ],
+  "constants": {
+    "W": 992,
+    "H": 1060,
+    "PX": 32,
+    "DIRS": 8,
+    "defaultElev": 40,
+    "KEY": "#1a1c22"
+  },
+  "enums": {
+    "order": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "SHAPES": [
+      "gable",
+      "ell",
+      "gambrel",
+      "saltbox",
+      "cape"
+    ],
+    "SIDINGS": [
+      "shingle",
+      "clapboard",
+      "twotone",
+      "fishscale"
+    ],
+    "WINDOWS": [
+      "sixOverSix",
+      "twoOverTwo",
+      "fourOverFour",
+      "twoOverOne",
+      "oneOverOne",
+      "arched"
+    ]
+  },
+  "palettes": {
+    "ROOFS": {
+      "asphaltGrey": [
+        "#23262b",
+        "#2e333a",
+        "#3c424a",
+        "#4c535c",
+        "#5d6570",
+        "#6f7883"
+      ],
+      "asphaltBrown": [
+        "#2a211a",
+        "#3a2e23",
+        "#4c3d2e",
+        "#5f4d3a",
+        "#736046",
+        "#877254"
+      ],
+      "metal": [
+        "#424d52",
+        "#556065",
+        "#6c7c81",
+        "#88999e",
+        "#a4babe",
+        "#c0d4d7"
+      ]
+    },
+    "BODY": {
+      "greyShingle": [
+        "#4c463f",
+        "#5d564c",
+        "#6f665a",
+        "#82786a",
+        "#968b7b",
+        "#a99d8c"
+      ],
+      "white": [
+        "#8c928c",
+        "#a6aaa2",
+        "#bfc2b9",
+        "#d5d8cf",
+        "#e7e9e0",
+        "#f3f4ec"
+      ],
+      "cream": [
+        "#8a6f3c",
+        "#a6884b",
+        "#c2a35f",
+        "#d8bd7c",
+        "#e9d59d",
+        "#f5e7c1"
+      ],
+      "red": [
+        "#4a130f",
+        "#671b14",
+        "#88271c",
+        "#a33124",
+        "#bd4230",
+        "#d25a42"
+      ],
+      "sage": [
+        "#3a4636",
+        "#4a5843",
+        "#5c6b52",
+        "#718063",
+        "#889777",
+        "#a1ae90"
+      ],
+      "blue": [
+        "#33454a",
+        "#43585d",
+        "#556d72",
+        "#6a848a",
+        "#849ea3",
+        "#a3b9bd"
+      ]
+    },
+    "TRIM": [
+      "#9aa09a",
+      "#b4b8b0",
+      "#ccd0c7",
+      "#e0e2da",
+      "#eef0e8",
+      "#f8f9f2"
+    ]
+  },
+  "tables": {
+    "pivot": {
+      "x": 496,
+      "y": 676
+    },
+    "ERAS": {
+      "plain": {
+        "shape": "gable",
+        "roof": "asphaltGrey",
+        "siding": "shingle",
+        "pitch": 0.95,
+        "bargeboard": false,
+        "windows": "twoOverTwo",
+        "attic": "gable",
+        "trimW": 0.1
+      },
+      "colonial": {
+        "shape": "gable",
+        "roof": "asphaltGrey",
+        "siding": "clapboard",
+        "pitch": 0.85,
+        "bargeboard": false,
+        "windows": "sixOverSix",
+        "attic": "gable",
+        "trimW": 0.12
+      },
+      "gothic": {
+        "shape": "gable",
+        "roof": "asphaltGrey",
+        "siding": "twotone",
+        "pitch": 1.4,
+        "bargeboard": true,
+        "windows": "sixOverSix",
+        "attic": "gothic",
+        "crossGable": 1,
+        "trimW": 0.14
+      },
+      "seaside": {
+        "shape": "cape",
+        "roof": "asphaltBrown",
+        "siding": "shingle",
+        "pitch": 1.05,
+        "bargeboard": false,
+        "windows": "sixOverSix",
+        "attic": "gable",
+        "trimW": 0.11
+      },
+      "modern": {
+        "shape": "saltbox",
+        "roof": "metal",
+        "siding": "clapboard",
+        "pitch": 0.8,
+        "bargeboard": false,
+        "windows": "twoOverTwo",
+        "attic": "none",
+        "trimW": 0.09
+      }
+    },
+    "PRESETS": {
+      "shingleCottage": {
+        "era": "plain",
+        "body": "greyShingle",
+        "roof": "asphaltBrown",
+        "shape": "gable",
+        "siding": "shingle",
+        "size": 0.15,
+        "porch": "front",
+        "dormers": 0,
+        "chimneys": 1,
+        "bay": false,
+        "attic": "gable",
+        "weather": 0.35
+      },
+      "whiteFarmhouse": {
+        "era": "colonial",
+        "body": "white",
+        "roof": "metal",
+        "shape": "ell",
+        "siding": "clapboard",
+        "size": 0.7,
+        "porch": "wrap",
+        "dormers": 1,
+        "chimneys": 1,
+        "bay": true,
+        "attic": "gable",
+        "weather": 0.1
+      },
+      "redSaltbox": {
+        "era": "modern",
+        "body": "red",
+        "roof": "asphaltGrey",
+        "shape": "saltbox",
+        "siding": "clapboard",
+        "size": 0.4,
+        "porch": "none",
+        "dormers": 0,
+        "chimneys": 1,
+        "bay": false,
+        "attic": "none",
+        "weather": 0.2
+      },
+      "gothicRevival": {
+        "era": "gothic",
+        "body": "cream",
+        "lower": "red",
+        "roof": "asphaltGrey",
+        "shape": "gable",
+        "siding": "twotone",
+        "size": 0.8,
+        "porch": "front",
+        "dormers": 0,
+        "chimneys": 2,
+        "bay": false,
+        "attic": "gothic",
+        "crossGable": 1,
+        "bargeboard": true,
+        "weather": 0.15
+      },
+      "dormerCape": {
+        "era": "seaside",
+        "body": "greyShingle",
+        "roof": "asphaltGrey",
+        "shape": "cape",
+        "siding": "shingle",
+        "size": 0.5,
+        "porch": "front",
+        "dormers": 3,
+        "chimneys": 1,
+        "bay": false,
+        "attic": "gable",
+        "bargeboard": true,
+        "weather": 0.45
+      }
+    }
+  },
+  "api": {
+    "render": "fn(2)",
+    "anchors": "fn(2)",
+    "project": "fn(3)",
+    "entrance": "fn(1)"
+  },
+  "presetCount": 5,
+  "presets": {
+    "shingleCottage": {
+      "options": {
+        "era": "plain",
+        "body": "greyShingle",
+        "roof": "asphaltBrown",
+        "shape": "gable",
+        "siding": "shingle",
+        "size": 0.15,
+        "porch": "front",
+        "dormers": 0,
+        "chimneys": 1,
+        "bay": false,
+        "attic": "gable",
+        "weather": 0.35
+      },
+      "anchors": {
+        "N": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 501.259807
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 559.532684
+          },
+          "threshold": {
+            "x": 496,
+            "y": 584.046106
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63
+        },
+        "NE": {
+          "chimneys": [
+            {
+              "x": 544.341214,
+              "y": 488.388894
+            }
+          ],
+          "door": {
+            "x": 409.676404,
+            "y": 582.516458
+          },
+          "threshold": {
+            "x": 409.676404,
+            "y": 607.02988
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63
+        },
+        "E": {
+          "chimneys": [
+            {
+              "x": 564.3648,
+              "y": 457.315761
+            }
+          ],
+          "door": {
+            "x": 373.92,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 373.92,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63
+        },
+        "SE": {
+          "chimneys": [
+            {
+              "x": 544.341214,
+              "y": 426.242628
+            }
+          ],
+          "door": {
+            "x": 409.676404,
+            "y": 693.491933
+          },
+          "threshold": {
+            "x": 409.676404,
+            "y": 718.005356
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63
+        },
+        "S": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 413.371714
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 716.475707
+          },
+          "threshold": {
+            "x": 496,
+            "y": 740.989129
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63
+        },
+        "SW": {
+          "chimneys": [
+            {
+              "x": 447.658786,
+              "y": 426.242628
+            }
+          ],
+          "door": {
+            "x": 582.323596,
+            "y": 693.491933
+          },
+          "threshold": {
+            "x": 582.323596,
+            "y": 718.005356
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63
+        },
+        "W": {
+          "chimneys": [
+            {
+              "x": 427.6352,
+              "y": 457.315761
+            }
+          ],
+          "door": {
+            "x": 618.08,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 618.08,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63
+        },
+        "NW": {
+          "chimneys": [
+            {
+              "x": 447.658786,
+              "y": 488.388894
+            }
+          ],
+          "door": {
+            "x": 582.323596,
+            "y": 582.516458
+          },
+          "threshold": {
+            "x": 582.323596,
+            "y": 607.02988
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63
+        }
+      },
+      "entrance": {
+        "axis": "y",
+        "facing": "+Y",
+        "x": 0,
+        "y": 3.815,
+        "z": 0.55,
+        "width": 1,
+        "height": 2.1
+      }
+    },
+    "whiteFarmhouse": {
+      "options": {
+        "era": "colonial",
+        "body": "white",
+        "roof": "metal",
+        "shape": "ell",
+        "siding": "clapboard",
+        "size": 0.7,
+        "porch": "wrap",
+        "dormers": 1,
+        "chimneys": 1,
+        "bay": true,
+        "attic": "gable",
+        "weather": 0.1
+      },
+      "anchors": {
+        "N": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 481.642442
+            }
+          ],
+          "door": {
+            "x": 457.3056,
+            "y": 449.902943
+          },
+          "threshold": {
+            "x": 457.3056,
+            "y": 474.416366
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94
+        },
+        "NE": {
+          "chimneys": [
+            {
+              "x": 558.976627,
+              "y": 464.87483
+            }
+          ],
+          "door": {
+            "x": 261.715724,
+            "y": 522.583883
+          },
+          "threshold": {
+            "x": 261.715724,
+            "y": 547.097305
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94
+        },
+        "E": {
+          "chimneys": [
+            {
+              "x": 585.0624,
+              "y": 424.394235
+            }
+          ],
+          "door": {
+            "x": 203.3664,
+            "y": 662.876477
+          },
+          "threshold": {
+            "x": 203.3664,
+            "y": 687.389899
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94
+        },
+        "SE": {
+          "chimneys": [
+            {
+              "x": 558.976627,
+              "y": 383.913639
+            }
+          ],
+          "door": {
+            "x": 316.43787,
+            "y": 788.599225
+          },
+          "threshold": {
+            "x": 316.43787,
+            "y": 813.112647
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94
+        },
+        "S": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 367.146028
+            }
+          ],
+          "door": {
+            "x": 534.6944,
+            "y": 826.105448
+          },
+          "threshold": {
+            "x": 534.6944,
+            "y": 850.61887
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94
+        },
+        "SW": {
+          "chimneys": [
+            {
+              "x": 433.023373,
+              "y": 383.913639
+            }
+          ],
+          "door": {
+            "x": 730.284276,
+            "y": 753.424508
+          },
+          "threshold": {
+            "x": 730.284276,
+            "y": 777.93793
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94
+        },
+        "W": {
+          "chimneys": [
+            {
+              "x": 406.9376,
+              "y": 424.394235
+            }
+          ],
+          "door": {
+            "x": 788.6336,
+            "y": 613.131915
+          },
+          "threshold": {
+            "x": 788.6336,
+            "y": 637.645337
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94
+        },
+        "NW": {
+          "chimneys": [
+            {
+              "x": 433.023373,
+              "y": 464.87483
+            }
+          ],
+          "door": {
+            "x": 675.56213,
+            "y": 487.409166
+          },
+          "threshold": {
+            "x": 675.56213,
+            "y": 511.922588
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94
+        }
+      },
+      "entrance": {
+        "axis": "y",
+        "facing": "+Y",
+        "x": -1.2092,
+        "y": 9.1448,
+        "z": 0.55,
+        "width": 0.95,
+        "height": 2.05
+      }
+    },
+    "redSaltbox": {
+      "options": {
+        "era": "modern",
+        "body": "red",
+        "roof": "asphaltGrey",
+        "shape": "saltbox",
+        "siding": "clapboard",
+        "size": 0.4,
+        "porch": "none",
+        "dormers": 0,
+        "chimneys": 1,
+        "bay": false,
+        "attic": "none",
+        "weather": 0.2
+      },
+      "anchors": {
+        "N": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 500.860123
+            }
+          ],
+          "door": {
+            "x": 607.36,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 607.36,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68
+        },
+        "NE": {
+          "chimneys": [
+            {
+              "x": 550.993674,
+              "y": 486.217983
+            }
+          ],
+          "door": {
+            "x": 574.743411,
+            "y": 587.388907
+          },
+          "threshold": {
+            "x": 574.743411,
+            "y": 611.902329
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68
+        },
+        "E": {
+          "chimneys": [
+            {
+              "x": 573.7728,
+              "y": 450.868731
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 566.423367
+          },
+          "threshold": {
+            "x": 496,
+            "y": 590.93679
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68
+        },
+        "SE": {
+          "chimneys": [
+            {
+              "x": 550.993674,
+              "y": 415.519478
+            }
+          ],
+          "door": {
+            "x": 417.256589,
+            "y": 587.388907
+          },
+          "threshold": {
+            "x": 417.256589,
+            "y": 611.902329
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68
+        },
+        "S": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 400.877338
+            }
+          ],
+          "door": {
+            "x": 384.64,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 384.64,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68
+        },
+        "SW": {
+          "chimneys": [
+            {
+              "x": 441.006326,
+              "y": 415.519478
+            }
+          ],
+          "door": {
+            "x": 417.256589,
+            "y": 688.619485
+          },
+          "threshold": {
+            "x": 417.256589,
+            "y": 713.132907
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68
+        },
+        "W": {
+          "chimneys": [
+            {
+              "x": 418.2272,
+              "y": 450.868731
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 709.585024
+          },
+          "threshold": {
+            "x": 496,
+            "y": 734.098446
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68
+        },
+        "NW": {
+          "chimneys": [
+            {
+              "x": 441.006326,
+              "y": 486.217983
+            }
+          ],
+          "door": {
+            "x": 574.743411,
+            "y": 688.619485
+          },
+          "threshold": {
+            "x": 574.743411,
+            "y": 713.132907
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68
+        }
+      },
+      "entrance": {
+        "axis": "x",
+        "facing": "+X",
+        "x": 3.48,
+        "y": 0,
+        "z": 0.55,
+        "width": 1,
+        "height": 2.1
+      }
+    },
+    "gothicRevival": {
+      "options": {
+        "era": "gothic",
+        "body": "cream",
+        "lower": "red",
+        "roof": "asphaltGrey",
+        "shape": "gable",
+        "siding": "twotone",
+        "size": 0.8,
+        "porch": "front",
+        "dormers": 0,
+        "chimneys": 2,
+        "bay": false,
+        "attic": "gothic",
+        "crossGable": 1,
+        "bargeboard": true,
+        "weather": 0.15
+      },
+      "anchors": {
+        "N": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 423.268093
+            },
+            {
+              "x": 496,
+              "y": 295.409924
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 531.455721
+          },
+          "threshold": {
+            "x": 496,
+            "y": 555.969144
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36
+        },
+        "NE": {
+          "chimneys": [
+            {
+              "x": 561.637611,
+              "y": 405.791991
+            },
+            {
+              "x": 420.985587,
+              "y": 315.382613
+            }
+          ],
+          "door": {
+            "x": 378.78998,
+            "y": 562.663047
+          },
+          "threshold": {
+            "x": 378.78998,
+            "y": 587.176469
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36
+        },
+        "E": {
+          "chimneys": [
+            {
+              "x": 588.8256,
+              "y": 363.600948
+            },
+            {
+              "x": 389.9136,
+              "y": 363.600948
+            }
+          ],
+          "door": {
+            "x": 330.24,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 330.24,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36
+        },
+        "SE": {
+          "chimneys": [
+            {
+              "x": 561.637611,
+              "y": 321.409905
+            },
+            {
+              "x": 420.985587,
+              "y": 411.819283
+            }
+          ],
+          "door": {
+            "x": 378.78998,
+            "y": 713.345344
+          },
+          "threshold": {
+            "x": 378.78998,
+            "y": 737.858766
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36
+        },
+        "S": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 303.933802
+            },
+            {
+              "x": 496,
+              "y": 431.791971
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 744.55267
+          },
+          "threshold": {
+            "x": 496,
+            "y": 769.066092
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36
+        },
+        "SW": {
+          "chimneys": [
+            {
+              "x": 430.362389,
+              "y": 321.409905
+            },
+            {
+              "x": 571.014413,
+              "y": 411.819283
+            }
+          ],
+          "door": {
+            "x": 613.21002,
+            "y": 713.345344
+          },
+          "threshold": {
+            "x": 613.21002,
+            "y": 737.858766
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36
+        },
+        "W": {
+          "chimneys": [
+            {
+              "x": 403.1744,
+              "y": 363.600948
+            },
+            {
+              "x": 602.0864,
+              "y": 363.600948
+            }
+          ],
+          "door": {
+            "x": 661.76,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 661.76,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36
+        },
+        "NW": {
+          "chimneys": [
+            {
+              "x": 430.362389,
+              "y": 405.791991
+            },
+            {
+              "x": 571.014413,
+              "y": 315.382613
+            }
+          ],
+          "door": {
+            "x": 613.21002,
+            "y": 562.663047
+          },
+          "threshold": {
+            "x": 613.21002,
+            "y": 587.176469
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36
+        }
+      },
+      "entrance": {
+        "axis": "y",
+        "facing": "+Y",
+        "x": 0,
+        "y": 5.18,
+        "z": 0.55,
+        "width": 1,
+        "height": 2.1
+      }
+    },
+    "dormerCape": {
+      "options": {
+        "era": "seaside",
+        "body": "greyShingle",
+        "roof": "asphaltGrey",
+        "shape": "cape",
+        "siding": "shingle",
+        "size": 0.5,
+        "porch": "front",
+        "dormers": 3,
+        "chimneys": 1,
+        "bay": false,
+        "attic": "gable",
+        "bargeboard": true,
+        "weather": 0.45
+      },
+      "anchors": {
+        "N": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 473.961008
+            }
+          ],
+          "door": {
+            "x": 611.2,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 611.2,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1
+        },
+        "NE": {
+          "chimneys": [
+            {
+              "x": 553.654659,
+              "y": 458.610378
+            }
+          ],
+          "door": {
+            "x": 577.458701,
+            "y": 585.643552
+          },
+          "threshold": {
+            "x": 577.458701,
+            "y": 610.156974
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1
+        },
+        "E": {
+          "chimneys": [
+            {
+              "x": 577.536,
+              "y": 421.550678
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 563.955063
+          },
+          "threshold": {
+            "x": 496,
+            "y": 588.468485
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1
+        },
+        "SE": {
+          "chimneys": [
+            {
+              "x": 553.654659,
+              "y": 384.490978
+            }
+          ],
+          "door": {
+            "x": 414.541299,
+            "y": 585.643552
+          },
+          "threshold": {
+            "x": 414.541299,
+            "y": 610.156974
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1
+        },
+        "S": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 369.140347
+            }
+          ],
+          "door": {
+            "x": 380.8,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 380.8,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1
+        },
+        "SW": {
+          "chimneys": [
+            {
+              "x": 438.345341,
+              "y": 384.490978
+            }
+          ],
+          "door": {
+            "x": 414.541299,
+            "y": 690.364839
+          },
+          "threshold": {
+            "x": 414.541299,
+            "y": 714.878262
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1
+        },
+        "W": {
+          "chimneys": [
+            {
+              "x": 414.464,
+              "y": 421.550678
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 712.053328
+          },
+          "threshold": {
+            "x": 496,
+            "y": 736.56675
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1
+        },
+        "NW": {
+          "chimneys": [
+            {
+              "x": 438.345341,
+              "y": 458.610378
+            }
+          ],
+          "door": {
+            "x": 577.458701,
+            "y": 690.364839
+          },
+          "threshold": {
+            "x": 577.458701,
+            "y": 714.878262
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1
+        }
+      },
+      "entrance": {
+        "axis": "x",
+        "facing": "+X",
+        "x": 3.6,
+        "y": 0,
+        "z": 0.55,
+        "width": 1,
+        "height": 2.1
+      }
+    }
+  },
+  "runtimeDependencies": [
+    "Art/coastalPass.js",
+    "Art/interiorPropRig.js"
+  ],
+  "renderSignatureSha256": "57e59da887ab14e1ced3627ab75c2d07c64a4e27bf3903cf4adfbbb2058b0a08",
+  "renderDependencyHashes": {
+    "Art/manorIsoRig.js": "eb59dcbfae10a47ae72d9e5193b789dcee4e5c1b8cb7b3d827d6db9f28dd1241",
+    "Art/interiorPropRig.js": "a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6",
+    "Art/manorUnitIsoRig.js": "d8bfad68a876f491a642b8aaeb5c7df65cc741c931e7ba2d8a9e3f561cecaf7b",
+    "Art/houseIsoRig.js": "4b28a464c87153c0d271789b583a485333c1fceb2ffa1b650b44d8258ba6ea66",
+    "Art/interiorIsoRig.js": "ef06a219a23686349dd96f63e5ca00ba72cf380954686263a3f1576fe80bafc1",
+    "Art/wharfBuildingRig.js": "76dbecb0e1ccadfbcacc66b9ec5787d2ebff8112b7d5976668fa953a08ed8163",
+    "Art/coastalPass.js": "cb0293833991f726742ad98aa4d169888293779b000192d8543e02b12bade780"
+  }
+}

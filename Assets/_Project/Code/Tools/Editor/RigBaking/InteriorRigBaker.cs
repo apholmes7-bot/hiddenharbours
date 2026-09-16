@@ -439,7 +439,35 @@ namespace HiddenHarbours.Tools.RigBaking
             // with no second storey in it has nothing to say here, and a missing anchor must not fail a
             // bake that is otherwise complete. What must NOT happen is the number being invented on this
             // side, which is why it is read and not defaulted to anything but zero.
-            string s = $"{g}.anchors(0,{req.OptsJs}).storeyZ";
+            //
+            // ⚠️ THE FIELD IS A FLOOR-TO-FLOOR RISE AND `storeyZ` STOPPED BEING ONE (2026-09-15). The
+            // rig this repo shipped against declared `b.storeyZ = b.ceilZ + b.joistZ` — "metres of
+            // HEIGHT from this floor to the one above", in its own words — so reading the anchor was
+            // reading the rise. The coastal-heritage interiorIsoRig redefines it as THIS storey's
+            // floor above grade (`b.storeyZ = b.fH` on the ground branch, `b.fH + min(...)` on the
+            // upper), which for every domestic ground room is a flat 0.55 m. Nothing throws: the
+            // number is still a number, still finite, still on the anchor. Baking through the old
+            // reader would have written 0.55 over 3.1025 and dropped Ginny's upper storey almost to
+            // the ground floor — the mirror of the double-rise trap, and just as quiet.
+            //
+            // So ASK FOR THE RISE ITSELF where the rig can answer: the difference between the upper
+            // storey's floor and this one's. Measured on all four shipped rooms, that difference
+            // equals the rig's own stair contract exactly — furnishings().stair.floorRise, its
+            // top.z, and steps x riser all agree to the last digit (sageCottage 2.65 · school 2.59 ·
+            // redSaltbox 2.74 · whiteFarmhouse 2.92), with the companion on and off alike. Only
+            // `storey` is overridden for the measurement: dividers and the hearth do not enter the
+            // height, and a measurement should move as little as it can.
+            //
+            // A rig with no dims(), or one that ignores `storey`, returns the same number twice and
+            // the difference is zero — which is why zero falls through to the anchor and the rigs
+            // that predate the storey option keep the reading they have always had.
+            string upperOpts = $"Object.assign({{}},{req.OptsJs},{{storey:'upper'}})";
+            string rise = $"({g}.dims({upperOpts}).storeyZ - {g}.dims({req.OptsJs}).storeyZ)";
+            bool hasRise =
+                host.EvaluateBool($"typeof {g}.dims === 'function'") &&
+                host.EvaluateBool($"typeof ({rise}) === 'number' && isFinite({rise}) && ({rise}) > 0");
+
+            string s = hasRise ? rise : $"{g}.anchors(0,{req.OptsJs}).storeyZ";
             r.StoreyHeightMetres =
                 host.EvaluateBool($"typeof ({s}) === 'number' && isFinite({s})")
                     ? host.EvaluateNumber(s)

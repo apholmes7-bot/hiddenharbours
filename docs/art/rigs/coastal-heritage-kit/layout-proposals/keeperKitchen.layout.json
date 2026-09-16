@@ -1,0 +1,574 @@
+{
+  "schema": "coastal-cottage-layout/2",
+  "preset": "keeperKitchen",
+  "options": {
+    "type": "cottage",
+    "storey": "ground",
+    "size": 0.2,
+    "floor": "checker",
+    "wall": "plaster",
+    "paper": "cream",
+    "wainscot": true,
+    "dividers": 1,
+    "hearth": true,
+    "weather": 0.3
+  },
+  "renderSignatureSha256": "57e59da887ab14e1ced3627ab75c2d07c64a4e27bf3903cf4adfbbb2058b0a08",
+  "derivedFromRigSha256": "ef06a219a23686349dd96f63e5ca00ba72cf380954686263a3f1576fe80bafc1",
+  "dependencyHashes": {
+    "Art/manorIsoRig.js": "eb59dcbfae10a47ae72d9e5193b789dcee4e5c1b8cb7b3d827d6db9f28dd1241",
+    "Art/interiorPropRig.js": "a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6",
+    "Art/manorUnitIsoRig.js": "d8bfad68a876f491a642b8aaeb5c7df65cc741c931e7ba2d8a9e3f561cecaf7b",
+    "Art/houseIsoRig.js": "4b28a464c87153c0d271789b583a485333c1fceb2ffa1b650b44d8258ba6ea66",
+    "Art/interiorIsoRig.js": "ef06a219a23686349dd96f63e5ca00ba72cf380954686263a3f1576fe80bafc1",
+    "Art/wharfBuildingRig.js": "76dbecb0e1ccadfbcacc66b9ec5787d2ebff8112b7d5976668fa953a08ed8163",
+    "Art/coastalPass.js": "cb0293833991f726742ad98aa4d169888293779b000192d8543e02b12bade780"
+  },
+  "props": [
+    {
+      "id": "range",
+      "name": "stove",
+      "face": "S",
+      "x": 2.29,
+      "y": -3.07,
+      "z": 0,
+      "options": {
+        "wood": "oak"
+      },
+      "verb": "cook",
+      "rect": {
+        "x0": 1.73,
+        "x1": 2.85,
+        "y0": -3.4,
+        "y1": -2.74
+      },
+      "height": 1.8
+    },
+    {
+      "id": "sink",
+      "name": "sink",
+      "face": "W",
+      "x": 2.29,
+      "y": -1.72,
+      "z": 0,
+      "options": {
+        "paint": "sage",
+        "worktop": "slate"
+      },
+      "verb": "wash_dishes",
+      "rect": {
+        "x0": 1.99,
+        "x1": 2.59,
+        "y0": -2.22,
+        "y1": -1.22
+      },
+      "height": 1.18
+    },
+    {
+      "id": "cupboard",
+      "name": "cupboard",
+      "face": "S",
+      "x": -2.29,
+      "y": -0.65,
+      "z": 0,
+      "options": {
+        "paint": "sage",
+        "wood": "oak"
+      },
+      "verb": "store",
+      "rect": {
+        "x0": -2.79,
+        "x1": -1.79,
+        "y0": -0.925,
+        "y1": -0.375
+      },
+      "height": 2.08
+    },
+    {
+      "id": "table",
+      "name": "table",
+      "face": "N",
+      "x": -2.36,
+      "y": -3.2,
+      "z": 0,
+      "options": {
+        "len": 0,
+        "wood": "oak"
+      },
+      "verb": "dine",
+      "rect": {
+        "x0": -2.91,
+        "x1": -1.81,
+        "y0": -3.59,
+        "y1": -2.81
+      },
+      "height": 0.74
+    },
+    {
+      "id": "chairB",
+      "name": "chair",
+      "face": "N",
+      "x": -2.36,
+      "y": -2.45,
+      "z": 0,
+      "options": {
+        "wood": "pine"
+      },
+      "verb": "sit",
+      "rect": {
+        "x0": -2.58,
+        "x1": -2.14,
+        "y0": -2.66,
+        "y1": -2.24
+      },
+      "height": 1.075
+    },
+    {
+      "id": "bed",
+      "name": "bed",
+      "face": "S",
+      "x": -2.29,
+      "y": 2.47,
+      "z": 0,
+      "options": {
+        "variant": 1,
+        "wood": "pine",
+        "fabric": "blue",
+        "fabric2": "cream"
+      },
+      "verb": "sleep",
+      "rect": {
+        "x0": -2.8,
+        "x1": -1.78,
+        "y0": 1.445,
+        "y1": 3.495
+      },
+      "height": 0.95
+    },
+    {
+      "id": "dresser",
+      "name": "dresser",
+      "face": "S",
+      "x": -2.41,
+      "y": -1.66,
+      "z": 0,
+      "options": {
+        "wood": "oak"
+      },
+      "verb": "store",
+      "rect": {
+        "x0": -2.91,
+        "x1": -1.91,
+        "y0": -1.91,
+        "y1": -1.41
+      },
+      "height": 0.95
+    },
+    {
+      "id": "armchair",
+      "name": "armchair",
+      "face": "W",
+      "x": 2.29,
+      "y": 2.72,
+      "z": 0,
+      "options": {
+        "fabric": "red",
+        "fabric2": "cream",
+        "wood": "walnut"
+      },
+      "verb": "sit",
+      "rect": {
+        "x0": 1.93,
+        "x1": 2.65,
+        "y0": 2.36,
+        "y1": 3.08
+      },
+      "height": 0.86
+    },
+    {
+      "id": "seaChest",
+      "name": "seaChest",
+      "face": "W",
+      "x": 2.29,
+      "y": 0.95,
+      "z": 0,
+      "options": {
+        "wood": "oak"
+      },
+      "verb": "store",
+      "rect": {
+        "x0": 2.04,
+        "x1": 2.54,
+        "y0": 0.5,
+        "y1": 1.4
+      },
+      "height": 0.5
+    }
+  ],
+  "blockers": [
+    {
+      "kind": "hearth",
+      "x0": -0.94,
+      "x1": 0.94,
+      "y0": -3.92,
+      "y1": -2.9
+    },
+    {
+      "kind": "partition",
+      "x0": -3.24,
+      "x1": -1.8,
+      "y0": -0.12,
+      "y1": 0.12
+    },
+    {
+      "kind": "partition",
+      "x0": 0.23,
+      "x1": 0.625,
+      "y0": -0.12,
+      "y1": 0.12
+    },
+    {
+      "kind": "partition",
+      "x0": 1.775,
+      "x1": 3.24,
+      "y0": -0.12,
+      "y1": 0.12
+    },
+    {
+      "kind": "stair",
+      "x0": -0.98,
+      "x1": 0.23,
+      "y0": -2.62,
+      "y1": 1.02
+    },
+    {
+      "kind": "stove",
+      "id": "range",
+      "x0": 1.73,
+      "x1": 2.85,
+      "y0": -3.4,
+      "y1": -2.74
+    },
+    {
+      "kind": "sink",
+      "id": "sink",
+      "x0": 1.99,
+      "x1": 2.59,
+      "y0": -2.22,
+      "y1": -1.22
+    },
+    {
+      "kind": "cupboard",
+      "id": "cupboard",
+      "x0": -2.79,
+      "x1": -1.79,
+      "y0": -0.925,
+      "y1": -0.375
+    },
+    {
+      "kind": "table",
+      "id": "table",
+      "x0": -2.91,
+      "x1": -1.81,
+      "y0": -3.59,
+      "y1": -2.81
+    },
+    {
+      "kind": "chair",
+      "id": "chairB",
+      "x0": -2.58,
+      "x1": -2.14,
+      "y0": -2.66,
+      "y1": -2.24
+    },
+    {
+      "kind": "bed",
+      "id": "bed",
+      "x0": -2.8,
+      "x1": -1.78,
+      "y0": 1.445,
+      "y1": 3.495
+    },
+    {
+      "kind": "dresser",
+      "id": "dresser",
+      "x0": -2.91,
+      "x1": -1.91,
+      "y0": -1.91,
+      "y1": -1.41
+    },
+    {
+      "kind": "armchair",
+      "id": "armchair",
+      "x0": 1.93,
+      "x1": 2.65,
+      "y0": 2.36,
+      "y1": 3.08
+    },
+    {
+      "kind": "seaChest",
+      "id": "seaChest",
+      "x0": 2.04,
+      "x1": 2.54,
+      "y0": 0.5,
+      "y1": 1.4
+    }
+  ],
+  "routes": [
+    {
+      "x0": -0.44,
+      "x1": 1.64,
+      "y0": 3.23,
+      "y1": 4.11
+    },
+    {
+      "x0": 0.76,
+      "x1": 1.64,
+      "y0": 0.26,
+      "y1": 4.11
+    },
+    {
+      "x0": 0.76,
+      "x1": 1.64,
+      "y0": 0.26,
+      "y1": 1.14
+    },
+    {
+      "x0": 0.76,
+      "x1": 1.64,
+      "y0": -1.14,
+      "y1": 1.14
+    },
+    {
+      "x0": 0.76,
+      "x1": 1.64,
+      "y0": -1.14,
+      "y1": -0.26
+    },
+    {
+      "x0": 0.76,
+      "x1": 1.64,
+      "y0": -2.71,
+      "y1": -0.26
+    },
+    {
+      "x0": -0.9,
+      "x1": 0.15,
+      "y0": -3.64,
+      "y1": -2.62
+    },
+    {
+      "x0": -0.9,
+      "x1": 0.15,
+      "y0": 1.02,
+      "y1": 2.04
+    },
+    {
+      "x0": -1.75,
+      "x1": -0.98,
+      "y0": -2.9,
+      "y1": 3.47
+    }
+  ],
+  "approaches": [
+    {
+      "id": "range",
+      "verb": "cook",
+      "target": {
+        "x": 2.29,
+        "y": -3.07,
+        "z": 0
+      },
+      "approach": {
+        "x": 1.33,
+        "y": -3.07,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "sink",
+      "verb": "wash_dishes",
+      "target": {
+        "x": 2.29,
+        "y": -1.72,
+        "z": 0
+      },
+      "approach": {
+        "x": 1.59,
+        "y": -1.72,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "cupboard",
+      "verb": "store",
+      "target": {
+        "x": -2.29,
+        "y": -0.65,
+        "z": 0
+      },
+      "approach": {
+        "x": -1.39,
+        "y": -0.65,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "table",
+      "verb": "dine",
+      "target": {
+        "x": -2.36,
+        "y": -3.2,
+        "z": 0
+      },
+      "approach": {
+        "x": -1.41,
+        "y": -3.2,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "chairB",
+      "verb": "sit",
+      "target": {
+        "x": -2.36,
+        "y": -2.45,
+        "z": 0
+      },
+      "approach": {
+        "x": -1.74,
+        "y": -2.45,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "bed",
+      "verb": "sleep",
+      "target": {
+        "x": -2.29,
+        "y": 2.47,
+        "z": 0
+      },
+      "approach": {
+        "x": -2.29,
+        "y": 1.045,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "dresser",
+      "verb": "store",
+      "target": {
+        "x": -2.41,
+        "y": -1.66,
+        "z": 0
+      },
+      "approach": {
+        "x": -1.51,
+        "y": -1.66,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "armchair",
+      "verb": "sit",
+      "target": {
+        "x": 2.29,
+        "y": 2.72,
+        "z": 0
+      },
+      "approach": {
+        "x": 1.53,
+        "y": 2.72,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "seaChest",
+      "verb": "store",
+      "target": {
+        "x": 2.29,
+        "y": 0.95,
+        "z": 0
+      },
+      "approach": {
+        "x": 1.64,
+        "y": 0.95,
+        "z": 0,
+        "radius": 0.28
+      }
+    }
+  ],
+  "rejected": [
+    {
+      "id": "chairA",
+      "name": "chair",
+      "reason": "No slot clear of walls, props, route and roof clearance"
+    }
+  ],
+  "stair": {
+    "id": "cottage_stair",
+    "axis": "y",
+    "ascending": "negativeY",
+    "x0": -0.9,
+    "x1": 0.15,
+    "y0": -2.62,
+    "y1": 1.02,
+    "steps": 14,
+    "going": 0.26,
+    "riser": 0.187143,
+    "floorRise": 2.62,
+    "slabThickness": 0.24,
+    "headroom": 2,
+    "opening": {
+      "x0": -0.96,
+      "x1": 0.21,
+      "y0": -2.62,
+      "y1": 0.5
+    },
+    "topLanding": {
+      "x0": -0.9,
+      "x1": 0.15,
+      "y0": -3.64,
+      "y1": -2.62
+    },
+    "bottomLanding": {
+      "x0": -0.9,
+      "x1": 0.15,
+      "y0": 1.02,
+      "y1": 2.04
+    },
+    "bottom": {
+      "x": -0.375,
+      "y": 1.54,
+      "z": 0
+    },
+    "top": {
+      "x": -0.375,
+      "y": -3.14,
+      "z": 2.62
+    }
+  },
+  "stairAccess": {
+    "bottom": true,
+    "top": null
+  },
+  "navigation": {
+    "radius": 0.28,
+    "gridStep": 0.12,
+    "reachableCells": 980,
+    "start": {
+      "x": 0.05,
+      "y": 3.21
+    }
+  },
+  "note": "Interior-local metres. Pair floors using identical type, size, shape and pitch. Stair top z is relative to the ground floor; upper sprite floor z is zero. Navigation checks floor approaches; Unity locomotion and door animation remain integration work."
+}

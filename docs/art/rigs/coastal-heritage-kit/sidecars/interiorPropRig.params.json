@@ -1,0 +1,1116 @@
+{
+  "schema": "iso-rig-params/1",
+  "rig": "Art/interiorPropRig.js",
+  "exportSymbol": "PropIso",
+  "derivedFromRigSha256": "a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6",
+  "generatedAt": "2026-09-16T01:45:45.636Z",
+  "usedBy": [
+    "Manor Interiors.dc.html",
+    "Interior Props Iso.dc.html"
+  ],
+  "constants": {
+    "W": 460,
+    "H": 460,
+    "PX": 32,
+    "defaultElev": 40,
+    "KEY": "#1a1c22"
+  },
+  "enums": {
+    "order": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "CATS": [
+      "seating",
+      "tables",
+      "bed",
+      "storage",
+      "kitchen",
+      "bath",
+      "utility",
+      "decor"
+    ],
+    "ERAS": [
+      "period",
+      "modern",
+      "any"
+    ]
+  },
+  "palettes": {
+    "WOODS": {
+      "pine": [
+        "#6b4e2b",
+        "#7e5d34",
+        "#8f6d40",
+        "#a5824f",
+        "#bb9a63",
+        "#d0b47e"
+      ],
+      "oak": [
+        "#553d23",
+        "#6b4e30",
+        "#7f603b",
+        "#957749",
+        "#ab8d5f",
+        "#c1a578"
+      ],
+      "walnut": [
+        "#2f2018",
+        "#412c20",
+        "#54402e",
+        "#68533e",
+        "#7d6851",
+        "#947f66"
+      ],
+      "driftwood": [
+        "#4a4d4b",
+        "#5d605c",
+        "#727571",
+        "#898b85",
+        "#9fa199",
+        "#b5b6ad"
+      ]
+    },
+    "WORKTOPS": {
+      "slate": [
+        "#3a3d43",
+        "#494d54",
+        "#5b6067",
+        "#70757c",
+        "#868b91",
+        "#9ca1a6"
+      ],
+      "soapstone": [
+        "#22262a",
+        "#2f353a",
+        "#3f474d",
+        "#525b61",
+        "#69727a",
+        "#828b92"
+      ],
+      "marble": [
+        "#8f918c",
+        "#a9aaa3",
+        "#c3c4bb",
+        "#d8d9d0",
+        "#e9eae1",
+        "#f6f7ef"
+      ],
+      "sandstone": [
+        "#7a6544",
+        "#957c53",
+        "#ad9366",
+        "#c4ac80",
+        "#d8c39d",
+        "#e9d9bd"
+      ],
+      "butcher": [
+        "#6b4e2b",
+        "#7e5d34",
+        "#8f6d40",
+        "#a5824f",
+        "#bb9a63",
+        "#d0b47e"
+      ],
+      "greentile": [
+        "#26362f",
+        "#33473c",
+        "#456155",
+        "#5c8071",
+        "#79a08d",
+        "#9abfa9"
+      ],
+      "bluetile": [
+        "#25353a",
+        "#33484f",
+        "#456068",
+        "#5c8088",
+        "#7aa0a8",
+        "#9abfc6"
+      ],
+      "redtile": [
+        "#3f1712",
+        "#5c2119",
+        "#7a3024",
+        "#96412f",
+        "#b0553f",
+        "#c66d55"
+      ]
+    },
+    "IRON": [
+      "#111216",
+      "#1c1e23",
+      "#2a2d33",
+      "#3a3e46",
+      "#4d525a",
+      "#636970"
+    ],
+    "TIN": [
+      "#565b5f",
+      "#6d7276",
+      "#868b8f",
+      "#a0a5a8",
+      "#bbbfc1",
+      "#d6d9da"
+    ],
+    "BRASS": [
+      "#59410f",
+      "#795819",
+      "#977326",
+      "#b28e3b",
+      "#c8a757",
+      "#dcc17d"
+    ],
+    "CERAMIC": [
+      "#868b89",
+      "#a3a8a4",
+      "#c0c4be",
+      "#d8dcd4",
+      "#ebeee6",
+      "#f7f9f2"
+    ],
+    "STONE": [
+      "#3a3d43",
+      "#494d54",
+      "#5b6067",
+      "#70757c",
+      "#868b91",
+      "#9ca1a6"
+    ],
+    "BODY": {
+      "greyShingle": [
+        "#4c463f",
+        "#5d564c",
+        "#6f665a",
+        "#82786a",
+        "#968b7b",
+        "#a99d8c"
+      ],
+      "white": [
+        "#8c928c",
+        "#a6aaa2",
+        "#bfc2b9",
+        "#d5d8cf",
+        "#e7e9e0",
+        "#f3f4ec"
+      ],
+      "cream": [
+        "#8a6f3c",
+        "#a6884b",
+        "#c2a35f",
+        "#d8bd7c",
+        "#e9d59d",
+        "#f5e7c1"
+      ],
+      "red": [
+        "#4a130f",
+        "#671b14",
+        "#88271c",
+        "#a33124",
+        "#bd4230",
+        "#d25a42"
+      ],
+      "sage": [
+        "#3a4636",
+        "#4a5843",
+        "#5c6b52",
+        "#718063",
+        "#889777",
+        "#a1ae90"
+      ],
+      "blue": [
+        "#33454a",
+        "#43585d",
+        "#556d72",
+        "#6a848a",
+        "#849ea3",
+        "#a3b9bd"
+      ],
+      "gold": [
+        "#5e4a12",
+        "#7c6119",
+        "#987a26",
+        "#b39440",
+        "#c8ab5e",
+        "#dbc182"
+      ],
+      "plum": [
+        "#2e2333",
+        "#3f3047",
+        "#523f5d",
+        "#664f73",
+        "#7d648b",
+        "#9079a1"
+      ],
+      "steel": [
+        "#565b5f",
+        "#6d7276",
+        "#868b8f",
+        "#a0a5a8",
+        "#bbbfc1",
+        "#d6d9da"
+      ]
+    },
+    "TRIM": [
+      "#9aa09a",
+      "#b4b8b0",
+      "#ccd0c7",
+      "#e0e2da",
+      "#eef0e8",
+      "#f8f9f2"
+    ]
+  },
+  "tables": {
+    "pivot": {
+      "x": 230,
+      "y": 330
+    },
+    "PROPS": {
+      "chair": {
+        "label": "Chair",
+        "cat": "seating",
+        "era": "any",
+        "foot": [
+          0.44,
+          0.42
+        ],
+        "variants": [
+          "ladderback",
+          "upholstered"
+        ],
+        "def": {
+          "wood": "oak"
+        },
+        "build": "[fn pChair/2]"
+      },
+      "stool": {
+        "label": "Stool",
+        "cat": "seating",
+        "era": "any",
+        "foot": [
+          0.4,
+          0.4
+        ],
+        "variants": [
+          "round"
+        ],
+        "def": {
+          "wood": "pine"
+        },
+        "build": "[fn pStool/2]"
+      },
+      "bench": {
+        "label": "Bench",
+        "cat": "seating",
+        "era": "any",
+        "foot": [
+          2.1,
+          0.36
+        ],
+        "variants": [
+          "plain"
+        ],
+        "run": true,
+        "runBase": 0.9,
+        "runK": 1.2,
+        "def": {
+          "wood": "pine"
+        },
+        "build": "[fn pBench/2]"
+      },
+      "armchair": {
+        "label": "Armchair",
+        "cat": "seating",
+        "era": "any",
+        "foot": [
+          0.72,
+          0.72
+        ],
+        "variants": [
+          "wing"
+        ],
+        "def": {
+          "paint": "red",
+          "fabric": "red",
+          "fabric2": "cream",
+          "wood": "walnut"
+        },
+        "build": "[fn pArmchair/2]"
+      },
+      "sofa": {
+        "label": "Sofa",
+        "cat": "seating",
+        "era": "modern",
+        "foot": [
+          2.6,
+          0.88
+        ],
+        "variants": [
+          "three-seat"
+        ],
+        "run": true,
+        "runBase": 1.9,
+        "runK": 0.7,
+        "def": {
+          "fabric": "blue",
+          "fabric2": "cream",
+          "wood": "walnut"
+        },
+        "build": "[fn pSofa/2]"
+      },
+      "table": {
+        "label": "Table",
+        "cat": "tables",
+        "era": "any",
+        "foot": [
+          2,
+          0.78
+        ],
+        "variants": [
+          "rect"
+        ],
+        "run": true,
+        "runBase": 1.1,
+        "runK": 0.9,
+        "def": {
+          "wood": "oak"
+        },
+        "build": "[fn pTable/2]"
+      },
+      "roundTable": {
+        "label": "Round Table",
+        "cat": "tables",
+        "era": "any",
+        "foot": [
+          1.24,
+          1.24
+        ],
+        "variants": [
+          "pedestal"
+        ],
+        "def": {
+          "wood": "walnut"
+        },
+        "build": "[fn pRoundTable/2]"
+      },
+      "bed": {
+        "label": "Bed",
+        "cat": "bed",
+        "era": "any",
+        "foot": [
+          1.62,
+          2.05
+        ],
+        "variants": [
+          "double",
+          "single",
+          "wide"
+        ],
+        "footVar": [
+          [
+            1.5,
+            2.05
+          ],
+          [
+            1.02,
+            2.05
+          ],
+          [
+            1.62,
+            2.05
+          ]
+        ],
+        "headToWall": true,
+        "def": {
+          "wood": "walnut",
+          "fabric": "sage",
+          "fabric2": "cream"
+        },
+        "build": "[fn pBed/2]"
+      },
+      "dresser": {
+        "label": "Dresser",
+        "cat": "storage",
+        "era": "any",
+        "foot": [
+          1,
+          0.5
+        ],
+        "variants": [
+          "6-drawer"
+        ],
+        "def": {
+          "paint": "blue",
+          "wood": "pine"
+        },
+        "build": "[fn pDresser/2]"
+      },
+      "wardrobe": {
+        "label": "Wardrobe",
+        "cat": "storage",
+        "era": "any",
+        "foot": [
+          1.05,
+          0.58
+        ],
+        "variants": [
+          "2-door"
+        ],
+        "def": {
+          "paint": "sage",
+          "wood": "pine"
+        },
+        "build": "[fn pWardrobe/2]"
+      },
+      "shelf": {
+        "label": "Shelf",
+        "cat": "storage",
+        "era": "any",
+        "foot": [
+          1.7,
+          0.3
+        ],
+        "variants": [
+          "open"
+        ],
+        "run": true,
+        "runBase": 0.9,
+        "runK": 0.8,
+        "def": {
+          "wood": "pine"
+        },
+        "build": "[fn pShelf/2]"
+      },
+      "seaChest": {
+        "label": "Sea Chest",
+        "cat": "storage",
+        "era": "period",
+        "foot": [
+          0.9,
+          0.5
+        ],
+        "variants": [
+          "domed"
+        ],
+        "def": {
+          "wood": "walnut"
+        },
+        "build": "[fn pSeaChest/2]"
+      },
+      "barrel": {
+        "label": "Barrel",
+        "cat": "storage",
+        "era": "any",
+        "foot": [
+          0.64,
+          0.64
+        ],
+        "variants": [
+          "hooped"
+        ],
+        "def": {
+          "wood": "oak"
+        },
+        "build": "[fn pBarrel/2]"
+      },
+      "mailboxes": {
+        "label": "Mailbox bank",
+        "cat": "storage",
+        "era": "any",
+        "foot": [
+          2.2,
+          0.28
+        ],
+        "variants": [
+          "bank"
+        ],
+        "run": true,
+        "runBase": 1.25,
+        "runK": 0.95,
+        "def": {},
+        "build": "[fn pMailboxes/2]"
+      },
+      "lockers": {
+        "label": "Store lockers",
+        "cat": "storage",
+        "era": "any",
+        "foot": [
+          2.5,
+          0.55
+        ],
+        "variants": [
+          "bank"
+        ],
+        "run": true,
+        "runBase": 1.35,
+        "runK": 1.15,
+        "def": {},
+        "build": "[fn pLockers/2]"
+      },
+      "crate": {
+        "label": "Crate",
+        "cat": "storage",
+        "era": "any",
+        "foot": [
+          0.6,
+          0.6
+        ],
+        "variants": [
+          "slatted"
+        ],
+        "def": {
+          "wood": "pine"
+        },
+        "build": "[fn pCrate/2]"
+      },
+      "rug": {
+        "label": "Rug",
+        "cat": "decor",
+        "era": "any",
+        "foot": [
+          2.3,
+          1.05
+        ],
+        "variants": [
+          "bordered"
+        ],
+        "run": true,
+        "runBase": 1.5,
+        "runK": 0.8,
+        "def": {
+          "fabric": "red",
+          "fabric2": "gold"
+        },
+        "build": "[fn pRug/2]"
+      },
+      "counter": {
+        "label": "Counter run",
+        "cat": "kitchen",
+        "era": "any",
+        "foot": [
+          2.8,
+          0.62
+        ],
+        "variants": [
+          "cabinets"
+        ],
+        "run": true,
+        "runBase": 1.3,
+        "runK": 1.5,
+        "def": {
+          "paint": "cream",
+          "wood": "pine",
+          "worktop": "slate"
+        },
+        "build": "[fn pCounter/2]"
+      },
+      "stove": {
+        "label": "Cook stove",
+        "cat": "kitchen",
+        "era": "period",
+        "foot": [
+          1.12,
+          0.66
+        ],
+        "variants": [
+          "single",
+          "double"
+        ],
+        "def": {
+          "wood": "oak"
+        },
+        "build": "[fn pStove/2]"
+      },
+      "sink": {
+        "label": "Dry sink",
+        "cat": "kitchen",
+        "era": "period",
+        "foot": [
+          1,
+          0.6
+        ],
+        "variants": [
+          "pump"
+        ],
+        "def": {
+          "paint": "blue",
+          "wood": "pine",
+          "worktop": "slate"
+        },
+        "build": "[fn pSink/2]"
+      },
+      "icebox": {
+        "label": "Icebox",
+        "cat": "kitchen",
+        "era": "period",
+        "foot": [
+          0.72,
+          0.6
+        ],
+        "variants": [
+          "oak"
+        ],
+        "def": {
+          "paint": "white",
+          "wood": "oak"
+        },
+        "build": "[fn pIcebox/2]"
+      },
+      "hutch": {
+        "label": "Dish hutch",
+        "cat": "kitchen",
+        "era": "any",
+        "foot": [
+          1.05,
+          0.5
+        ],
+        "variants": [
+          "glazed"
+        ],
+        "def": {
+          "paint": "sage",
+          "wood": "pine",
+          "worktop": "butcher"
+        },
+        "build": "[fn pHutch/2]"
+      },
+      "wetSink": {
+        "label": "Wet sink",
+        "cat": "kitchen",
+        "era": "any",
+        "foot": [
+          1.12,
+          0.62
+        ],
+        "variants": [
+          "piped"
+        ],
+        "def": {
+          "paint": "white",
+          "wood": "pine",
+          "worktop": "marble"
+        },
+        "build": "[fn pWetSink/2]"
+      },
+      "range": {
+        "label": "Range oven",
+        "cat": "kitchen",
+        "era": "any",
+        "foot": [
+          1.24,
+          0.72
+        ],
+        "variants": [
+          "twin-oven"
+        ],
+        "def": {
+          "wood": "oak"
+        },
+        "build": "[fn pRange/2]"
+      },
+      "cupboard": {
+        "label": "Larder",
+        "cat": "kitchen",
+        "era": "any",
+        "foot": [
+          1,
+          0.55
+        ],
+        "variants": [
+          "4-door"
+        ],
+        "def": {
+          "paint": "cream",
+          "wood": "pine"
+        },
+        "build": "[fn pCupboard/2]"
+      },
+      "washtub": {
+        "label": "Wash tub",
+        "cat": "kitchen",
+        "era": "period",
+        "foot": [
+          0.68,
+          0.68
+        ],
+        "variants": [
+          "tin"
+        ],
+        "def": {
+          "wood": "oak"
+        },
+        "build": "[fn pWashtub/2]"
+      },
+      "fridge": {
+        "label": "Fridge",
+        "cat": "kitchen",
+        "era": "modern",
+        "foot": [
+          0.72,
+          0.68
+        ],
+        "variants": [
+          "two-door"
+        ],
+        "def": {
+          "paint": "steel",
+          "wood": "oak"
+        },
+        "build": "[fn pFridge/2]"
+      },
+      "tub": {
+        "label": "Bath tub",
+        "cat": "bath",
+        "era": "any",
+        "foot": [
+          0.8,
+          1.6
+        ],
+        "variants": [
+          "clawfoot",
+          "built-in"
+        ],
+        "def": {},
+        "build": "[fn pTub/2]"
+      },
+      "toilet": {
+        "label": "Water closet",
+        "cat": "bath",
+        "era": "any",
+        "foot": [
+          0.44,
+          0.72
+        ],
+        "variants": [
+          "high-cistern",
+          "close-coupled"
+        ],
+        "def": {},
+        "build": "[fn pToilet/2]"
+      },
+      "washstand": {
+        "label": "Washstand",
+        "cat": "bath",
+        "era": "period",
+        "foot": [
+          0.82,
+          0.48
+        ],
+        "variants": [
+          "ewer"
+        ],
+        "def": {
+          "wood": "walnut"
+        },
+        "build": "[fn pWashstand/2]"
+      },
+      "towelRail": {
+        "label": "Towel rail",
+        "cat": "bath",
+        "era": "any",
+        "foot": [
+          0.6,
+          0.4
+        ],
+        "variants": [
+          "draped"
+        ],
+        "def": {
+          "wood": "pine",
+          "fabric": "white"
+        },
+        "build": "[fn pTowelRail/2]"
+      },
+      "mirror": {
+        "label": "Cheval mirror",
+        "cat": "bath",
+        "era": "any",
+        "foot": [
+          0.56,
+          0.45
+        ],
+        "variants": [
+          "standing"
+        ],
+        "def": {
+          "wood": "walnut"
+        },
+        "build": "[fn pMirror/2]"
+      },
+      "vanity": {
+        "label": "Basin vanity",
+        "cat": "bath",
+        "era": "modern",
+        "foot": [
+          1.4,
+          0.52
+        ],
+        "variants": [
+          "single",
+          "double",
+          "wall-hung"
+        ],
+        "footVar": [
+          null,
+          null,
+          [
+            0.56,
+            0.42
+          ]
+        ],
+        "run": true,
+        "runBase": 0.9,
+        "runK": 0.5,
+        "def": {
+          "paint": "sage",
+          "wood": "pine",
+          "worktop": "marble"
+        },
+        "build": "[fn pVanity/2]"
+      },
+      "shower": {
+        "label": "Walk-in shower",
+        "cat": "bath",
+        "era": "modern",
+        "foot": [
+          1,
+          0.95
+        ],
+        "variants": [
+          "glass"
+        ],
+        "def": {
+          "worktop": "greentile"
+        },
+        "build": "[fn pShower/2]"
+      },
+      "washer": {
+        "label": "Washing machine",
+        "cat": "utility",
+        "era": "modern",
+        "foot": [
+          0.6,
+          0.62
+        ],
+        "variants": [
+          "front-load",
+          "stacked"
+        ],
+        "def": {
+          "paint": "white",
+          "wood": "pine"
+        },
+        "build": "[fn pWasher/2]"
+      },
+      "fireplace": {
+        "label": "Fireplace",
+        "cat": "decor",
+        "era": "period",
+        "foot": [
+          1.56,
+          0.64
+        ],
+        "variants": [
+          "marble mantel",
+          "stone chimneypiece"
+        ],
+        "footVar": [
+          [
+            1.7,
+            0.64
+          ],
+          [
+            2,
+            0.64
+          ]
+        ],
+        "def": {
+          "worktop": "marble"
+        },
+        "build": "[fn pFireplace/2]"
+      },
+      "fourPoster": {
+        "label": "Four-poster",
+        "cat": "bed",
+        "era": "period",
+        "foot": [
+          1.66,
+          2.12
+        ],
+        "variants": [
+          "double",
+          "single"
+        ],
+        "footVar": [
+          [
+            1.66,
+            2.12
+          ],
+          [
+            1.28,
+            2.12
+          ]
+        ],
+        "headToWall": true,
+        "def": {
+          "wood": "walnut",
+          "fabric": "red",
+          "fabric2": "cream"
+        },
+        "build": "[fn pFourPoster/2]"
+      },
+      "bookcase": {
+        "label": "Bookcase",
+        "cat": "storage",
+        "era": "any",
+        "foot": [
+          2.16,
+          0.34
+        ],
+        "variants": [
+          "open",
+          "glazed"
+        ],
+        "run": true,
+        "runBase": 1.06,
+        "runK": 1.1,
+        "def": {
+          "wood": "oak",
+          "fabric": "red",
+          "fabric2": "blue",
+          "paint": "sage"
+        },
+        "build": "[fn pBookcase/2]"
+      },
+      "writingDesk": {
+        "label": "Writing desk",
+        "cat": "tables",
+        "era": "period",
+        "foot": [
+          1.32,
+          0.66
+        ],
+        "variants": [
+          "pedestal",
+          "secretary"
+        ],
+        "def": {
+          "paint": "cream",
+          "wood": "walnut",
+          "fabric": "red"
+        },
+        "build": "[fn pWritingDesk/2]"
+      },
+      "sideboard": {
+        "label": "Sideboard",
+        "cat": "storage",
+        "era": "period",
+        "foot": [
+          2.36,
+          0.56
+        ],
+        "variants": [
+          "mirror-back"
+        ],
+        "run": true,
+        "runBase": 1.66,
+        "runK": 0.7,
+        "def": {
+          "paint": "cream",
+          "wood": "walnut",
+          "worktop": "marble"
+        },
+        "build": "[fn pSideboard/2]"
+      },
+      "settee": {
+        "label": "Settee",
+        "cat": "seating",
+        "era": "period",
+        "foot": [
+          2.52,
+          0.76
+        ],
+        "variants": [
+          "buttoned"
+        ],
+        "run": true,
+        "runBase": 1.72,
+        "runK": 0.8,
+        "def": {
+          "fabric": "red",
+          "fabric2": "gold",
+          "wood": "walnut"
+        },
+        "build": "[fn pSettee/2]"
+      },
+      "longClock": {
+        "label": "Longcase clock",
+        "cat": "decor",
+        "era": "period",
+        "foot": [
+          0.46,
+          0.28
+        ],
+        "variants": [
+          "hooded"
+        ],
+        "def": {
+          "wood": "walnut"
+        },
+        "build": "[fn pLongClock/2]"
+      },
+      "hallStand": {
+        "label": "Hall stand",
+        "cat": "storage",
+        "era": "period",
+        "foot": [
+          1.12,
+          0.38
+        ],
+        "variants": [
+          "mirrored"
+        ],
+        "def": {
+          "wood": "oak"
+        },
+        "build": "[fn pHallStand/2]"
+      },
+      "piano": {
+        "label": "Upright piano",
+        "cat": "decor",
+        "era": "period",
+        "foot": [
+          1.48,
+          0.64
+        ],
+        "variants": [
+          "upright"
+        ],
+        "def": {
+          "paint": "plum",
+          "wood": "walnut",
+          "fabric": "gold"
+        },
+        "build": "[fn pPiano/2]"
+      }
+    }
+  },
+  "api": {
+    "list": "fn(0)",
+    "byEra": "fn(1)",
+    "footprint": "fn(2)",
+    "height": "fn(2)",
+    "mats": "fn(3)",
+    "emit": "fn(3)",
+    "render": "fn(3)",
+    "project": "fn(3)"
+  },
+  "presetCount": 0,
+  "presets": {}
+}
