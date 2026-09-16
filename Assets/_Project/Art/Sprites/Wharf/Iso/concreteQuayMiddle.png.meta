@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: a362c87b6a696416a7e588e50b4b3a58
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1130430163892241142
+    second: concreteQuayMiddle_0
+  - first:
+      213: 789548678315333910
+    second: concreteQuayMiddle_1
+  - first:
+      213: 301510027140176260
+    second: concreteQuayMiddle_2
+  - first:
+      213: 580868028053482732
+    second: concreteQuayMiddle_3
+  - first:
+      213: 742287027788918328
+    second: concreteQuayMiddle_4
+  - first:
+      213: 1106577442625716243
+    second: concreteQuayMiddle_5
+  - first:
+      213: 297445203237099026
+    second: concreteQuayMiddle_6
+  - first:
+      213: 163863159476988021
+    second: concreteQuayMiddle_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: concreteQuayMiddle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 524
+        width: 570
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982456140350877, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4f9b77714447e1200c87aa89f7ed713
+      internalID: 1130430163892241142
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: concreteQuayMiddle_1
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 524
+        width: 570
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982456140350877, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce57cd3c9ed9e62ae864fb1622eebc64
+      internalID: 789548678315333910
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: concreteQuayMiddle_2
+      rect:
+        serializedVersion: 2
+        x: 1140
+        y: 524
+        width: 570
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982456140350877, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 519626da6ad39ae7516da955f7351075
+      internalID: 301510027140176260
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: concreteQuayMiddle_3
+      rect:
+        serializedVersion: 2
+        x: 1710
+        y: 524
+        width: 570
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982456140350877, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 102f42a4946c38e28230bb4c3485a971
+      internalID: 580868028053482732
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: concreteQuayMiddle_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 570
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982456140350877, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f52e00fc83f66097a0981096454e60e9
+      internalID: 742287027788918328
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: concreteQuayMiddle_5
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 0
+        width: 570
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982456140350877, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acc4d57e4a09d8b72b17f6463dd95c9d
+      internalID: 1106577442625716243
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: concreteQuayMiddle_6
+      rect:
+        serializedVersion: 2
+        x: 1140
+        y: 0
+        width: 570
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982456140350877, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d113be044d8e641b971c32e3201235b
+      internalID: 297445203237099026
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: concreteQuayMiddle_7
+      rect:
+        serializedVersion: 2
+        x: 1710
+        y: 0
+        width: 570
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982456140350877, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09e9e0631e9667ac1554ef628605888f
+      internalID: 163863159476988021
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID: 7f076e3d31fe7efb2a830feb8fec0421
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      concreteQuayMiddle_0: 1130430163892241142
+      concreteQuayMiddle_1: 789548678315333910
+      concreteQuayMiddle_2: 301510027140176260
+      concreteQuayMiddle_3: 580868028053482732
+      concreteQuayMiddle_4: 742287027788918328
+      concreteQuayMiddle_5: 1106577442625716243
+      concreteQuayMiddle_6: 297445203237099026
+      concreteQuayMiddle_7: 163863159476988021
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

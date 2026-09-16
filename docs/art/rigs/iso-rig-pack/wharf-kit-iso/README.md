@@ -46,7 +46,7 @@ Here a 0.45 m ladder is 14 px wide **because it is 0.45 m**. Nothing is drawn to
 - **riprap** — two-grade armour-stone revetment seated on a real slope plane, weed on the lower
   courses, optional crest beam so it can meet a deck.
 
-## Styles, and the 17 presets
+## Styles, and the 19 presets
 
 Every style axis defaults to the original look; the variants are additive.
 
@@ -71,18 +71,32 @@ broken top, never a smooth cap — seated shallow on the slope so each block rea
 ## Berths decide the ladders
 
 A ladder belongs to a berth. The working face is packed with the best **mix** of hulls (utilisation
-first, then largest hull served), from a fleet table spanning a 4.9 m dory to an 18 m dragger:
+first, then largest hull served). Hull lengths match the game's BoatHullDefs: dory 4.5 m,
+punt 5.2 m, console skiff 7 m, lobster boat 12 m, side dragger 25 m, coastal packet 60 m.
+The packet therefore cannot fit on any of these individual modules. Short connectors do not
+invent a berth by clipping a hull's length.
 
 | face | berths | utilisation |
 |---|---|---|
-| 11.2 m | console skiff | 0.71 |
-| 24.0 m | coastal packet + console skiff | 0.99 |
-| 32.4 m | side dragger + dory + dory | 0.99 |
+| 11.2 m | console skiff | 0.75 |
+| 24.0 m | console skiff + console skiff + punt | 0.97 |
+| 32.4 m | side dragger + dory | 1.00 |
 
-Each berth gets its own ladder at mid-berth and its fenders out at the quarters, so a tyre or buoy
-fender can never land on a ladder head (measured minimum clearance 1.0 m). `gameplay().berths`
+Each berth gets its own ladder at mid-berth and its fenders out at the quarters. Foam fenders
+replace tyres at their stations instead of intersecting them. `gameplay().berths`
 reports each berth's class, span, deck-to-gunwale clearance at the current tide, and whether a ladder
 is in reach.
+
+The September 2026 asset review adds bolted cleat/bollard bases, ladder grab rails and worn yellow
+access shoulders, repaired deck boards and corner plates. Curbs and optional water-side rails leave
+a 0.70 m opening at each ladder. Floating ladders are rigid: their foot follows the water at a
+constant 1 m immersion. Fixed ladders still reach 1 m below chart datum. Breakwater backing follows
+both slopes through the crest, closing the gaps between armour stones.
+
+`node tools/wharf-review.mjs --check` verifies all 19 sheets and their metadata; `--bake` regenerates
+them while retaining Unity sprite identities. `--preview after` produces unscaled character/dory
+comparison plates under `Temp/wharf-review`. The [review](../../../wharf-review-2026-09-13.md)
+records the legacy assets still used by scenes and the limits of this offline review.
 
 ## Gangways
 
