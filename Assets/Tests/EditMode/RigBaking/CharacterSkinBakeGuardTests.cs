@@ -48,7 +48,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
         /// <summary>
         /// The composed preset — the def the game ships, with the face the owner accepted — built
-        /// once. Compose runs the rig, reads 45 bones, 2,992 weighted corners and 35 clips, and
+        /// once. Compose runs the rig, reads 45 bones, 3,108 weighted corners and 35 clips, and
         /// renders two turntable probes; at roughly two seconds a call there is no reason for eight
         /// tests to pay for it eight times.
         /// </summary>
@@ -359,7 +359,7 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <summary>
         /// The weights are attached by INDEX to a mesh a different class built. If
         /// <see cref="RigMeshBuilder"/> ever welds, reorders or drops a corner, every weight lands
-        /// on the wrong vertex — all 2,992 of them, each by a different amount, and nothing throws.
+        /// on the wrong vertex — all 3,108 of them, each by a different amount, and nothing throws.
         /// So the identity is asserted rather than assumed: vertex <c>c</c> of the asset is corner
         /// <c>c</c> of the rig's bind mesh, bit for bit, because both sides are the same float.
         ///

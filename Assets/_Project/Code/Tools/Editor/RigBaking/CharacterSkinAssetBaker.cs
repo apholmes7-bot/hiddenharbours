@@ -14,9 +14,10 @@ namespace HiddenHarbours.Tools.RigBaking
     ///
     /// <para><b>What this replaces, and by how much.</b> The flipbook baker beside this one writes
     /// one <see cref="Mesh"/> per POSE: 334 meshes for the player recipe, 45,153 KB. This writes one
-    /// mesh and 308 frames of 45 bone transforms: <b>611 KB, 74× smaller</b>. The saving is not a
-    /// compression trick — it is the observation that every pose of a character is the same 2,992
-    /// vertices in a different arrangement, so the vertices need storing once.</para>
+    /// mesh and 308 frames of 45 bone transforms: <b>619 KB, 73× smaller</b> (ADR 0044 §3.6 measured
+    /// 611 KB and 74× on rig 6's own head, before the accepted face). The saving is not a compression
+    /// trick — it is the observation that every pose of a character is the same 3,108 vertices in a
+    /// different arrangement, so the vertices need storing once.</para>
     ///
     /// <para><b>This does not switch the game over, and a re-bake never switches it either.</b>
     /// <see cref="CharacterMeshDef"/> stays exactly as it is and stays the fallback. A FRESH bake — one
