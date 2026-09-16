@@ -1,6 +1,7 @@
 {
   "rig": "sternTrawlerIsoRig.js",
-  "derivedFromRigSha256": "285cf70f7d3951b43c5a008b95229fb5aad7b558f41302ef1d242b036254dd6f",
+  "derivedFromRigSha256": "b2c2932c43ecc84a70ac4833c902c2e10f231fbe0e85218ea36403ed13c80ff7",
+  "_repin_hull_review_2026_09_15": "Hull review pass. The rig SOURCE changed (flat painted-shell shading for the broad steel materials; the external keyline dilation now honours opts.outline===false). Geometry is UNTOUCHED: faces(), the cell (W=1344 H=1152 pivot 672,672) and every DECK/CLEATS metre coordinate below are unchanged, so no polygon was re-derived -- this re-pin is the shading diff only. Measured in the standalone V8 harness over 8 headings: 2x2 checker blocks 274546 -> 116575 (-57.5%); default-opts silhouette 2338668 opaque px, byte-identical to the previous source, so every existing caller renders the same; with outline:false, 2312305 px, i.e. the flag is now obeyed. WARNING: as in _repin_batch5, this pin is the WORKING-TREE (CRLF) hash; the LF/blob hash is 40c9124ccf462308... Do not cross them.",
   "_repin_batch5": "2026-09-02 (cutaway kit batch 5). Plumbing only. Measured in the repo's own ClearScript V8 -- 842 -> 842 faces, ZERO differing fields, 10/10 renders byte-identical. WARNING: this pin is the WORKING-TREE (CRLF) hash; the LF/blob hash is a1deec112f97675a... Do not cross them.",
   "generated": "2026-07-22",
   "frame": {

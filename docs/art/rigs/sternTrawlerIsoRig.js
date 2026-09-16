@@ -468,7 +468,11 @@
           if(deff<zbuf[i]){
             zbuf[i]=deff; dep[i]=d;
             let base=Math.floor(fidx);
-            let idx=base+((fidx-base)>BAYER[x&3][y&3]?1:0)+M.off;
+            // REVIEW PASS (hull review 2026-09-13): broad steel paint must not alias into a
+            // checkerboard at overview zoom — the wide flat materials take the rounded ramp
+            // index instead of the ordered-dither one. Narrow detail materials keep the dither.
+            const flatPaint = f.mat==='hull' || f.mat==='boot' || f.mat==='cream';
+            let idx=(flatPaint ? Math.round(fidx) : base+((fidx-base)>BAYER[x&3][y&3]?1:0))+M.off;
             col[i]=M.ramp[Math.max(0,Math.min(M.ramp.length-1,idx))];
           }
         }
@@ -489,7 +493,9 @@
         }
       }
     }
-    for(let y=0;y<PH;y++) for(let x=0;x<PW;x++){
+    // REVIEW PASS: the external keyline dilation now HONOURS opts.outline===false, which this
+    // source previously ignored. Default stays ON: every existing caller renders byte-identical.
+    if(opts.outline !== false) for(let y=0;y<PH;y++) for(let x=0;x<PW;x++){
       const i=y*PW+x; if(out[i]) continue;
       let touch=false;
       for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
