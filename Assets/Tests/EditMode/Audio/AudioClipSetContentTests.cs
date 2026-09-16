@@ -49,7 +49,7 @@ namespace HiddenHarbours.Tests.Audio
         /// <summary>Slots the runtime loops. Everything else in the set is a one-shot cue.</summary>
         private static readonly HashSet<string> LoopSlots = new HashSet<string>
         {
-            "CalmBed", "Gulls", "HullRow", "OutboardEngine", "WindTell",
+            "CalmBed", "Gulls", "HullRow", "OutboardEngine", "WindTell", "ModerateSeaBed", "RoughSeaBed",
             "RodCreakLoop", "PayoutTickLoop", "StrainGroanLoop", "ReelClickLoop", "SurfaceThrashLoop",
         };
 
@@ -67,7 +67,7 @@ namespace HiddenHarbours.Tests.Audio
             "HullRow", "CatchSting", "HomeWarmth", "CastEntry",
         };
 
-        private const int ExpectedFilledSlots = 20;
+        private const int ExpectedFilledSlots = 23;
 
         // ---- fixture ----------------------------------------------------------------------------
 
@@ -121,10 +121,10 @@ namespace HiddenHarbours.Tests.Audio
         // ---- the slot inventory -----------------------------------------------------------------
 
         [Test]
-        public void SetHasTwentyFourSlots_OneForEachManifestRow()
+        public void SetHasTwentySevenSlots_OneForEachManifestRow()
         {
-            Assert.AreEqual(24, ClipFields().Count(),
-                "The manifest has 24 slots — 7 on the director, 4 for the three moments, 13 on the rod fight. AudioClipSetDef must " +
+            Assert.AreEqual(27, ClipFields().Count(),
+                "The manifest has 27 slots — 7 original director slots, 4 moments, 13 rod-fight slots, and 3 sea/fog slots. AudioClipSetDef must " +
                 "carry exactly one AudioClip field per slot.");
         }
 

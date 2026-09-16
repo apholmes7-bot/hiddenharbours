@@ -46,6 +46,34 @@ namespace HiddenHarbours.Audio
             }
         });
 
+        /// <summary>A broader, brighter wash that enters as the sea leaves glass.</summary>
+        public static AudioClip ModerateSeaBed() => SeaWash("ph_moderate_sea", 12.1f, 0.22f, 420f);
+
+        /// <summary>Low, forceful surf texture for the high sea-state band.</summary>
+        public static AudioClip RoughSeaBed() => SeaWash("ph_rough_sea", 13.7f, 0.36f, 620f);
+
+        private static AudioClip SeaWash(string name, float seconds, float gain, float cutoffHz)
+            => BuildBuffer(name, seconds, true, data =>
+            {
+                var pink = new Pink();
+                var body = new OnePole();
+                for (int n = 0; n < data.Length; n++)
+                {
+                    float t = (float)n / SampleRate;
+                    float swell = 0.65f + 0.18f * Sine(t * 0.13f) + 0.12f * Sine(t * 0.071f);
+                    data[n] = body.Low(pink.Next(Noise(n + 7919)), cutoffHz) * swell * gain;
+                }
+            });
+
+        /// <summary>A soft signal horn placeholder; the game clock chooses when it sounds.</summary>
+        public static AudioClip Foghorn() => Build("ph_foghorn", 2.4f, false, (t, n) =>
+        {
+            float attack = Mathf.Clamp01(t / 0.2f);
+            float release = Mathf.Clamp01((2.4f - t) / 0.55f);
+            float breath = 0.7f + 0.3f * Sine(t * 1.8f);
+            return (Sine(t * 180f) + 0.36f * Sine(t * 360f)) * attack * release * breath * 0.22f;
+        });
+
         /// <summary>Sparse gull calls over true silence. Each call is a harmonic stack (gulls are bright and
         /// harsh, not sinusoidal) with a rasp of noise, bent through a pitch contour and shaped by a formant
         /// band — a long wail, then the short barking "laugh" that follows it.</summary>

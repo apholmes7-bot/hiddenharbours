@@ -9,11 +9,12 @@ per committed clip**. A clip without a row does not merge, and an EditMode test 
 commercial game) and **no SA** (a share-alike sample would reach into the whole project). No
 "royalty-free" library whose terms forbid redistributing the raw files — which rules out the Sonniss GDC
 bundles, BBC RemArc, and the Pixabay-style content licence, however good those recordings are.
-Everything below is **CC0 1.0**, so no attribution is legally required. It is recorded anyway, because
-taking someone else's work without naming them is a choice we would rather not make.
+Rows 1–20 and 22–23 are **CC0 1.0**; row 21 is **CC BY 3.0**, credited and linked below. We record
+the CC0 authors too, even though attribution is not legally required.
 
-Every source is from [OpenGameArt.org](https://opengameart.org). Nothing executable was downloaded at
-any point — audio files only, opened by a decoder, never run.
+Sources are on [OpenGameArt.org](https://opengameart.org) and [Wikimedia Commons](https://commons.wikimedia.org).
+Rows 7 and 21–23 were rechecked on their own item pages. The wood bundle was opened as a ZIP archive;
+no executable from a source pack was run.
 
 ## What "changed" means
 
@@ -38,7 +39,7 @@ runtime, and baking either into a clip would take that control away from it.
 
 ## The ledger
 
-| # | File | Slot | Source (OpenGameArt item) | Original file | Author | Licence | Fetched | Changed |
+| # | File | Slot | Source item | Original file | Author | Licence | Fetched | Changed |
 |---|---|---|---|---|---|---|---|---|
 | 1 | `Ambient/calm_sea_bed.ogg` | `_calmBed` | [Sea and river wave sounds](https://opengameart.org/content/sea-and-river-wave-sounds) | `Vistula.mp3` | RandomMind | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-09 | **L**, window t=3900.0 s, 20.06 s — chosen for being the most eventless stretch in a 78-minute recording |
 | 2 | `Ambient/gulls.ogg` | `_gulls` | [Solo Seagull Sound Effects](https://opengameart.org/content/solo-seagull-sound-effects) | `gull_amb_1.wav` … `gull_amb_7.wav` | Rango Mango | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-09 | **S** per call, then **arranged**: the seven calls placed at fixed times over 24 s of true digital silence, so the layer adds birds without adding a second sea under the bed |
@@ -46,7 +47,7 @@ runtime, and baking either into a clip would take that control away from it.
 | 4 | `Ambient/wind_tell.wav` | `_windTell` | [wind whoosh loop](https://opengameart.org/content/wind-whoosh-loop) | `wind woosh loop.ogg` | SketchMan3 | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-09 | **L**, window 0–5.90 s — chosen for being **gustless**, so the loudness ramp is the only thing the player hears change |
 | 5 | `SFX/rod_creak.ogg` | `_rodCreakLoop` | [Tree Creaking](https://opengameart.org/content/tree-creaking) | `tree_creak.flac` | AntumDeluge (Jordan Irwin) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-09 | **L**, window t=0.50 s, 3.06 s |
 | 6 | `SFX/payout_tick.ogg` | `_payoutTickLoop` | [Fisheefects](https://opengameart.org/content/fisheefects) | `fish_reel.wav` | You're Perfect Studio | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) — the item is multi-licensed CC-BY 4.0 / OGA-BY 3.0 / CC0; **taken under CC0** | 2026-09-09 | **L**, window t=1.00 s, 2.06 s — a steady tick rate with no ritardando, because the runtime slows the pitch as the rig sinks |
-| 7 | `SFX/strain_groan.wav` | `_strainGroanLoop` | [30 CC0 SFX loops](https://opengameart.org/content/30-cc0-sfx-loops) | `sfxloops/ambient_01.ogg` | rubberduck | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-09 | **L**, window t=0.75 s, 4.06 s |
+| 7 | `SFX/strain_groan.wav` | `_strainGroanLoop` | [100 CC0 metal and wood SFX](https://opengameart.org/content/100-cc0-metal-and-wood-sfx) | `wood_squeak_01.ogg`, `wood_squeak_02.ogg` | rubberduck | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-13 | Mono fold, zero-phase 70 Hz high-pass, 48→44.1 kHz band-limited resample; arrange the two dry wood-under-load squeaks at 0.22, 0.86, 1.55, 2.34 s in a 3.00 s loop, with gains 1.0, 0.8, 0.9, 0.75; peak −12 dBFS; 16-bit PCM WAV. True-silence margins give a zero-step wrap. Replaces the low drone. |
 | 8 | `SFX/reel_clicks.ogg` | `_reelClickLoop` | [Fisheefects](https://opengameart.org/content/fisheefects) | `fish_reel.wav` | You're Perfect Studio | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) — multi-licensed as row 6, **taken under CC0** | 2026-09-09 | **L**, window t=5.50 s, 2.06 s |
 | 9 | `SFX/surface_thrash.ogg` | `_surfaceThrashLoop` | [40 CC0 water / splash / slime SFX](https://opengameart.org/content/40-cc0-water-splash-slime-sfx) | `watersplash/loop_water_02.ogg` | rubberduck | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-09 | **L**, window 0–6.96 s |
 | 10 | `SFX/cast_whoosh.wav` | `_castWhoosh` | [Swishes Sound Pack](https://opengameart.org/content/swishes-sound-pack) | `swishes/swish-5.wav` | artisticdude | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-09 | **S** |
@@ -60,9 +61,40 @@ runtime, and baking either into a clip would take that control away from it.
 | 18 | `SFX/landing_hit.wav` | `_landingHit` | [Thwack Sounds](https://opengameart.org/content/thwack-sounds) | `PCM/thwack-02.wav` | AntumDeluge (Jordan Irwin) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) — pack `LICENSE.txt` | 2026-09-09 | **S**. Picked for its register: 63 % of its energy sits at 250–500 Hz where row 17's wet slap sits at 1–2 kHz, so the two read as one hit in layers rather than as the same hit twice |
 | 19 | `SFX/sale_chime.wav` | `_saleChime` | [coin sounds](https://opengameart.org/content/coin-sounds) | `coinsounds011015.wav` | syncopika | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-09 | **S** on the window t=12.155 s, 0.380 s, **plus edge fades** (5 ms in, 15 ms out): that window is cut out of continuous room tone, and without the fades the cut clicks. The window was chosen by measurement — only 3.2 % of its energy is below 125 Hz, against 89.7 % and 22.3 % for the two other coin hits in the take |
 | 20 | `SFX/dig_strike.wav` | `_digStrike` | [100 CC0 SFX #2](https://opengameart.org/content/100-cc0-sfx-2) | `sfx100/sfx100v2_stones_01.ogg` **and** `sfx100/sfx100v2_footstep_wet_03.ogg` | rubberduck | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-09 | Each layer **S**, then **arranged** the way the gull bed is: the wet give placed 15 ms behind the grit bite and normalised 6 dB under it, so the bite stays the transient and the wet is what the flat gives back. No shovel-in-sand recording exists on OGA under an acceptable licence; this is the nearest honest build of one |
+| 21 | `Ambient/moderate_sea_bed.ogg` | `_moderateSeaBed` | [Oceanwavescrushing](https://commons.wikimedia.org/wiki/File:Oceanwavescrushing.ogg) | `Oceanwavescrushing.ogg` | Luftrum | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) — credit Luftrum; adapted by Codex: mono, high-pass, trimmed, seamless loop, level, Vorbis encode | 2026-09-13 | **L**, window t=50.00–68.11 s (18.05 s plus 60 ms overlap), mono fold, zero-phase 70 Hz high-pass, 60 ms wrap crossfade, peak −12 dBFS, Vorbis q6. Original medium surf recording, no added reverb/width. |
+| 22 | `Ambient/rough_sea_bed.ogg` | `_roughSeaBed` | [underwater or space engine rumble](https://opengameart.org/content/underwater-or-space-engine-rumble) | `underwater_or_space_engine.ogg` | gmason | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-13 | **L**, window t=10.00–28.11 s (18.05 s plus 60 ms overlap), mono fold, zero-phase 70 Hz high-pass, 96→44.1 kHz band-limited resample, 60 ms wrap crossfade, peak −12 dBFS, Vorbis q6. The item says it is a wild, windy ocean recording already low-passed at 100/200 Hz; this is the heavy water body beneath the wind tell. |
+| 23 | `SFX/foghorn.wav` | `_foghorn` | [Original foghorn at East Brother Island Lighthouse](https://commons.wikimedia.org/wiki/File:Original_foghorn_at_East_Brother_Island_Lighthouse.ogg) | `Original_foghorn_at_East_Brother_Island_Lighthouse.ogg` | Elwood P. Dowd | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | 2026-09-13 | **S**, window t=0.35–3.15 s, mono, zero-phase 70 Hz high-pass, 32→44.1 kHz band-limited resample, 30 ms raised-sine fade in and 220 ms fade out, peak −3 dBFS, 16-bit PCM WAV. A real lighthouse's horn, no synthetic reverb or stereo width. |
 
-**Committed audio: 2,383,921 bytes = 2.273 MB across 20 files** (per-PR ceiling 6 MB). All under Git LFS.
-This PR adds 82,664 bytes = 0.079 MB (rows 18–20).
+**Committed audio: 2,873,509 bytes = 2.740 MiB across 23 files** (content gate ceiling 6 MiB).
+This PR changes 840,574 gross audio bytes across four files (including the replacement in row 7),
+and adds 489,588 net bytes. All audio is Git LFS-tracked.
+
+### Reproducible processing for rows 7 and 21–23
+
+The source files were downloaded from the **item URLs in the rows**, using their original-file links.
+A temporary Python 3 script (NumPy, SciPy, SoundFile) decoded each input as float64, averaged stereo
+channels to mono, applied `scipy.signal.sosfiltfilt(butter(4, 70, btype="highpass",
+fs=source_rate, output="sos"), samples)`, and, where needed, `scipy.signal.resample_poly(samples,
+44100, source_rate)`. Those are the zero-phase high-pass and band-limited resampling in each row.
+
+For rows 21–22 it took the stated 18.11-second source windows and used the first 18.05 seconds with
+a 60 ms overhang crossfaded onto the head: `head = head*k + overhang*(1-k)`, where
+`k = arange(2646)/2646`. After peak-normalising to `10**(-12/20)` and writing 44.1 kHz mono PCM16
+`temp_pcm.wav`, it ran these commands, once per bed:
+
+```sh
+ffmpeg -hide_banner -loglevel error -y -i temp_pcm.wav -c:a libvorbis -q:a 6 Ambient/moderate_sea_bed.ogg
+ffmpeg -hide_banner -loglevel error -y -i temp_pcm.wav -c:a libvorbis -q:a 6 Ambient/rough_sea_bed.ogg
+```
+
+The decoded OGG joins measured 0.0001304 vs a 0.0017237 median interior step (moderate), and
+0.0000695 vs 0.0007759 (rough). Row 7 used the first 0.47/0.38 seconds of the two ZIP entries
+after the same preparation, placed them at the times/gains in its row over 3.00 seconds of true
+silence, normalised to `10**(-12/20)`, and wrote `SFX/strain_groan.wav` as 44.1 kHz mono PCM16.
+Its wrap step is zero. Row 23 used its stated window, multiplied the first 30 ms by a raised-sine
+fade and the last 220 ms by a raised-cosine fade, normalised to `10**(-3/20)`, and wrote
+`SFX/foghorn.wav` as 44.1 kHz mono PCM16. WAVs were written with SoundFile. No compressor,
+limiter, pitch shift, reverb, or widening was applied.
 
 ## Why some clips are `.ogg` and some are `.wav`
 
@@ -70,15 +102,16 @@ A loop is seamless only if the sample step across the wrap is no bigger than the
 is checked numerically by `AudioClipSetContentTests.LoopSlots_WrapWithoutAStep`. Vorbis coding noise is
 uncorrelated between a clip's first and last sample, so on a **quiet, smooth** loop — one whose median
 step between neighbouring samples is below the codec's own noise floor — no choice of loop point can
-meet that bar in a lossy format. **Three** clips are in that position (`outboard_engine`, `wind_tell`,
-`strain_groan`) and ship as exact 16-bit PCM, where the join is sample-accurate. The rest ship as Vorbis
-(~q6) and clear the bar with better than 2× margin. All-WAV would have been about 6.9 MB, over the
-ceiling.
+meet that bar in a lossy format. `outboard_engine` and `wind_tell` are in that position and ship as
+exact 16-bit PCM. The new strain loop is also PCM because its quiet gaps should remain true silence
+between creaks. The other loops ship as Vorbis (~q6); the new sea layers clear the seam bar with
+more than 10× margin.
 
 For the same reason the importers are set to **PCM** (`compressionFormat: 0`) with `normalize: 0`: the
 clip Unity hands the game is byte-for-byte the file in this folder, so the seam we measured is the seam
-that plays, and the −12 / −3 dBFS peaks survive import. Repo cost is 2.273 MB; decoded at 16-bit, about
-6.7 MB of RAM. Moving the beds to Vorbis or streaming later is an **importer setting**, not a re-export.
+that plays, and the −12 / −3 dBFS peaks survive import. Repo cost is 2.740 MiB; decoded at 16-bit,
+the 23 clips total about 9.86 MiB of audio data. Moving the beds to Vorbis or streaming later is an
+**importer setting**, not a re-export.
 
 ## Slots deliberately left empty
 
