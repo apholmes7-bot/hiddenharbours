@@ -1,0 +1,43 @@
+d70056fedd78a92872c0e3a94c369eff9ac68462afce0606bc49460391d4159d  ../modern3500.rig.js
+b44363bb7fa8c9e8c1d2ea1000968596ba4db830d831af1c45f974f65b267bae  ../modern3500.contract.json
+f1f801c7612971bdd31e46e00ebb30dbff87ebfa948d3202a8e51bcc665bbe84  ../preview.html
+b760cddfa7833361caaa091ce2c4e3c07a30c02578d8eb37800e5052b1bf771f  ../README.md
+5815ecc98408d8deceef8be92af3c86dc32850f42c211eae9dcaca1cddefcd11  ../../gameplay/vehicles/modern3500.rig.gameplay.json
+00e84b4c403d371956db968c4cf6383626aff099a63cbb7fe87b03f9ed54dd17  Modern3500_doors_W.png
+0b5432f70d660c560c59a0527349882cbfbaadf3ad7d572d2e5060c62bd040fd  Modern3500_drive_W.png
+5d1a7680f2e027442fa0b579ad51c2faebc638f6bf7150c99749d5b7d28c765d  Modern3500_gate_NE.png
+2f4ca55ae6507a8f1a55c4ab23cea2d67a0e9d1c902e93e11a78d1fd7febe9f9  Modern3500_graphite_8dir.png
+5f8ff27162c71ba9cc994fc8b4eadac6dd72bb1239e458df00ebd9e0e8fc1d7d  Modern3500_hood_SE.png
+4c070ab0f11f3a5af7a5d6d4f699e0546a5961bfd90889495ccc9f9e166e6d48  Modern3500_night_8dir.png
+5b95eb06db57e19134bee5f6b4f844fd507cb36a422e7e7b677cdd69a1a659f4  Modern3500_open_8dir.png
+f57f171a0e3517f8b232b55de23988794e7284c51fc649f1de5374874c8db1aa  Modern3500_paints_SE.png
+c7f426431d9355aff5821bd7407940b9d49410dc7506901ae0c07e04c0980092  Modern3500_pearl_8dir.png
+5beff303ccfd075ae657b794a6307c12074b646041d1ca6f763329146fb0499a  Modern3500_steer_SE.png
+
+# Modern 3500 truck kit, Codex drop of 2026-09-13, intake PR.
+#
+# ../modern3500.rig.js's digest above is ALSO modern3500.contract.json's `rigSha256` and the gameplay
+# sidecar's `derivedFromRigSha256`. All three were verified equal on the delivered bytes and again
+# after the copy into the repo. Compare the FULL 64-char digest, never a prefix: the hightop van's
+# bad stamp shared its rig's first SIXTEEN hex digits and diverged over the remaining 48, and a
+# prefix check is what let it through.
+#
+# Text hashes are over LF bytes. Unlike the ATV pack, that needs no conversion step here: the five
+# text files are pinned `text eol=lf` in .gitattributes BY NAME, so the working-tree form is the
+# blob form on every platform and `sha256sum -c SHA256SUMS.txt` runs as-is from this folder. The
+# pin is named per file rather than `modern3500-kit/**` on purpose -- a blanket would also match the
+# sheets below, where `text eol=lf` overrides the `-text` inside [attr]lfs and corrupts them.
+#
+# The ten sheets ARE listed, unlike the ATV pack's, because each digest is also the file's Git LFS
+# oid: `git cat-file -p HEAD:<path>` on a pointer-only checkout prints `oid sha256:<the same 64>`.
+# So these lines are checkable two ways -- against the pulled binary with `sha256sum -c`, and
+# against the pointer without ever fetching it. On a checkout that has NOT run `git lfs pull` the
+# `-c` form will fail these ten lines, and that is the pointer, not a corrupt sheet.
+#
+# The sheets are REFERENCE ONLY: this body bakes as MESH (ADR 0035, the road fleet's path) and no
+# sprite path consumes them.
+#
+# If the rig moves and the contract's and sidecar's stamps do not, the sidecar is STALE: do not read
+# its geometry, and do NOT re-stamp it here. docs/art/rigs/** is the art director's lane; a hash
+# corrected on our side comes back wrong on the next regeneration and fakes freshness. Register the
+# refusal in VehicleRigFleet.SidecarHashRefused and send the re-stamp upstream.

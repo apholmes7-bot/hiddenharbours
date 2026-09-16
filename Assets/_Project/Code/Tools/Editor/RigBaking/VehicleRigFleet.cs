@@ -1198,6 +1198,53 @@ namespace HiddenHarbours.Tools.RigBaking
         static readonly Axis[] UtilityQuadAxes =
             BuildQuadAxes(0.48f, 0.64f, -0.64f, 0.315f, 0.40f, 28f);
 
+        // =============================================================================================
+        //  ⭐⭐ THE MODERN 3500 (Codex drop 2026-09-13) — the Dually's SUCCESSOR, not her revision.
+        //  A crew-cab dually of her own: six wheels on four roll probes, FOUR doors, a clamshell
+        //  hood and a drop gate. `docs/art/rigs/modern3500-kit/modern3500.rig.js`.
+        //
+        //  ⚠️ EVERY NUMBER HERE IS THE RIG'S OWN LITERAL, read out of the file rather than off the
+        //  sidecar's paraphrase — the van's hood set that precedent, and here the two happen to
+        //  agree exactly (her WHEELS block publishes the same six centres and the same 28° lock).
+        //
+        //  Her rear pivot x is 0.9675: the mean of `G.rearWXin` 0.80 and `G.rearWXout` 1.135,
+        //  because ONE roll probe drives each side's DUAL PAIR — four probes, six wheels, exactly
+        //  the Dually's arrangement. For a rotation about the axle the pivot's x is arbitrary
+        //  anyway, and the mean is the honest label.
+        // =============================================================================================
+        static readonly Axis[] Modern3500Axes = WithDoors(
+            BuildRoadAxes(0.96f, 2.30f, 0.9675f, 0.455f, -2.37f),
+
+            // ⭐ FOUR doors, and the crew cab is the reason. Front and rear hang on DIFFERENT
+            // stations — the rig's `G.doorF` is [0.35, 1.60] and `G.doorR` is [-1.12, 0.27], and
+            // `doors()` pins each leaf at the SECOND of its pair, which is the forward edge on both
+            // (her contract says so too: "vertical, forward edge"). The hinge x is ±1.015 on all
+            // four. The sweep is `sx * s[id] * 68°`, so the left leaves swing negative and the right
+            // positive — the same sign convention every other cab in the fleet already carries.
+            Hinged("DoorFL", "{dFL:1}", VehicleFitmentSide.Left,
+                   VehicleHingeAxis.Vertical, new Vector3(-1.015f, 1.60f, 0f), -68f),
+            Hinged("DoorFR", "{dFR:1}", VehicleFitmentSide.Right,
+                   VehicleHingeAxis.Vertical, new Vector3(1.015f, 1.60f, 0f), +68f),
+            Hinged("DoorRL", "{dRL:1}", VehicleFitmentSide.Left,
+                   VehicleHingeAxis.Vertical, new Vector3(-1.015f, 0.27f, 0f), -68f),
+            Hinged("DoorRR", "{dRR:1}", VehicleFitmentSide.Right,
+                   VehicleHingeAxis.Vertical, new Vector3(1.015f, 0.27f, 0f), +68f),
+
+            // ⚠️ HER HOOD OPENS **POSITIVE**, and that sign is the whole reason to read the rig
+            // instead of copying a neighbour. The two conventionals tilt their hoods FORWARD about a
+            // pin ahead of the sheet, so their published sweeps are negative (−70°, −72°). Hers is a
+            // clamshell hinged back at the COWL (y 1.78, z 1.50) with the metal AHEAD of the pin, so
+            // the same upward motion is +48° in the (y, z) plane `hingeX` turns in. Copying the
+            // semi's sign would drive her bonnet down through the engine bay — and the bake would
+            // catch it, which is the point of declaring the full signed sweep.
+            Hinged("Hood", "{hood:1}", VehicleFitmentSide.Centre,
+                   VehicleHingeAxis.Lateral, new Vector3(0f, 1.78f, 1.50f), +48f),
+
+            // The tailgate: one leaf on a low aft pin at (−3.285, 1.055), dropping through 92° —
+            // two degrees PAST flat, which is what a gate that becomes a loading surface does.
+            Hinged("Gate", "{gate:1}", VehicleFitmentSide.Centre,
+                   VehicleHingeAxis.Lateral, new Vector3(0f, -3.285f, 1.055f), +92f));
+
         /// <summary>
         /// One saddle body's chassis, in the ATV rig's own words — one expression set with the body
         /// substituted, because all three really do share a vocabulary.
@@ -1814,6 +1861,66 @@ namespace HiddenHarbours.Tools.RigBaking
                                        maxOuter: "AtvIso.steer.quad.outerMaxDeg"),
                 abeamLeft: "wheelFL", abeamRight: "wheelFR",
                 aftAnchor: "tail", foreAnchor: "bars"),
+
+            // =========================================================================================
+            //  ⭐⭐ THE MODERN 3500 — Codex drop 2026-09-13, `docs/art/rigs/modern3500-kit/`.
+            //
+            //  A SECOND crew-cab dually, NOT a revision of the first. The drop's own README says it:
+            //  "use this as a separate asset entry; do not overwrite the older truck's rig or reuse
+            //  its sidecar." So she gets her own key, her own sidecar, her own def, her own mesh —
+            //  and `dually3500` above is left exactly as she was found.
+            //
+            //  ⚠️ ONE HASH, THREE PLACES. `d70056fe…` is the LF sha256 of the rig; it is also the
+            //  `rigSha256` in `modern3500.contract.json` and the `derivedFromRigSha256` in her
+            //  sidecar. All three agree on disk and `Modern3500KitContractTests` holds them there.
+            //  If a bake ever refuses her sidecar hash, the fix is upstream in the kit — NEVER a
+            //  re-stamp here.
+            //
+            //  ⚠️ `resolve` MUST be written qualified. Every expression below is evaluated with the
+            //  rig's globals in scope but not its closure, so `build(ModernTruck3500.resolve({}))`
+            //  is the whole face source; a bare `resolve({})` finds nothing.
+            // =========================================================================================
+            new Vehicle(
+                "modern3500",
+                "docs/art/rigs/modern3500-kit/modern3500.rig.js",
+                SidecarFolder + "/modern3500.rig.gameplay.json",
+                "ModernTruck3500",
+                meshAssetPath: "Assets/_Project/Data/Vehicles/Meshes/Modern3500VehicleMesh.asset",
+                meshId: "vehiclemesh.modern_3500",
+                faceBuilderName: "build",
+                extraction: new RigHullExtraction
+                {
+                    FaceExpression = "build(ModernTruck3500.resolve({}))",
+                    ExtraSymbols = new[] { "build" },
+                },
+                axes: Modern3500Axes,
+                chassisSource: new VehicleChassisSource
+                {
+                    // Read off her exported `G` rather than retyped: the rig publishes the whole
+                    // geometry table, so these stay true if the art moves and the bake re-runs.
+                    Wheelbase   = "ModernTruck3500.G.axF - ModernTruck3500.G.axR",   // 4.67
+                    FrontTrack  = "ModernTruck3500.G.frontWX * 2",                   // 1.92
+                    WheelRadius = "ModernTruck3500.G.wheelR",                        // 0.455
+                    FrontAxleY  = "ModernTruck3500.G.axF",                           //  2.30
+                    RearAxleY   = "ModernTruck3500.G.axR",                           // -2.37
+                    // ⚠️ 28 AND 28, and the equality is the ART'S STATEMENT, not a gap. Her rig
+                    // turns both front wheels through the same `s.steer*28*DEG` — her contract says
+                    // "same visual angle on both front wheels; no Ackermann solver", and her
+                    // sidecar's `_excluded` names Ackermann steering outright. A split inner/outer
+                    // lock here would be a number this truck's art has never drawn.
+                    MaxInnerDeg = "28",
+                    MaxOuterDeg = "28",
+                    TravelFront = "ModernTruck3500.travel.F",                        // 0.12
+                    TravelRear  = "ModernTruck3500.travel.R",                        // 0.14
+                },
+                azimuthAftAnchor: "hitch", azimuthForeAnchor: "hoodLatch",
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
+                // ⚠️ NO def and NO vehicleId — deliberately. She is registered ART, not a machine
+                // the world can place: her bake is excused in NotBaked below, and a VehicleDef is a
+                // Data asset that the bake writes. Hand-authoring one to fill this argument would be
+                // inventing the very output the blocker prevents. Her def arrives with her mesh, in
+                // the PR that lands the folded palette.
+                label: "Modern 3500"),
         };
 
         /// <summary>
@@ -1899,10 +2006,28 @@ namespace HiddenHarbours.Tools.RigBaking
         public static readonly IReadOnlyDictionary<string, string> NotBaked =
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
-                // Three entries have lived here and all three left the way an entry here should —
-                // deleted, not reworded. The last was the hightop van's stamp refusal
+                // Three entries lived here before this one and all three left the way an entry here
+                // should — deleted, not reworded. The last was the hightop van's stamp refusal
                 // (2026-08-27, discharged the same day when upstream's re-stamp landed and her
                 // full digest matched her rig — see the git history of SidecarHashRefused).
+
+                // ⭐⭐ THE FOURTH, AND IT IS THE OTTER'S BLOCKER AGAIN — eleven times over.
+                ["modern3500"] =
+                    "She paints 27 colour ramps and USES every one, against the facet shader's " +
+                    "float4[16] _RampMeta. MEASURED on intake through this repo's own V8 " +
+                    "(2026-09-14, rig d70056fe…): 2802 faces, 27 materials declared, 27 used, zero " +
+                    "unused — so the filter-to-used reconstruction that saved the Dually (17 " +
+                    "declared / 16 used) and the zodiac (18 / 14) buys nothing here, and " +
+                    "VehicleMeshDef.IsUsable would refuse the result. Folding every key that " +
+                    "resolves to a byte-identical ramp AND polish reaches 19; also folding " +
+                    "`sidewall` into `rubber` (identical ramp, polish .05 against none) reaches 18. " +
+                    "The last two merges change pixels, so — exactly as with the Otter (#558 until " +
+                    "the art merge of 2026-08-19) — this is an ART fix and no vehicle-side change " +
+                    "can lift it. ⚠️ Any fold rewrites modern3500.rig.js and therefore MOVES the " +
+                    "rig hash her contract and her sidecar both pin, so it arrives as a re-issued " +
+                    "drop and never as an edit to docs/art/rigs/**. " +
+                    "Modern3500KitProbeTests.HerPaletteDoesNotFitTheFacetShader measures the number " +
+                    "on every CI run: when it reads 16, delete this entry rather than rewording it.",
             };
 
         /// <summary>
