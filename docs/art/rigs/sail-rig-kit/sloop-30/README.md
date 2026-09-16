@@ -11,6 +11,25 @@ sloopIsoRig.sailing.json    the sailing sidecar — hidden-harbours/boat-sailing
 Builder page in the art workspace: `Sloop 30 Iso.dc.html` — turntable, wind + sheets, hoist / furl / stow,
 door + cabin cut, paint shop, points-of-sail and state strips, sheet and sidecar downloads (both sidecars).
 
+## Pass 3 — design reapplied to current main
+
+Based on `70969b684e6bf4d0581c8e7ea5c7e35e5de31a8c`, including PR #791 (S0). Every
+static face declares an existing `geometry().ids` level at emission. `inside`, `lid` and `under`
+remain independent display properties; mesh levels do not control the source renderer.
+Sidecars and the six-entry kit manifest are regenerated through the unmodified `SAIL_KIT.write()`.
+
+The design adds deeper cockpit seats/backrests, smoked glazing, visible roof hatches and handholds,
+a real companionway aperture with 0.52 m hatch travel clear of the mast, and a rearranged interior
+with a 2.00 m V-berth. Stowed canvas produces zero sail-driven heel; the grinding handle follows
+the working jib winch. Hull loft, scale, cell and pivot are unchanged. Static body: **2,035 faces,
+14 materials**, all six declared levels represented.
+
+The native face-level block was fixed in S0; it is not an outstanding art defect. The remaining
+S1 work is an editor-slot bake: re-import both SailPolarDef assets, bake/rebuild dependent sheets,
+run `RigMeshAssetBaker.BakeSloopsCli`, commit usable mesh definitions and complete the relevant Unity
+tests before removing the fleet bake block. This source proposal does not modify the bake-block
+ledger or pretend that native integration has been completed.
+
 ## The contract (same as the rest of the fleet)
 
 **32 px = 1 m.** Fixed ¾ turntable at **elev 40°** (30–50), 45° steps, 8 headings **N NE E SE S SW W NW**

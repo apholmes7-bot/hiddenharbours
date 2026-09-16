@@ -1,5 +1,5 @@
 /* Hidden Harbours — parametric ISO SLOOP 88 (27.0 m / 88.5 ft performance cruising yacht) — M2 bake recipe,
-   ADR-0006, same pipeline as sloopIsoRig.js (the Sloop 30). PASS 1: hull, laid-teak decks, the deck saloon,
+   ADR-0006, same pipeline as sloopIsoRig.js (the Sloop 30). PASS 3 (main 70969b68 / S0): refined deck saloon, smoked glazing, fine teak, upholstered cockpit; hull, laid-teak decks, the deck saloon,
    a twin-wheel cockpit with two U-settees, the aft deck with its transom stair and fold-down platform, the
    whole three-spreader rig with a self-tacking staysail, and the saloon + forward accommodation you can walk into.
 
@@ -7,7 +7,7 @@
    a wraparound smoked-glass band and two glass roof panels, twin pedestal wheels with instrument pods and helm
    seats, an aft deck with two flush garage lids, a stair down the transom onto a fold-down swim platform,
    flush foredeck hatches, a sunken tender well forward of the mast, a bow pad inside the pulpit and seat
-   pads in the quarter pushpits, hull slit windows in two groups of three. 
+   pads in the quarter pushpits, three tall aft hull windows and four forward ports.
 
    ADDITIONAL HARDWARE FOR THE 88 (not on the 30): twin helm stations · powered primaries + mainsheet winches
    + halyard winches (six drums) · mainsheet traveller across the aft deck · a Park-Avenue boom the main flakes
@@ -24,14 +24,14 @@
    THE CABIN. opts.view:'cabin' cuts the boat open at the boot top (ZLIP 1.55): the deck saloon (raised sole
    2.05, U-settee + table port, chart table + settee starboard, the mast through the middle), two steps down
    forward to the lower passage (sole 1.20): galley port, guest double starboard, the VIP island berth, the
-   crew cabin. The owner's cabin under the cockpit is pass 2 (_excluded).
+   crew cabin. The owner's cabin under the cockpit remains unmodelled (_excluded).
 
    ORIGIN. Amidships / CANOE-BODY BOTTOM / centreline, pinned every heading — the fleet convention. DWL 1.35 m
    above it. 32 px = 1 m. Paint never moves a vertex: SCHEMES swap ramps only.
    Exposes globalThis.Sloop88Iso (same surface as SloopIso + bounds(dir,opts), WHEEL_HUBS, STAY). */
 (function (root) {
   const PX = 32, S = 32;
-  const W = 1072, H = 1504, cx = 536, cy = 1150;   // locked by the cell-fit sweep: bounds() over elev 30–50 × 8 dirs × heel 20° × boom 86° × rock (±519 / 1133 up / 339 down)
+  const W = 1072, H = 1568, cx = 536, cy = 1182;   // bounds sweep: 30–50° elevation, both tacks, ±20° heel plus wave, platform travel
   const DEG = Math.PI/180, DEFAULT_ELEV = 40;
   const ROCK = { frames:8, rollA:1.1, pitchA:0.55, heaveA:1.0, period:5.2 };   // 27 m — long, slow
   function rockMotion(i, frames){
@@ -55,7 +55,7 @@
   const PAINT = ['#5d6a70','#7e8c90','#a3b0b1','#c2cdca','#dde5df','#eef0ea','#f7f8f3'];
   const STEEL = ['#3a4148','#565f66','#7a858c','#9fabb1','#c3ced2','#e6edee'];
   const DECKF = ['#6a7069','#848a82','#9ca29a','#b4bab0','#cad0c5'];
-  const GLAS  = ['#16333c','#24505a','#3a7680','#5fa3a6','#8fc9c4'];
+  const GLAS  = ['#101b21','#18262d','#24353d','#354a53','#526872'];
   const MOTO  = ['#101317','#1d2127','#2b323a','#3d454e','#525c63','#6b767b','#8a9499'];
   const ROPE  = ['#54432c','#7a6242','#a98f66','#cdbe97','#e3dbc1'];
   const TEAK  = ['#3f2814','#54351d','#6c4626','#855a31','#9c6e40','#b28553'];
@@ -124,10 +124,10 @@
   // (laid teak decks), canvas (boom cover, sail UV strips), sail (cloth), teak (cockpit + saloon joinery,
   // steps, platform), uph (cockpit, helm, bow + quarter pads, saloon + berths).
   const SCHEMES = {
-    'gelcoat-white': { name:'Gelcoat White', hull:'#eef0ea', stripe:'#7a2f22', bottom:'#2a2f33', deck:'#b8956a',
+    'gelcoat-white': { name:'Gelcoat White', hull:'#eef0ea', stripe:'#22354a', bottom:'#2a2f33', deck:'#b8956a',
                        canvas:'#22354a', sail:'#d9dbd6', teak:'#9c6e40', uph:'#9aa6b4',
                        ramps:{ hull:PAINT, teak:TEAK },
-                       note:'the yard\u2019s own \u2014 white glass, bordeaux cove, navy canvas, grey laminate, slate-blue pads' },
+                       note:'the yard\u2019s own \u2014 white glass, navy cove, navy canvas, grey laminate, slate-blue pads' },
     'atlantic-navy': { name:'Atlantic Navy', hull:'#254a6b', stripe:'#eef0ea', bottom:'#8c3f2c', deck:'#b8956a',
                        canvas:'#c9b98f', sail:'#eef0ea', teak:'#9c6e40', uph:'#e6ddc6',
                        note:'navy hull, white cove, sand canvas, white dacron' },
@@ -177,7 +177,7 @@
                    cream:{ramp:CREAM,off:0,dith:0},    steel:{ramp:STEEL,off:0,dith:0},
                    spar:{ramp:PAINT,off:-1,dith:0},    mast:{ramp:STEEL,off:-1,dith:0},
                    wire:{ramp:STEEL,off:-2,dith:0},    rope:{ramp:ROPE,off:0,dith:0},
-                   glas:{ramp:GLAS,off:0,dith:0},      moto:{ramp:MOTO,off:0,dith:0},
+                   glas:{ramp:GLAS,off:-1,dith:0},      moto:{ramp:MOTO,off:0,dith:0},
                    blk:{ramp:MOTO,off:-2,dith:0} };
     const rindex={};
     [hullR,stripeR,botR,deckR,canvR,sailR,teakR,uphR,CREAM,STEEL,ROPE,GLAS,MOTO,PAINT,TEAK].forEach(r=>r.forEach((c,i)=>{ if(!rindex[c]) rindex[c]={r,i}; }));
@@ -244,28 +244,30 @@
 
 
   // ---- plan constants ----------------------------------------------------------------------------
-  const RF = { yA:-1.6, yF:4.3, yNose:5.8, hA:1.40, hF:1.00, sdA:0.85, sdF:1.05 };   // deck saloon
+  const RF = { yA:-2.8, yF:2.1, yNose:3.6, hA:1.15, hF:0.72, sdA:0.85, sdF:1.05, tumble:0.24 };   // deck saloon
   const rfT=(y)=>clamp01((y-RF.yA)/(RF.yF-RF.yA));
-  const roofZ=(y)=>{ const t=rfT(y); return dZ(y) + RF.hA + (RF.hF-RF.hA)*t*t; };
-  const hxRoof=(y)=>{ const t=rfT(y); return Math.max(0.6, hD(y) - (RF.sdA + (RF.sdF-RF.sdA)*t)); };
+  const roofZ=(y)=>{ const t=rfT(y); return dZ(y)+RF.hA+(RF.hF-RF.hA)*t*t+0.045*Math.sin(Math.PI*t); };
+  const hxRoof=(y)=>{ const t=rfT(y), aft=Math.pow(Math.max(0,1-t/0.24),2), front=Math.pow(Math.max(0,(t-0.70)/0.30),2);
+    return Math.max(0.6,hD(y)-(RF.sdA+(RF.sdF-RF.sdA)*t)-0.20*aft-0.24*front); };
   const innerRoof=(y)=> y<=RF.yF ? hxRoof(y) : lerp(hxRoof(RF.yF), hxRoof(RF.yNose)*0.92, clamp01((y-RF.yF)/(RF.yNose-RF.yF)));
-  const CK = { yA:-1.6, yB:-5.9, yH:-7.9, xi:0.55, seatZ:3.00, coamZ:3.58, coamT:0.14, sd:0.80 };   // cockpit
+  const saloonY=(y)=>RF.yA+(y+1.6)*(RF.yF-RF.yA)/5.9;
+  const CK = { yA:RF.yA, yB:-6.3, yH:-7.9, xi:0.55, seatZ:3.00, coamZ:3.58, coamT:0.14, sd:0.80 };   // cockpit
   const xCoam=(y)=>hD(y) - CK.sd;                 // outer face of the coaming = inner edge of the side deck
   const xIn=(y)=>xCoam(y) - CK.coamT;             // inner face of the coaming
   const STEP1 = SOLE + 0.36;                      // walkway step up to the aft deck
   const AFT = { y0:-11.6, y1:CK.yH };             // aft deck (planked, full width)
   const STAIR = { x:1.0, floorY:-13.1, treads:[[-11.6,-12.1,2.85],[-12.1,-12.6,2.42],[-12.6,-13.1,1.98]] };   // [yFwd, yAft, top]
-  const PLATFORM = { y0:-13.5, y1:-14.45, hx:1.6, z:PLAT, th:0.08 };
-  const TABLE = { x:1.35, y:-3.75, hx:0.5, hy:1.0, z:SOLE+0.72 };
+  const PLATFORM = { y0:-13.5, y1:-13.5-(sheerZ(0)-0.02-PLAT), hx:STAIR.x, z:PLAT, th:0.08 };
+  const TABLE = { x:1.35, y:-4.55, hx:0.5, hy:0.80, z:SOLE+0.72 };
   const PED = { x:2.0, y:-6.95, hx:0.16, hy:0.13, h:0.92 };
   const WHEEL_HUBS = [ { x:-2.0, y:-7.12, z:SOLE+1.02 }, { x:2.0, y:-7.12, z:SOLE+1.02 } ];
   const WHEEL_GEO = { rad:0.60, rimIn:0.55, rake:-10, spokes:8, seg:20, hubR:0.07 };
   const WHEEL_LOCK = 2.0;
   const HSEAT = { x:2.05, y:-7.68, hx:0.5, hy:0.17, z:3.02 };
-  const MAST = { x:0, y:2.2, footZ:roofZ(2.2), headZ:37.0, rakeDeg:1.2 };
+  const MAST = { x:0, y:2.2, footZ:lerp(roofZ(RF.yF),dZ(RF.yNose),(2.2-RF.yF)/(RF.yNose-RF.yF)), headZ:37.0, rakeDeg:1.2 };
   const mastY=(z)=>MAST.y - (z-MAST.footZ)*Math.tan(MAST.rakeDeg*DEG);
   const mastAt=(z)=>[0, mastY(z), z];
-  const GOOSE_Z = MAST.footZ+1.75;
+  const GOOSE_Z = 6.448; // fixed spar datum: coachroof styling must not lower the sail plan
   const GOOSE = [0, mastY(GOOSE_Z)-0.16, GOOSE_Z];
   const BOOM_L = 10.6, BOOM_SEC=[0.30,0.24];     // Park-Avenue section: 0.60 wide, 0.48 tall
   const MAIN = { P:30.0, E:10.2, head:0.9, roach:1.5, battens:[0.18,0.36,0.54,0.71,0.87] };
@@ -276,7 +278,7 @@
   const JIB = { tackT:0.025, headT:0.97, LP:10.2, clewUp:1.25 };
   JIB.tack=fsAt(JIB.tackT); JIB.head=fsAt(JIB.headT);
   JIB.luff=Math.hypot(JIB.head[1]-JIB.tack[1], JIB.head[2]-JIB.tack[2]);
-  const INNER = { foot:[0, 8.3, dZ(8.3)+0.15], headZ:28.0 };
+  const INNER = { foot:[0, 10.65, dZ(10.65)+0.15], headZ:28.0 };
   INNER.head = mastAt(INNER.headZ); INNER.head[1]+=0.06;
   const isAt=(t)=>[0, lerp(INNER.foot[1],INNER.head[1],t), lerp(INNER.foot[2],INNER.head[2],t)];
   const STAY = { tackT:0.03, headT:0.96, LP:5.6, clewUp:0.95, trackY:6.35, trackHx:1.55, maxDeg:55 };
@@ -285,7 +287,7 @@
   const SPREADERS = [ { z:12.6, len:2.75, sweep:20 }, { z:20.9, len:2.25, sweep:20 }, { z:29.0, len:1.65, sweep:20 } ];
   const CHAIN = { x:2.95, yCap:2.3, yFwd:3.4, yAft:1.2 };
   const BACKSTAY = { x:2.25, y:-12.9 };
-  const WINCH = { primaryY:-6.4, primaryX:()=>xCoam(-6.4)-0.03, mainY:-8.65, mainX:2.15, halyardY:-0.9, halyardX:1.45, clutchY:-0.25 };
+  const WINCH = { primaryY:-6.4, primaryX:()=>xCoam(-6.4)-0.03, mainY:-8.65, mainX:2.15, halyardY:-2.25, halyardX:1.35, clutchY:-1.6 };
   const TRAV = { y:-8.35, hx:1.9 };
   const CAR_Y = 0.9, carX=()=>hD(CAR_Y)-0.30;
   const TURN = { y:-5.0, x:()=>xCoam(-5.0)+0.14 };
@@ -294,10 +296,11 @@
                  slide:'port', travel:1.30, leaf:{ w:1.24, th:0.05 }, clearAt:0.6 };
   const WELL = { y0:6.5, y1:10.3, hxA:1.55, hxF:1.05, depth:0.22 };
   const hxWell=(y)=>lerp(WELL.hxA,WELL.hxF,clamp01((y-WELL.y0)/(WELL.y1-WELL.y0)));
+  const TENDER = { y:8.35, length:3.45, beam:1.76, tube:0.16, z:dZ(8.35)-WELL.depth+0.26 };
   const WINDLASS = { y:12.1 };
   const HATCHES = [[-2.0,7.2,0.30],[2.0,7.2,0.30],[-1.55,9.3,0.28],[1.55,9.3,0.28],[-0.8,11.0,0.24],[0.8,11.0,0.24]];
-  const ROOF_GLASS = [[-1.1,0.3],[0.6,1.9]];
-  const HULL_WIN = { slits:[-8.9,-8.4,-7.9, 6.4,6.9,7.4], ports:[[-2.6,-2.0],[9.6,10.3]], z0:2.25, z1:2.80 };
+  const ROOF_GLASS = [[-2.22,-1.12],[-0.78,0.32]];
+  const HULL_WIN = { slits:[-2.10,-1.45,-0.80], ports:[[-9.2,-8.4],[-6.9,-6.1],[4.7,5.4],[7.0,7.7],[9.3,10.0]], z0:2.02, z1:2.96 };
   const CLEAT_PTS = [
     { id:'bow_port', type:'cleat', pos:[-0.4,12.4,+(dZ(12.4)+0.045).toFixed(3)] }, { id:'bow_star', type:'cleat', pos:[0.4,12.4,+(dZ(12.4)+0.045).toFixed(3)] },
     { id:'spring_fwd_port', type:'cleat', pos:[-(+(hD(4.0)-0.32).toFixed(3)),4.0,+(dZ(4.0)+0.045).toFixed(3)] }, { id:'spring_fwd_star', type:'cleat', pos:[+(hD(4.0)-0.32).toFixed(3),4.0,+(dZ(4.0)+0.045).toFixed(3)] },
@@ -331,6 +334,19 @@
               [P(-1,1,1),P(1,1,1),P(1,1,-1),P(-1,1,-1)], [P(1,-1,1),P(-1,-1,1),P(-1,-1,-1),P(1,-1,-1)],
               [P(1,1,1),P(1,-1,1),P(1,-1,-1),P(1,1,-1)], [P(-1,-1,1),P(-1,1,1),P(-1,1,-1),P(-1,-1,-1)] ];
     Q.forEach((v,i)=>out.push(mk(v,(mats&&mats[i])||mat,b,db,ex)));
+  }
+  function cushion(out,c,h,mat,b,db,ex){
+    const bevel=Math.min(0.10,h[0]*0.3,h[1]*0.3), crown=Math.min(0.035,h[2]*0.5);
+    const ring=(inset,z)=>{
+      const x=h[0]-inset,y=h[1]-inset,r=Math.max(0.012,bevel-inset*0.5);
+      return [[-x+r,-y],[x-r,-y],[x,-y+r],[x,y-r],[x-r,y],[-x+r,y],[-x,y-r],[-x,-y+r]].map(p=>[c[0]+p[0],c[1]+p[1],z]);
+    };
+    const lo=ring(0,c[2]-h[2]), mid=ring(0,c[2]+h[2]-crown), top=ring(Math.min(0.025,bevel*0.4),c[2]+h[2]);
+    faceN(out,top,mat,b,db,ex,[0,0,1]);
+    for(let i=0;i<8;i++){const j=(i+1)%8;
+      face(out,[lo[i],lo[j],mid[j],mid[i]],mat,b-0.3,db,ex);
+      face(out,[mid[i],mid[j],top[j],top[i]],mat,b+0.15,db,ex);
+    }
   }
   function bar(out,p0,p1,r,mat,b,db,ex){
     const d=v_sub(p1,p0), Ln=Math.hypot(d[0],d[1],d[2])||1, u=v_mul(d,1/Ln);
@@ -368,7 +384,7 @@
   }
   // laid-teak planking, swept with the deck edge: a gelcoat margin, then `perSide` planks from inner(y) out
   function planks(out,y0,y1,nseg,innerFn,o){
-    o=o||{}; const ps=o.perSide||5, mg=o.margin==null?0.12:o.margin, ex=o.lid?{lid:1}:null;
+    o=o||{}; const ps=Math.min(8,Math.max(o.perSide||5,Math.ceil(Math.max(hD(y0)-innerFn(y0),hD(y1)-innerFn(y1))/0.16))), mg=o.margin==null?0.12:o.margin, ex=o.lid?{lid:1}:null;
     const zF=o.zFn||dZ, eF=o.edgeFn||((y)=>hD(y)-0.006);
     for(let i=0;i<nseg;i++){
       const ya=y0+(y1-y0)*i/nseg, yb=y0+(y1-y0)*(i+1)/nseg;
@@ -376,10 +392,14 @@
       const ra=Math.max(ia,ea-mg), rb=Math.max(ib,eb-mg);
       for(const s of [-1,1]){
         if(mg>0) faceN(out,[[s*ra,ya,za],[s*ea,ya,za],[s*eb,yb,zb],[s*rb,yb,zb]],'paint',0.35,0,ex,[0,0,1]);
-        for(let k=0;k<ps;k++){
-          const xa0=ia+(ra-ia)*k/ps, xa1=ia+(ra-ia)*(k+1)/ps, xb0=ib+(rb-ib)*k/ps, xb1=ib+(rb-ib)*(k+1)/ps;
-          if(xa1-xa0<0.01 && xb1-xb0<0.01) continue;
-          faceN(out,[[s*xa0,ya,za+0.001],[s*xa1,ya,za+0.001],[s*xb1,yb,zb+0.001],[s*xb0,yb,zb+0.001]],'deck',0.35+(k%2?0.14:-0.10),-0.01,ex,[0,0,1]);
+        // One continuous surface supports the fine seams. Splitting every board as well
+        // doubles this mesh for a barely visible brightness variation at 32 px/m.
+        if(ra-ia>=0.01 || rb-ib>=0.01){
+          faceN(out,[[s*ia,ya,za+0.001],[s*ra,ya,za+0.001],[s*rb,yb,zb+0.001],[s*ib,yb,zb+0.001]],'deck',0.25,0.003,ex,[0,0,1]);
+          for(let k=1;k<ps;k++){
+            const xa=lerp(ia,ra,k/ps), xb=lerp(ib,rb,k/ps);
+            faceN(out,[[s*xa,ya,za+0.005],[s*(xa+0.016),ya,za+0.005],[s*(xb+0.016),yb,zb+0.005],[s*xb,yb,zb+0.005]],'deck',-1.6,0.006,ex,[0,0,1]);
+          }
         }
       }
     }
@@ -389,9 +409,11 @@
   const fAtZ=(u,z)=>fracAtZ(station(u),z);
   const fB=(d,u)=>{ const st=station(u); return Math.min(0.996, Math.max(FC+0.05, fracAtZ(st, st.kz+st.dep-d))); };
   const F_BOOT0=(u)=>fAtZ(u,DWL-0.08), F_BOOT1=(u)=>fAtZ(u,ZLIP);
-  const F_COVE=(u)=>fB(0.30,u), F_SHEER=(u)=>fB(0.16,u);
+  const F_COVE=(u)=>fB(0.30,u), F_SHEER=(u)=>fB(0.25,u);
   const OB = [ [0, F_BOOT0, 'bottom', -0.2, 0, false],
-               [F_BOOT0, F_BOOT1, 'stripe', 0.30, 0.005, false],
+               [F_BOOT0, (u)=>fAtZ(u,DWL+0.04), 'stripe', 0.30, 0.005, false],
+               [(u)=>fAtZ(u,DWL+0.04),(u)=>fAtZ(u,DWL+0.10),'paint',0.1,0.005,false],
+               [(u)=>fAtZ(u,DWL+0.10),F_BOOT1,'stripe',0.30,0.005,false],
                [F_BOOT1, F_COVE, 'paint', 0, 0, true],
                [F_COVE, F_SHEER, 'stripe', 0.35, 0.006, true],
                [F_SHEER, 1, 'paint', 0.10, 0, true] ];
@@ -422,7 +444,7 @@
       return Array.prototype.push.apply(this,arguments);
     };
     const CUT=(u0,u1,extra)=>inCabin(u0,u1)?Object.assign({cut:'cabin'},extra||{}):(extra||null);
-    const LID={lid:1}, RIGX={lv:'rig'};
+    const LID={lid:1}, RIGX={lv:'rig',rigging:1};
     // ---- hull skin, both sides ----
     for(const side of [-1,1]){
       for(let i=0;i<NSEG;i++){
@@ -459,13 +481,13 @@
           faceN(F,[up(L0),up(L1),L1,L0],'cream',0.9,-0.02,{lv:CLV,inside:1,lip:'cabin',cutN:onx},[side,0,0]);
         }
       }
-      // hull windows: two groups of three slits + two rectangular ports (proud smoked panels)
+      // hull windows: three aft Seascape-style lights + four forward rectangular ports (proud smoked panels)
       const win=(y0,y1,z0,z1)=>{
         const u0=uOf(y0), u1=uOf(y1), o=(p)=>[p[0]+side*0.015,p[1],p[2]];
-        faceN(F,[o(skin(side,u0,fAtZ(u0,z1))),o(skin(side,u1,fAtZ(u1,z1))),o(skin(side,u1,fAtZ(u1,z0))),o(skin(side,u0,fAtZ(u0,z0)))],'glas',0.55,0.02,
+        faceN(F,[o(skin(side,u0,fAtZ(u0,z1))),o(skin(side,u1,fAtZ(u1,z1))),o(skin(side,u1,fAtZ(u1,z0))),o(skin(side,u0,fAtZ(u0,z0)))],'glas',0.0,0.025,
               (y0>CAB_Y0&&y1<CAB_Y1)?{cut:'cabin',cutN:[side,0,0]}:null,[side,0,0]); };
-      for(const y of HULL_WIN.slits) win(y-0.09,y+0.09,HULL_WIN.z0,HULL_WIN.z1);
-      for(const [y0,y1] of HULL_WIN.ports) win(y0,y1,2.38,2.66);
+      for(const y of HULL_WIN.slits) win(y-0.16,y+0.16,HULL_WIN.z0,HULL_WIN.z1);
+      for(const [y0,y1] of HULL_WIN.ports) win(y0,y1,2.40,2.79);
     }
 
     lv('hull');        // transom, quarter pieces and the stair recess: exterior silhouette
@@ -477,7 +499,7 @@
       const xg=STAIR.x;
       for(const s of [-1,1]){
         const xo=(z)=>tp(s,tz(z))[0];
-        for(const [z0,z1,mat,b] of [[PLAT,sh-0.30,'paint',-0.45],[sh-0.30,sh-0.16,'stripe',0.1],[sh-0.16,sh,'paint',-0.35]])
+        for(const [z0,z1,mat,b] of [[PLAT,sh-0.30,'paint',-0.45],[sh-0.30,sh-0.25,'stripe',0.1],[sh-0.25,sh,'paint',-0.35]])
           faceN(F,[[s*xg,st.y,z0],[xo(z0),st.y,z0],[xo(z1),st.y,z1],[s*xg,st.y,z1]],mat,b,0.005,null,[0,-1,0]);
         faceN(F,[[s*xg,st.y,PLAT],[s*xg,AFT.y0,PLAT],[s*xg,AFT.y0,dZ(AFT.y0)],[s*xg,st.y,sh]],'liner',-0.7,-0.01,null,[-s,0,0]);
       }
@@ -503,19 +525,23 @@
     planks(F,WELL.y0,WELL.y1,5,hxWell,{perSide:3,lid:true});
     planks(F,WELL.y1,CAB_Y1,4,()=>0,{perSide:5,lid:true});
     planks(F,CAB_Y1,13.45,2,()=>0,{perSide:4});
-    lv('aft_deck');    // the garage lids and quarter pads sit on it
-    // aft-deck garage lids (smoked, steel frames) + quarter seat pads
-    for(const s of [-1,1]){
-      const hy=0.85, hx=0.95, yc=-9.75, xc=s*1.35, z=dZ(yc);
-      faceN(F,[[xc-hx-0.05,yc-hy-0.05,z+0.025],[xc+hx+0.05,yc-hy-0.05,z+0.025],[xc+hx+0.05,yc+hy+0.05,z+0.025],[xc-hx-0.05,yc+hy+0.05,z+0.025]],'steel',0.3,-0.02,null,[0,0,1]);
-      faceN(F,[[xc-hx,yc-hy,z+0.04],[xc+hx,yc-hy,z+0.04],[xc+hx,yc+hy,z+0.04],[xc-hx,yc+hy,z+0.04]],'glas',0.85,-0.03,null,[0,0,1]);
-      box(F,[s*2.0,-12.55,dZ(-12.55)+0.06],[0.45,0.32,0.06],'uph',0.5,0.012);
+    lv('aft_deck');    // flush locker lids and quarter pads belong to the aft deck
+    // Flush teak locker lids: continuous laid deck, recessed perimeter and lift handles.
+    for(const side of [-1,1]){
+      const xc=side*1.35, ya=-10.6, yb=-8.9, hx=0.95;
+      const corners=[[xc-hx,ya],[xc+hx,ya],[xc+hx,yb],[xc-hx,yb]];
+      for(let i=0;i<4;i++){const a=corners[i], b=corners[(i+1)%4];
+        bar(F,[a[0],a[1],dZ(a[1])+0.012],[b[0],b[1],dZ(b[1])+0.012],0.012,'blk',-0.4,0.01); }
+      box(F,[xc,ya+0.16,dZ(ya+0.16)+0.025],[0.11,0.035,0.012],'steel',0.1,0.02);
+      cushion(F,[side*2.0,-12.55,dZ(-12.55)+0.06],[0.45,0.32,0.06],'uph',0.35,0.012);
     }
 
     lv('cockpit');     // the well, its settees and both helms
     // ---- cockpit: walkway, helm sole, U-settees, tables, coaming, pedestals, helm seats ----
     (function(){
       const yA=CK.yA, yB=CK.yB, yH=CK.yH, xi=CK.xi;
+      // The first pass omitted the footwells inside both U-settees, exposing the dark hull below.
+      planks(F,yB,yA,10,()=>0,{perSide:14,margin:0,zFn:()=>SOLE,edgeFn:xIn});
       const NP=6;
       for(let k=0;k<NP;k++){ const x0=-xi+2*xi*k/NP, x1=-xi+2*xi*(k+1)/NP;
         faceN(F,[[x0,yB,SOLE],[x1,yB,SOLE],[x1,yA,SOLE],[x0,yA,SOLE]],'teak',(k%2?0.05:-0.30),0,null,[0,0,1]); }
@@ -544,17 +570,25 @@
         for(const [r0,r1] of [[yB+0.1,yB+0.8],[yA-0.8,yA-0.1]]){
           const xout=xIn((r0+r1)/2)-0.5, xm=s*(xi+xout)/2, hw=(xout-xi)/2;
           box(F,[xm,(r0+r1)/2,(SOLE+CK.seatZ)/2],[hw,(r1-r0)/2,(CK.seatZ-SOLE)/2],'paint',-0.5,0.005,null,null,['teak','paint','paint','paint','paint','paint']);
-          box(F,[xm,(r0+r1)/2,CK.seatZ+0.05],[hw-0.03,(r1-r0)/2-0.03,0.05],'uph',0.45,0.012);
+          cushion(F,[xm,(r0+r1)/2,CK.seatZ+0.07],[hw-0.03,(r1-r0)/2-0.03,0.07],'uph',0.35,0.012);
         }
-        { const ym=(bo0+bo1)/2; box(F,[s*(xIn(ym)-0.25),ym,CK.seatZ+0.05],[0.22,(bo1-bo0)/2-0.03,0.05],'uph',0.45,0.012); }
-        box(F,[s*TABLE.x,TABLE.y,TABLE.z],[TABLE.hx,TABLE.hy,0.025],'teak',0.5,-0.01);
+        for(let j=0;j<5;j++){
+          const ya=lerp(bo0,bo1,j/5)+0.02, yb=lerp(bo0,bo1,(j+1)/5)-0.02, ym=(ya+yb)/2;
+          cushion(F,[s*(xIn(ym)-0.25),ym,CK.seatZ+0.07],[0.22,(yb-ya)/2,0.07],'uph',0.35,0.012);
+          cushion(F,[s*(xIn(ym)-0.09),ym,CK.seatZ+0.34],[0.09,(yb-ya)/2,0.20],'uph',0.15,0.012);
+        }
+        for(const yr of [yB+0.19,yA-0.19]){
+          const xout=xIn(yr)-0.5;
+          cushion(F,[s*(xi+xout)/2,yr,CK.seatZ+0.32],[(xout-xi)/2-0.03,0.085,0.18],'uph',0.15,0.012);
+        }
+        cushion(F,[s*TABLE.x,TABLE.y,TABLE.z],[TABLE.hx,TABLE.hy,0.025],'teak',0.5,0.01);
         bar(F,[s*TABLE.x,TABLE.y,SOLE],[s*TABLE.x,TABLE.y,TABLE.z-0.02],0.045,'steel',0.4,-0.1);
         // helm station: pedestal, instrument pod (smoked screen aft), compass, helm seat
         box(F,[s*PED.x,PED.y,SOLE+PED.h/2],[PED.hx,PED.hy,PED.h/2],'paint',-0.2,-0.01);
         box(F,[s*PED.x,PED.y+0.02,SOLE+PED.h+0.12],[0.26,0.10,0.12],'blk',0.2,-0.02,null,null,['blk','blk','blk','glas','blk','blk']);
         prism(F,[s*PED.x,PED.y-0.02,SOLE+PED.h+0.24],0.07,0.05,10,'glas',0.9,-0.03);
         box(F,[s*HSEAT.x,HSEAT.y,(SOLE+HSEAT.z)/2],[HSEAT.hx,HSEAT.hy,(HSEAT.z-SOLE)/2],'paint',-0.45,0.005,null,null,['teak','paint','paint','paint','paint','paint']);
-        box(F,[s*HSEAT.x,HSEAT.y,HSEAT.z+0.05],[HSEAT.hx-0.03,HSEAT.hy-0.02,0.05],'uph',0.45,0.012);
+        cushion(F,[s*HSEAT.x,HSEAT.y,HSEAT.z+0.05],[HSEAT.hx-0.03,HSEAT.hy-0.02,0.05],'uph',0.35,0.012);
         // winches: primaries on the coaming, mainsheet winches on the aft deck; jib turning block
         drum(F,[s*WINCH.primaryX(),WINCH.primaryY,CK.coamZ],1.5);
         drum(F,[s*WINCH.mainX,WINCH.mainY,dZ(WINCH.mainY)],1.25);
@@ -578,21 +612,38 @@
     // ---- deck saloon ----
     (function(){
       const N=14, yA=RF.yA, yF=RF.yF;
+      for(const side of [-1,1]){
+        const x0=side*(side<0?-DOOR.x0:DOOR.x1), xb=side*hxRoof(yA), xt=side*(hxRoof(yA)-RF.tumble), zt=roofZ(yA);
+        faceN(F,[[x0,yA,SAL],[xb,yA,SAL],[xb,yA,dZ(yA)],[xt,yA,zt],[x0,yA,zt]],'paint',-0.2,0,{cut:'cabin',cutN:[0,-1,0]},[0,-1,0]);
+      }
+      faceN(F,[[DOOR.x0,yA,DOOR.z1],[DOOR.x1,yA,DOOR.z1],[DOOR.x1,yA,roofZ(yA)],[DOOR.x0,yA,roofZ(yA)]],'paint',0.1,0,{cut:'cabin',cutN:[0,-1,0]},[0,-1,0]);
       for(let i=0;i<N;i++){
         const y0=yA+(yF-yA)*i/N, y1=yA+(yF-yA)*(i+1)/N;
         const h0=hxRoof(y0), h1=hxRoof(y1), z0=roofZ(y0), z1=roofZ(y1), d0=dZ(y0), d1=dZ(y1);
-        faceN(F,[[-(h0-0.07),y0,z0],[h0-0.07,y0,z0],[h1-0.07,y1,z1],[-(h1-0.07),y1,z1]],'paint',0.55,0,LID,[0,0,1]);
-        for(const s of [-1,1]) faceN(F,[[s*h0,y0,d0],[s*h1,y1,d1],[s*(h1-0.07),y1,z1],[s*(h0-0.07),y0,z0]],'paint',-0.15,0,{cut:'cabin',cutN:[s,0,0]},[s,0,0]);
+        faceN(F,[[-(h0-RF.tumble),y0,z0],[h0-RF.tumble,y0,z0],[h1-RF.tumble,y1,z1],[-(h1-RF.tumble),y1,z1]],'paint',0.55,0,LID,[0,0,1]);
+        for(const s of [-1,1]) faceN(F,[[s*h0,y0,d0],[s*h1,y1,d1],[s*(h1-RF.tumble),y1,z1],[s*(h0-RF.tumble),y0,z0]],'paint',-0.15,0,{cut:'cabin',cutN:[s,0,0]},[s,0,0]);
       }
-      for(const s of [-1,1]){ const w0=-1.3, w1=3.9, NW=8;
+      for(const s of [-1,1]){ const w0=RF.yA+0.14, w1=RF.yF, NW=18;
         for(let i=0;i<NW;i++){ const y0=w0+(w1-w0)*i/NW, y1=w0+(w1-w0)*(i+1)/NW;
-          const zb0=dZ(y0)+0.42, zb1=dZ(y1)+0.42, zt0=roofZ(y0)-0.20, zt1=roofZ(y1)-0.20;
-          const xw=(y,z)=>{ const t=(z-dZ(y))/(roofZ(y)-dZ(y)); return hxRoof(y)-0.07*t+0.014; };
-          faceN(F,[[s*xw(y0,zb0),y0,zb0],[s*xw(y1,zb1),y1,zb1],[s*xw(y1,zt1),y1,zt1],[s*xw(y0,zt0),y0,zt0]],'glas',0.6,0.02,{cut:'cabin',cutN:[s,0,0]},[s,0,0]); } }
-      const hF=hxRoof(yF)-0.07, zF=roofZ(yF), yN=RF.yNose, zN=dZ(yN), hN=hxRoof(yN)*0.92;
+          // The upswept lower edge and rounded aft termination carry the Oyster window signature.
+          const edge=(y)=>0.16+0.18*Math.pow(rfT(y),2)+0.12*Math.pow(Math.max(0,1-(y-w0)/0.5),2);
+          const zb0=dZ(y0)+edge(y0), zb1=dZ(y1)+edge(y1), zt0=roofZ(y0)-0.15, zt1=roofZ(y1)-0.15;
+          const xw=(y,z)=>{ const t=(z-dZ(y))/(roofZ(y)-dZ(y)); return hxRoof(y)-RF.tumble*t+0.018; };
+          faceN(F,[[s*xw(y0,zb0),y0,zb0],[s*xw(y1,zb1),y1,zb1],[s*xw(y1,zt1),y1,zt1],[s*xw(y0,zt0),y0,zt0]],'glas',0.0,0.03,{cut:'cabin',cutN:[s,0,0]},[s,0,0]); } }
+      const hF=hxRoof(yF)-RF.tumble, zF=roofZ(yF), yN=RF.yNose, zN=dZ(yN), hN=hxRoof(yN)*0.92;
       faceN(F,[[-hF,yF,zF],[hF,yF,zF],[hN,yN,zN],[-hN,yN,zN]],'paint',0.5,0,{cut:'cabin',cutN:[0,1,0]},[0,1,1]);
-      faceN(F,[[-(hF-0.35),yF+0.08,zF-0.06],[hF-0.35,yF+0.08,zF-0.06],[hN*0.75,yN-0.35,zN+0.22],[-hN*0.75,yN-0.35,zN+0.22]],'glas',0.7,0.02,{cut:'cabin',cutN:[0,1,0]},[0,1,1]);
+      // Glazing lies ON the sloping front surface: the old hand-placed quad sank into it.
+      const windscreen=(t,f)=>[lerp(hF,hN,t)*f,lerp(yF,yN,t),lerp(zF,zN,t)+0.018];
+      for(const side of [-1,1]) faceN(F,[windscreen(0.12,side*0.025),windscreen(0.12,side*0.91),windscreen(0.82,side*0.91),windscreen(0.82,side*0.025)],'glas',0.0,0.03,{cut:'cabin',cutN:[0,1,0]},[0,1,1]);
       for(const s of [-1,1]) faceN(F,[[s*hF,yF,zF],[s*hN,yN,zN],[s*hxRoof(yN),yN,zN],[s*hxRoof(yF),yF,dZ(yF)]],'paint',-0.1,0,{cut:'cabin',cutN:[s,0.4,0]},[s,0.4,0]);
+      for(const side of [-1,1]){
+        const shoulder=(t,q)=>{
+          const y=lerp(yF,yN,t), low=lerp(dZ(yF),zN,t), high=lerp(zF,zN,t);
+          const xb=lerp(hxRoof(yF),hxRoof(yN),t), xt=lerp(hF,hN,t);
+          return [side*(lerp(xb,xt,q)+0.02),y,lerp(low,high,q)];
+        };
+        faceN(F,[shoulder(0,0.42),shoulder(0.72,0.48),shoulder(0.72,0.80),shoulder(0,0.84)],'glas',-0.2,0.03,{cut:'cabin',cutN:[side,0.4,0]},[side,0.4,0]);
+      }
       for(const [g0,g1] of ROOF_GLASS){ const hxg=0.85;
         faceN(F,[[-hxg-0.05,g0-0.05,roofZ(g0-0.05)+0.03],[hxg+0.05,g0-0.05,roofZ(g0-0.05)+0.03],[hxg+0.05,g1+0.05,roofZ(g1+0.05)+0.03],[-hxg-0.05,g1+0.05,roofZ(g1+0.05)+0.03]],'steel',0.3,-0.02,LID,[0,0,1]);
         faceN(F,[[-hxg,g0,roofZ(g0)+0.045],[hxg,g0,roofZ(g0)+0.045],[hxg,g1,roofZ(g1)+0.045],[-hxg,g1,roofZ(g1)+0.045]],'glas',0.9,-0.03,LID,[0,0,1]); }
@@ -602,6 +653,15 @@
         for(let k=0;k<4;k++) box(F,[s*(WINCH.halyardX-0.11+0.073*k),WINCH.clutchY+0.02,roofZ(WINCH.clutchY)+0.1],[0.014,0.024,0.03],'steel',0.6,-0.03,null,LID);
         const tails=[[s*0.22,MAST.y-0.25,roofZ(MAST.y-0.25)+0.035],[s*0.9,1.0,roofZ(1.0)+0.035],[s*WINCH.halyardX,WINCH.clutchY+0.08,roofZ(WINCH.clutchY)+0.035],[s*WINCH.halyardX,WINCH.halyardY+0.14,roofZ(WINCH.halyardY)+0.035]];
         rope(F,tails,0.026,'rope',0.2,0,LID);
+      }
+      for(const side of [-1,1]){
+        const rail=[];
+        for(const y of [-1.9,-0.85,0.2,1.25]){
+          const x=side*(hxRoof(y)-0.42), z=roofZ(y);
+          bar(F,[x,y,z],[x,y,z+0.12],0.018,'steel',0.25,0.01,LID);
+          rail.push([x,y,z+0.12]);
+        }
+        rope(F,rail,0.022,'steel',0.35,0,LID);
       }
       box(F,[0,MAST.y,MAST.footZ+0.05],[0.26,0.30,0.05],'steel',0.4,-0.02,null,LID);
     })();
@@ -619,6 +679,27 @@
       faceN(F,[[-hxWell(wy1),wy1,dZ(wy1)-WELL.depth],[hxWell(wy1),wy1,dZ(wy1)-WELL.depth],[hxWell(wy1),wy1,dZ(wy1)],[-hxWell(wy1),wy1,dZ(wy1)]],'paint',-0.5,0,LID,[0,-1,0]);
       const rim=[[-hxWell(wy0),wy0],[hxWell(wy0),wy0],[hxWell(wy1),wy1],[-hxWell(wy1),wy1]];
       for(let k=0;k<4;k++){ const a=rim[k], b=rim[(k+1)%4]; bar(F,[a[0],a[1],dZ(a[1])+0.03],[b[0],b[1],dZ(b[1])+0.03],[0.05,0.03],'steel',0.5,-0.02,LID); }
+      (function(){
+        const ex={lv:'foredeck',tender:1}, yc=TENDER.y, z=TENDER.z;
+        const outline=[[-0.66,yc-1.56],[0.66,yc-1.56],[0.70,yc+0.74],[0.51,yc+1.28],[0,yc+1.56],[-0.51,yc+1.28],[-0.70,yc+0.74]];
+        faceN(F,outline.map(p=>[p[0],p[1],z-0.10]),'paint',0.15,0.01,ex,[0,0,1]);
+        for(let k=0;k<outline.length;k++){
+          const a=outline[k],b=outline[(k+1)%outline.length];
+          face(F,[[a[0],a[1],z-0.1],[b[0],b[1],z-0.1],[b[0]*0.85,b[1],z-0.23],[a[0]*0.85,a[1],z-0.23]],'paint',-0.4,0,ex);
+        }
+        // Octagonal inflated tubes, including a rounded bow; transom is a solid motor board.
+        const ring=(p,prev,next)=>{
+          const dx=next[0]-prev[0],dy=next[1]-prev[1],m=Math.hypot(dx,dy);
+          return Array.from({length:8},(_,i)=>{const a=i*Math.PI/4;
+            return [p[0]+dy/m*TENDER.tube*Math.cos(a),p[1]-dx/m*TENDER.tube*Math.cos(a),z+TENDER.tube*Math.sin(a)];});
+        };
+        const tube=outline.slice(1).concat([outline[0]]), rings=tube.map((p,i)=>ring(p,tube[Math.max(0,i-1)],tube[Math.min(tube.length-1,i+1)]));
+        for(let i=0;i+1<rings.length;i++) for(let k=0;k<8;k++) face(F,[rings[i][k],rings[i+1][k],rings[i+1][(k+1)%8],rings[i][(k+1)%8]],'cream',0.1,0.01,ex);
+        box(F,[0,yc-1.5,z-0.02],[0.65,0.05,0.14],'paint',0.0,0.01,null,ex);
+        cushion(F,[0,yc-0.35,z-0.025],[0.58,0.19,0.065],'uph',0.25,0.02,ex);
+        cushion(F,[0,yc+0.85,z-0.01],[0.41,0.29,0.075],'uph',0.25,0.02,ex);
+        for(const y of [yc-0.8,yc+0.55]) rope(F,[[-hxWell(y)+0.1,y,dZ(y)+0.035],[-0.72,y,z+0.17],[0.72,y,z+0.17],[hxWell(y)-0.1,y,dZ(y)+0.035]],0.016,'wire',-0.2,0,ex);
+      })();
       for(const [hx0,hy0,hs] of HATCHES){ const z=dZ(hy0);
         faceN(F,[[hx0-hs-0.04,hy0-hs-0.04,z+0.03],[hx0+hs+0.04,hy0-hs-0.04,z+0.03],[hx0+hs+0.04,hy0+hs+0.04,z+0.03],[hx0-hs-0.04,hy0+hs+0.04,z+0.03]],'steel',0.3,-0.02,LID,[0,0,1]);
         faceN(F,[[hx0-hs,hy0-hs,z+0.045],[hx0+hs,hy0-hs,z+0.045],[hx0+hs,hy0+hs,z+0.045],[hx0-hs,hy0+hs,z+0.045]],'glas',0.9,-0.03,LID,[0,0,1]); }
@@ -731,7 +812,8 @@
         const n=(x1-x0)>1.4?2:1, pw=(x1-x0)/(n*2)-0.08;
         for(let k=0;k<n;k++) box(F,[x0+(x1-x0)*(2*k+1)/(2*n),pillowY,zt+0.05],[pw,0.2,0.05],'cream',0.8,0.01,null,C); };
       // saloon sole (raised, 2.05) + the companionway tread
-      const NS3=10, y0s=-1.0, y1s=RF.yF-0.02;
+      const saloonStart=F.length;
+      const NS3=10, y0s=-1.0, y1s=4.28;
       for(let i=0;i<NS3;i++){ const y0=y0s+(y1s-y0s)*i/NS3, y1=y0s+(y1s-y0s)*(i+1)/NS3;
         faceN(F,[[-0.7,y0,SAL],[1.5,y0,SAL],[1.5,y1,SAL],[-0.7,y1,SAL]],'teak',(i%2?0.35:0.05),0,C,[0,0,1]); }
       box(F,[0,-1.45,(2.34+SAL)/2],[0.55,0.15,(2.34-SAL)/2],'teak',0.1,0,null,C);
@@ -749,15 +831,19 @@
       bench(1.75,2.45,0.3,3.6,SAL);
       box(F,[2.05,3.95,SAL+0.45],[0.4,0.3,0.45],'teak',-0.1,0,null,C);
       for(const s of [-1,1]) box(F,[s*2.35,1.5,3.2],[0.14,2.1,0.25],'teak',0.15,0,null,C);
+      for(let i=saloonStart;i<F.length;i++) F[i].v=F[i].v.map(([x,y,z])=>[x,saloonY(y),z]);
+      for(let i=0;i<10;i++){
+        const y0=saloonY(-1.6+5.9*i/10),y1=saloonY(-1.6+5.9*(i+1)/10);
+        faceN(F,[[-half(y0,SAL),y0,SAL-0.004],[half(y0,SAL),y0,SAL-0.004],[half(y1,SAL),y1,SAL-0.004],[-half(y1,SAL),y1,SAL-0.004]],'teak',0.1,0,C,[0,0,1]);
+      }
       bar(F,[0,mastY(SAL),SAL],[0,mastY(roofZ(MAST.y)),roofZ(MAST.y)-0.02],[0.17,0.11],'spar',0.25,-0.1,C);
       // forward bulkhead + two steps down to the lower passage
       bulkhead(RF.yF,LOW-0.1,roofZ(RF.yF)-0.04,[0.5,1.7,SAL+2.0]);
-      for(const [ya,yb,zt] of [[4.3,4.6,1.77],[4.6,4.9,1.49]]) box(F,[0,(ya+yb)/2,(zt+LOW)/2],[0.5,(yb-ya)/2,(zt-LOW)/2],'teak',0.1,0,null,C);
-      lv('lower',{inside:1});   // forward of the saloon's bulkhead: the lower passage, galley, VIP and crew,
-                                // lidded by `foredeck` rather than by the coachroof
-      const NL=12, yl0=4.9, yl1=12.4;
+      for(const [ya,yb,zt] of [[RF.yF,RF.yF+0.3,1.77],[RF.yF+0.3,RF.yF+0.6,1.49]]) box(F,[0,(ya+yb)/2,(zt+LOW)/2],[0.5,(yb-ya)/2,(zt-LOW)/2],'teak',0.1,0,null,C);
+      lv('lower',{inside:1});   // lower accommodation, beneath the foredeck
+      const NL=16, yl0=RF.yF+0.6, yl1=12.4;
       for(let i=0;i<NL;i++){ const y0=yl0+(yl1-yl0)*i/NL, y1=yl0+(yl1-yl0)*(i+1)/NL;
-        faceN(F,[[-0.55,y0,LOW],[0.55,y0,LOW],[0.55,y1,LOW],[-0.55,y1,LOW]],'teak',(i%2?0.35:0.05),0,C,[0,0,1]); }
+        faceN(F,[[-half(y0,LOW),y0,LOW],[half(y0,LOW),y0,LOW],[half(y1,LOW),y1,LOW],[-half(y1,LOW),y1,LOW]],'teak',(i%2?0.35:0.05),0,C,[0,0,1]); }
       // galley port (counter, sink, stove), guest double starboard
       box(F,[-1.45,6.45,(LOW+2.12)/2],[0.7,1.3,(2.12-LOW)/2],'teak',-0.1,0,null,C);
       box(F,[-1.45,5.7,2.125],[0.22,0.18,0.012],'steel',0.5,-0.02,null,C);
@@ -772,6 +858,13 @@
       // crew cabin: a bunk a side on a teak base
       for(const s of [-1,1]){ box(F,[s*0.5,11.95,(LOW+1.62)/2],[0.28,0.5,(1.62-LOW)/2],'teak',-0.15,0,null,C); box(F,[s*0.5,11.95,1.67],[0.26,0.48,0.05],'uph',0.45,0.01,null,C); }
       bulkhead(12.5,LOW-0.1,dZ(12.5)-0.04,null);
+      // The original rectangular fit-out protruded through the narrowing bow. Shape its
+      // in-hull vertices to the inner skin, including the VIP cabinets and guest berth.
+      for(const f of F) if(f.inside) f.v=f.v.map(([x,y,z])=>{
+        if(z>dZ(y)) return [x,y,z];
+        const hx=Math.max(0.02,halfAtZ(uOf(y),z,1)-0.035);
+        return [clamp(x,-hx,hx),y,z];
+      });
     })();
     delete F.push;   // the cursor is an AUTHORING tool; F leaves build() a plain array
   })();
@@ -806,8 +899,11 @@
     const flogM=flog(aoaM), flogJ=flog(aoaJ), flogS=flog(aoaS);
     const stallM=clamp01((aoaM-40)/40), stallJ=clamp01((aoaJ-40)/40), stallS=clamp01((aoaS-40)/40);
     const k = a<100 ? 1 : lerp(1,0.35,(a-100)/80);
-    const heelDeg = Math.min(HEEL_MAX, HEEL_K*aws*aws*(0.25+0.75*fillM)*k)*(irons?0.15:1);
-    const mode = aws<0.5 ? 'becalmed' : irons ? 'in irons' : (flogM>0.01||flogJ>0.01) ? 'luffing' : (stallM>0.3) ? 'stalled' : 'drawing';
+    const sfurl=clamp01(o.sfurl==null?1:+o.sfurl);
+    const areaM=hoist>0.02?hoist:0, areaJ=furl<0.97?1-furl:0, areaS=sfurl<0.97?1-sfurl:0;
+    const drive=(0.52*areaM*(0.25+0.75*fillM)+0.48*areaJ*(0.25+0.75*fillJ)+0.18*areaS*(0.25+0.75*fillS));
+    const heelDeg = Math.min(HEEL_MAX, HEEL_K*aws*aws*drive*k)*(irons?0.15:1);
+    const mode = aws<0.5 || areaM+areaJ+areaS===0 ? 'becalmed' : irons ? 'in irons' : ((areaM>0&&flogM>0.01)||(areaJ>0&&flogJ>0.01)||(areaS>0&&flogS>0.01)) ? 'luffing' : ((areaM>0&&stallM>0.3)||(areaJ>0&&stallJ>0.3)||(areaS>0&&stallS>0.3)) ? 'stalled' : 'drawing';
     return { awa, aws, side, boom, boomSigned:side*boom, jibAngle:jibA, jibSigned:side*jibA, stayAngle:stayA, staySigned:side*stayA,
              aoaMain:aoaM, aoaJib:aoaJ, aoaStay:aoaS, fillMain:fillM, fillJib:fillJ, fillStay:fillS, flogMain:flogM, flogJib:flogJ, flogStay:flogS,
              stallMain:stallM, stallJib:stallJ, stallStay:stallS, irons, heel: side*heelDeg, heelDeg, phase, mode, mainSheet:main, jibSheet:jib };
@@ -835,27 +931,30 @@
     const rows=[]; for(let j=0;j<=NT;j++){ const t=j/NT, r=[]; for(let i=0;i<=NS;i++) r.push(pt(i/NS,t)); rows.push(r); }
     for(let j=0;j<NT;j++) for(let i=0;i<NS;i++){
       const a=rows[j][i], b=rows[j][i+1], c=rows[j+1][i+1], d=rows[j+1][i];
-      out.push({ v:[a,b,c,d], mat:P.mat, b:P.b||0, db:P.db||0, two:true, lv:'rig' });
+      out.push({ v:[a,b,c,d], mat:P.mat, b:P.b||0, db:P.db||0, two:true, lv:'rig',rigging:1 });
     }
     for(const tb of (P.battens||[])){ const t0=tb-0.006, t1=tb+0.006;
       for(let i=0;i<NS;i++){ const s0=0.04+0.94*i/NS, s1=0.04+0.94*(i+1)/NS;
-        out.push({ v:[pt(s0,t0),pt(s1,t0),pt(s1,t1),pt(s0,t1)], mat:'batten', b:0.2, db:0.03, two:true, lv:'rig' }); } }
+        out.push({ v:[pt(s0,t0),pt(s1,t0),pt(s1,t1),pt(s0,t1)], mat:'batten', b:0.2, db:0.03, two:true, lv:'rig',rigging:1 }); } }
   }
   function dynamicFaces(o, pose, view){
-    const D=[], sp=pose.sail, side=sp.side, RX={lv:'rig'};
+    const D=[], sp=pose.sail, side=sp.side, RX={lv:'rig',rigging:1};
     const showSails = o.sails!=null ? !!o.sails : (view!=='cabin');
     const h=clamp01(o.hoist==null?1:+o.hoist), furl=clamp01(o.furl==null?0:+o.furl), sfurl=clamp01(o.sfurl==null?1:+o.sfurl);
     const cover = !!o.cover && h<0.02;
     // ---- boom (Park Avenue), gooseneck, hydraulic vang ----
     const beta=sp.boom*DEG, ub=[side*Math.sin(beta), -Math.cos(beta)];
     const G=GOOSE, E=[G[0]+ub[0]*BOOM_L, G[1]+ub[1]*BOOM_L, G[2]];
-    bar(D,G,E,BOOM_SEC,'spar',0.3,-0.10,RX);
-    box(D,[G[0],G[1]+0.1,G[2]],[0.14,0.16,0.22],'blk',0.2,-0.02,null,RX);
     const xfB=(p)=>rotZabout(p,G,side*beta);
+    box(D,[G[0],G[1]-BOOM_L/2,G[2]-BOOM_SEC[1]+0.04],[BOOM_SEC[0],BOOM_L/2,0.04],'spar',0.3,0.01,xfB,RX);
+    for(const s of [-1,1]) box(D,[G[0]+s*(BOOM_SEC[0]-0.035),G[1]-BOOM_L/2,G[2]+0.02],[0.035,BOOM_L/2,BOOM_SEC[1]-0.02],'spar',0.3,0.01,xfB,RX);
+    box(D,[G[0],G[1]+0.1,G[2]],[0.14,0.16,0.22],'blk',0.2,-0.02,null,RX);
     bar(D,[0,mastY(MAST.footZ+0.55),MAST.footZ+0.55],xfB([0,G[1]-BOOM_L*0.27,G[2]-BOOM_SEC[1]-0.02]),0.07,'spar',0.2,-0.08,RX);
     if(showSails){
-      if(h<0.98){ const ph=0.05+0.32*(1-h);
-        box(D,[G[0],G[1]-BOOM_L*0.50,G[2]+BOOM_SEC[1]+ph],[BOOM_SEC[0]-0.03,BOOM_L*0.46,ph],cover?'canvas':'sail',0.25,-0.01,xfB,RX); }
+      if(h<0.98){ const ph=0.04+0.22*(1-h);
+        const pile=[];
+        cushion(pile,[G[0],G[1]-BOOM_L*0.50,G[2]+0.10],[BOOM_SEC[0]-0.045,BOOM_L*0.46,ph],cover?'canvas':'sail',0.25,0.01,RX);
+        for(const f of pile){ f.v=f.v.map(xfB); D.push(f); } }
       const lj=mastAt(MAST.footZ+13.5);
       for(const s of [-1,1]) for(const d of [2.6,5.6,8.6]){ const p=xfB([G[0]+s*(BOOM_SEC[0]-0.05),G[1]-d,G[2]+BOOM_SEC[1]+0.1]); rope(D,[[s*0.1,lj[1],lj[2]],p],0.016,'rope',0.3,0,RX); }
     }
@@ -940,12 +1039,18 @@
     })();
     // ---- fold-down transom platform (down) or the transom door (folded) ----
     const pf=clamp01(o.platform==null?1:+o.platform);
-    if(pf>=0.5){
-      box(D,[0,(PLATFORM.y0+PLATFORM.y1)/2,PLATFORM.z-PLATFORM.th/2],[PLATFORM.hx,(PLATFORM.y0-PLATFORM.y1)/2,PLATFORM.th/2],'paint',-0.2,-0.01,null,null,['teak','paint','paint','paint','paint','paint']);
-    } else {
-      const st=station(0), sh=st.kz+st.dep;
-      faceN(D,[[-STAIR.x,st.y-0.01,PLAT],[STAIR.x,st.y-0.01,PLAT],[STAIR.x,st.y-0.01,sh-0.02],[-STAIR.x,st.y-0.01,sh-0.02]],'paint',-0.4,0.004,null,[0,-1,0]);
-      faceN(D,[[-STAIR.x,st.y-0.012,sh-0.30],[STAIR.x,st.y-0.012,sh-0.30],[STAIR.x,st.y-0.012,sh-0.16],[-STAIR.x,st.y-0.012,sh-0.16]],'stripe',0.1,0.004,null,[0,-1,0]);
+    const a=(1-pf)*Math.PI/2, length=PLATFORM.y0-PLATFORM.y1;
+    const hinge=(p)=>{const y=p[1]-PLATFORM.y0, z=p[2]-PLATFORM.z;
+      return [p[0],PLATFORM.y0+y*Math.cos(a)+z*Math.sin(a),PLATFORM.z-y*Math.sin(a)+z*Math.cos(a)];};
+    box(D,[0,PLATFORM.y0-length/2,PLATFORM.z-PLATFORM.th/2],[PLATFORM.hx,length/2,PLATFORM.th/2],'paint',-0.2,0.01,hinge,null,['teak','paint','paint','paint','paint','paint']);
+    for(let k=1;k<12;k++){
+      const x=-PLATFORM.hx+2*PLATFORM.hx*k/12;
+      faceN(D,[[x,PLATFORM.y1,PLATFORM.z+0.006],[x+0.015,PLATFORM.y1,PLATFORM.z+0.006],[x+0.015,PLATFORM.y0,PLATFORM.z+0.006],[x,PLATFORM.y0,PLATFORM.z+0.006]].map(hinge),'teak',-1.8,0.01,null,[0,-Math.sin(a),Math.cos(a)]);
+    }
+    {
+      const z=sheerZ(0)-0.30;
+      // The cove line continues across the outer face when the door is closed.
+      face(D,[[-PLATFORM.hx,PLATFORM.y0-(z-PLAT),PLAT-PLATFORM.th-0.005],[PLATFORM.hx,PLATFORM.y0-(z-PLAT),PLAT-PLATFORM.th-0.005],[PLATFORM.hx,PLATFORM.y0-(z+0.05-PLAT),PLAT-PLATFORM.th-0.005],[-PLATFORM.hx,PLATFORM.y0-(z+0.05-PLAT),PLAT-PLATFORM.th-0.005]].map(hinge),'stripe',0.1,0.01);
     }
     // ---- wheels ----
     if(o.wheel!==false) D.push.apply(D, wheelFaces(wheelDeg(o)));
@@ -1020,6 +1125,8 @@
   const facingN=(n,B)=> (n[1]*B.ce - n[2]*B.se) < 0;
   function facingHull(nH,B){ const r=rotV(nH[0],nH[1],nH[2],B); return facingN([r.xr,r.yr,r.zr],B); }
   function gate(f, view, opts){
+    if(f.rigging && opts.rigging===false) return false;
+    if(f.tender && (view==='cabin' || opts.tender===false)) return false;
     // The three cutaway switches are face PROPERTIES, never the level tag: `lv` is the mesh
     // vocabulary (a key of geometry().ids) and RigMeshExtractor reads it, so a level must never be
     // able to move a pixel. `inside` = accommodation, drawn only in the cabin view; `lid` = lifted
@@ -1139,7 +1246,7 @@
     winchMainPort:{x:-WINCH.mainX,y:WINCH.mainY,z:dZ(WINCH.mainY)+0.29}, winchMainStbd:{x:WINCH.mainX,y:WINCH.mainY,z:dZ(WINCH.mainY)+0.29},
     halyardWinchPort:{x:-WINCH.halyardX,y:WINCH.halyardY,z:roofZ(WINCH.halyardY)+0.27}, halyardWinchStbd:{x:WINCH.halyardX,y:WINCH.halyardY,z:roofZ(WINCH.halyardY)+0.27},
     furlerCleat:{x:FURL_CLEAT[0],y:FURL_CLEAT[1],z:FURL_CLEAT[2]}, tablePort:{x:-TABLE.x,y:TABLE.y,z:TABLE.z}, tableStbd:{x:TABLE.x,y:TABLE.y,z:TABLE.z},
-    seatPort:{x:-(2.2),y:-3.75,z:CK.seatZ}, seatStbd:{x:2.2,y:-3.75,z:CK.seatZ}, helmSeatPort:{x:-HSEAT.x,y:HSEAT.y,z:HSEAT.z}, helmSeatStbd:{x:HSEAT.x,y:HSEAT.y,z:HSEAT.z},
+    seatPort:{x:-(2.2),y:TABLE.y,z:CK.seatZ}, seatStbd:{x:2.2,y:TABLE.y,z:CK.seatZ}, helmSeatPort:{x:-HSEAT.x,y:HSEAT.y,z:HSEAT.z}, helmSeatStbd:{x:HSEAT.x,y:HSEAT.y,z:HSEAT.z},
     bowPad:{x:0,y:12.6,z:dZ(12.6)+0.12}, quarterPadPort:{x:-2.0,y:-12.55,z:dZ(-12.55)+0.12}, quarterPadStbd:{x:2.0,y:-12.55,z:dZ(-12.55)+0.12},
     tenderWell:{x:0,y:(WELL.y0+WELL.y1)/2,z:dZ((WELL.y0+WELL.y1)/2)-WELL.depth},
     goose:{x:GOOSE[0],y:GOOSE[1],z:GOOSE[2]}, masthead:{x:0,y:mastY(MAST.headZ),z:MAST.headZ},
@@ -1177,8 +1284,8 @@
         { id:'aft_deck', deck:'aft_deck', soleZ:r3(dZ(-9.75)), ceilingZ:null, ceiling:{ kind:'open', lid:null } },
         { id:'coachroof', deck:'coachroof', soleZ:r3(roofZ(RF.yA)), ceilingZ:null, sole:{ kind:'raked', zAft:r3(roofZ(RF.yA)), zFwd:r3(roofZ(RF.yF)) }, ceiling:{ kind:'open', lid:null } },
         { id:'foredeck', deck:'foredeck', soleZ:r3(dZ(RF.yNose)), ceilingZ:null, sole:{ kind:'raked', zAft:r3(dZ(RF.yNose)), zFwd:r3(dZ(13.4)), follows:'sheer - 0.03' }, ceiling:{ kind:'open', lid:null } },
-        { id:'saloon', deck:'saloon_sole', soleZ:SAL, ceilingZ:r3(roofZ(1.3)-0.05), ceiling:{ kind:'raked', lid:'coachroof', zAft:r3(roofZ(RF.yA)-0.05), zFwd:r3(roofZ(RF.yF)-0.05), y0:RF.yA, y1:RF.yF, of:'coachroof underside' } },
-        { id:'lower', deck:'lower_sole', soleZ:LOW, ceilingZ:r3(dZ(8.5)-0.05), ceiling:{ kind:'raked', lid:'foredeck', zAft:r3(dZ(4.9)-0.05), zFwd:r3(dZ(12.4)-0.05), y0:4.9, y1:12.5, of:'foredeck underside' } },
+        { id:'saloon', deck:'saloon_sole', soleZ:SAL, ceilingZ:r3(roofZ(saloonY(1.3))-0.05), ceiling:{ kind:'raked', lid:'coachroof', zAft:r3(roofZ(RF.yA)-0.05), zFwd:r3(roofZ(RF.yF)-0.05), y0:RF.yA, y1:RF.yF, of:'coachroof underside' } },
+        { id:'lower', deck:'lower_sole', soleZ:LOW, ceilingZ:r3(dZ(8.5)-0.05), ceiling:{ kind:'raked', lid:'foredeck', zAft:r3(dZ(RF.yF+0.6)-0.05), zFwd:r3(dZ(12.4)-0.05), y0:RF.yF+0.6, y1:12.5, of:'foredeck underside' } },
       ] };
   }
   function gameplayGeometry(){
@@ -1195,12 +1302,12 @@
       _notes:[
         { id:'pedestal_port', kind:'obstruction', type:'console', footprint:{x:[-PED.x-PED.hx,-PED.x+PED.hx],y:[PED.y-PED.hy,PED.y+PED.hy]}, height_above_floor_m:{top:r3(PED.h+0.29)}, treatment:'wall', provenance:'exact, PED; instrument pod + compass on top' },
         { id:'pedestal_stbd', kind:'obstruction', type:'console', footprint:{x:[PED.x-PED.hx,PED.x+PED.hx],y:[PED.y-PED.hy,PED.y+PED.hy]}, height_above_floor_m:{top:r3(PED.h+0.29)}, treatment:'wall', provenance:'mirror' },
-        { id:'wheel_port', kind:'obstruction', type:'wheel', footprint:{x:[-WHEEL_HUBS[0].x-WHEEL_GEO.rad,-WHEEL_HUBS[0].x+WHEEL_GEO.rad].sort((a,b)=>a-b),y:[WHEEL_HUBS[0].y-0.05,WHEEL_HUBS[0].y+0.05]}, height_above_floor_m:{top:r3(WHEEL_HUBS[0].z+WHEEL_GEO.rad-SOLE),underside:r3(WHEEL_HUBS[0].z-WHEEL_GEO.rad-SOLE)}, treatment:'waist_block', provenance:'exact, WHEEL_HUBS[0] + WHEEL_GEO.rad; the helm stands aft of it at ANCHORS.helmPort' },
+        { id:'wheel_port', kind:'obstruction', type:'wheel', footprint:{x:[WHEEL_HUBS[0].x-WHEEL_GEO.rad,WHEEL_HUBS[0].x+WHEEL_GEO.rad].sort((a,b)=>a-b),y:[WHEEL_HUBS[0].y-0.05,WHEEL_HUBS[0].y+0.05]}, height_above_floor_m:{top:r3(WHEEL_HUBS[0].z+WHEEL_GEO.rad-SOLE),underside:r3(WHEEL_HUBS[0].z-WHEEL_GEO.rad-SOLE)}, treatment:'waist_block', provenance:'exact, WHEEL_HUBS[0] + WHEEL_GEO.rad; the helm stands aft of it at ANCHORS.helmPort' },
         { id:'wheel_stbd', kind:'obstruction', type:'wheel', footprint:{x:[WHEEL_HUBS[1].x-WHEEL_GEO.rad,WHEEL_HUBS[1].x+WHEEL_GEO.rad],y:[WHEEL_HUBS[1].y-0.05,WHEEL_HUBS[1].y+0.05]}, height_above_floor_m:{top:r3(WHEEL_HUBS[1].z+WHEEL_GEO.rad-SOLE),underside:r3(WHEEL_HUBS[1].z-WHEEL_GEO.rad-SOLE)}, treatment:'waist_block', provenance:'mirror; ANCHORS.helmStbd' },
         { id:'helm_seat_port', kind:'obstruction', type:'seat', footprint:{x:[-HSEAT.x-HSEAT.hx,-HSEAT.x+HSEAT.hx],y:[HSEAT.y-HSEAT.hy,HSEAT.y+HSEAT.hy]}, height_above_floor_m:{top:r3(HSEAT.z+0.1-SOLE)}, treatment:'step_over', provenance:'exact, HSEAT' },
         { id:'helm_seat_stbd', kind:'obstruction', type:'seat', footprint:{x:[HSEAT.x-HSEAT.hx,HSEAT.x+HSEAT.hx],y:[HSEAT.y-HSEAT.hy,HSEAT.y+HSEAT.hy]}, height_above_floor_m:{top:r3(HSEAT.z+0.1-SOLE)}, treatment:'step_over', provenance:'mirror' },
-        { id:'settee_port', kind:'obstruction', type:'seat', footprint:{x:[-r3(xIn(-3.75)),-CK.xi],y:[CK.yB+0.1,CK.yA-0.1]}, height_above_floor_m:{top:r3(CK.seatZ+0.1-SOLE)}, treatment:'step_over', provenance:'exact — U: outboard bench 0.50 deep + returns y '+r3(CK.yB+0.1)+'..'+r3(CK.yB+0.8)+' and '+r3(CK.yA-0.8)+'..'+r3(CK.yA-0.1)+'; the table sits in the U (see table_port)' },
-        { id:'settee_stbd', kind:'obstruction', type:'seat', footprint:{x:[CK.xi,r3(xIn(-3.75))],y:[CK.yB+0.1,CK.yA-0.1]}, height_above_floor_m:{top:r3(CK.seatZ+0.1-SOLE)}, treatment:'step_over', provenance:'mirror of settee_port' },
+        { id:'settee_port', kind:'obstruction', type:'seat', footprint:{x:[-r3(xIn(TABLE.y)),-CK.xi],y:[CK.yB+0.1,CK.yA-0.1]}, height_above_floor_m:{top:r3(CK.seatZ+0.54-SOLE)}, treatment:'step_over', provenance:'exact — U: outboard bench 0.50 deep + returns y '+r3(CK.yB+0.1)+'..'+r3(CK.yB+0.8)+' and '+r3(CK.yA-0.8)+'..'+r3(CK.yA-0.1)+'; the table sits in the U (see table_port)' },
+        { id:'settee_stbd', kind:'obstruction', type:'seat', footprint:{x:[CK.xi,r3(xIn(TABLE.y))],y:[CK.yB+0.1,CK.yA-0.1]}, height_above_floor_m:{top:r3(CK.seatZ+0.54-SOLE)}, treatment:'step_over', provenance:'mirror of settee_port' },
         { id:'table_port', kind:'obstruction', type:'table', footprint:{x:[-TABLE.x-TABLE.hx,-TABLE.x+TABLE.hx],y:[TABLE.y-TABLE.hy,TABLE.y+TABLE.hy]}, height_above_floor_m:{top:r3(TABLE.z-SOLE)}, treatment:'waist_block', provenance:'exact, TABLE' },
         { id:'table_stbd', kind:'obstruction', type:'table', footprint:{x:[TABLE.x-TABLE.hx,TABLE.x+TABLE.hx],y:[TABLE.y-TABLE.hy,TABLE.y+TABLE.hy]}, height_above_floor_m:{top:r3(TABLE.z-SOLE)}, treatment:'waist_block', provenance:'mirror' },
         { id:'boom', kind:'overhead', type:'spar', footprint:{x:'swings 0..86° either side about the gooseneck',y:[r3(GOOSE[1]-BOOM_L),r3(GOOSE[1])]}, height_above_floor_m:{underside:r3(GOOSE[2]-BOOM_SEC[1]-SOLE)}, treatment:'overhead', provenance:'exact, GOOSE + BOOM_L + BOOM_SEC — '+r3(GOOSE[2]-BOOM_SEC[1]-SOLE)+' m over the sole: clear' },
@@ -1216,15 +1323,15 @@
       _notes:[
         { id:'traveller', kind:'obstruction', type:'rail', footprint:{x:[-TRAV.hx,TRAV.hx],y:[TRAV.y-0.05,TRAV.y+0.05]}, height_above_floor_m:{top:0.07,car:0.12}, treatment:'step_over', provenance:'exact, TRAV; the car rides the pose (ANCHORS.travellerCar), the sheet rises from it to the boom end' },
         { id:'mainsheet_winches', kind:'obstruction', type:'winch', footprint:{x:[[-WINCH.mainX-0.13,-WINCH.mainX+0.13],[WINCH.mainX-0.13,WINCH.mainX+0.13]],y:[WINCH.mainY-0.13,WINCH.mainY+0.13]}, height_above_floor_m:{top:0.29}, treatment:'step_over', provenance:'exact, WINCH.main*' },
-        { id:'garage_lids', kind:'surface', type:'hatch_lid', footprint:{x:[[-2.3,-0.4],[0.4,2.3]],y:[-10.6,-8.9]}, height_above_floor_m:{top:0.04}, treatment:'flat', provenance:'exact, decks build()' },
+        { id:'garage_lids', kind:'surface', type:'hatch_lid', footprint:{x:[[-2.3,-0.4],[0.4,2.3]],y:[-10.6,-8.9]}, height_above_floor_m:{top:0.04}, treatment:'flat', provenance:'flush teak lids with perimeter reveals and lift handles, decks build()' },
         { id:'quarter_pads', kind:'surface', type:'cushion', footprint:{x:[[-2.45,-1.55],[1.55,2.45]],y:[-12.87,-12.23]}, height_above_floor_m:{top:0.12}, treatment:'flat', provenance:'exact, decks build()' },
         { id:'stair_top', kind:'edge', type:'stair_head', footprint:{x:[-STAIR.x,STAIR.x],y:[AFT.y0-0.02,AFT.y0]}, treatment:'stairs', provenance:'STAIRS.transom_stair' },
       ] };
-    const platform={ id:'swim_platform', z:PLAT, winding:'ccw_from_above', polygon:[[-PLATFORM.hx,PLATFORM.y1],[PLATFORM.hx,PLATFORM.y1],[PLATFORM.hx,PLATFORM.y0],[STAIR.x,PLATFORM.y0],[STAIR.x,STAIR.floorY],[-STAIR.x,STAIR.floorY],[-STAIR.x,PLATFORM.y0],[-PLATFORM.hx,PLATFORM.y0]],
-      note:'The fold-down platform (opts.platform 1 = down) plus the recess floor inside the transom, '+r3(PLAT-DWL)+' m above the DWL. Absent when opts.platform is 0 — the transom door is shut over the stair.', conditional:'opts.platform >= 0.5' };
+    const platform={ id:'swim_platform', z:PLAT, winding:'ccw_from_above', polygon:[[-PLATFORM.hx,PLATFORM.y1],[PLATFORM.hx,PLATFORM.y1],[STAIR.x,STAIR.floorY],[-STAIR.x,STAIR.floorY]],
+      note:'The fold-down platform (opts.platform 1 = down) plus the recess floor inside the transom, '+r3(PLAT-DWL)+' m above the DWL. Walkable only when opts.platform >= 0.999. Intermediate poses rotate the same panel about its transom hinge; 0 shuts it over the stair.', conditional:'opts.platform >= 0.999' };
     const roofPoly=[]; const NR=8;
-    for(let i=0;i<=NR;i++){ const y=RF.yA+(RF.yF-RF.yA)*i/NR; roofPoly.push([-r3(hxRoof(y)-0.07),r3(y),r3(roofZ(y))]); }
-    for(let i=NR;i>=0;i--){ const y=RF.yA+(RF.yF-RF.yA)*i/NR; roofPoly.push([r3(hxRoof(y)-0.07),r3(y),r3(roofZ(y))]); }
+    for(let i=0;i<=NR;i++){ const y=RF.yA+(RF.yF-RF.yA)*i/NR; roofPoly.push([-r3(hxRoof(y)-RF.tumble),r3(y),r3(roofZ(y))]); }
+    for(let i=NR;i>=0;i--){ const y=RF.yA+(RF.yF-RF.yA)*i/NR; roofPoly.push([r3(hxRoof(y)-RF.tumble),r3(y),r3(roofZ(y))]); }
     const coachroof={ id:'coachroof', winding:'ccw_from_above', polygon3d:roofPoly,
       note:'Walkable — the route to the mast, the halyard winches and the boom. Falls '+r3(RF.hA-RF.hF)+' m going forward; the raked front (y '+RF.yF+'..'+RF.yNose+') is a slope down to the foredeck. Reached from the cockpit coaming or either side deck ('+r3(RF.hA)+' m up from the side deck aft).',
       _notes:[
@@ -1239,7 +1346,7 @@
     const foredeck={ id:'foredeck', winding:'ccw_from_above', polygon3d:forePoly,
       note:'Rising gently with the sheer from the saloon nose to the stem head; fenced by the pulpit and twin lifelines. The tender well is a '+WELL.depth+' m drop in the middle of it (see tender_well).',
       _notes:[
-        { id:'tender_well', kind:'hole', type:'well', footprint:{x:'±'+WELL.hxA+' aft tapering to ±'+WELL.hxF+' fwd',y:[WELL.y0,WELL.y1]}, height_above_floor_m:{floor:-WELL.depth,rim:0.06}, treatment:'drop', provenance:'exact, WELL — published as DECK tender_well; the lid is off in pass 1' },
+        { id:'tender_well', kind:'hole', type:'well', footprint:{x:'±'+WELL.hxA+' aft tapering to ±'+WELL.hxF+' fwd',y:[WELL.y0,WELL.y1]}, height_above_floor_m:{floor:-WELL.depth,rim:0.06}, treatment:'drop', provenance:'exact, WELL — published as DECK tender_well; secured tender present unless opts.tender:false' },
         { id:'hatches', kind:'surface', type:'hatch_lid', footprint:{centres:HATCHES.map(h=>[h[0],h[1]]),half:HATCHES.map(h=>h[2])}, height_above_floor_m:{top:0.045}, treatment:'flat', provenance:'exact, HATCHES' },
         { id:'windlass', kind:'obstruction', type:'fitting', footprint:{x:[-0.24,0.24],y:[r3(WINDLASS.y-0.2),r3(WINDLASS.y+0.2)]}, height_above_floor_m:{top:0.43}, treatment:'step_over', provenance:'exact, WINDLASS' },
         { id:'bow_pad', kind:'surface', type:'cushion', footprint:{x:[-0.32,0.32],y:[12.38,12.82]}, height_above_floor_m:{top:0.12}, treatment:'flat', provenance:'exact, foredeck build()' },
@@ -1250,8 +1357,8 @@
         { id:'jib_tracks', kind:'obstruction', type:'rail', footprint:{x:[[-r3(carX()+0.03),-r3(carX()-0.03)],[r3(carX()-0.03),r3(carX()+0.03)]],y:[0.1,2.0]}, height_above_floor_m:{top:0.05,car:0.11}, treatment:'step_over', provenance:'exact, carX()/CAR_Y — on the side decks; the lazy sheet crosses the foredeck to the windward car' },
       ] };
     const wellPoly=[[-WELL.hxA,WELL.y0],[WELL.hxA,WELL.y0],[WELL.hxF,WELL.y1],[-WELL.hxF,WELL.y1]];
-    const well={ id:'tender_well', z:r3(dZ((WELL.y0+WELL.y1)/2)-WELL.depth), winding:'ccw_from_above', polygon:wellPoly, note:'Teak-soled well sunk '+WELL.depth+' m into the foredeck with a proud steel rim; the RIB stows here under its lid (lid not modelled — pass 1 shows it open).', access:['step down from the foredeck over the rim, any side'] };
-    const saloon={ id:'saloon_sole', z:SAL, level:'saloon', winding:'ccw_from_above', polygon:[[-0.7,-1.0],[-0.7,RF.yF-0.02],[1.5,RF.yF-0.02],[1.5,-1.0]],
+    const well={ id:'tender_well', z:r3(dZ((WELL.y0+WELL.y1)/2)-WELL.depth), winding:'ccw_from_above', polygon:wellPoly, note:'Teak-soled well sunk '+WELL.depth+' m into the foredeck with a proud steel rim; the RIB is secured here by default; opts.tender:false removes it.', _notes:[{id:'secured_tender',kind:'obstruction',type:'boat',footprint:{x:[-TENDER.beam/2,TENDER.beam/2],y:[TENDER.y-TENDER.length/2,TENDER.y+TENDER.length/2]},height_above_floor_m:{top:r3(TENDER.z+TENDER.tube-(dZ(TENDER.y)-WELL.depth))},treatment:'wall',conditional:'opts.tender !== false',provenance:'TENDER, conservative envelope including tubes and lashings'}], access:['step down from the foredeck over the rim, any side'] };
+    const saloon={ id:'saloon_sole', z:SAL, level:'saloon', winding:'ccw_from_above', polygon:[[-0.7,saloonY(-1.0)],[-0.7,saloonY(4.28)],[1.5,saloonY(4.28)],[1.5,saloonY(-1.0)]],
       note:'The raised deck saloon: from the foot of the companionway tread to the forward bulkhead door, between the port U-settee/table and the starboard chart table/settee. Headroom '+r3(roofZ(RF.yA)-0.05-SAL)+' aft to '+r3(roofZ(RF.yF)-0.05-SAL)+' forward. The mast comes through it at y '+MAST.y+'.',
       _notes:[
         { id:'settee_port_U', kind:'obstruction', type:'seat', footprint:{x:[-2.45,-0.7],y:[-0.6,3.6]}, height_above_floor_m:{top:0.54}, treatment:'step_over', provenance:'exact, interior build() bench(); outboard run x -2.45..-1.75 full length, returns y -0.6..0.0 and 3.0..3.6' },
@@ -1264,7 +1371,12 @@
         { id:'companionway_tread', kind:'obstruction', type:'bulkhead_step', footprint:{x:[-0.55,0.55],y:[-1.6,-1.3]}, height_above_floor_m:{top:0.29}, treatment:'stairs', provenance:'STAIRS.companionway' },
         { id:'forward_steps', kind:'obstruction', type:'bulkhead_step', footprint:{x:[-0.5,0.5],y:[4.3,4.9]}, height_above_floor_m:{treads:[-0.28,-0.56],bottom:-0.85}, treatment:'stairs', provenance:'STAIRS.saloon_to_lower — down going forward' },
       ] };
-    const lower={ id:'lower_sole', z:LOW, level:'lower', winding:'ccw_from_above', polygon:[[-0.55,4.9],[-0.55,12.4],[0.55,12.4],[0.55,4.9]],
+    for(const n of saloon._notes) if(n.footprint && Array.isArray(n.footprint.y)) {
+      if(n.id==='forward_steps') n.footprint.y=[RF.yF,RF.yF+0.6];
+      else if(n.id!=='mast') n.footprint.y=n.footprint.y.map(saloonY);
+      n.provenance+='; saloon fit-out follows saloonY(), forward steps follow RF.yF';
+    }
+    const lower={ id:'lower_sole', z:LOW, level:'lower', winding:'ccw_from_above', polygon:[[-0.55,RF.yF+0.6],[-0.55,12.4],[0.55,12.4],[0.55,RF.yF+0.6]],
       note:'Centreline passage below the foredeck from the foot of the saloon steps to the crew cabin: galley port / guest double starboard (y 5.4..7.8), a bulkhead door at y 8.0 into the VIP (island berth), a door at y 11.3 into the crew cabin, the chain-locker bulkhead at 12.5. Headroom '+r3(dZ(6.5)-0.05-LOW)+' m.',
       _notes:[
         { id:'galley', kind:'obstruction', type:'counter', footprint:{x:[-2.15,-0.75],y:[5.15,7.75]}, height_above_floor_m:{top:0.92}, treatment:'waist_block', provenance:'exact; sink y 5.52..5.88, stove y 6.62..7.18 (INTERACT stove)' },
@@ -1289,7 +1401,7 @@
       provenance:'rig DOOR const; defaults CLOSED (fleet ruling 2026-08-19)' };
     const STAIRS={ companionways:[
       { id:'companionway', from:'cockpit_sole', to:'saloon_sole', mechanism:'InteriorStair', opening:{ x0:DOOR.x0, x1:DOOR.x1, at_y:DOOR.y, z0:r3(DOOR.z0), z1:r3(DOOR.z1) }, sill_z:r3(DOOR.z0),
-        total_rise_m:r3(DOOR.z0-SAL), treads:[{top_z:2.34,going_m:0.30}], direction:'down going forward (+y)', provenance:'interior build(); sill = DOOR.z0' },
+        total_rise_m:r3(DOOR.z0-SAL), treads:[{top_z:2.34,going_m:r3(saloonY(-1.3)-saloonY(-1.6))}], direction:'down going forward (+y)', provenance:'interior build(); sill = DOOR.z0; tread follows saloonY()' },
       { id:'saloon_to_lower', from:'saloon_sole', to:'lower_sole', mechanism:'InteriorStair', opening:{ x0:-0.5, x1:0.5, at_y:RF.yF, z0:1.7, z1:r3(SAL+2.0) }, sill_z:SAL,
         total_rise_m:r3(SAL-LOW), treads:[{top_z:1.77,going_m:0.30},{top_z:1.49,going_m:0.30}], direction:'down going forward (+y)', provenance:'interior build()' },
       { id:'helm_to_aft_deck', from:'cockpit_sole', to:'aft_deck', mechanism:'step', opening:{ x0:-CK.xi, x1:CK.xi, at_y:CK.yH }, total_rise_m:r3(dZ(CK.yH)-SOLE), treads:[{top_z:r3(STEP1),going_m:0.32}], direction:'up going aft (-y)', provenance:'cockpit build(); STEP1' },
@@ -1305,7 +1417,7 @@
       { id:'mainsheet_stbd', action:'trim_main', label:'Starboard mainsheet winch', verb:'Trim the main', level:'aft_deck', pos:P3(A.winchMainStbd), reach_point:[1.7,-8.65,r3(dZ(-8.65))], visible_facings:ALL, mech:'as port', provenance:'WINCH.main*' },
       { id:'primary_port', action:'trim_jib', label:'Port primary', verb:'Trim the genoa', level:'cockpit_sole', pos:P3(A.winchPrimaryPort), reach_point:[-1.9,-6.4,SOLE], visible_facings:ALL, mech:'opts.jib 0..1; opts.grind:"jib" animates the handle on the LEEWARD primary', provenance:'WINCH.primary*' },
       { id:'primary_stbd', action:'trim_jib', label:'Starboard primary', verb:'Trim the genoa', level:'cockpit_sole', pos:P3(A.winchPrimaryStbd), reach_point:[1.9,-6.4,SOLE], visible_facings:ALL, mech:'as port', provenance:'WINCH.primary*' },
-      { id:'halyard_winch', action:'hoist_main', label:'Halyard winch', verb:'Hoist / lower the main', level:'coachroof', pos:P3(A.halyardWinchStbd), reach_point:[1.0,-0.9,r3(roofZ(-0.9))], visible_facings:ALL, mech:'opts.hoist 0..1 — the main flakes INTO the boom; opts.cover zips the boom cover at 0 (STORED)', provenance:'WINCH.halyard*' },
+      { id:'halyard_winch', action:'hoist_main', label:'Halyard winch', verb:'Hoist / lower the main', level:'coachroof', pos:P3(A.halyardWinchStbd), reach_point:[1.0,WINCH.halyardY,r3(roofZ(WINCH.halyardY))], visible_facings:ALL, mech:'opts.hoist 0..1 — the main flakes INTO the boom; opts.cover zips the boom cover at 0 (STORED)', provenance:'WINCH.halyard*' },
       { id:'furler', action:'furl_jib', label:'Furling line', verb:'Furl / unfurl the genoa', level:'cockpit_sole', pos:P3(A.furlerCleat), reach_point:[-1.9,-5.4,SOLE], visible_facings:ALL, mech:'opts.furl 0..1 — the line runs the port deck to the drum; the staysail furls on its own (opts.sfurl, electric)', provenance:'FURL_CLEAT' },
       { id:'windlass', action:'anchor', label:'Windlass', verb:'Drop / weigh anchor', level:'foredeck', pos:P3(A.windlass), reach_point:[0,11.7,r3(dZ(11.7))], visible_facings:ALL, mech:'the anchor hangs on the bow roller arm; no chain-out state in pass 1', provenance:'WINDLASS' },
       { id:'platform', action:'fold_platform', label:'Swim platform', verb:'Lower / raise the platform', level:'aft_deck', pos:P3(A.stairTop), reach_point:[0,-11.3,r3(dZ(-11.3))], visible_facings:ALL, mech:'opts.platform 0..1; 0 shuts the transom door over the stair', provenance:'PLATFORM / STAIR' },
@@ -1318,21 +1430,22 @@
       mast:{ foot:[0,MAST.y,r3(MAST.footZ)], head_z:MAST.headZ, rake_deg:MAST.rakeDeg, section_m:[0.34,0.22], through:'saloon (a post from the saloon sole in the cabin view)', spreaders:SPREADERS.map(s=>({z:s.z,len_m:s.len,sweep_deg:s.sweep})), chainplates:{x:CHAIN.x,y:[CHAIN.yAft,CHAIN.yCap,CHAIN.yFwd]}, backstays:{x:BACKSTAY.x,y:BACKSTAY.y,twin:true} },
       boom:{ gooseneck:P3({x:GOOSE[0],y:GOOSE[1],z:GOOSE[2]}), length_m:BOOM_L, section_m:[2*BOOM_SEC[0],2*BOOM_SEC[1]], kind:'Park Avenue — the main flakes into the trough; opts.cover is the boom cover', vang:'rigid strut, mast foot +0.55 -> boom at 27% of its length', clearance_over_cockpit_sole_m:r3(GOOSE[2]-BOOM_SEC[1]-SOLE), clearance_over_aft_deck_m:r3(GOOSE[2]-BOOM_SEC[1]-dZ(TRAV.y)), swing_deg:{min:0,max:86,side:'leeward = opposite the wind'}, end_over:'the aft deck above the traveller' },
       main:{ P_m:MAIN.P, E_m:MAIN.E, head_m:MAIN.head, roach_m:MAIN.roach, battens:MAIN.battens, area_m2:r3(0.5*MAIN.P*MAIN.E*1.2),
-        hoist:'opts.hoist 0..1 — luff = P*hoist up the mast; the flaked pile on the boom grows 0.10 -> 0.74 m as the cloth comes down', stored:'hoist 0 + cover:true — the boom cover zipped; the STORED state', sheet:'opts.main 0..1 — 1 hardened (boom 4°, traveller car centred), 0 eased (boom 86°, car at the leeward track end)', luff_on:'mast aft face', foot_on:'boom' },
+        hoist:'opts.hoist 0..1 — luff = P*hoist up the mast; the flaked pile nested inside the boom grows 0.08 -> 0.52 m as the cloth comes down', stored:'hoist 0 + cover:true — the boom cover zipped; the STORED state', sheet:'opts.main 0..1 — 1 hardened (boom 4°, traveller car centred), 0 eased (boom 86°, car at the leeward track end)', luff_on:'mast aft face', foot_on:'boom' },
       jib:{ kind:'genoa', luff_m:r3(JIB.luff), LP_m:JIB.LP, area_m2:r3(0.5*JIB.luff*JIB.LP), overlap:'~92% of J', tack:P3({x:JIB.tack[0],y:JIB.tack[1],z:JIB.tack[2]}), head:P3({x:JIB.head[0],y:JIB.head[1],z:JIB.head[2]}),
         furl:'opts.furl 0..1 — rolled onto the forestay; rolled radius 0.05+0.13*furl, the UV strip is the canvas slot', sheet:'opts.jib 0..1 — 1 hardened (9°), 0 eased (85°)', leads:{ cars:[[-r3(carX()),CAR_Y],[r3(carX()),CAR_Y]], turning_blocks:[[-r3(TURN.x()),TURN.y],[r3(TURN.x()),TURN.y]], primaries:[[-r3(WINCH.primaryX()),WINCH.primaryY],[r3(WINCH.primaryX()),WINCH.primaryY]] } },
       staysail:{ luff_m:r3(STAY.luff), LP_m:STAY.LP, area_m2:r3(0.5*STAY.luff*STAY.LP), tack:P3({x:STAY.tack[0],y:STAY.tack[1],z:STAY.tack[2]}), head:P3({x:STAY.head[0],y:STAY.head[1],z:STAY.head[2]}),
         furl:'opts.sfurl 0..1 (default 1 = furled)', sheet:'self-tacking: angle = min(jib angle, '+STAY.maxDeg+'°); the car rides the curved track at y '+STAY.trackY+' to x = ±'+r3(STAY.trackHx*0.95)+' at full travel', shadow:'fill *0.6 while the genoa is set (furl < 0.6)' },
-      pose_law:{ inputs:'awa (deg, + = wind over the starboard bow), aws (kn), main 0..1, jib 0..1, frame 0..7',
+      pose_law:{ inputs:'awa (deg, + = wind over the starboard bow), aws (kn), main 0..1, jib 0..1, hoist/furl/sfurl 0..1, frame 0..7',
         boom_deg:'min(4 + 82*(1-main), max(0, |awa| - 6))', jib_deg:'min(9 + 76*(1-jib), max(0, |awa| - 6))', stay_deg:'min(jib_deg, '+STAY.maxDeg+')',
         angle_of_attack:'|awa| - sail angle', fill:'clamp((aoa-5)/13) * clamp(aws/6); jib + staysail *0.4 when |awa|>150 (blanketed)',
         luff:'clamp((8-aoa)/8) — flogging near the luff; |awa|<25 = in irons, every sail flogs whole and the boom wanders ±2°',
-        stall:'aoa>40 — full but dead; camber eases 40% by aoa 80', heel_deg:'min('+HEEL_MAX+', '+HEEL_K+'*aws^2*(0.25+0.75*fill_main)*k(awa)) to leeward; k=1 to 100°, 0.35 dead downwind; 15% in irons — a 27 m yacht is stiffer than the 30',
+        stall:'aoa>40 — full but dead; camber eases 40% by aoa 80', heel_deg:'min('+HEEL_MAX+', '+HEEL_K+'*aws^2*drive*k(awa)) to leeward; drive=0.52*deployed_main*(0.25+0.75*fill_main)+0.48*deployed_jib*(0.25+0.75*fill_jib)+0.18*deployed_staysail*(0.25+0.75*fill_stay); deployed_main=hoist when hoist>0.02, otherwise 0; deployed_jib=1-furl when furl<0.97, otherwise 0; deployed_staysail=1-sfurl when sfurl<0.97, otherwise 0; k=1 to 100°, 0.35 dead downwind; 15% in irons; no canvas gives zero heel',
         frames:'8, looping: cloth flutter + winch handle + (rock:true) the wave', note:'ART-SIDE law: it makes the sprite agree with itself. Gameplay owns the polar and drive; feed the rig the awa/aws/sheet it decides and the picture follows.' },
       standing_rigging:{ forestay:[P3({x:FORESTAY.foot[0],y:FORESTAY.foot[1],z:FORESTAY.foot[2]}),P3({x:FORESTAY.head[0],y:FORESTAY.head[1],z:FORESTAY.head[2]})], inner_forestay:[P3({x:INNER.foot[0],y:INNER.foot[1],z:INNER.foot[2]}),P3({x:INNER.head[0],y:INNER.head[1],z:INNER.head[2]})], backstays:'twin, masthead to the quarters at (±'+BACKSTAY.x+', '+BACKSTAY.y+')', caps:'chainplates (±'+CHAIN.x+', '+CHAIN.yCap+') through all three spreader tips to the masthead', diagonals:'D2 spreader-1 tip -> spreader-2 root, D3 spreader-2 tip -> spreader-3 root', lowers:'fore + aft from (±'+CHAIN.x+', '+CHAIN.yFwd+'/'+CHAIN.yAft+') to the lower spreader root' },
       running_rigging:{ mainsheet:'boom end -> traveller car (aft deck, y '+TRAV.y+') -> track end -> leeward mainsheet winch (±'+WINCH.mainX+', '+WINCH.mainY+')', jib_sheets:'clew -> car -> turning block -> primary, both sides; the lazy sheet sags across the foredeck forward of the mast', staysail_sheet:'clew -> self-tacking car; led below', halyards:'mast foot -> organiser -> clutch banks (y '+WINCH.clutchY+') -> halyard winches (±'+WINCH.halyardX+', '+WINCH.halyardY+') on the saloon roof', furling_line:'drum -> port side deck -> coaming cleat ('+FURL_CLEAT[1]+')', lazy_jacks:'mast z '+r3(MAST.footZ+13.5)+' -> boom top, three legs a side' } };
+    for(const i of INTERACT.filter(i=>i.level==='saloon_sole')){i.pos[1]=r3(saloonY(i.pos[1]));i.reach_point[1]=r3(saloonY(i.reach_point[1]));}
     const WATERLINE={ z:DWL, clip_rule:'the water shader cuts at hull z='+DWL+' — the boot-top BOTTOM. The pivot row is the canoe-body bottom, '+DWL+' m (~'+Math.round(DWL*Math.cos(40*DEG)*32)+' px at elev 40) below it; there is no per-facing correction, the DWL is a horizontal line in sprite space under roll 0.',
-      draft_m:{ canoe_body:DWL, keel:r3(DWL+2.65+0.6), rudder:r3(DWL+1.9) }, underbody:'fin keel (root chord 4.4 at y -1.0..3.4, bulb at z -2.85) and spade rudder (stock y -11.2) bake only with opts.underbody — the dry reference. Afloat they are under the shader\u2019s water. The swim platform sits '+r3(PLAT-DWL)+' m above the cut.',
+      draft_m:{ canoe_body:DWL, keel:r3(DWL-Math.min(...F.filter(f=>f.under).flatMap(f=>f.v.map(p=>p[2])))), rudder:r3(DWL+1.9) }, underbody:'fin keel (root chord 4.4 at y -1.0..3.4, bulb at z -2.85) and spade rudder (stock y -11.2) bake only with opts.underbody — the dry reference. Afloat they are under the shader\u2019s water. The swim platform sits '+r3(PLAT-DWL)+' m above the cut.',
       note:'Heel is a render param (pose.heel, degrees about the origin): the waterline on the sprite tilts with it; the shader cut stays level in world.' };
     return {
       schema:'hidden-harbours/boat-gameplay-geometry@1', rig:'sloop88IsoRig.js', exportSymbol:'Sloop88Iso', units:'metres',
@@ -1346,7 +1459,7 @@
       THRESHOLD, STAIRS, INTERACT, SAIL, WATERLINE,
       _excluded:{ LADDER:'None — stairs everywhere: the transom stair, the walkway step, the companionway tread, the saloon steps. The swim ladder folds out of the platform and is not modelled.',
         owners_cabin:'The aft (owner\u2019s) cabin under the cockpit and aft deck is not cut open in pass 1 — the cockpit and aft deck keep their soles in the cabin view.',
-        tender:'The RIB that lives in the tender well is not modelled; the well is shown open, lid off.',
+        tender:'A secured RIB is visible by default; opts.tender:false exposes the empty well. Launch animation and outboard are not modelled.',
         bimini_sprayhood:'Not modelled — the reference deck is clean.',
         spinnaker_code_zero:'No downwind sail. The genoa and staysail are blanketed dead downwind (fill *0.4) and that is the picture.',
         passerelle_davit_radar:'Not modelled.',

@@ -355,10 +355,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 // Both rigs publish `geometry().ids`, which arms RigMeshExtractor's level-tag
                 // contract: "this rig publishes geometry().ids, so every face it hands over must
                 // DECLARE its level". Until S0 neither paid for it. MEASURED in the repo's own V8,
-                // on the committed bytes, before and after:
+                // on the bytes S0 landed, before and after:
                 //
                 //                        sloop 30                        sloop 88
-                //   faces                1,852                           3,088
+                //   faces (at S0)        1,852                           3,088
                 //   lv not in ids  WAS   1,058 (842 with no `lv` at all) 2,302 (1,312 with none)
                 //                  NOW   0                               0
                 //   stamped with   WAS   cabin·lid·rig·under             cabin·lid·rig·under
@@ -366,6 +366,33 @@ namespace HiddenHarbours.Tools.RigBaking
                 //                        foredeck·cabin·rig              coachroof·foredeck·
                 //                        (all 6 ids)                     saloon·lower·rig (all 8)
                 //   ids never stamped    (none)                          (none)
+                //
+                // ⚠️ THOSE ARE THE S0 NUMBERS, AND PASS 3 RE-CUT THE GEOMETRY THEY COUNTED (drop
+                // 2026-09-13). Re-measured on the pass-3 bytes, in the same standalone V8, by a
+                // probe whose control is that it reproduces every S0 number above EXACTLY on main's
+                // bytes — faces, vertices and the per-level histogram alike:
+                //
+                //                        sloop 30                        sloop 88
+                //   faces                2,035  (was 1,852)              4,500  (was 3,088)
+                //   vertices             8,278  (was 7,514)              18,327 (was 12,530)
+                //   lv not in ids        0                               0
+                //   distinct materials   14                              14
+                //   faces by level       cabin      302  (+0)            aft_deck    256  (+138)
+                //                        coachroof  306  (+71)           coachroof   344  (+110)
+                //                        cockpit    355  (+112)          cockpit   1,126  (+644)
+                //                        foredeck    91  (+0)            foredeck    519  (+202)
+                //                        hull       489  (+0)            hull        986  (+284)
+                //                        rig        492  (+0)            lower       271  (+34)
+                //                                                        rig         786  (+0)
+                //                                                        saloon      212  (+0)
+                //
+                // READ THE SHAPE, not just the totals: `rig` does not move on either hull, and
+                // neither does the 88's `saloon` or the 30's `cabin`, `foredeck` and `hull`. Pass 3
+                // is a DECK AND COCKPIT pass — the 88 takes two thirds of her +1,412 in the cockpit
+                // and on the foredeck (the tender), the 30 takes all +183 of hers in the coachroof
+                // and cockpit. Nothing in the standing rig was re-cut, which is why the sidecars'
+                // only changed row field is `heel_deg`. SailRigKitTests moves its two face pins with
+                // them (1,852 → 2,035, 3,088 → 4,500) and that is the only C# the drop touches.
                 //
                 // HOW, because the shape matters more than the counts. `lid` and `under` were never
                 // levels: they were the RIG's own rasteriser switches, sharing the `lv` field with
@@ -392,24 +419,28 @@ namespace HiddenHarbours.Tools.RigBaking
                 // clears both: run RigMeshAssetBaker.BakeSloopsCli, commit the defs, then delete
                 // these two entries and add the hulls to OneHullPerRig as MeshOnly.
                 //
-                // Everything else downstream of the BODY was already measured and has not moved:
-                // `faces()` is pose-free (same array identity after renders at opposite poses),
-                // 1,852 / 3,088 faces, 7,514 / 12,530 vertices, and the filtered ramp table is still
-                // 14 of 16 on both (the unfiltered one is 18 and 19 — over the cap, and it fails
-                // quietly). The reconstruction entries in RigMeshExtractor and
-                // RigMeshAssetBaker.BakeSloopsCli are in place, so the bake is a slot away.
+                // Everything else downstream of the BODY still holds on the pass-3 bytes:
+                // `faces()` is pose-free (same length after renders at opposite poses) and carries no
+                // sail, canvas or batten material; 2,035 / 4,500 faces; 8,278 / 18,327 vertices; and
+                // the filtered ramp table is still 14 of 16 on both. (The unfiltered 18 and 19 —
+                // over the cap, and it fails quietly — is read through the extractor rather than off
+                // the rig, so it is NOT re-measured here and stays an S0 reading.) The reconstruction
+                // entries in RigMeshExtractor and RigMeshAssetBaker.BakeSloopsCli are in place, so
+                // the bake is a slot away.
                 ["docs/art/rigs/sail-rig-kit/sloop-30/sloopIsoRig.js"] =
                     "ART FIXED, BAKE OWED: faces stamped from ids in S0 (PR #791, art/sloop-face-levels) " +
-                    "— 0 of 1,852 faces now carry a level her geometry().ids does not name, and all " +
-                    "six of hull/cockpit/coachroof/foredeck/cabin/rig are stamped. RigMeshExtractor " +
+                    "and re-measured on the pass-3 drop of 2026-09-13 — 0 of 2,035 faces (1,852 " +
+                    "before pass 3) carry a level her geometry().ids does not name, and all six of " +
+                    "hull/cockpit/coachroof/foredeck/cabin/rig are stamped. RigMeshExtractor " +
                     "accepts her. She stays here only until S1 runs RigMeshAssetBaker.BakeSloopsCli " +
                     "and commits the HullMeshDef; bake pending S1.",
 
                 ["docs/art/rigs/sail-rig-kit/sloop-88/sloop88IsoRig.js"] =
                     "ART FIXED, BAKE OWED: faces stamped from ids in S0 (PR #791, art/sloop-face-levels) " +
-                    "— 0 of 3,088, and the 449 faces that said `cabin` (a level she never declared) " +
-                    "now say saloon or lower, the two rooms she does. All eight of her ids are " +
-                    "stamped. Same state as the 30: bake pending S1.",
+                    "and re-measured on the pass-3 drop of 2026-09-13 — 0 of 4,500 (3,088 before " +
+                    "pass 3), and the 449 faces that said `cabin` (a level she never declared) now " +
+                    "say saloon or lower, the two rooms she does. All eight of her ids are stamped. " +
+                    "Same state as the 30: bake pending S1.",
             };
 
         /// <summary>

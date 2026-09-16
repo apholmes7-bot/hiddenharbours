@@ -2,7 +2,7 @@
   "schema": "hidden-harbours/boat-sailing@1",
   "rig": "sloop88IsoRig.js",
   "exportSymbol": "Sloop88Iso",
-  "derivedFromRigSha256": "137c2f4e908d8aba4e32a9309b0935eb47973530141a13024623deed98015270",
+  "derivedFromRigSha256": "909fb28413aa73e15bc445668c0719de5c9f47e97618824341543596e6b8e251",
   "pairs_with": {
     "gameplay_sidecar": "sloop88IsoRig.gameplay.json",
     "same_rig_hash": true,
@@ -161,16 +161,16 @@
     "P_m": 30,
     "E_m": 10.2,
     "main_area_m2": 183.6,
-    "headsail_area_m2": 165.689,
+    "headsail_area_m2": 165.708,
     "headsail": "genoa",
     "headsail_overlap": "~92% of J",
-    "staysail_area_m2": 65.247,
+    "staysail_area_m2": 66.846,
     "staysail_self_tacking_max_deg": 55,
-    "upwind_area_m2": 349.29,
+    "upwind_area_m2": 349.31,
     "SA_D": 17.79,
     "masthead_z": 37,
     "boom_length_m": 10.6,
-    "boom_underside_over_cockpit_sole_m": 3.66,
+    "boom_underside_over_cockpit_sole_m": 3.658,
     "provenance": "areas from SAIL in the geometry sidecar (main 0.5*P*E*roach factor; headsails 0.5*luff*LP); I = forestay head to forestay foot, J = forestay foot to the mast centreline at the deck (RIG consts)"
   },
   "AUTO_TRIM": {
@@ -208,7 +208,7 @@
         "luff_main": 1,
         "luff_headsail": 1,
         "stall_main": 0,
-        "heel_deg": 0.5,
+        "heel_deg": 0.4,
         "sails_to": "port"
       },
       "note": "pose law: |awa| < 25 with wind = in irons — every sail flogs whole, the boom wanders about the centreline"
@@ -242,7 +242,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 10,
+        "heel_deg": 9.6,
         "sails_to": "port"
       }
     },
@@ -275,7 +275,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 10.2,
+        "heel_deg": 9.7,
         "sails_to": "port"
       }
     },
@@ -308,7 +308,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 10.2,
+        "heel_deg": 9.6,
         "sails_to": "port"
       }
     },
@@ -374,7 +374,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 1,
-        "heel_deg": 2.4,
+        "heel_deg": 1.9,
         "sails_to": "port"
       },
       "note": "pose law: |awa| > 150 = the headsail is blanketed by the main (fill x0.4)"
@@ -486,7 +486,7 @@
         "luff_main": 1,
         "luff_headsail": 1,
         "stall_main": 0,
-        "heel_deg": 1,
+        "heel_deg": 0.9,
         "sails_to": "port"
       },
       {
@@ -524,7 +524,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.7,
+        "heel_deg": 7.3,
         "sails_to": "port"
       },
       {
@@ -543,7 +543,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.7,
+        "heel_deg": 7.3,
         "sails_to": "port"
       },
       {
@@ -562,7 +562,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.8,
+        "heel_deg": 7.4,
         "sails_to": "port"
       },
       {
@@ -581,7 +581,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.8,
+        "heel_deg": 7.4,
         "sails_to": "port"
       },
       {
@@ -600,7 +600,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.8,
+        "heel_deg": 7.5,
         "sails_to": "port"
       },
       {
@@ -619,7 +619,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.8,
+        "heel_deg": 7.4,
         "sails_to": "port"
       },
       {
@@ -638,7 +638,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.8,
+        "heel_deg": 7.5,
         "sails_to": "port"
       },
       {
@@ -657,7 +657,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.8,
+        "heel_deg": 7.4,
         "sails_to": "port"
       },
       {
@@ -676,7 +676,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.8,
+        "heel_deg": 7.3,
         "sails_to": "port"
       },
       {
@@ -695,7 +695,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.7,
+        "heel_deg": 7.4,
         "sails_to": "port"
       },
       {
@@ -714,7 +714,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.7,
+        "heel_deg": 7.3,
         "sails_to": "port"
       },
       {
@@ -733,7 +733,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.7,
+        "heel_deg": 7.4,
         "sails_to": "port"
       },
       {
@@ -752,7 +752,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.8,
+        "heel_deg": 7.4,
         "sails_to": "port"
       },
       {
@@ -771,7 +771,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.8,
+        "heel_deg": 7.3,
         "sails_to": "port"
       },
       {
@@ -790,7 +790,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.8,
+        "heel_deg": 7.4,
         "sails_to": "port"
       },
       {
@@ -809,7 +809,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 7.8,
+        "heel_deg": 7.4,
         "sails_to": "port"
       },
       {
@@ -1018,7 +1018,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0.72,
-        "heel_deg": 4.3,
+        "heel_deg": 3.4,
         "sails_to": "port"
       },
       {
@@ -1037,7 +1037,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0.85,
-        "heel_deg": 4,
+        "heel_deg": 3.2,
         "sails_to": "port"
       },
       {
@@ -1056,7 +1056,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0.97,
-        "heel_deg": 3.7,
+        "heel_deg": 2.9,
         "sails_to": "port"
       },
       {
@@ -1075,7 +1075,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 1,
-        "heel_deg": 3.4,
+        "heel_deg": 2.7,
         "sails_to": "port"
       },
       {
@@ -1094,7 +1094,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 1,
-        "heel_deg": 3.1,
+        "heel_deg": 2.4,
         "sails_to": "port"
       },
       {
@@ -1113,13 +1113,13 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 1,
-        "heel_deg": 2.7,
+        "heel_deg": 2.2,
         "sails_to": "starboard"
       }
     ]
   },
   "HEEL": {
-    "law": "min(20, 0.04*aws^2*(0.25+0.75*fill_main)*k(awa)) to leeward; k=1 to 100°, 0.35 dead downwind; 15% in irons — a 27 m yacht is stiffer than the 30",
+    "law": "min(20, 0.04*aws^2*drive*k(awa)) to leeward; drive=0.52*deployed_main*(0.25+0.75*fill_main)+0.48*deployed_jib*(0.25+0.75*fill_jib)+0.18*deployed_staysail*(0.25+0.75*fill_stay); deployed_main=hoist when hoist>0.02, otherwise 0; deployed_jib=1-furl when furl<0.97, otherwise 0; deployed_staysail=1-sfurl when sfurl<0.97, otherwise 0; k=1 to 100°, 0.35 dead downwind; 15% in irons; no canvas gives zero heel",
     "max_deg": 20,
     "k": 0.04,
     "saturates_at_aws_kn": 22.4,
@@ -1179,24 +1179,24 @@
           0.3,
           0.5,
           0.7,
-          1,
-          1.3,
-          1.6,
-          2,
-          2.9,
+          0.9,
+          1.2,
+          1.5,
+          1.8,
+          2.7,
           3
         ],
         [
           0.1,
           0.5,
-          1.4,
-          2.5,
-          4,
-          5.7,
-          7.7,
-          10.1,
-          12.8,
-          15.8,
+          1.3,
+          2.4,
+          3.7,
+          5.4,
+          7.3,
+          9.5,
+          12,
+          14.9,
           20,
           20
         ],
@@ -1204,13 +1204,13 @@
           0.1,
           0.5,
           1.4,
-          2.6,
-          4,
-          5.8,
-          7.8,
-          10.2,
-          13,
-          16,
+          2.4,
+          3.8,
+          5.5,
+          7.5,
+          9.7,
+          12.3,
+          15.2,
           20,
           20
         ],
@@ -1218,41 +1218,41 @@
           0.1,
           0.5,
           1.4,
-          2.6,
-          4,
-          5.8,
-          7.8,
-          10.2,
-          13,
-          16,
+          2.4,
+          3.8,
+          5.4,
+          7.4,
+          9.7,
+          12.3,
+          15.1,
           20,
           20
         ],
         [
           0.1,
           0.5,
-          1.4,
-          2.5,
-          3.9,
-          5.7,
-          7.7,
-          10.1,
-          12.7,
-          15.7,
+          1.3,
+          2.4,
+          3.7,
+          5.4,
+          7.3,
+          9.5,
+          12.1,
+          14.9,
           20,
           20
         ],
         [
           0.1,
           0.5,
-          1.4,
-          2.6,
-          4,
-          5.7,
-          7.8,
-          10.2,
-          12.9,
-          15.9,
+          1.3,
+          2.4,
+          3.7,
+          5.4,
+          7.3,
+          9.6,
+          12.1,
+          14.9,
           20,
           20
         ],
@@ -1315,30 +1315,30 @@
         [
           0,
           0.2,
-          0.7,
-          1.2,
-          1.9,
-          2.7,
-          3.7,
+          0.5,
+          0.9,
+          1.5,
+          2.1,
+          2.9,
+          3.8,
           4.8,
-          6.1,
-          7.5,
-          10.9,
-          17
+          5.9,
+          8.5,
+          13.3
         ],
         [
           0,
-          0.2,
-          0.5,
-          0.9,
-          1.4,
-          2,
-          2.7,
+          0.1,
+          0.4,
+          0.7,
+          1.1,
+          1.6,
+          2.2,
+          2.8,
           3.6,
-          4.5,
-          5.6,
-          8.1,
-          12.6
+          4.4,
+          6.3,
+          9.9
         ]
       ]
     }
@@ -1650,7 +1650,7 @@
         }
       ]
     },
-    "boom_underside_over_cockpit_sole_m": 3.66,
+    "boom_underside_over_cockpit_sole_m": 3.658,
     "boom_end_over": "the aft deck above the traveller",
     "note": "the sprite follows awa; a tack or gybe is gameplay turning the boat through the wind and feeding the rig the awa of each frame. Timing is gameplay’s."
   },
@@ -1877,7 +1877,7 @@
     "inputs": {
       "LWL_m": 26.95,
       "displacement_kg": 89190,
-      "upwind_sail_area_m2": 349.29,
+      "upwind_sail_area_m2": 349.31,
       "SA_D": 17.79,
       "DL_ratio": 127
     },
@@ -2089,7 +2089,7 @@
         "v_kn": 3.2,
         "awa": 25.1,
         "aws": 6.7,
-        "heel_deg": 1.8,
+        "heel_deg": 1.7,
         "mode": "drawing"
       },
       {
@@ -2098,7 +2098,7 @@
         "v_kn": 3.39,
         "awa": 28.3,
         "aws": 6.6,
-        "heel_deg": 1.7,
+        "heel_deg": 1.6,
         "mode": "drawing"
       },
       {
@@ -2107,7 +2107,7 @@
         "v_kn": 3.6,
         "awa": 31.7,
         "aws": 6.6,
-        "heel_deg": 1.7,
+        "heel_deg": 1.6,
         "mode": "drawing"
       },
       {
@@ -2116,7 +2116,7 @@
         "v_kn": 3.67,
         "awa": 36.7,
         "aws": 6.3,
-        "heel_deg": 1.6,
+        "heel_deg": 1.5,
         "mode": "drawing"
       },
       {
@@ -2125,7 +2125,7 @@
         "v_kn": 3.73,
         "awa": 41.7,
         "aws": 5.9,
-        "heel_deg": 1.4,
+        "heel_deg": 1.3,
         "mode": "drawing"
       },
       {
@@ -2224,7 +2224,7 @@
         "v_kn": 4.8,
         "awa": 25.1,
         "aws": 10,
-        "heel_deg": 4,
+        "heel_deg": 3.8,
         "mode": "drawing"
       },
       {
@@ -2233,7 +2233,7 @@
         "v_kn": 5.08,
         "awa": 28.3,
         "aws": 10,
-        "heel_deg": 3.9,
+        "heel_deg": 3.8,
         "mode": "drawing"
       },
       {
@@ -2242,7 +2242,7 @@
         "v_kn": 5.4,
         "awa": 31.7,
         "aws": 9.9,
-        "heel_deg": 3.9,
+        "heel_deg": 3.7,
         "mode": "drawing"
       },
       {
@@ -2251,7 +2251,7 @@
         "v_kn": 5.5,
         "awa": 36.7,
         "aws": 9.4,
-        "heel_deg": 3.5,
+        "heel_deg": 3.4,
         "mode": "drawing"
       },
       {
@@ -2260,7 +2260,7 @@
         "v_kn": 5.6,
         "awa": 41.7,
         "aws": 8.9,
-        "heel_deg": 3.2,
+        "heel_deg": 3,
         "mode": "drawing"
       },
       {
@@ -2269,7 +2269,7 @@
         "v_kn": 5.7,
         "awa": 46.5,
         "aws": 8.3,
-        "heel_deg": 2.7,
+        "heel_deg": 2.6,
         "mode": "drawing"
       },
       {
@@ -2278,7 +2278,7 @@
         "v_kn": 5.5,
         "awa": 53,
         "aws": 7.4,
-        "heel_deg": 2.2,
+        "heel_deg": 2.1,
         "mode": "drawing"
       },
       {
@@ -2287,7 +2287,7 @@
         "v_kn": 5.3,
         "awa": 60.1,
         "aws": 6.5,
-        "heel_deg": 1.7,
+        "heel_deg": 1.6,
         "mode": "drawing"
       },
       {
@@ -2296,7 +2296,7 @@
         "v_kn": 5.1,
         "awa": 68,
         "aws": 5.6,
-        "heel_deg": 1.2,
+        "heel_deg": 1.1,
         "mode": "drawing"
       },
       {
@@ -2359,7 +2359,7 @@
         "v_kn": 6.4,
         "awa": 25.1,
         "aws": 13.3,
-        "heel_deg": 7,
+        "heel_deg": 6.7,
         "mode": "drawing"
       },
       {
@@ -2368,7 +2368,7 @@
         "v_kn": 6.77,
         "awa": 28.3,
         "aws": 13.3,
-        "heel_deg": 7,
+        "heel_deg": 6.7,
         "mode": "drawing"
       },
       {
@@ -2377,7 +2377,7 @@
         "v_kn": 7.2,
         "awa": 31.7,
         "aws": 13.2,
-        "heel_deg": 6.9,
+        "heel_deg": 6.5,
         "mode": "drawing"
       },
       {
@@ -2386,7 +2386,7 @@
         "v_kn": 7.33,
         "awa": 36.8,
         "aws": 12.6,
-        "heel_deg": 6.4,
+        "heel_deg": 5.9,
         "mode": "drawing"
       },
       {
@@ -2395,7 +2395,7 @@
         "v_kn": 7.47,
         "awa": 41.6,
         "aws": 11.9,
-        "heel_deg": 5.6,
+        "heel_deg": 5.3,
         "mode": "drawing"
       },
       {
@@ -2404,7 +2404,7 @@
         "v_kn": 7.6,
         "awa": 46.5,
         "aws": 11,
-        "heel_deg": 4.8,
+        "heel_deg": 4.6,
         "mode": "drawing"
       },
       {
@@ -2413,7 +2413,7 @@
         "v_kn": 7.33,
         "awa": 53,
         "aws": 9.9,
-        "heel_deg": 3.9,
+        "heel_deg": 3.7,
         "mode": "drawing"
       },
       {
@@ -2422,7 +2422,7 @@
         "v_kn": 7.07,
         "awa": 60,
         "aws": 8.7,
-        "heel_deg": 3,
+        "heel_deg": 2.9,
         "mode": "drawing"
       },
       {
@@ -2431,7 +2431,7 @@
         "v_kn": 6.8,
         "awa": 68,
         "aws": 7.5,
-        "heel_deg": 2.3,
+        "heel_deg": 2.1,
         "mode": "drawing"
       },
       {
@@ -2440,7 +2440,7 @@
         "v_kn": 6.2,
         "awa": 84.5,
         "aws": 5.7,
-        "heel_deg": 1.3,
+        "heel_deg": 1.2,
         "mode": "drawing"
       },
       {
@@ -2494,7 +2494,7 @@
         "v_kn": 8,
         "awa": 25.1,
         "aws": 16.6,
-        "heel_deg": 10.9,
+        "heel_deg": 10.4,
         "mode": "drawing"
       },
       {
@@ -2503,7 +2503,7 @@
         "v_kn": 8.47,
         "awa": 28.3,
         "aws": 16.6,
-        "heel_deg": 10.9,
+        "heel_deg": 10.4,
         "mode": "drawing"
       },
       {
@@ -2512,7 +2512,7 @@
         "v_kn": 9,
         "awa": 31.7,
         "aws": 16.5,
-        "heel_deg": 10.8,
+        "heel_deg": 10.2,
         "mode": "drawing"
       },
       {
@@ -2521,7 +2521,7 @@
         "v_kn": 9.17,
         "awa": 36.7,
         "aws": 15.7,
-        "heel_deg": 9.8,
+        "heel_deg": 9.4,
         "mode": "drawing"
       },
       {
@@ -2530,7 +2530,7 @@
         "v_kn": 9.33,
         "awa": 41.7,
         "aws": 14.8,
-        "heel_deg": 8.8,
+        "heel_deg": 8.3,
         "mode": "drawing"
       },
       {
@@ -2539,7 +2539,7 @@
         "v_kn": 9.5,
         "awa": 46.5,
         "aws": 13.8,
-        "heel_deg": 7.6,
+        "heel_deg": 7.2,
         "mode": "drawing"
       },
       {
@@ -2548,7 +2548,7 @@
         "v_kn": 9.17,
         "awa": 53,
         "aws": 12.3,
-        "heel_deg": 6,
+        "heel_deg": 5.7,
         "mode": "drawing"
       },
       {
@@ -2557,7 +2557,7 @@
         "v_kn": 8.83,
         "awa": 60.1,
         "aws": 10.8,
-        "heel_deg": 4.7,
+        "heel_deg": 4.4,
         "mode": "drawing"
       },
       {
@@ -2566,7 +2566,7 @@
         "v_kn": 8.5,
         "awa": 68,
         "aws": 9.3,
-        "heel_deg": 3.5,
+        "heel_deg": 3.2,
         "mode": "drawing"
       },
       {
@@ -2575,7 +2575,7 @@
         "v_kn": 7.75,
         "awa": 84.5,
         "aws": 7.1,
-        "heel_deg": 2,
+        "heel_deg": 1.9,
         "mode": "drawing"
       },
       {
@@ -2602,7 +2602,7 @@
         "v_kn": 6,
         "awa": 180,
         "aws": 4,
-        "heel_deg": 0.2,
+        "heel_deg": 0.1,
         "mode": "stalled"
       },
       {
@@ -2629,7 +2629,7 @@
         "v_kn": 9.15,
         "awa": 25.7,
         "aws": 19.6,
-        "heel_deg": 15,
+        "heel_deg": 14.3,
         "mode": "drawing"
       },
       {
@@ -2638,7 +2638,7 @@
         "v_kn": 9.97,
         "awa": 28.6,
         "aws": 19.8,
-        "heel_deg": 15.7,
+        "heel_deg": 14.7,
         "mode": "drawing"
       },
       {
@@ -2647,7 +2647,7 @@
         "v_kn": 10.55,
         "awa": 32.1,
         "aws": 19.5,
-        "heel_deg": 15.2,
+        "heel_deg": 14.5,
         "mode": "drawing"
       },
       {
@@ -2656,7 +2656,7 @@
         "v_kn": 11,
         "awa": 36.7,
         "aws": 18.8,
-        "heel_deg": 14.1,
+        "heel_deg": 13.4,
         "mode": "drawing"
       },
       {
@@ -2665,7 +2665,7 @@
         "v_kn": 11.2,
         "awa": 41.7,
         "aws": 17.8,
-        "heel_deg": 12.7,
+        "heel_deg": 12,
         "mode": "drawing"
       },
       {
@@ -2674,7 +2674,7 @@
         "v_kn": 11.4,
         "awa": 46.5,
         "aws": 16.6,
-        "heel_deg": 11,
+        "heel_deg": 10.4,
         "mode": "drawing"
       },
       {
@@ -2683,7 +2683,7 @@
         "v_kn": 11,
         "awa": 53,
         "aws": 14.8,
-        "heel_deg": 8.7,
+        "heel_deg": 8.2,
         "mode": "drawing"
       },
       {
@@ -2692,7 +2692,7 @@
         "v_kn": 10.6,
         "awa": 60.1,
         "aws": 13,
-        "heel_deg": 6.8,
+        "heel_deg": 6.4,
         "mode": "drawing"
       },
       {
@@ -2701,7 +2701,7 @@
         "v_kn": 10.2,
         "awa": 68,
         "aws": 11.2,
-        "heel_deg": 5,
+        "heel_deg": 4.7,
         "mode": "drawing"
       },
       {
@@ -2710,7 +2710,7 @@
         "v_kn": 9.3,
         "awa": 84.5,
         "aws": 8.5,
-        "heel_deg": 2.9,
+        "heel_deg": 2.7,
         "mode": "drawing"
       },
       {
@@ -2737,7 +2737,7 @@
         "v_kn": 7.2,
         "awa": 180,
         "aws": 4.8,
-        "heel_deg": 0.3,
+        "heel_deg": 0.2,
         "mode": "stalled"
       },
       {
@@ -2764,7 +2764,7 @@
         "v_kn": 9.39,
         "awa": 27.2,
         "aws": 21.7,
-        "heel_deg": 18.8,
+        "heel_deg": 17.8,
         "mode": "drawing"
       },
       {
@@ -2773,7 +2773,7 @@
         "v_kn": 10.23,
         "awa": 30.3,
         "aws": 21.8,
-        "heel_deg": 19,
+        "heel_deg": 17.9,
         "mode": "drawing"
       },
       {
@@ -2782,7 +2782,7 @@
         "v_kn": 10.83,
         "awa": 34.2,
         "aws": 21.6,
-        "heel_deg": 18.6,
+        "heel_deg": 17.6,
         "mode": "drawing"
       },
       {
@@ -2791,7 +2791,7 @@
         "v_kn": 11.56,
         "awa": 38.8,
         "aws": 21,
-        "heel_deg": 17.6,
+        "heel_deg": 16.7,
         "mode": "drawing"
       },
       {
@@ -2800,7 +2800,7 @@
         "v_kn": 11.92,
         "awa": 43.9,
         "aws": 19.9,
-        "heel_deg": 15.6,
+        "heel_deg": 14.8,
         "mode": "drawing"
       },
       {
@@ -2809,7 +2809,7 @@
         "v_kn": 12.04,
         "awa": 49.3,
         "aws": 18.5,
-        "heel_deg": 13.7,
+        "heel_deg": 12.9,
         "mode": "drawing"
       },
       {
@@ -2818,7 +2818,7 @@
         "v_kn": 12.28,
         "awa": 54.5,
         "aws": 16.9,
-        "heel_deg": 11.2,
+        "heel_deg": 10.6,
         "mode": "drawing"
       },
       {
@@ -2827,7 +2827,7 @@
         "v_kn": 12.37,
         "awa": 60,
         "aws": 15.2,
-        "heel_deg": 9.2,
+        "heel_deg": 8.7,
         "mode": "drawing"
       },
       {
@@ -2836,7 +2836,7 @@
         "v_kn": 11.9,
         "awa": 68,
         "aws": 13.1,
-        "heel_deg": 6.9,
+        "heel_deg": 6.4,
         "mode": "drawing"
       },
       {
@@ -2845,7 +2845,7 @@
         "v_kn": 10.85,
         "awa": 84.5,
         "aws": 9.9,
-        "heel_deg": 3.9,
+        "heel_deg": 3.7,
         "mode": "drawing"
       },
       {
@@ -2872,7 +2872,7 @@
         "v_kn": 8.4,
         "awa": 180,
         "aws": 5.6,
-        "heel_deg": 0.4,
+        "heel_deg": 0.3,
         "mode": "stalled"
       },
       {
@@ -2926,7 +2926,7 @@
         "v_kn": 11.75,
         "awa": 41.1,
         "aws": 22.9,
-        "heel_deg": 20,
+        "heel_deg": 19.9,
         "mode": "drawing"
       },
       {
@@ -2935,7 +2935,7 @@
         "v_kn": 12.12,
         "awa": 46.6,
         "aws": 21.7,
-        "heel_deg": 18.8,
+        "heel_deg": 18,
         "mode": "drawing"
       },
       {
@@ -2944,7 +2944,7 @@
         "v_kn": 12.24,
         "awa": 52.6,
         "aws": 20.1,
-        "heel_deg": 16.2,
+        "heel_deg": 15.4,
         "mode": "drawing"
       },
       {
@@ -2953,7 +2953,7 @@
         "v_kn": 12.48,
         "awa": 58.4,
         "aws": 18.5,
-        "heel_deg": 13.7,
+        "heel_deg": 12.9,
         "mode": "drawing"
       },
       {
@@ -2962,7 +2962,7 @@
         "v_kn": 12.61,
         "awa": 64.6,
         "aws": 16.6,
-        "heel_deg": 11,
+        "heel_deg": 10.4,
         "mode": "drawing"
       },
       {
@@ -2971,7 +2971,7 @@
         "v_kn": 12.48,
         "awa": 72.1,
         "aws": 14.6,
-        "heel_deg": 8.5,
+        "heel_deg": 8,
         "mode": "drawing"
       },
       {
@@ -2980,7 +2980,7 @@
         "v_kn": 11.87,
         "awa": 87.2,
         "aws": 11.3,
-        "heel_deg": 5,
+        "heel_deg": 4.7,
         "mode": "drawing"
       },
       {
@@ -3007,7 +3007,7 @@
         "v_kn": 9.3,
         "awa": 180,
         "aws": 6.7,
-        "heel_deg": 0.6,
+        "heel_deg": 0.5,
         "mode": "stalled"
       },
       {
@@ -3079,7 +3079,7 @@
         "v_kn": 12.37,
         "awa": 55.5,
         "aws": 21.8,
-        "heel_deg": 18.9,
+        "heel_deg": 17.9,
         "mode": "drawing"
       },
       {
@@ -3088,7 +3088,7 @@
         "v_kn": 12.62,
         "awa": 61.8,
         "aws": 20.1,
-        "heel_deg": 15.8,
+        "heel_deg": 15.2,
         "mode": "drawing"
       },
       {
@@ -3097,7 +3097,7 @@
         "v_kn": 12.74,
         "awa": 68.7,
         "aws": 18.2,
-        "heel_deg": 13.2,
+        "heel_deg": 12.4,
         "mode": "drawing"
       },
       {
@@ -3106,7 +3106,7 @@
         "v_kn": 12.62,
         "awa": 76.9,
         "aws": 16,
-        "heel_deg": 10.2,
+        "heel_deg": 9.7,
         "mode": "drawing"
       },
       {
@@ -3115,7 +3115,7 @@
         "v_kn": 12,
         "awa": 93.3,
         "aws": 12.7,
-        "heel_deg": 6.4,
+        "heel_deg": 6.1,
         "mode": "drawing"
       },
       {
@@ -3142,7 +3142,7 @@
         "v_kn": 9.4,
         "awa": 180,
         "aws": 8.6,
-        "heel_deg": 1,
+        "heel_deg": 0.8,
         "mode": "stalled"
       },
       {
@@ -3223,7 +3223,7 @@
         "v_kn": 12.7,
         "awa": 64.9,
         "aws": 21.8,
-        "heel_deg": 19,
+        "heel_deg": 17.8,
         "mode": "drawing"
       },
       {
@@ -3232,7 +3232,7 @@
         "v_kn": 12.83,
         "awa": 72.3,
         "aws": 19.7,
-        "heel_deg": 15.5,
+        "heel_deg": 14.7,
         "mode": "drawing"
       },
       {
@@ -3241,7 +3241,7 @@
         "v_kn": 12.7,
         "awa": 81.1,
         "aws": 17.5,
-        "heel_deg": 12.3,
+        "heel_deg": 11.5,
         "mode": "drawing"
       },
       {
@@ -3250,7 +3250,7 @@
         "v_kn": 12.08,
         "awa": 98.3,
         "aws": 14.3,
-        "heel_deg": 8.2,
+        "heel_deg": 7.8,
         "mode": "drawing"
       },
       {
@@ -3268,7 +3268,7 @@
         "v_kn": 10.21,
         "awa": 150.4,
         "aws": 10.5,
-        "heel_deg": 2.6,
+        "heel_deg": 2,
         "mode": "stalled"
       },
       {
@@ -3277,7 +3277,7 @@
         "v_kn": 9.46,
         "awa": 180,
         "aws": 10.5,
-        "heel_deg": 1.5,
+        "heel_deg": 1.2,
         "mode": "stalled"
       },
       {
@@ -3376,7 +3376,7 @@
         "v_kn": 12.8,
         "awa": 89.2,
         "aws": 21.7,
-        "heel_deg": 18.8,
+        "heel_deg": 18,
         "mode": "drawing"
       },
       {
@@ -3403,7 +3403,7 @@
         "v_kn": 10.29,
         "awa": 155,
         "aws": 15.3,
-        "heel_deg": 5.2,
+        "heel_deg": 4.1,
         "mode": "stalled"
       },
       {
@@ -3412,7 +3412,7 @@
         "v_kn": 9.54,
         "awa": 180,
         "aws": 15.5,
-        "heel_deg": 3.4,
+        "heel_deg": 2.6,
         "mode": "stalled"
       }
     ],
@@ -3454,10 +3454,10 @@
     "elev_deg": 40,
     "cell": {
       "w": 1072,
-      "h": 1504,
+      "h": 1568,
       "pivot": [
         536,
-        1150
+        1182
       ]
     },
     "_units": "cell px, [x0,y0,x1,y1] inclusive, measured off the alpha channel of render(dir, opts) at elev 40, frame 0, heel from the pose law",
@@ -3477,72 +3477,72 @@
         "by_facing": {
           "N": [
             121,
-            245,
+            277,
             613,
-            1426
+            1469
           ],
           "NE": [
             185,
-            444,
-            884,
-            1371
+            476,
+            889,
+            1403
           ],
           "E": [
             86,
-            553,
-            997,
-            1214
+            585,
+            1022,
+            1246
           ],
           "SE": [
             238,
-            496,
+            527,
             923,
-            1330
+            1362
           ],
           "S": [
             458,
-            320,
+            352,
             949,
-            1406
+            1438
           ],
           "SW": [
-            186,
-            126,
+            181,
+            158,
             886,
-            1321
+            1353
           ],
           "W": [
-            74,
-            32,
+            49,
+            64,
             985,
-            1153
+            1185
           ],
           "NW": [
             148,
-            75,
+            107,
             833,
-            1326
+            1367
           ]
         },
         "union": [
-          74,
-          32,
-          997,
-          1426
+          49,
+          64,
+          1022,
+          1469
         ],
         "union_size": [
-          924,
-          1395
+          974,
+          1406
         ],
         "painted_px": [
-          241182,
-          175813,
-          293572,
-          221506,
-          160358,
-          288707,
-          435344,
-          418806
+          241574,
+          175849,
+          293998,
+          222533,
+          161764,
+          285549,
+          433685,
+          418104
         ]
       },
       "run_boom_out": {
@@ -3559,73 +3559,73 @@
         },
         "by_facing": {
           "N": [
-            188,
-            191,
-            638,
-            1412
+            190,
+            223,
+            639,
+            1459
           ],
           "NE": [
-            32,
-            228,
-            898,
-            1349
+            33,
+            255,
+            901,
+            1382
           ],
           "E": [
             86,
-            270,
-            997,
-            1231
+            295,
+            1022,
+            1260
           ],
           "SE": [
             215,
-            280,
-            905,
-            1330
+            307,
+            904,
+            1359
           ],
           "S": [
-            433,
-            267,
-            883,
-            1405
+            432,
+            298,
+            881,
+            1437
           ],
           "SW": [
-            173,
-            235,
-            1039,
-            1323
+            170,
+            271,
+            1038,
+            1356
           ],
           "W": [
-            74,
-            200,
+            49,
+            241,
             985,
-            1177
+            1210
           ],
           "NW": [
-            166,
-            183,
+            167,
+            220,
             856,
-            1344
+            1379
           ]
         },
         "union": [
-          32,
-          183,
-          1039,
-          1412
+          33,
+          220,
+          1038,
+          1459
         ],
         "union_size": [
-          1008,
-          1230
+          1006,
+          1240
         ],
         "painted_px": [
-          270663,
-          285810,
-          199955,
-          293913,
-          287139,
-          336216,
-          216044,
-          306786
+          270343,
+          286727,
+          199697,
+          294867,
+          287028,
+          336791,
+          216989,
+          306032
         ]
       },
       "stored": {
@@ -3641,84 +3641,84 @@
         "by_facing": {
           "N": [
             429,
-            190,
+            222,
             642,
-            1410
+            1458
           ],
           "NE": [
             212,
-            205,
+            237,
             902,
-            1346
+            1381
           ],
           "E": [
             86,
-            238,
-            997,
-            1181
+            270,
+            1022,
+            1213
           ],
           "SE": [
             212,
-            257,
+            289,
             902,
-            1324
+            1356
           ],
           "S": [
             429,
-            266,
+            298,
             642,
-            1405
+            1437
           ],
           "SW": [
             169,
-            257,
+            289,
             859,
-            1324
+            1356
           ],
           "W": [
-            74,
-            238,
+            49,
+            270,
             985,
-            1181
+            1213
           ],
           "NW": [
             169,
-            205,
+            237,
             859,
-            1346
+            1381
           ]
         },
         "union": [
-          74,
-          190,
-          997,
-          1410
+          49,
+          222,
+          1022,
+          1458
         ],
         "union_size": [
-          924,
-          1221
+          974,
+          1237
         ],
         "painted_px": [
-          126351,
-          173119,
-          189718,
-          173158,
-          112153,
-          175031,
-          191961,
-          174989
+          126786,
+          172848,
+          185884,
+          172489,
+          112785,
+          173100,
+          188083,
+          173113
         ]
       }
     },
     "union_everything": [
-      32,
-      32,
-      1039,
-      1426
+      33,
+      64,
+      1038,
+      1469
     ],
     "union_everything_size": [
-      1008,
-      1395
+      1006,
+      1406
     ],
     "all_inside_cell": true,
     "note": "close_hauled_max_heel is the widest heel the pose law produces (aws 24 saturates it); run_boom_out is the boom at 86 deg; stored is the hull alone with the cover on. Pack from union_everything to hold the sailing envelope in one atlas cell."
