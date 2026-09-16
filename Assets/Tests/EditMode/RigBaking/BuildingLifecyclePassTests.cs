@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using NUnit.Framework;
 using UnityEngine;
@@ -413,24 +414,77 @@ namespace HiddenHarbours.Tests.RigBaking
                           .Where(line => !line.Contains(HookLine1) && !line.Contains(HookLine2));
             string stripped = string.Join("\n", kept);
 
-            // The hook needs `b` and `faces` to be reassignable; the pre-hook file declared them const.
-            // ⚠️ The one-line (shopfront) shape goes FIRST: its text begins with the two-line shape's
-            // `    let b=resolve(opts);`, so putting the two-line replacements ahead of it would eat
-            // that prefix and leave the third pattern unmatched — silently, and still rendering.
-            stripped = stripped
-                .Replace("    let b=resolve(opts); const MATS=makeMats(b); let faces=build(b);",
-                         "    const b=resolve(opts), MATS=makeMats(b), faces=build(b);")
-                .Replace("    let b=resolve(opts);", "    const b=resolve(opts);")
-                .Replace("    let faces=build(b);", "    const faces=build(b);");
+            // The hook needs `b` and `faces` to be reassignable; the pre-hook file declared them
+            // const, so restoring const is how the "before" half becomes the file as it shipped.
+            //
+            // ⚠️⚠️ THAT RESTORATION IS ONLY VALID WHILE THIS PASS IS THE BINDING'S ONLY OTHER
+            // CONSUMER. The coastal-heritage pass (2026-09-14) added a second one to houseIsoRig —
+            // `if(root.CoastalPass) faces=root.CoastalPass.apply('house',faces,MATS,b,opts);` — which
+            // this strip leaves in place, correctly, because it is not this pass's hook. Collapsing
+            // the binding to const in front of it makes the "before" half throw "Assignment to
+            // constant variable" before it draws a single pixel, and that reads like a broken rig
+            // rather than a stale assumption in this helper. So: restore const only when nothing
+            // else still assigns to those bindings, and name the line holding the `let` open when
+            // something does. let vs const changes no pixel, so the byte comparison is unaffected.
+            string[] holdsB = LinesThatReassign(stripped, "b");
+            string[] holdsFaces = LinesThatReassign(stripped, "faces");
 
-            Assert.IsFalse(stripped.Contains("    let b=resolve(opts)"),
-                $"'{rigKey}' still declares b with let after the strip, so the pre-hook shape was not " +
-                "restored and this comparison is not against the file that shipped.");
+            if (holdsB.Length == 0 && holdsFaces.Length == 0)
+            {
+                // ⚠️ The one-line (shopfront) shape goes FIRST: its text begins with the two-line
+                // shape's `    let b=resolve(opts);`, so putting the two-line replacements ahead of
+                // it would eat that prefix and leave the third pattern unmatched — silently, and
+                // still rendering.
+                stripped = stripped
+                    .Replace("    let b=resolve(opts); const MATS=makeMats(b); let faces=build(b);",
+                             "    const b=resolve(opts), MATS=makeMats(b), faces=build(b);")
+                    .Replace("    let b=resolve(opts);", "    const b=resolve(opts);")
+                    .Replace("    let faces=build(b);", "    const faces=build(b);");
+
+                Assert.IsFalse(stripped.Contains("    let b=resolve(opts)"),
+                    $"'{rigKey}' still declares b with let after the strip, so the pre-hook shape was" +
+                    " not restored and this comparison is not against the file that shipped.");
+            }
+            else
+            {
+                // Not a silent allowance: the reason is printed with the run, so a second pass
+                // arriving in a host rig is visible here rather than inferred from a green bar.
+                TestContext.WriteLine(
+                    $"'{rigKey}' keeps `let` after the strip because another pass still assigns to " +
+                    $"these bindings: {string.Join(" | ", holdsB.Concat(holdsFaces))}. let vs const " +
+                    "changes nothing that is drawn, so the byte comparison below is unaffected.");
+            }
 
             Assert.IsFalse(stripped.Contains("BuildingLifecycle"),
                 $"stripping the hook out of '{rigKey}' left a reference to the pass behind, so the " +
                 "'before' half of the comparison is not actually hook-free.");
             return stripped;
+        }
+
+        /// <summary>
+        /// The lines of <paramref name="src"/> that ASSIGN to <paramref name="name"/> without
+        /// declaring it — the ones that need the binding to stay <c>let</c>. Declarations are removed
+        /// before the match, so <c>let b=resolve(opts);</c> does not read as a reassignment of
+        /// <c>b</c>, and a comment line is skipped so prose about the hook does not count as one.
+        ///
+        /// <para>Deliberately textual. The baker reads these rigs as text too, and a parser here
+        /// would be a second, differently-wrong model of the same file.</para>
+        /// </summary>
+        static string[] LinesThatReassign(string src, string name)
+        {
+            // ⚠️ A declarator run ends at the `;` OR at the end of the line — no trailing `;`
+            // required. Both shapes are live in these rigs and both would otherwise read as a
+            // reassignment, dropping the const restoration on rigs this pass never touched:
+            //   wharfBuildingRig  `const b = {`                     (a multi-line object literal)
+            //   shopfrontRig      `const a=-hw+inset, b=hw-inset;`  (b declared second in a list)
+            var declaration = new Regex(@"\b(?:let|const|var)\b[^;]*");
+            var assignment = new Regex(@"(?<![.\w])" + Regex.Escape(name) + @"\s*=(?!=)");
+
+            return src.Split('\n')
+                      .Select(line => line.Trim())
+                      .Where(line => !line.StartsWith("//"))
+                      .Where(line => assignment.IsMatch(declaration.Replace(line, string.Empty)))
+                      .ToArray();
         }
 
         static int Occurrences(string haystack, string needle)
