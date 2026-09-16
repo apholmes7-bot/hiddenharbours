@@ -12,6 +12,29 @@ Builder page in the art workspace: `Sloop 88 Iso.dc.html` — turntable, wind + 
 boom cover / platform, saloon door + cabin cut, paint shop, points-of-sail and state strips, sheet and sidecar
 downloads (both sidecars).
 
+## Pass 3 — design reapplied to current main
+
+Based on `70969b684e6bf4d0581c8e7ea5c7e35e5de31a8c`, including PR #791 (S0). Every
+static face declares an existing `geometry().ids` level at emission. `inside`, `lid` and `under`
+remain independent display properties; mesh levels do not control the source renderer.
+Sidecars and the six-entry kit manifest are regenerated through the unmodified `SAIL_KIT.write()`.
+
+The saloon plan centre moves 1.7 m aft, with a lower curved roof, swept smoked glazing and three
+tall hull lights. The revised cockpit, open boom trough, flush aft lockers, secured tender and
+continuous hinged platform are retained. Fine deck seams now share a continuous surface instead
+of duplicating each plank surface: **4,500 static faces** (down from the rejected pass 2's 6,144),
+**14 materials**, all eight existing levels represented. Tender visibility is a separate `tender`
+property; its mesh level is `foredeck`. Optional rig visibility likewise uses a separate property.
+
+The **1072 × 1568** cell and **(536, 1182)** pivot require replacement sheets; the original
+main cell was 1072 × 1504 with pivot (536, 1150). Metric origin and 32 px/m are unchanged.
+
+The native face-level block was fixed in S0; it is not an outstanding art defect. The remaining
+S1 work is an editor-slot bake: re-import both SailPolarDef assets, bake/rebuild dependent sheets,
+run `RigMeshAssetBaker.BakeSloopsCli`, commit usable mesh definitions and complete the relevant Unity
+tests before removing the fleet bake block. This source proposal does not modify the bake-block
+ledger or pretend that native integration has been completed.
+
 ## The contract (same as the rest of the fleet)
 
 **32 px = 1 m.** Fixed ¾ turntable at **elev 40°** (30–50), 45° steps, 8 headings **N NE E SE S SW W NW**
@@ -20,10 +43,10 @@ ringless (ADR 0031).
 
 | | |
 | --- | --- |
-| Cell | **1072 × 1504** |
-| Pivot | **(536, 1150)** = boat origin: amidships / **canoe-body bottom** / centreline, pinned every heading, pose, paint |
+| Cell | **1072 × 1568** |
+| Pivot | **(536, 1182)** = boat origin: amidships / **canoe-body bottom** / centreline, pinned every heading, pose, paint |
 | LOA / beam | 27.0 m / 6.70 m (5.4 m transom) · masthead 37.0 m above the origin |
-| Cell fit | `bounds()` swept clear over elev 30–50 × 8 headings × heel 20° × boom 86° × 8 wave frames (±519 / 1133 up / 339 down) |
+| Cell fit | `bounds()` swept clear over elev 30–50 × 8 headings × heel 20° × boom 86° × 8 wave frames (pass-3 minimum margins: 1.69 px sides / 6.87 top / 22.40 bottom) |
 | Colourways | the Sloop 30's 8 presets, hull for hull, + mixer (8 slots) — the two sail together |
 
 **The waterline is not the pivot row.** The design waterline is **1.35 m above the origin** — the boot-top
@@ -86,7 +109,7 @@ vertex.**
 ## Sidecars
 
 Both generated, never typed, both stamped by `Art/_sidecarExport.js` from the same read of the rig
-(`aed8100cb8ad…`).
+(see `derivedFromRigSha256` and the kit manifest for the complete current digest).
 
 **`sloop88IsoRig.gameplay.json`** — `Sloop88Iso.gameplayGeometry()`. `DECK` ×8 over four levels: cockpit_sole
 (2.55) · aft_deck (3.29) · swim_platform (1.55, conditional on `opts.platform`) · coachroof · foredeck · tender_well (a 0.22 m
@@ -97,7 +120,7 @@ door (1.24 m leaf, 1.30 m travel to port, `keep_clear` = the pocket strip, not a
 ×4: companionway (one tread), saloon_to_lower (two), helm_to_aft_deck (one step up), transom_stair (three treads
 down onto the platform). `INTERACT` ×14: helm_port/stbd · mainsheet_port/stbd · primary_port/stbd · halyard_winch
 · furler · windlass · platform · dining_table · chart_table · stove · bunk. `SAIL` and `WATERLINE` as the 30.
-`_excluded`: no ladder (stairs everywhere), the owner's cabin not cut open in pass 1, no tender in the well, no
+`_excluded`: no ladder (stairs everywhere), the owner's cabin is not cut open; tender launch/outboard are absent; no
 bimini, no downwind sail, no passerelle / davit / radar.
 
 **`sloop88IsoRig.sailing.json`** — `SAIL_KIT.sailing()` off the live rig. LWL 26.95 m, waterline beam 6.15,

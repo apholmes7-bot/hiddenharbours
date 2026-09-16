@@ -57,9 +57,13 @@ namespace HiddenHarbours.Tools.RigBaking
                 // ⚠️ SILENT FALLBACKS, all four PROBED and pinned by BUFFER IDENTITY (an FNV-1a over
                 // the whole RGBA return, not a pixel count — a count cannot tell two paints apart):
                 //   · render('N', …) — the compass STRING the READMEs talk in — returns a fully
-                //     TRANSPARENT cell: 0 opaque px of 28,827, and throws nothing. dir is an INTEGER
-                //     0..7. Same trap as the camper (RigCatalog.CamperKit); any baker must assert an
-                //     opaque-pixel floor per cell rather than trust the call site.
+                //     TRANSPARENT cell: 0 opaque px where the integer call paints 28,570, and throws
+                //     nothing. dir is an INTEGER 0..7. Same trap as the camper (RigCatalog.CamperKit);
+                //     any baker must assert an opaque-pixel floor per cell rather than trust the call
+                //     site. ⚠️ RE-PROBED on the pass-3 bytes (drop 2026-09-13): still 0, on both
+                //     hulls. The DENOMINATOR moved with the art — it read 28,827 before pass 3, at
+                //     the same facing and the same pose — which is exactly why the floor is written
+                //     "> 0" and never as a pinned count.
                 //   · render(8, …) is byte-identical to render(0, …) and render(-1, …) to
                 //     render(7, …) — dir wraps cleanly, so an off-by-one is invisible, not loud.
                 //   · An unknown `scheme` silently renders the DEFAULT (`gelcoat-white`) — byte
@@ -72,29 +76,74 @@ namespace HiddenHarbours.Tools.RigBaking
                 // 9.4 m LOA · 2.98 m beam · masthead 13.0 m · cell 400×552 · pivot (200,432) ·
                 // DWL 0.55 m above the origin (NOT the pivot row) · fin keel 1.90 m, rudder 1.50 m,
                 // both baked only with `underbody:true`.
+                //
+                // Her body, re-measured on the pass-3 bytes: 2,035 faces · 8,278 vertices · 14
+                // distinct materials (1,852 · 7,514 · 14 before it). Her CELL did not move — 400×552,
+                // pivot (200,432), the same on both sides of the drop.
+                //
+                // ⚠️ PASS 3 WIDENED HER EXPORT SURFACE, which the drop's own notes do not mention:
+                // she now hands out `FIT` (the cabin's bulkhead/settee/table fit constants, which her
+                // gameplay sidecar's obstruction footprints are written from) and `bounds(dir,opts)`.
+                // She exported neither on main. Nothing was removed.
                 ["sloop30"] = new RigEntry($"{RigFolder}/sail-rig-kit/sloop-30/sloopIsoRig.js",
                                            "SloopIso", AzimuthConvention.CounterClockwise),
 
                 // The same measurement, re-run on her own pixels rather than assumed from her
                 // sister: `helmPort`/`helmStbd` (equal y, equal z) gives the identical −45.0000°
                 // step seven times, and `bowRoller` projects 448.00 px WEST at cell 2. Every silent
-                // fallback above reproduces on her too, at her own scale (0 of 202,675 opaque px for
-                // the compass string).
+                // fallback above reproduces on her too, at her own scale (0 opaque px for the
+                // compass string where the integer call paints 200,898 — 202,675 before pass 3, at
+                // the same facing and the same pose).
                 //
-                // ⚠️ SHE IS THE LARGEST CELL IN THE GAME: 1072×1504, pivot (536,1150) — 6.4× the
-                // Cape Islander's area. That is moot on the mesh path and FATAL on a sheet path
-                // (a 32-facing sheet of her would exceed the texture size cap and slice wrong), which
-                // is why HullMeshFleet registers her MeshOnly and no sheet is baked. Her painted
-                // envelope over the sailing states measures 1008×1395 — inside the cell on all four
-                // edges, measured, not claimed.
+                // ⚠️ HER CELL MOVED IN PASS 3 (drop 2026-09-13): 1072×1504, pivot (536,1150) →
+                // 1072×1568, pivot (536,1182). Canvas and pivot each grew 32 px, so anything that
+                // places her BY the pivot moves with them. Nothing committed had to be rebaked for
+                // it: she sits on HullMeshFleet.BakeBlocked rather than in Hulls, and there is no
+                // sloop sprite sheet anywhere in the tree — the cell is what a FUTURE bake would
+                // emit, not a picture that exists.
+                //
+                // At 1,680,896 px she is the THIRD largest cell in the fleet, behind the coastal
+                // packet's 2112×1760 and the tanker's 1920×1600 — both MeshOnly, neither ever
+                // sheeted. (The line here used to say "the largest cell in the game … 6.4× the Cape
+                // Islander's area"; neither half reproduces today — against her committed 456×420
+                // the multiple is 8.8× — so both are restated from the rigs as they stand.) The size
+                // is moot on the mesh path and FATAL on a sheet path: a 32-facing sheet of her would
+                // exceed the texture size cap and slice wrong, which is why no sheet is baked.
+                //
+                // ⚠️ THE NEW CELL IS HEADROOM, NOT A CLIP — measured, not claimed. Painted envelope
+                // in the repo's own V8 over 8 pose families (sailing · stored under her cover · the
+                // cabin cutaway · heeled 18° · underbody · grinding · everything deployed · close-
+                // hauled at 24°) × all 8 facings — 64 rasters a side, none blank:
+                //
+                //                            main (3,088 faces)     pass 3 (4,500 faces)
+                //   painted envelope         932×1367               980×1381
+                //   around the pivot l/r/u/d 466/465/1073/293       490/489/1073/307
+                //   bounds() extent          931×1369               981×1382
+                //
+                // She widened 48 px and dropped 14; she did not rise at all. Main's 1072×1504 cell
+                // held 536/535/1150/353 around its pivot, so it would still have contained pass-3's
+                // picture on all four edges. ⚠️ An EARLIER reading recorded 1008×1395 "over the
+                // sailing states"; that frame is not this one and does not reproduce under it, so
+                // both are kept — a measurement is only comparable to one shot through the same
+                // frame.
                 //
                 // 27.0 m LOA · 6.70 m beam (5.4 m transom) · masthead 37.0 m · DWL 1.35 m above the
                 // origin · fin keel 4.60 m — deeper than NMC's berth trench, which is where she may
                 // NOT lie. She carries what the 30 does not: a self-tacking staysail on an inner
                 // forestay (`sfurl`), a fold-down swim platform (`platform`, and the swim_platform
-                // DECK polygon is conditional on it), a SLIDING saloon door, and `bounds(dir,opts)`
-                // — a surface the 30 does not export at all. Do not write one loop over both hulls
-                // that assumes either has it.
+                // DECK polygon is conditional on it), a SLIDING saloon door, and — on main — a
+                // `bounds(dir,opts)` the 30 did not export at all.
+                //
+                // ⚠️ `bounds` IS NO LONGER HERS ALONE: pass 3 gives the 30 one too, so a loop over
+                // both hulls may assume it from this drop forward and not before. What still parts
+                // them, read off the two export surfaces on the pass-3 bytes: hers alone are
+                // `staysail` · `platform` · `stair` · `well` · `aft` · `LOW` · `PLAT` · `SAL` ·
+                // `STAY` · `WHEEL_HUBS`; the 30's alone are `CAB_SOLE` · `FIT` · `HATCH` ·
+                // `WHEEL_HUB` (singular — she has one wheel hub, the 88 has two). Do not write one
+                // loop over both hulls that assumes either list.
+                //
+                // Her body, re-measured on the pass-3 bytes: 4,500 faces · 18,327 vertices · 14
+                // distinct materials (3,088 · 12,530 · 14 before it).
                 ["sloop88"] = new RigEntry($"{RigFolder}/sail-rig-kit/sloop-88/sloop88IsoRig.js",
                                            "Sloop88Iso", AzimuthConvention.CounterClockwise),
             };
