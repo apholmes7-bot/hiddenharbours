@@ -16,6 +16,10 @@
 
 ## How to use this backlog (multi-agent workflow)
 
+**Owner-directed character work (2026-09-13):**
+[`CW-01–04: character creator, wardrobe and purchases`](character-creator-and-wardrobe.md)
+tracks the complete loop, its explicit fit contracts, production integration and acceptance.
+
 - **Pull the top unblocked item for your role.** Items are roughly ordered within a milestone; an item is
   workable once its noted dependencies are Done. Prefer earlier milestones — **honor milestone order** (the
   roadmap is the gate; later-phase work that jumps the queue gets redirected there).

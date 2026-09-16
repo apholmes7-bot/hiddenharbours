@@ -1,0 +1,45 @@
+{
+  "SchemaVersion": 1,
+  "Id": "garment.fisher_deck_boots",
+  "DisplayName": "Deck boots",
+  "Category": "footwear",
+  "OccupiedSlots": [
+    "footwear"
+  ],
+  "CoverageTags": [],
+  "CompatibilityTags": [
+    "fisher_study"
+  ],
+  "IncompatibleTags": [],
+  "Fits": [
+    {
+      "FitId": "fit.character_fisher_study_v1",
+      "SourceSectionIds": [
+        "fisher_study.boots"
+      ]
+    }
+  ],
+  "Colourways": [
+    {
+      "Id": "colourway.deck_boots_charcoal",
+      "DisplayName": "Charcoal",
+      "MaterialRoles": [
+        {
+          "SourceMaterial": "boot",
+          "Role": "rubber",
+          "RampId": "ramp.hatCol.char"
+        },
+        {
+          "SourceMaterial": "sole",
+          "Role": "sole",
+          "RampId": "ramp.hatCol.char"
+        }
+      ]
+    }
+  ],
+  "Price": 28,
+  "SellerIds": [
+    "seller.leblancs"
+  ],
+  "StarterGrant": true
+}
