@@ -68701,7 +68701,7 @@
       "x-cellAt": [232, 84],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": "638ab5359d7790aa24fa67534b22503e46b18729fe62b69bba11ffe43e778ca9",
+      "x-rigSha256": "4b28a464c87153c0d271789b583a485333c1fceb2ffa1b650b44d8258ba6ea66",
       "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Buildings/Village/Village_redSaltbox.png",
@@ -68764,7 +68764,7 @@
       "x-cellAt": [172, 220],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": "638ab5359d7790aa24fa67534b22503e46b18729fe62b69bba11ffe43e778ca9",
+      "x-rigSha256": "4b28a464c87153c0d271789b583a485333c1fceb2ffa1b650b44d8258ba6ea66",
       "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Buildings/Village/Village_sageCottage.png",
@@ -195257,7 +195257,7 @@
     {
       "rig": "houseIsoRig",
       "rigSource": "docs/art/rigs/houseIsoRig.js",
-      "sha256": "638ab5359d7790aa24fa67534b22503e46b18729fe62b69bba11ffe43e778ca9",
+      "sha256": "4b28a464c87153c0d271789b583a485333c1fceb2ffa1b650b44d8258ba6ea66",
       "shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum)",
       "x-declaredBy": "Assets/_Project/Art/Sprites/Buildings/Village/Buildings.json#redSaltbox"
     },
@@ -195343,7 +195343,7 @@
     },
     "house": {
       "rigSource": "docs/art/rigs/houseIsoRig.js",
-      "sha256": "638ab5359d7790aa24fa67534b22503e46b18729fe62b69bba11ffe43e778ca9"
+      "sha256": "4b28a464c87153c0d271789b583a485333c1fceb2ffa1b650b44d8258ba6ea66"
     },
     "shipyard": {
       "rigSource": "docs/art/rigs/shipyard-iso-kit/shipyardIsoRig.js",
