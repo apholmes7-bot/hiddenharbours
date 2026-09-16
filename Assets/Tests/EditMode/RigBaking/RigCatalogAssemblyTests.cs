@@ -114,8 +114,33 @@ namespace HiddenHarbours.Tests.RigBaking
                          "fish2", "crustacean2", "shellfish2"),
             new Snapshot("character", "docs/art/rigs/characterIsoRig6.js",
                          "CharacterIso6", AzimuthConvention.Clockwise, "characterHead"),
+            // Added by the pass-05/06 face chain (PR #854). Promoted verbatim from the offline
+            // workbench, where it rebuilt fisher's BODY as well as its head — which is why fisher is
+            // the outlier in the composed mesh's crown drop. Stands alone: it reads no other layer.
+            new Snapshot("characterArtStudy", "docs/art/rigs/characterArtStudy.js",
+                         "CharacterArtStudy", AzimuthConvention.Clockwise),
             new Snapshot("characterEye", "docs/art/rigs/eyeIsoRig.js",
                          "EyeIso", AzimuthConvention.Clockwise),
+            // ---- the pass-05/06 face chain (PR #854) -------------------------------------------
+            // The composition itself. ⚠️ It PATCHES NOTHING — installing it is inert, asserted by
+            // CharacterFaceCompositionTests. It names all four layers as prerequisites because the
+            // bake reads them through a faceLayer parameter, NOT through a patched rig export, so
+            // nothing else would drag them in. Order is the depth-first install order.
+            new Snapshot("characterFaceComposition", "docs/art/rigs/characterFaceComposition.js",
+                         "CharacterFaceComposition", AzimuthConvention.Clockwise,
+                         "characterSkin", "characterFaceStudy", "characterFinish", "characterArtStudy"),
+            // The pass-06 head. Prerequisite is the head it replaces, whose bone and pivot it reuses.
+            // ⚠️ It paints with noseLight/noseShadow, which CharacterIso6.makeMats does NOT declare —
+            // the blocker that keeps the composed bake switched off.
+            new Snapshot("characterFaceStudy", "docs/art/rigs/characterFaceStudy.js",
+                         "CharacterHeadStudy", AzimuthConvention.Clockwise, "characterHead"),
+            // The body tailoring. Reads its numbers from the config below, so the order is load-bearing.
+            new Snapshot("characterFinish", "docs/art/rigs/characterFinish.js",
+                         "CharacterFinish", AzimuthConvention.Clockwise, "characterFinishConfig"),
+            // Generated from docs/art/character-workbench/character-finish.json; a test fails if the
+            // two drift. Pure data, draws nothing, depends on nothing.
+            new Snapshot("characterFinishConfig", "docs/art/rigs/characterFinishConfig.js",
+                         "CharacterFinishConfig", AzimuthConvention.Clockwise),
             // Added by the rev-6.4 carry drop (2026-08-14), not present at 18b67d1c. The prerequisite
             // is the BODY and the order is load-bearing: this layer reads the body's camera basis and
             // anchors(), and loaded first it does not throw — every pin() silently returns null.

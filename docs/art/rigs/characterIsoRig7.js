@@ -226,12 +226,8 @@
           const vl=Math.hypot(vx,vy,vz)||1, tt=Math.min(1,(G.bootZ*hS)/vl);
           top=[a[0]+vx*tt, a[1]+vy*tt, a[2]+vz*tt];
         } else {
-          const bz=P.ankleZ+G.bootZ*hS, dz=knee[2]-a[2], projected=(bz-a[2])/dz;
-          // Keep the standing boot height when it intersects the shin. Raised/inverted
-          // shins need a length-based fallback on the ankle-to-knee segment (all axes).
-          const valid=dz>0.01 && projected>=0 && projected<=1;
-          const t=valid ? projected : Math.min(1,G.bootZ*hS/(Math.hypot(knee[0]-a[0],knee[1]-a[1],dz)||1));
-          top=[a[0]+(knee[0]-a[0])*t, a[1]+(knee[1]-a[1])*t, valid ? bz : a[2]+dz*t];
+          const bz=P.ankleZ+G.bootZ*hS, t=(bz-a[2])/Math.max(0.001,(knee[2]-a[2]));
+          top=[a[0]+(knee[0]-a[0])*t, a[1]+(knee[1]-a[1])*t, bz];
         }
         bootB=[a[0],a[1],a[2]+0.006];
         bone('ankle_'+side,'knee_'+side, top, limbFrame(top,bootB)); bone('ankle_'+side+'_tip','ankle_'+side, bootB, BN[IX['ankle_'+side]].R);
