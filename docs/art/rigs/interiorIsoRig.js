@@ -11,20 +11,35 @@
    whose outward face points at the camera are dropped, so you look in over them; which two drop
    swaps per facing (a clean back V at the diagonals, a back-U at the orthogonals). NO ceiling.
 
+   REGISTRATION CONTRACT with the exterior rigs — every one of these is read from the SAME formula:
+     footprint  Wd/Ln/wallH/fH come from the paired TYPE's ranges (house family == houseIsoRig,
+                wharf family == wharfBuildingRig's per-type ranges — a net shed is shack-sized)
+     roofline   shape + pitch are the exterior's; an 'upper' storey is bounded by that very roof
+     door       front doorway on the +Y gable, x=0  (== houseIsoRig / wharfBuildingRig door anchor)
+     chimney    hearth breast on the -Y gable, x=0  (== the exterior stack at (0, -Ln/2+0.22*Ln))
+     sash       ww 0.82 x wh 1.15, sill floor+1.0, long-wall count round((Ln/2.4)*(0.5+winD)),
+                gable pair at +/-0.42*hw, peak sash at 0.42 of the rise  (all == the exterior)
+     grade      anchors report fH + storeyZ so a room composites at its storey's true height.
+
    THE BUILDER SURFACE (every axis resolved per render, no re-modelling):
-     size:   0..1   cottage(~6x7m) -> farmhouse(~8x11m)   — mirrors houseIsoRig exactly
+     type:   'cottage'|'farmhouse'|'cape'|'saltbox'|'netShed'|'barn'|'fishPlant'  — names the exterior
+             it is inside; reseeds footprint ranges, roofline, finish, sash + palette
+     storey: 'ground'|'upper'   ('upper' = under the roof: knee walls, sloped ceiling, dormers)
+     shape:  'gable'|'gambrel'|'saltbox'|'shed'|'cape'   pitch:0..2   (the exterior's roofline)
+     size:   0..1   small -> large within the TYPE's own range
      floor:  'plank'|'wideBoard'|'checker'|'stoneFlag'|'painted'   floorTone: FLOOR key / BODY key
-     wall:   'plaster'|'wainscot'|'wallpaper'|'board'|'stud'|'stone'|'brick'   (interior finish)
+     wall:   'plaster'|'wainscot'|'wallpaper'|'board'|'stud'|'stone'|'brick'|'block'|'corrugated'
      paper:  BODY key (wallpaper/paint hue)   wainscot:bool (beadboard dado on any finish)
-     windows:'sixOverSix'|'twoOverTwo'|...   winDensity:0..1   door:bool (front doorway)
-     dividers:0..2 (interior partition walls w/ a door gap — multiple rooms from one footprint)
-     hearth:bool (chimney breast + firebox on the back wall, tied to the exterior chimney)
+     windows:'sixOverSix'|'twoOverTwo'|...|'industrial'   winDensity:0..1   door:bool
+     dividers:0..2 (partition walls w/ a door gap)   dormers:0..3 (upper storey, +X slope)
+     hearth:bool (chimney breast + firebox on the -Y gable, tied to the exterior chimney)
+     beams:bool (joists downstairs / rafters + collar ties under an open roof)
      weather:0..1 (grime + scuffed floor)   night:bool (warm lamplit; windows go cool/night)
    ANIM: rooms are static; lamp flicker + hearth fire are runtime overlays — anchors(dir,opts) ->
-     { floor:{x,y}, door:{x,y}, hearth:{x,y}|null, lamps:[{x,y}], Wd, Ln } in cell px.
+     { floor:{x,y}, door:{x,y}, hearth:{x,y}|null, lamps:[{x,y}], Wd, Ln, fH, storeyZ, ext } in cell px.
    Exposes globalThis.InteriorIso = { W,H,PX,DIRS,pivot,order,defaultElev, FLOORS,WALLS,WINDOWS,
-     BODY,TRIM,FLOORWOOD,STONE,BRICK,TILE,PLASTER,PRESETS, render(dir,opts), anchors(dir,opts),
-     project(dir,p,elev) }. */
+     TYPES,SHAPES,STOREYS,BODY,TRIM,FLOORWOOD,STONE,BRICK,TILE,PLASTER,CINDER,STEEL,PRESETS,
+     dims(opts), render(dir,opts), renderLayers(dir,opts), anchors(dir,opts), project(dir,p,elev) }. */
 (function (root) {
   const PX = 32, S = 32;
   const W = 1180, H = 900, cx = 590, groundY = 560;
@@ -41,6 +56,11 @@
     blue:        ['#33454a','#43585d','#556d72','#6a848a','#849ea3','#a3b9bd'],
     gold:        ['#5e4a12','#7c6119','#987a26','#b39440','#c8ab5e','#dbc182'],
     plum:        ['#2e2333','#3f3047','#523f5d','#664f73','#7d648b','#9079a1'],
+    rustOrange:  ['#5c2a10','#78380f','#95491a','#b05c27','#c67338','#d98d4f'],
+    mustard:     ['#5e4a12','#7c6119','#987a26','#b39440','#c8ab5e','#dbc182'],
+    teal:        ['#143a38','#1f4d4a','#2c625e','#3b7872','#4d8f88','#66a69d'],
+    galv:        ['#464d51','#5a6267','#727c81','#8c979c','#a6b1b5','#c2cccf'],
+    rustMetal:   ['#3a1c10','#552a17','#6e3a22','#8a4e2f','#a5643f','#bd7d52'],
   };
   const TRIM = ['#9aa09a','#b4b8b0','#ccd0c7','#e0e2da','#eef0e8','#f8f9f2'];
   const PLASTER  = ['#6f6350','#877a63','#a2947a','#bcae92','#d3c6a9','#e7dcc2'];
@@ -56,28 +76,60 @@
   const GLASS_HI = '#dff0f1';
   const KEY = '#1a1c22';
   const FIRE = ['#7a2a10','#b5541a','#e59433','#f6cf6a'];
+  const CINDER   = ['#4a4842','#5f5d55','#77746a','#8f8b7f','#a4a094','#b8b3a6'];   // == wharf rig
+  const STEEL    = ['#2a2f33','#3c454b','#525c63','#6d777e','#889298','#a2acb1'];
 
   const FLOORS = ['plank','wideBoard','checker','stoneFlag','painted'];
-  const WALLS  = ['plaster','wainscot','wallpaper','board','stud','stone','brick'];
+  const WALLS  = ['plaster','wainscot','wallpaper','board','stud','stone','brick','block','corrugated'];
   const STAIRS = ['none','straight'];
-  const WINDOWS= ['sixOverSix','twoOverTwo','fourOverFour','oneOverOne','arched'];
+  const STOREYS= ['ground','upper'];
+  const SHAPES = ['gable','cape','gambrel','saltbox','shed'];
+  const WINDOWS= ['sixOverSix','twoOverTwo','fourOverFour','oneOverOne','arched','industrial'];
   const WINSTYLES = {
     sixOverSix:   { v:2, r:[0.25,0.5,0.75] },
     fourOverFour: { v:1, r:[0.25,0.5,0.75] },
     twoOverTwo:   { v:1, r:[0.5] },
     oneOverOne:   { v:0, r:[0.5] },
     arched:       { v:1, r:[0.5], arch:true },
+    industrial:   { v:2, r:[0.2,0.4,0.6,0.8] },
   };
 
-  // presets MIRROR the building rigs (size => same metric footprint as houseIsoRig)
+  // WHICH BUILDING AM I INSIDE. Each type names its exterior preset and carries THAT rig's footprint
+  // ranges + roofline, so the room registers under the shell instead of guessing at a house-sized box.
+  const TYPES = {
+    cottage:   { fam:'house', ext:'shingleCottage', label:'cottage',   shape:'gable',   pitch:0.95, extSize:0.15,
+                 Wd:[6,2.4], Ln:[7,4.2], wallH:[3.6,2.0], fH:0.55,
+                 finish:'plaster', paper:'cream', floor:'plank', windows:'twoOverTwo', winD:0.55, wainscot:true,  beams:false },
+    farmhouse: { fam:'house', ext:'whiteFarmhouse', label:'farmhouse', shape:'gable',   pitch:0.85, extSize:0.70,
+                 Wd:[6,2.4], Ln:[7,4.2], wallH:[3.6,2.0], fH:0.55,
+                 finish:'plaster', paper:'blue',  floor:'plank', windows:'sixOverSix', winD:0.60, wainscot:true,  beams:false },
+    cape:      { fam:'house', ext:'dormerCape',     label:'cape',      shape:'cape',    pitch:1.05, extSize:0.50,
+                 Wd:[6,2.4], Ln:[7,4.2], wallH:[3.6,2.0], fH:0.55, dormers:3,
+                 finish:'plaster', paper:'cream', floor:'wideBoard', windows:'sixOverSix', winD:0.50, wainscot:false, beams:true },
+    saltbox:   { fam:'house', ext:'redSaltbox',     label:'saltbox',   shape:'saltbox', pitch:0.80, extSize:0.40,
+                 Wd:[6,2.4], Ln:[7,4.2], wallH:[3.6,2.0], fH:0.55,
+                 finish:'wallpaper', paper:'red', floor:'plank', windows:'twoOverTwo', winD:0.50, wainscot:false, beams:true },
+    netShed:   { fam:'wharf', ext:'netShed',        label:'net shed',  shape:'gable',   pitch:1.30, extSize:0.20,
+                 Wd:[3.6,1.4], Ln:[4.5,3.0], wallH:[2.9,1.1], fH:0.40,
+                 finish:'stud',  paper:'greyShingle', floor:'plank', windows:'twoOverTwo', winD:0.35, wainscot:false, beams:true },
+    barn:      { fam:'wharf', ext:'gambrelBarn',    label:'barn',      shape:'gambrel', pitch:1.00, extSize:0.60,
+                 Wd:[5.2,2.2], Ln:[6.5,4.5], wallH:[3.6,1.6], fH:0.45,
+                 finish:'board', paper:'blue',  floor:'wideBoard', windows:'twoOverTwo', winD:0.30, wainscot:false, beams:true },
+    fishPlant: { fam:'wharf', ext:'fishPlant',      label:'fish plant',shape:'gable',   pitch:0.72, extSize:0.70,
+                 Wd:[7.2,2.6], Ln:[10,6], wallH:[4.0,1.6], fH:0.60,
+                 finish:'block', paper:'galv', floor:'painted', windows:'industrial', winD:0.50, wainscot:false, beams:true },
+  };
+
+  // presets are ROOMS IN A NAMED BUILDING — type carries the exterior pairing
   const PRESETS = {
-    keeperKitchen:  { size:0.20, floor:'checker',   floorTone:'slate',  wall:'plaster',   paper:'cream', wainscot:true,  windows:'sixOverSix', dividers:1, hearth:false, weather:0.30 },
-    cottageBedroom: { size:0.20, floor:'plank',     wall:'wallpaper', paper:'red',   wainscot:false, windows:'twoOverTwo', dividers:0, hearth:true,  weather:0.28 },
-    seasideParlor:  { size:0.42, floor:'wideBoard', wall:'wallpaper', paper:'sage',  wainscot:true,  windows:'sixOverSix', dividers:0, hearth:true,  weather:0.24 },
-    netLoft:        { size:0.55, floor:'wideBoard', wall:'board',     paper:'greyShingle', wainscot:false, windows:'twoOverTwo', dividers:0, hearth:false, weather:0.55 },
-    stoneCellar:    { size:0.30, floor:'stoneFlag', wall:'stone',     paper:'greyShingle', wainscot:false, windows:'oneOverOne', dividers:0, hearth:false, weather:0.6 },
-    framingRoom:    { size:0.35, floor:'plank',     wall:'stud',      paper:'cream', wainscot:false, windows:'twoOverTwo', dividers:1, hearth:false, weather:0.4 },
-    farmhouseHall:  { size:0.72, floor:'plank',     wall:'plaster',   paper:'blue',  wainscot:true,  windows:'sixOverSix', dividers:2, hearth:true,  weather:0.18 },
+    keeperKitchen:  { type:'cottage',   storey:'ground', size:0.20, floor:'checker',   wall:'plaster',   paper:'cream',       wainscot:true,  dividers:1, hearth:true,  weather:0.30 },
+    cottageLoft:    { type:'cottage',   storey:'upper',  size:0.20, floor:'plank',     wall:'plaster',   paper:'cream',       wainscot:false, dividers:0, beams:true,   weather:0.32 },
+    capeAttic:      { type:'cape',      storey:'upper',  size:0.50, floor:'wideBoard', wall:'board',     paper:'greyShingle', wainscot:false, dormers:3,  beams:true,   weather:0.38 },
+    seasideParlor:  { type:'farmhouse', storey:'ground', size:0.42, floor:'wideBoard', wall:'wallpaper', paper:'sage',        wainscot:true,  dividers:0, hearth:true,  weather:0.24 },
+    farmhouseHall:  { type:'farmhouse', storey:'ground', size:0.72, floor:'plank',     wall:'plaster',   paper:'blue',        wainscot:true,  dividers:2, hearth:true,  stairs:'straight', weather:0.18 },
+    netLoft:        { type:'netShed',   storey:'upper',  size:0.55, floor:'wideBoard', wall:'board',     paper:'greyShingle', wainscot:false, beams:true,   weather:0.55 },
+    barnLoft:       { type:'barn',      storey:'upper',  size:0.60, floor:'plank',     wall:'stud',      paper:'greyShingle', wainscot:false, beams:true,   weather:0.50 },
+    plantFloor:     { type:'fishPlant', storey:'ground', size:0.70, floor:'painted',   wall:'block',     paper:'galv',        floorTone:'galv', beams:true, weather:0.45 },
   };
 
   // ---- shading constants (fleet recipe) ----
@@ -189,6 +241,12 @@
       return (u,v)=>{ const row=Math.floor(v/c), off=(row&1)*0.5*bl;
         const fv=((v%c)+c)%c, su=(((u+off)%bl)+bl)%bl;
         if(fv<0.03) return -2; if(su<0.035) return -2; if(fv>c-0.03) return 1; return 0; }; }
+    if(kind==='corrugated') return (u,v)=>{ const rw=0.115, f=((u%rw)+rw)%rw, t=f/rw;
+      return t<0.14?-2:(t<0.44?0:(t<0.70?1:0)); };
+    if(kind==='block'){ const c=0.20, bl=0.40;
+      return (u,v)=>{ const row=Math.floor(v/c), off=(row&1)*0.5*bl;
+        const fv=((v%c)+c)%c, su=(((u+off)%bl)+bl)%bl, r=hash2(Math.floor((u+off)/bl)|0,row|0);
+        if(fv<0.04) return -2; if(su<0.04) return -2; if(fv>c-0.035) return 1; return r<0.22?-1:0; }; }
     return null;
   }
   function beadTex(){ const bw=0.095; return (u,v)=>{ const f=((u%bw)+bw)%bw;
@@ -246,59 +304,97 @@
       const step=0.42; for(let a=a0+0.18; a<a1-0.05; a+=step)
         put(out,plane,nrm, a-0.045,a+0.045, mainZ0+0.1, crownZ-0.12, 'wood', 0.2, 0.07); // studs
     } else {
-      const mat = F0==='wallpaper'?'paper' : F0==='board'?'wood' : F0==='stone'?'stone' : F0==='brick'?'brick' : 'plaster';
+      const mat = F0==='wallpaper'?'paper' : F0==='board'?'wood' : F0==='stone'?'stone' : F0==='brick'?'brick'
+                : F0==='block'?'cinder' : F0==='corrugated'?'metal' : 'plaster';
       put(out,plane,nrm, a0,a1, mainZ0, crownZ, mat, 0.0, 0.05, tex, false);
     }
     // crown / cornice
     put(out,plane,nrm, a0,a1, crownZ, ceilZ, 'trim', 0.6, 0.05);
   }
 
-  // ---- geometry resolve (mirrors houseIsoRig footprint) ----------------------
+  // ---- the exterior's roofline, as the inside face over this storey -----------
+  // profile = breakpoints [x,z] from -hw to +hw; the room's ceiling IS these planes.
+  function roofProfile(shape, hw, k, rise){
+    switch(shape){
+      case 'shed':    return [[-hw,k],[hw,k+rise*1.05]];
+      case 'saltbox': return [[-hw,k],[hw*0.25,k+rise],[hw,k+rise*0.30]];
+      case 'gambrel': { const brk=hw*0.62; return [[-hw,k],[-brk,k+rise*0.66],[0,k+rise+0.22],[brk,k+rise*0.66],[hw,k]]; }
+      default:        return [[-hw,k],[0,k+rise],[hw,k]];   // gable / cape
+    }
+  }
+  function profZ(prof,x){
+    for(let i=0;i+1<prof.length;i++){ const a=prof[i], b=prof[i+1];
+      if(x>=a[0]-1e-6 && x<=b[0]+1e-6) return a[1]+(b[1]-a[1])*((x-a[0])/((b[0]-a[0])||1)); }
+    return x<prof[0][0]?prof[0][1]:prof[prof.length-1][1];
+  }
+  function ridgeX(prof){ let bx=prof[0][0], bz=prof[0][1]; for(const p of prof) if(p[1]>bz){ bz=p[1]; bx=p[0]; } return bx; }
+
+  // ---- geometry resolve (footprint + roofline come from the paired exterior) --
   function resolve(opts){
     opts = opts||{};
     const P = opts.preset && PRESETS[opts.preset] ? PRESETS[opts.preset] : {};
     const g=(k,d)=> opts[k]!=null ? opts[k] : (P[k]!=null ? P[k] : d);
+    const tk = g('type','cottage'), T = TYPES[tk] || TYPES.cottage;
     const size = g('size', 0.3);
     const b = {
-      size,
-      floor:  g('floor','plank'),
+      size, type:tk, fam:T.fam, ext:T.ext,
+      surfaceCalm:Math.max(0,Math.min(1,Number(g('surfaceCalm',0))||0)),
+      shape:  g('shape',  T.shape),
+      pitch:  g('pitch',  T.pitch),
+      storey: g('storey','ground'),
+      floor:  g('floor',  T.floor),
       floorTone: g('floorTone', null),
-      finish: g('wall','plaster'),
-      paper:  g('paper','cream'),
-      wainscot: g('wainscot', false),
-      windows: g('windows','sixOverSix'),
-      winD:   g('winDensity', 0.6),
+      finish: g('wall',   T.finish),
+      paper:  g('paper',  T.paper),
+      wainscot: g('wainscot', T.wainscot),
+      windows: g('windows', T.windows),
+      winD:   g('winDensity', T.winD),
       door:   g('door', true),
       dividers: g('dividers', 0)|0,
+      dormers: g('dormers', T.dormers||0)|0,
       hearth: g('hearth', false),
       stairs: g('stairs','none'),
-      beams:  g('beams', false),
+      coastalStoreys:g('coastalStoreys',2), coastalPass:g('coastalPass',true),
+      beams:  g('beams', !!T.beams),
       weather: g('weather', 0.3),
       night:  !!opts.night,
     };
-    b.Wd = 6 + size*2.4;             // == houseIsoRig
-    b.Ln = 7 + size*4.2;
-    b.wallH = 3.6 + size*2.0;
-    b.roomH = Math.min(2.55 + size*0.85, b.wallH - 0.6);   // single-storey interior height
+    // footprint: the paired exterior rig's own formula for this family
+    b.Wd = T.Wd[0] + size*T.Wd[1];
+    b.Ln = T.Ln[0] + size*T.Ln[1];
+    b.wallH = T.wallH[0] + size*T.wallH[1];    // grade -> eave, exterior
+    b.fH = T.fH;                               // grade -> ground floor, exterior
+    b.rise = (b.Wd/2) * b.pitch;               // == exterior ridge rise
     b.wt = 0.16;
-    b.fZ = 0;
-    b.ceilZ = b.fZ + b.roomH;
-    // FLOOR-TO-FLOOR rise to the storey above: this storey's ceiling plus the joists and deck it
-    // carries. DECLARED here so nothing downstream has to guess a storey's height — the engine reads
-    // it off the bake (anchors().storeyZ -> the interiors contract) the same way it reads Wd/Ln. The
-    // 0.34 m of structure is the shop kit's own allowance (shopInteriorRig: storeyZ = fH+shopH+0.34),
-    // reused rather than re-invented so both building families stack their storeys identically.
-    b.joistZ = 0.34;
-    b.storeyZ = b.ceilZ + b.joistZ;
+    b.fZ = 0;                                  // sprite pivot: THIS storey's floor plane
+    const upper = b.storey==='upper';
+    b.openRoof = upper || b.fam==='wharf';     // 1.5-storey rooms & wharf sheds are open to the rafters
+    if(upper){
+      b.storeyZ = b.fH + Math.min(b.wallH-0.35, 2.5 + size*0.6);      // this floor above grade
+      b.plate = Math.max(0.85, Math.min(1.5, b.fH + b.wallH - b.storeyZ));   // knee wall
+    } else {
+      b.storeyZ = b.fH;
+      b.plate = b.openRoof ? Math.min(b.wallH-0.15, 2.7+size*1.1)
+                           : Math.min(2.55 + size*0.85, b.wallH - 0.6);
+    }
+    b.ceilZ = b.fZ + b.plate;                  // wall plate: crown / cap / divider top
+    b.prof  = b.openRoof ? roofProfile(b.shape, b.Wd/2, b.ceilZ, b.rise*0.84) : null;
+    b.peakZ = b.prof ? b.prof.reduce((m,p)=>Math.max(m,p[1]), 0) : b.ceilZ;
+    if(b.fam==='house' && b.coastalStoreys>1 && b.coastalPass!==false && root.CoastalPass?.enabled && !upper){
+      b.plate=Math.min(b.wallH-.35,2.5+size*.6)-.24; b.ceilZ=b.plate;b.peakZ=b.plate;
+    }
+    b.roomH = b.peakZ;
     return b;
   }
+  function dims(opts){ const b=resolve(opts||{});
+    return { Wd:b.Wd, Ln:b.Ln, wallH:b.wallH, fH:b.fH, plate:b.plate, peakZ:b.peakZ, storeyZ:b.storeyZ, ext:b.ext, fam:b.fam }; }
 
   function makeMats(b){
     const wx=b.weather, night=b.night;
     const grime=(ramp)=>ramp.map(c=>{ let x=desat(c, wx*0.28); x=mix(x,'#4a4034',wx*0.14); return x; });
     const warm=(ramp,k)=> night ? ramp.map(c=> mix(mix(c,'#c98b3f',0.12), '#241a10', 0.20+ (k||0)) ) : ramp;
     const bodyPaper = Array.isArray(b.paper)?b.paper:(BODY[b.paper]||BODY.cream);
-    const floorRamp = b.floor==='checker' ? TILE
+    const floorRamp = b.floor==='checker' ? TILE.map(c=>mix(c,'#8b8e81',b.surfaceCalm*0.65))
                     : b.floor==='stoneFlag' ? STONE
                     : (b.floorTone && BODY[b.floorTone]) ? BODY[b.floorTone] : FLOORWOOD;
     return {
@@ -310,6 +406,9 @@
       stone:  { ramp: warm(grime(STONE)) },
       brick:  { ramp: warm(grime(BRICK)) },
       cavity: { ramp: warm(CAVITY) },
+      cinder: { ramp: warm(grime(CINDER)) },
+      steel:  { ramp: warm(grime(STEEL)) },
+      metal:  { ramp: warm(grime(BODY.galv)) },
       doordk: { ramp: night?DOORDK.map(c=>mix(c,'#3a2a14',0.25)):DOORDK },
       glass:  { ramp: night?GLASSN:GLASSD },
       glassHi:{ ramp:[ night?'#4a6a86':GLASS_HI ] },
@@ -343,6 +442,41 @@
     decalX(out, hingeX+th,1, y2-0.15,y2-0.07, fZ+dh*0.47,fZ+dh*0.47+0.09, 'trim', 0.9, null, true, 0.07);   // knob
   }
 
+  // arbitrary polygon on a Y plane, wound so its normal faces ny (used for gable fields + dormer cheeks)
+  function polyY(out, yv, ny, pts, mat, bias, db, tex){
+    let a=0; for(let i=0;i<pts.length;i++){ const p=pts[i], q=pts[(i+1)%pts.length]; a += p[0]*q[1]-q[0]*p[1]; }
+    const pl = ((a>0)===(ny>0)) ? pts : pts.slice().reverse();
+    const e=0.02*ny;
+    out.push(F(pl.map(p=>[p[0], yv+e, p[1]]), mat, bias||0, db==null?0.05:db,
+      tex?pl.map(p=>[p[0],p[1]]):null, tex||null, !tex));
+  }
+  // the wall above the plate on a gable end, cut by the exterior roofline + its rake trim
+  function gableField(out, b, yv, ny, mat, tex, noRake){
+    const x0=-b.Wd/2+b.wt, x1=b.Wd/2-b.wt, k=b.ceilZ, prof=b.prof;
+    const line=[[x0, profZ(prof,x0)]];
+    for(const p of prof) if(p[0]>x0+0.03 && p[0]<x1-0.03) line.push([p[0],p[1]]);
+    line.push([x1, profZ(prof,x1)]);
+    const pts=[[x0,k],[x1,k]];
+    for(let i=line.length-1;i>=0;i--) pts.push(line[i]);
+    polyY(out, yv, ny, pts, mat, 0, 0.05, tex);
+    if(noRake) return;
+    for(let i=0;i+1<line.length;i++){ const a=line[i], c=line[i+1];
+      polyY(out, yv+0.012*ny, ny, [[a[0],a[1]-0.17],[c[0],c[1]-0.17],[c[0],c[1]],[a[0],a[1]]], 'trim', 0.5, 0.07, null); }
+  }
+  function xAtZ(prof, z, xa, xb){ const n=56;
+    for(let i=1;i<=n;i++){ const x=xa+(xb-xa)*(i/n); if(profZ(prof,x)>=z) return x; } return xb; }
+  // dormer alcove punched into the +X slope: cheeks + flat ceiling + the sash in its face
+  function dormerRecess(out, b, dy, halfW, cMat, cTex){
+    const hw=b.Wd/2, prof=b.prof, xf=hw*0.60, zf=profZ(prof,xf), cz=zf+1.00;
+    const xb=xAtZ(prof, cz, xf, ridgeX(prof));
+    if(xf-xb<0.35) return;
+    slab(out, [[xb,dy-halfW],[xf,dy-halfW],[xf,dy+halfW],[xb,dy+halfW]], cz, cMat, -0.85);       // dormer ceiling
+    polyY(out, dy-halfW,  1, [[xf,zf],[xb,cz],[xf,cz]], cMat, -0.5, 0.05, cTex);                // cheeks
+    polyY(out, dy+halfW, -1, [[xf,zf],[xb,cz],[xf,cz]], cMat, -0.5, 0.05, cTex);
+    decalX(out, xf, -1, dy-halfW, dy+halfW, zf-0.05, cz, 'plaster', 0.15, wallTex('plaster'), false, 0.05);
+    windowOn(out,'x', xf, -1, dy, zf+0.05, 0.76, Math.min(0.9, cz-zf-0.15), b.windows);
+  }
+
   function build(b, B){
     const out=[];
     const hw=b.Wd/2, hl=b.Ln/2, wt=b.wt, fZ=b.fZ, ceilZ=b.ceilZ;
@@ -350,6 +484,13 @@
     const ftex=floorTex(b.floor), fb=FLOOR_BIAS[b.floor]!=null?FLOOR_BIAS[b.floor]:-3;
     const flatFloor = (b.floor==='checker');
     const b2 = Object.assign({}, b);
+    const upper = b.storey==='upper', prof=b.prof;
+    const keepN=keepWall(0,1,B), keepS=keepWall(0,-1,B), keepE=keepWall(1,0,B), keepW=keepWall(-1,0,B);
+    // what the roof shows on its underside: finished plaster, board sheathing, or galvanised sheet
+    const cMat = (b.finish==='plaster'||b.finish==='wallpaper') ? 'plaster'
+               : (b.finish==='block'||b.finish==='corrugated') ? 'metal' : 'wood';
+    const cTex = cMat==='plaster' ? wallTex('plaster') : cMat==='metal' ? wallTex('corrugated') : wallTex('board');
+    const rafMat = cMat==='metal' ? 'steel' : 'wood';
 
     // FLOOR (full footprint, under the walls) — uv in metres from a room corner
     CUR_LAYER='floor';
@@ -358,8 +499,13 @@
 
     // PERIMETER WALLS + their openings — each on its OWN layer (engine fades one at a time).
     // Drop the walls whose outward face points at the camera (open dollhouse); the L/V swaps per facing.
-    const sillG = fZ + 1.0, ww=0.82, wh=1.12;
-    const nLong = Math.max(1, Math.round((b.Ln/2.6)*(0.5+b.winD)));
+    // Sash + door + chimney all sit where the EXTERIOR rig puts them: front door on +Y, stack on -Y.
+    const sillG = fZ + 1.0, ww=0.82, wh=1.15;                          // == houseIsoRig / wharfBuildingRig
+    const nLong = Math.max(1, Math.round((b.Ln/2.4)*(0.5+b.winD)));    // == exterior long-wall count
+    const dw = b.fam==='wharf' ? Math.min(2.5, b.Wd*0.40) : 1.05;
+    const dh = Math.min(b.fam==='wharf' ? 2.55 : 2.15, ceilZ-0.12);
+    const gx = hw*0.42;                                                // == exterior gable-wall sash offset
+    const gWinH = Math.min(wh, (prof?profZ(prof,gx):ceilZ) - sillG - 0.28);
     const sides=[
       { id:'N', nx:0, ny:1,  axis:'y', plane:y1i, nrm:-1, a0:x0i, a1:x1i, cap:['y',y1i,hl]  },
       { id:'S', nx:0, ny:-1, axis:'y', plane:y0i, nrm:1,  a0:x0i, a1:x1i, cap:['y',-hl,y0i] },
@@ -368,52 +514,130 @@
     ];
     for(const s of sides){
       if(!keepWall(s.nx,s.ny,B)) continue;
+      const gable = s.axis==='y';
       CUR_LAYER='w'+s.id;
-      if(s.cap[0]==='y') slab(out, [[-hw,s.cap[1]],[hw,s.cap[1]],[hw,s.cap[2]],[-hw,s.cap[2]]], ceilZ, 'plaster', 0.55);
-      else               slab(out, [[s.cap[1],-hl],[s.cap[2],-hl],[s.cap[2],hl],[s.cap[1],hl]], ceilZ, 'plaster', 0.55);
+      if(!(b.openRoof && gable)){                                      // gable ends are capped by the roof
+        if(s.cap[0]==='y') slab(out, [[-hw,s.cap[1]],[hw,s.cap[1]],[hw,s.cap[2]],[-hw,s.cap[2]]], ceilZ, 'plaster', 0.55);
+        else               slab(out, [[s.cap[1],-hl],[s.cap[2],-hl],[s.cap[2],hl],[s.cap[1],hl]], ceilZ, 'plaster', 0.55);
+      }
       finishBands(out, s.axis, s.plane, s.nrm, s.a0, s.a1, fZ, ceilZ, b2);
-      if(s.id==='E') for(let i=0;i<nLong;i++){ const c=y0i+(y1i-y0i)*((i+0.5)/nLong); windowOn(out,'x',x1i,-1,c,sillG,ww,wh,b.windows); }
-      if(s.id==='W') for(let i=0;i<nLong;i++){ const c=y0i+(y1i-y0i)*((i+0.5)/nLong); windowOn(out,'x',x0i, 1,c,sillG,ww,wh,b.windows); }
-      if(s.id==='N'){ windowOn(out,'y',y1i,-1,-hw*0.42,sillG,ww,wh,b.windows); windowOn(out,'y',y1i,-1,hw*0.42,sillG,ww,wh,b.windows); }
-      if(s.id==='S'){ if(b.door) doorwayOn(out,'y',y0i,1, 0, fZ, 1.05, 2.15, {slab:true});
-        windowOn(out,'y',y0i,1,-hw*0.62,sillG,ww,wh,b.windows); windowOn(out,'y',y0i,1, hw*0.62,sillG,ww,wh,b.windows); }
+      if(b.openRoof && gable){
+        const gm = b.finish==='wallpaper'?'paper' : b.finish==='board'||b.finish==='stud'?'wood'
+                 : b.finish==='block'?'cinder' : b.finish==='corrugated'?'metal' : 'plaster';
+        gableField(out, b, s.plane, s.nrm, gm, wallTex(b.finish==='stud'?'board':b.finish));
+      }
+      // long walls carry the sash run — unless this storey's side walls are knee walls
+      if(s.axis==='x' && !upper) for(let i=0;i<nLong;i++){ const c=y0i+(y1i-y0i)*((i+0.5)/nLong);
+        windowOn(out,'x',s.plane,s.nrm,c,sillG,ww,wh,b.windows); }
+      if(gable){
+        const doorHere = s.id==='N' && b.door && !upper;
+        if(doorHere) doorwayOn(out,'y',s.plane,s.nrm, 0, fZ, dw, dh, {slab:true});
+        if(gWinH>0.5) for(const c of [-gx, gx]){
+          if(doorHere && Math.abs(c) < dw/2+0.55) continue;
+          if(s.id==='S' && b.hearth && Math.abs(c) < 1.15) continue;
+          windowOn(out,'y',s.plane,s.nrm,c,sillG,ww,gWinH,b.windows);
+        }
+        // peak sash in the gable field — 0.42 up the rise, exactly the exterior's attic/loft opening
+        if(b.openRoof && !(s.id==='S' && b.hearth)){
+          const pz = ceilZ + (b.peakZ-ceilZ)*0.42;
+          if(pz-ceilZ>0.5) windowOn(out,'y',s.plane,s.nrm, 0, pz-0.35, 0.72, 0.80, b.windows);
+        }
+      }
     }
 
-    // CEILING BEAMS — exposed joists across the short span + a summer beam down the ridge (overhead)
-    if(b.beams){ CUR_LAYER='beam'; const bz=ceilZ-0.2, nb=Math.max(3,Math.round(b.Ln/1.8));
+    // ROOF UNDERSIDE — the shell's own roofline is this room's ceiling. Cut back on the camera side
+    // (past the ridge / the open wall plane) so the dollhouse stays open.
+    if(b.openRoof && prof){
+      CUR_LAYER='roof';
+      const xR=ridgeX(prof);
+      const xLo = keepW ? -hw : xR, xHi = keepE ? hw : xR;
+      const inset = (keepE && keepW) ? b.Ln*0.42 : 0;                  // orthogonal facings: pull it back
+      const yLo = keepS ? -hl : y0i+inset, yHi = keepN ? hl : y1i-inset;
+      const ndm = upper ? Math.min(3, b.dormers|0) : 0;
+      const dms = [];
+      if(ndm && keepE) for(let i=0;i<ndm;i++){ const dy=-hl+b.Ln*((i+0.5)/ndm);
+        if(dy-0.72>yLo && dy+0.72<yHi) dms.push(dy); }
+      for(let i=0;i+1<prof.length;i++){
+        let ax=prof[i][0], az=prof[i][1], bx=prof[i+1][0], bz=prof[i+1][1];
+        if(bx<=xLo+0.01 || ax>=xHi-0.01) continue;
+        if(ax<xLo){ az=profZ(prof,xLo); ax=xLo; }
+        if(bx>xHi){ bz=profZ(prof,xHi); bx=xHi; }
+        const L=Math.hypot(bx-ax, bz-az);
+        const bands = (dms.length && (ax+bx)/2 > 0.02) ? [] : [[yLo,yHi]];
+        if(!bands.length){ let c=yLo;
+          for(const dy of dms){ if(dy-0.72>c) bands.push([c, dy-0.72]); c=Math.max(c, dy+0.72); }
+          if(yHi-c>0.05) bands.push([c,yHi]); }
+        for(const [ya,yb] of bands){ if(yb-ya<0.05) continue;
+          out.push(F([[ax,ya,az],[bx,ya,bz],[bx,yb,bz],[ax,yb,az]], cMat, bz<az?0.30:-0.30, 0,
+            [[0,0],[L,0],[L,yb-ya],[0,yb-ya]], cTex)); }
+      }
+      for(const dy of dms) dormerRecess(out, b, dy, 0.70, cMat, cTex);
+      if(b.beams){                                                     // rafters + ridge board + collar ties
+        CUR_LAYER='beam';
+        const nR=Math.max(2, Math.round((yHi-yLo)/1.45));
+        for(let r=0;r<=nR;r++){ const yy=yLo+(yHi-yLo)*(r/nR);
+          if(dms.some(dy=>Math.abs(yy-dy)<0.78)) continue;
+          for(let i=0;i+1<prof.length;i++){
+            let ax=prof[i][0], az=prof[i][1], bx=prof[i+1][0], bz=prof[i+1][1];
+            if(bx<=xLo+0.01 || ax>=xHi-0.01) continue;
+            if(ax<xLo){ az=profZ(prof,xLo); ax=xLo; }
+            if(bx>xHi){ bz=profZ(prof,xHi); bx=xHi; }
+            out.push(F([[ax,yy-0.055,az-0.13],[bx,yy-0.055,bz-0.13],[bx,yy+0.055,bz-0.13],[ax,yy+0.055,az-0.13]], rafMat, 0.25, 0.07));
+            out.push(F([[ax,yy+0.055,az-0.13],[bx,yy+0.055,bz-0.13],[bx,yy+0.055,bz-0.02],[ax,yy+0.055,az-0.02]], rafMat, -0.35, 0.08));
+          }
+          if(upper && b.shape!=='shed' && b.peakZ-ceilZ>1.3){          // collar tie across the rafter pair
+            const cz=ceilZ+(b.peakZ-ceilZ)*0.62, cxx=Math.abs(xAtZ(prof, cz, xHi, ridgeX(prof)));
+            if(cxx>0.4) boxSolid(out, -Math.min(cxx,-xLo), Math.min(cxx,xHi), yy-0.05,yy+0.05, cz-0.12, cz, rafMat, null, 0.15);
+          }
+        }
+        if(b.shape!=='shed'){ const rz=b.peakZ;                        // ridge board
+          boxSolid(out, xR-0.06, xR+0.06, yLo, yHi, rz-0.24, rz-0.03, rafMat, null, 0.1); }
+      }
+    }
+
+    // CEILING JOISTS — flat-ceiling rooms only (open-roof rooms get rafters above)
+    if(b.beams && !b.openRoof){ CUR_LAYER='beam'; const bz=ceilZ-0.2, nb=Math.max(3,Math.round(b.Ln/1.8));
       for(let i=1;i<nb;i++){ const yy=-hl+b.Ln*(i/nb); boxSolid(out, x0i,x1i, yy-0.06,yy+0.06, bz, ceilZ-0.02,'wood',null,0.15); }
       boxSolid(out, -0.1,0.1, y0i,y1i, bz-0.05, ceilZ-0.02,'wood',null,0.22); }
 
-    // STAIRS — straight flight against the W wall; rides that wall's visibility (dropped when W is a near wall)
-    if(b.stairs && b.stairs!=='none' && keepWall(-1,0,B)){ CUR_LAYER='stair'; buildStairs(out, b, x0i, y0i); }
+    // STAIRS — straight flight against the W wall; rides that wall's visibility. Ground storey only.
+    if(b.stairs && b.stairs!=='none' && !upper && keepW){ CUR_LAYER='stair'; buildStairs(out, b, x0i, y0i); }
 
     // INTERIOR DIVIDERS (partition walls w/ a hinged door leaf → multiple rooms from one footprint)
     const nd=Math.min(2,b.dividers|0);
+    const dvTop = ceilZ, dvDoor = Math.min(2.05, dvTop-0.12);
     for(let i=0;i<nd;i++){
       CUR_LAYER='dv'+i;
       const yy = y0i + (y1i-y0i)*((i+1)/(nd+1));           // run in X, at staggered y
-      const gapC = (i%2? -1:1) * hw*0.34, gapW=1.15;       // doorway gap
+      const gapC = (i%2? -1:1) * hw*0.34, gapW=Math.min(1.15, b.Wd*0.30);
       const segs=[[x0i, gapC-gapW/2],[gapC+gapW/2, x1i]];
       for(const [sa,sb] of segs){ if(sb-sa<0.2) continue;
-        boxSolid(out, sa,sb, yy-wt/2, yy+wt/2, fZ, ceilZ, 'plaster', null, 0.0);
-        finishBands(out,'y', yy-wt/2, -1, sa, sb, fZ, ceilZ, b2);
-        finishBands(out,'y', yy+wt/2,  1, sa, sb, fZ, ceilZ, b2);
+        boxSolid(out, sa,sb, yy-wt/2, yy+wt/2, fZ, dvTop, 'plaster', null, 0.0);
+        finishBands(out,'y', yy-wt/2, -1, sa, sb, fZ, dvTop, b2);
+        finishBands(out,'y', yy+wt/2,  1, sa, sb, fZ, dvTop, b2);
       }
-      decalY(out, yy-wt/2, -1, gapC-gapW/2-0.1, gapC+gapW/2+0.1, fZ+2.15, fZ+2.32, 'trim', 0.6, null, true, 0.06);
-      decalY(out, yy+wt/2,  1, gapC-gapW/2-0.1, gapC+gapW/2+0.1, fZ+2.15, fZ+2.32, 'trim', 0.6, null, true, 0.06);
-      buildDoorLeaf(out, gapC-gapW/2, yy, gapW*0.9, fZ, 2.05);
+      if(b.openRoof && prof){                              // partition follows the roofline above the plate
+        gableField(out, b, yy-wt/2, -1, 'plaster', wallTex('plaster'), true);
+        gableField(out, b, yy+wt/2,  1, 'plaster', wallTex('plaster'), true);
+      }
+      if(dvTop > dvDoor+0.2){
+        decalY(out, yy-wt/2, -1, gapC-gapW/2-0.1, gapC+gapW/2+0.1, dvDoor+0.1, dvDoor+0.27, 'trim', 0.6, null, true, 0.06);
+        decalY(out, yy+wt/2,  1, gapC-gapW/2-0.1, gapC+gapW/2+0.1, dvDoor+0.1, dvDoor+0.27, 'trim', 0.6, null, true, 0.06);
+      }
+      buildDoorLeaf(out, gapC-gapW/2, yy, gapW*0.9, fZ, dvDoor);
     }
 
-    // HEARTH / chimney breast on the back (+Y / N) wall, tied to the exterior chimney
-    if(b.hearth && keepWall(0,1,B)){
+    // HEARTH / chimney breast on the -Y gable at x=0 — where the EXTERIOR rig puts the stack
+    if(b.hearth && keepS){
       CUR_LAYER='hearth';
-      const bw=1.7, bd=0.7, cx0=-bw/2, cx1=bw/2, by0=y1i-bd, by1=y1i;
-      boxSolid(out, cx0,cx1, by0,by1, fZ, ceilZ*0.86, 'stone', wallTex('stone'), 0.0);            // stone surround
-      boxSolid(out, cx0+0.12,cx1-0.12, by0-0.02,by1, ceilZ*0.86, ceilZ, 'stone', wallTex('stone'), 0.05); // flue
-      decalY(out, by0, -1, cx0+0.22, cx1-0.22, fZ+0.06, fZ+1.12, 'brick', 0.0, wallTex('brick'), false, 0.055);
-      decalY(out, by0, -1, cx0+0.3, cx1-0.3, fZ+0.1, fZ+0.98, 'dark', 0.0, null, true, 0.07);
-      decalY(out, by0, -1, cx0+0.36, cx1-0.36, fZ+0.12, fZ+0.62, 'fire', 0.0, null, true, 0.09);
-      decalY(out, by0-0.06, -1, cx0-0.1, cx1+0.1, fZ+1.2, fZ+1.38, 'wood', 0.4, null, true, 0.05);
+      const bw=1.7, bd=0.7, cx0=-bw/2, cx1=bw/2, wallY=y0i, faceY=y0i+bd;
+      const shZ=Math.min(ceilZ*0.86, fZ+1.45), topZ=b.openRoof?b.peakZ:ceilZ;
+      boxSolid(out, cx0,cx1, wallY,faceY, fZ, shZ, 'stone', wallTex('stone'), 0.0);                     // stone surround
+      boxSolid(out, cx0+0.12,cx1-0.12, wallY,faceY-0.02, shZ, topZ, 'stone', wallTex('stone'), 0.05);   // flue to the roof
+      decalY(out, faceY, 1, cx0+0.22, cx1-0.22, fZ+0.06, Math.min(fZ+1.12,shZ-0.1), 'brick', 0.0, wallTex('brick'), false, 0.055);
+      decalY(out, faceY, 1, cx0+0.3, cx1-0.3, fZ+0.1, Math.min(fZ+0.98,shZ-0.2), 'dark', 0.0, null, true, 0.07);
+      decalY(out, faceY, 1, cx0+0.36, cx1-0.36, fZ+0.12, fZ+0.62, 'fire', 0.0, null, true, 0.09);
+      decalY(out, faceY+0.06, 1, cx0-0.1, cx1+0.1, fZ+1.2, fZ+1.38, 'wood', 0.4, null, true, 0.05);     // mantel
     }
 
     CUR_LAYER='base';
@@ -524,14 +748,16 @@
         if(nx>=0&&nx<W&&ny>=0&&ny<H&&op[ny*W+nx]){ touch=true; break; } }
       if(touch){ const j=i*4; rgba[j]=kr; rgba[j+1]=kg; rgba[j+2]=kb; rgba[j+3]=255; } }
   }
-  function layerKind(id){ return id==='floor'?'floor' : id[0]==='w'?'wall' : id.slice(0,2)==='dv'?'divider' : 'fixture'; }
+  function layerKind(id){ return id==='floor'?'floor' : (id==='roof'||id[0]==='w')?'wall' : id.slice(0,2)==='dv'?'divider' : 'fixture'; }
 
   // engine primitive: the room split into independently compositable/fade-able sprites, so a wall or
   // divider can be dropped/ghosted when the player walks behind it. Same pivot as render().
   function renderLayers(dir, opts){
     opts=(typeof opts==='number')?{elev:opts}:(opts||{});
     const b=resolve(opts), B=camBasis({dir,elev:opts.elev}), MATS=makeMats(b);
-    const bufs=paint(build(b,B), B, MATS);
+    let faces=build(b,B);
+    if(root.CoastalPass) faces=root.CoastalPass.apply('cottage',faces,MATS,b,opts);
+    const bufs=paint(faces, B, MATS);
     const cols=post(bufs,b,true), lbuf=bufs.lbuf, groups={};
     for(let i=0;i<W*H;i++){ const l=lbuf[i]; if(cols[i]==null||l==null) continue; (groups[l]||(groups[l]=[])).push(i); }
     const rank=(id)=> id==='floor'?0 : (layerKind(id)==='fixture'?1 : layerKind(id)==='divider'?2 : 3);
@@ -552,7 +778,8 @@
     const b=resolve(opts);
     const B=camBasis({dir, elev:opts.elev});
     const MATS=makeMats(b);
-    const faces=build(b, B);
+    let faces=build(b, B);
+    if(root.CoastalPass) faces=root.CoastalPass.apply('cottage',faces,MATS,b,opts);
     return toRGBA(post(paint(faces, B, MATS), b));
   }
   function anchors(dir, opts){
@@ -572,18 +799,21 @@
     if(keepWall(-1,0,B)) pushW('wW','x',x0i,-hl,hl, 0);
     const nd=Math.min(2,b.dividers|0);
     for(let i=0;i<nd;i++){ const yy=y0i+(y1i-y0i)*((i+1)/(nd+1)); pushW('dv'+i,'y',yy,x0i,x1i, yy); }
-    return { floor:pj(0,0,b.fZ), door:pj(0,-hl,b.fZ),
-      hearth: b.hearth?pj(0,hl-0.35,b.fZ+0.5):null,
+    return { floor:pj(0,0,b.fZ), door:pj(0,hl,b.fZ),
+      hearth: b.hearth?pj(0,-hl+0.35,b.fZ+0.5):null,
+      peak: b.openRoof?pj(0,0,b.peakZ):null,
       lamps:[pj(-hw*0.5,hl*0.4,b.ceilZ*0.7), pj(hw*0.5,-hl*0.2,b.ceilZ*0.7)],
-      // storeyZ: metres of HEIGHT from this floor to the one above (see resolve). Reported in metres,
-      // not px, because it is a fact about the building and not about this cell — whoever draws a
-      // second storey projects it themselves at the shared camera.
-      occluders:occ, Wd:b.Wd, Ln:b.Ln, roomH:b.roomH, storeyZ:b.storeyZ };
+      occluders:occ, Wd:b.Wd, Ln:b.Ln,
+      // registration with the exterior shell: this storey's floor sits storeyZ above grade
+      fH:b.fH, storeyZ:b.storeyZ, plate:b.plate, peakZ:b.peakZ,
+      type:b.type, ext:b.ext, fam:b.fam, shape:b.shape, storey:b.storey };
   }
   function project(dir, p, elev){ const v=projVert(p[0],p[1],p[2],camBasis({dir,elev})); return {x:v.sx,y:v.sy}; }
 
   root.InteriorIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:groundY}, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'],
-    FLOORS, WALLS, WINDOWS, STAIRS, BODY, TRIM, FLOORWOOD, STONE, BRICK, TILE, PLASTER, WOOD, PRESETS, KEY,
-    render, renderLayers, ghost, anchors, project };
+    FLOORS, WALLS, WINDOWS, STAIRS, SHAPES, STOREYS, TYPES, BODY, TRIM, FLOORWOOD, STONE, BRICK, TILE,
+    PLASTER, WOOD, CINDER, STEEL, PRESETS, KEY,
+    dims, render, renderLayers, ghost, anchors, project,
+    furnishings:(opts)=>{ const b=resolve(opts||{}); return root.CoastalPass&&b.fam==='house'?root.CoastalPass.cottagePlan(b):null; } };
 })(typeof globalThis!=='undefined'?globalThis:window);

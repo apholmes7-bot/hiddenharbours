@@ -32,9 +32,14 @@ namespace HiddenHarbours.Tools.RigBaking
                 // hook after build(b) that reads root.BuildingLifecycle and NO-OPS when it is absent
                 // — so without the declaration a phase/decay bake silently renders the finished
                 // house. Loading it changes nothing for a finished build: measured byte-identical.
+                //
+                // ⭐ The coastal-heritage COMPANION joined it as a prerequisite (2026-09-15), same
+                // story and the same failure mode: houseIsoRig reads root.CoastalPass and renders
+                // the undressed house when it is missing. Order matters only in that both run
+                // before the house does; neither reads the other.
                 ["house"] = new RigEntry($"{RigFolder}/houseIsoRig.js", "HouseIso",
                                          AzimuthConvention.CounterClockwise,
-                                         new[] { "buildingLifecycle" }),
+                                         new[] { "buildingLifecycle", "coastalPass" }),
 
                 // The net-shed / storage-barn / fish-plant family — the wharf's working buildings.
                 // Same story as the house, one size worse: the 1200×1160 cell is sized to hold the

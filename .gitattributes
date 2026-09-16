@@ -227,3 +227,19 @@ docs/art/rigs/rock-px-kit/**                          text eol=lf
 Assets/_Project/Art/Sprites/Shore/RockPx/*.json       text eol=lf
 Assets/_Project/Art/Sprites/Shore/RockPx/sidecar/*.json text eol=lf
 Assets/_Project/Art/Sprites/Shore/RockPx/seat/*.json  text eol=lf
+
+# The coastal-heritage pass (manors + houses, drop of 2026-09-15). manifest.json pins a sha256 over
+# each of the SEVEN rig sources as served, which are LF, and every sidecar stamps
+# derivedFromRigSha256 over the same bytes. Three of those rigs live beside the kit in
+# docs/art/rigs/, not inside it, so the folder rule below cannot reach them -- name them. The wharf
+# rig is in the list because its manifest hash matches the blob ALREADY committed here (the drop
+# changed nothing in it but the line endings), and that equality is only checkable against a pinned
+# working tree. Same reasoning as the sail, seagull and Rock Px kits above.
+docs/art/rigs/coastal-heritage-kit/**       text eol=lf
+docs/art/rigs/manorIsoRig.js                text eol=lf
+docs/art/rigs/manorUnitIsoRig.js            text eol=lf
+docs/art/rigs/coastalPass.js                text eol=lf
+docs/art/rigs/houseIsoRig.js                text eol=lf
+docs/art/rigs/interiorIsoRig.js             text eol=lf
+docs/art/rigs/interiorPropRig.js            text eol=lf
+docs/art/rigs/wharfBuildingRig.js           text eol=lf

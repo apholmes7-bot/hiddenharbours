@@ -1,0 +1,2060 @@
+{
+  "schema": "coastal-stair-contracts/1",
+  "renderSignatureSha256": "57e59da887ab14e1ced3627ab75c2d07c64a4e27bf3903cf4adfbbb2058b0a08",
+  "manors": {
+    "mansardSeat": {
+      "options": {
+        "tier": "secondEmpire",
+        "size": 0.5,
+        "storeys": 2,
+        "accent": "tower",
+        "bay": "canted",
+        "level": 0,
+        "focus": "stack"
+      },
+      "levels": [
+        {
+          "index": 0,
+          "floorZ": 1.05,
+          "stairs": [
+            {
+              "id": "main_l0",
+              "kind": "main",
+              "level": 0,
+              "axis": "x",
+              "steps": 18,
+              "x0": -4.925,
+              "x1": 0.623,
+              "y0": 0.495,
+              "y1": 1.835,
+              "going": 0.308,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.925,
+              "voidA1": -1.226,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.623,
+                "x1": 1.623,
+                "y0": 0.495,
+                "y1": 1.835
+              },
+              "topLanding": {
+                "x0": -5.925,
+                "x1": -4.925,
+                "y0": 0.495,
+                "y1": 1.835
+              }
+            },
+            {
+              "id": "svc_l0",
+              "kind": "svc",
+              "level": 0,
+              "axis": "x",
+              "steps": 18,
+              "x0": -3.472,
+              "x1": 0.623,
+              "y0": -7.99,
+              "y1": -6.93,
+              "going": 0.227,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.472,
+              "voidA1": -0.742,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.623,
+                "x1": 1.623,
+                "y0": -7.99,
+                "y1": -6.93
+              },
+              "topLanding": {
+                "x0": -4.472,
+                "x1": -3.472,
+                "y0": -7.99,
+                "y1": -6.93
+              }
+            }
+          ],
+          "voids": []
+        },
+        {
+          "index": 1,
+          "floorZ": 4.6,
+          "stairs": [
+            {
+              "id": "main_l1",
+              "kind": "main",
+              "level": 1,
+              "axis": "x",
+              "steps": 18,
+              "x0": -4.925,
+              "x1": 0.623,
+              "y0": 0.495,
+              "y1": 1.835,
+              "going": 0.308,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.925,
+              "voidA1": -1.226,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.623,
+                "x1": 1.623,
+                "y0": 0.495,
+                "y1": 1.835
+              },
+              "topLanding": {
+                "x0": -5.925,
+                "x1": -4.925,
+                "y0": 0.495,
+                "y1": 1.835
+              }
+            },
+            {
+              "id": "svc_l1",
+              "kind": "svc",
+              "level": 1,
+              "axis": "x",
+              "steps": 18,
+              "x0": -3.472,
+              "x1": 0.623,
+              "y0": -7.99,
+              "y1": -6.93,
+              "going": 0.227,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.472,
+              "voidA1": -0.742,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.623,
+                "x1": 1.623,
+                "y0": -7.99,
+                "y1": -6.93
+              },
+              "topLanding": {
+                "x0": -4.472,
+                "x1": -3.472,
+                "y0": -7.99,
+                "y1": -6.93
+              }
+            }
+          ],
+          "voids": [
+            {
+              "id": "main_l0",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.925,
+                "x1": -4.925,
+                "y0": 0.495,
+                "y1": 1.835
+              },
+              "x0": -4.925,
+              "x1": -1.226,
+              "y0": 0.425,
+              "y1": 1.905
+            },
+            {
+              "id": "svc_l0",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.472,
+                "x1": -3.472,
+                "y0": -7.99,
+                "y1": -6.93
+              },
+              "x0": -3.472,
+              "x1": -0.742,
+              "y0": -8.06,
+              "y1": -6.86
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "floorZ": 8.15,
+          "stairs": [],
+          "voids": [
+            {
+              "id": "main_l1",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.925,
+                "x1": -4.925,
+                "y0": 0.495,
+                "y1": 1.835
+              },
+              "x0": -4.925,
+              "x1": -1.226,
+              "y0": 0.425,
+              "y1": 1.905
+            },
+            {
+              "id": "svc_l1",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.472,
+                "x1": -3.472,
+                "y0": -7.99,
+                "y1": -6.93
+              },
+              "x0": -3.472,
+              "x1": -0.742,
+              "y0": -8.06,
+              "y1": -6.86
+            }
+          ]
+        }
+      ]
+    },
+    "mansardGrand": {
+      "options": {
+        "tier": "secondEmpire",
+        "size": 0.85,
+        "storeys": 3,
+        "accent": "tower",
+        "bay": "canted",
+        "porte": true,
+        "level": 0,
+        "focus": "stack"
+      },
+      "levels": [
+        {
+          "index": 0,
+          "floorZ": 1.05,
+          "stairs": [
+            {
+              "id": "main_l0",
+              "kind": "main",
+              "level": 0,
+              "axis": "x",
+              "steps": 18,
+              "x0": -4.9,
+              "x1": 0.7,
+              "y0": 0.694,
+              "y1": 2.034,
+              "going": 0.311,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.9,
+              "voidA1": -1.167,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.7,
+                "x1": 1.7,
+                "y0": 0.694,
+                "y1": 2.034
+              },
+              "topLanding": {
+                "x0": -5.9,
+                "x1": -4.9,
+                "y0": 0.694,
+                "y1": 2.034
+              }
+            },
+            {
+              "id": "svc_l0",
+              "kind": "svc",
+              "level": 0,
+              "axis": "x",
+              "steps": 18,
+              "x0": -3.55,
+              "x1": 0.7,
+              "y0": -9.215,
+              "y1": -8.155,
+              "going": 0.236,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.55,
+              "voidA1": -0.717,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.7,
+                "x1": 1.7,
+                "y0": -9.215,
+                "y1": -8.155
+              },
+              "topLanding": {
+                "x0": -4.55,
+                "x1": -3.55,
+                "y0": -9.215,
+                "y1": -8.155
+              }
+            }
+          ],
+          "voids": []
+        },
+        {
+          "index": 1,
+          "floorZ": 4.6,
+          "stairs": [
+            {
+              "id": "main_l1",
+              "kind": "main",
+              "level": 1,
+              "axis": "x",
+              "steps": 18,
+              "x0": -4.9,
+              "x1": 0.7,
+              "y0": 0.694,
+              "y1": 2.034,
+              "going": 0.311,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.9,
+              "voidA1": -1.167,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.7,
+                "x1": 1.7,
+                "y0": 0.694,
+                "y1": 2.034
+              },
+              "topLanding": {
+                "x0": -5.9,
+                "x1": -4.9,
+                "y0": 0.694,
+                "y1": 2.034
+              }
+            },
+            {
+              "id": "svc_l1",
+              "kind": "svc",
+              "level": 1,
+              "axis": "x",
+              "steps": 18,
+              "x0": -3.55,
+              "x1": 0.7,
+              "y0": -9.215,
+              "y1": -8.155,
+              "going": 0.236,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.55,
+              "voidA1": -0.717,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.7,
+                "x1": 1.7,
+                "y0": -9.215,
+                "y1": -8.155
+              },
+              "topLanding": {
+                "x0": -4.55,
+                "x1": -3.55,
+                "y0": -9.215,
+                "y1": -8.155
+              }
+            }
+          ],
+          "voids": [
+            {
+              "id": "main_l0",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.9,
+                "x1": -4.9,
+                "y0": 0.694,
+                "y1": 2.034
+              },
+              "x0": -4.9,
+              "x1": -1.167,
+              "y0": 0.624,
+              "y1": 2.104
+            },
+            {
+              "id": "svc_l0",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.55,
+                "x1": -3.55,
+                "y0": -9.215,
+                "y1": -8.155
+              },
+              "x0": -3.55,
+              "x1": -0.717,
+              "y0": -9.285,
+              "y1": -8.085
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "floorZ": 8.15,
+          "stairs": [
+            {
+              "id": "main_l2",
+              "kind": "main",
+              "level": 2,
+              "axis": "x",
+              "steps": 18,
+              "x0": -4.9,
+              "x1": 0.7,
+              "y0": 0.694,
+              "y1": 2.034,
+              "going": 0.311,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.9,
+              "voidA1": -1.167,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.7,
+                "x1": 1.7,
+                "y0": 0.694,
+                "y1": 2.034
+              },
+              "topLanding": {
+                "x0": -5.9,
+                "x1": -4.9,
+                "y0": 0.694,
+                "y1": 2.034
+              }
+            },
+            {
+              "id": "svc_l2",
+              "kind": "svc",
+              "level": 2,
+              "axis": "x",
+              "steps": 18,
+              "x0": -3.55,
+              "x1": 0.7,
+              "y0": -9.215,
+              "y1": -8.155,
+              "going": 0.236,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.55,
+              "voidA1": -0.717,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.7,
+                "x1": 1.7,
+                "y0": -9.215,
+                "y1": -8.155
+              },
+              "topLanding": {
+                "x0": -4.55,
+                "x1": -3.55,
+                "y0": -9.215,
+                "y1": -8.155
+              }
+            }
+          ],
+          "voids": [
+            {
+              "id": "main_l1",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.9,
+                "x1": -4.9,
+                "y0": 0.694,
+                "y1": 2.034
+              },
+              "x0": -4.9,
+              "x1": -1.167,
+              "y0": 0.624,
+              "y1": 2.104
+            },
+            {
+              "id": "svc_l1",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.55,
+                "x1": -3.55,
+                "y0": -9.215,
+                "y1": -8.155
+              },
+              "x0": -3.55,
+              "x1": -0.717,
+              "y0": -9.285,
+              "y1": -8.085
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "floorZ": 11.7,
+          "stairs": [],
+          "voids": [
+            {
+              "id": "main_l2",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.9,
+                "x1": -4.9,
+                "y0": 0.694,
+                "y1": 2.034
+              },
+              "x0": -4.9,
+              "x1": -1.167,
+              "y0": 0.624,
+              "y1": 2.104
+            },
+            {
+              "id": "svc_l2",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.55,
+                "x1": -3.55,
+                "y0": -9.215,
+                "y1": -8.155
+              },
+              "x0": -3.55,
+              "x1": -0.717,
+              "y0": -9.285,
+              "y1": -8.085
+            }
+          ]
+        }
+      ]
+    },
+    "stoneSeat": {
+      "options": {
+        "tier": "baronial",
+        "size": 0.5,
+        "storeys": 2,
+        "accent": "turret",
+        "bay": "oriel",
+        "level": 0,
+        "focus": "stack"
+      },
+      "levels": [
+        {
+          "index": 0,
+          "floorZ": 0.95,
+          "stairs": [
+            {
+              "id": "main_l0",
+              "kind": "main",
+              "level": 0,
+              "axis": "x",
+              "steps": 17,
+              "x0": -4.687,
+              "x1": 0.565,
+              "y0": 0.441,
+              "y1": 1.781,
+              "going": 0.309,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.687,
+              "voidA1": -0.98,
+              "floorRise": 3.35,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.565,
+                "x1": 1.565,
+                "y0": 0.441,
+                "y1": 1.781
+              },
+              "topLanding": {
+                "x0": -5.687,
+                "x1": -4.687,
+                "y0": 0.441,
+                "y1": 1.781
+              }
+            },
+            {
+              "id": "svc_l0",
+              "kind": "svc",
+              "level": 0,
+              "axis": "x",
+              "steps": 17,
+              "x0": -3.415,
+              "x1": 0.565,
+              "y0": -8.37,
+              "y1": -7.31,
+              "going": 0.234,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.415,
+              "voidA1": -0.606,
+              "floorRise": 3.35,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.565,
+                "x1": 1.565,
+                "y0": -8.37,
+                "y1": -7.31
+              },
+              "topLanding": {
+                "x0": -4.415,
+                "x1": -3.415,
+                "y0": -8.37,
+                "y1": -7.31
+              }
+            }
+          ],
+          "voids": []
+        },
+        {
+          "index": 1,
+          "floorZ": 4.3,
+          "stairs": [
+            {
+              "id": "main_l1",
+              "kind": "main",
+              "level": 1,
+              "axis": "x",
+              "steps": 17,
+              "x0": -4.687,
+              "x1": 0.565,
+              "y0": 0.441,
+              "y1": 1.781,
+              "going": 0.309,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.687,
+              "voidA1": -0.98,
+              "floorRise": 3.35,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.565,
+                "x1": 1.565,
+                "y0": 0.441,
+                "y1": 1.781
+              },
+              "topLanding": {
+                "x0": -5.687,
+                "x1": -4.687,
+                "y0": 0.441,
+                "y1": 1.781
+              }
+            },
+            {
+              "id": "svc_l1",
+              "kind": "svc",
+              "level": 1,
+              "axis": "x",
+              "steps": 17,
+              "x0": -3.415,
+              "x1": 0.565,
+              "y0": -8.37,
+              "y1": -7.31,
+              "going": 0.234,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.415,
+              "voidA1": -0.606,
+              "floorRise": 3.35,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.565,
+                "x1": 1.565,
+                "y0": -8.37,
+                "y1": -7.31
+              },
+              "topLanding": {
+                "x0": -4.415,
+                "x1": -3.415,
+                "y0": -8.37,
+                "y1": -7.31
+              }
+            }
+          ],
+          "voids": [
+            {
+              "id": "main_l0",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.687,
+                "x1": -4.687,
+                "y0": 0.441,
+                "y1": 1.781
+              },
+              "x0": -4.687,
+              "x1": -0.98,
+              "y0": 0.371,
+              "y1": 1.851
+            },
+            {
+              "id": "svc_l0",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.415,
+                "x1": -3.415,
+                "y0": -8.37,
+                "y1": -7.31
+              },
+              "x0": -3.415,
+              "x1": -0.606,
+              "y0": -8.44,
+              "y1": -7.24
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "floorZ": 7.65,
+          "stairs": [],
+          "voids": [
+            {
+              "id": "main_l1",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.687,
+                "x1": -4.687,
+                "y0": 0.441,
+                "y1": 1.781
+              },
+              "x0": -4.687,
+              "x1": -0.98,
+              "y0": 0.371,
+              "y1": 1.851
+            },
+            {
+              "id": "svc_l1",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.415,
+                "x1": -3.415,
+                "y0": -8.37,
+                "y1": -7.31
+              },
+              "x0": -3.415,
+              "x1": -0.606,
+              "y0": -8.44,
+              "y1": -7.24
+            }
+          ]
+        }
+      ]
+    },
+    "stoneGrand": {
+      "options": {
+        "tier": "baronial",
+        "size": 0.9,
+        "storeys": 3,
+        "accent": "turret",
+        "bay": "oriel",
+        "level": 0,
+        "focus": "stack"
+      },
+      "levels": [
+        {
+          "index": 0,
+          "floorZ": 0.95,
+          "stairs": [
+            {
+              "id": "main_l0",
+              "kind": "main",
+              "level": 0,
+              "axis": "x",
+              "steps": 17,
+              "x0": -4.9,
+              "x1": 0.7,
+              "y0": 0.698,
+              "y1": 2.038,
+              "going": 0.329,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.9,
+              "voidA1": -0.947,
+              "floorRise": 3.35,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.7,
+                "x1": 1.7,
+                "y0": 0.698,
+                "y1": 2.038
+              },
+              "topLanding": {
+                "x0": -5.9,
+                "x1": -4.9,
+                "y0": 0.698,
+                "y1": 2.038
+              }
+            },
+            {
+              "id": "svc_l0",
+              "kind": "svc",
+              "level": 0,
+              "axis": "x",
+              "steps": 17,
+              "x0": -3.55,
+              "x1": 0.7,
+              "y0": -9.77,
+              "y1": -8.71,
+              "going": 0.25,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.55,
+              "voidA1": -0.55,
+              "floorRise": 3.35,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.7,
+                "x1": 1.7,
+                "y0": -9.77,
+                "y1": -8.71
+              },
+              "topLanding": {
+                "x0": -4.55,
+                "x1": -3.55,
+                "y0": -9.77,
+                "y1": -8.71
+              }
+            }
+          ],
+          "voids": []
+        },
+        {
+          "index": 1,
+          "floorZ": 4.3,
+          "stairs": [
+            {
+              "id": "main_l1",
+              "kind": "main",
+              "level": 1,
+              "axis": "x",
+              "steps": 17,
+              "x0": -4.9,
+              "x1": 0.7,
+              "y0": 0.698,
+              "y1": 2.038,
+              "going": 0.329,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.9,
+              "voidA1": -0.947,
+              "floorRise": 3.35,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.7,
+                "x1": 1.7,
+                "y0": 0.698,
+                "y1": 2.038
+              },
+              "topLanding": {
+                "x0": -5.9,
+                "x1": -4.9,
+                "y0": 0.698,
+                "y1": 2.038
+              }
+            },
+            {
+              "id": "svc_l1",
+              "kind": "svc",
+              "level": 1,
+              "axis": "x",
+              "steps": 17,
+              "x0": -3.55,
+              "x1": 0.7,
+              "y0": -9.77,
+              "y1": -8.71,
+              "going": 0.25,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.55,
+              "voidA1": -0.55,
+              "floorRise": 3.35,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.7,
+                "x1": 1.7,
+                "y0": -9.77,
+                "y1": -8.71
+              },
+              "topLanding": {
+                "x0": -4.55,
+                "x1": -3.55,
+                "y0": -9.77,
+                "y1": -8.71
+              }
+            }
+          ],
+          "voids": [
+            {
+              "id": "main_l0",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.9,
+                "x1": -4.9,
+                "y0": 0.698,
+                "y1": 2.038
+              },
+              "x0": -4.9,
+              "x1": -0.947,
+              "y0": 0.628,
+              "y1": 2.108
+            },
+            {
+              "id": "svc_l0",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.55,
+                "x1": -3.55,
+                "y0": -9.77,
+                "y1": -8.71
+              },
+              "x0": -3.55,
+              "x1": -0.55,
+              "y0": -9.84,
+              "y1": -8.64
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "floorZ": 7.65,
+          "stairs": [
+            {
+              "id": "main_l2",
+              "kind": "main",
+              "level": 2,
+              "axis": "x",
+              "steps": 17,
+              "x0": -4.9,
+              "x1": 0.7,
+              "y0": 0.698,
+              "y1": 2.038,
+              "going": 0.329,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.9,
+              "voidA1": -0.947,
+              "floorRise": 3.35,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.7,
+                "x1": 1.7,
+                "y0": 0.698,
+                "y1": 2.038
+              },
+              "topLanding": {
+                "x0": -5.9,
+                "x1": -4.9,
+                "y0": 0.698,
+                "y1": 2.038
+              }
+            },
+            {
+              "id": "svc_l2",
+              "kind": "svc",
+              "level": 2,
+              "axis": "x",
+              "steps": 17,
+              "x0": -3.55,
+              "x1": 0.7,
+              "y0": -9.77,
+              "y1": -8.71,
+              "going": 0.25,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.55,
+              "voidA1": -0.55,
+              "floorRise": 3.35,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.7,
+                "x1": 1.7,
+                "y0": -9.77,
+                "y1": -8.71
+              },
+              "topLanding": {
+                "x0": -4.55,
+                "x1": -3.55,
+                "y0": -9.77,
+                "y1": -8.71
+              }
+            }
+          ],
+          "voids": [
+            {
+              "id": "main_l1",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.9,
+                "x1": -4.9,
+                "y0": 0.698,
+                "y1": 2.038
+              },
+              "x0": -4.9,
+              "x1": -0.947,
+              "y0": 0.628,
+              "y1": 2.108
+            },
+            {
+              "id": "svc_l1",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.55,
+                "x1": -3.55,
+                "y0": -9.77,
+                "y1": -8.71
+              },
+              "x0": -3.55,
+              "x1": -0.55,
+              "y0": -9.84,
+              "y1": -8.64
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "floorZ": 11,
+          "stairs": [],
+          "voids": [
+            {
+              "id": "main_l2",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.9,
+                "x1": -4.9,
+                "y0": 0.698,
+                "y1": 2.038
+              },
+              "x0": -4.9,
+              "x1": -0.947,
+              "y0": 0.628,
+              "y1": 2.108
+            },
+            {
+              "id": "svc_l2",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.55,
+                "x1": -3.55,
+                "y0": -9.77,
+                "y1": -8.71
+              },
+              "x0": -3.55,
+              "x1": -0.55,
+              "y0": -9.84,
+              "y1": -8.64
+            }
+          ]
+        }
+      ]
+    },
+    "receptionOnly": {
+      "options": {
+        "tier": "secondEmpire",
+        "size": 0.6,
+        "storeys": 2,
+        "accent": "tower",
+        "bay": "canted",
+        "level": 0,
+        "focus": "level"
+      },
+      "levels": [
+        {
+          "index": 0,
+          "floorZ": 1.05,
+          "stairs": [
+            {
+              "id": "main_l0",
+              "kind": "main",
+              "level": 0,
+              "axis": "x",
+              "steps": 18,
+              "x0": -4.906,
+              "x1": 0.694,
+              "y0": 0.58,
+              "y1": 1.92,
+              "going": 0.311,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.906,
+              "voidA1": -1.173,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.694,
+                "x1": 1.694,
+                "y0": 0.58,
+                "y1": 1.92
+              },
+              "topLanding": {
+                "x0": -5.906,
+                "x1": -4.906,
+                "y0": 0.58,
+                "y1": 1.92
+              }
+            },
+            {
+              "id": "svc_l0",
+              "kind": "svc",
+              "level": 0,
+              "axis": "x",
+              "steps": 18,
+              "x0": -3.544,
+              "x1": 0.694,
+              "y0": -8.34,
+              "y1": -7.28,
+              "going": 0.235,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.544,
+              "voidA1": -0.719,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.694,
+                "x1": 1.694,
+                "y0": -8.34,
+                "y1": -7.28
+              },
+              "topLanding": {
+                "x0": -4.544,
+                "x1": -3.544,
+                "y0": -8.34,
+                "y1": -7.28
+              }
+            }
+          ],
+          "voids": []
+        },
+        {
+          "index": 1,
+          "floorZ": 4.6,
+          "stairs": [
+            {
+              "id": "main_l1",
+              "kind": "main",
+              "level": 1,
+              "axis": "x",
+              "steps": 18,
+              "x0": -4.906,
+              "x1": 0.694,
+              "y0": 0.58,
+              "y1": 1.92,
+              "going": 0.311,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.906,
+              "voidA1": -1.173,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.694,
+                "x1": 1.694,
+                "y0": 0.58,
+                "y1": 1.92
+              },
+              "topLanding": {
+                "x0": -5.906,
+                "x1": -4.906,
+                "y0": 0.58,
+                "y1": 1.92
+              }
+            },
+            {
+              "id": "svc_l1",
+              "kind": "svc",
+              "level": 1,
+              "axis": "x",
+              "steps": 18,
+              "x0": -3.544,
+              "x1": 0.694,
+              "y0": -8.34,
+              "y1": -7.28,
+              "going": 0.235,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.544,
+              "voidA1": -0.719,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.694,
+                "x1": 1.694,
+                "y0": -8.34,
+                "y1": -7.28
+              },
+              "topLanding": {
+                "x0": -4.544,
+                "x1": -3.544,
+                "y0": -8.34,
+                "y1": -7.28
+              }
+            }
+          ],
+          "voids": [
+            {
+              "id": "main_l0",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.906,
+                "x1": -4.906,
+                "y0": 0.58,
+                "y1": 1.92
+              },
+              "x0": -4.906,
+              "x1": -1.173,
+              "y0": 0.51,
+              "y1": 1.99
+            },
+            {
+              "id": "svc_l0",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.544,
+                "x1": -3.544,
+                "y0": -8.34,
+                "y1": -7.28
+              },
+              "x0": -3.544,
+              "x1": -0.719,
+              "y0": -8.41,
+              "y1": -7.21
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "floorZ": 8.15,
+          "stairs": [],
+          "voids": [
+            {
+              "id": "main_l1",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.906,
+                "x1": -4.906,
+                "y0": 0.58,
+                "y1": 1.92
+              },
+              "x0": -4.906,
+              "x1": -1.173,
+              "y0": 0.51,
+              "y1": 1.99
+            },
+            {
+              "id": "svc_l1",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.544,
+                "x1": -3.544,
+                "y0": -8.34,
+                "y1": -7.28
+              },
+              "x0": -3.544,
+              "x1": -0.719,
+              "y0": -8.41,
+              "y1": -7.21
+            }
+          ]
+        }
+      ]
+    },
+    "chamberFloor": {
+      "options": {
+        "tier": "secondEmpire",
+        "size": 0.6,
+        "storeys": 2,
+        "accent": "tower",
+        "bay": "canted",
+        "level": 1,
+        "focus": "level"
+      },
+      "levels": [
+        {
+          "index": 0,
+          "floorZ": 1.05,
+          "stairs": [
+            {
+              "id": "main_l0",
+              "kind": "main",
+              "level": 0,
+              "axis": "x",
+              "steps": 18,
+              "x0": -4.906,
+              "x1": 0.694,
+              "y0": 0.58,
+              "y1": 1.92,
+              "going": 0.311,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.906,
+              "voidA1": -1.173,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.694,
+                "x1": 1.694,
+                "y0": 0.58,
+                "y1": 1.92
+              },
+              "topLanding": {
+                "x0": -5.906,
+                "x1": -4.906,
+                "y0": 0.58,
+                "y1": 1.92
+              }
+            },
+            {
+              "id": "svc_l0",
+              "kind": "svc",
+              "level": 0,
+              "axis": "x",
+              "steps": 18,
+              "x0": -3.544,
+              "x1": 0.694,
+              "y0": -8.34,
+              "y1": -7.28,
+              "going": 0.235,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.544,
+              "voidA1": -0.719,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.694,
+                "x1": 1.694,
+                "y0": -8.34,
+                "y1": -7.28
+              },
+              "topLanding": {
+                "x0": -4.544,
+                "x1": -3.544,
+                "y0": -8.34,
+                "y1": -7.28
+              }
+            }
+          ],
+          "voids": []
+        },
+        {
+          "index": 1,
+          "floorZ": 4.6,
+          "stairs": [
+            {
+              "id": "main_l1",
+              "kind": "main",
+              "level": 1,
+              "axis": "x",
+              "steps": 18,
+              "x0": -4.906,
+              "x1": 0.694,
+              "y0": 0.58,
+              "y1": 1.92,
+              "going": 0.311,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.906,
+              "voidA1": -1.173,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.694,
+                "x1": 1.694,
+                "y0": 0.58,
+                "y1": 1.92
+              },
+              "topLanding": {
+                "x0": -5.906,
+                "x1": -4.906,
+                "y0": 0.58,
+                "y1": 1.92
+              }
+            },
+            {
+              "id": "svc_l1",
+              "kind": "svc",
+              "level": 1,
+              "axis": "x",
+              "steps": 18,
+              "x0": -3.544,
+              "x1": 0.694,
+              "y0": -8.34,
+              "y1": -7.28,
+              "going": 0.235,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.544,
+              "voidA1": -0.719,
+              "floorRise": 3.55,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.694,
+                "x1": 1.694,
+                "y0": -8.34,
+                "y1": -7.28
+              },
+              "topLanding": {
+                "x0": -4.544,
+                "x1": -3.544,
+                "y0": -8.34,
+                "y1": -7.28
+              }
+            }
+          ],
+          "voids": [
+            {
+              "id": "main_l0",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.906,
+                "x1": -4.906,
+                "y0": 0.58,
+                "y1": 1.92
+              },
+              "x0": -4.906,
+              "x1": -1.173,
+              "y0": 0.51,
+              "y1": 1.99
+            },
+            {
+              "id": "svc_l0",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.544,
+                "x1": -3.544,
+                "y0": -8.34,
+                "y1": -7.28
+              },
+              "x0": -3.544,
+              "x1": -0.719,
+              "y0": -8.41,
+              "y1": -7.21
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "floorZ": 8.15,
+          "stairs": [],
+          "voids": [
+            {
+              "id": "main_l1",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.906,
+                "x1": -4.906,
+                "y0": 0.58,
+                "y1": 1.92
+              },
+              "x0": -4.906,
+              "x1": -1.173,
+              "y0": 0.51,
+              "y1": 1.99
+            },
+            {
+              "id": "svc_l1",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.544,
+                "x1": -3.544,
+                "y0": -8.34,
+                "y1": -7.28
+              },
+              "x0": -3.544,
+              "x1": -0.719,
+              "y0": -8.41,
+              "y1": -7.21
+            }
+          ]
+        }
+      ]
+    },
+    "atticFloor": {
+      "options": {
+        "tier": "baronial",
+        "size": 0.6,
+        "storeys": 2,
+        "accent": "turret",
+        "bay": "oriel",
+        "level": 2,
+        "focus": "level"
+      },
+      "levels": [
+        {
+          "index": 0,
+          "floorZ": 0.95,
+          "stairs": [
+            {
+              "id": "main_l0",
+              "kind": "main",
+              "level": 0,
+              "axis": "x",
+              "steps": 17,
+              "x0": -4.962,
+              "x1": 0.637,
+              "y0": 0.527,
+              "y1": 1.867,
+              "going": 0.329,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.962,
+              "voidA1": -1.01,
+              "floorRise": 3.35,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.637,
+                "x1": 1.637,
+                "y0": 0.527,
+                "y1": 1.867
+              },
+              "topLanding": {
+                "x0": -5.962,
+                "x1": -4.962,
+                "y0": 0.527,
+                "y1": 1.867
+              }
+            },
+            {
+              "id": "svc_l0",
+              "kind": "svc",
+              "level": 0,
+              "axis": "x",
+              "steps": 17,
+              "x0": -3.487,
+              "x1": 0.637,
+              "y0": -8.72,
+              "y1": -7.66,
+              "going": 0.243,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.487,
+              "voidA1": -0.576,
+              "floorRise": 3.35,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.637,
+                "x1": 1.637,
+                "y0": -8.72,
+                "y1": -7.66
+              },
+              "topLanding": {
+                "x0": -4.487,
+                "x1": -3.487,
+                "y0": -8.72,
+                "y1": -7.66
+              }
+            }
+          ],
+          "voids": []
+        },
+        {
+          "index": 1,
+          "floorZ": 4.3,
+          "stairs": [
+            {
+              "id": "main_l1",
+              "kind": "main",
+              "level": 1,
+              "axis": "x",
+              "steps": 17,
+              "x0": -4.962,
+              "x1": 0.637,
+              "y0": 0.527,
+              "y1": 1.867,
+              "going": 0.329,
+              "rise": 0.197,
+              "railSide": "low",
+              "open": "x0",
+              "voidA0": -4.962,
+              "voidA1": -1.01,
+              "floorRise": 3.35,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.637,
+                "x1": 1.637,
+                "y0": 0.527,
+                "y1": 1.867
+              },
+              "topLanding": {
+                "x0": -5.962,
+                "x1": -4.962,
+                "y0": 0.527,
+                "y1": 1.867
+              }
+            },
+            {
+              "id": "svc_l1",
+              "kind": "svc",
+              "level": 1,
+              "axis": "x",
+              "steps": 17,
+              "x0": -3.487,
+              "x1": 0.637,
+              "y0": -8.72,
+              "y1": -7.66,
+              "going": 0.243,
+              "rise": 0.197,
+              "railSide": "high",
+              "open": "x0",
+              "voidA0": -3.487,
+              "voidA1": -0.576,
+              "floorRise": 3.35,
+              "headroom": 2,
+              "slabThickness": 0.3,
+              "bottomLanding": {
+                "x0": 0.637,
+                "x1": 1.637,
+                "y0": -8.72,
+                "y1": -7.66
+              },
+              "topLanding": {
+                "x0": -4.487,
+                "x1": -3.487,
+                "y0": -8.72,
+                "y1": -7.66
+              }
+            }
+          ],
+          "voids": [
+            {
+              "id": "main_l0",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.962,
+                "x1": -4.962,
+                "y0": 0.527,
+                "y1": 1.867
+              },
+              "x0": -4.962,
+              "x1": -1.01,
+              "y0": 0.457,
+              "y1": 1.937
+            },
+            {
+              "id": "svc_l0",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.487,
+                "x1": -3.487,
+                "y0": -8.72,
+                "y1": -7.66
+              },
+              "x0": -3.487,
+              "x1": -0.576,
+              "y0": -8.79,
+              "y1": -7.59
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "floorZ": 7.65,
+          "stairs": [],
+          "voids": [
+            {
+              "id": "main_l1",
+              "kind": "main",
+              "open": "x0",
+              "topLanding": {
+                "x0": -5.962,
+                "x1": -4.962,
+                "y0": 0.527,
+                "y1": 1.867
+              },
+              "x0": -4.962,
+              "x1": -1.01,
+              "y0": 0.457,
+              "y1": 1.937
+            },
+            {
+              "id": "svc_l1",
+              "kind": "svc",
+              "open": "x0",
+              "topLanding": {
+                "x0": -4.487,
+                "x1": -3.487,
+                "y0": -8.72,
+                "y1": -7.66
+              },
+              "x0": -3.487,
+              "x1": -0.576,
+              "y0": -8.79,
+              "y1": -7.59
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "cottages": {
+    "keeperKitchen": {
+      "options": {
+        "type": "cottage",
+        "storey": "ground",
+        "size": 0.2,
+        "floor": "checker",
+        "wall": "plaster",
+        "paper": "cream",
+        "wainscot": true,
+        "dividers": 1,
+        "hearth": true,
+        "weather": 0.3
+      },
+      "stair": {
+        "id": "cottage_stair",
+        "axis": "y",
+        "ascending": "negativeY",
+        "x0": -0.9,
+        "x1": 0.15000000000000002,
+        "y0": -2.62,
+        "y1": 1.02,
+        "steps": 14,
+        "going": 0.26,
+        "riser": 0.18714285714285714,
+        "floorRise": 2.62,
+        "slabThickness": 0.24,
+        "headroom": 2,
+        "opening": {
+          "x0": -0.96,
+          "x1": 0.21000000000000002,
+          "y0": -2.62,
+          "y1": 0.5
+        },
+        "topLanding": {
+          "x0": -0.9,
+          "x1": 0.15000000000000002,
+          "y0": -3.64,
+          "y1": -2.62
+        },
+        "bottomLanding": {
+          "x0": -0.9,
+          "x1": 0.15000000000000002,
+          "y0": 1.02,
+          "y1": 2.04
+        },
+        "bottom": {
+          "x": -0.375,
+          "y": 1.54,
+          "z": 0
+        },
+        "top": {
+          "x": -0.375,
+          "y": -3.14,
+          "z": 2.62
+        }
+      }
+    },
+    "cottageLoft": {
+      "options": {
+        "type": "cottage",
+        "storey": "upper",
+        "size": 0.2,
+        "floor": "plank",
+        "wall": "plaster",
+        "paper": "cream",
+        "wainscot": false,
+        "dividers": 0,
+        "beams": true,
+        "weather": 0.32
+      },
+      "stair": {
+        "id": "cottage_stair",
+        "axis": "y",
+        "ascending": "negativeY",
+        "x0": -0.9,
+        "x1": 0.15000000000000002,
+        "y0": -2.62,
+        "y1": 1.02,
+        "steps": 14,
+        "going": 0.26,
+        "riser": 0.18714285714285714,
+        "floorRise": 2.62,
+        "slabThickness": 0.24,
+        "headroom": 2,
+        "opening": {
+          "x0": -0.96,
+          "x1": 0.21000000000000002,
+          "y0": -2.62,
+          "y1": 0.5
+        },
+        "topLanding": {
+          "x0": -0.9,
+          "x1": 0.15000000000000002,
+          "y0": -3.64,
+          "y1": -2.62
+        },
+        "bottomLanding": {
+          "x0": -0.9,
+          "x1": 0.15000000000000002,
+          "y0": 1.02,
+          "y1": 2.04
+        },
+        "bottom": {
+          "x": -0.375,
+          "y": 1.54,
+          "z": 0
+        },
+        "top": {
+          "x": -0.375,
+          "y": -3.14,
+          "z": 2.62
+        }
+      }
+    },
+    "capeAttic": {
+      "options": {
+        "type": "cape",
+        "storey": "upper",
+        "size": 0.5,
+        "floor": "wideBoard",
+        "wall": "board",
+        "paper": "greyShingle",
+        "wainscot": false,
+        "dormers": 3,
+        "beams": true,
+        "weather": 0.38
+      },
+      "stair": {
+        "id": "cottage_stair",
+        "axis": "y",
+        "ascending": "negativeY",
+        "x0": -0.9,
+        "x1": 0.15000000000000002,
+        "y0": -3.25,
+        "y1": 0.6500000000000004,
+        "steps": 15,
+        "going": 0.26,
+        "riser": 0.18666666666666665,
+        "floorRise": 2.8,
+        "slabThickness": 0.24,
+        "headroom": 2,
+        "opening": {
+          "x0": -0.96,
+          "x1": 0.21000000000000002,
+          "y0": -3.25,
+          "y1": 0.13000000000000034
+        },
+        "topLanding": {
+          "x0": -0.9,
+          "x1": 0.15000000000000002,
+          "y0": -4.27,
+          "y1": -3.25
+        },
+        "bottomLanding": {
+          "x0": -0.9,
+          "x1": 0.15000000000000002,
+          "y0": 0.6500000000000004,
+          "y1": 1.6700000000000004
+        },
+        "bottom": {
+          "x": -0.375,
+          "y": 1.1700000000000004,
+          "z": 0
+        },
+        "top": {
+          "x": -0.375,
+          "y": -3.77,
+          "z": 2.8
+        }
+      }
+    },
+    "seasideParlor": {
+      "options": {
+        "type": "farmhouse",
+        "storey": "ground",
+        "size": 0.42,
+        "floor": "wideBoard",
+        "wall": "wallpaper",
+        "paper": "sage",
+        "wainscot": true,
+        "dividers": 0,
+        "hearth": true,
+        "weather": 0.24
+      },
+      "stair": {
+        "id": "cottage_stair",
+        "axis": "y",
+        "ascending": "negativeY",
+        "x0": -0.9,
+        "x1": 0.15000000000000002,
+        "y0": -3.082,
+        "y1": 0.8180000000000005,
+        "steps": 15,
+        "going": 0.26,
+        "riser": 0.18346666666666664,
+        "floorRise": 2.752,
+        "slabThickness": 0.24,
+        "headroom": 2,
+        "opening": {
+          "x0": -0.96,
+          "x1": 0.21000000000000002,
+          "y0": -3.082,
+          "y1": 0.2980000000000005
+        },
+        "topLanding": {
+          "x0": -0.9,
+          "x1": 0.15000000000000002,
+          "y0": -4.102,
+          "y1": -3.082
+        },
+        "bottomLanding": {
+          "x0": -0.9,
+          "x1": 0.15000000000000002,
+          "y0": 0.8180000000000005,
+          "y1": 1.8380000000000005
+        },
+        "bottom": {
+          "x": -0.375,
+          "y": 1.3380000000000005,
+          "z": 0
+        },
+        "top": {
+          "x": -0.375,
+          "y": -3.602,
+          "z": 2.752
+        }
+      }
+    },
+    "farmhouseHall": {
+      "options": {
+        "type": "farmhouse",
+        "storey": "ground",
+        "size": 0.72,
+        "floor": "plank",
+        "wall": "plaster",
+        "paper": "blue",
+        "wainscot": true,
+        "dividers": 2,
+        "hearth": true,
+        "stairs": "straight",
+        "weather": 0.18
+      },
+      "stair": {
+        "id": "cottage_stair",
+        "axis": "y",
+        "ascending": "negativeY",
+        "x0": -0.9,
+        "x1": 0.15000000000000002,
+        "y0": -3.7120000000000006,
+        "y1": 0.4479999999999995,
+        "steps": 16,
+        "going": 0.26,
+        "riser": 0.18325,
+        "floorRise": 2.932,
+        "slabThickness": 0.24,
+        "headroom": 2,
+        "opening": {
+          "x0": -0.96,
+          "x1": 0.21000000000000002,
+          "y0": -3.7120000000000006,
+          "y1": -0.3320000000000005
+        },
+        "topLanding": {
+          "x0": -0.9,
+          "x1": 0.15000000000000002,
+          "y0": -4.732000000000001,
+          "y1": -3.7120000000000006
+        },
+        "bottomLanding": {
+          "x0": -0.9,
+          "x1": 0.15000000000000002,
+          "y0": 0.4479999999999995,
+          "y1": 1.4679999999999995
+        },
+        "bottom": {
+          "x": -0.375,
+          "y": 0.9679999999999995,
+          "z": 0
+        },
+        "top": {
+          "x": -0.375,
+          "y": -4.232000000000001,
+          "z": 2.932
+        }
+      }
+    }
+  }
+}

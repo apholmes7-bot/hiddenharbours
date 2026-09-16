@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+<script src="Art/interiorPropRig.js"></script>
+<script src="Art/coastalPass.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/manorIsoRig.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;} a:hover{color:#a9e7dd;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:1120px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Manor</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;BUILDING&nbsp;CLASS&nbsp;4&nbsp;&middot;&nbsp;MANOR&nbsp;ISO&nbsp;&middot;&nbsp;TWO&nbsp;STYLE&nbsp;VOCABULARIES&nbsp;(M2&nbsp;BAKE)</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:430px;text-align:right;line-height:1.45;">One parametric manor on the fleet&rsquo;s turntable. Geometry for anything that breaks the silhouette &mdash; cornice, cresting, dormers, tower, turret. Texture for anything that lies flush &mdash; brick, rubble, ashlar, quoins, slate.</div>
+  </div>
+
+  <div style="width:100%;max-width:1120px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
+
+    <!-- STAGE -->
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ canvasRef }}" width="600" height="700"></canvas>
+        <div style="position:absolute;left:11px;top:10px;font-size:10px;letter-spacing:0.14em;color:rgba(231,236,235,0.9);background:rgba(11,18,22,0.6);padding:3px 8px;">{{ stateLine }}</div>
+        <div style="position:absolute;right:11px;top:10px;font-size:10px;letter-spacing:0.12em;color:rgba(200,168,106,0.9);">{{ scaleLine }}</div>
+        <div style="position:absolute;left:11px;bottom:10px;font-size:10px;letter-spacing:0.1em;color:rgba(174,185,187,0.75);">{{ dimLine }}</div>
+      </div>
+
+      <div style="display:flex;gap:14px;align-items:center;">
+        <div onClick="{{ rotL }}" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8634;</div>
+        <div style="width:120px;display:flex;flex-direction:column;align-items:center;gap:1px;">
+          <div style="font-family:'IM Fell English SC',serif;font-size:26px;line-height:1;color:#eef3f2;">{{ compass }}</div>
+          <div style="font-size:10px;letter-spacing:0.14em;color:#7f8c90;">{{ compassDeg }}</div>
+        </div>
+        <div onClick="{{ rotR }}" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8635;</div>
+      </div>
+
+      <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:600px;">
+        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="8">
+          <div onClick="{{ c.onClick }}" style="min-width:38px;text-align:center;padding:6px 9px;font-size:11px;letter-spacing:0.08em;cursor:pointer;user-select:none;color:{{ c.fg }};background:{{ c.bg }};border:1px solid {{ c.bd }};">{{ c.label }}</div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:600px;">
+        <sc-for list="{{ stageToggles }}" as="t" hint-placeholder-count="4">
+          <div onClick="{{ t.onClick }}" style="padding:7px 12px;font-size:10px;letter-spacing:0.09em;cursor:pointer;user-select:none;border:1px solid {{ t.bd }};color:{{ t.fg }};background:{{ t.bg }};">{{ t.label }}</div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:24px;align-items:center;justify-content:center;max-width:600px;">
+        <div style="display:flex;flex-direction:column;gap:4px;width:150px;">
+          <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>ZOOM</span><span style="color:#9aa6aa;">{{ zoom }}&times;</span></div>
+          <input type="range" min="0.3" max="1.2" step="0.02" value="{{ zoom }}" onInput="{{ onZoom }}" />
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;width:150px;">
+          <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>CAM ANGLE</span><span style="color:#9aa6aa;">{{ elev }}&deg;</span></div>
+          <input type="range" min="30" max="50" step="1" value="{{ elev }}" onInput="{{ onElev }}" />
+        </div>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.06em;text-align:center;max-width:600px;line-height:1.6;">pre-rendered 3D &middot; fixed &frac34; camera &middot; 45&deg; steps &middot; ground origin pinned &mdash; <span style="color:#e0b13a;">SMOKE</span> &amp; lit windows are runtime overlays on baked stack &amp; sash anchors &middot; 32&nbsp;px = 1&nbsp;m, true to the street below</div>
+    </div>
+
+    <!-- BUILDER -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:352px;">
+
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Style &middot; a whole vocabulary</div></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <sc-for list="{{ tierChips }}" as="p" hint-placeholder-count="2">
+            <div onClick="{{ p.onClick }}" style="padding:8px 12px;font-size:10.5px;letter-spacing:0.07em;cursor:pointer;user-select:none;color:{{ p.fg }};background:{{ p.bg }};border:1px solid {{ p.bd }};">{{ p.label }}</div>
+          </sc-for>
+        </div>
+        <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;letter-spacing:0.03em;">{{ tierBlurb }}</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#b49a74;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Preset</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;">
+          <sc-for list="{{ presetChips }}" as="p" hint-placeholder-count="6">
+            <div onClick="{{ p.onClick }}" style="padding:6px 10px;font-size:10px;letter-spacing:0.06em;cursor:pointer;user-select:none;color:{{ p.fg }};background:{{ p.bg }};border:1px solid {{ p.bd }};">{{ p.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#2ba39a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Manor build</div></div>
+        <div style="border:1px solid #243137;padding:12px 13px;display:flex;flex-direction:column;gap:12px;">
+
+          <sc-for list="{{ chipRows }}" as="row" hint-placeholder-count="7">
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div style="font-size:9px;letter-spacing:0.12em;color:#6f7e83;">{{ row.name }}</div>
+              <div style="display:flex;gap:5px;flex-wrap:wrap;">
+                <sc-for list="{{ row.opts }}" as="p" hint-placeholder-count="4">
+                  <div onClick="{{ p.onClick }}" style="padding:5px 9px;font-size:10px;letter-spacing:0.06em;cursor:pointer;user-select:none;color:{{ p.fg }};background:{{ p.bg }};border:1px solid {{ p.bd }};">{{ p.label }}</div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+
+          <sc-for list="{{ swatchRows }}" as="row" hint-placeholder-count="2">
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#6f7e83;"><span>{{ row.name }}</span><span style="color:#9aa6aa;">{{ row.cur }}</span></div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <sc-for list="{{ row.opts }}" as="s" hint-placeholder-count="6">
+                  <div onClick="{{ s.onClick }}" title="{{ s.name }}" style="width:30px;height:20px;background:{{ s.col }};cursor:pointer;border:{{ s.border }};"></div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+
+          <sc-for list="{{ sliders }}" as="s" hint-placeholder-count="6">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#6f7e83;"><span>{{ s.name }}</span><span style="color:#9aa6aa;">{{ s.disp }}</span></div>
+              <input type="range" min="{{ s.min }}" max="{{ s.max }}" step="{{ s.step }}" value="{{ s.val }}" onInput="{{ s.onInput }}" />
+            </div>
+          </sc-for>
+
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="font-size:9px;letter-spacing:0.12em;color:#6f7e83;">EXTERIOR DETAIL &middot; {{ detailCount }} ON</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;">
+              <sc-for list="{{ detailToggles }}" as="t" hint-placeholder-count="14">
+                <div onClick="{{ t.onClick }}" style="padding:5px 8px;font-size:9.5px;letter-spacing:0.05em;cursor:pointer;user-select:none;border:1px solid {{ t.bd }};color:{{ t.fg }};background:{{ t.bg }};">{{ t.label }}</div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;letter-spacing:0.03em;">Every axis rebuilds and re-lights the same 3D manor &mdash; nothing is re-drawn. Detail that breaks the outline is real geometry, so it shades and occludes on all eight facings; detail that lies flush is a uv texture on the wall it belongs to.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div onClick="{{ downloadDirs }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; 8-DIR SHEET &middot; THIS BUILD</div>
+        <div onClick="{{ downloadOne }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; SINGLE CELL &middot; {{ compass }} FACING</div>
+        <a href="Manor Interiors.dc.html" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #3d4a2f;background:#1a2118;color:#c9d6a8;text-align:center;">&rarr; THE MANOR INSIDE &middot; ROOMS, STAIRS, FURNITURE</a>
+      <a href="Art/manorIsoRig.js" download="manorIsoRig.js" style="font-size:9.5px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; RIG SOURCE &middot; manorIsoRig.js</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIRECTION SHEET -->
+  <div style="width:100%;max-width:1120px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">DIRECTION&nbsp;SHEET&nbsp;&middot;&nbsp;Art/Sprites/Buildings/ManorIso.png</div>
+      <div style="font-size:9.5px;color:#5f6e73;">{{ sheetDims }} &middot; pivot pinned each cell &middot; N NE E SE S SW W NW</div>
+    </div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;padding:14px;">
+      <canvas ref="{{ sheetRef }}" width="1300" height="300"></canvas>
+    </div>
+  </div>
+
+  <!-- STYLE ROW -->
+  <div style="width:100%;max-width:1120px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">SIX&nbsp;SEATS&nbsp;FROM&nbsp;ONE&nbsp;RIG</div>
+      <div style="font-size:9.5px;color:#5f6e73;">common ground line &mdash; three mansard, three stone; every roofline is the same model re-posed</div>
+    </div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;padding:14px;">
+      <canvas ref="{{ rowRef }}" width="1300" height="330"></canvas>
+    </div>
+  </div>
+
+  <!-- META + PALETTE + CONTRACT -->
+  <div style="width:100%;max-width:1120px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:320px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Sheet</div></div>
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ meta }}" as="row" hint-placeholder-count="10">
+          <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ row.border }};background:#0f191e;">{{ row.k }}</div>
+          <div style="padding:6px 11px;color:#c4cdcd;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.v }}</div>
+        </sc-for>
+      </div>
+      <div style="display:flex;align-items:center;gap:9px;margin-top:6px;"><div style="width:8px;height:8px;background:#2ba39a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Registration contract &middot; shell()</div></div>
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto auto 1fr;font-size:10.5px;">
+        <sc-for list="{{ levels }}" as="row" hint-placeholder-count="4">
+          <div style="padding:5px 10px;color:#8a969b;letter-spacing:0.06em;border-top:{{ row.border }};background:#0f191e;">{{ row.id }}</div>
+          <div style="padding:5px 10px;color:#c4cdcd;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.z }}</div>
+          <div style="padding:5px 10px;color:#7f8c90;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.note }}</div>
+        </sc-for>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;letter-spacing:0.03em;">A manor interior pass measures nothing &mdash; it reads these levels, the wall thickness, the accent&rsquo;s own cylinder or box, and {{ openCount }} baked openings, all in the metres this bake used.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:320px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#b49a74;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Palette &middot; this build, KTC</div></div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <sc-for list="{{ ramps }}" as="r" hint-placeholder-count="7">
+          <div style="display:flex;align-items:center;gap:9px;">
+            <div style="width:78px;font-size:9px;letter-spacing:0.08em;color:#6f7e83;">{{ r.name }}</div>
+            <div style="display:flex;gap:2px;flex:1;">
+              <sc-for list="{{ r.cols }}" as="c" hint-placeholder-count="6">
+                <div title="{{ c }}" style="flex:1;height:15px;background:{{ c }};"></div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;letter-spacing:0.03em;">Bodies are the harbour brick, rubble and paint ramps; dressed stone is the granite the quays are cut from; slate and copper come off the stacked-flats roofs. Weathering and night are ramp transforms &mdash; no new colours invented.</div>
+      <div style="display:flex;align-items:center;gap:9px;margin-top:6px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">What makes it read as a manor</div></div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <sc-for list="{{ notes }}" as="n" hint-placeholder-count="5">
+          <div style="display:flex;gap:9px;align-items:baseline;">
+            <div style="width:74px;flex:none;font-size:9px;letter-spacing:0.08em;color:#8a969b;">{{ n.k }}</div>
+            <div style="font-size:10.5px;color:#9aa6aa;line-height:1.55;">{{ n.v }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1120, &quot;height&quot;: 1600 },
+  &quot;tier&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;secondEmpire&quot;, &quot;options&quot;: [&quot;secondEmpire&quot;,&quot;baronial&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Style&quot; },
+  &quot;size&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.5, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.02, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;storeys&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 2, &quot;min&quot;: 2, &quot;max&quot;: 3, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;accent&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;tower&quot;, &quot;options&quot;: [&quot;tower&quot;,&quot;turret&quot;,&quot;none&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;bay&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;canted&quot;, &quot;options&quot;: [&quot;none&quot;,&quot;canted&quot;,&quot;oriel&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;body&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;brownstone&quot;, &quot;options&quot;: [&quot;redBrick&quot;,&quot;buffBrick&quot;,&quot;brownstone&quot;,&quot;greyBrick&quot;,&quot;paintedWhite&quot;,&quot;paintedCream&quot;,&quot;paintedSage&quot;,&quot;paintedBlue&quot;,&quot;rubbleStone&quot;,&quot;ashlarGrey&quot;,&quot;sandstone&quot;,&quot;seaSlate&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;roofMat&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;slate&quot;, &quot;options&quot;: [&quot;slate&quot;,&quot;slateBlue&quot;,&quot;asphaltGrey&quot;,&quot;metal&quot;,&quot;copper&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Build&quot; },
+  &quot;dormers&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 3, &quot;min&quot;: 0, &quot;max&quot;: 4, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Detail&quot; },
+  &quot;chimneys&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 2, &quot;min&quot;: 0, &quot;max&quot;: 3, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Detail&quot; },
+  &quot;crestingOn&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Detail&quot; },
+  &quot;crowStep&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Detail&quot; },
+  &quot;shutters&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Detail&quot; },
+  &quot;porte&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Detail&quot; },
+  &quot;weather&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.12, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Detail&quot; },
+  &quot;night&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Preview&quot; },
+  &quot;zoom&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.66, &quot;min&quot;: 0.3, &quot;max&quot;: 1.2, &quot;step&quot;: 0.02, &quot;unit&quot;: &quot;×&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Preview&quot; },
+  &quot;elev&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 40, &quot;min&quot;: 30, &quot;max&quot;: 50, &quot;step&quot;: 1, &quot;unit&quot;: &quot;°&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Preview&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.ORDER = ['N','NE','E','SE','S','SW','W','NW'];
+    const dirIdx=(d)=>{ const i=this.ORDER.indexOf(d); return i<0?3:i; };
+    const saved=this._load();
+    const R = (typeof window!=='undefined') && window.ManorIso;
+    this.CW=R?R.W:1040; this.CH=R?R.H:1300; this.PVX=R?R.pivot.x:520; this.PVY=R?R.pivot.y:1000;
+    this.state = {
+      dir:   saved.dir   ?? dirIdx(props.dir ?? 'SE'),
+      zoom:  saved.zoom  ?? (props.zoom ?? 0.66),
+      elev:  saved.elev  ?? (props.elev ?? 40),
+      smoke: saved.smoke ?? true,
+      night: saved.night ?? (props.night ?? false),
+      outline: saved.outline ?? false,
+      showPivot: saved.showPivot ?? false,
+      build: Object.assign({ tier:'secondEmpire' }, (R?R.TIERS.secondEmpire:{}), (R?R.PRESETS.mansardManor:{}), saved.build ?? {}),
+    };
+    this._cells={}; this._cellsKey=''; this._t0=performance.now();
+    this.canvasRef=(n)=>{ if(!n||n===this._cv)return; this._cv=n; this._ctx=n.getContext('2d'); this._rebuild(); };
+    this.sheetRef=(n)=>{ if(!n||n===this._sh)return; this._sh=n; this._shctx=n.getContext('2d'); this._drawSheet(); };
+    this.rowRef=(n)=>{ if(!n||n===this._rw)return; this._rw=n; this._rwctx=n.getContext('2d'); this._drawRow(); };
+  }
+  _load(){ try{ return JSON.parse(localStorage.getItem('hh.manorIso')||'{}'); }catch(e){ return {}; } }
+  _save(){ try{ localStorage.setItem('hh.manorIso', JSON.stringify(this.state)); }catch(e){} }
+  _rig(){ return (typeof window!=='undefined') && window.ManorIso; }
+
+  componentDidMount(){
+    this._iv=setInterval(()=>{ if(this.state.smoke && this._ctx && this._ready) this._drawStage(); }, 95);
+    this._tryReady();
+  }
+  componentDidUpdate(prev){
+    const s={};
+    if(prev.dir!==this.props.dir && this.props.dir!=null){ const i=this.ORDER.indexOf(this.props.dir); if(i>=0&&i!==this.state.dir) s.dir=i; }
+    ['zoom','elev','night'].forEach(k=>{ if(prev[k]!==this.props[k] && this.props[k]!=null && this.props[k]!==this.state[k]) s[k]=this.props[k]; });
+    ['tier','size','storeys','accent','bay','body','roofMat','dormers','chimneys','weather','porte','crestingOn','crowStep','shutters','winDensity'].forEach(k=>{
+      if(prev[k]!==this.props[k] && this.props[k]!=null && this.props[k]!==this.state.build[k])
+        s.build=Object.assign({},this.state.build,s.build,{[k]:this.props[k]});
+    });
+    if(Object.keys(s).length) this.setState(s);
+  }
+  componentWillUnmount(){ if(this._iv) clearInterval(this._iv); if(this._deb) clearTimeout(this._deb); if(this._rowT) clearTimeout(this._rowT); this._rowTok=-1; }
+
+  _tryReady(){ if(this._rig()){ this._ready=true; this._rebuild(); } else if(!this._ready){ setTimeout(()=>this._tryReady(),80); } }
+  _key(){ return this.state.elev+'|'+this.state.night+'|'+this.state.outline+'|'+JSON.stringify(this.state.build); }
+  _opts(){ return Object.assign({}, this.state.build, { elev:this.state.elev, night:this.state.night, outline:this.state.outline }); }
+
+  _renderCell(dir, opts){
+    const R=this._rig(); const cv=document.createElement('canvas'); cv.width=R.W; cv.height=R.H;
+    cv.getContext('2d').putImageData(new ImageData(R.render(dir, opts||this._opts()), R.W, R.H), 0, 0);
+    return cv;
+  }
+  _rebuild(){
+    if(!this._rig()){ this._tryReady(); return; }
+    const key=this._key();
+    if(this._cellsKey!==key){ this._cells={}; this._cellsKey=key; }
+    if(!this._cells[this.state.dir]) this._cells[this.state.dir]=this._renderCell(this.state.dir);
+    this._ready=true;
+    this._drawStage(); this._drawSheet();
+    // Bake the other seven facings ONE PER TICK. A manor cell is 1040x1300 and every detail is
+    // real geometry, so a whole sheet in one tick would lock the page for seconds.
+    if(this._deb) clearTimeout(this._deb);
+    let d=0;
+    const step=()=>{ if(this._cellsKey!==key) return;
+      while(d<8 && this._cells[d]) d++;
+      if(d>=8) return;
+      this._cells[d]=this._renderCell(d); this._drawSheet();
+      this._deb=setTimeout(step,16);
+    };
+    this._deb=setTimeout(step,90);
+  }
+
+  _bgStage(ctx,W,H,groundY){
+    if(this.state.night){
+      const g=ctx.createLinearGradient(0,0,0,groundY); g.addColorStop(0,'#0b1420'); g.addColorStop(1,'#152230');
+      ctx.fillStyle=g; ctx.fillRect(0,0,W,groundY);
+      ctx.fillStyle='#0e1a16'; ctx.fillRect(0,groundY,W,H-groundY);
+    } else {
+      const g=ctx.createLinearGradient(0,0,0,groundY); g.addColorStop(0,'#16242c'); g.addColorStop(1,'#22323a');
+      ctx.fillStyle=g; ctx.fillRect(0,0,W,groundY);
+      const gg=ctx.createLinearGradient(0,groundY,0,H); gg.addColorStop(0,'#2f4230'); gg.addColorStop(1,'#233524');
+      ctx.fillStyle=gg; ctx.fillRect(0,groundY,W,H-groundY);
+    }
+    ctx.fillStyle=this.state.night?'#1c2b22':'#3a5138'; ctx.fillRect(0,groundY,W,1);
+  }
+  _drawStage(){
+    if(!this._ctx||!this._ready) return;
+    const ctx=this._ctx, W=this._cv.width, H=this._cv.height, z=this.state.zoom;
+    ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,W,H);
+    const gx=Math.round(W/2), gy=Math.round(H*0.74);
+    this._bgStage(ctx,W,H,gy);
+    const R=this._rig(), an=R?R.anchors(this.state.dir,this._opts()):{Wd:14,Ln:19,chimneys:[]};
+    ctx.save(); ctx.globalAlpha=this.state.night?0.44:0.32; ctx.fillStyle='#050c10';
+    ctx.beginPath(); ctx.ellipse(gx,gy+2,(an.Wd*0.62)*z*2.0,(an.Ln*0.12)*z*2.0,0,0,Math.PI*2); ctx.fill(); ctx.restore();
+    const cell=this._cells[this.state.dir]||(this._cells[this.state.dir]=this._renderCell(this.state.dir));
+    ctx.drawImage(cell, Math.round(gx-this.PVX*z), Math.round(gy-this.PVY*z), this.CW*z, this.CH*z);
+    if(this.state.smoke && an.chimneys && an.chimneys.length){
+      const t=(performance.now()-this._t0)/1000;
+      for(const c of an.chimneys){
+        const bx=gx+(c.x-this.PVX)*z, by=gy+(c.y-this.PVY)*z;
+        for(let p=0;p<8;p++){
+          const life=((t*0.5 + p/8)%1);
+          const rise=life*56*z, drift=Math.sin((life*3.0)+(c.x))*12*z*life;
+          const r=(2.4+life*8)*z, a=(1-life)*(this.state.night?0.24:0.33);
+          ctx.fillStyle='rgba('+(this.state.night?'150,160,170':'205,210,214')+','+a.toFixed(3)+')';
+          ctx.beginPath(); ctx.arc(bx+drift, by-rise-4*z, Math.max(0.6,r), 0, 7); ctx.fill();
+        }
+      }
+    }
+    if(this.state.showPivot){
+      ctx.fillStyle='rgba(240,90,80,0.9)';
+      ctx.fillRect(gx-0.5,gy-7,1,14); ctx.fillRect(gx-7,gy-0.5,14,1);
+      ctx.fillStyle='rgba(240,90,80,0.22)'; for(let x=0;x<W;x+=6) ctx.fillRect(x,gy,3,1);
+      if(an.accentTop){ const ax=gx+(an.accentTop.x-this.PVX)*z, ay=gy+(an.accentTop.y-this.PVY)*z;
+        ctx.fillStyle='rgba(127,214,201,0.85)'; ctx.fillRect(ax-3,ay-0.5,6,1); ctx.fillRect(ax-0.5,ay-3,1,6); }
+    }
+  }
+
+  _checker(ctx,x,y,fw,fh,S){ const c=16; for(let yy=0;yy<fh;yy+=c)for(let xx=0;xx<fw;xx+=c){ ctx.fillStyle=(((xx/c|0)+(yy/c|0))&1)?'#16232b':'#111d23'; ctx.fillRect(x+xx*S,y+yy*S,Math.min(c,fw-xx)*S,Math.min(c,fh-yy)*S); } }
+  _drawSheet(){
+    if(!this._shctx||!this._ready) return;
+    const S=0.185, gap=7, cw=this.CW*S, ch=this.CH*S;
+    this._sh.width=Math.ceil(12+8*(cw+gap)); this._sh.height=Math.ceil(ch+26);
+    const ctx=this._shctx;
+    ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,this._sh.width,this._sh.height);
+    for(let d=0;d<8;d++){
+      const x=6+d*(cw+gap), y=6;
+      this._checker(ctx,x,y,this.CW,this.CH,S);
+      if(d===this.state.dir){ ctx.fillStyle='rgba(127,214,201,0.13)'; ctx.fillRect(x,y,cw,ch); }
+      const cell=this._cells[d]; if(cell) ctx.drawImage(cell,x,y,cw,ch);
+      ctx.fillStyle=d===this.state.dir?'#cfeee8':'#6f7e83';
+      ctx.font='10px ui-monospace,monospace'; ctx.textAlign='center';
+      ctx.fillText(d+' \u00b7 '+this.ORDER[d], x+cw/2, y+ch+15);
+    }
+    ctx.textAlign='left';
+  }
+  // Six presets, ONE BAKE PER TICK, each drawn as it lands — same reason as the sheet.
+  _drawRow(){
+    if(!this._rwctx||!this._ready) return;
+    const R=this._rig(), S=0.175, keys=Object.keys(R.PRESETS);
+    this._rw.width=Math.ceil(R.W*S*(0.68*(keys.length-1)+1)+28);
+    this._rw.height=Math.ceil(R.H*S+30);
+    const ctx=this._rwctx, W=this._rw.width, H=this._rw.height, G=H-24;
+    ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#16232b'; ctx.fillRect(0,G,W,1);
+    const w=R.W*S, h=R.H*S, gy=G-R.pivot.y*S;
+    // a cell is taller than its share of the strip, so the caption band is repainted after every
+    // bake rather than once up front
+    const labels=()=>{ ctx.fillStyle='#0e181d'; ctx.fillRect(0,G+2,W,H-G-2);
+      ctx.font='10px ui-monospace,monospace'; ctx.textAlign='center'; ctx.fillStyle='#6f7e83';
+      keys.forEach((k,i)=>ctx.fillText(k.replace(/([A-Z])/g,' $1').trim(), 14+i*w*0.68+w/2, G+16));
+      ctx.textAlign='left'; };
+    labels();
+    const token=(this._rowTok=(this._rowTok||0)+1);
+    const env={elev:this.state.elev,night:this.state.night,outline:this.state.outline};
+    let i=0;
+    const step=()=>{ if(token!==this._rowTok||!this._rwctx) return;
+      if(i>=keys.length) return;
+      const cv=this._renderCell(3, Object.assign({}, env, R.PRESETS[keys[i]]));
+      ctx.drawImage(cv, 14+i*w*0.68, gy, w, h);
+      labels();
+      i++; this._rowT=setTimeout(step,16);
+    };
+    this._rowT=setTimeout(step,240);
+  }
+
+  _rot(d){ this.setState({dir:(this.state.dir+d+8)%8}, ()=>{ this._save(); this._rebuild(); }); }
+  _setDir(d){ this.setState({dir:d}, ()=>{ this._save(); this._rebuild(); }); }
+  _setB(patch){ this.setState({build:Object.assign({},this.state.build,patch)}, ()=>{ this._save(); this._rebuild(); }); }
+  _setTier(t){ const R=this._rig(), T=R.TIERS[t]||{};
+    this.setState({build:Object.assign({}, T, {tier:t, size:this.state.build.size, storeys:this.state.build.storeys})},
+      ()=>{ this._save(); this._rebuild(); this._drawRow(); }); }
+  _setPreset(k){ const R=this._rig(), P=R.PRESETS[k], T=R.TIERS[P.tier]||{};
+    this.setState({build:Object.assign({}, T, P)}, ()=>{ this._save(); this._rebuild(); }); }
+  _toggle(k){ this.setState({[k]:!this.state[k]}, ()=>{ this._save(); this._rebuild(); if(k==='night'||k==='outline') this._drawRow(); }); }
+  // toggles read the RESOLVED build, not the patch — a sparse preset leaves most flags to the tier
+  _rb(){ const R=this._rig(); return R?R.resolved(this._opts()):this.state.build; }
+  _toggleB(k){ this._setB({[k]:!this._rb()[k]}); }
+
+  _saveCanvas(cv,name){ cv.toBlob((b)=>{ if(!b)return; const url=URL.createObjectURL(b); const a=document.createElement('a');
+    a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),2000); }); }
+  _downloadDirs(){ for(let d=0;d<8;d++) if(!this._cells[d]) this._cells[d]=this._renderCell(d);
+    const cv=document.createElement('canvas'); cv.width=this.CW*8; cv.height=this.CH; const c=cv.getContext('2d');
+    for(let d=0;d<8;d++) c.drawImage(this._cells[d], d*this.CW, 0);
+    this._saveCanvas(cv,'ManorIso_'+this.state.build.tier+'.png'); }
+  _downloadOne(){ const cell=this._cells[this.state.dir]||this._renderCell(this.state.dir);
+    this._saveCanvas(cell,'ManorIso_'+this.state.build.tier+'_'+this.ORDER[this.state.dir]+'.png'); }
+
+  renderVals(){
+    const R=this._rig(), st=this.state, b=R?R.resolved(this._opts()):st.build;
+    const on={fg:'#0b1216',bg:'#7fd6c9',bd:'#7fd6c9'}, off={fg:'#aeb9bb',bg:'#141f25',bd:'#2f444c'};
+    const gold={fg:'#0b1216',bg:'#e0b13a',bd:'#e0b13a'}, sand={fg:'#0b1216',bg:'#c9a86a',bd:'#c9a86a'};
+    const mk=(label,sel,fn,style)=>Object.assign({label,onClick:fn}, sel?(style||on):off);
+    const chip=(label,val,cur,key)=>mk(label, cur===val, ()=>this._setB({[key]:val}));
+    const chips=this.ORDER.map((name,d)=>mk(name, d===st.dir, ()=>this._setDir(d)));
+    const isBar = b.tier==='baronial';
+    const tierChips = R ? Object.keys(R.TIERS).map(k=>mk(
+      k==='secondEmpire'?'MANSARD MANOR · SECOND EMPIRE':'STONE MANOR · BARONIAL',
+      b.tier===k, ()=>this._setTier(k), gold)) : [];
+    const tierBlurb = isBar
+      ? 'Battered rubble on a chamfered plinth, dressed quoins and hood moulds with label stops, a corbel course at the eaves, and a steep slate roof whose ends rise into crow-step gables. A full-height round turret with a conical cap, a corbelled bartizan at the far corner, a stone oriel on the front, wall dormers through the eaves, and clustered stacks on the apexes.'
+      : 'Brick or painted body on a rusticated basement: water table, dressed quoins, a string course per floor, and a deep bracketed cornice with a dentil frieze. Above it a true mansard storey — near-vertical slate, a copper break band, a shallow deck under iron cresting, and segmental dormers standing proud of the slope. The entry tower carries the centre a storey higher.';
+    const presetChips = R ? Object.keys(R.PRESETS).map(k=>mk(k.replace(/([A-Z])/g,' $1').trim(),
+      false, ()=>this._setPreset(k), sand)) : [];
+    const cladList = R?R.CLADS:['brick'];
+    const winList = R?R.WINDOWS:['twoOverTwo'];
+    const winLabel={twoOverTwo:'2/2',sixOverSix:'6/6',fourOverFour:'4/4',oneOverOne:'1/1',mullioned:'MULLIONED'};
+    const chipRows=[
+      { name:'CLADDING', opts:cladList.map(c=>chip(c.toUpperCase(),c,b.clad,'clad')) },
+      { name:'ROOF FORM', opts:(R?R.ROOFFORMS:['mansard']).map(f=>chip(f.toUpperCase(),f,b.roofForm,'roofForm')) },
+      { name:'VERTICAL ACCENT', opts:[mk('ENTRY TOWER',b.accent==='tower',()=>this._setB({accent:'tower'})),
+                                     mk('ROUND TURRET',b.accent==='turret',()=>this._setB({accent:'turret'})),
+                                     mk('NONE',b.accent==='none',()=>this._setB({accent:'none'}))] },
+      { name:'PROJECTING BAY', opts:[mk('NONE',b.bay==='none',()=>this._setB({bay:'none'})),
+                                     mk('CANTED · 2-STOREY',b.bay==='canted',()=>this._setB({bay:'canted'})),
+                                     mk('STONE ORIEL',b.bay==='oriel',()=>this._setB({bay:'oriel'}))] },
+      { name:'WINDOWS', opts:winList.map(w=>chip(winLabel[w]||w.toUpperCase(),w,b.winStyle,'winStyle')) },
+      { name:'OPENING HEADS', opts:[chip('FLAT','none',b.arch,'arch'),chip('SEGMENTAL','segmental',b.arch,'arch'),chip('ROUND','round',b.arch,'arch')] },
+      { name:'ENTRANCE DOOR', opts:(R?Object.keys(R.DOORPAINTS):['oak']).map(d=>chip(d.toUpperCase(),d,b.door,'door')) },
+    ];
+    const swatch=(name,cur,keyName,list,src)=>({ name, cur, opts:list.map(k=>{ const ramp=src&&src[k]; const col=ramp?ramp[3]:'#888'; const sel=k===cur;
+      return { name:k, col, onClick:()=>this._setB({[keyName]:k}), border: sel?'2px solid #eef3f2':'1px solid #2f444c' }; }) });
+    const swatchRows = R ? [
+      swatch('BODY · '+b.clad, b.body, 'body', Object.keys(R.BODY), R.BODY),
+      swatch('ROOF', b.roofMat, 'roofMat', Object.keys(R.ROOFS), R.ROOFS),
+      swatch('DRESSED STONE', b.dress, 'dress', ['ashlarGrey','sandstone','buffBrick','greyBrick','paintedWhite'], R.BODY),
+    ] : [];
+    const slider=(name,val,min,max,step,fn,disp)=>({name,val,min,max,step,onInput:fn,disp});
+    const dm = R?R.dims(this._opts()):{Wd:14,Ln:19,area:266};
+    const sliders=[
+      slider('SIZE  ·  seat → grand seat', b.size, 0, 1, 0.02, (e)=>this._setB({size:+e.target.value}), dm.Wd.toFixed(1)+'×'+dm.Ln.toFixed(1)+' m'),
+      slider('MASONRY STOREYS  ·  + roof storey', b.storeys, 2, 3, 1, (e)=>this._setB({storeys:+e.target.value}), b.storeys+' + roof'),
+      slider('WINDOW DENSITY', b.winDensity, 0.2, 1, 0.05, (e)=>this._setB({winDensity:+e.target.value}), Math.round(b.winDensity*100)+'%'),
+      slider(isBar?'WALL DORMERS':'MANSARD DORMERS', b.dormers, 0, 4, 1, (e)=>this._setB({dormers:+e.target.value}), ''+b.dormers),
+      slider(isBar?'CLUSTERED STACKS':'CORBELLED STACKS', b.chimneys, 0, 3, 1, (e)=>this._setB({chimneys:+e.target.value}), ''+b.chimneys),
+      slider('WEATHER  ·  kept → salt-worn', b.weather, 0, 1, 0.05, (e)=>this._setB({weather:+e.target.value}), Math.round(b.weather*100)+'%'),
+    ];
+    const dflags=[
+      ['quoins','QUOINS'],['stringCourse','STRING COURSE'],['waterTable','WATER TABLE'],['rustBase','RUSTICATED BASE'],
+      ['brackets','CORNICE BRACKETS'],['dentils','DENTILS'],['corbelEaves','CORBEL EAVES'],['hoods','WINDOW HOODS'],
+      ['shutters','SHUTTERS'],['crestingOn','IRON CRESTING'],['finials','FINIALS'],['balustrade','BALUSTRADE'],
+      ['crowStep','CROW-STEP GABLES'],['bartizan','BARTIZAN'],['porte','PORTE-COCHÈRE'],
+    ];
+    const detailToggles=dflags.map(([k,l])=>mk((b[k]?'■ ':'□ ')+l, !!b[k], ()=>this._toggleB(k)));
+    const detailCount=dflags.filter(([k])=>!!b[k]).length+'/'+dflags.length;
+    const stageToggles=[
+      mk(st.smoke?'■ SMOKE':'▶ SMOKE', st.smoke, ()=>this._toggle('smoke'), gold),
+      mk(st.night?'☾ NIGHT':'☀ DAY', st.night, ()=>this._toggle('night')),
+      mk(st.outline?'■ KEYLINE':'□ KEYLINE', st.outline, ()=>this._toggle('outline')),
+      mk('ANCHORS', st.showPivot, ()=>this._toggle('showPivot')),
+    ];
+    const border='1px solid #243137';
+    const sh = R?R.shell(this._opts()):{levels:[],openings:[],wallT:0.5};
+    const un = R?R.units(this._opts())[0]:{floorArea:0,beds:0,levels:0};
+    const meta=[
+      {k:'CELL', v:this.CW+' × '+this.CH+' · 8 dirs', border:'none'},
+      {k:'PIVOT', v:'ground centre ('+this.PVX+', '+this.PVY+')', border},
+      {k:'CAMERA', v:'elev '+st.elev+'° · 45° steps · fleet-true', border},
+      {k:'SCALE', v:'32 px = 1 m → '+dm.Wd.toFixed(1)+'×'+dm.Ln.toFixed(1)+' m · '+dm.area+' m² plate', border},
+      {k:'MASS', v:b.storeys+' masonry storeys + '+(b.roofForm==='mansard'?'mansard':'attic')+' · ridge '+dm.topZ.toFixed(1)+' m', border},
+      {k:'STYLE', v:dm.label+' · '+b.clad+' · '+b.roofMat, border},
+      {k:'ACCENT', v:(b.accent==='none'?'none':b.accent)+' · bay '+b.bay, border},
+      {k:'HOUSEHOLD', v:un.beds+' beds · '+un.levels+' levels · '+un.floorArea.toFixed(0)+' m² net', border},
+      {k:'LIGHT', v:'upper-left key · dither · no AA · keyline '+(st.outline?'on':'off'), border},
+      {k:'SOURCE', v:'Art/manorIsoRig.js (re-bakeable)', border},
+    ];
+    const levels=(sh.levels||[]).map((L,i)=>({ id:L.id.toUpperCase(), z:L.floorZ.toFixed(2)+' → '+L.ceilZ.toFixed(2)+' m',
+      note:L.note||(L.kind+' · '+((L.box.x1-L.box.x0)*(L.box.y1-L.box.y0)).toFixed(0)+' m²'), border:i?border:'none' }));
+    const bodyRamp=R?(R.BODY[b.body]||R.BODY.brownstone):[];
+    const ramps = R ? [
+      {name:'BODY', cols:bodyRamp},
+      {name:'DRESSED', cols:R.BODY[b.dress]||R.DRESS},
+      {name:'PLINTH', cols:b.clad==='rubble'?R.BODY.rubbleStone:R.BODY.ashlarGrey},
+      {name:'ROOF', cols:R.ROOFS[b.roofMat]||R.ROOFS.slate},
+      {name:'IRON', cols:R.IRON},
+      {name:'DOOR', cols:R.DOORPAINTS[b.door]||R.DOORPAINTS.oak},
+      {name:'GLASS', cols:st.night?['#7a4f18','#b98a2f','#eed07a']:['#33474d','#40585f','#547078']},
+    ] : [];
+    const notes = isBar ? [
+      {k:'SILHOUETTE', v:'the round turret and the crow-step gables — both survive to 20 px, which is the whole test'},
+      {k:'GEOMETRY', v:'crow steps, coping, corbels, hood moulds, wall dormers, bartizan and stacks are real boxes: they shade and occlude on every facing'},
+      {k:'TEXTURE', v:'rubble coursing, ashlar, quoin blocks and slate are uv textures on the wall they belong to — no per-facing art'},
+      {k:'STONE LOGIC', v:'field wall is rubble, corners and openings are dressed — the cut changes where the load changes'},
+      {k:'ANCHORS', v:'stack tops, sash centres, turret apex, door and steps are baked points; smoke and lamplight are runtime overlays'},
+    ] : [
+      {k:'SILHOUETTE', v:'the mansard break, the cresting line and the entry tower — the outline reads as a manor before any detail resolves'},
+      {k:'GEOMETRY', v:'cornice shelf, paired brackets, sills on brackets, hoods, dormers, cresting, finials and the balcony are real boxes with lit tops and dark soffits'},
+      {k:'TEXTURE', v:'brick coursing, rustication, quoins, slate and standing seam are uv textures — flush surface never costs a facing'},
+      {k:'DEPTH', v:'a projecting cornice throws its own soffit shadow, which is what separates the wall from the roof storey at small scale'},
+      {k:'ANCHORS', v:'stack tops, sash centres, tower apex, balcony, door and steps are baked points; smoke and lamplight are runtime overlays'},
+    ];
+    return {
+      canvasRef:this.canvasRef, sheetRef:this.sheetRef, rowRef:this.rowRef,
+      rotL:()=>this._rot(-1), rotR:()=>this._rot(1),
+      compass:this.ORDER[st.dir], compassDeg:(st.dir*45)+'° · facing',
+      stateLine:(isBar?'BARONIAL':'SECOND EMPIRE')+'  ·  '+this.ORDER[st.dir]+'  ·  '+(st.dir*45)+'°',
+      scaleLine:this.CW+'×'+this.CH+' · '+st.zoom.toFixed(2)+'×',
+      dimLine:dm.Wd.toFixed(1)+' × '+dm.Ln.toFixed(1)+' m  ·  '+b.storeys+'+roof  ·  '+dm.topZ.toFixed(1)+' m to the top',
+      sheetDims:(8*this.CW)+'×'+this.CH+' · 8×('+this.CW+'×'+this.CH+')',
+      chips, tierChips, tierBlurb, presetChips, chipRows, swatchRows, sliders,
+      detailToggles, detailCount, stageToggles,
+      zoom:st.zoom, onZoom:(e)=>this.setState({zoom:+e.target.value}, ()=>{ this._save(); this._drawStage(); }),
+      elev:st.elev, onElev:(e)=>this.setState({elev:+e.target.value}, ()=>{ this._save(); this._rebuild(); }),
+      downloadDirs:()=>this._downloadDirs(), downloadOne:()=>this._downloadOne(),
+      meta, levels, ramps, notes, openCount:(sh.openings||[]).length,
+    };
+  }
+}
+</script>
+</body>
+</html>

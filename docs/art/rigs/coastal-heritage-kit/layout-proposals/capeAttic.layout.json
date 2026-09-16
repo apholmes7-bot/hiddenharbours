@@ -1,0 +1,301 @@
+{
+  "schema": "coastal-cottage-layout/2",
+  "preset": "capeAttic",
+  "options": {
+    "type": "cape",
+    "storey": "upper",
+    "size": 0.5,
+    "floor": "wideBoard",
+    "wall": "board",
+    "paper": "greyShingle",
+    "wainscot": false,
+    "dormers": 3,
+    "beams": true,
+    "weather": 0.38
+  },
+  "renderSignatureSha256": "57e59da887ab14e1ced3627ab75c2d07c64a4e27bf3903cf4adfbbb2058b0a08",
+  "derivedFromRigSha256": "ef06a219a23686349dd96f63e5ca00ba72cf380954686263a3f1576fe80bafc1",
+  "dependencyHashes": {
+    "Art/manorIsoRig.js": "eb59dcbfae10a47ae72d9e5193b789dcee4e5c1b8cb7b3d827d6db9f28dd1241",
+    "Art/interiorPropRig.js": "a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6",
+    "Art/manorUnitIsoRig.js": "d8bfad68a876f491a642b8aaeb5c7df65cc741c931e7ba2d8a9e3f561cecaf7b",
+    "Art/houseIsoRig.js": "4b28a464c87153c0d271789b583a485333c1fceb2ffa1b650b44d8258ba6ea66",
+    "Art/interiorIsoRig.js": "ef06a219a23686349dd96f63e5ca00ba72cf380954686263a3f1576fe80bafc1",
+    "Art/wharfBuildingRig.js": "76dbecb0e1ccadfbcacc66b9ec5787d2ebff8112b7d5976668fa953a08ed8163",
+    "Art/coastalPass.js": "cb0293833991f726742ad98aa4d169888293779b000192d8543e02b12bade780"
+  },
+  "props": [
+    {
+      "id": "bed",
+      "name": "bed",
+      "face": "S",
+      "x": -2.65,
+      "y": 0,
+      "z": 0,
+      "options": {
+        "variant": 1,
+        "wood": "pine",
+        "fabric": "blue",
+        "fabric2": "cream"
+      },
+      "verb": "sleep",
+      "rect": {
+        "x0": -3.16,
+        "x1": -2.14,
+        "y0": -1.025,
+        "y1": 1.025
+      },
+      "height": 0.95
+    },
+    {
+      "id": "chest",
+      "name": "seaChest",
+      "face": "N",
+      "x": 2.65,
+      "y": 1.8,
+      "z": 0,
+      "options": {
+        "wood": "oak"
+      },
+      "verb": "store",
+      "rect": {
+        "x0": 2.2,
+        "x1": 3.1,
+        "y0": 1.55,
+        "y1": 2.05
+      },
+      "height": 0.5
+    },
+    {
+      "id": "desk",
+      "name": "writingDesk",
+      "face": "E",
+      "x": -2.65,
+      "y": -3.25,
+      "z": 0,
+      "options": {
+        "wood": "oak"
+      },
+      "verb": "desk",
+      "rect": {
+        "x0": -2.98,
+        "x1": -2.32,
+        "y0": -3.91,
+        "y1": -2.59
+      },
+      "height": 0.774
+    },
+    {
+      "id": "chair",
+      "name": "chair",
+      "face": "W",
+      "x": 3.06,
+      "y": -4,
+      "z": 0,
+      "options": {
+        "wood": "pine"
+      },
+      "verb": "sit",
+      "rect": {
+        "x0": 2.85,
+        "x1": 3.27,
+        "y0": -4.22,
+        "y1": -3.78
+      },
+      "height": 1.075
+    }
+  ],
+  "blockers": [
+    {
+      "kind": "well",
+      "x0": -0.96,
+      "x1": 0.21,
+      "y0": -3.25,
+      "y1": 0.13
+    },
+    {
+      "kind": "bed",
+      "id": "bed",
+      "x0": -3.16,
+      "x1": -2.14,
+      "y0": -1.025,
+      "y1": 1.025
+    },
+    {
+      "kind": "seaChest",
+      "id": "chest",
+      "x0": 2.2,
+      "x1": 3.1,
+      "y0": 1.55,
+      "y1": 2.05
+    },
+    {
+      "kind": "writingDesk",
+      "id": "desk",
+      "x0": -2.98,
+      "x1": -2.32,
+      "y0": -3.91,
+      "y1": -2.59
+    },
+    {
+      "kind": "chair",
+      "id": "chair",
+      "x0": 2.85,
+      "x1": 3.27,
+      "y0": -4.22,
+      "y1": -3.78
+    }
+  ],
+  "routes": [
+    {
+      "x0": -0.44,
+      "x1": 1.64,
+      "y0": 3.86,
+      "y1": 4.74
+    },
+    {
+      "x0": 0.76,
+      "x1": 1.64,
+      "y0": -3.34,
+      "y1": 4.74
+    },
+    {
+      "x0": -0.9,
+      "x1": 0.15,
+      "y0": -4.27,
+      "y1": -3.25
+    },
+    {
+      "x0": -0.9,
+      "x1": 0.15,
+      "y0": 0.65,
+      "y1": 1.67
+    },
+    {
+      "x0": -1.75,
+      "x1": -0.98,
+      "y0": -3.53,
+      "y1": 4.1
+    }
+  ],
+  "approaches": [
+    {
+      "id": "bed",
+      "verb": "sleep",
+      "target": {
+        "x": -2.65,
+        "y": 0,
+        "z": 0
+      },
+      "approach": {
+        "x": -2.65,
+        "y": 1.425,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "chest",
+      "verb": "store",
+      "target": {
+        "x": 2.65,
+        "y": 1.8,
+        "z": 0
+      },
+      "approach": {
+        "x": 2.65,
+        "y": 1.15,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "desk",
+      "verb": "desk",
+      "target": {
+        "x": -2.65,
+        "y": -3.25,
+        "z": 0
+      },
+      "approach": {
+        "x": -1.92,
+        "y": -3.25,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "chair",
+      "verb": "sit",
+      "target": {
+        "x": 3.06,
+        "y": -4,
+        "z": 0
+      },
+      "approach": {
+        "x": 2.93,
+        "y": -3.38,
+        "z": 0,
+        "radius": 0.28
+      }
+    }
+  ],
+  "rejected": [],
+  "stair": {
+    "id": "cottage_stair",
+    "axis": "y",
+    "ascending": "negativeY",
+    "x0": -0.9,
+    "x1": 0.15,
+    "y0": -3.25,
+    "y1": 0.65,
+    "steps": 15,
+    "going": 0.26,
+    "riser": 0.186667,
+    "floorRise": 2.8,
+    "slabThickness": 0.24,
+    "headroom": 2,
+    "opening": {
+      "x0": -0.96,
+      "x1": 0.21,
+      "y0": -3.25,
+      "y1": 0.13
+    },
+    "topLanding": {
+      "x0": -0.9,
+      "x1": 0.15,
+      "y0": -4.27,
+      "y1": -3.25
+    },
+    "bottomLanding": {
+      "x0": -0.9,
+      "x1": 0.15,
+      "y0": 0.65,
+      "y1": 1.67
+    },
+    "bottom": {
+      "x": -0.375,
+      "y": 1.17,
+      "z": 0
+    },
+    "top": {
+      "x": -0.375,
+      "y": -3.77,
+      "z": 2.8
+    }
+  },
+  "stairAccess": {
+    "bottom": null,
+    "top": true
+  },
+  "navigation": {
+    "radius": 0.28,
+    "gridStep": 0.12,
+    "reachableCells": 2436,
+    "start": {
+      "x": -0.43,
+      "y": -3.78
+    }
+  },
+  "note": "Interior-local metres. Pair floors using identical type, size, shape and pitch. Stair top z is relative to the ground floor; upper sprite floor z is zero. Navigation checks floor approaches; Unity locomotion and door animation remain integration work."
+}
