@@ -244,15 +244,20 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <param name="target">An existing def to refresh in place (keeps its guid), or null to
         /// create a fresh in-memory instance.</param>
         /// <param name="composedFace">Bake the pass-05/06 face instead of rig 6's own head.
-        /// <b>Defaults to OFF, and that is not timidity — it is currently BLOCKED.</b> The study head
-        /// paints with two materials rig 6 does not declare, so a composed bake refuses in
-        /// <see cref="CharacterSkinExtractor.AssertComposedFaceAgrees"/> with the reason named. The
-        /// wiring is complete and sits behind this one flag so that the day the art director rules on
-        /// those ramps, turning the face on is a parameter and not a re-plumb.</param>
+        /// <b>On by default, because the owner accepted this face on 2026-09-16.</b> The whole nose
+        /// paints rig 6's own <c>skin</c>, and its away-side plane carries a half-step darkening so it
+        /// parts from the cheek. The composed path still refuses, by name, in
+        /// <see cref="CharacterSkinExtractor.AssertComposedFaceAgrees"/> the moment the study paints a
+        /// material rig 6 does not declare.
+        /// <para><c>false</c> is kept on purpose, and not as a fallback for the game: it bakes rig 6's
+        /// own head, the only mesh rig 6's <c>facesOf</c> can answer for on every frame. The face layer
+        /// is a BIND-pose list, so the guards that replay a def against rig 6 frame by frame measure
+        /// that bake, and a separate guard proves the shipped def shares its skeleton and
+        /// clips.</para></param>
         public static SkinBake Compose(IRigScriptHost host, string preset,
                                        CharacterSkinDef target = null,
                                        Action<string, float> progress = null,
-                                       bool composedFace = false)
+                                       bool composedFace = true)
         {
             if (host == null) throw new ArgumentNullException(nameof(host));
             if (string.IsNullOrEmpty(preset)) throw new ArgumentNullException(nameof(preset));

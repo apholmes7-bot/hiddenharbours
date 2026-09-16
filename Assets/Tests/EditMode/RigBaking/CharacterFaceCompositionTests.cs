@@ -22,11 +22,13 @@ namespace HiddenHarbours.Tests.RigBaking
     /// leaves none, and it also means <see cref="InstallingTheFaceLayerWrapsNoneOfTheRigsOwnExports"/>
     /// is measuring the property the other tests depend on.</para>
     ///
-    /// <para><b>⚠️ Two of these tests assert a BLOCKER, not a success.</b> They pin measured facts that
-    /// stop the ten-preset bake today — the study's two undeclared materials, and two presets already
-    /// at the ramp ceiling before any face lands. They are written to pass on the truth as measured, so
-    /// that the day someone fixes one, CI says so out loud instead of leaving a stale claim in a PR
-    /// body. Each names what to do when it goes red.</para>
+    /// <para><b>⚠️ The material budget.</b> <see cref="TheStudyHeadPaintsOnlyMaterialsTheRigDeclares"/>
+    /// is a guard: the face the owner accepted on 2026-09-16 paints only materials rig 6 declares, for
+    /// every preset, and the bake refuses one that does not. Until that ruling it pinned the opposite,
+    /// as a blocker. <see cref="TwoPresetsAlreadySitAboveTheRampBudgetBeforeAnyFaceLands"/> still pins
+    /// a BLOCKER, not a success: two presets sit above the ramp ceiling on rig 7's own export. It passes
+    /// on the truth as measured, so that the day someone fixes it CI says so out loud instead of
+    /// leaving a stale claim in a PR body. Both name what to do when they go red.</para>
     /// </summary>
     public class CharacterFaceCompositionTests
     {
@@ -393,60 +395,66 @@ namespace HiddenHarbours.Tests.RigBaking
             }
         }
 
-        // ---- ⚠️ the BLOCKERS, pinned as measured ------------------------------------------------------
+        // ---- ⚠️ the material budget: one guard, and one blocker still pinned as measured ---------------
 
         /// <summary>
-        /// ⚠️ <b>BLOCKER, pinned.</b> The pass-06 head paints its nose with <c>noseLight</c> and
-        /// <c>noseShadow</c>, and rig 6's <c>makeMats</c> declares neither of them among its 36
-        /// materials. The mesh bake's packer REFUSES a face whose material is not in the pose's union
+        /// <b>Every material the composed face paints is one rig 6 declares, for every preset in the
+        /// cast.</b> The mesh bake's packer REFUSES a face whose material is not in the pose's union
         /// rather than resolving it to the first ramp — deliberately, because that resolve is exactly
-        /// how mis-coloured art has shipped out of this kit before. So the composed cast cannot bake
-        /// until those two have ramps.
+        /// how mis-coloured art has shipped out of this kit before. So a red here means the player's
+        /// skin will not bake: <see cref="CharacterSkinExtractor.AssertComposedFaceAgrees"/> and the
+        /// packer both refuse the material by name.
         ///
-        /// <para>The study never needed them: its own <c>colours(build)</c> returns a flat eleven-entry
-        /// palette, and the facet renderer reads four-stop ramps. Authoring two new ramps — or remapping
-        /// the nose onto materials the rig already declares — changes the face the owner is being asked
-        /// to accept, so it is an art-director decision and is NOT made here.</para>
+        /// <para>The fix for a red is in the art, never in this check: author a ramp for the material
+        /// in <c>CharacterIso6.makeMats</c>, or remap the face onto a material the rig already declares.
+        /// Either one changes a face the owner accepted, so it goes back to the owner. Do not widen the
+        /// assertion, sample fewer presets, or allow-list a name.</para>
         ///
-        /// <para>This test passes on the blocker being PRESENT. The wiring is already DONE —
-        /// <see cref="CharacterSkinAssetBaker.Compose"/> takes a <c>composedFace</c> flag that installs
-        /// this layer and bakes it — and it defaults to OFF for exactly the reason above. So when
-        /// someone lands the ramps this goes red, and the fix is to flip that default and delete this
-        /// test, not to plumb anything.</para>
+        /// <para>Until 2026-09-16 this test was <c>TheStudyHeadStillNeedsTwoMaterialsThisRigDoesNotDeclare</c>
+        /// and pinned the pass-06 nose's <c>noseLight</c>/<c>noseShadow</c> as a blocker, on one preset.
+        /// The face the owner accepted paints the whole nose <c>skin</c>, so the blocker is gone and
+        /// <see cref="CharacterSkinAssetBaker.Compose"/> bakes the face by default.</para>
         /// </summary>
         [Test]
-        public void TheStudyHeadStillNeedsTwoMaterialsThisRigDoesNotDeclare()
+        public void TheStudyHeadPaintsOnlyMaterialsTheRigDeclares()
         {
             using (IRigScriptHost host = BaseHost())
             {
                 InstallFace(host);
-                string undeclared = host.EvaluateString(
-                    "(function(){var b=CharacterIso6.resolveBuild({build:{preset:'ginny'}});" +
-                    "var M=CharacterIso6.makeMats(b).MATS,o={};" +
-                    "CharacterFaceComposition.composed('ginny')" +
-                    ".forEach(function(f){if(!M[f.mat])o[f.mat]=1;});" +
-                    "return Object.keys(o).sort().join(',');})()");
+                var red = new System.Collections.Generic.List<string>();
+                foreach (string preset in Cast)
+                {
+                    string undeclared = host.EvaluateString(
+                        "(function(){var b=CharacterIso6.resolveBuild({build:{preset:" + Js(preset) + "}});" +
+                        "var M=CharacterIso6.makeMats(b).MATS,o={};" +
+                        "CharacterFaceComposition.composed(" + Js(preset) + ")" +
+                        ".forEach(function(f){if(!M[f.mat])o[f.mat]=1;});" +
+                        "return Object.keys(o).sort().join(',');})()");
+                    if (!string.Equals(undeclared, "", StringComparison.Ordinal))
+                        red.Add("'" + preset + "' paints " + (undeclared ?? "<no answer>"));
+                }
 
-                Assert.That(undeclared, Is.EqualTo("noseLight,noseShadow"),
-                    "The set of materials the study head needs and rig 6 does not declare has CHANGED " +
-                    "— it is now '" + undeclared + "'. If it is EMPTY the blocker is FIXED: the bake " +
-                    "is already wired, so flip CharacterSkinAssetBaker.Compose's composedFace default " +
-                    "to true and delete this test. If it GREW, the drop introduced another material " +
-                    "and the bake will refuse the face.");
+                Assert.That(red, Is.Empty,
+                    "The composed face paints materials CharacterIso6.makeMats does not declare: " +
+                    string.Join("; ", red) + ". The bake refuses each one by name " +
+                    "(CharacterSkinExtractor.AssertComposedFaceAgrees, then the packer), so the player's " +
+                    "skin will not bake. Fix the ART — author the ramp in makeMats, or remap the face onto " +
+                    "a declared material — and take that face back to the owner. Never widen this check.");
             }
         }
 
         /// <summary>
         /// ⚠️ <b>BLOCKER, pinned — and it PREDATES the face entirely.</b> The def has 16 ramp slots and
         /// the bake refuses to truncate. Two of the ten presets already reach 17 declared materials on
-        /// rig 7's own untouched export, so "bake the ten presets" is blocked for <c>deckboss</c> and
-        /// <c>packer</c> whether or not a new face ever lands.
+        /// rig 7's own untouched export, so baking <c>deckboss</c> or <c>packer</c> WITHOUT the face is
+        /// blocked whether or not a new face ever lands.
         ///
-        /// <para>Composing actually HELPS: dropping rig 6's head takes both to exactly 16. But the two
-        /// undeclared nose materials above would put them straight back to 18 the moment they are given
-        /// ramps — so the two blockers have to be ruled on TOGETHER: widen the slots (a renderer change:
-        /// <c>_RampMeta</c> and the def's limits move as a pair), or give the nose materials rig 6
-        /// already declares.</para>
+        /// <para>Composing HELPS: dropping rig 6's head takes both to exactly 16, and the face the owner
+        /// accepted on 2026-09-16 paints its nose with rig 6's own <c>skin</c>, so it adds nothing back.
+        /// That is 16 of 16, with no headroom: a face or body change that gives either preset one more
+        /// declared material refuses the bake. The choices then are to widen the slots (a renderer
+        /// change: <c>_RampMeta</c> and the def's limits move as a pair) or to paint with a material the
+        /// preset already uses. The player preset is not one of these two.</para>
         /// </summary>
         [Test]
         public void TwoPresetsAlreadySitAboveTheRampBudgetBeforeAnyFaceLands()

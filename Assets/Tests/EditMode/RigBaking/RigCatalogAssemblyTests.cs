@@ -130,8 +130,8 @@ namespace HiddenHarbours.Tests.RigBaking
                          "CharacterFaceComposition", AzimuthConvention.Clockwise,
                          "characterSkin", "characterFaceStudy", "characterFinish", "characterArtStudy"),
             // The pass-06 head. Prerequisite is the head it replaces, whose bone and pivot it reuses.
-            // ⚠️ It paints with noseLight/noseShadow, which CharacterIso6.makeMats does NOT declare —
-            // the blocker that keeps the composed bake switched off.
+            // It paints only materials CharacterIso6.makeMats declares (the accepted nose is skin);
+            // CharacterFaceCompositionTests.TheStudyHeadPaintsOnlyMaterialsTheRigDeclares guards that.
             new Snapshot("characterFaceStudy", "docs/art/rigs/characterFaceStudy.js",
                          "CharacterHeadStudy", AzimuthConvention.Clockwise, "characterHead"),
             // The body tailoring. Reads its numbers from the config below, so the order is load-bearing.

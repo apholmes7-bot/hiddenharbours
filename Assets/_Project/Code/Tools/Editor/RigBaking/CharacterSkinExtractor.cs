@@ -230,12 +230,13 @@ namespace HiddenHarbours.Tools.RigBaking
         /// only true of the COMPOSED mesh, and that would otherwise first be noticed by a bake
         /// throwing somewhere less legible.
         ///
-        /// <para>⚠️ The material check is where the pass-06 head currently STOPS. The study paints
-        /// its nose with <c>noseLight</c> and <c>noseShadow</c> and rig 6's <c>makeMats</c> declares
-        /// neither, so the packer — which refuses an unlisted material rather than resolving it to
-        /// the first ramp — would reject the face. That is an art-director decision (author two
-        /// ramps, or remap the nose onto declared materials) and the refusal below is written to say
-        /// so by name rather than to be worked around here.</para>
+        /// <para>⚠️ The material check is the one that held the pass-06 head back until the owner
+        /// accepted the returned face on 2026-09-16. The study used to paint its nose with two
+        /// materials rig 6's <c>makeMats</c> does not declare, and the packer refuses an unlisted
+        /// material rather than resolving it to the first ramp. The accepted face paints the whole
+        /// nose <c>skin</c>, so it passes. The refusal below is exactly as strict as it was: if a
+        /// study paints an undeclared material again, the fix is an art decision (author the ramp,
+        /// or remap the material), named by the throw and never worked around here.</para>
         /// </summary>
         public static void AssertComposedFaceAgrees(IRigScriptHost host, string preset)
         {

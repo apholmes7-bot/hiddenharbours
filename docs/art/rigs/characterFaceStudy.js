@@ -75,10 +75,12 @@
     f.faceSurface=true;
    }
   }
-  const add=(v,mat)=>F.push({v:v.map(p=>[center[0]+p[0]*scale,center[1]+p[1]*scale,center[2]+p[2]*scale]),mat,b:0,part:'head'});
+  const add=(v,mat,bias)=>F.push({v:v.map(p=>[center[0]+p[0]*scale,center[1]+p[1]*scale,center[2]+p[2]*scale]),mat,b:bias||0,part:'head'});
   // Small real nose and ears preserve readable profiles without the old spectacle-like eye blocks.
   const p=[[-.016,.106,.012],[.016,.106,.012],[.021,.109,-.044],[-.021,.109,-.044],[0,.141,-.026]];
-  for(const [i,ids] of [[0,[0,1,4]],[1,[1,2,4]],[2,[2,3,4]],[3,[3,0,4]]])add(ids.map(i=>p[i]),i===2?'noseShadow':i===0?'noseLight':'skin');
+  // The whole nose is skin: the light already separates its planes. The away-side plane alone landed on
+ // the cheek's own ramp step at the front heading, so it carries a half-step darkening to part from it.
+ for(const [i,ids] of [[0,[0,1,4]],[1,[1,2,4]],[2,[2,3,4]],[3,[3,0,4]]])add(ids.map(i=>p[i]),'skin',i===1?-.5:0);
   for(const side of [-1,1]){const x=side*.157;
    for(const [z,rx,ry,dz] of [[-.063,.022,.026,.053]]){
     const A=[x,0,z+dz],B=[x+side*rx,.002,z+.020],D=[x+side*rx,-.003,z-.023],E=[x,-.004,z-dz],front=[x,.030,z];
