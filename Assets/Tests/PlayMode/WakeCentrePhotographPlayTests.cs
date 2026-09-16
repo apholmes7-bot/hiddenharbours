@@ -324,6 +324,7 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_probeFoamVisibility)
             {
                 CaptureFoamVisibility(subject + "-" + leg.Name);
+                RestoreFoamPackingOrder();
                 Time.timeScale = 1f;
                 _spawned.Remove(go);
                 Object.Destroy(go);

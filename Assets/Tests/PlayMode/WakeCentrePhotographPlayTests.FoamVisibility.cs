@@ -13,8 +13,11 @@ namespace HiddenHarbours.Tests.PlayMode
 {
     public partial class WakeCentrePhotographPlayTests
     {
-        // Diagnostic only. No production shader, material asset, or injector is changed.
+        // Diagnostic only. Production assets/code are unchanged; the optional counterfactual
+        // temporarily reorders registry membership and restores it after each leg.
         bool _probeFoamVisibility;
+        bool _prioritizeFoamSubject;
+        int _foamOriginalIndex = -1;
         FoamInjector _foamProbeSubject;
         int _foamEligibleFrames, _foamSelectedFrames, _foamOverflowFrames;
         string _foamLastPacking;
@@ -42,18 +45,48 @@ namespace HiddenHarbours.Tests.PlayMode
             RenderPipelineManager.beginCameraRendering += ObserveFoamPacking;
             try
             {
-                yield return Photograph("foam-visibility", CapeHullPath, CapeVisualPath, forceSprite: false);
+                yield return Photograph(_prioritizeFoamSubject ? "foam-priority-probe" : "foam-visibility",
+                    CapeHullPath, CapeVisualPath, forceSprite: false);
             }
             finally
             {
                 RenderPipelineManager.beginCameraRendering -= ObserveFoamPacking;
+                RestoreFoamPackingOrder();
                 _probeFoamVisibility = false;
                 _foamProbeSubject = null;
             }
         }
 
+        [UnityTest]
+        public IEnumerator TheCape_FoamSheet_WithSubjectFirst_SeparatesSlotStarvationFromComposition()
+        {
+            RequireAGraphicsDevice();
+            _prioritizeFoamSubject = true;
+            try
+            {
+                yield return TheCape_FoamSheet_ReachesTheDrawingChannelOrNamesTheMissingInput();
+            }
+            finally
+            {
+                _prioritizeFoamSubject = false;
+            }
+        }
+
+        void RestoreFoamPackingOrder()
+        {
+            if (_foamOriginalIndex < 0 || _foamProbeSubject == null) return;
+            var members = (IList)FoamMembers.GetValue(null);
+            if (members.Contains(_foamProbeSubject))
+            {
+                members.Remove(_foamProbeSubject);
+                members.Insert(Mathf.Min(_foamOriginalIndex, members.Count), _foamProbeSubject);
+            }
+            _foamOriginalIndex = -1;
+        }
+
         void BeginFoamVisibilityLeg(FoamInjector subject, string leg)
         {
+            RestoreFoamPackingOrder();
             Assert.NotNull(subject, leg + ": the mesh subject has no foam injector");
             _foamProbeSubject = subject;
             _foamEligibleFrames = _foamSelectedFrames = _foamOverflowFrames = 0;
@@ -62,10 +95,21 @@ namespace HiddenHarbours.Tests.PlayMode
 
         void ObserveFoamPacking(ScriptableRenderContext context, Camera camera)
         {
-            // After LateUpdate, before the feature collects. Inspect without consuming deposits,
-            // changing membership, or triggering the registry's over-cap warning latch.
+            // After LateUpdate, before the feature collects. The baseline only inspects.
+            // The explicitly labelled counterfactual promotes this subject before inspection.
             if (camera != _cam || _foamProbeSubject == null || Time.deltaTime <= 0f) return;
             var members = (IList)FoamMembers.GetValue(null);
+            if (_prioritizeFoamSubject && _foamOriginalIndex < 0)
+            {
+                int index = members.IndexOf(_foamProbeSubject);
+                if (index >= 0)
+                {
+                    _foamOriginalIndex = index;
+                    members.RemoveAt(index);
+                    members.Insert(0, _foamProbeSubject);
+                    _rows.Add($"DIAGNOSTIC COUNTERFACTUAL: subject promoted from registration index {index} to 0; restored after capture");
+                }
+            }
             int eligible = 0, subjectRank = -1;
             var packing = new List<string>();
             foreach (FoamInjector injector in members)
@@ -264,6 +308,13 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.AreEqual(0, bypass, "Strength zero must ignore both real and known foam inputs");
                 Assert.AreEqual(0, restored, "Restoring the property blocks did not restore the original picture");
                 Assert.Greater(_foamEligibleFrames, 0, "Subject never offered an injection while driving");
+                if (_prioritizeFoamSubject)
+                {
+                    Assert.AreEqual(_foamEligibleFrames, _foamSelectedFrames,
+                        "Promoted subject did not own an injection slot on every eligible observation");
+                    Assert.Greater(livePixels, 0,
+                        "The promoted subject was selected, but production foam still did not reach the picture");
+                }
             }
             finally
             {
