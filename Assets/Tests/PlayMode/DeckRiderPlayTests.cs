@@ -460,6 +460,18 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             // THE DEFECT, over the live loop. Pre-fix the rider's lift is the rock term alone and the
             // ride term is simply absent from it, however far the boat heaves.
+            // ⚠️ THIS FIXTURE OWNS ITS CLOCK, exactly as the OnDisable sibling above does, and it did
+            // not — a doc-comment on the class is not compliance. Since PR E the drawn wave phase is
+            // ω·t at GameServices.Clock; with no clock installed that reads Time.timeAsDouble, so this
+            // loop started at an arbitrary wall-clock instant and its headless frames bought a fraction
+            // of a wave period. The boat then never heaved past 5 cm ONCE in 400 frames and the vacuity
+            // guard below redded for real on "Expected: >= 20, But was: 0" — which is also why the
+            // earlier 120→400 frame increase moved nothing. Advancing a real clock a real 1/60 s per
+            // frame makes the loop 6.7 s of sail, several wave periods at this sea state, whatever the
+            // hardware does with the frames.
+            var clock = new SteppedClock { TotalSeconds = ClockOrigin };
+            GameServices.Clock = clock;
+
             var r = NewRig(rowed: true, helmReach: 0.1f);      // tight reach: stay ON THE DECK
             var wave = GiveHerASeaToRideOn(r);
             DisplacedSea.Publish(_seaOwner, new DisplacedSeaState(1.5f, 0.6f));
@@ -471,11 +483,13 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(r.Switcher.TryInteract(), "board");
             Assert.AreEqual(ControlMode.OnDeck, r.Switcher.Mode);
 
-            // Bounded by the SEA, not by a frame count (headless frames are not wall time): sail until
-            // she is genuinely riding, and say so if the harness never made her.
+            // Bounded by the SEA, not by a frame count (headless frames are not wall time): the sea
+            // travels because the CLOCK does, so 400 frames are 6.7 s of sail on every machine. Sail
+            // until she is genuinely riding, and say so if the harness never made her.
             int riding = 0;
             for (int f = 0; f < 400 && riding < 20; f++)
             {
+                clock.TotalSeconds += FrameStep;      // the SEA advances because the CLOCK does
                 yield return null;
                 SplitTheLift(r, wave, out float rock, out float ride);
 
