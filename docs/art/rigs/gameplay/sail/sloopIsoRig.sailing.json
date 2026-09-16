@@ -2,7 +2,7 @@
   "schema": "hidden-harbours/boat-sailing@1",
   "rig": "sloopIsoRig.js",
   "exportSymbol": "SloopIso",
-  "derivedFromRigSha256": "b0cdd16b2fe10b1b2f9e159cb9a0cccc82bde60bac84c982e85e55fd913ce178",
+  "derivedFromRigSha256": "cfb2297cf0f6d55fa1b14dccd9c8b139c5efec236c070082f92663929552671d",
   "pairs_with": {
     "gameplay_sidecar": "sloopIsoRig.gameplay.json",
     "same_rig_hash": true,
@@ -203,7 +203,7 @@
         "luff_main": 1,
         "luff_headsail": 1,
         "stall_main": 0,
-        "heel_deg": 0.6,
+        "heel_deg": 0.5,
         "sails_to": "port"
       },
       "note": "pose law: |awa| < 25 with wind = in irons — every sail flogs whole, the boom wanders about the centreline"
@@ -234,7 +234,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 12.8,
+        "heel_deg": 12.4,
         "sails_to": "port"
       }
     },
@@ -264,7 +264,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 13.1,
+        "heel_deg": 12.6,
         "sails_to": "port"
       }
     },
@@ -294,7 +294,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 13.1,
+        "heel_deg": 12.5,
         "sails_to": "port"
       }
     },
@@ -354,7 +354,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 1,
-        "heel_deg": 2.8,
+        "heel_deg": 2.3,
         "sails_to": "port"
       },
       "note": "pose law: |awa| > 150 = the headsail is blanketed by the main (fill x0.4)"
@@ -438,7 +438,7 @@
         "luff_main": 1,
         "luff_headsail": 1,
         "stall_main": 0,
-        "heel_deg": 0.8,
+        "heel_deg": 0.7,
         "sails_to": "port"
       },
       {
@@ -455,7 +455,7 @@
         "luff_main": 1,
         "luff_headsail": 1,
         "stall_main": 0,
-        "heel_deg": 1.2,
+        "heel_deg": 1.1,
         "sails_to": "port"
       },
       {
@@ -489,7 +489,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.5,
+        "heel_deg": 9.2,
         "sails_to": "port"
       },
       {
@@ -506,7 +506,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.5,
+        "heel_deg": 9.1,
         "sails_to": "port"
       },
       {
@@ -523,7 +523,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.6,
+        "heel_deg": 9.2,
         "sails_to": "port"
       },
       {
@@ -540,7 +540,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.6,
+        "heel_deg": 9.2,
         "sails_to": "port"
       },
       {
@@ -557,7 +557,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.6,
+        "heel_deg": 9.3,
         "sails_to": "port"
       },
       {
@@ -574,7 +574,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.6,
+        "heel_deg": 9.2,
         "sails_to": "port"
       },
       {
@@ -591,7 +591,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.6,
+        "heel_deg": 9.3,
         "sails_to": "port"
       },
       {
@@ -608,7 +608,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.6,
+        "heel_deg": 9.3,
         "sails_to": "port"
       },
       {
@@ -625,7 +625,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.6,
+        "heel_deg": 9.2,
         "sails_to": "port"
       },
       {
@@ -642,7 +642,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.4,
+        "heel_deg": 9.2,
         "sails_to": "port"
       },
       {
@@ -659,7 +659,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.5,
+        "heel_deg": 9.1,
         "sails_to": "port"
       },
       {
@@ -676,7 +676,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.5,
+        "heel_deg": 9.2,
         "sails_to": "port"
       },
       {
@@ -693,7 +693,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.6,
+        "heel_deg": 9.2,
         "sails_to": "port"
       },
       {
@@ -710,7 +710,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.6,
+        "heel_deg": 9.2,
         "sails_to": "port"
       },
       {
@@ -727,7 +727,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.6,
+        "heel_deg": 9.3,
         "sails_to": "port"
       },
       {
@@ -744,7 +744,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0,
-        "heel_deg": 9.6,
+        "heel_deg": 9.2,
         "sails_to": "port"
       },
       {
@@ -931,7 +931,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0.72,
-        "heel_deg": 5.3,
+        "heel_deg": 4.5,
         "sails_to": "port"
       },
       {
@@ -948,7 +948,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0.85,
-        "heel_deg": 4.9,
+        "heel_deg": 4.2,
         "sails_to": "port"
       },
       {
@@ -965,7 +965,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 0.97,
-        "heel_deg": 4.6,
+        "heel_deg": 3.8,
         "sails_to": "port"
       },
       {
@@ -982,7 +982,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 1,
-        "heel_deg": 4.2,
+        "heel_deg": 3.5,
         "sails_to": "port"
       },
       {
@@ -999,7 +999,7 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 1,
-        "heel_deg": 3.8,
+        "heel_deg": 3.2,
         "sails_to": "port"
       },
       {
@@ -1016,13 +1016,13 @@
         "luff_main": 0,
         "luff_headsail": 0,
         "stall_main": 1,
-        "heel_deg": 3.4,
+        "heel_deg": 2.8,
         "sails_to": "starboard"
       }
     ]
   },
   "HEEL": {
-    "law": "min(24, 0.067*aws^2*(0.25+0.75*fill_main)*k(awa)) to leeward; k=1 to 100°, 0.35 dead downwind; 15% in irons",
+    "law": "min(24, 0.067*aws^2*k(awa)*drive) to leeward; k=1 to 100°, 0.35 dead downwind; 15% in irons; drive = 0.65*deployed_main*(0.25+0.75*fill_main) + 0.35*deployed_jib*(0.25+0.75*fill_jib); deployed_main = hoist if >0.02 else 0; deployed_jib = 1-furl if furl<0.97 else 0",
     "max_deg": 24,
     "k": 0.067,
     "saturates_at_aws_kn": 18.9,
@@ -1081,24 +1081,24 @@
           0.3,
           0.5,
           0.8,
-          1.2,
-          1.6,
-          2.1,
-          2.7,
-          3.3,
+          1.1,
+          1.5,
+          2,
+          2.5,
+          3.1,
           3.6,
           3.6
         ],
         [
           0.1,
           0.8,
-          2.4,
-          4.2,
-          6.6,
-          9.5,
-          13,
-          17,
-          21.5,
+          2.3,
+          4.1,
+          6.3,
+          9.1,
+          12.4,
+          16.2,
+          20.5,
           24,
           24,
           24
@@ -1106,13 +1106,13 @@
         [
           0.1,
           0.8,
-          2.4,
-          4.3,
-          6.7,
-          9.6,
-          13.1,
-          17.2,
-          21.7,
+          2.3,
+          4.1,
+          6.5,
+          9.3,
+          12.7,
+          16.5,
+          20.9,
           24,
           24,
           24
@@ -1120,13 +1120,13 @@
         [
           0.1,
           0.8,
-          2.4,
-          4.3,
-          6.7,
-          9.6,
-          13.1,
-          17.2,
-          21.7,
+          2.3,
+          4.1,
+          6.4,
+          9.3,
+          12.6,
+          16.5,
+          20.8,
           24,
           24,
           24
@@ -1134,13 +1134,13 @@
         [
           0.1,
           0.8,
-          2.4,
-          4.2,
-          6.6,
-          9.5,
-          12.9,
-          16.9,
-          21.3,
+          2.3,
+          4.1,
+          6.3,
+          9.1,
+          12.4,
+          16.2,
+          20.5,
           24,
           24,
           24
@@ -1148,13 +1148,13 @@
         [
           0.1,
           0.8,
-          2.4,
-          4.3,
-          6.7,
-          9.6,
-          13.1,
-          17.1,
-          21.6,
+          2.3,
+          4.1,
+          6.4,
+          9.2,
+          12.5,
+          16.3,
+          20.6,
           24,
           24,
           24
@@ -1217,31 +1217,31 @@
         ],
         [
           0.1,
-          0.4,
-          1.1,
-          2,
-          3.2,
-          4.6,
-          6.2,
-          8.1,
-          10.2,
-          12.6,
-          18.2,
+          0.3,
+          1,
+          1.7,
+          2.7,
+          3.8,
+          5.2,
+          6.8,
+          8.6,
+          10.7,
+          15.3,
           24
         ],
         [
           0,
-          0.3,
-          0.8,
-          1.5,
-          2.3,
-          3.4,
-          4.6,
-          6,
-          7.6,
-          9.4,
-          13.5,
-          21.1
+          0.2,
+          0.7,
+          1.3,
+          2,
+          2.8,
+          3.9,
+          5.1,
+          6.4,
+          7.9,
+          11.4,
+          17.8
         ]
       ]
     }
@@ -1899,7 +1899,7 @@
         "v_kn": 3.02,
         "awa": 29.9,
         "aws": 6.3,
-        "heel_deg": 2.6,
+        "heel_deg": 2.5,
         "mode": "drawing"
       },
       {
@@ -1908,7 +1908,7 @@
         "v_kn": 3.2,
         "awa": 33.7,
         "aws": 6.2,
-        "heel_deg": 2.6,
+        "heel_deg": 2.5,
         "mode": "drawing"
       },
       {
@@ -1917,7 +1917,7 @@
         "v_kn": 3.41,
         "awa": 38.2,
         "aws": 6.1,
-        "heel_deg": 2.5,
+        "heel_deg": 2.4,
         "mode": "drawing"
       },
       {
@@ -1926,7 +1926,7 @@
         "v_kn": 3.52,
         "awa": 43.1,
         "aws": 5.8,
-        "heel_deg": 2.2,
+        "heel_deg": 2.1,
         "mode": "drawing"
       },
       {
@@ -1935,7 +1935,7 @@
         "v_kn": 3.56,
         "awa": 48.3,
         "aws": 5.4,
-        "heel_deg": 1.8,
+        "heel_deg": 1.7,
         "mode": "drawing"
       },
       {
@@ -1944,7 +1944,7 @@
         "v_kn": 3.63,
         "awa": 53.3,
         "aws": 4.9,
-        "heel_deg": 1.4,
+        "heel_deg": 1.3,
         "mode": "drawing"
       },
       {
@@ -1953,7 +1953,7 @@
         "v_kn": 3.53,
         "awa": 60.1,
         "aws": 4.3,
-        "heel_deg": 1,
+        "heel_deg": 0.9,
         "mode": "drawing"
       },
       {
@@ -1962,7 +1962,7 @@
         "v_kn": 3.4,
         "awa": 68,
         "aws": 3.7,
-        "heel_deg": 0.7,
+        "heel_deg": 0.6,
         "mode": "drawing"
       },
       {
@@ -2016,7 +2016,7 @@
         "v_kn": 3.33,
         "awa": 25.9,
         "aws": 8.8,
-        "heel_deg": 5.1,
+        "heel_deg": 5,
         "mode": "drawing"
       },
       {
@@ -2025,7 +2025,7 @@
         "v_kn": 3.61,
         "awa": 28.4,
         "aws": 8.9,
-        "heel_deg": 5.3,
+        "heel_deg": 5.1,
         "mode": "drawing"
       },
       {
@@ -2034,7 +2034,7 @@
         "v_kn": 3.94,
         "awa": 31.8,
         "aws": 9,
-        "heel_deg": 5.4,
+        "heel_deg": 5.2,
         "mode": "drawing"
       },
       {
@@ -2043,7 +2043,7 @@
         "v_kn": 4.17,
         "awa": 35.9,
         "aws": 8.9,
-        "heel_deg": 5.3,
+        "heel_deg": 5.1,
         "mode": "drawing"
       },
       {
@@ -2052,7 +2052,7 @@
         "v_kn": 4.44,
         "awa": 41,
         "aws": 8.6,
-        "heel_deg": 5,
+        "heel_deg": 4.8,
         "mode": "drawing"
       },
       {
@@ -2061,7 +2061,7 @@
         "v_kn": 4.58,
         "awa": 46.4,
         "aws": 8.2,
-        "heel_deg": 4.5,
+        "heel_deg": 4.3,
         "mode": "drawing"
       },
       {
@@ -2070,7 +2070,7 @@
         "v_kn": 4.63,
         "awa": 52.3,
         "aws": 7.6,
-        "heel_deg": 3.9,
+        "heel_deg": 3.7,
         "mode": "drawing"
       },
       {
@@ -2079,7 +2079,7 @@
         "v_kn": 4.72,
         "awa": 58.1,
         "aws": 7,
-        "heel_deg": 3.3,
+        "heel_deg": 3.1,
         "mode": "drawing"
       },
       {
@@ -2088,7 +2088,7 @@
         "v_kn": 4.77,
         "awa": 64.3,
         "aws": 6.3,
-        "heel_deg": 2.6,
+        "heel_deg": 2.5,
         "mode": "drawing"
       },
       {
@@ -2097,7 +2097,7 @@
         "v_kn": 4.72,
         "awa": 71.7,
         "aws": 5.5,
-        "heel_deg": 1.9,
+        "heel_deg": 1.8,
         "mode": "drawing"
       },
       {
@@ -2151,7 +2151,7 @@
         "v_kn": 3.89,
         "awa": 27.2,
         "aws": 11.3,
-        "heel_deg": 8.6,
+        "heel_deg": 8.2,
         "mode": "drawing"
       },
       {
@@ -2160,7 +2160,7 @@
         "v_kn": 4.22,
         "awa": 29.8,
         "aws": 11.4,
-        "heel_deg": 8.5,
+        "heel_deg": 8.3,
         "mode": "drawing"
       },
       {
@@ -2169,7 +2169,7 @@
         "v_kn": 4.59,
         "awa": 33.5,
         "aws": 11.4,
-        "heel_deg": 8.7,
+        "heel_deg": 8.4,
         "mode": "drawing"
       },
       {
@@ -2178,7 +2178,7 @@
         "v_kn": 4.86,
         "awa": 38,
         "aws": 11.2,
-        "heel_deg": 8.2,
+        "heel_deg": 8,
         "mode": "drawing"
       },
       {
@@ -2187,7 +2187,7 @@
         "v_kn": 5.19,
         "awa": 43.5,
         "aws": 10.9,
-        "heel_deg": 8,
+        "heel_deg": 7.7,
         "mode": "drawing"
       },
       {
@@ -2196,7 +2196,7 @@
         "v_kn": 5.35,
         "awa": 49.5,
         "aws": 10.4,
-        "heel_deg": 7.1,
+        "heel_deg": 6.9,
         "mode": "drawing"
       },
       {
@@ -2205,7 +2205,7 @@
         "v_kn": 5.41,
         "awa": 55.9,
         "aws": 9.7,
-        "heel_deg": 6.3,
+        "heel_deg": 6,
         "mode": "drawing"
       },
       {
@@ -2214,7 +2214,7 @@
         "v_kn": 5.51,
         "awa": 62.4,
         "aws": 8.9,
-        "heel_deg": 5.3,
+        "heel_deg": 5.1,
         "mode": "drawing"
       },
       {
@@ -2223,7 +2223,7 @@
         "v_kn": 5.57,
         "awa": 69.3,
         "aws": 8,
-        "heel_deg": 4.2,
+        "heel_deg": 4.1,
         "mode": "drawing"
       },
       {
@@ -2232,7 +2232,7 @@
         "v_kn": 5.51,
         "awa": 77.7,
         "aws": 7.1,
-        "heel_deg": 3.4,
+        "heel_deg": 3.3,
         "mode": "drawing"
       },
       {
@@ -2241,7 +2241,7 @@
         "v_kn": 5.24,
         "awa": 94.2,
         "aws": 5.7,
-        "heel_deg": 2.1,
+        "heel_deg": 2,
         "mode": "drawing"
       },
       {
@@ -2268,7 +2268,7 @@
         "v_kn": 4.11,
         "awa": 180,
         "aws": 3.9,
-        "heel_deg": 0.3,
+        "heel_deg": 0.2,
         "mode": "stalled"
       },
       {
@@ -2277,7 +2277,7 @@
         "v_kn": 3.7,
         "awa": 25.7,
         "aws": 13.2,
-        "heel_deg": 11.4,
+        "heel_deg": 11,
         "mode": "drawing"
       },
       {
@@ -2286,7 +2286,7 @@
         "v_kn": 4.29,
         "awa": 28.3,
         "aws": 13.6,
-        "heel_deg": 12.2,
+        "heel_deg": 11.8,
         "mode": "drawing"
       },
       {
@@ -2295,7 +2295,7 @@
         "v_kn": 4.65,
         "awa": 31.1,
         "aws": 13.7,
-        "heel_deg": 12.6,
+        "heel_deg": 12.1,
         "mode": "drawing"
       },
       {
@@ -2304,7 +2304,7 @@
         "v_kn": 5.07,
         "awa": 35.1,
         "aws": 13.7,
-        "heel_deg": 12.6,
+        "heel_deg": 12.1,
         "mode": "drawing"
       },
       {
@@ -2313,7 +2313,7 @@
         "v_kn": 5.37,
         "awa": 39.9,
         "aws": 13.5,
-        "heel_deg": 12.1,
+        "heel_deg": 11.6,
         "mode": "drawing"
       },
       {
@@ -2322,7 +2322,7 @@
         "v_kn": 5.73,
         "awa": 45.8,
         "aws": 13.1,
-        "heel_deg": 11.5,
+        "heel_deg": 11.1,
         "mode": "drawing"
       },
       {
@@ -2331,7 +2331,7 @@
         "v_kn": 5.9,
         "awa": 52.2,
         "aws": 12.5,
-        "heel_deg": 10.4,
+        "heel_deg": 10,
         "mode": "drawing"
       },
       {
@@ -2340,7 +2340,7 @@
         "v_kn": 5.96,
         "awa": 59.2,
         "aws": 11.6,
-        "heel_deg": 9,
+        "heel_deg": 8.7,
         "mode": "drawing"
       },
       {
@@ -2349,7 +2349,7 @@
         "v_kn": 6.08,
         "awa": 66.2,
         "aws": 10.8,
-        "heel_deg": 7.8,
+        "heel_deg": 7.5,
         "mode": "drawing"
       },
       {
@@ -2358,7 +2358,7 @@
         "v_kn": 6.14,
         "awa": 73.9,
         "aws": 9.8,
-        "heel_deg": 6.4,
+        "heel_deg": 6.2,
         "mode": "drawing"
       },
       {
@@ -2367,7 +2367,7 @@
         "v_kn": 6.08,
         "awa": 82.9,
         "aws": 8.7,
-        "heel_deg": 5.1,
+        "heel_deg": 4.9,
         "mode": "drawing"
       },
       {
@@ -2376,7 +2376,7 @@
         "v_kn": 5.79,
         "awa": 100.3,
         "aws": 7.2,
-        "heel_deg": 3.5,
+        "heel_deg": 3.3,
         "mode": "drawing"
       },
       {
@@ -2394,7 +2394,7 @@
         "v_kn": 4.89,
         "awa": 151.5,
         "aws": 5.4,
-        "heel_deg": 1.1,
+        "heel_deg": 0.9,
         "mode": "stalled"
       },
       {
@@ -2403,7 +2403,7 @@
         "v_kn": 4.53,
         "awa": 180,
         "aws": 5.5,
-        "heel_deg": 0.7,
+        "heel_deg": 0.6,
         "mode": "stalled"
       },
       {
@@ -2412,7 +2412,7 @@
         "v_kn": 3.95,
         "awa": 26.5,
         "aws": 15.4,
-        "heel_deg": 15.9,
+        "heel_deg": 15.2,
         "mode": "drawing"
       },
       {
@@ -2421,7 +2421,7 @@
         "v_kn": 4.58,
         "awa": 29.3,
         "aws": 15.8,
-        "heel_deg": 16.6,
+        "heel_deg": 15.9,
         "mode": "drawing"
       },
       {
@@ -2430,7 +2430,7 @@
         "v_kn": 4.97,
         "awa": 32.2,
         "aws": 15.9,
-        "heel_deg": 16.9,
+        "heel_deg": 16.4,
         "mode": "drawing"
       },
       {
@@ -2439,7 +2439,7 @@
         "v_kn": 5.41,
         "awa": 36.5,
         "aws": 15.9,
-        "heel_deg": 16.7,
+        "heel_deg": 16.1,
         "mode": "drawing"
       },
       {
@@ -2448,7 +2448,7 @@
         "v_kn": 5.73,
         "awa": 41.5,
         "aws": 15.7,
-        "heel_deg": 16.3,
+        "heel_deg": 15.7,
         "mode": "drawing"
       },
       {
@@ -2457,7 +2457,7 @@
         "v_kn": 6.11,
         "awa": 47.8,
         "aws": 15.2,
-        "heel_deg": 15.5,
+        "heel_deg": 14.9,
         "mode": "drawing"
       },
       {
@@ -2466,7 +2466,7 @@
         "v_kn": 6.3,
         "awa": 54.6,
         "aws": 14.5,
-        "heel_deg": 13.9,
+        "heel_deg": 13.4,
         "mode": "drawing"
       },
       {
@@ -2475,7 +2475,7 @@
         "v_kn": 6.37,
         "awa": 62,
         "aws": 13.6,
-        "heel_deg": 12.3,
+        "heel_deg": 11.7,
         "mode": "drawing"
       },
       {
@@ -2484,7 +2484,7 @@
         "v_kn": 6.49,
         "awa": 69.6,
         "aws": 12.6,
-        "heel_deg": 10.6,
+        "heel_deg": 10.2,
         "mode": "drawing"
       },
       {
@@ -2493,7 +2493,7 @@
         "v_kn": 6.56,
         "awa": 77.7,
         "aws": 11.5,
-        "heel_deg": 8.8,
+        "heel_deg": 8.5,
         "mode": "drawing"
       },
       {
@@ -2502,7 +2502,7 @@
         "v_kn": 6.49,
         "awa": 87.3,
         "aws": 10.4,
-        "heel_deg": 7.1,
+        "heel_deg": 6.9,
         "mode": "drawing"
       },
       {
@@ -2529,7 +2529,7 @@
         "v_kn": 5.22,
         "awa": 154,
         "aws": 7.1,
-        "heel_deg": 1.9,
+        "heel_deg": 1.6,
         "mode": "stalled"
       },
       {
@@ -2538,7 +2538,7 @@
         "v_kn": 4.84,
         "awa": 180,
         "aws": 7.2,
-        "heel_deg": 1.2,
+        "heel_deg": 1,
         "mode": "stalled"
       },
       {
@@ -2547,7 +2547,7 @@
         "v_kn": 4.13,
         "awa": 27.2,
         "aws": 17.5,
-        "heel_deg": 20.5,
+        "heel_deg": 19.7,
         "mode": "drawing"
       },
       {
@@ -2556,7 +2556,7 @@
         "v_kn": 4.79,
         "awa": 30.1,
         "aws": 17.9,
-        "heel_deg": 21.3,
+        "heel_deg": 20.4,
         "mode": "drawing"
       },
       {
@@ -2565,7 +2565,7 @@
         "v_kn": 5.19,
         "awa": 33.3,
         "aws": 18,
-        "heel_deg": 21.5,
+        "heel_deg": 20.7,
         "mode": "drawing"
       },
       {
@@ -2574,7 +2574,7 @@
         "v_kn": 5.66,
         "awa": 37.7,
         "aws": 18,
-        "heel_deg": 21.7,
+        "heel_deg": 20.7,
         "mode": "drawing"
       },
       {
@@ -2583,7 +2583,7 @@
         "v_kn": 5.99,
         "awa": 43,
         "aws": 17.8,
-        "heel_deg": 20.8,
+        "heel_deg": 20,
         "mode": "drawing"
       },
       {
@@ -2592,7 +2592,7 @@
         "v_kn": 6.39,
         "awa": 49.6,
         "aws": 17.3,
-        "heel_deg": 19.7,
+        "heel_deg": 19.1,
         "mode": "drawing"
       },
       {
@@ -2601,7 +2601,7 @@
         "v_kn": 6.59,
         "awa": 56.8,
         "aws": 16.5,
-        "heel_deg": 18.2,
+        "heel_deg": 17.5,
         "mode": "drawing"
       },
       {
@@ -2610,7 +2610,7 @@
         "v_kn": 6.66,
         "awa": 64.6,
         "aws": 15.5,
-        "heel_deg": 16.1,
+        "heel_deg": 15.4,
         "mode": "drawing"
       },
       {
@@ -2619,7 +2619,7 @@
         "v_kn": 6.79,
         "awa": 72.5,
         "aws": 14.5,
-        "heel_deg": 13.8,
+        "heel_deg": 13.4,
         "mode": "drawing"
       },
       {
@@ -2628,7 +2628,7 @@
         "v_kn": 6.86,
         "awa": 81.1,
         "aws": 13.3,
-        "heel_deg": 11.9,
+        "heel_deg": 11.3,
         "mode": "drawing"
       },
       {
@@ -2637,7 +2637,7 @@
         "v_kn": 6.79,
         "awa": 91,
         "aws": 12.1,
-        "heel_deg": 9.8,
+        "heel_deg": 9.4,
         "mode": "drawing"
       },
       {
@@ -2664,7 +2664,7 @@
         "v_kn": 5.46,
         "awa": 155.8,
         "aws": 8.8,
-        "heel_deg": 2.8,
+        "heel_deg": 2.4,
         "mode": "stalled"
       },
       {
@@ -2673,7 +2673,7 @@
         "v_kn": 5.06,
         "awa": 180,
         "aws": 8.9,
-        "heel_deg": 1.9,
+        "heel_deg": 1.6,
         "mode": "stalled"
       },
       {
@@ -2727,7 +2727,7 @@
         "v_kn": 6.59,
         "awa": 51.3,
         "aws": 19.3,
-        "heel_deg": 24,
+        "heel_deg": 23.6,
         "mode": "drawing"
       },
       {
@@ -2736,7 +2736,7 @@
         "v_kn": 6.8,
         "awa": 58.7,
         "aws": 18.4,
-        "heel_deg": 22.4,
+        "heel_deg": 21.7,
         "mode": "drawing"
       },
       {
@@ -2745,7 +2745,7 @@
         "v_kn": 6.87,
         "awa": 66.8,
         "aws": 17.4,
-        "heel_deg": 19.9,
+        "heel_deg": 19.2,
         "mode": "drawing"
       },
       {
@@ -2754,7 +2754,7 @@
         "v_kn": 7,
         "awa": 75,
         "aws": 16.3,
-        "heel_deg": 17.5,
+        "heel_deg": 16.8,
         "mode": "drawing"
       },
       {
@@ -2763,7 +2763,7 @@
         "v_kn": 7.07,
         "awa": 83.9,
         "aws": 15.1,
-        "heel_deg": 15.3,
+        "heel_deg": 14.5,
         "mode": "drawing"
       },
       {
@@ -2772,7 +2772,7 @@
         "v_kn": 7,
         "awa": 94.1,
         "aws": 13.9,
-        "heel_deg": 12.9,
+        "heel_deg": 12.4,
         "mode": "drawing"
       },
       {
@@ -2799,7 +2799,7 @@
         "v_kn": 5.63,
         "awa": 157.1,
         "aws": 10.7,
-        "heel_deg": 4.1,
+        "heel_deg": 3.5,
         "mode": "stalled"
       },
       {
@@ -2808,7 +2808,7 @@
         "v_kn": 5.22,
         "awa": 180,
         "aws": 10.8,
-        "heel_deg": 2.7,
+        "heel_deg": 2.3,
         "mode": "stalled"
       },
       {
@@ -2880,7 +2880,7 @@
         "v_kn": 7.02,
         "awa": 68.7,
         "aws": 19.3,
-        "heel_deg": 24,
+        "heel_deg": 23.7,
         "mode": "drawing"
       },
       {
@@ -2889,7 +2889,7 @@
         "v_kn": 7.16,
         "awa": 77.2,
         "aws": 18.2,
-        "heel_deg": 22.2,
+        "heel_deg": 21.2,
         "mode": "drawing"
       },
       {
@@ -2898,7 +2898,7 @@
         "v_kn": 7.23,
         "awa": 86.4,
         "aws": 16.9,
-        "heel_deg": 18.7,
+        "heel_deg": 18,
         "mode": "drawing"
       },
       {
@@ -2907,7 +2907,7 @@
         "v_kn": 7.16,
         "awa": 96.7,
         "aws": 15.7,
-        "heel_deg": 16.5,
+        "heel_deg": 15.9,
         "mode": "drawing"
       },
       {
@@ -2934,7 +2934,7 @@
         "v_kn": 5.76,
         "awa": 158.2,
         "aws": 12.5,
-        "heel_deg": 5.5,
+        "heel_deg": 4.6,
         "mode": "stalled"
       },
       {
@@ -2943,7 +2943,7 @@
         "v_kn": 5.33,
         "awa": 180,
         "aws": 12.7,
-        "heel_deg": 3.8,
+        "heel_deg": 3.2,
         "mode": "stalled"
       },
       {
@@ -3033,7 +3033,7 @@
         "v_kn": 7.34,
         "awa": 88.5,
         "aws": 18.8,
-        "heel_deg": 23.7,
+        "heel_deg": 22.6,
         "mode": "drawing"
       },
       {
@@ -3042,7 +3042,7 @@
         "v_kn": 7.27,
         "awa": 99,
         "aws": 17.5,
-        "heel_deg": 20.4,
+        "heel_deg": 19.7,
         "mode": "drawing"
       },
       {
@@ -3069,7 +3069,7 @@
         "v_kn": 5.84,
         "awa": 159,
         "aws": 14.4,
-        "heel_deg": 7.2,
+        "heel_deg": 6.1,
         "mode": "stalled"
       },
       {
@@ -3078,7 +3078,7 @@
         "v_kn": 5.42,
         "awa": 180,
         "aws": 14.6,
-        "heel_deg": 5,
+        "heel_deg": 4.2,
         "mode": "stalled"
       },
       {
@@ -3204,7 +3204,7 @@
         "v_kn": 5.97,
         "awa": 160.4,
         "aws": 19.3,
-        "heel_deg": 12.7,
+        "heel_deg": 10.7,
         "mode": "stalled"
       },
       {
@@ -3213,7 +3213,7 @@
         "v_kn": 5.54,
         "awa": 180,
         "aws": 19.5,
-        "heel_deg": 8.9,
+        "heel_deg": 7.5,
         "mode": "stalled"
       }
     ],
@@ -3335,14 +3335,14 @@
           493
         ],
         "painted_px": [
-          33285,
+          33280,
           25907,
           35737,
           26494,
           23115,
-          40391,
-          56383,
-          52853
+          40408,
+          56426,
+          52871
         ]
       },
       "run_boom_out": {
@@ -3358,73 +3358,73 @@
         },
         "by_facing": {
           "N": [
-            80,
-            99,
-            243,
+            81,
+            98,
+            244,
             518
           ],
           "NE": [
             23,
-            115,
-            332,
-            498
+            113,
+            333,
+            497
           ],
           "E": [
             50,
-            130,
+            127,
             360,
-            448
+            447
           ],
           "SE": [
             94,
-            132,
+            129,
             337,
             488
           ],
           "S": [
-            156,
+            155,
             122,
-            320,
+            319,
             515
           ],
           "SW": [
-            67,
-            105,
+            66,
+            107,
             376,
             487
           ],
           "W": [
             39,
-            93,
+            95,
             349,
             442
           ],
           "NW": [
             62,
-            89,
+            90,
             305,
             494
           ]
         },
         "union": [
           23,
-          89,
+          90,
           376,
           518
         ],
         "union_size": [
           354,
-          430
+          429
         ],
         "painted_px": [
-          35570,
-          38081,
-          30602,
-          36508,
-          34823,
-          44424,
-          32662,
-          40825
+          35474,
+          38169,
+          30486,
+          36712,
+          34672,
+          44385,
+          32721,
+          40704
         ]
       },
       "stored": {
@@ -3498,13 +3498,13 @@
         ],
         "painted_px": [
           21529,
-          28953,
-          31476,
-          28562,
-          18332,
-          28709,
-          31565,
-          29334
+          28915,
+          31439,
+          28515,
+          18325,
+          28678,
+          31513,
+          29301
         ]
       }
     },

@@ -1,0 +1,1215 @@
+{
+ "exportSymbol": "PxRockIso2",
+ "derivedFromRigSha256": "3b6ec36d7891893c1b970859b5e9de4c744c6404540d3b888ab3a0119615d58c",
+ "form": "knuckle",
+ "name": "Bedrock Knuckle",
+ "role": "seam",
+ "note": "THE TRANSITION PIECE. Bedrock breaking through turf or sand: a low broad plate that rises a bed or two and dies back into the ground at its edges. Scatter these along a material boundary with their skirts and the ground stops having a join.",
+ "cell": [
+  70,
+  38
+ ],
+ "sheet": {
+  "cols": 8,
+  "rows": 3,
+  "colAxis": "4 variants then the same 4 mirrored",
+  "rowAxis": [
+   "dry",
+   "wet",
+   "awash"
+  ]
+ },
+ "pivot": "bottom-centre ground contact",
+ "stones": {
+  "sandstone": [
+   {
+    "id": "knuckleA",
+    "variant": 0,
+    "sizeM": 2.2,
+    "topM": 0.48,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.71,
+      "ry": 0.43,
+      "ground": {
+       "x": 35,
+       "y": 25
+      }
+     },
+     "perch": {
+      "x": 37,
+      "y": 12,
+      "zM": 0.4,
+      "flat": true
+     },
+     "snags": [
+      {
+       "x": 38,
+       "y": 9,
+       "zM": 0.4
+      },
+      {
+       "x": 12,
+       "y": 24,
+       "zM": 0.02
+      },
+      {
+       "x": 58,
+       "y": 24,
+       "zM": 0.01
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 21,
+      "zM": 0.16
+     },
+     "pivot": {
+      "x": 35,
+      "y": 25
+     }
+    },
+    "params": {
+     "seed": 8801,
+     "sizeM": 2.2,
+     "turn": 0.6,
+     "n": 8
+    }
+   },
+   {
+    "id": "knuckleB",
+    "variant": 1,
+    "sizeM": 1.5,
+    "topM": 0.28,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.41,
+      "ry": 0.35,
+      "ground": {
+       "x": 35,
+       "y": 28
+      }
+     },
+     "perch": {
+      "x": 27,
+      "y": 24,
+      "zM": 0.22,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 20,
+       "y": 25,
+       "zM": 0.08
+      },
+      {
+       "x": 34,
+       "y": 19,
+       "zM": 0.15
+      },
+      {
+       "x": 47,
+       "y": 31,
+       "zM": -0.02
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 25,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 35,
+      "y": 28
+     }
+    },
+    "params": {
+     "seed": 8802,
+     "sizeM": 1.5,
+     "turn": 2,
+     "n": 7
+    }
+   },
+   {
+    "id": "knuckleC",
+    "variant": 2,
+    "sizeM": 2.9,
+    "topM": 0.44,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.7,
+      "ry": 0.45,
+      "ground": {
+       "x": 35,
+       "y": 25
+      }
+     },
+     "perch": {
+      "x": 26,
+      "y": 20,
+      "zM": 0.36,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 57,
+       "y": 32,
+       "zM": -0.02
+      },
+      {
+       "x": 12,
+       "y": 28,
+       "zM": 0.02
+      },
+      {
+       "x": 39,
+       "y": 10,
+       "zM": 0.34
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 21,
+      "zM": 0.15
+     },
+     "pivot": {
+      "x": 35,
+      "y": 25
+     }
+    },
+    "params": {
+     "seed": 8803,
+     "sizeM": 2.9,
+     "turn": 3.4,
+     "n": 9
+    }
+   },
+   {
+    "id": "knuckleD",
+    "variant": 3,
+    "sizeM": 1.1,
+    "topM": 0.2,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.43,
+      "ry": 0.19,
+      "ground": {
+       "x": 35,
+       "y": 30
+      }
+     },
+     "perch": {
+      "x": 28,
+      "y": 25,
+      "zM": 0.15,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 51,
+       "y": 30,
+       "zM": 0.01
+      },
+      {
+       "x": 24,
+       "y": 27,
+       "zM": 0.08
+      },
+      {
+       "x": 38,
+       "y": 24,
+       "zM": 0.1
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 28,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 35,
+      "y": 30
+     }
+    },
+    "params": {
+     "seed": 8804,
+     "sizeM": 1.1,
+     "turn": 5.2,
+     "n": 6
+    }
+   }
+  ],
+  "granite": [
+   {
+    "id": "knuckleA",
+    "variant": 0,
+    "sizeM": 2.2,
+    "topM": 0.48,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.71,
+      "ry": 0.43,
+      "ground": {
+       "x": 35,
+       "y": 25
+      }
+     },
+     "perch": {
+      "x": 37,
+      "y": 12,
+      "zM": 0.4,
+      "flat": true
+     },
+     "snags": [
+      {
+       "x": 38,
+       "y": 9,
+       "zM": 0.4
+      },
+      {
+       "x": 12,
+       "y": 24,
+       "zM": 0.02
+      },
+      {
+       "x": 58,
+       "y": 24,
+       "zM": 0.01
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 21,
+      "zM": 0.16
+     },
+     "pivot": {
+      "x": 35,
+      "y": 25
+     }
+    },
+    "params": {
+     "seed": 8801,
+     "sizeM": 2.2,
+     "turn": 0.6,
+     "n": 8
+    }
+   },
+   {
+    "id": "knuckleB",
+    "variant": 1,
+    "sizeM": 1.5,
+    "topM": 0.28,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.41,
+      "ry": 0.35,
+      "ground": {
+       "x": 35,
+       "y": 28
+      }
+     },
+     "perch": {
+      "x": 27,
+      "y": 24,
+      "zM": 0.22,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 20,
+       "y": 25,
+       "zM": 0.08
+      },
+      {
+       "x": 34,
+       "y": 19,
+       "zM": 0.15
+      },
+      {
+       "x": 47,
+       "y": 31,
+       "zM": -0.02
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 25,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 35,
+      "y": 28
+     }
+    },
+    "params": {
+     "seed": 8802,
+     "sizeM": 1.5,
+     "turn": 2,
+     "n": 7
+    }
+   },
+   {
+    "id": "knuckleC",
+    "variant": 2,
+    "sizeM": 2.9,
+    "topM": 0.44,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.7,
+      "ry": 0.45,
+      "ground": {
+       "x": 35,
+       "y": 25
+      }
+     },
+     "perch": {
+      "x": 26,
+      "y": 20,
+      "zM": 0.36,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 57,
+       "y": 32,
+       "zM": -0.02
+      },
+      {
+       "x": 12,
+       "y": 28,
+       "zM": 0.02
+      },
+      {
+       "x": 39,
+       "y": 10,
+       "zM": 0.34
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 21,
+      "zM": 0.15
+     },
+     "pivot": {
+      "x": 35,
+      "y": 25
+     }
+    },
+    "params": {
+     "seed": 8803,
+     "sizeM": 2.9,
+     "turn": 3.4,
+     "n": 9
+    }
+   },
+   {
+    "id": "knuckleD",
+    "variant": 3,
+    "sizeM": 1.1,
+    "topM": 0.2,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.43,
+      "ry": 0.19,
+      "ground": {
+       "x": 35,
+       "y": 30
+      }
+     },
+     "perch": {
+      "x": 28,
+      "y": 25,
+      "zM": 0.15,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 51,
+       "y": 30,
+       "zM": 0.01
+      },
+      {
+       "x": 24,
+       "y": 27,
+       "zM": 0.08
+      },
+      {
+       "x": 38,
+       "y": 24,
+       "zM": 0.1
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 28,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 35,
+      "y": 30
+     }
+    },
+    "params": {
+     "seed": 8804,
+     "sizeM": 1.1,
+     "turn": 5.2,
+     "n": 6
+    }
+   }
+  ],
+  "basalt": [
+   {
+    "id": "knuckleA",
+    "variant": 0,
+    "sizeM": 2.2,
+    "topM": 0.48,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.71,
+      "ry": 0.43,
+      "ground": {
+       "x": 35,
+       "y": 25
+      }
+     },
+     "perch": {
+      "x": 37,
+      "y": 12,
+      "zM": 0.4,
+      "flat": true
+     },
+     "snags": [
+      {
+       "x": 38,
+       "y": 9,
+       "zM": 0.4
+      },
+      {
+       "x": 12,
+       "y": 24,
+       "zM": 0.02
+      },
+      {
+       "x": 58,
+       "y": 24,
+       "zM": 0.01
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 21,
+      "zM": 0.16
+     },
+     "pivot": {
+      "x": 35,
+      "y": 25
+     }
+    },
+    "params": {
+     "seed": 8801,
+     "sizeM": 2.2,
+     "turn": 0.6,
+     "n": 8
+    }
+   },
+   {
+    "id": "knuckleB",
+    "variant": 1,
+    "sizeM": 1.5,
+    "topM": 0.28,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.41,
+      "ry": 0.35,
+      "ground": {
+       "x": 35,
+       "y": 28
+      }
+     },
+     "perch": {
+      "x": 27,
+      "y": 24,
+      "zM": 0.22,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 20,
+       "y": 25,
+       "zM": 0.08
+      },
+      {
+       "x": 34,
+       "y": 19,
+       "zM": 0.15
+      },
+      {
+       "x": 47,
+       "y": 31,
+       "zM": -0.02
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 25,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 35,
+      "y": 28
+     }
+    },
+    "params": {
+     "seed": 8802,
+     "sizeM": 1.5,
+     "turn": 2,
+     "n": 7
+    }
+   },
+   {
+    "id": "knuckleC",
+    "variant": 2,
+    "sizeM": 2.9,
+    "topM": 0.44,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.7,
+      "ry": 0.45,
+      "ground": {
+       "x": 35,
+       "y": 25
+      }
+     },
+     "perch": {
+      "x": 26,
+      "y": 20,
+      "zM": 0.36,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 57,
+       "y": 32,
+       "zM": -0.02
+      },
+      {
+       "x": 12,
+       "y": 28,
+       "zM": 0.02
+      },
+      {
+       "x": 39,
+       "y": 10,
+       "zM": 0.34
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 21,
+      "zM": 0.15
+     },
+     "pivot": {
+      "x": 35,
+      "y": 25
+     }
+    },
+    "params": {
+     "seed": 8803,
+     "sizeM": 2.9,
+     "turn": 3.4,
+     "n": 9
+    }
+   },
+   {
+    "id": "knuckleD",
+    "variant": 3,
+    "sizeM": 1.1,
+    "topM": 0.2,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.43,
+      "ry": 0.19,
+      "ground": {
+       "x": 35,
+       "y": 30
+      }
+     },
+     "perch": {
+      "x": 28,
+      "y": 25,
+      "zM": 0.15,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 51,
+       "y": 30,
+       "zM": 0.01
+      },
+      {
+       "x": 24,
+       "y": 27,
+       "zM": 0.08
+      },
+      {
+       "x": 38,
+       "y": 24,
+       "zM": 0.1
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 28,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 35,
+      "y": 30
+     }
+    },
+    "params": {
+     "seed": 8804,
+     "sizeM": 1.1,
+     "turn": 5.2,
+     "n": 6
+    }
+   }
+  ],
+  "quartzite": [
+   {
+    "id": "knuckleA",
+    "variant": 0,
+    "sizeM": 2.2,
+    "topM": 0.48,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.71,
+      "ry": 0.43,
+      "ground": {
+       "x": 35,
+       "y": 25
+      }
+     },
+     "perch": {
+      "x": 37,
+      "y": 12,
+      "zM": 0.4,
+      "flat": true
+     },
+     "snags": [
+      {
+       "x": 38,
+       "y": 9,
+       "zM": 0.4
+      },
+      {
+       "x": 12,
+       "y": 24,
+       "zM": 0.02
+      },
+      {
+       "x": 58,
+       "y": 24,
+       "zM": 0.01
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 21,
+      "zM": 0.16
+     },
+     "pivot": {
+      "x": 35,
+      "y": 25
+     }
+    },
+    "params": {
+     "seed": 8801,
+     "sizeM": 2.2,
+     "turn": 0.6,
+     "n": 8
+    }
+   },
+   {
+    "id": "knuckleB",
+    "variant": 1,
+    "sizeM": 1.5,
+    "topM": 0.28,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.41,
+      "ry": 0.35,
+      "ground": {
+       "x": 35,
+       "y": 28
+      }
+     },
+     "perch": {
+      "x": 27,
+      "y": 24,
+      "zM": 0.22,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 20,
+       "y": 25,
+       "zM": 0.08
+      },
+      {
+       "x": 34,
+       "y": 19,
+       "zM": 0.15
+      },
+      {
+       "x": 47,
+       "y": 31,
+       "zM": -0.02
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 25,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 35,
+      "y": 28
+     }
+    },
+    "params": {
+     "seed": 8802,
+     "sizeM": 1.5,
+     "turn": 2,
+     "n": 7
+    }
+   },
+   {
+    "id": "knuckleC",
+    "variant": 2,
+    "sizeM": 2.9,
+    "topM": 0.44,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.7,
+      "ry": 0.45,
+      "ground": {
+       "x": 35,
+       "y": 25
+      }
+     },
+     "perch": {
+      "x": 26,
+      "y": 20,
+      "zM": 0.36,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 57,
+       "y": 32,
+       "zM": -0.02
+      },
+      {
+       "x": 12,
+       "y": 28,
+       "zM": 0.02
+      },
+      {
+       "x": 39,
+       "y": 10,
+       "zM": 0.34
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 21,
+      "zM": 0.15
+     },
+     "pivot": {
+      "x": 35,
+      "y": 25
+     }
+    },
+    "params": {
+     "seed": 8803,
+     "sizeM": 2.9,
+     "turn": 3.4,
+     "n": 9
+    }
+   },
+   {
+    "id": "knuckleD",
+    "variant": 3,
+    "sizeM": 1.1,
+    "topM": 0.2,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.43,
+      "ry": 0.19,
+      "ground": {
+       "x": 35,
+       "y": 30
+      }
+     },
+     "perch": {
+      "x": 28,
+      "y": 25,
+      "zM": 0.15,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 51,
+       "y": 30,
+       "zM": 0.01
+      },
+      {
+       "x": 24,
+       "y": 27,
+       "zM": 0.08
+      },
+      {
+       "x": 38,
+       "y": 24,
+       "zM": 0.1
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 28,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 35,
+      "y": 30
+     }
+    },
+    "params": {
+     "seed": 8804,
+     "sizeM": 1.1,
+     "turn": 5.2,
+     "n": 6
+    }
+   }
+  ],
+  "till": [
+   {
+    "id": "knuckleA",
+    "variant": 0,
+    "sizeM": 2.2,
+    "topM": 0.48,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.71,
+      "ry": 0.43,
+      "ground": {
+       "x": 35,
+       "y": 25
+      }
+     },
+     "perch": {
+      "x": 37,
+      "y": 12,
+      "zM": 0.4,
+      "flat": true
+     },
+     "snags": [
+      {
+       "x": 38,
+       "y": 9,
+       "zM": 0.4
+      },
+      {
+       "x": 12,
+       "y": 24,
+       "zM": 0.02
+      },
+      {
+       "x": 58,
+       "y": 24,
+       "zM": 0.01
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 21,
+      "zM": 0.16
+     },
+     "pivot": {
+      "x": 35,
+      "y": 25
+     }
+    },
+    "params": {
+     "seed": 8801,
+     "sizeM": 2.2,
+     "turn": 0.6,
+     "n": 8
+    }
+   },
+   {
+    "id": "knuckleB",
+    "variant": 1,
+    "sizeM": 1.5,
+    "topM": 0.28,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.41,
+      "ry": 0.35,
+      "ground": {
+       "x": 35,
+       "y": 28
+      }
+     },
+     "perch": {
+      "x": 27,
+      "y": 24,
+      "zM": 0.22,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 20,
+       "y": 25,
+       "zM": 0.08
+      },
+      {
+       "x": 34,
+       "y": 19,
+       "zM": 0.15
+      },
+      {
+       "x": 47,
+       "y": 31,
+       "zM": -0.02
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 25,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 35,
+      "y": 28
+     }
+    },
+    "params": {
+     "seed": 8802,
+     "sizeM": 1.5,
+     "turn": 2,
+     "n": 7
+    }
+   },
+   {
+    "id": "knuckleC",
+    "variant": 2,
+    "sizeM": 2.9,
+    "topM": 0.44,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.7,
+      "ry": 0.45,
+      "ground": {
+       "x": 35,
+       "y": 25
+      }
+     },
+     "perch": {
+      "x": 26,
+      "y": 20,
+      "zM": 0.36,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 57,
+       "y": 32,
+       "zM": -0.02
+      },
+      {
+       "x": 12,
+       "y": 28,
+       "zM": 0.02
+      },
+      {
+       "x": 39,
+       "y": 10,
+       "zM": 0.34
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 21,
+      "zM": 0.15
+     },
+     "pivot": {
+      "x": 35,
+      "y": 25
+     }
+    },
+    "params": {
+     "seed": 8803,
+     "sizeM": 2.9,
+     "turn": 3.4,
+     "n": 9
+    }
+   },
+   {
+    "id": "knuckleD",
+    "variant": 3,
+    "sizeM": 1.1,
+    "topM": 0.2,
+    "cell": [
+     70,
+     38
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.43,
+      "ry": 0.19,
+      "ground": {
+       "x": 35,
+       "y": 30
+      }
+     },
+     "perch": {
+      "x": 28,
+      "y": 25,
+      "zM": 0.15,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 51,
+       "y": 30,
+       "zM": 0.01
+      },
+      {
+       "x": 24,
+       "y": 27,
+       "zM": 0.08
+      },
+      {
+       "x": 38,
+       "y": 24,
+       "zM": 0.1
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 28,
+      "zM": 0.09
+     },
+     "pivot": {
+      "x": 35,
+      "y": 30
+     }
+    },
+    "params": {
+     "seed": 8804,
+     "sizeM": 1.1,
+     "turn": 5.2,
+     "n": 6
+    }
+   }
+  ]
+ }
+}

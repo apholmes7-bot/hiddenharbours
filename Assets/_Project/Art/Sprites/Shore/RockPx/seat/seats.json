@@ -1,0 +1,455 @@
+{
+ "exportSymbol": "PxRockIso2",
+ "derivedFromRigSha256": "3b6ec36d7891893c1b970859b5e9de4c744c6404540d3b888ab3a0119615d58c",
+ "note": "Seat decals. Draw OVER the rock, same cell, same pivot. A seam decal (seat2 set) must be placed with its frontier ON the level's own material boundary — the decal does not invent the boundary, it dresses it.",
+ "decals": [
+  {
+   "file": "seat/KnuckleA_skirt_grass_sand",
+   "form": "knuckle",
+   "variant": 0,
+   "seat": "grass",
+   "seat2": "sand",
+   "reach": 9,
+   "cell": [
+    70,
+    38
+   ],
+   "pivot": {
+    "x": 35,
+    "y": 25
+   }
+  },
+  {
+   "file": "seat/KnuckleB_skirt_grass_marram",
+   "form": "knuckle",
+   "variant": 1,
+   "seat": "grass",
+   "seat2": "marram",
+   "reach": 8,
+   "cell": [
+    70,
+    38
+   ],
+   "pivot": {
+    "x": 35,
+    "y": 28
+   }
+  },
+  {
+   "file": "seat/KnuckleC_skirt_marram_sand",
+   "form": "knuckle",
+   "variant": 2,
+   "seat": "marram",
+   "seat2": "sand",
+   "reach": 9,
+   "cell": [
+    70,
+    38
+   ],
+   "pivot": {
+    "x": 35,
+    "y": 25
+   }
+  },
+  {
+   "file": "seat/KnuckleD_skirt_sand_foreshore",
+   "form": "knuckle",
+   "variant": 3,
+   "seat": "sand",
+   "seat2": "foreshore",
+   "reach": 7,
+   "cell": [
+    70,
+    38
+   ],
+   "pivot": {
+    "x": 35,
+    "y": 30
+   }
+  },
+  {
+   "file": "seat/SpineA_skirt_grass_marram",
+   "form": "spine",
+   "variant": 0,
+   "seat": "grass",
+   "seat2": "marram",
+   "reach": 8,
+   "cell": [
+    122,
+    42
+   ],
+   "pivot": {
+    "x": 61,
+    "y": 33
+   }
+  },
+  {
+   "file": "seat/SpineB_skirt_grass_sand",
+   "form": "spine",
+   "variant": 1,
+   "seat": "grass",
+   "seat2": "sand",
+   "reach": 9,
+   "cell": [
+    122,
+    42
+   ],
+   "pivot": {
+    "x": 61,
+    "y": 30
+   }
+  },
+  {
+   "file": "seat/SpineC_skirt_marram_sand",
+   "form": "spine",
+   "variant": 2,
+   "seat": "marram",
+   "seat2": "sand",
+   "reach": 8,
+   "cell": [
+    122,
+    42
+   ],
+   "pivot": {
+    "x": 61,
+    "y": 36
+   }
+  },
+  {
+   "file": "seat/BenchA_skirt_path_grass",
+   "form": "bench",
+   "variant": 0,
+   "seat": "path",
+   "seat2": "grass",
+   "reach": 9,
+   "cell": [
+    98,
+    46
+   ],
+   "pivot": {
+    "x": 49,
+    "y": 32
+   }
+  },
+  {
+   "file": "seat/BenchB_skirt_grass_dirt",
+   "form": "bench",
+   "variant": 1,
+   "seat": "grass",
+   "seat2": "dirt",
+   "reach": 9,
+   "cell": [
+    98,
+    46
+   ],
+   "pivot": {
+    "x": 49,
+    "y": 30
+   }
+  },
+  {
+   "file": "seat/BenchD_skirt_ledge_shingle",
+   "form": "bench",
+   "variant": 3,
+   "seat": "ledge",
+   "seat2": "shingle",
+   "reach": 9,
+   "cell": [
+    98,
+    46
+   ],
+   "pivot": {
+    "x": 49,
+    "y": 31
+   }
+  },
+  {
+   "file": "seat/ErraticB_skirt_grass",
+   "form": "erratic",
+   "variant": 1,
+   "seat": "grass",
+   "seat2": null,
+   "reach": 10,
+   "cell": [
+    56,
+    50
+   ],
+   "pivot": {
+    "x": 28,
+    "y": 35
+   }
+  },
+  {
+   "file": "seat/ErraticC_skirt_marram",
+   "form": "erratic",
+   "variant": 2,
+   "seat": "marram",
+   "seat2": null,
+   "reach": 7,
+   "cell": [
+    56,
+    50
+   ],
+   "pivot": {
+    "x": 28,
+    "y": 42
+   }
+  },
+  {
+   "file": "seat/BlockB_skirt_sand",
+   "form": "block",
+   "variant": 1,
+   "seat": "sand",
+   "seat2": null,
+   "reach": 12,
+   "cell": [
+    56,
+    54
+   ],
+   "pivot": {
+    "x": 28,
+    "y": 40
+   }
+  },
+  {
+   "file": "seat/BlockD_skirt_talus",
+   "form": "block",
+   "variant": 3,
+   "seat": "talus",
+   "seat2": null,
+   "reach": 12,
+   "cell": [
+    56,
+    54
+   ],
+   "pivot": {
+    "x": 28,
+    "y": 40
+   }
+  },
+  {
+   "file": "seat/PerchedB_skirt_grass",
+   "form": "perched",
+   "variant": 1,
+   "seat": "grass",
+   "seat2": null,
+   "reach": 13,
+   "cell": [
+    58,
+    62
+   ],
+   "pivot": {
+    "x": 29,
+    "y": 47
+   }
+  },
+  {
+   "file": "seat/SlabB_skirt_ledge",
+   "form": "slab",
+   "variant": 1,
+   "seat": "ledge",
+   "seat2": null,
+   "reach": 8,
+   "cell": [
+    74,
+    42
+   ],
+   "pivot": {
+    "x": 37,
+    "y": 26
+   }
+  },
+  {
+   "file": "seat/ShelfB_skirt_ledge",
+   "form": "shelf",
+   "variant": 1,
+   "seat": "ledge",
+   "seat2": null,
+   "reach": 9,
+   "cell": [
+    82,
+    46
+   ],
+   "pivot": {
+    "x": 41,
+    "y": 30
+   }
+  },
+  {
+   "file": "seat/FinB_skirt_grass",
+   "form": "fin",
+   "variant": 1,
+   "seat": "grass",
+   "seat2": null,
+   "reach": 13,
+   "cell": [
+    46,
+    66
+   ],
+   "pivot": {
+    "x": 23,
+    "y": 60
+   }
+  },
+  {
+   "file": "seat/WedgeC_skirt_shingle",
+   "form": "wedge",
+   "variant": 2,
+   "seat": "shingle",
+   "seat2": null,
+   "reach": 11,
+   "cell": [
+    54,
+    56
+   ],
+   "pivot": {
+    "x": 27,
+    "y": 48
+   }
+  },
+  {
+   "file": "seat/ClovenB_skirt_grass",
+   "form": "cloven",
+   "variant": 1,
+   "seat": "grass",
+   "seat2": null,
+   "reach": 13,
+   "cell": [
+    62,
+    86
+   ],
+   "pivot": {
+    "x": 31,
+    "y": 75
+   }
+  },
+  {
+   "file": "seat/PrismsB_skirt_ledge",
+   "form": "prisms",
+   "variant": 1,
+   "seat": "ledge",
+   "seat2": null,
+   "reach": 15,
+   "cell": [
+    66,
+    62
+   ],
+   "pivot": {
+    "x": 33,
+    "y": 49
+   }
+  },
+  {
+   "file": "seat/CobblesB_skirt_shingle",
+   "form": "cobbles",
+   "variant": 1,
+   "seat": "shingle",
+   "seat2": null,
+   "reach": 7,
+   "cell": [
+    58,
+    32
+   ],
+   "pivot": {
+    "x": 29,
+    "y": 25
+   }
+  },
+  {
+   "file": "seat/CobblesC_skirt_sand",
+   "form": "cobbles",
+   "variant": 2,
+   "seat": "sand",
+   "seat2": null,
+   "reach": 7,
+   "cell": [
+    58,
+    32
+   ],
+   "pivot": {
+    "x": 29,
+    "y": 27
+   }
+  },
+  {
+   "file": "seat/ScreeB_skirt_talus",
+   "form": "scree",
+   "variant": 1,
+   "seat": "talus",
+   "seat2": null,
+   "reach": 9,
+   "cell": [
+    78,
+    46
+   ],
+   "pivot": {
+    "x": 39,
+    "y": 34
+   }
+  },
+  {
+   "file": "seat/ApronB_skirt_talus",
+   "form": "apron",
+   "variant": 1,
+   "seat": "talus",
+   "seat2": null,
+   "reach": 10,
+   "cell": [
+    116,
+    58
+   ],
+   "pivot": {
+    "x": 58,
+    "y": 40
+   }
+  },
+  {
+   "file": "seat/ApronC_skirt_shingle",
+   "form": "apron",
+   "variant": 2,
+   "seat": "shingle",
+   "seat2": null,
+   "reach": 9,
+   "cell": [
+    116,
+    58
+   ],
+   "pivot": {
+    "x": 58,
+    "y": 47
+   }
+  },
+  {
+   "file": "seat/SkerryB_skirt_water",
+   "form": "skerry",
+   "variant": 1,
+   "seat": "water",
+   "seat2": null,
+   "reach": 11,
+   "cell": [
+    102,
+    46
+   ],
+   "pivot": {
+    "x": 51,
+    "y": 34
+   }
+  },
+  {
+   "file": "seat/SkerryC_skirt_water",
+   "form": "skerry",
+   "variant": 2,
+   "seat": "water",
+   "seat2": null,
+   "reach": 9,
+   "cell": [
+    102,
+    46
+   ],
+   "pivot": {
+    "x": 51,
+    "y": 36
+   }
+  }
+ ]
+}

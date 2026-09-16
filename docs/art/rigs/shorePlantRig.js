@@ -180,6 +180,12 @@
   // ---- the tide, resolved for one species ------------------------------------
   // Everything downstream reads THIS object. One place decides, so lay/wet/water can't disagree.
   function tideOf(t, sp) {
+    if (typeof t === 'string') {
+      const hit = TIDES.find(x => x.key === t);
+      if (!hit) throw new Error('ShorePlants: unknown tide "' + t + '" — use ' + TIDE_KEYS.join('|') + ' or 0–1');
+      t = hit.t;
+    }
+    if (t != null && !(typeof t === 'number' && isFinite(t))) throw new Error('ShorePlants: tide must be a number 0–1 or one of ' + TIDE_KEYS.join('|'));
     const tt = clamp(t == null ? 0.55 : t, 0, 1);
     const waterM = tt * TIDE_M;
     if (!sp) return { t: tt, waterM };

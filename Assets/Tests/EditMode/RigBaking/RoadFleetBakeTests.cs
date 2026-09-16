@@ -194,9 +194,20 @@ namespace HiddenHarbours.Tests.RigBaking
                 "the refusal ledger changed. Every entry blocks a bake, so an addition needs its " +
                 "measurement — and if it is the van again, compare FULL digests, never a prefix.");
 
-            Assert.That(VehicleRigFleet.NotBaked, Is.Empty,
-                "something is unbaked again. All nine bodies of the road-fleet drop baked " +
-                "(#671 + the van's re-stamp intake); a body coming back out needs a reasoned entry.");
+            // ⚠️ NARROWED 2026-09-14, and the narrowing is the point. This asserted the whole
+            // ledger was EMPTY, which was true from the van's re-stamp until the Modern 3500's kit
+            // landed with her bake excused (27 used ramps against the shader's 16 — her
+            // VehicleRigFleet.NotBaked entry carries the measurement). An unrelated vehicle's
+            // reasoned entry is not this test's business: what THIS test defends is that none of
+            // the NINE bodies of the road-fleet drop came back out, and that is now asserted by
+            // name instead of by a global emptiness that any later intake would trip.
+            var excusedBodies = Bodies.Select(x => x.Key)
+                                      .Where(VehicleRigFleet.NotBaked.ContainsKey)
+                                      .ToList();
+            CollectionAssert.IsEmpty(excusedBodies,
+                "a road-fleet body is unbaked again: " + string.Join(", ", excusedBodies) + ". All " +
+                "nine baked (#671 + the van's re-stamp intake); one coming back out needs a " +
+                "reasoned entry AND a look at whether the drop regressed.");
 
             Assert.That(VehicleRigFleet.Baked, Does.Contain("hightopVan"),
                 "the ninth body left Baked — her re-stamp intake put her there and nothing since " +

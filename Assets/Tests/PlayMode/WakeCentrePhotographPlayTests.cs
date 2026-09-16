@@ -72,7 +72,7 @@ namespace HiddenHarbours.Tests.PlayMode
     /// (<see cref="RequireAGraphicsDevice"/>, called FIRST, before any yield — after a yield the case
     /// records as FAILED with the skip text attached, which is how a skip turns a PR red).</para>
     /// </summary>
-    public class WakeCentrePhotographPlayTests
+    public partial class WakeCentrePhotographPlayTests
     {
         // ── the box the picture is taken in ───────────────────────────────────────────────────────────
         const string SceneName = "NineMileCreek";
@@ -291,6 +291,8 @@ namespace HiddenHarbours.Tests.PlayMode
             float bandHalfWidth = she.BandHalfWidth;
             FoamInjector injector = she.Injector;
 
+            if (_probeFoamVisibility) BeginFoamVisibilityLeg(injector, leg.Name);
+
             // ── frame her, drive her, then stop the world ────────────────────────────────────────────
             // The frame is sized to the leg BEFORE she sails it: her path is a pure function of the leg
             // and this fixture's constants, so the camera can be placed over the finished run rather than
@@ -318,6 +320,17 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(wakeRoot, $"{subject}/{leg.Name}: no Wake[{go.name}] rig was ever built for " +
                                        "her, so families B and C have nothing drawn to photograph. The " +
                                        "emitter either never found her or never ran.");
+
+            if (_probeFoamVisibility)
+            {
+                CaptureFoamVisibility(subject + "-" + leg.Name);
+                RestoreFoamPackingOrder();
+                Time.timeScale = 1f;
+                _spawned.Remove(go);
+                Object.Destroy(go);
+                yield return null;
+                yield break;
+            }
 
             // ── the arms, all inside ONE frozen frame ────────────────────────────────────────────────
             byte[] all = ShootArm(wakeRoot, injector, sheet: true, foam: true, crest: true);

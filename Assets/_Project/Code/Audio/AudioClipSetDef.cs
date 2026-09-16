@@ -3,8 +3,8 @@ using UnityEngine;
 namespace HiddenHarbours.Audio
 {
     /// <summary>
-    /// The twenty-four manifest slots as DATA (rule 2) — one serialized <see cref="AudioClip"/> per slot in
-    /// <c>Assets/_Project/Audio/AUDIO-MANIFEST.md</c>, eleven for <see cref="AudioDirector"/> and thirteen
+    /// The twenty-seven manifest slots as DATA (rule 2) — one serialized <see cref="AudioClip"/> per slot in
+    /// <c>Assets/_Project/Audio/AUDIO-MANIFEST.md</c>, fourteen for <see cref="AudioDirector"/> and thirteen
     /// for <see cref="FishingAudio"/>.
     ///
     /// <para><b>Why this exists.</b> Both players already generate a procedural placeholder for every
@@ -111,5 +111,15 @@ namespace HiddenHarbours.Audio
 
         [Tooltip("Landed. Short, and not musical — the sting carries the music.")]
         public AudioClip LandedFlourish;
+
+        [Header("Director — sea state and visibility")]
+        [Tooltip("Moderate-water wash, faded in from the continuous sea-state sample.")]
+        public AudioClip ModerateSeaBed;
+
+        [Tooltip("Heavy surf, faded in as the sea reaches its rough band.")]
+        public AudioClip RoughSeaBed;
+
+        [Tooltip("A distant fog signal, sounded on the deterministic game-clock schedule in thick fog.")]
+        public AudioClip Foghorn;
     }
 }

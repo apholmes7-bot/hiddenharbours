@@ -874,6 +874,38 @@ namespace HiddenHarbours.Tools.RigBaking
                         "return out;})()",
                 },
 
+                // ---- the MODERN 3500 — the second crew-cab dually, Codex drop 2026-09-13 --------
+                // The same gap as her older namesake's above, for the same reason: no module-level
+                // `MATS`, because her table is built per-pose by `makeMats(s)` off her paint, trim and
+                // lamp axes. Without this entry the shim widens the exported literal to publish a
+                // binding that was never declared and V8 throws `ReferenceError: MATS is not defined`
+                // — which is exactly what a bake of her did on 2026-09-14, and it is a SYMPTOM.
+                //
+                // ⚠️⚠️ THIS DOES NOT MAKE HER BAKEABLE, and nothing on this side will. She declares 27
+                // ramps and USES all 27 against the shader's 16, so the filter below drops NOTHING —
+                // the measurement, the arithmetic of every available fold, and the art merge it needs
+                // are written out in full on her `VehicleRigFleet.NotBaked` entry. The baker skips her
+                // by that entry and never reaches this expression today.
+                //
+                // It is registered anyway, for two reasons. The defect is real and was traced rather
+                // than guessed, and a fold changes WHICH keys `makeMats` returns without changing that
+                // it is a function — so this entry outlives the blocker and the bake that follows the
+                // art merge needs no rediscovery. And it is not dead: Modern3500KitProbeTests
+                // evaluates THIS registered string through the same widening the baker uses and counts
+                // what comes back, so CI exercises it on every run.
+                //
+                // Character-for-character the Dually's, deliberately — a different shape here would be
+                // a second mechanism to reason about for no gain.
+                ["modern3500.rig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] =
+                        "(function(){var M=makeMats(resolve({})),F=build(resolve({}))," +
+                        "used={},out={};" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;" +
+                        "for(var k in M)if(used[k])out[k]=M[k];" +
+                        "return out;})()",
+                },
+
                 // ---- the OTTER 8x8 — the second road vehicle, and the first amphibian ----------
                 // Same gap and the same fix as the Dually's above: no `MATS` const, because her table
                 // is built per-pose by `makeMats(s)` off her paint and weather axes. The expression is

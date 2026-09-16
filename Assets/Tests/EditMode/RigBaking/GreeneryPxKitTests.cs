@@ -664,10 +664,8 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// <b>The drop side of the shore-plant fork.</b> This copy of <c>shorePlantRig.js</c> accepts a
-        /// tide by NAME and rejects a name it does not know. The repo's live copy does neither: it
-        /// coerces an unknown string to NaN and draws a plant at a water level of "not a number",
-        /// which is the kind of defect that survives review precisely because nothing throws.
+        /// The drop's <c>shorePlantRig.js</c> accepts a tide by NAME and rejects an unknown name.
+        /// The live rig now carries the same fix; both copies must keep this regression covered.
         /// </summary>
         [Test]
         public void TheDropsShorePlantRigResolvesATideByNameAndRefusesAnUnknownOne()
@@ -697,14 +695,11 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// <b>The repo side of the same fork — and the reason this PR lands a COPY, not a replacement.</b>
-        ///
-        /// <para>The drop's <c>shorePlantRig.js</c> pre-dates ADR 0031, which turned the keyline off by
-        /// default. The repo's copy carries that decision and lacks the tide fix; the drop's carries the
-        /// tide fix and lacks the decision. They are a two-way fork, and the merge is the art director's
-        /// to make, not ours. What this guard prevents is the cheap-looking fix: someone noticing "two
-        /// copies of the same rig" and making them identical, which would silently switch the keyline
-        /// back on across every shore plant in the game.</para>
+        /// <b>The shore-plant fork is now one-way: the kit is behind on ADR 0031 only.</b>
+        /// <para>The live rig now carries the kit's tide fix and retains ADR 0031's keyline-off
+        /// default. The kit remains unchanged and pre-dates that decision. This guard keeps both
+        /// copies' tide fix explicit and prevents replacing the live rig with the kit copy, which
+        /// would silently switch the keyline back on across every shore plant in the game.</para>
         /// </summary>
         [Test]
         public void TheDropsShorePlantRigIsAForkAndMustNotReplaceTheLiveOne()
@@ -727,9 +722,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 "The kit copy now carries ADR 0031 — it is no longer the pre-ADR fork this census describes.");
 
             StringAssert.Contains("unknown tide", kit, "the kit copy is the one carrying the tideOf fix");
-            Assert.IsFalse(live.Contains("unknown tide"),
-                "The live rig has gained the tide fix. The fork is closing — say so to the art director and " +
-                "retire this guard deliberately, rather than letting it rot into a lie.");
+            Assert.IsTrue(live.Contains("unknown tide"),
+                "The live rig must retain the tideOf string fix ported from the kit.");
         }
 
         /// <summary>

@@ -408,7 +408,13 @@ this PR leaves it EMPTY, and PR 3 flips it per state.
    *`MeshStates` is authored here, not in a PR 3.* §4 says PR 1 leaves it empty and PR 3 flips it
    per state; an empty list means the presenter can never draw, so no toggle-1 plate could exist and
    the presenter would ship unverified. The capability switch the owner holds is therefore the other
-   one: `GameConfig.MeshCharacter`, **default false**. The shipped game still draws the sprite.
+   one: `GameConfig.MeshCharacter`, **default false** as that PR shipped it. The shipped game
+   still drew the sprite. **Amended 2026-09-13 (owner ruling 2026-09-12, "ship it on"):** the
+   default is now **true** — the shipped game draws the mesh aboard a mesh hull, and OFF remains
+   byte-identical to the sprite path. The ruling accepts the named debt: rig 7 exports no helm
+   and no oars clip, so at the wheel and at the oars she stands in a plain `idle` where the
+   sprite sat and rowed; she is faceless; and she is 43–57% off the inked art until the shader
+   look pass lands.
    *The `mount*` spike, measured on the rig-7 skeleton.* §3.2 names the part `boot_R`/`boot_cuff_R`;
    the exported skeleton's bone ids for it are `ankle_R`/`ankle_R_tip` — rig 7's own header calls
    `ankle_L` "the boot shaft". Walking all 35 fisher clips in a chained ClearScript V8 host (control:

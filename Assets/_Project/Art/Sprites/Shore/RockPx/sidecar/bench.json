@@ -1,0 +1,1215 @@
+{
+ "exportSymbol": "PxRockIso2",
+ "derivedFromRigSha256": "3b6ec36d7891893c1b970859b5e9de4c744c6404540d3b888ab3a0119615d58c",
+ "form": "bench",
+ "name": "Bedrock Bench",
+ "role": "seam",
+ "note": "A two-course bedrock step, 2–3 m long, straight enough to lay along a level change and hide it: a flat standable top, one lit bench lip, a shadowed riser, and its ends broken so it never reads as masonry.",
+ "cell": [
+  98,
+  46
+ ],
+ "sheet": {
+  "cols": 8,
+  "rows": 3,
+  "colAxis": "4 variants then the same 4 mirrored",
+  "rowAxis": [
+   "dry",
+   "wet",
+   "awash"
+  ]
+ },
+ "pivot": "bottom-centre ground contact",
+ "stones": {
+  "sandstone": [
+   {
+    "id": "benchA",
+    "variant": 0,
+    "sizeM": 2.6,
+    "topM": 0.51,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.13,
+      "ry": 0.3,
+      "ground": {
+       "x": 49,
+       "y": 32
+      }
+     },
+     "perch": {
+      "x": 45,
+      "y": 18,
+      "zM": 0.44,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 13,
+       "y": 25,
+       "zM": 0.11
+      },
+      {
+       "x": 84,
+       "y": 31,
+       "zM": 0.03
+      },
+      {
+       "x": 46,
+       "y": 13,
+       "zM": 0.44
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 28,
+      "zM": 0.17
+     },
+     "pivot": {
+      "x": 49,
+      "y": 32
+     }
+    },
+    "params": {
+     "seed": 8901,
+     "sizeM": 2.6,
+     "turn": 0.1,
+     "n": 5
+    }
+   },
+   {
+    "id": "benchB",
+    "variant": 1,
+    "sizeM": 3,
+    "topM": 0.57,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.13,
+      "ry": 0.53,
+      "ground": {
+       "x": 49,
+       "y": 30
+      }
+     },
+     "perch": {
+      "x": 43,
+      "y": 17,
+      "zM": 0.5,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 12,
+       "y": 21,
+       "zM": 0.17
+      },
+      {
+       "x": 79,
+       "y": 18,
+       "zM": 0.2
+      },
+      {
+       "x": 72,
+       "y": 39,
+       "zM": -0.02
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 26,
+      "zM": 0.2
+     },
+     "pivot": {
+      "x": 49,
+      "y": 30
+     }
+    },
+    "params": {
+     "seed": 8902,
+     "sizeM": 3,
+     "turn": 1.6,
+     "n": 6
+    }
+   },
+   {
+    "id": "benchC",
+    "variant": 2,
+    "sizeM": 2,
+    "topM": 0.38,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.66,
+      "ry": 0.35,
+      "ground": {
+       "x": 49,
+       "y": 35
+      }
+     },
+     "perch": {
+      "x": 49,
+      "y": 23,
+      "zM": 0.34,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 28,
+       "y": 24,
+       "zM": 0.21
+      },
+      {
+       "x": 66,
+       "y": 25,
+       "zM": 0.17
+      },
+      {
+       "x": 70,
+       "y": 40,
+       "zM": 0.03
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 32,
+      "zM": 0.13
+     },
+     "pivot": {
+      "x": 49,
+      "y": 35
+     }
+    },
+    "params": {
+     "seed": 8903,
+     "sizeM": 2,
+     "turn": 3,
+     "n": 5
+    }
+   },
+   {
+    "id": "benchD",
+    "variant": 3,
+    "sizeM": 2.8,
+    "topM": 0.55,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.18,
+      "ry": 0.48,
+      "ground": {
+       "x": 49,
+       "y": 31
+      }
+     },
+     "perch": {
+      "x": 47,
+      "y": 15,
+      "zM": 0.47,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 87,
+       "y": 23,
+       "zM": 0.18
+      },
+      {
+       "x": 17,
+       "y": 17,
+       "zM": 0.36
+      },
+      {
+       "x": 33,
+       "y": 37,
+       "zM": -0.02
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 27,
+      "zM": 0.19
+     },
+     "pivot": {
+      "x": 49,
+      "y": 31
+     }
+    },
+    "params": {
+     "seed": 8904,
+     "sizeM": 2.8,
+     "turn": 4.5,
+     "n": 6
+    }
+   }
+  ],
+  "granite": [
+   {
+    "id": "benchA",
+    "variant": 0,
+    "sizeM": 2.6,
+    "topM": 0.51,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.13,
+      "ry": 0.3,
+      "ground": {
+       "x": 49,
+       "y": 32
+      }
+     },
+     "perch": {
+      "x": 45,
+      "y": 18,
+      "zM": 0.44,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 13,
+       "y": 25,
+       "zM": 0.11
+      },
+      {
+       "x": 84,
+       "y": 31,
+       "zM": 0.03
+      },
+      {
+       "x": 46,
+       "y": 13,
+       "zM": 0.44
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 28,
+      "zM": 0.17
+     },
+     "pivot": {
+      "x": 49,
+      "y": 32
+     }
+    },
+    "params": {
+     "seed": 8901,
+     "sizeM": 2.6,
+     "turn": 0.1,
+     "n": 5
+    }
+   },
+   {
+    "id": "benchB",
+    "variant": 1,
+    "sizeM": 3,
+    "topM": 0.57,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.13,
+      "ry": 0.53,
+      "ground": {
+       "x": 49,
+       "y": 30
+      }
+     },
+     "perch": {
+      "x": 43,
+      "y": 17,
+      "zM": 0.5,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 12,
+       "y": 21,
+       "zM": 0.17
+      },
+      {
+       "x": 79,
+       "y": 18,
+       "zM": 0.2
+      },
+      {
+       "x": 72,
+       "y": 39,
+       "zM": -0.02
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 26,
+      "zM": 0.2
+     },
+     "pivot": {
+      "x": 49,
+      "y": 30
+     }
+    },
+    "params": {
+     "seed": 8902,
+     "sizeM": 3,
+     "turn": 1.6,
+     "n": 6
+    }
+   },
+   {
+    "id": "benchC",
+    "variant": 2,
+    "sizeM": 2,
+    "topM": 0.38,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.66,
+      "ry": 0.35,
+      "ground": {
+       "x": 49,
+       "y": 35
+      }
+     },
+     "perch": {
+      "x": 49,
+      "y": 23,
+      "zM": 0.34,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 28,
+       "y": 24,
+       "zM": 0.21
+      },
+      {
+       "x": 66,
+       "y": 25,
+       "zM": 0.17
+      },
+      {
+       "x": 70,
+       "y": 40,
+       "zM": 0.03
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 32,
+      "zM": 0.13
+     },
+     "pivot": {
+      "x": 49,
+      "y": 35
+     }
+    },
+    "params": {
+     "seed": 8903,
+     "sizeM": 2,
+     "turn": 3,
+     "n": 5
+    }
+   },
+   {
+    "id": "benchD",
+    "variant": 3,
+    "sizeM": 2.8,
+    "topM": 0.55,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.18,
+      "ry": 0.48,
+      "ground": {
+       "x": 49,
+       "y": 31
+      }
+     },
+     "perch": {
+      "x": 47,
+      "y": 15,
+      "zM": 0.47,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 87,
+       "y": 23,
+       "zM": 0.18
+      },
+      {
+       "x": 17,
+       "y": 17,
+       "zM": 0.36
+      },
+      {
+       "x": 33,
+       "y": 37,
+       "zM": -0.02
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 27,
+      "zM": 0.19
+     },
+     "pivot": {
+      "x": 49,
+      "y": 31
+     }
+    },
+    "params": {
+     "seed": 8904,
+     "sizeM": 2.8,
+     "turn": 4.5,
+     "n": 6
+    }
+   }
+  ],
+  "basalt": [
+   {
+    "id": "benchA",
+    "variant": 0,
+    "sizeM": 2.6,
+    "topM": 0.51,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.13,
+      "ry": 0.3,
+      "ground": {
+       "x": 49,
+       "y": 32
+      }
+     },
+     "perch": {
+      "x": 45,
+      "y": 18,
+      "zM": 0.44,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 13,
+       "y": 25,
+       "zM": 0.11
+      },
+      {
+       "x": 84,
+       "y": 31,
+       "zM": 0.03
+      },
+      {
+       "x": 46,
+       "y": 13,
+       "zM": 0.44
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 28,
+      "zM": 0.17
+     },
+     "pivot": {
+      "x": 49,
+      "y": 32
+     }
+    },
+    "params": {
+     "seed": 8901,
+     "sizeM": 2.6,
+     "turn": 0.1,
+     "n": 5
+    }
+   },
+   {
+    "id": "benchB",
+    "variant": 1,
+    "sizeM": 3,
+    "topM": 0.57,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.13,
+      "ry": 0.53,
+      "ground": {
+       "x": 49,
+       "y": 30
+      }
+     },
+     "perch": {
+      "x": 43,
+      "y": 17,
+      "zM": 0.5,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 12,
+       "y": 21,
+       "zM": 0.17
+      },
+      {
+       "x": 79,
+       "y": 18,
+       "zM": 0.2
+      },
+      {
+       "x": 72,
+       "y": 39,
+       "zM": -0.02
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 26,
+      "zM": 0.2
+     },
+     "pivot": {
+      "x": 49,
+      "y": 30
+     }
+    },
+    "params": {
+     "seed": 8902,
+     "sizeM": 3,
+     "turn": 1.6,
+     "n": 6
+    }
+   },
+   {
+    "id": "benchC",
+    "variant": 2,
+    "sizeM": 2,
+    "topM": 0.38,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.66,
+      "ry": 0.35,
+      "ground": {
+       "x": 49,
+       "y": 35
+      }
+     },
+     "perch": {
+      "x": 49,
+      "y": 23,
+      "zM": 0.34,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 28,
+       "y": 24,
+       "zM": 0.21
+      },
+      {
+       "x": 66,
+       "y": 25,
+       "zM": 0.17
+      },
+      {
+       "x": 70,
+       "y": 40,
+       "zM": 0.03
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 32,
+      "zM": 0.13
+     },
+     "pivot": {
+      "x": 49,
+      "y": 35
+     }
+    },
+    "params": {
+     "seed": 8903,
+     "sizeM": 2,
+     "turn": 3,
+     "n": 5
+    }
+   },
+   {
+    "id": "benchD",
+    "variant": 3,
+    "sizeM": 2.8,
+    "topM": 0.55,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.18,
+      "ry": 0.48,
+      "ground": {
+       "x": 49,
+       "y": 31
+      }
+     },
+     "perch": {
+      "x": 47,
+      "y": 15,
+      "zM": 0.47,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 87,
+       "y": 23,
+       "zM": 0.18
+      },
+      {
+       "x": 17,
+       "y": 17,
+       "zM": 0.36
+      },
+      {
+       "x": 33,
+       "y": 37,
+       "zM": -0.02
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 27,
+      "zM": 0.19
+     },
+     "pivot": {
+      "x": 49,
+      "y": 31
+     }
+    },
+    "params": {
+     "seed": 8904,
+     "sizeM": 2.8,
+     "turn": 4.5,
+     "n": 6
+    }
+   }
+  ],
+  "quartzite": [
+   {
+    "id": "benchA",
+    "variant": 0,
+    "sizeM": 2.6,
+    "topM": 0.51,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.13,
+      "ry": 0.3,
+      "ground": {
+       "x": 49,
+       "y": 32
+      }
+     },
+     "perch": {
+      "x": 45,
+      "y": 18,
+      "zM": 0.44,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 13,
+       "y": 25,
+       "zM": 0.11
+      },
+      {
+       "x": 84,
+       "y": 31,
+       "zM": 0.03
+      },
+      {
+       "x": 46,
+       "y": 13,
+       "zM": 0.44
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 28,
+      "zM": 0.17
+     },
+     "pivot": {
+      "x": 49,
+      "y": 32
+     }
+    },
+    "params": {
+     "seed": 8901,
+     "sizeM": 2.6,
+     "turn": 0.1,
+     "n": 5
+    }
+   },
+   {
+    "id": "benchB",
+    "variant": 1,
+    "sizeM": 3,
+    "topM": 0.57,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.13,
+      "ry": 0.53,
+      "ground": {
+       "x": 49,
+       "y": 30
+      }
+     },
+     "perch": {
+      "x": 43,
+      "y": 17,
+      "zM": 0.5,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 12,
+       "y": 21,
+       "zM": 0.17
+      },
+      {
+       "x": 79,
+       "y": 18,
+       "zM": 0.2
+      },
+      {
+       "x": 72,
+       "y": 39,
+       "zM": -0.02
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 26,
+      "zM": 0.2
+     },
+     "pivot": {
+      "x": 49,
+      "y": 30
+     }
+    },
+    "params": {
+     "seed": 8902,
+     "sizeM": 3,
+     "turn": 1.6,
+     "n": 6
+    }
+   },
+   {
+    "id": "benchC",
+    "variant": 2,
+    "sizeM": 2,
+    "topM": 0.38,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.66,
+      "ry": 0.35,
+      "ground": {
+       "x": 49,
+       "y": 35
+      }
+     },
+     "perch": {
+      "x": 49,
+      "y": 23,
+      "zM": 0.34,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 28,
+       "y": 24,
+       "zM": 0.21
+      },
+      {
+       "x": 66,
+       "y": 25,
+       "zM": 0.17
+      },
+      {
+       "x": 70,
+       "y": 40,
+       "zM": 0.03
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 32,
+      "zM": 0.13
+     },
+     "pivot": {
+      "x": 49,
+      "y": 35
+     }
+    },
+    "params": {
+     "seed": 8903,
+     "sizeM": 2,
+     "turn": 3,
+     "n": 5
+    }
+   },
+   {
+    "id": "benchD",
+    "variant": 3,
+    "sizeM": 2.8,
+    "topM": 0.55,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.18,
+      "ry": 0.48,
+      "ground": {
+       "x": 49,
+       "y": 31
+      }
+     },
+     "perch": {
+      "x": 47,
+      "y": 15,
+      "zM": 0.47,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 87,
+       "y": 23,
+       "zM": 0.18
+      },
+      {
+       "x": 17,
+       "y": 17,
+       "zM": 0.36
+      },
+      {
+       "x": 33,
+       "y": 37,
+       "zM": -0.02
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 27,
+      "zM": 0.19
+     },
+     "pivot": {
+      "x": 49,
+      "y": 31
+     }
+    },
+    "params": {
+     "seed": 8904,
+     "sizeM": 2.8,
+     "turn": 4.5,
+     "n": 6
+    }
+   }
+  ],
+  "till": [
+   {
+    "id": "benchA",
+    "variant": 0,
+    "sizeM": 2.6,
+    "topM": 0.51,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.13,
+      "ry": 0.3,
+      "ground": {
+       "x": 49,
+       "y": 32
+      }
+     },
+     "perch": {
+      "x": 45,
+      "y": 18,
+      "zM": 0.44,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 13,
+       "y": 25,
+       "zM": 0.11
+      },
+      {
+       "x": 84,
+       "y": 31,
+       "zM": 0.03
+      },
+      {
+       "x": 46,
+       "y": 13,
+       "zM": 0.44
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 28,
+      "zM": 0.17
+     },
+     "pivot": {
+      "x": 49,
+      "y": 32
+     }
+    },
+    "params": {
+     "seed": 8901,
+     "sizeM": 2.6,
+     "turn": 0.1,
+     "n": 5
+    }
+   },
+   {
+    "id": "benchB",
+    "variant": 1,
+    "sizeM": 3,
+    "topM": 0.57,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.13,
+      "ry": 0.53,
+      "ground": {
+       "x": 49,
+       "y": 30
+      }
+     },
+     "perch": {
+      "x": 43,
+      "y": 17,
+      "zM": 0.5,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 12,
+       "y": 21,
+       "zM": 0.17
+      },
+      {
+       "x": 79,
+       "y": 18,
+       "zM": 0.2
+      },
+      {
+       "x": 72,
+       "y": 39,
+       "zM": -0.02
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 26,
+      "zM": 0.2
+     },
+     "pivot": {
+      "x": 49,
+      "y": 30
+     }
+    },
+    "params": {
+     "seed": 8902,
+     "sizeM": 3,
+     "turn": 1.6,
+     "n": 6
+    }
+   },
+   {
+    "id": "benchC",
+    "variant": 2,
+    "sizeM": 2,
+    "topM": 0.38,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.66,
+      "ry": 0.35,
+      "ground": {
+       "x": 49,
+       "y": 35
+      }
+     },
+     "perch": {
+      "x": 49,
+      "y": 23,
+      "zM": 0.34,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 28,
+       "y": 24,
+       "zM": 0.21
+      },
+      {
+       "x": 66,
+       "y": 25,
+       "zM": 0.17
+      },
+      {
+       "x": 70,
+       "y": 40,
+       "zM": 0.03
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 32,
+      "zM": 0.13
+     },
+     "pivot": {
+      "x": 49,
+      "y": 35
+     }
+    },
+    "params": {
+     "seed": 8903,
+     "sizeM": 2,
+     "turn": 3,
+     "n": 5
+    }
+   },
+   {
+    "id": "benchD",
+    "variant": 3,
+    "sizeM": 2.8,
+    "topM": 0.55,
+    "cell": [
+     98,
+     46
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.18,
+      "ry": 0.48,
+      "ground": {
+       "x": 49,
+       "y": 31
+      }
+     },
+     "perch": {
+      "x": 47,
+      "y": 15,
+      "zM": 0.47,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 87,
+       "y": 23,
+       "zM": 0.18
+      },
+      {
+       "x": 17,
+       "y": 17,
+       "zM": 0.36
+      },
+      {
+       "x": 33,
+       "y": 37,
+       "zM": -0.02
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 27,
+      "zM": 0.19
+     },
+     "pivot": {
+      "x": 49,
+      "y": 31
+     }
+    },
+    "params": {
+     "seed": 8904,
+     "sizeM": 2.8,
+     "turn": 4.5,
+     "n": 6
+    }
+   }
+  ]
+ }
+}

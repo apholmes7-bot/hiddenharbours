@@ -1,0 +1,64 @@
+====================================================================================================
+MEASURED-TheCorner_ShippedAgainstFixed_ThroughOnePulse.txt
+====================================================================================================
+MEASURED — the shore-corner hairline, shipped against fixed (TheCorner_ShippedAgainstFixed_ThroughOnePulse)
+shot 2026-09-13 17:59:34, Unity 6000.5.0f1, NVIDIA GeForce RTX 4060
+difference images amplified ×8
+
+RUN: run-20260913-175926   plates under C:/Users/aphol/AppData/Local/Temp/DefaultCompany/My project\shore-hairline\run-20260913-175926
+FIXED arm  = shader 'HiddenHarbours/Water' (this branch's working tree)
+SHIPPED arm = shader 'HiddenHarbours/Water SHIPPED (plate rider)' (the uncommitted rider copy of the pre-fix source; identical to it but for its Shader "…" line)
+HOUR: asked 11.00 h, clock reads 11.00 h, tint (0.816, 0.827, 0.838) after 7 frames
+
+═══ FRAME corner @ (34.70, 11.50) — r2's corner, re-scored at the live waterline: shore-normal circular s.d. 26.06°, median band slope 0.800, 25.7 % wet
+DRAWING WATER (corner): 1 runtime material(s) [568105589213358546] across 1680 renderer(s); 1 asset material(s) skipped, 0 carried the dial on another shader
+  DRAWN SEA spans x [-384.0, 384.0] y [-284.0, 284.0]
+  SHORELINE: water level -1.236 m; 26.0 % of the frame is wet ground (800 of 3072 terrain samples)
+HELD: _Time.y = Time.time = 2.6140 s at timeScale 0 (Time.timeSinceLevelLoad = 0.9994 s — NOT what URP uploads; the gap is 1.6145 s); 0.009375 m per pixel; 1280×960 across 12.0 × 9.0 m
+  CONTROL shutter noise: same frame → 0 px differ (worst 0.0000); across ONE frame → 11970 px (0.97 %) differ (worst 0.4980) with nothing changed. Every arm pair below is shot inside ONE frame.
+  phase 0.25 cycles (dial 0.09564)  FIXED 973eed3303db18c4  SHIPPED 973eed3303db18c4  worst channel 0.0000  changed 0 px (0.00 %)  [shutter noise floor 11970 px]
+  phase 0.75 cycles (dial 0.28692)  FIXED 0ff1895d83daa39c  SHIPPED 1d71ec0cc9369e9f  worst channel 0.7020  changed 14901 px (1.21 %)  [shutter noise floor 11970 px]
+  phase 1.25 cycles (dial 0.47820)  FIXED 626a65826d6da355  SHIPPED 626a65826d6da355  worst channel 0.0000  changed 0 px (0.00 %)  [shutter noise floor 11970 px]
+  phase 1.75 cycles (dial 0.66948)  FIXED 8e8a97bc4b71d3b6  SHIPPED 46c13530b36d3749  worst channel 0.6549  changed 26465 px (2.15 %)  [shutter noise floor 11970 px]
+  PULSE: strongest at phase 1.75 with 26465 px against a shutter floor of 11970 px (phase 0.25 → 0 px, phase 0.75 → 14901 px, phase 1.25 → 0 px, phase 1.75 → 26465 px)
+  CONTROL two-cycle identity: phase 0.25 vs 2.25 → worst channel 0.0039, 3 px differ  (9b9a4d380ef91c45)
+  CONTROL water removed: worst channel 0.7569, 273450 px (22.25 %) of the frame are drawn by the water shader  (7d6398aea6d21a0e)
+
+====================================================================================================
+MEASURED-TheStraightShores_ShippedAgainstFixed_ThroughOnePulse.txt
+====================================================================================================
+MEASURED — the shore-corner hairline, shipped against fixed (TheStraightShores_ShippedAgainstFixed_ThroughOnePulse)
+shot 2026-09-13 17:59:43, Unity 6000.5.0f1, NVIDIA GeForce RTX 4060
+difference images amplified ×8
+
+RUN: run-20260913-175934   plates under C:/Users/aphol/AppData/Local/Temp/DefaultCompany/My project\shore-hairline\run-20260913-175934
+FIXED arm  = shader 'HiddenHarbours/Water' (this branch's working tree)
+SHIPPED arm = shader 'HiddenHarbours/Water SHIPPED (plate rider)' (the uncommitted rider copy of the pre-fix source; identical to it but for its Shader "…" line)
+HOUR: asked 11.00 h, clock reads 11.00 h, tint (0.816, 0.827, 0.838) after 5 frames
+
+═══ FRAME straight-gentle @ (120.00, -176.00) — a smooth shoreline: shore-normal circular s.d. 3.49°, median band slope 0.241, 49.9 % wet
+DRAWING WATER (straight-gentle): 1 runtime material(s) [568105589212943718] across 1680 renderer(s); 1 asset material(s) skipped, 0 carried the dial on another shader
+  DRAWN SEA spans x [-384.0, 384.0] y [-284.0, 284.0]
+  SHORELINE: water level -1.236 m; 49.4 % of the frame is wet ground (1517 of 3072 terrain samples)
+HELD: _Time.y = Time.time = 3.8314 s at timeScale 0 (Time.timeSinceLevelLoad = 0.5005 s — NOT what URP uploads; the gap is 3.3309 s); 0.009375 m per pixel; 1280×960 across 12.0 × 9.0 m
+  CONTROL shutter noise: same frame → 0 px differ (worst 0.0000); across ONE frame → 6261 px (0.51 %) differ (worst 0.4627) with nothing changed. Every arm pair below is shot inside ONE frame.
+  phase 0.25 cycles (dial 0.06525)  FIXED 0eb7d75e792bc278  SHIPPED 0eb7d75e792bc278  worst channel 0.0000  changed 0 px (0.00 %)  [shutter noise floor 6261 px]
+  phase 0.75 cycles (dial 0.19575)  FIXED de82854795832a56  SHIPPED de82854795832a56  worst channel 0.0000  changed 0 px (0.00 %)  [shutter noise floor 6261 px]
+  phase 1.25 cycles (dial 0.32625)  FIXED d8b63b372422bf32  SHIPPED d8b63b372422bf32  worst channel 0.0000  changed 0 px (0.00 %)  [shutter noise floor 6261 px]
+  phase 1.75 cycles (dial 0.45675)  FIXED 1901d2e016ceb9a5  SHIPPED 1901d2e016ceb9a5  worst channel 0.0000  changed 0 px (0.00 %)  [shutter noise floor 6261 px]
+  CONTROL two-cycle identity: phase 0.25 vs 2.25 → worst channel 0.0039, 9 px differ  (8d3eaa70d9e9361b)
+  CONTROL water removed: worst channel 0.7333, 614491 px (50.01 %) of the frame are drawn by the water shader  (beabcb389bddff28)
+
+═══ FRAME straight-steep @ (62.00, 92.00) — a smooth STEEP shoreline: shore-normal circular s.d. 0.00°, median band slope 1.812, 50.0 % wet
+DRAWING WATER (straight-steep): 1 runtime material(s) [568105589212943718] across 1680 renderer(s); 1 asset material(s) skipped, 0 carried the dial on another shader
+  DRAWN SEA spans x [-384.0, 384.0] y [-284.0, 284.0]
+  SHORELINE: water level -1.236 m; 50.0 % of the frame is wet ground (1536 of 3072 terrain samples)
+HELD: _Time.y = Time.time = 4.1424 s at timeScale 0 (Time.timeSinceLevelLoad = 0.8115 s — NOT what URP uploads; the gap is 3.3309 s); 0.009375 m per pixel; 1280×960 across 12.0 × 9.0 m
+  CONTROL shutter noise: same frame → 0 px differ (worst 0.0000); across ONE frame → 12613 px (1.03 %) differ (worst 0.4941) with nothing changed. Every arm pair below is shot inside ONE frame.
+  phase 0.25 cycles (dial 0.06035)  FIXED 05e90b38f51b7b9a  SHIPPED 05e90b38f51b7b9a  worst channel 0.0000  changed 0 px (0.00 %)  [shutter noise floor 12613 px]
+  phase 0.75 cycles (dial 0.18105)  FIXED 964b466d487110ef  SHIPPED 8366315eed52c6b8  worst channel 0.5294  changed 3195 px (0.26 %)  [shutter noise floor 12613 px]
+  phase 1.25 cycles (dial 0.30176)  FIXED e9f7fe7bad67b50f  SHIPPED e9f7fe7bad67b50f  worst channel 0.0000  changed 0 px (0.00 %)  [shutter noise floor 12613 px]
+  phase 1.75 cycles (dial 0.42246)  FIXED f68f4bc9d27122cd  SHIPPED bac1d780527ec81c  worst channel 0.5294  changed 13714 px (1.12 %)  [shutter noise floor 12613 px]
+  CONTROL two-cycle identity: phase 0.25 vs 2.25 → worst channel 0.0039, 1 px differ  (a024cd91dd5a6281)
+  CONTROL water removed: worst channel 0.6706, 616399 px (50.16 %) of the frame are drawn by the water shader  (80c9a38b3b784a4b)
+

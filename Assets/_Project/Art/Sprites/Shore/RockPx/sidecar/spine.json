@@ -1,0 +1,1190 @@
+{
+ "exportSymbol": "PxRockIso2",
+ "derivedFromRigSha256": "3b6ec36d7891893c1b970859b5e9de4c744c6404540d3b888ab3a0119615d58c",
+ "form": "spine",
+ "name": "Bedrock Spine",
+ "role": "seam",
+ "note": "A 3–4 m rib of bedrock, three to five knuckles in a line at their own heights with soil between them. Lay it ALONG a boundary: one sprite covers four metres of seam and the eye reads a geological line instead of a texture join.",
+ "cell": [
+  122,
+  42
+ ],
+ "sheet": {
+  "cols": 8,
+  "rows": 3,
+  "colAxis": "4 variants then the same 4 mirrored",
+  "rowAxis": [
+   "dry",
+   "wet",
+   "awash"
+  ]
+ },
+ "pivot": "bottom-centre ground contact",
+ "stones": {
+  "sandstone": [
+   {
+    "id": "spineA",
+    "variant": 0,
+    "sizeM": 3.4,
+    "topM": 0.39,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.63,
+      "ry": 0.27,
+      "ground": {
+       "x": 61,
+       "y": 33
+      }
+     },
+     "perch": {
+      "x": 26,
+      "y": 25,
+      "zM": 0.36,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 114,
+       "y": 27,
+       "zM": 0.15
+      },
+      {
+       "x": 10,
+       "y": 28,
+       "zM": 0.11
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 30,
+      "zM": 0.13
+     },
+     "pivot": {
+      "x": 61,
+      "y": 33
+     }
+    },
+    "params": {
+     "seed": 9501,
+     "sizeM": 3.4,
+     "turn": 0.2,
+     "n": 4
+    }
+   },
+   {
+    "id": "spineB",
+    "variant": 1,
+    "sizeM": 3.8,
+    "topM": 0.48,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.71,
+      "ry": 0.34,
+      "ground": {
+       "x": 61,
+       "y": 30
+      }
+     },
+     "perch": {
+      "x": 78,
+      "y": 21,
+      "zM": 0.43,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 7,
+       "y": 25,
+       "zM": 0.16
+      },
+      {
+       "x": 115,
+       "y": 30,
+       "zM": 0.11
+      },
+      {
+       "x": 58,
+       "y": 20,
+       "zM": 0.3
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 26,
+      "zM": 0.16
+     },
+     "pivot": {
+      "x": 61,
+      "y": 30
+     }
+    },
+    "params": {
+     "seed": 9502,
+     "sizeM": 3.8,
+     "turn": 1.5,
+     "n": 5
+    }
+   },
+   {
+    "id": "spineC",
+    "variant": 2,
+    "sizeM": 2.6,
+    "topM": 0.31,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.11,
+      "ry": 0.16,
+      "ground": {
+       "x": 61,
+       "y": 36
+      }
+     },
+     "perch": {
+      "x": 93,
+      "y": 29,
+      "zM": 0.26,
+      "flat": true
+     },
+     "snags": [
+      {
+       "x": 24,
+       "y": 31,
+       "zM": 0.06
+      },
+      {
+       "x": 96,
+       "y": 34,
+       "zM": 0.12
+      },
+      {
+       "x": 58,
+       "y": 30,
+       "zM": 0.18
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 34,
+      "zM": 0.11
+     },
+     "pivot": {
+      "x": 61,
+      "y": 36
+     }
+    },
+    "params": {
+     "seed": 9503,
+     "sizeM": 2.6,
+     "turn": 2.9,
+     "n": 3
+    }
+   },
+   {
+    "id": "spineD",
+    "variant": 3,
+    "sizeM": 3.6,
+    "topM": 0.45,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.75,
+      "ry": 0.37,
+      "ground": {
+       "x": 61,
+       "y": 33
+      }
+     },
+     "perch": {
+      "x": 104,
+      "y": 23,
+      "zM": 0.37,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 5,
+       "y": 23,
+       "zM": 0.13
+      },
+      {
+       "x": 115,
+       "y": 31,
+       "zM": 0.12
+      },
+      {
+       "x": 68,
+       "y": 23,
+       "zM": 0.35
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 29,
+      "zM": 0.15
+     },
+     "pivot": {
+      "x": 61,
+      "y": 33
+     }
+    },
+    "params": {
+     "seed": 9504,
+     "sizeM": 3.6,
+     "turn": 4.4,
+     "n": 4
+    }
+   }
+  ],
+  "granite": [
+   {
+    "id": "spineA",
+    "variant": 0,
+    "sizeM": 3.4,
+    "topM": 0.39,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.63,
+      "ry": 0.27,
+      "ground": {
+       "x": 61,
+       "y": 33
+      }
+     },
+     "perch": {
+      "x": 26,
+      "y": 25,
+      "zM": 0.36,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 114,
+       "y": 27,
+       "zM": 0.15
+      },
+      {
+       "x": 10,
+       "y": 28,
+       "zM": 0.11
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 30,
+      "zM": 0.13
+     },
+     "pivot": {
+      "x": 61,
+      "y": 33
+     }
+    },
+    "params": {
+     "seed": 9501,
+     "sizeM": 3.4,
+     "turn": 0.2,
+     "n": 4
+    }
+   },
+   {
+    "id": "spineB",
+    "variant": 1,
+    "sizeM": 3.8,
+    "topM": 0.48,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.71,
+      "ry": 0.34,
+      "ground": {
+       "x": 61,
+       "y": 30
+      }
+     },
+     "perch": {
+      "x": 78,
+      "y": 21,
+      "zM": 0.43,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 7,
+       "y": 25,
+       "zM": 0.16
+      },
+      {
+       "x": 115,
+       "y": 30,
+       "zM": 0.11
+      },
+      {
+       "x": 58,
+       "y": 20,
+       "zM": 0.3
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 26,
+      "zM": 0.16
+     },
+     "pivot": {
+      "x": 61,
+      "y": 30
+     }
+    },
+    "params": {
+     "seed": 9502,
+     "sizeM": 3.8,
+     "turn": 1.5,
+     "n": 5
+    }
+   },
+   {
+    "id": "spineC",
+    "variant": 2,
+    "sizeM": 2.6,
+    "topM": 0.31,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.11,
+      "ry": 0.16,
+      "ground": {
+       "x": 61,
+       "y": 36
+      }
+     },
+     "perch": {
+      "x": 93,
+      "y": 29,
+      "zM": 0.26,
+      "flat": true
+     },
+     "snags": [
+      {
+       "x": 24,
+       "y": 31,
+       "zM": 0.06
+      },
+      {
+       "x": 96,
+       "y": 34,
+       "zM": 0.12
+      },
+      {
+       "x": 58,
+       "y": 30,
+       "zM": 0.18
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 34,
+      "zM": 0.11
+     },
+     "pivot": {
+      "x": 61,
+      "y": 36
+     }
+    },
+    "params": {
+     "seed": 9503,
+     "sizeM": 2.6,
+     "turn": 2.9,
+     "n": 3
+    }
+   },
+   {
+    "id": "spineD",
+    "variant": 3,
+    "sizeM": 3.6,
+    "topM": 0.45,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.75,
+      "ry": 0.37,
+      "ground": {
+       "x": 61,
+       "y": 33
+      }
+     },
+     "perch": {
+      "x": 104,
+      "y": 23,
+      "zM": 0.37,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 5,
+       "y": 23,
+       "zM": 0.13
+      },
+      {
+       "x": 115,
+       "y": 31,
+       "zM": 0.12
+      },
+      {
+       "x": 68,
+       "y": 23,
+       "zM": 0.35
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 29,
+      "zM": 0.15
+     },
+     "pivot": {
+      "x": 61,
+      "y": 33
+     }
+    },
+    "params": {
+     "seed": 9504,
+     "sizeM": 3.6,
+     "turn": 4.4,
+     "n": 4
+    }
+   }
+  ],
+  "basalt": [
+   {
+    "id": "spineA",
+    "variant": 0,
+    "sizeM": 3.4,
+    "topM": 0.39,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.63,
+      "ry": 0.27,
+      "ground": {
+       "x": 61,
+       "y": 33
+      }
+     },
+     "perch": {
+      "x": 26,
+      "y": 25,
+      "zM": 0.36,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 114,
+       "y": 27,
+       "zM": 0.15
+      },
+      {
+       "x": 10,
+       "y": 28,
+       "zM": 0.11
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 30,
+      "zM": 0.13
+     },
+     "pivot": {
+      "x": 61,
+      "y": 33
+     }
+    },
+    "params": {
+     "seed": 9501,
+     "sizeM": 3.4,
+     "turn": 0.2,
+     "n": 4
+    }
+   },
+   {
+    "id": "spineB",
+    "variant": 1,
+    "sizeM": 3.8,
+    "topM": 0.48,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.71,
+      "ry": 0.34,
+      "ground": {
+       "x": 61,
+       "y": 30
+      }
+     },
+     "perch": {
+      "x": 78,
+      "y": 21,
+      "zM": 0.43,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 7,
+       "y": 25,
+       "zM": 0.16
+      },
+      {
+       "x": 115,
+       "y": 30,
+       "zM": 0.11
+      },
+      {
+       "x": 58,
+       "y": 20,
+       "zM": 0.3
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 26,
+      "zM": 0.16
+     },
+     "pivot": {
+      "x": 61,
+      "y": 30
+     }
+    },
+    "params": {
+     "seed": 9502,
+     "sizeM": 3.8,
+     "turn": 1.5,
+     "n": 5
+    }
+   },
+   {
+    "id": "spineC",
+    "variant": 2,
+    "sizeM": 2.6,
+    "topM": 0.31,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.11,
+      "ry": 0.16,
+      "ground": {
+       "x": 61,
+       "y": 36
+      }
+     },
+     "perch": {
+      "x": 93,
+      "y": 29,
+      "zM": 0.26,
+      "flat": true
+     },
+     "snags": [
+      {
+       "x": 24,
+       "y": 31,
+       "zM": 0.06
+      },
+      {
+       "x": 96,
+       "y": 34,
+       "zM": 0.12
+      },
+      {
+       "x": 58,
+       "y": 30,
+       "zM": 0.18
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 34,
+      "zM": 0.11
+     },
+     "pivot": {
+      "x": 61,
+      "y": 36
+     }
+    },
+    "params": {
+     "seed": 9503,
+     "sizeM": 2.6,
+     "turn": 2.9,
+     "n": 3
+    }
+   },
+   {
+    "id": "spineD",
+    "variant": 3,
+    "sizeM": 3.6,
+    "topM": 0.45,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.75,
+      "ry": 0.37,
+      "ground": {
+       "x": 61,
+       "y": 33
+      }
+     },
+     "perch": {
+      "x": 104,
+      "y": 23,
+      "zM": 0.37,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 5,
+       "y": 23,
+       "zM": 0.13
+      },
+      {
+       "x": 115,
+       "y": 31,
+       "zM": 0.12
+      },
+      {
+       "x": 68,
+       "y": 23,
+       "zM": 0.35
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 29,
+      "zM": 0.15
+     },
+     "pivot": {
+      "x": 61,
+      "y": 33
+     }
+    },
+    "params": {
+     "seed": 9504,
+     "sizeM": 3.6,
+     "turn": 4.4,
+     "n": 4
+    }
+   }
+  ],
+  "quartzite": [
+   {
+    "id": "spineA",
+    "variant": 0,
+    "sizeM": 3.4,
+    "topM": 0.39,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.63,
+      "ry": 0.27,
+      "ground": {
+       "x": 61,
+       "y": 33
+      }
+     },
+     "perch": {
+      "x": 26,
+      "y": 25,
+      "zM": 0.36,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 114,
+       "y": 27,
+       "zM": 0.15
+      },
+      {
+       "x": 10,
+       "y": 28,
+       "zM": 0.11
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 30,
+      "zM": 0.13
+     },
+     "pivot": {
+      "x": 61,
+      "y": 33
+     }
+    },
+    "params": {
+     "seed": 9501,
+     "sizeM": 3.4,
+     "turn": 0.2,
+     "n": 4
+    }
+   },
+   {
+    "id": "spineB",
+    "variant": 1,
+    "sizeM": 3.8,
+    "topM": 0.48,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.71,
+      "ry": 0.34,
+      "ground": {
+       "x": 61,
+       "y": 30
+      }
+     },
+     "perch": {
+      "x": 78,
+      "y": 21,
+      "zM": 0.43,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 7,
+       "y": 25,
+       "zM": 0.16
+      },
+      {
+       "x": 115,
+       "y": 30,
+       "zM": 0.11
+      },
+      {
+       "x": 58,
+       "y": 20,
+       "zM": 0.3
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 26,
+      "zM": 0.16
+     },
+     "pivot": {
+      "x": 61,
+      "y": 30
+     }
+    },
+    "params": {
+     "seed": 9502,
+     "sizeM": 3.8,
+     "turn": 1.5,
+     "n": 5
+    }
+   },
+   {
+    "id": "spineC",
+    "variant": 2,
+    "sizeM": 2.6,
+    "topM": 0.31,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.11,
+      "ry": 0.16,
+      "ground": {
+       "x": 61,
+       "y": 36
+      }
+     },
+     "perch": {
+      "x": 93,
+      "y": 29,
+      "zM": 0.26,
+      "flat": true
+     },
+     "snags": [
+      {
+       "x": 24,
+       "y": 31,
+       "zM": 0.06
+      },
+      {
+       "x": 96,
+       "y": 34,
+       "zM": 0.12
+      },
+      {
+       "x": 58,
+       "y": 30,
+       "zM": 0.18
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 34,
+      "zM": 0.11
+     },
+     "pivot": {
+      "x": 61,
+      "y": 36
+     }
+    },
+    "params": {
+     "seed": 9503,
+     "sizeM": 2.6,
+     "turn": 2.9,
+     "n": 3
+    }
+   },
+   {
+    "id": "spineD",
+    "variant": 3,
+    "sizeM": 3.6,
+    "topM": 0.45,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.75,
+      "ry": 0.37,
+      "ground": {
+       "x": 61,
+       "y": 33
+      }
+     },
+     "perch": {
+      "x": 104,
+      "y": 23,
+      "zM": 0.37,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 5,
+       "y": 23,
+       "zM": 0.13
+      },
+      {
+       "x": 115,
+       "y": 31,
+       "zM": 0.12
+      },
+      {
+       "x": 68,
+       "y": 23,
+       "zM": 0.35
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 29,
+      "zM": 0.15
+     },
+     "pivot": {
+      "x": 61,
+      "y": 33
+     }
+    },
+    "params": {
+     "seed": 9504,
+     "sizeM": 3.6,
+     "turn": 4.4,
+     "n": 4
+    }
+   }
+  ],
+  "till": [
+   {
+    "id": "spineA",
+    "variant": 0,
+    "sizeM": 3.4,
+    "topM": 0.39,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.63,
+      "ry": 0.27,
+      "ground": {
+       "x": 61,
+       "y": 33
+      }
+     },
+     "perch": {
+      "x": 26,
+      "y": 25,
+      "zM": 0.36,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 114,
+       "y": 27,
+       "zM": 0.15
+      },
+      {
+       "x": 10,
+       "y": 28,
+       "zM": 0.11
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 30,
+      "zM": 0.13
+     },
+     "pivot": {
+      "x": 61,
+      "y": 33
+     }
+    },
+    "params": {
+     "seed": 9501,
+     "sizeM": 3.4,
+     "turn": 0.2,
+     "n": 4
+    }
+   },
+   {
+    "id": "spineB",
+    "variant": 1,
+    "sizeM": 3.8,
+    "topM": 0.48,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.71,
+      "ry": 0.34,
+      "ground": {
+       "x": 61,
+       "y": 30
+      }
+     },
+     "perch": {
+      "x": 78,
+      "y": 21,
+      "zM": 0.43,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 7,
+       "y": 25,
+       "zM": 0.16
+      },
+      {
+       "x": 115,
+       "y": 30,
+       "zM": 0.11
+      },
+      {
+       "x": 58,
+       "y": 20,
+       "zM": 0.3
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 26,
+      "zM": 0.16
+     },
+     "pivot": {
+      "x": 61,
+      "y": 30
+     }
+    },
+    "params": {
+     "seed": 9502,
+     "sizeM": 3.8,
+     "turn": 1.5,
+     "n": 5
+    }
+   },
+   {
+    "id": "spineC",
+    "variant": 2,
+    "sizeM": 2.6,
+    "topM": 0.31,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.11,
+      "ry": 0.16,
+      "ground": {
+       "x": 61,
+       "y": 36
+      }
+     },
+     "perch": {
+      "x": 93,
+      "y": 29,
+      "zM": 0.26,
+      "flat": true
+     },
+     "snags": [
+      {
+       "x": 24,
+       "y": 31,
+       "zM": 0.06
+      },
+      {
+       "x": 96,
+       "y": 34,
+       "zM": 0.12
+      },
+      {
+       "x": 58,
+       "y": 30,
+       "zM": 0.18
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 34,
+      "zM": 0.11
+     },
+     "pivot": {
+      "x": 61,
+      "y": 36
+     }
+    },
+    "params": {
+     "seed": 9503,
+     "sizeM": 2.6,
+     "turn": 2.9,
+     "n": 3
+    }
+   },
+   {
+    "id": "spineD",
+    "variant": 3,
+    "sizeM": 3.6,
+    "topM": 0.45,
+    "cell": [
+     122,
+     42
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 1.75,
+      "ry": 0.37,
+      "ground": {
+       "x": 61,
+       "y": 33
+      }
+     },
+     "perch": {
+      "x": 104,
+      "y": 23,
+      "zM": 0.37,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 5,
+       "y": 23,
+       "zM": 0.13
+      },
+      {
+       "x": 115,
+       "y": 31,
+       "zM": 0.12
+      },
+      {
+       "x": 68,
+       "y": 23,
+       "zM": 0.35
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 29,
+      "zM": 0.15
+     },
+     "pivot": {
+      "x": 61,
+      "y": 33
+     }
+    },
+    "params": {
+     "seed": 9504,
+     "sizeM": 3.6,
+     "turn": 4.4,
+     "n": 4
+    }
+   }
+  ]
+ }
+}

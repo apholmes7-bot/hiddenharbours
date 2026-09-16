@@ -430,8 +430,8 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             foreach ((string rig, string global, int faces) in new[]
             {
-                (Rig30, "SloopIso", 1852),
-                (Rig88, "Sloop88Iso", 3088),
+                (Rig30, "SloopIso", 2035),
+                (Rig88, "Sloop88Iso", 4500),
             })
             {
                 using IRigScriptHost host = RigScriptHostFactory.Create();

@@ -43,6 +43,12 @@ leads; the milestone tables remain the *dependency order* and the *fun-check gat
 When a later-phase system already exists, its milestone row is still where its acceptance criteria
 live — and the gate questions in §6 still apply to it.
 
+**Owner-directed addition, 2026-09-13:** the character creator, wardrobe tools and purchasable
+clothes are now active work, sequenced as [CW-01–04](../backlog/character-creator-and-wardrobe.md).
+The first change establishes the art/fit contract; completion requires creation and clothing
+ownership in normal play, with production rendering and safe save migration. The old sprite-layer
+restriction in ADR 0029 is revisited through a measured mesh proof, not treated as a scope deferral.
+
 ---
 
 ## 0. Scope reality — read this first (a blunt, kind note to the owner)

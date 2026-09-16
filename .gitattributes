@@ -213,7 +213,35 @@ docs/art/rigs/gameplay/sail/**              text eol=lf
 docs/art/rigs/seagullIsoRig.js              text eol=lf
 docs/art/rigs/gameplay/seagullIsoRig.gameplay.json text eol=lf
 
+# The Modern 3500 truck kit (Codex drop of 2026-09-13) ships SHA256SUMS.txt, and its contract and
+# gameplay sidecar both stamp the rig's LF sha256. DeckSidecarReader.MatchRigHash ACCEPTS the
+# CRLF form -- but only as RigHashMatch.LineEndingNormalized, which files a standing "art-director
+# should re-stamp derivedFromRigSha256" note on every run. Measured on this box (core.autocrlf
+# true): the UNPINNED dually rig checks out CRLF and hashes 97f7bd2f..., while its sidecar pins
+# the LF 6486b335... -- correct file, permanent nag. Pin the working-tree form so the truck's hash
+# is EXACT everywhere and `sha256sum -c SHA256SUMS.txt` runs on any checkout.
+#
+# NAMED FILES, NOT `docs/art/rigs/modern3500-kit/**`. A blanket rule would also match
+# reference/*.png, and `text eol=lf` there would override the `-text` inside [attr]lfs and corrupt
+# every sprite sheet on checkout. The sail kit's `**` is safe only because it ships no binaries.
+docs/art/rigs/modern3500-kit/modern3500.rig.js        text eol=lf
+docs/art/rigs/modern3500-kit/modern3500.contract.json text eol=lf
+docs/art/rigs/modern3500-kit/preview.html             text eol=lf
+docs/art/rigs/modern3500-kit/README.md                text eol=lf
+docs/art/rigs/modern3500-kit/reference/SHA256SUMS.txt text eol=lf
+docs/art/rigs/gameplay/vehicles/modern3500.rig.gameplay.json text eol=lf
+
 # Shell scripts run under bash, which chokes on CR. The gauntlet in tools/gauntlet is the seat's
 # merge battery; a checkout with autocrlf on would otherwise hand it back with CRLF and it would not start.
 *.sh                    text eol=lf
 tools/gauntlet/**       text eol=lf
+
+# The Rock Px kit (Rock Iso, pass three — drop of 2026-09-11) stamps derivedFromRigSha256 over the
+# rig's bytes AS WRITTEN, which are LF, into all EIGHTEEN of its JSONs, and RockPxKitContractTests
+# re-hashes the working-tree rig against that pin. The test normalises CRLF -> LF itself, but
+# `sha256sum` and the art director's own toolchain do not -- so pin the working-tree form, the same
+# reasoning as the sail and seagull kits above, and the kit stays verifiable on any machine.
+docs/art/rigs/rock-px-kit/**                          text eol=lf
+Assets/_Project/Art/Sprites/Shore/RockPx/*.json       text eol=lf
+Assets/_Project/Art/Sprites/Shore/RockPx/sidecar/*.json text eol=lf
+Assets/_Project/Art/Sprites/Shore/RockPx/seat/*.json  text eol=lf

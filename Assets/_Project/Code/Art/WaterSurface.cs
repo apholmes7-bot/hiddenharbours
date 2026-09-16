@@ -2070,6 +2070,67 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// The reference depth the drawn edge asks the break gate at — the shader's
+        /// <c>SURF_EDGE_REF_DEPTH</c>, which is <see cref="BreakerMath.MinDepthMeters"/>, the same pin the
+        /// surf block uses when it projects a dry fragment back to the waterline. Not a tunable: it is the
+        /// statement that the edge is a SHORE quantity.
+        /// </summary>
+        public const float DrawnEdgeReferenceDepthMeters = 0.02f;
+
+        /// <summary>
+        /// <b>The blend that hands the drawn edge from the cosmetic swash to the bore's run-up</b> — the
+        /// shader's <c>boreEdgeBlend</c> — and ONLY that one. The shader's foam fringe keeps its own
+        /// separate <c>boreFoamBlend</c>, still read at the fragment's depth; the foam families are a
+        /// different charter. ADR 0040 rev 3: where a bore is alive the drawn edge rides its run-up and
+        /// drains between crests; elsewhere the cosmetic swash keeps its beat.
+        ///
+        /// <para><b>⚠️ <paramref name="breakingAtReferenceDepth01"/> must be the break gate read at
+        /// <see cref="DrawnEdgeReferenceDepthMeters"/> — never at the fragment's own depth.</b> That is the
+        /// whole content of this function and the reason it is named. The gate falls 1 → 0 across the break
+        /// band; on a sheltered shore that band is centimetres deep, narrower than the metres of level the
+        /// two arms differ by, so a fragment-depth weight sweeps the entire excursion inside the edge's own
+        /// band and <c>depth + shift</c> stops rising with depth. The drawn surface then has TWO pieces and
+        /// the sea strands a ribbon at the waterline — the 2026-09-13 shore-corner hairline. Asked at the
+        /// reference depth the blend is constant along the shore normal, which is what
+        /// <see cref="DrawnEdgeShift"/>'s one-piece law rests on.</para>
+        ///
+        /// <para>Beyond the wash's reach the caller passes 0: the shader gates this on the same
+        /// <c>depth &gt; -surfBeachReach</c> predicate its surf block uses, so outside the reach the drawn
+        /// edge is the cosmetic swash bit-for-bit as it shipped.</para>
+        /// </summary>
+        public static float BoreEdgeBlend(float breakingAtReferenceDepth01, float surfStrength,
+                                          float runUpStrength)
+            => Mathf.Clamp01(Mathf.Clamp01(breakingAtReferenceDepth01)
+                             * Mathf.Clamp01(surfStrength) * Mathf.Clamp01(runUpStrength));
+
+        /// <summary>
+        /// <b>The composed drawn-edge offset</b> — the shader's <c>edgeSwash</c> after the bore lerp, the
+        /// single number the wet edge's <c>clip(depth + edgeSwash)</c> is taken against. Mirrors
+        /// <c>lerp(cosmetic, clamp(runUp, ±cap), blend)</c> exactly.
+        ///
+        /// <para><b>THE LAW this exists to make testable:</b> <c>depth ↦ depth + DrawnEdgeShift(…)</c> must
+        /// be strictly increasing, because that — and only that — is what makes the drawn water ONE PIECE
+        /// with a single edge. It holds when <paramref name="blend01"/> and <paramref name="runUpMeters"/>
+        /// are shore quantities (constant along the shore normal): the derivative is then
+        /// <c>1 + (1−blend)·C′</c>, and the cosmetic arm's own slope is bounded by
+        /// <c>wavelength · amplitude · edgeShift ≤ 1.2 · 1 · 0.6 &lt; 1</c> at the shipped dials. Feed it a
+        /// blend read at the fragment's depth instead and the <c>blend′·(runUp − cosmetic)</c> term appears,
+        /// which on a shallow break band is large and negative — the hairline.
+        /// <c>WaterDrawnEdgeOnePieceTests</c> pins both halves: the law, and the witness that the old
+        /// composition breaks it.</para>
+        ///
+        /// <para>Still the bounded SEE≠FEEL divergence <see cref="SwashEdgeShift"/> documents: |result| ≤
+        /// <paramref name="maxShift"/>, drawn fragments only, no sim, no gameplay waterline (P1, rule 5).</para>
+        /// </summary>
+        public static float DrawnEdgeShift(float cosmeticShift, float runUpMeters, float blend01,
+                                           float maxShift)
+        {
+            float cap = Mathf.Max(Mathf.Clamp01(maxShift), 0f);
+            float bore = Mathf.Clamp(runUpMeters, -cap, cap);
+            return Mathf.Lerp(Mathf.Clamp(cosmeticShift, -cap, cap), bore, Mathf.Clamp01(blend01));
+        }
+
+        /// <summary>
         /// (owner judge pass 2026-08-01) The FLOOR under the local seabed slope the shore cosmetics scale by —
         /// the shader's <c>max(shoreSlopeRaw, _ShoreSlopeFloor)</c>.
         ///

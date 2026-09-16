@@ -81,8 +81,15 @@ namespace HiddenHarbours.Art.Editor
             // Sprite-level settings (alignment/pivot/wrap/sRGB) go through TextureImporterSettings.
             var s = new TextureImporterSettings();
             imp.ReadTextureSettings(s);
-            s.sRGBTexture = true;                               // colour art is sRGB
-            s.alphaIsTransparency = true;                       // clean edges on transparent sprites
+            // ⚠ Half of a modern kit's sheets are DATA, not pictures. sRGB-decoding a mask or a
+            // normal bends every value on the way in, and alphaIsTransparency bleeds its RGB into
+            // the transparent margin. The slicers that own those sheets (TreeSheetSlicer,
+            // RockPxSheetSlicer) already say this — it belongs HERE too, because FIRST IMPORT
+            // happens before any slicer runs, and on a fresh clone (which has no .meta for a
+            // brand-new PNG) that first import is the only one a CI machine ever performs.
+            bool data = IsDataChannel(path);
+            s.sRGBTexture = !data;                              // colour art is sRGB; numbers are not
+            s.alphaIsTransparency = !data;                      // clean edges on transparent sprites
             s.spriteMeshType = SpriteMeshType.FullRect;         // predictable pixel-art quads
             s.spriteExtrude = 1;
 
@@ -94,6 +101,25 @@ namespace HiddenHarbours.Art.Editor
             s.spriteAlignment = (int)PivotFor(path);
 
             imp.SetTextureSettings(s);
+        }
+
+        /// <summary>
+        /// Channel suffixes that mean the PNG holds NUMBERS rather than colour: a light/relief mask,
+        /// a view-space normal, or a seat decal's material-blend channel. They are matched on the
+        /// file's stem, not its folder, because the kits interleave them with their albedo sheets.
+        ///
+        /// <para>⚠ This is not a guess about what the file contains — every sheet carrying one of
+        /// these suffixes in this repo is produced by a rig export that documents its channels
+        /// (tree kit and Rock Px kit today). A colour sheet must not be named <c>*_mask.png</c>,
+        /// which is also true for every other reason.</para>
+        /// </summary>
+        public static bool IsDataChannel(string path)
+        {
+            string stem = System.IO.Path.GetFileNameWithoutExtension(path ?? string.Empty)
+                                .ToLowerInvariant();
+            return stem.EndsWith("_mask", StringComparison.Ordinal)
+                || stem.EndsWith("_normal", StringComparison.Ordinal)
+                || stem.EndsWith("_blend", StringComparison.Ordinal);
         }
 
         /// <summary>Tiling textures (animated water, parallax bands) wrap with Repeat.</summary>

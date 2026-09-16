@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.stern_trawler_iso
   SourceSidecar: docs/art/rigs/gameplay/sternTrawlerIsoRig.gameplay.json
   SourceRig: docs/art/rigs/sternTrawlerIsoRig.js
-  DerivedFromRigSha256: 285cf70f7d3951b43c5a008b95229fb5aad7b558f41302ef1d242b036254dd6f
+  DerivedFromRigSha256: b2c2932c43ecc84a70ac4833c902c2e10f231fbe0e85218ea36403ed13c80ff7
   LoaMeters: 38
   Areas:
   - Id: ramp_strip_port

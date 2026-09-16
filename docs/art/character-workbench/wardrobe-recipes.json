@@ -1,0 +1,22 @@
+{
+  "Presets": [
+    {"Id":"starter","DisplayName":"Starter · slate shirt, teal bibs, deck boots","Recipe":{
+      "SchemaVersion":1,
+      "Identity":{"BuildId":"char_build.fisher","FitId":"fit.character_fisher_study_v1","Skin":"fair","Hair":"blond","Eyes":"sea"},
+      "Garments":[
+        {"GarmentId":"garment.fisher_work_shirt","ColourwayId":"colourway.work_shirt_slate"},
+        {"GarmentId":"garment.fisher_bib_overalls","ColourwayId":"colourway.bib_teal"},
+        {"GarmentId":"garment.fisher_deck_boots","ColourwayId":"colourway.deck_boots_charcoal"}
+      ]
+    }},
+    {"Id":"mixed","DisplayName":"Mixed · ochre long sleeves, navy trousers, deck boots","Recipe":{
+      "SchemaVersion":1,
+      "Identity":{"BuildId":"char_build.fisher","FitId":"fit.character_fisher_study_v1","Skin":"fair","Hair":"blond","Eyes":"sea"},
+      "Garments":[
+        {"GarmentId":"garment.fisher_long_shirt","ColourwayId":"colourway.long_shirt_ochre"},
+        {"GarmentId":"garment.fisher_work_trousers","ColourwayId":"colourway.work_trousers_navy"},
+        {"GarmentId":"garment.fisher_deck_boots","ColourwayId":"colourway.deck_boots_charcoal"}
+      ]
+    }}
+  ]
+}

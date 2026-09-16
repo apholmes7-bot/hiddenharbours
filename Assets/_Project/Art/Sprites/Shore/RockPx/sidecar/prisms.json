@@ -1,0 +1,1215 @@
+{
+ "exportSymbol": "PxRockIso2",
+ "derivedFromRigSha256": "3b6ec36d7891893c1b970859b5e9de4c744c6404540d3b888ab3a0119615d58c",
+ "form": "prisms",
+ "name": "Columnar Cluster",
+ "role": "mass",
+ "note": "Broken colonnade: four to seven prisms at their own heights, each a flat cap and its own tone, barely battered. The form basalt should always have had.",
+ "cell": [
+  66,
+  62
+ ],
+ "sheet": {
+  "cols": 8,
+  "rows": 3,
+  "colAxis": "4 variants then the same 4 mirrored",
+  "rowAxis": [
+   "dry",
+   "wet",
+   "awash"
+  ]
+ },
+ "pivot": "bottom-centre ground contact",
+ "stones": {
+  "basalt": [
+   {
+    "id": "prismsA",
+    "variant": 0,
+    "sizeM": 1.5,
+    "topM": 1.12,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.43,
+      "ry": 0.35,
+      "ground": {
+       "x": 33,
+       "y": 54
+      }
+     },
+     "perch": {
+      "x": 26,
+      "y": 30,
+      "zM": 1.11,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 28,
+       "y": 22,
+       "zM": 0.92
+      },
+      {
+       "x": 18,
+       "y": 50,
+       "zM": 0.28
+      },
+      {
+       "x": 46,
+       "y": 49,
+       "zM": 0.17
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 45,
+      "zM": 0.38
+     },
+     "pivot": {
+      "x": 33,
+      "y": 54
+     }
+    },
+    "params": {
+     "seed": 9101,
+     "sizeM": 1.5,
+     "turn": 0.4,
+     "n": 5
+    }
+   },
+   {
+    "id": "prismsB",
+    "variant": 1,
+    "sizeM": 2,
+    "topM": 1.46,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.61,
+      "ry": 0.47,
+      "ground": {
+       "x": 33,
+       "y": 49
+      }
+     },
+     "perch": {
+      "x": 22,
+      "y": 13,
+      "zM": 1.45,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 26,
+       "y": 9,
+       "zM": 1.26
+      },
+      {
+       "x": 52,
+       "y": 41,
+       "zM": 0.4
+      },
+      {
+       "x": 13,
+       "y": 44,
+       "zM": 0.21
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 37,
+      "zM": 0.5
+     },
+     "pivot": {
+      "x": 33,
+      "y": 49
+     }
+    },
+    "params": {
+     "seed": 9102,
+     "sizeM": 2,
+     "turn": 1.8,
+     "n": 7
+    }
+   },
+   {
+    "id": "prismsC",
+    "variant": 2,
+    "sizeM": 1.1,
+    "topM": 0.9,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.23,
+      "ry": 0.16,
+      "ground": {
+       "x": 33,
+       "y": 55
+      }
+     },
+     "perch": {
+      "x": 30,
+      "y": 33,
+      "zM": 0.88,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 28,
+       "y": 31,
+       "zM": 0.88
+      },
+      {
+       "x": 40,
+       "y": 52,
+       "zM": 0.16
+      },
+      {
+       "x": 25,
+       "y": 53,
+       "zM": 0.07
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 48,
+      "zM": 0.31
+     },
+     "pivot": {
+      "x": 33,
+      "y": 55
+     }
+    },
+    "params": {
+     "seed": 9103,
+     "sizeM": 1.1,
+     "turn": 3.2,
+     "n": 4
+    }
+   },
+   {
+    "id": "prismsD",
+    "variant": 3,
+    "sizeM": 2.4,
+    "topM": 1.57,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.53,
+      "ry": 0.4,
+      "ground": {
+       "x": 33,
+       "y": 50
+      }
+     },
+     "perch": {
+      "x": 33,
+      "y": 13,
+      "zM": 1.53,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 25,
+       "y": 5,
+       "zM": 1.53
+      },
+      {
+       "x": 49,
+       "y": 43,
+       "zM": 0.27
+      },
+      {
+       "x": 15,
+       "y": 46,
+       "zM": 0.2
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 37,
+      "zM": 0.53
+     },
+     "pivot": {
+      "x": 33,
+      "y": 50
+     }
+    },
+    "params": {
+     "seed": 9104,
+     "sizeM": 2.4,
+     "turn": 5,
+     "n": 6
+    }
+   }
+  ],
+  "granite": [
+   {
+    "id": "prismsA",
+    "variant": 0,
+    "sizeM": 1.5,
+    "topM": 1.12,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.43,
+      "ry": 0.35,
+      "ground": {
+       "x": 33,
+       "y": 54
+      }
+     },
+     "perch": {
+      "x": 26,
+      "y": 30,
+      "zM": 1.11,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 28,
+       "y": 22,
+       "zM": 0.92
+      },
+      {
+       "x": 18,
+       "y": 50,
+       "zM": 0.28
+      },
+      {
+       "x": 46,
+       "y": 49,
+       "zM": 0.17
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 45,
+      "zM": 0.38
+     },
+     "pivot": {
+      "x": 33,
+      "y": 54
+     }
+    },
+    "params": {
+     "seed": 9101,
+     "sizeM": 1.5,
+     "turn": 0.4,
+     "n": 5
+    }
+   },
+   {
+    "id": "prismsB",
+    "variant": 1,
+    "sizeM": 2,
+    "topM": 1.46,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.61,
+      "ry": 0.47,
+      "ground": {
+       "x": 33,
+       "y": 49
+      }
+     },
+     "perch": {
+      "x": 22,
+      "y": 13,
+      "zM": 1.45,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 26,
+       "y": 9,
+       "zM": 1.26
+      },
+      {
+       "x": 52,
+       "y": 41,
+       "zM": 0.4
+      },
+      {
+       "x": 13,
+       "y": 44,
+       "zM": 0.21
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 37,
+      "zM": 0.5
+     },
+     "pivot": {
+      "x": 33,
+      "y": 49
+     }
+    },
+    "params": {
+     "seed": 9102,
+     "sizeM": 2,
+     "turn": 1.8,
+     "n": 7
+    }
+   },
+   {
+    "id": "prismsC",
+    "variant": 2,
+    "sizeM": 1.1,
+    "topM": 0.9,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.23,
+      "ry": 0.16,
+      "ground": {
+       "x": 33,
+       "y": 55
+      }
+     },
+     "perch": {
+      "x": 30,
+      "y": 33,
+      "zM": 0.88,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 28,
+       "y": 31,
+       "zM": 0.88
+      },
+      {
+       "x": 40,
+       "y": 52,
+       "zM": 0.16
+      },
+      {
+       "x": 25,
+       "y": 53,
+       "zM": 0.07
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 48,
+      "zM": 0.31
+     },
+     "pivot": {
+      "x": 33,
+      "y": 55
+     }
+    },
+    "params": {
+     "seed": 9103,
+     "sizeM": 1.1,
+     "turn": 3.2,
+     "n": 4
+    }
+   },
+   {
+    "id": "prismsD",
+    "variant": 3,
+    "sizeM": 2.4,
+    "topM": 1.57,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.53,
+      "ry": 0.4,
+      "ground": {
+       "x": 33,
+       "y": 50
+      }
+     },
+     "perch": {
+      "x": 33,
+      "y": 13,
+      "zM": 1.53,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 25,
+       "y": 5,
+       "zM": 1.53
+      },
+      {
+       "x": 49,
+       "y": 43,
+       "zM": 0.27
+      },
+      {
+       "x": 15,
+       "y": 46,
+       "zM": 0.2
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 37,
+      "zM": 0.53
+     },
+     "pivot": {
+      "x": 33,
+      "y": 50
+     }
+    },
+    "params": {
+     "seed": 9104,
+     "sizeM": 2.4,
+     "turn": 5,
+     "n": 6
+    }
+   }
+  ],
+  "sandstone": [
+   {
+    "id": "prismsA",
+    "variant": 0,
+    "sizeM": 1.5,
+    "topM": 1.12,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.43,
+      "ry": 0.35,
+      "ground": {
+       "x": 33,
+       "y": 54
+      }
+     },
+     "perch": {
+      "x": 26,
+      "y": 30,
+      "zM": 1.11,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 28,
+       "y": 22,
+       "zM": 0.92
+      },
+      {
+       "x": 18,
+       "y": 50,
+       "zM": 0.28
+      },
+      {
+       "x": 46,
+       "y": 49,
+       "zM": 0.17
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 45,
+      "zM": 0.38
+     },
+     "pivot": {
+      "x": 33,
+      "y": 54
+     }
+    },
+    "params": {
+     "seed": 9101,
+     "sizeM": 1.5,
+     "turn": 0.4,
+     "n": 5
+    }
+   },
+   {
+    "id": "prismsB",
+    "variant": 1,
+    "sizeM": 2,
+    "topM": 1.46,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.61,
+      "ry": 0.47,
+      "ground": {
+       "x": 33,
+       "y": 49
+      }
+     },
+     "perch": {
+      "x": 22,
+      "y": 13,
+      "zM": 1.45,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 26,
+       "y": 9,
+       "zM": 1.26
+      },
+      {
+       "x": 52,
+       "y": 41,
+       "zM": 0.4
+      },
+      {
+       "x": 13,
+       "y": 44,
+       "zM": 0.21
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 37,
+      "zM": 0.5
+     },
+     "pivot": {
+      "x": 33,
+      "y": 49
+     }
+    },
+    "params": {
+     "seed": 9102,
+     "sizeM": 2,
+     "turn": 1.8,
+     "n": 7
+    }
+   },
+   {
+    "id": "prismsC",
+    "variant": 2,
+    "sizeM": 1.1,
+    "topM": 0.9,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.23,
+      "ry": 0.16,
+      "ground": {
+       "x": 33,
+       "y": 55
+      }
+     },
+     "perch": {
+      "x": 30,
+      "y": 33,
+      "zM": 0.88,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 28,
+       "y": 31,
+       "zM": 0.88
+      },
+      {
+       "x": 40,
+       "y": 52,
+       "zM": 0.16
+      },
+      {
+       "x": 25,
+       "y": 53,
+       "zM": 0.07
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 48,
+      "zM": 0.31
+     },
+     "pivot": {
+      "x": 33,
+      "y": 55
+     }
+    },
+    "params": {
+     "seed": 9103,
+     "sizeM": 1.1,
+     "turn": 3.2,
+     "n": 4
+    }
+   },
+   {
+    "id": "prismsD",
+    "variant": 3,
+    "sizeM": 2.4,
+    "topM": 1.57,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.53,
+      "ry": 0.4,
+      "ground": {
+       "x": 33,
+       "y": 50
+      }
+     },
+     "perch": {
+      "x": 33,
+      "y": 13,
+      "zM": 1.53,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 25,
+       "y": 5,
+       "zM": 1.53
+      },
+      {
+       "x": 49,
+       "y": 43,
+       "zM": 0.27
+      },
+      {
+       "x": 15,
+       "y": 46,
+       "zM": 0.2
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 37,
+      "zM": 0.53
+     },
+     "pivot": {
+      "x": 33,
+      "y": 50
+     }
+    },
+    "params": {
+     "seed": 9104,
+     "sizeM": 2.4,
+     "turn": 5,
+     "n": 6
+    }
+   }
+  ],
+  "quartzite": [
+   {
+    "id": "prismsA",
+    "variant": 0,
+    "sizeM": 1.5,
+    "topM": 1.12,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.43,
+      "ry": 0.35,
+      "ground": {
+       "x": 33,
+       "y": 54
+      }
+     },
+     "perch": {
+      "x": 26,
+      "y": 30,
+      "zM": 1.11,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 28,
+       "y": 22,
+       "zM": 0.92
+      },
+      {
+       "x": 18,
+       "y": 50,
+       "zM": 0.28
+      },
+      {
+       "x": 46,
+       "y": 49,
+       "zM": 0.17
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 45,
+      "zM": 0.38
+     },
+     "pivot": {
+      "x": 33,
+      "y": 54
+     }
+    },
+    "params": {
+     "seed": 9101,
+     "sizeM": 1.5,
+     "turn": 0.4,
+     "n": 5
+    }
+   },
+   {
+    "id": "prismsB",
+    "variant": 1,
+    "sizeM": 2,
+    "topM": 1.46,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.61,
+      "ry": 0.47,
+      "ground": {
+       "x": 33,
+       "y": 49
+      }
+     },
+     "perch": {
+      "x": 22,
+      "y": 13,
+      "zM": 1.45,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 26,
+       "y": 9,
+       "zM": 1.26
+      },
+      {
+       "x": 52,
+       "y": 41,
+       "zM": 0.4
+      },
+      {
+       "x": 13,
+       "y": 44,
+       "zM": 0.21
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 37,
+      "zM": 0.5
+     },
+     "pivot": {
+      "x": 33,
+      "y": 49
+     }
+    },
+    "params": {
+     "seed": 9102,
+     "sizeM": 2,
+     "turn": 1.8,
+     "n": 7
+    }
+   },
+   {
+    "id": "prismsC",
+    "variant": 2,
+    "sizeM": 1.1,
+    "topM": 0.9,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.23,
+      "ry": 0.16,
+      "ground": {
+       "x": 33,
+       "y": 55
+      }
+     },
+     "perch": {
+      "x": 30,
+      "y": 33,
+      "zM": 0.88,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 28,
+       "y": 31,
+       "zM": 0.88
+      },
+      {
+       "x": 40,
+       "y": 52,
+       "zM": 0.16
+      },
+      {
+       "x": 25,
+       "y": 53,
+       "zM": 0.07
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 48,
+      "zM": 0.31
+     },
+     "pivot": {
+      "x": 33,
+      "y": 55
+     }
+    },
+    "params": {
+     "seed": 9103,
+     "sizeM": 1.1,
+     "turn": 3.2,
+     "n": 4
+    }
+   },
+   {
+    "id": "prismsD",
+    "variant": 3,
+    "sizeM": 2.4,
+    "topM": 1.57,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.53,
+      "ry": 0.4,
+      "ground": {
+       "x": 33,
+       "y": 50
+      }
+     },
+     "perch": {
+      "x": 33,
+      "y": 13,
+      "zM": 1.53,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 25,
+       "y": 5,
+       "zM": 1.53
+      },
+      {
+       "x": 49,
+       "y": 43,
+       "zM": 0.27
+      },
+      {
+       "x": 15,
+       "y": 46,
+       "zM": 0.2
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 37,
+      "zM": 0.53
+     },
+     "pivot": {
+      "x": 33,
+      "y": 50
+     }
+    },
+    "params": {
+     "seed": 9104,
+     "sizeM": 2.4,
+     "turn": 5,
+     "n": 6
+    }
+   }
+  ],
+  "till": [
+   {
+    "id": "prismsA",
+    "variant": 0,
+    "sizeM": 1.5,
+    "topM": 1.12,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.43,
+      "ry": 0.35,
+      "ground": {
+       "x": 33,
+       "y": 54
+      }
+     },
+     "perch": {
+      "x": 26,
+      "y": 30,
+      "zM": 1.11,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 28,
+       "y": 22,
+       "zM": 0.92
+      },
+      {
+       "x": 18,
+       "y": 50,
+       "zM": 0.28
+      },
+      {
+       "x": 46,
+       "y": 49,
+       "zM": 0.17
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 45,
+      "zM": 0.38
+     },
+     "pivot": {
+      "x": 33,
+      "y": 54
+     }
+    },
+    "params": {
+     "seed": 9101,
+     "sizeM": 1.5,
+     "turn": 0.4,
+     "n": 5
+    }
+   },
+   {
+    "id": "prismsB",
+    "variant": 1,
+    "sizeM": 2,
+    "topM": 1.46,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.61,
+      "ry": 0.47,
+      "ground": {
+       "x": 33,
+       "y": 49
+      }
+     },
+     "perch": {
+      "x": 22,
+      "y": 13,
+      "zM": 1.45,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 26,
+       "y": 9,
+       "zM": 1.26
+      },
+      {
+       "x": 52,
+       "y": 41,
+       "zM": 0.4
+      },
+      {
+       "x": 13,
+       "y": 44,
+       "zM": 0.21
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 37,
+      "zM": 0.5
+     },
+     "pivot": {
+      "x": 33,
+      "y": 49
+     }
+    },
+    "params": {
+     "seed": 9102,
+     "sizeM": 2,
+     "turn": 1.8,
+     "n": 7
+    }
+   },
+   {
+    "id": "prismsC",
+    "variant": 2,
+    "sizeM": 1.1,
+    "topM": 0.9,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.23,
+      "ry": 0.16,
+      "ground": {
+       "x": 33,
+       "y": 55
+      }
+     },
+     "perch": {
+      "x": 30,
+      "y": 33,
+      "zM": 0.88,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 28,
+       "y": 31,
+       "zM": 0.88
+      },
+      {
+       "x": 40,
+       "y": 52,
+       "zM": 0.16
+      },
+      {
+       "x": 25,
+       "y": 53,
+       "zM": 0.07
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 48,
+      "zM": 0.31
+     },
+     "pivot": {
+      "x": 33,
+      "y": 55
+     }
+    },
+    "params": {
+     "seed": 9103,
+     "sizeM": 1.1,
+     "turn": 3.2,
+     "n": 4
+    }
+   },
+   {
+    "id": "prismsD",
+    "variant": 3,
+    "sizeM": 2.4,
+    "topM": 1.57,
+    "cell": [
+     66,
+     62
+    ],
+    "anchors": {
+     "footprint": {
+      "rx": 0.53,
+      "ry": 0.4,
+      "ground": {
+       "x": 33,
+       "y": 50
+      }
+     },
+     "perch": {
+      "x": 33,
+      "y": 13,
+      "zM": 1.53,
+      "flat": false
+     },
+     "snags": [
+      {
+       "x": 25,
+       "y": 5,
+       "zM": 1.53
+      },
+      {
+       "x": 49,
+       "y": 43,
+       "zM": 0.27
+      },
+      {
+       "x": 15,
+       "y": 46,
+       "zM": 0.2
+      }
+     ],
+     "hazard": null,
+     "pool": null,
+     "weedLine": {
+      "y": 37,
+      "zM": 0.53
+     },
+     "pivot": {
+      "x": 33,
+      "y": 50
+     }
+    },
+    "params": {
+     "seed": 9104,
+     "sizeM": 2.4,
+     "turn": 5,
+     "n": 6
+    }
+   }
+  ]
+ }
+}
