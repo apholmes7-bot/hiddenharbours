@@ -112,6 +112,25 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <c>CharacterIso7</c>, prerequisite <c>character</c>.</summary>
         public const string CatalogKey = "characterSkin";
 
+        /// <summary>The catalog key for the pass-05/06 face layer. Installing it is INERT — the
+        /// module wraps nothing — so a host that carries it still answers every question exactly as
+        /// the rig does. The face only reaches a bake through <see cref="FaceLayerJs"/>.</summary>
+        public const string FaceCatalogKey = "characterFaceComposition";
+
+        /// <summary>The composed bind mesh for one preset: the pass-05 finish-tailored body with rig
+        /// 6's own head dropped, plus the pass-06 study head rebound rigidly to the head bone at
+        /// weight 1. Handed to <see cref="CharacterPoseMeshExtractor.ExtractPose"/> as its face layer
+        /// AND to <see cref="ReadSkinning"/> as its mesh, so the geometry and the weights are the
+        /// same list read twice and <see cref="AssertBindAgrees"/> still means something.</summary>
+        public static string FaceLayerJs(string preset) =>
+            $"CharacterFaceComposition.composed({Js(preset)})";
+
+        /// <summary>Rig 7's own untouched export for one preset. The guards address THIS when they
+        /// mean "the export still re-expresses rig 6's build" — a premise the face layer does not
+        /// weaken and must not be allowed to hide.</summary>
+        public static string BaseMeshJs(string preset) =>
+            $"CharacterFaceComposition.baseBindMesh({Js(preset)})";
+
         public static RigEntry Entry => RigCatalog.Get(CatalogKey);
         public static string ScriptPath => Entry.ScriptPath;
         public static string GlobalName => Entry.GlobalName;
@@ -201,6 +220,68 @@ namespace HiddenHarbours.Tools.RigBaking
                 throw new InvalidOperationException(
                     $"'{preset}': rig 7's bind mesh has {faces} faces but rig 6's own " +
                     $"pose('idle',0) has {poseFaces}. The export is not re-expressing this build.");
+        }
+
+        /// <summary>
+        /// THE CONTROL FOR THE COMPOSED FACE — the companion to <see cref="AssertKitLoaded"/>, not a
+        /// replacement for it. <c>AssertKitLoaded</c> keeps asking rig 7's own untouched export
+        /// whether it still re-expresses rig 6's build; that premise does not get weaker because a
+        /// face went on top of it, so it keeps being measured. This asks the three things that are
+        /// only true of the COMPOSED mesh, and that would otherwise first be noticed by a bake
+        /// throwing somewhere less legible.
+        ///
+        /// <para>⚠️ The material check is where the pass-06 head currently STOPS. The study paints
+        /// its nose with <c>noseLight</c> and <c>noseShadow</c> and rig 6's <c>makeMats</c> declares
+        /// neither, so the packer — which refuses an unlisted material rather than resolving it to
+        /// the first ramp — would reject the face. That is an art-director decision (author two
+        /// ramps, or remap the nose onto declared materials) and the refusal below is written to say
+        /// so by name rather than to be worked around here.</para>
+        /// </summary>
+        public static void AssertComposedFaceAgrees(IRigScriptHost host, string preset)
+        {
+            if (host == null) throw new ArgumentNullException(nameof(host));
+
+            if (!host.EvaluateBool("typeof CharacterFaceComposition === 'object' && " +
+                                   "CharacterFaceComposition !== null"))
+                throw new InvalidOperationException(
+                    "globalThis.CharacterFaceComposition is absent. A composed bake was asked for " +
+                    "and the face layer never loaded — install " + FaceCatalogKey + " first.");
+
+            int headFaces = (int)host.EvaluateNumber(
+                $"{FaceLayerJs(preset)}.filter(function(f){{return f.part==='head';}}).length");
+            if (headFaces == 0)
+                throw new InvalidOperationException(
+                    $"The composed mesh for '{preset}' carries no face tagged part 'head'. The " +
+                    "composition dropped rig 6's head and the study put nothing back — do not bake " +
+                    "a headless character because the totals happened to balance.");
+
+            string stale = host.EvaluateString(
+                "(function(){var drop=CharacterFaceComposition.oldHeadParts" +
+                ".filter(function(x){return x!=='head';}).concat(['inseam']),seen={};" +
+                $"{FaceLayerJs(preset)}.forEach(function(f){{" +
+                "if(drop.indexOf(f.part)>=0)seen[f.part]=1;});" +
+                "return Object.keys(seen).sort().join(',');})()");
+            if (!string.IsNullOrEmpty(stale))
+                throw new InvalidOperationException(
+                    $"'{preset}': rig 6's own '{stale}' survived into the composed mesh alongside " +
+                    "the study's head. Two faces in the same place is not a face — it is z-fighting " +
+                    "with a plan.");
+
+            string undeclared = host.EvaluateString(
+                $"(function(){{var C={CharacterPoseMeshExtractor.GlobalName};" +
+                $"var b=C.resolveBuild({{build:{{preset:{Js(preset)}}}}});" +
+                "var M=C.makeMats(b).MATS,o={};" +
+                $"{FaceLayerJs(preset)}.forEach(function(f){{if(!M[f.mat])o[f.mat]=1;}});" +
+                "return Object.keys(o).sort().join(',');})()");
+            if (!string.IsNullOrEmpty(undeclared))
+                throw new InvalidOperationException(
+                    $"'{preset}': the composed face paints with materials rig 6 does not declare — " +
+                    $"{undeclared}.\nThe facet packer refuses an unlisted material rather than " +
+                    "resolving it to the first ramp, deliberately: that resolve is how mis-coloured " +
+                    "art has shipped out of this kit before. Fixing it means AUTHORING RAMPS for " +
+                    "those materials, or remapping those faces onto materials the rig already " +
+                    "declares — either changes the face the owner accepted, so it is an " +
+                    "art-director decision and the bake will not guess at it.");
         }
 
         // ---------------------------------------------------------------------------------------
@@ -392,13 +473,19 @@ namespace HiddenHarbours.Tools.RigBaking
         /// truncated weight is not a smaller mesh, it is the hem collapse that measured 4.52e-2 m,
         /// 452× the rig's own tolerance, on every one of the 56 golden rows.</para>
         /// </summary>
-        public static RigSkinning ReadSkinning(IRigScriptHost host, string preset, int maxWidth)
+        public static RigSkinning ReadSkinning(IRigScriptHost host, string preset, int maxWidth,
+                                               string meshJs = null)
         {
             string g = GlobalName;
             if (maxWidth < 1) throw new ArgumentOutOfRangeException(nameof(maxWidth));
 
+            // Default: the rig's own export, exactly as every caller before the face layer read it.
+            // When the bake composes a face it passes the composed list here TOO — geometry and
+            // weights must be the same list, or AssertBindAgrees is comparing two characters.
+            string mesh = string.IsNullOrEmpty(meshJs) ? $"{g}.bindMesh({Js(preset)})" : meshJs;
+
             int width = (int)host.EvaluateNumber(
-                $"(function(){{var m={g}.bindMesh({Js(preset)}),w=0;" +
+                $"(function(){{var m={mesh},w=0;" +
                 "for(var i=0;i<m.length;i++)for(var k=0;k<m[i].bone.length;k++)" +
                 "if(m[i].bone[k].length>w)w=m[i].bone[k].length;return w;})()");
             if (width < 1)
@@ -411,12 +498,12 @@ namespace HiddenHarbours.Tools.RigBaking
                     "452×-tolerance hem collapse. Refusing.");
 
             string parts = host.EvaluateString(
-                $"{g}.bindMesh({Js(preset)}).map(function(f){{return f.part||'';}}).join(',')");
+                $"{mesh}.map(function(f){{return f.part||'';}}).join(',')");
 
             // [i32 faceCount][i32 width] then per face [i32 nv]
             //   then nv × ( [f64 x,y,z] + width × ([i32 bone][f64 weight]) )
             host.Execute(
-                $"globalThis.__hhSkinPack=(function(){{var m={g}.bindMesh({Js(preset)});" +
+                $"globalThis.__hhSkinPack=(function(){{var m={mesh};" +
                 $"var W={width.ToString(CultureInfo.InvariantCulture)};" +
                 "var corners=0;for(var i=0;i<m.length;i++)corners+=m[i].v.length;" +
                 "var buf=new ArrayBuffer(8+m.length*4+corners*(24+W*12));" +

@@ -195,10 +195,18 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <param name="dir">The direction handed to the rig's resolveOpts. The POSE must not depend
         /// on it (the heading is a live transform); passing it through rather than hard-coding lets
         /// the guard prove that by extracting the same pose at two dirs and comparing.</param>
+        /// <param name="faceLayerJs">Optional JS expression evaluated AFTER the rig's own chain,
+        /// whose value replaces the extracted face list. This is how the pass-06 face reaches the
+        /// bake (<c>CharacterFaceComposition.composed(...)</c>) — as a NAMED step a reviewer can see
+        /// in the caller, never as a wrapper installed over the rig's own exports. Null leaves the
+        /// rig's output exactly as the rig produced it, which is what every other caller wants.
+        /// The expression is recorded on <see cref="RigMeshData.SourceFaceExpression"/>, so a def
+        /// baked with a face layer says so in its own provenance rather than looking like a plain
+        /// extraction that happens to disagree with the rig.</param>
         public static RigMeshData ExtractPose(IRigScriptHost host, string preset, string anim,
                                               int frame, string carry = null,
                                               string power = null, string rest = null,
-                                              int dir = 0)
+                                              int dir = 0, string faceLayerJs = null)
         {
             if (host == null) throw new ArgumentNullException(nameof(host));
             string g = GlobalName;
@@ -219,12 +227,30 @@ namespace HiddenHarbours.Tools.RigBaking
                 "C.__hhPoseMats=C.makeMats(R.b).MATS;" +
                 "C.__hhPoseFaces=C.facesOf(C.pose(R.anim,R.u,R.b,R.power,R.carry,R.o),R.b);})()");
 
+            // The face layer, when the caller asked for one. Applied HERE — after the rig's own
+            // chain, before the material union and the packer — so the union is computed over the
+            // faces that actually get baked. That matters: the packer refuses a face whose material
+            // is not in the union rather than resolving it to the first ramp, which is exactly how
+            // mis-coloured art has shipped from this kit before. A layer that introduces a material
+            // the pose never declared therefore FAILS the bake instead of recolouring a character.
+            if (!string.IsNullOrEmpty(faceLayerJs))
+            {
+                host.Execute(
+                    "(function(){var C=" + g + ";var F=(" + faceLayerJs + ");" +
+                    "if(!Array.isArray(F)||F.length===0)" +
+                    "throw new Error('the face layer produced no faces');" +
+                    "for(var i=0;i<F.length;i++)if(!F[i]||!F[i].v||!F[i].v.length||!F[i].mat)" +
+                    "throw new Error('the face layer produced a face with no corners or no material at '+i);" +
+                    "C.__hhPoseFaces=F;})()");
+            }
+
             var data = new RigMeshData
             {
                 RigKey = $"{g}:{preset}:{StateKey(anim, power, carry, rest)}:{frame}",
                 GlobalName = g,
-                SourceFaceExpression =
-                    $"facesOf(pose(resolveOpts({dir}, {OptsJs(preset, anim, frame, carry, power, rest)})))",
+                SourceFaceExpression = string.IsNullOrEmpty(faceLayerJs)
+                    ? $"facesOf(pose(resolveOpts({dir}, {OptsJs(preset, anim, frame, carry, power, rest)})))"
+                    : faceLayerJs,
                 W = (int)host.EvaluateNumber($"{g}.W"),
                 H = (int)host.EvaluateNumber($"{g}.H"),
                 PivotX = host.EvaluateNumber($"{g}.pivot.x"),

@@ -243,9 +243,16 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         /// <param name="target">An existing def to refresh in place (keeps its guid), or null to
         /// create a fresh in-memory instance.</param>
+        /// <param name="composedFace">Bake the pass-05/06 face instead of rig 6's own head.
+        /// <b>Defaults to OFF, and that is not timidity — it is currently BLOCKED.</b> The study head
+        /// paints with two materials rig 6 does not declare, so a composed bake refuses in
+        /// <see cref="CharacterSkinExtractor.AssertComposedFaceAgrees"/> with the reason named. The
+        /// wiring is complete and sits behind this one flag so that the day the art director rules on
+        /// those ramps, turning the face on is a parameter and not a re-plumb.</param>
         public static SkinBake Compose(IRigScriptHost host, string preset,
                                        CharacterSkinDef target = null,
-                                       Action<string, float> progress = null)
+                                       Action<string, float> progress = null,
+                                       bool composedFace = false)
         {
             if (host == null) throw new ArgumentNullException(nameof(host));
             if (string.IsNullOrEmpty(preset)) throw new ArgumentNullException(nameof(preset));
@@ -263,7 +270,21 @@ namespace HiddenHarbours.Tools.RigBaking
                     $"{g}.BUILDS has no preset '{preset}'. The rig is the authority on its own cast; " +
                     "a typo here would bake the DEFAULT man under a cast member's name.");
 
+            // ⚠️ AssertKitLoaded keeps asking rig 7's OWN untouched export whether it still
+            // re-expresses rig 6's build. That premise does not get weaker because a face went on
+            // top of it, so it is asserted for both paths and the composed mesh gets its own
+            // companion check rather than inheriting a loosened one.
             CharacterSkinExtractor.AssertKitLoaded(host, preset);
+
+            string faceLayer = null;
+            if (composedFace)
+            {
+                RigCatalog.InstallModule(host, RigCatalog.Get(CharacterSkinExtractor.FaceCatalogKey));
+                CharacterSkinExtractor.AssertComposedFaceAgrees(host, preset);
+                faceLayer = CharacterSkinExtractor.FaceLayerJs(preset);
+                Debug.Log($"[char-skin] composing the pass-05/06 face for '{preset}'.");
+            }
+
             Debug.Log($"[char-skin] census — {CharacterSkinExtractor.Census(host, preset)}");
 
             double tol = CharacterSkinExtractor.Tolerance(host);
@@ -276,13 +297,17 @@ namespace HiddenHarbours.Tools.RigBaking
             // ---- the skinning, then the geometry it belongs to ------------------------------
             progress?.Invoke("bind mesh", 0.08f);
             RigSkinning skin = CharacterSkinExtractor.ReadSkinning(
-                host, preset, CharacterSkinDef.MaxBoneInfluences);
+                host, preset, CharacterSkinDef.MaxBoneInfluences, faceLayer);
             CharacterSkinExtractor.MarkOwnership(rigBones, skin);
 
             // The GEOMETRY comes from the flipbook's own extractor, at idle frame 0 — which is
             // exactly rig 7's bind pose. So the skinned bind mesh is byte-identical to the sheet's
             // first frame rather than a second transcription of it, and AssertBindAgrees proves it.
-            RigMeshData bind = CharacterPoseMeshExtractor.ExtractPose(host, preset, "idle", 0);
+            // Both sides take the SAME faceLayer, so AssertBindAgrees still compares one list
+            // against itself read twice — the property that makes it worth running at all. Handing
+            // the face to only one of them is the mistake this seam exists to make visible.
+            RigMeshData bind = CharacterPoseMeshExtractor.ExtractPose(
+                host, preset, "idle", 0, faceLayerJs: faceLayer);
             CharacterSkinExtractor.AssertBindAgrees(bind, skin, tol);
 
             // One mesh means one material table, and the bind pose's table is all of it: the rig's
