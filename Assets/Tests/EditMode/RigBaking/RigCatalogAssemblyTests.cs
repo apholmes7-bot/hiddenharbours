@@ -135,6 +135,16 @@ namespace HiddenHarbours.Tests.RigBaking
             // catch pass 2. The wire roller basket, lathed against the shared turntable.
             new Snapshot("clamHod", "docs/art/rigs/catch-pass-2-kit/Art/clamHodRig.js",
                          "ClamHod", AzimuthConvention.Clockwise, "deckIsoSolid"),
+            // The coastal-heritage pass (drop 2026-09-14, package 01-houses). NOT A RIG — an
+            // aesthetic COMPANION that repaints slate, stone, joinery and interior finishes for
+            // house, interior, manorIso and manorUnitIso. Clockwise is the placeholder every
+            // non-directional entry carries (buildingLifecycle, dialogueBubble, catchKit);
+            // nothing probes it. It names interiorProp and deliberately NOT house: house names
+            // IT, and InstallPrerequisites has no cycle guard, so a house row here would close
+            // house -> coastalPass -> house. CoastalPass.enabled=false reverts the LOOK only —
+            // the manor stair corrections live in the host rigs and stay.
+            new Snapshot("coastalPass", "docs/art/rigs/coastalPass.js",
+                         "CoastalPass", AzimuthConvention.Clockwise, "interiorProp"),
             new Snapshot("crustacean", "docs/art/rigs/crustaceanRig.js",
                          "Crustacean", AzimuthConvention.Clockwise),
             // catch pass 2. ⚠️ render() takes the KIND first and the camera in opts.dir; an
@@ -173,9 +183,10 @@ namespace HiddenHarbours.Tests.RigBaking
             new Snapshot("gasStation", "docs/art/rigs/gas-station-rig/rig/gasStationRig.js",
                          "StationIso", AzimuthConvention.Clockwise, "deckIsoSolid", "fuel"),
             new Snapshot("house", "docs/art/rigs/houseIsoRig.js",
-                         "HouseIso", AzimuthConvention.CounterClockwise, "buildingLifecycle"),
+                         "HouseIso", AzimuthConvention.CounterClockwise,
+                         "buildingLifecycle", "coastalPass"),
             new Snapshot("interior", "docs/art/rigs/interiorIsoRig.js",
-                         "InteriorIso", AzimuthConvention.CounterClockwise),
+                         "InteriorIso", AzimuthConvention.CounterClockwise, "coastalPass"),
             new Snapshot("interiorProp", "docs/art/rigs/interiorPropRig.js",
                          "PropIso", AzimuthConvention.CounterClockwise),
             new Snapshot("lobsterBoat", "docs/art/rigs/lobsterBoatIsoRig.js",
@@ -184,6 +195,19 @@ namespace HiddenHarbours.Tests.RigBaking
             // lobsterBoat in one host — +45.000° per step at all 8 headings, un-squashed.
             new Snapshot("lobsterBoatVariants", "docs/art/rigs/lobsterBoatVariantsIsoRig.js",
                          "LobsterBoatVariantsIso", AzimuthConvention.CounterClockwise),
+            // The coastal-heritage pass (drop 2026-09-14, package 01-houses). The manor SHELL.
+            // ⚠️ It MUST be installed before manorUnitIso, which reads ManorIso for its
+            // footprint: without it ManorUnitIso.dims answers {Wd:0, Ln:0, topZ:0} and throws
+            // nothing, so the failure is silently a manor of zero size.
+            new Snapshot("manorIso", "docs/art/rigs/manorIsoRig.js",
+                         "ManorIso", AzimuthConvention.CounterClockwise, "coastalPass"),
+            // The manor INTERIOR, floor by floor. Prerequisites are IN INSTALL ORDER and the
+            // first is load-bearing (see manorIso above). ⚠️ Its anchors() returns
+            // {anchors, openings, dims} and none of the door/floor/Wd/Ln/storeyZ that
+            // InteriorRigBaker reads, so it cannot bake through that baker as it stands.
+            new Snapshot("manorUnitIso", "docs/art/rigs/manorUnitIsoRig.js",
+                         "ManorUnitIso", AzimuthConvention.CounterClockwise,
+                         "manorIso", "interiorProp", "coastalPass"),
             new Snapshot("navBuoy", "docs/art/rigs/nav-buoy-kit/navBuoyRig.js",
                          "NavBuoy", AzimuthConvention.Clockwise, "deckIsoSolid"),
             // The player's notebook — the main UI surface (drop 2026-08-17, imported here).
