@@ -1,0 +1,49 @@
+# foam-visibility — NineMileCreek, hour 11.0, open water (260.0, 75.0); (280.0, -65.0); (270.0, 235.0), 6.0 m
+# heading | family | drawn px | centroid world (x, y) | lateral offset from the swept track, m (+ = to PORT of the course) | that offset over the band's own half-width
+FOAM VISIBILITY foam-visibility-north-000 frame=3509 subjectEligible=204 selected=0 overflow=204
+frame=3507 registered=31 eligible=31 cap=8 subjectRank=30
+0: FleetReviewAnchorage/Review_lobster_offshore_open_nfld/FishingBoatVisual to=(452.00, 36.36) amount=0.004755782
+1: NineMileCreekFleet/Moored_owner.peters_dan/FishingBoatVisual to=(117.75, 64.18) amount=0.00383196957
+2: FleetReviewAnchorage/Review_lobster_standard_hardtop_nfld/FishingBoatVisual to=(416.00, 23.20) amount=0.0105906092
+3: FleetReviewAnchorage/Review_lobster_standard_open_fundy/FishingBoatVisual to=(384.00, 23.20) amount=0.0301823374
+4: FleetReviewAnchorage/Review_lobster_standard_open_nfld/FishingBoatVisual to=(416.00, 65.20) amount=0.005105548
+5: FleetReviewAnchorage/Review_zodiac_hurricane/FishingBoatVisual to=(312.00, 64.80) amount=0.0176602919
+6: NineMileCreekFleet/Moored_owner.doiron_yvette/FishingBoatVisual to=(131.00, 80.91) amount=0.00382627454
+7: NineMileCreekFleet/Moored_owner.arsenault_leo/FishingBoatVisual to=(103.50, 80.91) amount=0.00382627221
+8: FleetReviewAnchorage/Review_lobster_offshore_open_fundy/FishingBoatVisual to=(452.00, 50.36) amount=0.0377203934
+9: FleetReviewAnchorage/Review_lobster_offshore_open_nor/FishingBoatVisual to=(452.00, 64.36) amount=0.00395668251
+10: FleetReviewAnchorage/Review_lobster_inshore_hardtop_nor/FishingBoatVisual to=(356.00, 24.29) amount=0.008534647
+11: FleetReviewAnchorage/Review_lobster_inshore_open_nfld/FishingBoatVisual to=(356.00, 38.29) amount=0.00385987712
+12: FleetReviewAnchorage/Review_lobster_offshore_hardtop_nfld/FishingBoatVisual to=(488.00, 50.36) amount=0.0312466137
+13: FleetReviewAnchorage/Review_lobster_standard_hardtop_nor/FishingBoatVisual to=(416.00, 51.20) amount=0.024597669
+14: FleetReviewAnchorage/Review_sport_fisher_90'_skybridge/FishingBoatVisual to=(262.00, 58.25) amount=0.005047507
+15: FleetReviewAnchorage/Review_lobster_offshore_hardtop_nor/FishingBoatVisual to=(452.00, 22.36) amount=0.03244308
+16: FleetReviewAnchorage/Review_lobster_standard_open_nor/FishingBoatVisual to=(384.00, 37.20) amount=0.0347989127
+17: FleetReviewAnchorage/Review_lobster_standard_hardtop_fundy/FishingBoatVisual to=(416.00, 37.20) amount=0.0208574254
+18: FleetReviewAnchorage/Review_sport_fisher_53'_convertible/FishingBoatVisual to=(262.00, 33.85) amount=0.00433275755
+19: FleetReviewAnchorage/Review_lobster_inshore_hardtop_fundy/FishingBoatVisual to=(384.00, 66.29) amount=0.0402856581
+20: FleetReviewAnchorage/Review_zodiac_frc/FishingBoatVisual to=(312.00, 53.00) amount=0.00382432179
+21: FleetReviewAnchorage/Review_lobster_inshore_open_nor/FishingBoatVisual to=(356.00, 66.29) amount=0.00565365935
+22: NineMileCreekFleet/Moored_owner.bernard_celeste/FishingBoatVisual to=(128.75, 70.81) amount=0.00396926468
+23: FleetReviewAnchorage/Review_sport_skiff_Mk2/FishingBoatVisual to=(312.00, 40.80) amount=0.006723083
+24: FleetReviewAnchorage/Review_lobster_inshore_hardtop_nfld/FishingBoatVisual to=(384.00, 52.29) amount=0.008912228
+25: NineMileCreekFleet/Moored_owner.gallant_marie/FishingBoatVisual to=(114.50, 80.73) amount=0.00382627524
+26: FleetReviewAnchorage/Review_lobster_inshore_open_fundy/FishingBoatVisual to=(356.00, 52.29) amount=0.007594558
+27: NineMileCreekFleet/Moored_owner.campbell_hughie/FishingBoatVisual to=(136.50, 81.89) amount=0.00382627873
+28: NineMileCreekFleet/Moored_owner.macdonald_ross/FishingBoatVisual to=(120.00, 81.89) amount=0.00382627524
+29: FleetReviewAnchorage/Review_lobster_offshore_hardtop_fundy/FishingBoatVisual to=(488.00, 64.36) amount=0.00745733
+30: Photo[foam-visibility-north-000]/FishingBoatVisual to=(260.01, 93.85) amount=0.0214863941
+DRAW CHANNEL material=Water (Displaced) id=568105589213358528 renderer=Sea/DisplacedWaterMesh/Chunk_47_34 slot=0 materialStrength=0.85 override=False overrideStrength=0
+DRAW CHANNEL slots=1680 displacedSlots=1680
+untouched repeat: hashes=4e055c04289e66a6/4e055c04289e66a6 changedPx=0 worst=0
+foam-visibility-north-000: window=(212.10, 39.11, 96.00, 0.01) texture=UnityBlack type=Texture2D registryStrength=0.85 shouldRun=True
+live buffer off/on: hashes=4e055c04289e66a6/4e055c04289e66a6 changedPx=0 worst=0
+live on repeat: hashes=4e055c04289e66a6/4e055c04289e66a6 changedPx=0 worst=0
+live off repeat: hashes=4e055c04289e66a6/4e055c04289e66a6 changedPx=0 worst=0
+FEATURE BUFFER camera=568105584918865958 target=_HHFoamBufferB_768x768_R16G16_UNorm_Tex2D lastFrame=3509 origin=(212.00, 39.00)
+feature target directly bound off/on: hashes=4e055c04289e66a6/4e055c04289e66a6 changedPx=0 worst=0
+known input off/on: hashes=4e055c04289e66a6/e03da9edc6c97d2f changedPx=3205807 worst=0.65882355
+known on repeat: hashes=e03da9edc6c97d2f/e03da9edc6c97d2f changedPx=0 worst=0
+off ignores known input: hashes=4e055c04289e66a6/4e055c04289e66a6 changedPx=0 worst=0
+restored original draw state: hashes=4e055c04289e66a6/4e055c04289e66a6 changedPx=0 worst=0
+RESULT: no production-buffer contribution measured; consult controls, texture and packing.
