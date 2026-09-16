@@ -229,6 +229,23 @@ Def invariants).
 
 ## 5. Boat & entity architecture (composition)
 
+**Character clothing interchange (CW-01, 2026-09-13).** Core now defines the version-1
+`CharacterClothingCatalogue`, `CharacterClothingFitSpec`, `CharacterGarmentSpec` and
+`CharacterAppearanceRecipe` contracts. Identity (`BuildId`, `FitId`, skin/hair/eye keys) is separate
+from selected garment/colourway IDs. `CharacterGarmentDef` and `CharacterClothingFitDef` wrap the
+same records in one-entity-per-file authoring assets; offline JSON uses the identical field names.
+`CharacterClothingValidation` checks record versions, IDs, fit/section/coverage references,
+combined slots and incompatible tags without mutating input. This is authoring validation, not
+proof that Unity meshes, material ramps or seller stock resolve. It does not authorize ownership
+or spending. CW-02 must introduce committed/preview appearance services through Core; Art applies
+them, Economy owns purchase transactions, and UI consumes those seams. See
+[the implementation sequence](../../backlog/character-creator-and-wardrobe.md) and
+[ADR 0029](../adr/0029-character-colour-runtime-structure-baked.md).
+
+These new transport records are not yet installed into `SaveData`. Its observed version remains
+14 at this change's baseline; CW-02 must recheck it and ship a tested migration rather than
+confusing the clothing interchange version with the save version.
+
 A boat is a `Rigidbody2D` (Box2D-v3 backend in Unity 6.5) assembled from data-configured
 components:
 

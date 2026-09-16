@@ -1,0 +1,88 @@
+<div id="hh-cast-viewer" data-focus="face">
+  <div class="cast-title"><strong>Hidden Harbours</strong><span class="text-small text-muted">Character viewer</span></div>
+  <div class="viz-controls cast-picker">
+    <label class="form-label">View<select class="form-select" data-view><option value="cast">Full cast</option><option value="inspect">One character</option></select></label>
+    <label class="form-label">Character<select class="form-select" data-character></select></label>
+  </div>
+  <div class="cast-transport">
+    <button type="button" class="btn btn-primary" data-play aria-pressed="false">Play</button>
+    <button type="button" class="btn" data-spin aria-pressed="false">Rotate 360°</button>
+  </div>
+  <div data-gallery class="cast-gallery" aria-label="Full cast"></div>
+  <div data-inspector hidden>
+    <div class="cast-focus" role="group" aria-label="Character detail">
+      <button type="button" class="btn" data-focus="face" aria-pressed="true">Face</button>
+      <button type="button" class="btn" data-focus="body" aria-pressed="false">Full body</button>
+    </div>
+    <div class="cast-inspect-grid">
+      <div class="cast-body-panel"><canvas data-body role="img" aria-label="Selected character, full body"></canvas></div>
+      <div class="cast-face-panel"><canvas data-head role="img" aria-label="Selected character, animated face"></canvas></div>
+    </div>
+    <p class="cast-hint text-small text-muted">Swipe sideways to turn. Swipe up to scroll.</p>
+    <div class="cast-navigation">
+      <button type="button" class="btn" data-previous-character aria-label="Previous character">Previous</button>
+      <button type="button" class="btn" data-next-character aria-label="Next character">Next</button>
+    </div>
+  </div>
+  <label class="form-label cast-art-pass">Compare<select class="form-select" data-pass aria-label="Character refinement comparison"><option value="before">Original · pass 04</option><option value="previous">Previous eyes · pass 05</option><option value="after" selected>Revised eyes · pass 06</option></select></label>
+  <details class="cast-options" data-options open>
+    <summary>Animation &amp; appearance</summary>
+    <div class="viz-controls">
+      <label class="form-label">Animation<select class="form-select" data-clip></select></label>
+      <label class="form-label">Expression<select class="form-select" data-expression><option value="auto">Follow animation</option><option value="neutral">Neutral</option><option value="smile">Smile</option><option value="grin">Grin</option><option value="frown">Frown</option><option value="worry">Worry</option><option value="oh">Surprise</option><option value="grit">Effort</option><option value="weary">Weary</option></select></label>
+      <label class="form-label">Speed<select class="form-select" data-speed aria-label="Playback speed"><option value="0.25">¼×</option><option value="0.5">½×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+      <label class="form-label">Pixels<select class="form-select" data-density aria-label="Pixel density"><option value="32">Gameplay · 32 px/m</option><option value="64" selected>Detail · 64 px/m</option><option value="96">Portrait · 96 px/m</option></select></label>
+    </div>
+    <div class="cast-turn-buttons">
+      <button type="button" class="btn" data-turn="-45" aria-label="Turn left 45 degrees">Turn left</button>
+      <button type="button" class="btn" data-turn="45" aria-label="Turn right 45 degrees">Turn right</button>
+    </div>
+    <div class="viz-controls cast-sliders">
+      <label class="form-label">Rotation <span class="tabular-nums" data-angle-value>25°</span><input class="form-range" data-angle type="range" min="0" max="360" value="25" step="1" aria-label="Rotation in degrees"></label>
+      <label class="form-label">Frame <span class="tabular-nums" data-frame-value>1 / 8</span><input class="form-range" data-frame type="range" min="0" max="1000" value="0" step="1" aria-label="Animation timeline"></label>
+    </div>
+    <label class="form-label" data-wardrobe-controls hidden>Clothing<select class="form-select" data-wardrobe><option value="original">Original clothing</option></select></label>
+    <p class="text-small text-muted" data-wardrobe-fit hidden></p>
+    <label class="form-check"><input class="form-check-input" type="checkbox" data-talk><span>Speaking</span></label>
+  </details>
+  <div class="text-small text-muted cast-status" data-status role="status" aria-live="polite">Paused</div>
+</div>
+<style>
+#hh-cast-viewer{width:100%;min-width:0;color:var(--foreground)}
+#hh-cast-viewer .cast-title{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+#hh-cast-viewer .cast-title strong{font-size:1.25rem;letter-spacing:-.025em}
+#hh-cast-viewer .cast-transport{position:sticky;top:0;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 0;background:var(--background)}
+#hh-cast-viewer .cast-gallery{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+#hh-cast-viewer .cast-person{min-width:0;display:flex;flex-direction:column;align-items:stretch;text-align:center;gap:4px}
+#hh-cast-viewer canvas{width:100%;display:block;image-rendering:pixelated;touch-action:pan-y pinch-zoom;cursor:ew-resize;-webkit-user-select:none;user-select:none}
+#hh-cast-viewer .cast-person canvas{aspect-ratio:3/4;object-fit:contain}
+#hh-cast-viewer .cast-person{border:1px solid var(--border);border-radius:12px}
+#hh-cast-viewer .cast-inspect-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:10px}
+#hh-cast-viewer .cast-inspect-grid>div{min-width:0;border-radius:16px;background:var(--stage);overflow:hidden}
+#hh-cast-viewer .cast-inspect-grid canvas{height:360px;object-fit:contain}
+#hh-cast-viewer .cast-focus{display:none}
+#hh-cast-viewer .cast-navigation,#hh-cast-viewer .cast-turn-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+#hh-cast-viewer .cast-art-pass{margin:18px 0}
+#hh-cast-viewer .cast-hint{text-align:center;margin:8px 0}
+#hh-cast-viewer .cast-options{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding-bottom:8px}
+#hh-cast-viewer summary{cursor:pointer;min-height:48px;padding:12px 0;font-weight:600}
+#hh-cast-viewer .cast-sliders{margin:14px 0}
+#hh-cast-viewer .cast-status{margin-top:14px}
+#hh-cast-viewer [hidden]{display:none!important}
+@media(max-width:700px){
+  #hh-cast-viewer .cast-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  #hh-cast-viewer .cast-focus{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  #hh-cast-viewer .cast-inspect-grid{grid-template-columns:minmax(0,1fr);gap:0}
+  #hh-cast-viewer .cast-inspect-grid canvas{height:280px;height:clamp(200px,38svh,340px)}
+  #hh-cast-viewer[data-focus=face] .cast-body-panel,#hh-cast-viewer[data-focus=body] .cast-face-panel{display:none}
+}
+@media(max-width:360px){#hh-cast-viewer .cast-picker{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){#hh-cast-viewer *{scroll-behavior:auto}}
+</style>
+<script>
+__DEPENDENCIES__
+__ENGINE__
+__WARDROBE__
+__RASTER__
+__CONTROLLER__
+</script>

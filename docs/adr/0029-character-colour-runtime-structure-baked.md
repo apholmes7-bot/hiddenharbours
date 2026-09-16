@@ -10,6 +10,11 @@
 
 ## Context
 
+**2026-09-13 amendment:** the sprite-layer measurements below remain valid for the old sheets.
+They do not prohibit explicitly fitted mesh parts. The measured CW-01 decision and its production
+limits are recorded at the end of this ADR; references to a creator limited to sheet presets are
+historical constraints on that sprite path.
+
 The owner wants a character creator at the start of the game and clothes that are purchasable
 and swappable later. The pass-6 rig can express all of it: seven colour axes, seven structural
 ones, ten built cast members — 3136 wardrobe combinations before proportions are touched.
@@ -141,3 +146,92 @@ would show a stripe of the body through the coat.
 **Treat colour as baked too, for uniformity.** It would make the split simpler to explain and
 make the wardrobe unaffordable. The whole reason a shirt can be bought is that its colour is not
 pixels.
+
+## 2026-09-13 — CW-01: explicitly fitted mesh clothing
+
+**Decision:** retain runtime colour and editor-only geometry generation, but permit clothing
+assembled from independently baked, explicitly compatible mesh sections. This is a bounded
+extension of the split, not permission to run the JS rig at runtime or assume a universal skeleton.
+CW-01 measures the offline art proof and establishes the Core interchange contract. Production
+rendering, baked bindings and persistence remain CW-02; creation/commerce remain CW-03/CW-04.
+
+### What was measured
+
+The [reproducible workbench](../art/character-workbench/README.md) uses the revised Fisher body
+study and expressive head. One fixed fit, `fit.character_fisher_study_v1`, is supported. It splits
+actual source faces into shirt, trousers, bib and boots; a fitted long-sleeve shirt uses an explicit
+forearm coverage tag. Switching to the mixed recipe removes bib/straps, adds sleeves and keeps the
+same head, skin, hair, eyes, body proportions and animation skeleton. Mandatory top/bottom/footwear
+slots are fit data because this source has no bare trunk, legs or feet.
+
+| Measurement | Starter shirt + bibs + boots | Mixed long sleeves + trousers + boots |
+| --- | ---: | ---: |
+| Expanded vertices | 3,108 | 2,876 |
+| Triangles | 1,630 | 1,514 |
+| Used geometry material ramps | 9 | 8 |
+| Conservative mesh buffer estimate | 243,336 bytes | 225,240 bytes |
+
+Both share **45 bones and 308 animation frames**: 388,080 bytes of position/quaternion samples,
+counted once, plus 2,880 bytes of bind matrices. This does not multiply by garment or colour.
+Bone remapping uses stable bone IDs and rejects unequal bind transforms; equal bone counts alone
+do not authorize a fit. The measured remap test reverses source indices and reproduces the same
+geometry. Identity-head vertices had **zero delta** over 1,820 sampled recipe/animation poses
+(all four supported top/bottom combinations across the 35 animations).
+There were 32 static render checks at 64/32 px/m and explicit negative checks for invalid recipes,
+slots, fits, sections and bone contracts. See generated `wardrobe-measurements.json` for the current
+full sample matrix, rejection list, SHA-256 inputs and host timing distribution.
+
+Validation and cached section assembly measured roughly **0.8–1.1 ms median in Node** on this host. These are CPU
+review-tool timings, not Unity frame-budget results. Mesh bytes are a layout estimate and exclude
+managed objects, driver copies, uploads, animation caches and facial state textures. There is no
+measured Unity draw-call or allocation result in CW-01. The 16-ramp geometry cap is enforced in the
+proof; its procedural facial surface colours are evaluated separately and have not yet earned a
+production shader slot budget. A single assembled character mesh is the proposed runtime strategy,
+but its actual render-pass cost must be measured through the existing facet renderer.
+
+### Contracts and rollout
+
+- `CharacterGarmentDef` and `CharacterClothingFitDef` wrap the same versioned records used by the
+  workbench's one-entity-per-file JSON. The catalogue snapshot is an aggregate transport, not a
+  second authoring database. Stable garment IDs, colourway IDs, fit IDs and section IDs are kept
+  separate from material colour values. Seller IDs and integer prices are authored proposals until
+  actual stock/purchases are wired. The existing seller chosen for initial stock is LeBlanc's.
+- `CharacterAppearanceRecipe` separates identity keys from garment selections. Preview recipes
+  neither grant ownership nor commit changes. `CharacterClothingValidation` supplies common
+  read-only record, reference and compatibility validation; actual baked geometry, materials,
+  bone weights, bind poses, ramps, seller IDs and build/colour keys still need domain resolution.
+- CW-02 must bind generated parts to production assets with source hashes for **all** contributing
+  rig/head/body/material inputs. Preserve current pose and interaction anchors across a swap,
+  isolate each character's palette state, and reject unsupported fits before changing the look.
+  Do not silently fit adult sleeves to children, elders, skirts, aprons, hats or hoods.
+- The **preferred inspection density is 64 px/m**, with a 32 px/m comparison. This changes neither
+  the canon's global PPU of 32 nor metre scale. The current production camera/renderer still needs
+  an in-world comparison demonstrating what detail survives.
+- The preview boot-top correction now interpolates **all three coordinates** on an inverted shin.
+  The reviewed port is preserved in the workbench, while production rig 7 remains byte-equivalent
+  to this PR's baseline. Changing it requires a real Fisher skin rebake: the committed source-hash
+  test deliberately rejects stale assets. No stored hash was changed to conceal that dependency.
+- CW-01 does not alter save schema 14 or implement the full loop. The later migration must preserve
+  `WornOutfitId` appearance and grant previously available wardrobe choices while fresh games use
+  limited starter grants. See [CW-01–04](../../backlog/character-creator-and-wardrobe.md).
+
+### Cast finish pass 05 (13 September 2026)
+
+The owner's [beauty and clarity pass](../art/briefs/character-finish-pass05.md) refines all ten
+presets with explicit garment volumes, clothing/hat ramps, softer lower jaws and more readable
+eye clusters. Editable `character-finish.json` parameters preserve identities, physical heights,
+skeletons, topology, weights and protected hand/foot/attachment geometry. They do not grant the
+nine non-Fisher bodies an interchangeable clothing fit. Fisher remains the only modular proof fit.
+
+The source-controlled pass04 face and an optional finish layer make the before/after comparison
+reproducible at an identical pose and scale. The independent comparison checks 4,550 pose pairs
+and 960 selected rasters at 64/32 px/m; it finds no new degenerate triangles or clipped/empty
+rasters in that sample matrix. Existing cap degeneracies and the awkward isolated mid-mount pose
+remain recorded in [the review](../art/character-workbench/CHARACTER-FINISH-REVIEW.md).
+These results do not establish Unity facial rendering or boat/tool/seat contact. Production
+integration must account for the new face-material index and all contributing finish source hashes.
+
+The owner rejected pass05's eye appearance. Pass06 replaces its rectangular dark fill with
+rounded openings, capped upper lids, smaller pupils and balanced light corners. The preserved
+pass05 head provides an eye-only comparison; geometry and animation timing remain identical.
+The historical pixel counts above do not constitute approval of that eye design.
