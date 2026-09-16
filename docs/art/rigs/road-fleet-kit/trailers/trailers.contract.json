@@ -137,7 +137,7 @@
         "wR"
       ],
       "distance_per_rev_m": 3.142,
-      "cyclic": "Exact integer-revolution wrap; 28 tread periods per circumference. Verified for all eight facings in validation.json."
+      "cyclic": "one revolution closes to 0-1 px (29.008 tread stripes; 10-lug hubs with FIVE hand-holes so half a rev is visible)"
     },
     "sus": {
       "param": "sus",
@@ -173,7 +173,7 @@
         1
       ],
       "default": 0.35,
-      "effect": "Sparse, object-space localized wear; quieter paint dithering. No screen-space random speckles."
+      "effect": "grime, rust, plank wear — the WOOD deck weathers with the steel"
     }
   },
   "paints": [
@@ -247,7 +247,7 @@
             291
           ],
           "NE": [
-            67,
+            68,
             79,
             315,
             280
@@ -259,10 +259,10 @@
             234
           ],
           "SE": [
-            67,
+            68,
             105,
             315,
-            270
+            268
           ],
           "S": [
             152,
@@ -273,8 +273,8 @@
           "SW": [
             68,
             105,
-            316,
-            270
+            315,
+            268
           ],
           "W": [
             55,
@@ -285,7 +285,7 @@
           "NW": [
             68,
             79,
-            316,
+            315,
             280
           ]
         },
@@ -297,7 +297,7 @@
             291
           ],
           "NE": [
-            67,
+            68,
             79,
             315,
             280
@@ -309,10 +309,10 @@
             234
           ],
           "SE": [
-            67,
+            68,
             105,
             315,
-            270
+            268
           ],
           "S": [
             152,
@@ -323,8 +323,8 @@
           "SW": [
             68,
             105,
-            316,
-            270
+            315,
+            268
           ],
           "W": [
             55,
@@ -335,7 +335,7 @@
           "NW": [
             68,
             79,
-            316,
+            315,
             280
           ]
         },
@@ -347,7 +347,7 @@
             291
           ],
           "NE": [
-            67,
+            68,
             105,
             315,
             280
@@ -359,10 +359,10 @@
             234
           ],
           "SE": [
-            67,
+            68,
             105,
             315,
-            270
+            268
           ],
           "S": [
             152,
@@ -373,8 +373,8 @@
           "SW": [
             68,
             105,
-            316,
-            270
+            315,
+            268
           ],
           "W": [
             55,
@@ -385,7 +385,7 @@
           "NW": [
             68,
             105,
-            316,
+            315,
             280
           ]
         },
@@ -415,8 +415,9 @@
         ]
       },
       "roll_seam": {
-        "changed_pixels": 0,
-        "note": "Recomputed in validation.json for all eight facings; 28-stripe periodic tread."
+        "moved": 0,
+        "painted": 15734,
+        "pct": 0
       },
       "anchors": {
         "_units": "{x,y} in THIS body’s cell px, m = [x,y,z] model metres",
@@ -1086,19 +1087,7 @@
             }
           }
         }
-      },
-      "mesh_bounds_at_rest": [
-        [
-          -1.24,
-          -4.27,
-          0.01253604390908819
-        ],
-        [
-          1.238,
-          4.285,
-          2.35
-        ]
-      ]
+      }
     },
     "flatbed53": {
       "label": "53 ft Flatbed",
@@ -1125,22 +1114,22 @@
             455
           ],
           "NE": [
-            106,
+            109,
             109,
             530,
             421
           ],
           "E": [
-            55,
+            61,
             220,
             578,
             320
           ],
           "SE": [
-            106,
+            109,
             136,
             530,
-            411
+            409
           ],
           "S": [
             280,
@@ -1151,19 +1140,19 @@
           "SW": [
             109,
             136,
-            533,
-            411
+            530,
+            409
           ],
           "W": [
             61,
             220,
-            584,
+            578,
             320
           ],
           "NW": [
             109,
             109,
-            533,
+            530,
             421
           ]
         },
@@ -1175,22 +1164,22 @@
             455
           ],
           "NE": [
-            106,
+            109,
             109,
             530,
             421
           ],
           "E": [
-            55,
+            61,
             220,
             578,
             320
           ],
           "SE": [
-            106,
+            109,
             136,
             530,
-            411
+            409
           ],
           "S": [
             280,
@@ -1201,19 +1190,19 @@
           "SW": [
             109,
             136,
-            533,
-            411
+            530,
+            409
           ],
           "W": [
             61,
             220,
-            584,
+            578,
             320
           ],
           "NW": [
             109,
             109,
-            533,
+            530,
             421
           ]
         },
@@ -1225,22 +1214,22 @@
             455
           ],
           "NE": [
-            106,
-            133,
+            109,
+            136,
             530,
             421
           ],
           "E": [
-            55,
+            61,
             246,
             578,
             320
           ],
           "SE": [
-            106,
+            109,
             136,
             530,
-            411
+            409
           ],
           "S": [
             280,
@@ -1251,50 +1240,51 @@
           "SW": [
             109,
             136,
-            533,
-            411
+            530,
+            409
           ],
           "W": [
             61,
             246,
-            584,
+            578,
             320
           ],
           "NW": [
             109,
-            133,
-            533,
+            136,
+            530,
             421
           ]
         },
         "union_at_rest": [
-          55,
+          61,
           77,
-          584,
+          578,
           455
         ],
         "union_gear_up": [
-          55,
+          61,
           77,
-          584,
+          578,
           455
         ],
         "union_open": [
-          55,
+          61,
           96,
-          584,
+          578,
           455
         ],
         "union_everything": [
-          55,
+          61,
           77,
-          584,
+          578,
           455
         ]
       },
       "roll_seam": {
-        "changed_pixels": 0,
-        "note": "Recomputed in validation.json for all eight facings; 28-stripe periodic tread."
+        "moved": 0,
+        "painted": 29714,
+        "pct": 0
       },
       "anchors": {
         "_units": "{x,y} in THIS body’s cell px, m = [x,y,z] model metres",
@@ -1964,19 +1954,7 @@
             }
           }
         }
-      },
-      "mesh_bounds_at_rest": [
-        [
-          -1.24,
-          -8.08,
-          0.01253604390908819
-        ],
-        [
-          1.238,
-          8.275,
-          2.35
-        ]
-      ]
+      }
     },
     "reefer28": {
       "label": "28 ft Reefer Pup",
@@ -1997,100 +1975,100 @@
         },
         "at_rest": {
           "N": [
-            152,
+            153,
             27,
-            231,
+            230,
             291
           ],
           "NE": [
             68,
-            36,
-            315,
+            35,
+            314,
             280
           ],
           "E": [
-            46,
-            91,
+            47,
+            89,
             329,
             234
           ],
           "SE": [
             68,
-            37,
-            315,
+            35,
+            314,
             267
           ],
           "S": [
-            152,
-            28,
-            231,
+            153,
+            27,
+            230,
             280
           ],
           "SW": [
-            68,
-            37,
+            69,
+            35,
             315,
             267
           ],
           "W": [
             54,
-            91,
-            337,
+            89,
+            336,
             234
           ],
           "NW": [
-            68,
-            36,
+            69,
+            35,
             315,
             280
           ]
         },
         "gear_up": {
           "N": [
-            152,
+            153,
             27,
-            231,
+            230,
             291
           ],
           "NE": [
             68,
-            36,
-            315,
+            35,
+            314,
             280
           ],
           "E": [
-            46,
-            91,
+            47,
+            89,
             329,
             234
           ],
           "SE": [
             68,
-            37,
-            315,
+            35,
+            314,
             267
           ],
           "S": [
-            152,
-            28,
-            231,
+            153,
+            27,
+            230,
             280
           ],
           "SW": [
-            68,
-            37,
+            69,
+            35,
             315,
             267
           ],
           "W": [
             54,
-            91,
-            337,
+            89,
+            336,
             234
           ],
           "NW": [
-            68,
-            36,
+            69,
+            35,
             315,
             280
           ]
@@ -2104,75 +2082,76 @@
           ],
           "NE": [
             68,
-            36,
-            315,
+            35,
+            314,
             280
           ],
           "E": [
-            46,
+            47,
             87,
             328,
             234
           ],
           "SE": [
             68,
-            37,
-            315,
+            35,
+            314,
             267
           ],
           "S": [
             144,
-            28,
+            27,
             239,
             280
           ],
           "SW": [
-            68,
-            37,
+            69,
+            35,
             315,
             267
           ],
           "W": [
             55,
             87,
-            337,
+            336,
             234
           ],
           "NW": [
-            68,
-            36,
+            69,
+            35,
             315,
             280
           ]
         },
         "union_at_rest": [
-          46,
+          47,
           27,
-          337,
+          336,
           291
         ],
         "union_gear_up": [
-          46,
+          47,
           27,
-          337,
+          336,
           291
         ],
         "union_open": [
-          46,
+          47,
           27,
-          337,
+          336,
           291
         ],
         "union_everything": [
-          46,
+          47,
           27,
-          337,
+          336,
           291
         ]
       },
       "roll_seam": {
-        "changed_pixels": 0,
-        "note": "Recomputed in validation.json for all eight facings; 28-stripe periodic tread."
+        "moved": 1,
+        "painted": 35176,
+        "pct": 0
       },
       "anchors": {
         "_units": "{x,y} in THIS body’s cell px, m = [x,y,z] model metres",
@@ -2986,19 +2965,7 @@
             }
           }
         }
-      },
-      "mesh_bounds_at_rest": [
-        [
-          -1.2349999999999999,
-          -4.325,
-          0.01253604390908819
-        ],
-        [
-          1.2349999999999999,
-          4.569,
-          4.06
-        ]
-      ]
+      }
     },
     "reefer53": {
       "label": "53 ft Reefer",
@@ -3019,100 +2986,100 @@
         },
         "at_rest": {
           "N": [
-            280,
+            281,
             34,
-            359,
+            358,
             455
           ],
           "NE": [
             109,
-            67,
+            65,
             529,
             421
           ],
           "E": [
-            52,
-            177,
+            53,
+            175,
             579,
             320
           ],
           "SE": [
             109,
-            67,
+            66,
             529,
             408
           ],
           "S": [
-            280,
+            281,
             35,
-            359,
+            358,
             445
           ],
           "SW": [
             110,
-            67,
+            66,
             530,
             408
           ],
           "W": [
             60,
-            177,
-            587,
+            175,
+            586,
             320
           ],
           "NW": [
             110,
-            67,
+            65,
             530,
             421
           ]
         },
         "gear_up": {
           "N": [
-            280,
+            281,
             34,
-            359,
+            358,
             455
           ],
           "NE": [
             109,
-            67,
+            65,
             529,
             421
           ],
           "E": [
-            52,
-            177,
+            53,
+            175,
             579,
             320
           ],
           "SE": [
             109,
-            67,
+            66,
             529,
             408
           ],
           "S": [
-            280,
+            281,
             35,
-            359,
+            358,
             445
           ],
           "SW": [
             110,
-            67,
+            66,
             530,
             408
           ],
           "W": [
             60,
-            177,
-            587,
+            175,
+            586,
             320
           ],
           "NW": [
             110,
-            67,
+            65,
             530,
             421
           ]
@@ -3126,19 +3093,19 @@
           ],
           "NE": [
             109,
-            67,
+            65,
             529,
             421
           ],
           "E": [
-            52,
+            53,
             173,
             578,
             320
           ],
           "SE": [
             109,
-            67,
+            66,
             529,
             408
           ],
@@ -3150,51 +3117,52 @@
           ],
           "SW": [
             110,
-            67,
+            66,
             530,
             408
           ],
           "W": [
             61,
             173,
-            587,
+            586,
             320
           ],
           "NW": [
             110,
-            67,
+            65,
             530,
             421
           ]
         },
         "union_at_rest": [
-          52,
+          53,
           34,
-          587,
+          586,
           455
         ],
         "union_gear_up": [
-          52,
+          53,
           34,
-          587,
+          586,
           455
         ],
         "union_open": [
-          52,
+          53,
           34,
-          587,
+          586,
           455
         ],
         "union_everything": [
-          52,
+          53,
           34,
-          587,
+          586,
           455
         ]
       },
       "roll_seam": {
-        "changed_pixels": 0,
-        "note": "Recomputed in validation.json for all eight facings; 28-stripe periodic tread."
+        "moved": 1,
+        "painted": 66059,
+        "pct": 0
       },
       "anchors": {
         "_units": "{x,y} in THIS body’s cell px, m = [x,y,z] model metres",
@@ -4008,19 +3976,7 @@
             }
           }
         }
-      },
-      "mesh_bounds_at_rest": [
-        [
-          -1.2349999999999999,
-          -8.135,
-          0.01253604390908819
-        ],
-        [
-          1.2349999999999999,
-          8.378999999999998,
-          4.06
-        ]
-      ]
+      }
     }
   },
   "sheets": [
@@ -4041,72 +3997,6 @@
         "SW",
         "W",
         "NW"
-      ],
-      "frames": [
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "NE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "E",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "S",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "SW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "NW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        }
       ]
     },
     {
@@ -4117,89 +4007,7 @@
         1920,
         640
       ],
-      "pose": "the ten harbour paints at SE, weather 0.22",
-      "frames": [
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.22,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "cream",
-            "weather": 0.22,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "red",
-            "weather": 0.22,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "sage",
-            "weather": 0.22,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.22,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "teal",
-            "weather": 0.22,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "gold",
-            "weather": 0.22,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "rustOrange",
-            "weather": 0.22,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "greyShingle",
-            "weather": 0.22,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "plum",
-            "weather": 0.22,
-            "body": "flatbed28"
-          }
-        }
-      ]
+      "pose": "the ten harbour paints at SE, weather 0.22"
     },
     {
       "file": "Flatbed28_gear_W.png",
@@ -4208,81 +4016,7 @@
         3072,
         320
       ],
-      "pose": "gear cue 0->1 at W — legs down to the shoes",
-      "frames": [
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "gear": 0
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "gear": 0.14285714285714285
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "gear": 0.2857142857142857
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "gear": 0.42857142857142855
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "gear": 0.5714285714285714
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "gear": 0.7142857142857143
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "gear": 0.8571428571428571
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "gear": 1
-          }
-        }
-      ]
+      "pose": "gear cue 0->1 at W — legs down to the shoes"
     },
     {
       "file": "Flatbed53_white_8dir.png",
@@ -4291,73 +4025,7 @@
         5120,
         480
       ],
-      "pose": "at rest (parked), white 0.45",
-      "frames": [
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "NE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "E",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "S",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "SW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "NW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        }
-      ]
+      "pose": "at rest (parked), white 0.45"
     },
     {
       "file": "Flatbed53_paints_SE.png",
@@ -4367,89 +4035,7 @@
         3200,
         960
       ],
-      "pose": "ten paints at SE",
-      "frames": [
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.22,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "cream",
-            "weather": 0.22,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "red",
-            "weather": 0.22,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "sage",
-            "weather": 0.22,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.22,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "teal",
-            "weather": 0.22,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "gold",
-            "weather": 0.22,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "rustOrange",
-            "weather": 0.22,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "greyShingle",
-            "weather": 0.22,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "plum",
-            "weather": 0.22,
-            "body": "flatbed53"
-          }
-        }
-      ]
+      "pose": "ten paints at SE"
     },
     {
       "file": "Flatbed53_gear_W.png",
@@ -4458,81 +4044,7 @@
         5120,
         480
       ],
-      "pose": "gear cue at W",
-      "frames": [
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "gear": 0
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "gear": 0.14285714285714285
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "gear": 0.2857142857142857
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "gear": 0.42857142857142855
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "gear": 0.5714285714285714
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "gear": 0.7142857142857143
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "gear": 0.8571428571428571
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "gear": 1
-          }
-        }
-      ]
+      "pose": "gear cue at W"
     },
     {
       "file": "Reefer28_white_8dir.png",
@@ -4541,73 +4053,7 @@
         3072,
         320
       ],
-      "pose": "at rest (parked), white 0.45",
-      "frames": [
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "NE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "E",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "S",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "SW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "NW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        }
-      ]
+      "pose": "at rest (parked), white 0.45"
     },
     {
       "file": "Reefer28_paints_SE.png",
@@ -4617,89 +4063,7 @@
         1920,
         640
       ],
-      "pose": "ten paints at SE",
-      "frames": [
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.22,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "cream",
-            "weather": 0.22,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "red",
-            "weather": 0.22,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "sage",
-            "weather": 0.22,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.22,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "teal",
-            "weather": 0.22,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "gold",
-            "weather": 0.22,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "rustOrange",
-            "weather": 0.22,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "greyShingle",
-            "weather": 0.22,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "plum",
-            "weather": 0.22,
-            "body": "reefer28"
-          }
-        }
-      ]
+      "pose": "ten paints at SE"
     },
     {
       "file": "Reefer28_doors_N.png",
@@ -4708,89 +4072,7 @@
         3072,
         320
       ],
-      "pose": "doors cue 0->255deg at N — out, through full outboard, flat to the sides",
-      "frames": [
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 0,
-            "barnR": 0
-          }
-        },
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 0.14285714285714285,
-            "barnR": 0.14285714285714285
-          }
-        },
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 0.2857142857142857,
-            "barnR": 0.2857142857142857
-          }
-        },
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 0.42857142857142855,
-            "barnR": 0.42857142857142855
-          }
-        },
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 0.5714285714285714,
-            "barnR": 0.5714285714285714
-          }
-        },
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 0.7142857142857143,
-            "barnR": 0.7142857142857143
-          }
-        },
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 0.8571428571428571,
-            "barnR": 0.8571428571428571
-          }
-        },
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 1,
-            "barnR": 1
-          }
-        }
-      ]
+      "pose": "doors cue 0->255deg at N — out, through full outboard, flat to the sides"
     },
     {
       "file": "Reefer53_white_8dir.png",
@@ -4799,73 +4081,7 @@
         5120,
         480
       ],
-      "pose": "at rest (parked), white 0.45",
-      "frames": [
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "NE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "E",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "S",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "SW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "NW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        }
-      ]
+      "pose": "at rest (parked), white 0.45"
     },
     {
       "file": "Reefer53_paints_SE.png",
@@ -4875,89 +4091,7 @@
         3200,
         960
       ],
-      "pose": "ten paints at SE",
-      "frames": [
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.22,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "cream",
-            "weather": 0.22,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "red",
-            "weather": 0.22,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "sage",
-            "weather": 0.22,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.22,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "teal",
-            "weather": 0.22,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "gold",
-            "weather": 0.22,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "rustOrange",
-            "weather": 0.22,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "greyShingle",
-            "weather": 0.22,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "plum",
-            "weather": 0.22,
-            "body": "reefer53"
-          }
-        }
-      ]
+      "pose": "ten paints at SE"
     },
     {
       "file": "Reefer53_doors_N.png",
@@ -4966,708 +4100,9 @@
         5120,
         480
       ],
-      "pose": "doors cue at N",
-      "frames": [
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 0,
-            "barnR": 0
-          }
-        },
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 0.14285714285714285,
-            "barnR": 0.14285714285714285
-          }
-        },
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 0.2857142857142857,
-            "barnR": 0.2857142857142857
-          }
-        },
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 0.42857142857142855,
-            "barnR": 0.42857142857142855
-          }
-        },
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 0.5714285714285714,
-            "barnR": 0.5714285714285714
-          }
-        },
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 0.7142857142857143,
-            "barnR": 0.7142857142857143
-          }
-        },
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 0.8571428571428571,
-            "barnR": 0.8571428571428571
-          }
-        },
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 1,
-            "barnR": 1
-          }
-        }
-      ]
-    },
-    {
-      "file": "flatbed28_open_review_8dir.png",
-      "cells": 8,
-      "frames": [
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "headboard": false
-          }
-        },
-        {
-          "facing": "NE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "headboard": false
-          }
-        },
-        {
-          "facing": "E",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "headboard": false
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "headboard": false
-          }
-        },
-        {
-          "facing": "S",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "headboard": false
-          }
-        },
-        {
-          "facing": "SW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "headboard": false
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "headboard": false
-          }
-        },
-        {
-          "facing": "NW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed28",
-            "headboard": false
-          }
-        }
-      ]
-    },
-    {
-      "file": "flatbed28_dark_review_8dir.png",
-      "cells": 8,
-      "frames": [
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "NE",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "E",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "S",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "SW",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        },
-        {
-          "facing": "NW",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed28"
-          }
-        }
-      ]
-    },
-    {
-      "file": "flatbed53_open_review_8dir.png",
-      "cells": 8,
-      "frames": [
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "headboard": false
-          }
-        },
-        {
-          "facing": "NE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "headboard": false
-          }
-        },
-        {
-          "facing": "E",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "headboard": false
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "headboard": false
-          }
-        },
-        {
-          "facing": "S",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "headboard": false
-          }
-        },
-        {
-          "facing": "SW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "headboard": false
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "headboard": false
-          }
-        },
-        {
-          "facing": "NW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "flatbed53",
-            "headboard": false
-          }
-        }
-      ]
-    },
-    {
-      "file": "flatbed53_dark_review_8dir.png",
-      "cells": 8,
-      "frames": [
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "NE",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "E",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "S",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "SW",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        },
-        {
-          "facing": "NW",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "flatbed53"
-          }
-        }
-      ]
-    },
-    {
-      "file": "reefer28_open_review_8dir.png",
-      "cells": 8,
-      "frames": [
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 1,
-            "barnR": 1
-          }
-        },
-        {
-          "facing": "NE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 1,
-            "barnR": 1
-          }
-        },
-        {
-          "facing": "E",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 1,
-            "barnR": 1
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 1,
-            "barnR": 1
-          }
-        },
-        {
-          "facing": "S",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 1,
-            "barnR": 1
-          }
-        },
-        {
-          "facing": "SW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 1,
-            "barnR": 1
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 1,
-            "barnR": 1
-          }
-        },
-        {
-          "facing": "NW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer28",
-            "barnL": 1,
-            "barnR": 1
-          }
-        }
-      ]
-    },
-    {
-      "file": "reefer28_dark_review_8dir.png",
-      "cells": 8,
-      "frames": [
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "NE",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "E",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "S",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "SW",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        },
-        {
-          "facing": "NW",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer28"
-          }
-        }
-      ]
-    },
-    {
-      "file": "reefer53_open_review_8dir.png",
-      "cells": 8,
-      "frames": [
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 1,
-            "barnR": 1
-          }
-        },
-        {
-          "facing": "NE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 1,
-            "barnR": 1
-          }
-        },
-        {
-          "facing": "E",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 1,
-            "barnR": 1
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 1,
-            "barnR": 1
-          }
-        },
-        {
-          "facing": "S",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 1,
-            "barnR": 1
-          }
-        },
-        {
-          "facing": "SW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 1,
-            "barnR": 1
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 1,
-            "barnR": 1
-          }
-        },
-        {
-          "facing": "NW",
-          "pose": {
-            "paint": "white",
-            "weather": 0.45,
-            "body": "reefer53",
-            "barnL": 1,
-            "barnR": 1
-          }
-        }
-      ]
-    },
-    {
-      "file": "reefer53_dark_review_8dir.png",
-      "cells": 8,
-      "frames": [
-        {
-          "facing": "N",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "NE",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "E",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "SE",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "S",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "SW",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "W",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        },
-        {
-          "facing": "NW",
-          "pose": {
-            "paint": "blue",
-            "weather": 0.45,
-            "body": "reefer53"
-          }
-        }
-      ]
+      "pose": "doors cue at N"
     }
   ],
   "sidecar": "trailerIsoRig.trailers.gameplay.json",
-  "rigSha256": "65df99f0fcd9b6e114cbf1f2f2dea6517e94ed43635c3b840bd9eddc6fada826",
-  "artRevision": {
-    "date": "2026-09-13",
-    "pass": 3,
-    "status": "final art pass for gameplay handoff; not integrated into Unity",
-    "originalRigSha256": "8ba111c41a8ab2bae855a51dc9d2c75cf518af2b01ff8cc15665caf18c9264f2",
-    "pass2RigSha256": "9123fe0a2080e9e25db1c3be7aea022de5a638c1c784614e3deca49b2926d8f2",
-    "changes": "See ../FINAL-PASS.md",
-    "geometry": "Trailer geometry carried forward unchanged from pass 2; sheets and metadata refreshed for the final fleet bundle."
-  }
+  "rigSha256": "8ba111c41a8ab2bae855a51dc9d2c75cf518af2b01ff8cc15665caf18c9264f2"
 }
