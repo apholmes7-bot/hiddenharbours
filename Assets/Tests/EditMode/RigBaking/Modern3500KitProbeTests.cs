@@ -12,11 +12,16 @@ namespace HiddenHarbours.Tests.RigBaking
     /// before anything is built on it. Every number below came out of the rig, not out of the drop's
     /// README.
     ///
-    /// <para>⭐⭐ <b>She does not fit the facet shader, and this suite is where that is proved rather
-    /// than asserted.</b> Her bake is excused in <c>VehicleRigFleet.NotBaked</c>; that entry carries
-    /// the argument and this carries the measurement behind it. The day an art fold brings her to 16,
-    /// <see cref="HerPaletteDoesNotFitTheFacetShader"/> goes red and says so — which is the whole
-    /// reason the blocker is written as a live measurement instead of a comment.</para>
+    /// <para>⭐⭐ <b>She fits the facet shader since her re-issued rig of 2026-09-16, and this suite
+    /// is where that is proved rather than asserted.</b> She arrived painting 27 ramps against the
+    /// shader's 16 and her bake sat excused in <c>VehicleRigFleet.NotBaked</c>. The re-issue folds
+    /// eleven material names onto their neighbours inside her own <c>build()</c>, so the baker reads
+    /// 16; the excuse was deleted and she is baked as a mesh only. The three tests that proved the
+    /// blocker (<c>HerPaletteDoesNotFitTheFacetShader</c>,
+    /// <c>EveryRampSheDeclaresIsPainted_SoTheFilterCannotSaveHer</c>,
+    /// <c>TheLosslessFoldsDoNotReachTheCap</c>) were retired with it; the two below measure the
+    /// fold that lifted it, so a later re-issue that puts her back over the cap is a red test here
+    /// rather than a fleet bake that fails on her.</para>
     ///
     /// <para><b>Why this is trustworthy without an editor bake.</b> The host below is built by the
     /// SAME widening the baker uses — <c>RigMeshExtractor.WidenExportedLiteral</c>, resolving the
@@ -40,11 +45,13 @@ namespace HiddenHarbours.Tests.RigBaking
         /// global, and <c>MATS</c> supplied by the registered reconstruction — the rig declares no
         /// module-level <c>MATS</c>, so without that entry this line is the
         /// <c>ReferenceError: MATS is not defined</c> that a bake of her produced on 2026-09-14.
+        /// <c>makeMats</c> is widened too, plainly, so the fold can be counted against the table she
+        /// DECLARES as well as the one the reconstruction keeps.
         /// </summary>
         static IRigScriptHost BuilderHost()
         {
             string widened = RigMeshExtractor.WidenExportedLiteral(
-                File.ReadAllText(Full(RigPath)), Global, new[] { "MATS", "build" }, RigPath);
+                File.ReadAllText(Full(RigPath)), Global, new[] { "MATS", "build", "makeMats" }, RigPath);
 
             IRigScriptHost host = RigScriptHostFactory.Create();
             host.Execute(widened);
@@ -55,27 +62,23 @@ namespace HiddenHarbours.Tests.RigBaking
                   for (var i = 0; i < f.length; i++) used[f[i].mat] = 1;
                   return Object.keys(used).length;
                 }
-                function __declaredMaterialCount(){
+                // The table the registered reconstruction keeps: what the baker packs.
+                function __keptMaterialCount(){
                   return Object.keys(ModernTruck3500.MATS).length;
                 }
-                function __unusedMaterials(){
-                  var f = __faces({}), used = {}, out = [];
-                  for (var i = 0; i < f.length; i++) used[f[i].mat] = 1;
-                  for (var k in ModernTruck3500.MATS) if (!used[k]) out.push(k);
-                  return out.join(',');
+                function __firstKeptMaterial(){
+                  return Object.keys(ModernTruck3500.MATS)[0];
                 }
-                // The lossless fold: two ramps may share a slot only if they resolve to the SAME
-                // colours and the same polish. Anything coarser recolours a face.
-                function __distinctRamps(alias){
-                  var M = ModernTruck3500.MATS, seen = {}, n = 0;
-                  for (var k in M) {
-                    var key = alias && alias[k] ? alias[k] : k;
-                    var m = M[key] || M[k];
-                    var sig = JSON.stringify(m.ramp) + '|p' +
-                              (m.polish === undefined ? '-' : m.polish);
-                    if (!seen[sig]) { seen[sig] = 1; n++; }
-                  }
-                  return n;
+                // The table her makeMats DECLARES, before anything filters it.
+                function __declaredMaterialCount(){
+                  return Object.keys(ModernTruck3500.makeMats(ModernTruck3500.resolve({}))).length;
+                }
+                function __declaredButUnpainted(){
+                  var f = __faces({}), used = {}, out = [];
+                  var M = ModernTruck3500.makeMats(ModernTruck3500.resolve({}));
+                  for (var i = 0; i < f.length; i++) used[f[i].mat] = 1;
+                  for (var k in M) if (!used[k]) out.push(k);
+                  return out.sort().join(',');
                 }
                 function __faceCount(){ return __faces({}).length; }");
             return host;
@@ -94,8 +97,8 @@ namespace HiddenHarbours.Tests.RigBaking
         /// defined</c>.
         ///
         /// <para>This is the regression test for that, and it is deliberately the FIRST thing here:
-        /// the error was a symptom, it looked like the blocker, and it was not. Everything below is
-        /// the actual blocker.</para>
+        /// the error was a symptom, it looked like the blocker, and it was not. The blocker was her
+        /// palette, and section 2 measures the fold that lifted it.</para>
         /// </summary>
         [Test]
         public void HerMatsIsReconstructed_AndTheWidenedRigExecutes()
@@ -115,25 +118,27 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         // =========================================================================================
-        //  2. THE BLOCKER — 27 ramps against 16 slots
+        //  2. THE FOLD — 27 ramps to 16, upstream, inside her own build()
         // =========================================================================================
 
         /// <summary>
-        /// ⭐⭐ <b>SHE DOES NOT FIT THE FACET SHADER, and no vehicle-side change can make her.</b>
-        /// <c>_RampMeta</c> is a <c>float4[16]</c>; she paints 27. This is the Otter's blocker again
-        /// (#558 until the art merge of 2026-08-19) and it is ELEVEN over rather than one.
+        /// ⭐⭐ <b>SHE FITS THE FACET SHADER: 16 ramps by day, 15 by night, against
+        /// <c>_RampMeta</c>'s <c>float4[16]</c>.</b> Her re-issued rig (2026-09-16) carries an
+        /// eleven-entry fold table inside <c>build()</c>, so the faces the baker reads already name
+        /// the folded material. Before it she painted 27, eleven over — the Otter's blocker again.
         ///
-        /// <para>⚠️ <b>Asserted in both directions, and the upward one matters most.</b> The day a
-        /// fold brings her to 16 this test goes red, and that red is the signal to bake her and
-        /// delete her <c>VehicleRigFleet.NotBaked</c> entry — which is how a blocker gets lifted
-        /// deliberately rather than rediscovered by a fleet bake that suddenly exits 0.</para>
+        /// <para>Replaces <c>HerPaletteDoesNotFitTheFacetShader</c>, which pinned 27 used and
+        /// used &gt; 16. Pinned EXACTLY rather than as a ceiling, both ways: a count that comes down
+        /// is a re-issued rig nobody measured, and one that goes up is a fitting that gained a
+        /// material — and at 16 she has no room for one.</para>
         ///
-        /// <para>The face count is pinned alongside because the two move together: a fold that
-        /// changed the face list would be a different truck, not a recolour, and her contract and
-        /// sidecar both pin the rig that produced this number.</para>
+        /// <para>The night count is the day's minus her day-only <c>head</c> lens: the night pass
+        /// swaps it for <c>led</c>, which the day build already paints. The face count is pinned
+        /// alongside because the fold touched no geometry — 2802 before and after — and a different
+        /// face list would be a different truck, not a recolour.</para>
         /// </summary>
         [Test]
-        public void HerPaletteDoesNotFitTheFacetShader()
+        public void HerFoldedPaletteFitsTheFacetShader()
         {
             Assert.That(HullMeshDef.HullRampSlots, Is.EqualTo(ShaderCap),
                 "the shader's ramp table was resized. Every count in this suite was measured " +
@@ -145,79 +150,51 @@ namespace HiddenHarbours.Tests.RigBaking
                 "her face count changed, so this is not the rig these numbers were measured on.");
 
             double used = host.EvaluateNumber("__usedMaterialCount({})");
+            Assert.That(used, Is.EqualTo(16d),
+                $"she paints {used} ramps by day, not 16. Above 16 the fleet bake refuses her again: " +
+                "put the refusal and its measurement back on a VehicleRigFleet.NotBaked entry and " +
+                "ask the art side for the fold — never a repo-side edit under docs/art/rigs/**.");
 
-            Assert.That(used, Is.EqualTo(27d),
-                $"she paints {used} ramps, not 27. If it came DOWN, say so on her NotBaked entry " +
-                "and re-run the fold arithmetic below; if it went UP, a fitting gained a material.");
+            Assert.That(host.EvaluateNumber("__usedMaterialCount({night:true})"), Is.EqualTo(15d),
+                "her night build no longer paints 15 ramps. The day-only `head` lens is the gap; " +
+                "if the two now agree, the night pass stopped being a swap.");
 
-            Assert.That(used, Is.GreaterThan((double)ShaderCap),
-                "she now fits the facet shader. Lift the blocker DELIBERATELY: bake her, wire her " +
-                "def, and delete her VehicleRigFleet.NotBaked entry — entries there leave by " +
-                "deletion, never by rewording.");
+            Assert.That(used, Is.LessThanOrEqualTo((double)ShaderCap),
+                "she no longer fits the facet shader.");
         }
 
         /// <summary>
-        /// ⭐⭐ <b>THE FILTER BUYS NOTHING — she declares 27 and uses all 27.</b> This is the finding
-        /// that decides the whole shape of her intake, so it is measured rather than inferred.
+        /// ⭐ <b>She still DECLARES 27; the fold left eleven names declared and unpainted, and the
+        /// registered filter drops exactly those.</b> The re-issue added no material and renamed
+        /// none — every folded name stays in <c>makeMats</c>, which costs nothing, because the
+        /// reconstruction keeps only the ramps some face actually names.
         ///
-        /// <para>The registered reconstruction keeps only the ramps some face actually names. That
-        /// trick is what saved the older Dually (17 declared, 16 used) and the zodiac (18 / 14). Here
-        /// there is not one orphan to drop — exactly the Otter's position, and for the same reason
-        /// her fix had to come from the art side.</para>
+        /// <para>Replaces <c>EveryRampSheDeclaresIsPainted_SoTheFilterCannotSaveHer</c>, which pinned
+        /// 27 declared and none unpainted: the filter could not save her then, and it is what packs
+        /// her 16 now. The eleven are the fold table's sources, named, so a re-issue that folds a
+        /// DIFFERENT set is a red test rather than the same count by coincidence. <c>paint</c> stays
+        /// first in what is kept, and that order is load-bearing: index 0 is where the face packer
+        /// sends an unknown material name.</para>
         /// </summary>
         [Test]
-        public void EveryRampSheDeclaresIsPainted_SoTheFilterCannotSaveHer()
+        public void TheFoldLeavesElevenNamesDeclaredButUnpainted_AndTheFilterDropsThem()
         {
             using IRigScriptHost host = BuilderHost();
 
             Assert.That(host.EvaluateNumber("__declaredMaterialCount()"), Is.EqualTo(27d),
-                "her declared material count changed.");
+                "her declared material count changed — the fold was supposed to add and rename " +
+                "nothing.");
 
-            string unused = host.EvaluateString("__unusedMaterials()");
-            Assert.That(unused, Is.Empty,
-                $"she now declares ramps no face paints ({unused}). That is HEADROOM the filter " +
-                "takes for free — re-measure the used count, because the blocker may be smaller " +
-                "than her NotBaked entry says.");
-        }
+            Assert.That(host.EvaluateString("__declaredButUnpainted()"),
+                Is.EqualTo("alloy,cover,dash,mirror,plate,reflect,reverse,screen,seatInsert,sidewall,stepGrip"),
+                "the names she declares but no face paints are not the eleven her fold table folds.");
 
-        /// <summary>
-        /// ⭐⭐ <b>What a lossless fold actually buys: 27 → 19, and 18 with one judgement call.</b>
-        /// This is the arithmetic the art ask rests on, kept here so the ask is a number rather than
-        /// "please use fewer colours".
-        ///
-        /// <para><b>Free (27 → 19):</b> six groups resolve to a byte-identical ramp AND polish, so
-        /// merging them cannot move a pixel — <c>bright</c>+<c>chrome</c>,
-        /// <c>badge</c>+<c>plate</c>+<c>reverse</c>, <c>iron</c>+<c>cover</c>,
-        /// <c>galv</c>+<c>alloy</c>, <c>rubber</c>+<c>dash</c>+<c>stepGrip</c>,
-        /// <c>reflect</c>+<c>head</c>.</para>
-        ///
-        /// <para><b>Nearly free (19 → 18):</b> <c>sidewall</c> carries the same ramp as
-        /// <c>rubber</c> and differs only by <c>polish</c> .05 against none — a specular difference
-        /// on a tyre wall, which is a judgement the art side makes, not this test.</para>
-        ///
-        /// <para><b>Still two over.</b> The cheapest remaining merges by face count are
-        /// <c>screen</c> (1 face), <c>mirror</c> (2), <c>seatInsert</c> (10), <c>hoodAccent</c> (10)
-        /// and <c>bedliner</c> (14) — all of which change visible colour. ⚠️ And every one of them
-        /// rewrites <c>modern3500.rig.js</c> and so MOVES the rig hash her contract and her sidecar
-        /// pin: it arrives as a re-issued drop, never as an edit under <c>docs/art/rigs/**</c>.</para>
-        /// </summary>
-        [Test]
-        public void TheLosslessFoldsDoNotReachTheCap()
-        {
-            using IRigScriptHost host = BuilderHost();
+            Assert.That(host.EvaluateNumber("__keptMaterialCount()"), Is.EqualTo(16d),
+                "the registered MATS reconstruction no longer keeps exactly the 16 ramps she paints.");
 
-            Assert.That(host.EvaluateNumber("__distinctRamps(null)"), Is.EqualTo(19d),
-                "the free fold no longer lands on 19 distinct ramp/polish signatures. Two ramps " +
-                "sharing a slot must be byte-identical in BOTH — if this moved, the palette moved.");
-
-            Assert.That(host.EvaluateNumber("__distinctRamps({sidewall:'rubber'})"), Is.EqualTo(18d),
-                "folding `sidewall` into `rubber` no longer lands on 18, so their ramps diverged " +
-                "by more than polish and that merge is no longer nearly free.");
-
-            Assert.That(host.EvaluateNumber("__distinctRamps({sidewall:'rubber'})"),
-                        Is.GreaterThan((double)ShaderCap),
-                "every lossless fold now fits the shader. Ask the art side to land it, then bake " +
-                "her and delete her NotBaked entry.");
+            Assert.That(host.EvaluateString("__firstKeptMaterial()"), Is.EqualTo("paint"),
+                "`paint` is no longer index 0 of the kept table, and index 0 is where an unknown " +
+                "material name lands.");
         }
     }
 }

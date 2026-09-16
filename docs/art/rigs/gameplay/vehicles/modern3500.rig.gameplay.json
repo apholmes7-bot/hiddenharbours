@@ -1,6 +1,6 @@
 {
   "schema": "hidden-harbours-gameplay/modern3500/v1",
-  "derivedFromRigSha256": "d70056fedd78a92872c0e3a94c369eff9ac68462afce0606bc49460391d4159d",
+  "derivedFromRigSha256": "3eb1640029e51e28f8597e393418ab5492ad77e3bd33bd8ce0040cff53eddc86",
   "kind": "road_vehicle",
   "status": "Integration candidate; collision and reach tests in world remain to be done.",
   "coordinate_frame": {

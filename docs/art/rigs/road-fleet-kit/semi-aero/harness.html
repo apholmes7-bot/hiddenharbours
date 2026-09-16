@@ -203,7 +203,7 @@ fetches are blocked and those groups are skipped, not silently passed.</p>
       }
       return { painted:painted, moved:moved, pct:100*moved/painted };
     }
-    var CUE_AT = { doors:6, hood:6, roll:6, bounce:6, steer:4, turn:6 };
+    var CUE_AT = { doors:6, hood:6, roll:6, bounce:6, steer:3, turn:6 };
     var CUE_T1 = { turn:0.25 };
     var CUE_MIN = { roll:100, steer:60, turn:1000, doors:300, hood:1000, bounce:1000 };
     Object.keys(CUE_AT).forEach(function(c){
@@ -248,9 +248,9 @@ fetches are blocked and those groups are skipped, not silently passed.</p>
       assert('anchors', A.fifthWheel.m[1] < A.deck.m[1], FACE[d] + ': the fifth wheel is not aft of the catwalk');
     }
 
-    var lock = pixDiff(V.render(4, rest), V.render(4, Object.assign({}, rest, {steer:1})));
-    assert('steering', lock.moved > 60, 'full lock moves only ' + lock.moved + ' px at S — the front wheels are not yawing');
-    assert('steering', pixDiff(V.render(4, Object.assign({}, rest, {steer:1})), V.render(4, Object.assign({}, rest, {steer:-1}))).moved > 60,
+    var lock = pixDiff(V.render(3, rest), V.render(3, Object.assign({}, rest, {steer:1})));
+    assert('steering', lock.moved > 60, 'full lock moves only ' + lock.moved + ' px at SE — the front wheels are not yawing');
+    assert('steering', pixDiff(V.render(3, Object.assign({}, rest, {steer:1})), V.render(3, Object.assign({}, rest, {steer:-1}))).moved > 60,
       'left lock and right lock look the same');
     var env = V.G.frontWX + (V.G.tireW/2)*Math.cos(V.steer.maxInnerDeg*Math.PI/180) + V.G.wheelR*Math.sin(V.steer.maxInnerDeg*Math.PI/180);
     assert('steering', env <= V.G.hwFender + 0.005, 'at full lock a front tire corner reaches |x| ' + env.toFixed(3)

@@ -21,12 +21,31 @@ overview PNGs, and `bake.cjs`/`verify.cjs` (Node). They stay in the drop on purp
 the source of truth and the repo's own baker makes the repo's meshes** — a second, Node-shaped mesh
 path under `docs/art/rigs/**` would be a fork of the pipeline that nothing reads.
 
+**Re-issued on 2026-09-16 with her palette folded from 27 ramps to 16.** The first cut painted 27
+material ramps against the facet shader's 16 slots, so the fleet bake had to skip her. The re-issued
+rig adds an eleven-entry fold table inside `build()` and changes nothing else. No face was added, no
+geometry moved, and no material name was added or renamed; the eleven folded names are still declared
+in `makeMats`. She paints 16 ramps by day and 15 by night (the day-only `head` lens is the gap). One
+fold departs from the route the art brief proposed: `reflect` → `glass` was taken instead of `bright`
+→ `chrome`, because `bright` is the only consumer of `trim`, and folding it would have made
+`trim:'black'` (and the `blackout` preset) a no-op. The owner kept that departure on 2026-09-16 and
+ruled that she bakes as **a mesh only — no VehicleDef and no vehicle id until her gameplay exists**.
+
+**One line of the rig is the repo's, not the return's: the exported literal gained
+`KEY, GAIN, BIAS, LN, build`.** The baker reads `ModernTruck3500.KEY` off her global and parses it as
+hex. She declares `const KEY` but never exported it, so the first editor bake of 2026-09-16 failed on
+her with *"Could not find any recognizable digits."* `GAIN`, `BIAS`, `LN` and `build` were missing from
+the same literal; the baker had been shimming them in memory, and its warning asks for exactly those
+four. Every name added is one the rig already declared, so nothing she draws moved. That edit is what
+moved the pin below. On `node`, only `MATS` is left for the baker's in-memory widening (it is
+reconstructed); the editor has not baked her since.
+
 ### The pin
 
 `modern3500.rig.js` LF-normalised sha256:
 
 ```
-d70056fedd78a92872c0e3a94c369eff9ac68462afce0606bc49460391d4159d
+3eb1640029e51e28f8597e393418ab5492ad77e3bd33bd8ce0040cff53eddc86
 ```
 
 The same 64 characters appear as `rigSha256` in `modern3500.contract.json` and as
@@ -105,22 +124,37 @@ front wheels; no Ackermann solver"* — and it is why the fleet row carries `Max
 
 ## What was verified where
 
-Verified **in this repo**, against these bytes: the rig's sha256 equals the pin and equals both
-stamps; `modern3500.rig.js` and `modern3500.contract.json` are byte-identical to the drop (both are
-pure LF on each side); all ten sheets are byte-identical to the drop, and their PNG dimensions match
-the contract's manifest sheet for sheet; the four articulation degrees above are the literals in the
-rig source; `sha256sum -c reference/SHA256SUMS.txt` verifies all fifteen listed files.
+Verified **at the 2026-09-16 re-issue**, against these bytes:
 
-One file was normalised, and it is not the rig: **`preview.html` was delivered CRLF** (1,194 line
-endings) where the rig and contract came LF, so it was converted to LF on the way in. The repo stores
-text as LF, nothing stamps a hash over this file, and leaving it mixed would have made its checksum
-line pass on Linux and fail on Windows — the precise failure the `eol=lf` pin exists to prevent. Its
-content is otherwise unchanged and it is identical to the drop's once line endings are normalised.
+- The rig's sha256 equals the pin and equals both stamps.
+- `preview.html` is the returned bytes, pure LF, and re-embeds the folded rig. `modern3500.rig.js`
+  is the returned bytes plus the export line above, also pure LF. The rig copy inside
+  `preview.html` keeps the returned export line; the preview draws from it and never bakes.
+- `modern3500.contract.json` and the ten sheets are **not** the returned files. They were re-baked
+  on `node` by the kit's `bake.cjs` from the returned rig. The returned sheets match `node`'s pixel
+  for pixel but not byte for byte: the return was rendered on a Node-18-compatible runtime whose PNG
+  deflate differs. So the committed sheets are `node`'s, and each digest is also its LFS oid.
+- After the export line was added, `bake.cjs` was run again on `node` from the edited rig. All ten
+  sheets decode to the same pixels as the committed ones (0 differing pixels in every sheet, and the
+  files are byte-identical too), and the contract differs from the committed one by `rigSha256`
+  alone. That contract is the one committed.
+- The contract differs from the previous one by `rigSha256` alone, and the sidecar by
+  `derivedFromRigSha256` alone.
+- On `node`, from the edited rig, `verify.cjs` passed 159 / 159 (faces 2802, triangles 6856, roll
+  seam 0 px), and `count-ramps.cjs` read 16 ramps by day and 15 by night.
+- The sheets' PNG dimensions match the grids above. The rig diff touches none of the four
+  articulation degrees.
+- `sha256sum -c reference/SHA256SUMS.txt` verifies all fifteen listed files.
 
-Proved by **CI**, not here: everything needing the engine — that the sidecar registers, that the
-fleet row's axes partition, that the bake produces the Data assets. `node` is deliberately absent
-from the lane box, so the drop's own `verify.cjs` run was **not** reproduced; its self-check numbers
-are Codex's, are reported as Codex's, and are not repeated here as measurements of ours.
+At the first intake (2026-09-13), `preview.html` was delivered CRLF (1,194 line endings) and
+converted to LF on the way in. The re-issue arrived LF. Nothing stamps a hash over this file, but a
+mixed file would make its checksum line pass on Linux and fail on Windows, which is the failure the
+`eol=lf` pin exists to prevent.
+
+Proved by **the editor bake and CI**, not by `node`: everything that needs the engine. That covers
+the sidecar registering, the fleet row's axes partitioning, the widened rig executing in the repo's
+own script host, and the bake producing her mesh and fittings. The `node` numbers above are `node`'s
+measurements of the rig. They are not the engine's.
 
 ## Known limits
 

@@ -234,9 +234,10 @@ groups are skipped, not silently passed.</p>
       assert('anchors', A.hitch.m[1] < A.hoodLatch.m[1], FACE[d] + ': hitch is not aft of the hood latch');
     }
 
-    var lock = pixDiff(V.render(4, rest), V.render(4, Object.assign({}, rest, {steer:1})));
-    assert('steering', lock.moved > 30, 'full lock moves only ' + lock.moved + ' px at S — the front wheels are not yawing');
-    assert('steering', pixDiff(V.render(4, Object.assign({}, rest, {steer:1})), V.render(4, Object.assign({}, rest, {steer:-1}))).moved > 40,
+    // Use the front quarter because the fascia occludes the tires head-on. Geometry isolation is checked in verify.cjs.
+    var lock = pixDiff(V.render(3, rest), V.render(3, Object.assign({}, rest, {steer:1})));
+    assert('steering', lock.moved > 30, 'full lock moves only ' + lock.moved + ' px at SE — the front wheels are not yawing');
+    assert('steering', pixDiff(V.render(3, Object.assign({}, rest, {steer:1})), V.render(3, Object.assign({}, rest, {steer:-1}))).moved > 40,
       'left lock and right lock look the same');
     var env = V.G.frontWX + (V.G.tireW/2)*Math.cos(V.steer.maxInnerDeg*Math.PI/180) + V.G.wheelR*Math.sin(V.steer.maxInnerDeg*Math.PI/180);
     assert('steering', env <= V.G.hwArch + 0.005, 'at full lock a front tire corner reaches |x| ' + env.toFixed(3)
@@ -330,3 +331,4 @@ groups are skipped, not silently passed.</p>
 </script>
 </body>
 </html>
+

@@ -2,7 +2,7 @@
   "rig": "vanIsoRig.js",
   "exportSymbol": "VanIso",
   "variant": "hightopVan",
-  "derivedFromRigSha256": "1ac7804ddb045ec3a9c9ba8797b8025547c21649d5ea70c61dc7b6e8ee048eb3",
+  "derivedFromRigSha256": "ebfeff32d9cf82aa05bd694419df3a08b1213e60282e261e949629d74d134684",
   "kind": "road_vehicle",
   "label": "Hightop Van",
   "generated": "measured off the rig source by hand-transcription with per-value provenance; no generator in the rig",
@@ -13,21 +13,47 @@
     "axes": "+x curb side, +y nose, +z up",
     "heading_independent": true,
     "at_rest": "every value here is at susF=susR=0, all leaves shut, HIGH roof, panel build. See VARIANTS for what moves.",
-    "pivot_px": { "x": 192, "y": 214, "cell": [384, 320], "_note": "model z=0 projects to the pivot row in all 8 facings" }
+    "pivot_px": {
+      "x": 192,
+      "y": 214,
+      "cell": [
+        384,
+        320
+      ],
+      "_note": "model z=0 projects to the pivot row in all 8 facings"
+    }
   },
   "VARIANTS": {
     "_what": "two BUILD variants live in the one body. They are geometry, not poses — decide them at spawn, not per frame.",
     "roof": {
-      "values": ["high", "low"],
+      "values": [
+        "high",
+        "low"
+      ],
       "default": "high",
-      "roof_z": { "high": 2.72, "low": 2.42 },
-      "height_m": { "high": 2.76, "low": 2.46 },
-      "barn_head_z": { "high": 2.30, "low": 2.00 },
-      "cargo_headroom_m": { "high": 2.03, "low": 1.73 },
+      "roof_z": {
+        "high": 2.72,
+        "low": 2.42
+      },
+      "height_m": {
+        "high": 2.76,
+        "low": 2.46
+      },
+      "barn_head_z": {
+        "high": 2.3,
+        "low": 2
+      },
+      "cargo_headroom_m": {
+        "high": 2.03,
+        "low": 1.73
+      },
       "_note": "every published top-of-van z rides this choice; the pivot, cell and everything below the belt do not"
     },
     "windows": {
-      "values": [false, true],
+      "values": [
+        false,
+        true
+      ],
       "default": false,
       "false": "panel van: blind sides, full bulkhead at y 0.58, bare cargo bay",
       "true": "passenger van: set-in side glass, glazed slide and barn doors, TWO bench rows in the bay, NO bulkhead — the cab and bay are one room",
@@ -48,9 +74,18 @@
     "cargo_length_m": 3.38,
     "wheels": 4,
     "collider_bbox": {
-      "x": [-1.09, 1.09],
-      "y": [-3.04, 3.0],
-      "z": [0, 2.76],
+      "x": [
+        -1.09,
+        1.09
+      ],
+      "y": [
+        -3.04,
+        3
+      ],
+      "z": [
+        0,
+        2.76
+      ],
       "_note": "front arch bulges, not mirrors; z top 2.46 on roof:'low'. Add 0.17 m per side if the mirrors must be solid (glass at z 1.46..1.74)."
     },
     "ground_clearance_m": {
@@ -65,173 +100,630 @@
   "CAB": {
     "_what": "a seated crew compartment on a FLAT floor shared with the bay. On windows:true there is no wall behind it at all.",
     "floor": {
-      "polygon": [[-0.94, 0.56], [0.94, 0.56], [0.94, 1.70], [-0.94, 1.70]],
+      "polygon": [
+        [
+          -0.94,
+          0.56
+        ],
+        [
+          0.94,
+          0.56
+        ],
+        [
+          0.94,
+          1.7
+        ],
+        [
+          -0.94,
+          1.7
+        ]
+      ],
       "z": 0.55,
       "winding": "ccw_from_above",
       "provenance": "buildInterior cargo slab runs to y 0.56; the cab shares its level — one flat floor nose to tail"
     },
-    "liner": { "walls_x": [-0.96, 0.96], "top_z": 2.06, "headroom_above_floor_m": 2.03 },
+    "liner": {
+      "walls_x": [
+        -0.96,
+        0.96
+      ],
+      "top_z": 2.22,
+      "headroom_above_floor_m": 2.03
+    },
     "helm": {
       "side": "street (-x)",
-      "wheel_hub": [-0.48, 1.34, 1.21],
+      "wheel_hub": [
+        -0.48,
+        1.34,
+        1.21
+      ],
       "wheel_r_m": 0.16,
-      "dash_face_y": 1.40,
+      "dash_face_y": 1.4,
       "provenance": "buildInterior tube [-0.48,1.38,1.18]->[-0.48,1.30,1.24] r 0.16 — left-hand drive"
     },
     "seats": [
-      { "id": "front_street", "kind": "bucket", "cushion": { "x": [-0.72, -0.26], "y": [0.70, 1.20], "top_z": 1.10 }, "back": { "y": [0.60, 0.74], "top_z": 1.56 }, "seat_ref": [-0.49, 0.95, 1.10], "height_above_floor_m": 0.55, "role": "driver" },
-      { "id": "front_curb", "kind": "bucket", "cushion": { "x": [0.26, 0.72], "y": [0.70, 1.20], "top_z": 1.10 }, "back": { "y": [0.60, 0.74], "top_z": 1.56 }, "seat_ref": [0.49, 0.95, 1.10], "height_above_floor_m": 0.55, "role": "passenger" }
+      {
+        "id": "front_street",
+        "kind": "bucket",
+        "cushion": {
+          "x": [
+            -0.72,
+            -0.26
+          ],
+          "y": [
+            0.7,
+            1.2
+          ],
+          "top_z": 1.1
+        },
+        "back": {
+          "y": [
+            0.6,
+            0.74
+          ],
+          "top_z": 1.56
+        },
+        "seat_ref": [
+          -0.49,
+          0.95,
+          1.1
+        ],
+        "height_above_floor_m": 0.55,
+        "role": "driver"
+      },
+      {
+        "id": "front_curb",
+        "kind": "bucket",
+        "cushion": {
+          "x": [
+            0.26,
+            0.72
+          ],
+          "y": [
+            0.7,
+            1.2
+          ],
+          "top_z": 1.1
+        },
+        "back": {
+          "y": [
+            0.6,
+            0.74
+          ],
+          "top_z": 1.56
+        },
+        "seat_ref": [
+          0.49,
+          0.95,
+          1.1
+        ],
+        "height_above_floor_m": 0.55,
+        "role": "passenger"
+      }
     ],
     "obstructions": [
-      { "id": "dash", "footprint": { "x": [-0.90, 0.90], "y": [1.40, 1.68] }, "top_z": 1.34, "height_above_floor_m": 0.79, "treatment": "wall" }
+      {
+        "id": "dash",
+        "footprint": {
+          "x": [
+            -0.9,
+            0.9
+          ],
+          "y": [
+            1.4,
+            1.68
+          ]
+        },
+        "top_z": 1.34,
+        "height_above_floor_m": 0.79,
+        "treatment": "wall"
+      }
     ],
     "provenance": "buildInterior + buildCab, read verbatim"
   },
   "CARGO": {
     "floor": {
-      "polygon": [[-0.94, -2.82], [0.94, -2.82], [0.94, 0.56], [-0.94, 0.56]],
+      "polygon": [
+        [
+          -0.94,
+          -2.82
+        ],
+        [
+          0.94,
+          -2.82
+        ],
+        [
+          0.94,
+          0.56
+        ],
+        [
+          -0.94,
+          0.56
+        ]
+      ],
       "z": 0.55,
       "winding": "ccw_from_above",
-      "size_m": [1.88, 3.38],
+      "size_m": [
+        1.88,
+        3.38
+      ],
       "load_height_m": 0.55,
       "provenance": "buildInterior slab at G.floorZ — exact"
     },
-    "walls": { "inner_x": [-0.96, 0.96], "headroom_m": 2.03, "headroom_low_roof_m": 1.73, "headliner_z": 2.58, "front_y": 0.58 },
+    "walls": {
+      "inner_x": [
+        -0.96,
+        0.96
+      ],
+      "headroom_m": 2.03,
+      "headroom_low_roof_m": 1.73,
+      "headliner_z": 2.58,
+      "front_y": 0.58
+    },
     "bulkhead": {
-      "present_when": { "windows": false },
+      "present_when": {
+        "windows": false
+      },
       "y": 0.58,
-      "x": [-0.94, 0.94],
-      "z": [0.55, 2.02],
+      "x": [
+        -0.94,
+        0.94
+      ],
+      "z": [
+        0.55,
+        2.02
+      ],
       "_note": "full-height, no pass-through. windows:true deletes it — cab and bay become one walkable room."
     },
     "obstructions": [
-      { "id": "wheel_tub_street", "footprint": { "x": [-0.94, -0.62], "y": [-2.26, -1.26] }, "top_z": 0.82, "height_above_floor_m": 0.27, "treatment": "step_over" },
-      { "id": "wheel_tub_curb", "footprint": { "x": [0.62, 0.94], "y": [-2.26, -1.26] }, "top_z": 0.82, "height_above_floor_m": 0.27, "treatment": "step_over" },
-      { "id": "bench_row_1", "present_when": { "windows": true }, "footprint": { "x": [-0.80, 0.80], "y": [-0.44, 0.20] }, "top_z": 1.42, "treatment": "seat" },
-      { "id": "bench_row_2", "present_when": { "windows": true }, "footprint": { "x": [-0.80, 0.80], "y": [-1.44, -0.80] }, "top_z": 1.42, "treatment": "seat" }
+      {
+        "id": "wheel_tub_street",
+        "footprint": {
+          "x": [
+            -0.94,
+            -0.62
+          ],
+          "y": [
+            -2.26,
+            -1.26
+          ]
+        },
+        "top_z": 0.82,
+        "height_above_floor_m": 0.27,
+        "treatment": "step_over"
+      },
+      {
+        "id": "wheel_tub_curb",
+        "footprint": {
+          "x": [
+            0.62,
+            0.94
+          ],
+          "y": [
+            -2.26,
+            -1.26
+          ]
+        },
+        "top_z": 0.82,
+        "height_above_floor_m": 0.27,
+        "treatment": "step_over"
+      },
+      {
+        "id": "bench_row_1",
+        "present_when": {
+          "windows": true
+        },
+        "footprint": {
+          "x": [
+            -0.8,
+            0.8
+          ],
+          "y": [
+            -0.44,
+            0.2
+          ]
+        },
+        "top_z": 1.42,
+        "treatment": "seat"
+      },
+      {
+        "id": "bench_row_2",
+        "present_when": {
+          "windows": true
+        },
+        "footprint": {
+          "x": [
+            -0.8,
+            0.8
+          ],
+          "y": [
+            -1.44,
+            -0.8
+          ]
+        },
+        "top_z": 1.42,
+        "treatment": "seat"
+      }
     ],
     "bench_seats": [
-      { "id": "bench_row_1", "present_when": { "windows": true }, "kind": "bench", "cushion": { "x": [-0.80, 0.80], "y": [-0.30, 0.20], "top_z": 0.96 }, "back": { "y": [-0.44, -0.30], "top_z": 1.42 }, "seat_ref": [0, -0.05, 0.96], "width_m": 1.60 },
-      { "id": "bench_row_2", "present_when": { "windows": true }, "kind": "bench", "cushion": { "x": [-0.80, 0.80], "y": [-1.30, -0.80], "top_z": 0.96 }, "back": { "y": [-1.44, -1.30], "top_z": 1.42 }, "seat_ref": [0, -1.05, 0.96], "width_m": 1.60 }
+      {
+        "id": "bench_row_1",
+        "present_when": {
+          "windows": true
+        },
+        "kind": "bench",
+        "cushion": {
+          "x": [
+            -0.8,
+            0.8
+          ],
+          "y": [
+            -0.3,
+            0.2
+          ],
+          "top_z": 0.96
+        },
+        "back": {
+          "y": [
+            -0.44,
+            -0.3
+          ],
+          "top_z": 1.42
+        },
+        "seat_ref": [
+          0,
+          -0.05,
+          0.96
+        ],
+        "width_m": 1.6
+      },
+      {
+        "id": "bench_row_2",
+        "present_when": {
+          "windows": true
+        },
+        "kind": "bench",
+        "cushion": {
+          "x": [
+            -0.8,
+            0.8
+          ],
+          "y": [
+            -1.3,
+            -0.8
+          ],
+          "top_z": 0.96
+        },
+        "back": {
+          "y": [
+            -1.44,
+            -1.3
+          ],
+          "top_z": 1.42
+        },
+        "seat_ref": [
+          0,
+          -1.05,
+          0.96
+        ],
+        "width_m": 1.6
+      }
     ],
-    "clear_between_tubs": { "width_m": 1.24, "over_length_m": 1.0, "_note": "a 1.24 m aisle for the metre the tubs span; full 1.88 m fore and aft of them (panel build — the benches sit ON the tub span in the passenger build)" },
+    "clear_between_tubs": {
+      "width_m": 1.24,
+      "over_length_m": 1,
+      "_note": "a 1.24 m aisle for the metre the tubs span; full 1.88 m fore and aft of them (panel build — the benches sit ON the tub span in the passenger build)"
+    },
     "walkable": "UNRULED — see _confirm.cargo_walkable",
-    "visible_facings": ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+    "visible_facings": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ]
   },
   "THRESHOLD": [
     {
       "id": "door_fl",
       "side": "street (-x, driver)",
       "kind": "hinged",
-      "span_y": [0.62, 1.66],
+      "span_y": [
+        0.62,
+        1.66
+      ],
       "clear_width_m": 1.04,
       "sill_z": 0.52,
-      "head_z": 2.06,
+      "head_z": 2.22,
       "clear_height_m": 1.54,
-      "hinge_axis": { "kind": "vertical", "at": [-0.98, 1.66], "edge": "forward" },
+      "hinge_axis": {
+        "kind": "vertical",
+        "at": [
+          -0.98,
+          1.66
+        ],
+        "edge": "forward"
+      },
       "swing_deg": 62,
       "swing_sense": "CCW seen from above",
       "keep_clear": {
-        "radius_m": 1.04,
-        "sector_deg": [0, 62],
-        "arc_at_sill": [[-1.01, 0.62], [-1.29, 0.67], [-1.54, 0.78], [-1.76, 0.97], [-1.91, 1.20]],
-        "outboard_extreme_x": -1.91,
-        "_note": "sweep of the free edge about the hinge axis; the collider is the arc, not the leaf"
+        "radius_m": 1.030154195326193,
+        "sector_deg": [
+          0,
+          62
+        ],
+        "outboard_extreme_x": -1.9045979165842435,
+        "_note": "33 pose samples of the whole door including its moving mirror. Radius is the closed assembly maximum about the hinge; fit the game collider against CAB_FIT.",
+        "sampled_bounds_xyz": [
+          [
+            -1.9045979165842435,
+            0.6303745019920319,
+            0.534
+          ],
+          [
+            -0.8579124005339192,
+            1.9387287732672214,
+            2.2140000000000004
+          ]
+        ]
       },
-      "boarding": { "ground_to_sill_m": 0.52, "_note": "no running board is modelled — the 0.52 m step-in is bare" },
-      "reach_point": { "pos": [-1.85, 0.35, 0], "hinge_clearance_m": 1.57, "_note": "outside the swept disc; NOT tested against ground colliders" },
-      "mirror": { "outboard_x": -1.26, "z": [1.46, 1.74], "rides": "this door" },
-      "visible_facings": ["NE", "E", "SE"],
-      "provenance": "buildDoorsF + G.doorF/G.doorZ0/G.glassTop; hinge (sx*0.98, 1.66); a = sx*pose*62deg"
+      "boarding": {
+        "ground_to_sill_m": 0.52,
+        "_note": "no running board is modelled — the 0.52 m step-in is bare"
+      },
+      "reach_point": {
+        "pos": [
+          -1.85,
+          0.35,
+          0
+        ],
+        "hinge_clearance_m": 1.57,
+        "_note": "outside the swept disc; NOT tested against ground colliders"
+      },
+      "mirror": {
+        "outboard_x": -1.3,
+        "z": [
+          1.4599999999999997,
+          1.8399999999999999
+        ],
+        "rides": "the DOOR; moves with the complete hinged leaf",
+        "provenance": "cabFit.doorMesh(side,0), mirror-tagged geometry"
+      },
+      "visible_facings": [
+        "NE",
+        "E",
+        "SE"
+      ],
+      "provenance": "buildDoorsF + G.doorF/G.doorZ0/G.glassTop; hinge (sx*0.98, 1.66); a = sx*pose*62deg",
+      "fitted_profile_ref": "CAB_FIT.doors[0]"
     },
     {
       "id": "door_fr",
       "side": "curb (+x)",
       "kind": "hinged",
-      "span_y": [0.62, 1.66],
+      "span_y": [
+        0.62,
+        1.66
+      ],
       "clear_width_m": 1.04,
       "sill_z": 0.52,
-      "head_z": 2.06,
+      "head_z": 2.22,
       "clear_height_m": 1.54,
-      "hinge_axis": { "kind": "vertical", "at": [0.98, 1.66], "edge": "forward" },
+      "hinge_axis": {
+        "kind": "vertical",
+        "at": [
+          0.98,
+          1.66
+        ],
+        "edge": "forward"
+      },
       "swing_deg": 62,
       "swing_sense": "CW seen from above",
       "keep_clear": {
-        "radius_m": 1.04,
-        "sector_deg": [0, 62],
-        "arc_at_sill": [[1.01, 0.62], [1.29, 0.67], [1.54, 0.78], [1.76, 0.97], [1.91, 1.20]],
-        "outboard_extreme_x": 1.91,
-        "_note": "sweep of the free edge about the hinge axis"
+        "radius_m": 1.030154195326193,
+        "sector_deg": [
+          0,
+          62
+        ],
+        "outboard_extreme_x": 1.9045979165842435,
+        "_note": "33 pose samples of the whole door including its moving mirror. Radius is the closed assembly maximum about the hinge; fit the game collider against CAB_FIT.",
+        "sampled_bounds_xyz": [
+          [
+            0.8579124005339192,
+            0.6303745019920319,
+            0.534
+          ],
+          [
+            1.9045979165842435,
+            1.9387287732672214,
+            2.2140000000000004
+          ]
+        ]
       },
-      "boarding": { "ground_to_sill_m": 0.52, "_note": "bare step-in, no board" },
-      "reach_point": { "pos": [1.85, 0.35, 0], "hinge_clearance_m": 1.57, "_note": "outside the swept disc; NOT tested against ground colliders" },
-      "mirror": { "outboard_x": 1.26, "z": [1.46, 1.74], "rides": "this door" },
-      "visible_facings": ["SW", "W", "NW"],
-      "provenance": "buildDoorsF + G.doorF/G.doorZ0/G.glassTop; hinge (sx*0.98, 1.66); a = sx*pose*62deg"
+      "boarding": {
+        "ground_to_sill_m": 0.52,
+        "_note": "bare step-in, no board"
+      },
+      "reach_point": {
+        "pos": [
+          1.85,
+          0.35,
+          0
+        ],
+        "hinge_clearance_m": 1.57,
+        "_note": "outside the swept disc; NOT tested against ground colliders"
+      },
+      "mirror": {
+        "outboard_x": 1.3,
+        "z": [
+          1.4599999999999997,
+          1.8399999999999999
+        ],
+        "rides": "the DOOR; moves with the complete hinged leaf",
+        "provenance": "cabFit.doorMesh(side,0), mirror-tagged geometry"
+      },
+      "visible_facings": [
+        "SW",
+        "W",
+        "NW"
+      ],
+      "provenance": "buildDoorsF + G.doorF/G.doorZ0/G.glassTop; hinge (sx*0.98, 1.66); a = sx*pose*62deg",
+      "fitted_profile_ref": "CAB_FIT.doors[1]"
     },
     {
       "id": "slide",
       "side": "curb (+x)",
       "kind": "sliding",
-      "span_y": [-0.62, 0.58],
-      "clear_width_m": 1.20,
+      "span_y": [
+        -0.62,
+        0.58
+      ],
+      "clear_width_m": 1.2,
       "sill_z": 0.55,
-      "frame_lip_z": 0.50,
-      "head_z": 2.06,
+      "frame_lip_z": 0.5,
+      "head_z": 2.22,
       "clear_height_m": 1.51,
       "motion": {
         "pop_out_m": 0.085,
         "travel_aft_m": 1.16,
         "rule": "pops out over the first 10% of the pose, then runs aft along the track at z 1.30..1.36",
-        "parked_over": { "x": [1.01, 1.105], "y": [-1.78, -0.58] }
+        "parked_over": {
+          "x": [
+            1.01,
+            1.105
+          ],
+          "y": [
+            -1.78,
+            -0.58
+          ]
+        }
       },
       "keep_clear": {
-        "strip": { "x": [1.01, 1.13], "y": [-1.78, 0.58] },
+        "strip": {
+          "x": [
+            1.01,
+            1.13
+          ],
+          "y": [
+            -1.78,
+            0.58
+          ]
+        },
         "_note": "no swept arc — a 0.12 m strip along the body covers the pop-out and the parked leaf. The door never leaves the side."
       },
-      "boarding": { "ground_to_floor_m": 0.55, "_note": "the sill IS the cargo floor — kerb loading, one step" },
-      "reach_point": { "pos": [1.90, -0.02, 0], "_note": "NOT tested against ground colliders" },
-      "visible_facings": ["SW", "W", "NW"],
+      "boarding": {
+        "ground_to_floor_m": 0.55,
+        "_note": "the sill IS the cargo floor — kerb loading, one step"
+      },
+      "reach_point": {
+        "pos": [
+          1.9,
+          -0.02,
+          0
+        ],
+        "_note": "NOT tested against ground colliders"
+      },
+      "visible_facings": [
+        "SW",
+        "W",
+        "NW"
+      ],
       "provenance": "buildSlide + G.slideY/G.slideZ0; outT=0.085*min(1,slide*6), aft=1.16*max(0,(slide-0.10)/0.90)"
     },
     {
       "id": "barn_l",
       "side": "tail, street leaf",
       "kind": "hinged",
-      "span_x": [-0.92, 0.0],
+      "span_x": [
+        -0.92,
+        0
+      ],
       "clear_width_m": 0.92,
-      "sill_z": 0.50,
-      "head_z": 2.30,
-      "head_z_low_roof": 2.00,
-      "hinge_axis": { "kind": "vertical", "at": [-0.98, -2.92], "edge": "outer" },
+      "sill_z": 0.5,
+      "head_z": 2.3,
+      "head_z_low_roof": 2,
+      "hinge_axis": {
+        "kind": "vertical",
+        "at": [
+          -0.98,
+          -2.92
+        ],
+        "edge": "outer"
+      },
       "swing_deg": 96,
       "swing_sense": "CW seen from above (out and aft)",
       "keep_clear": {
         "radius_m": 0.98,
-        "sector_deg": [0, 96],
-        "aft_extreme_y": -3.90,
+        "sector_deg": [
+          0,
+          96
+        ],
+        "aft_extreme_y": -3.9,
         "outboard_extreme_x": -1.08,
         "_note": "quarter-disc aft of the tail per leaf; both leaves open want the full 1.96 m square behind the van"
       },
-      "reach_point": { "pos": [-0.50, -4.10, 0], "hinge_clearance_m": 1.27 },
-      "visible_facings": ["N", "NE", "NW"],
+      "reach_point": {
+        "pos": [
+          -0.5,
+          -4.1,
+          0
+        ],
+        "hinge_clearance_m": 1.27
+      },
+      "visible_facings": [
+        "N",
+        "NE",
+        "NW"
+      ],
       "provenance": "buildBarn hinge (sx*0.98, G.tailY); a = sx*pose*96deg; head = roofZ - G.barnDrop"
     },
     {
       "id": "barn_r",
       "side": "tail, curb leaf",
       "kind": "hinged",
-      "span_x": [0.0, 0.92],
+      "span_x": [
+        0,
+        0.92
+      ],
       "clear_width_m": 0.92,
-      "sill_z": 0.50,
-      "head_z": 2.30,
-      "head_z_low_roof": 2.00,
-      "hinge_axis": { "kind": "vertical", "at": [0.98, -2.92], "edge": "outer" },
+      "sill_z": 0.5,
+      "head_z": 2.3,
+      "head_z_low_roof": 2,
+      "hinge_axis": {
+        "kind": "vertical",
+        "at": [
+          0.98,
+          -2.92
+        ],
+        "edge": "outer"
+      },
       "swing_deg": 96,
       "swing_sense": "CCW seen from above (out and aft)",
-      "keep_clear": { "radius_m": 0.98, "sector_deg": [0, 96], "aft_extreme_y": -3.90, "outboard_extreme_x": 1.08 },
-      "reach_point": { "pos": [0.50, -4.10, 0], "hinge_clearance_m": 1.27 },
-      "visible_facings": ["N", "NE", "NW"],
+      "keep_clear": {
+        "radius_m": 0.98,
+        "sector_deg": [
+          0,
+          96
+        ],
+        "aft_extreme_y": -3.9,
+        "outboard_extreme_x": 1.08
+      },
+      "reach_point": {
+        "pos": [
+          0.5,
+          -4.1,
+          0
+        ],
+        "hinge_clearance_m": 1.27
+      },
+      "visible_facings": [
+        "N",
+        "NE",
+        "NW"
+      ],
       "provenance": "buildBarn hinge (sx*0.98, G.tailY); a = sx*pose*96deg"
     }
   ],
@@ -244,20 +736,49 @@
     "hitch": {
       "id": "hitch_rear",
       "type": "receiver_ball",
-      "present_when": { "hitch": true },
+      "present_when": {
+        "hitch": true
+      },
       "default": true,
-      "receiver": { "x": [-0.07, 0.07], "y": [-3.12, -2.92], "z": [0.30, 0.42] },
-      "coupling_point": [0, -3.08, 0.52],
+      "receiver": {
+        "x": [
+          -0.07,
+          0.07
+        ],
+        "y": [
+          -3.12,
+          -2.92
+        ],
+        "z": [
+          0.3,
+          0.42
+        ]
+      },
+      "coupling_point": [
+        0,
+        -3.08,
+        0.52
+      ],
       "ball_top_z": 0.52,
-      "visible_facings": ["N", "NE", "NW"],
+      "visible_facings": [
+        "N",
+        "NE",
+        "NW"
+      ],
       "provenance": "buildFrame hitch block + tube [0,-3.08,0.42]->[0,-3.08,0.52]; anchors().hitch is the same point"
     },
     "front_hooks": [],
     "_note": "one ball, no pintle, no fifth wheel, and NO front recovery points are modelled — the bumper is plastic cladding."
   },
   "SUSPENSION": {
-    "travel_m": { "front": 0.08, "rear": 0.10 },
-    "input_range": [-1, 1],
+    "travel_m": {
+      "front": 0.08,
+      "rear": 0.1
+    },
+    "input_range": [
+      -1,
+      1
+    ],
     "formula": "dz(y) = -(susF*0.08)*t - (susR*0.10)*(1-t),  t = (y - (-1.76)) / 3.96",
     "applies_to": "the whole body group (shell, doors, slide, barn leaves, hood, hitch, mirrors) — the wheels do NOT move",
     "consequence": "every polygon in CAB, CARGO, THRESHOLD and TOW rides that dz; t extrapolates past both axles so the bumpers pitch further than the travel.",
@@ -266,26 +787,88 @@
   "WHEELS": {
     "radius_m": 0.36,
     "tire_width_m": 0.24,
-    "axles": { "front_y": 2.20, "rear_y": -1.76, "wheelbase_m": 3.96 },
+    "axles": {
+      "front_y": 2.2,
+      "rear_y": -1.76,
+      "wheelbase_m": 3.96
+    },
     "list": [
-      { "id": "FL", "pos": [-0.82, 2.20, 0.36], "role": "steer", "steer_axis": { "kind": "vertical", "at": [-0.82, 2.20] } },
-      { "id": "FR", "pos": [0.82, 2.20, 0.36], "role": "steer", "steer_axis": { "kind": "vertical", "at": [0.82, 2.20] } },
-      { "id": "RL", "pos": [-0.82, -1.76, 0.36], "role": "drive" },
-      { "id": "RR", "pos": [0.82, -1.76, 0.36], "role": "drive" }
+      {
+        "id": "FL",
+        "pos": [
+          -0.82,
+          2.2,
+          0.36
+        ],
+        "role": "steer",
+        "steer_axis": {
+          "kind": "vertical",
+          "at": [
+            -0.82,
+            2.2
+          ]
+        }
+      },
+      {
+        "id": "FR",
+        "pos": [
+          0.82,
+          2.2,
+          0.36
+        ],
+        "role": "steer",
+        "steer_axis": {
+          "kind": "vertical",
+          "at": [
+            0.82,
+            2.2
+          ]
+        }
+      },
+      {
+        "id": "RL",
+        "pos": [
+          -0.82,
+          -1.76,
+          0.36
+        ],
+        "role": "drive"
+      },
+      {
+        "id": "RR",
+        "pos": [
+          0.82,
+          -1.76,
+          0.36
+        ],
+        "role": "drive"
+      }
     ],
-    "track_m": { "front": 1.64, "rear": 1.64 },
+    "track_m": {
+      "front": 1.64,
+      "rear": 1.64
+    },
     "contact_z": 0,
     "_note": "roll is per-wheel (wFL..wRR, REVOLUTIONS) on top of the master roll. One revolution closes the hubs exactly and the tread to 0.06% of painted pixels (23.81 stripes per turn) — seamless in motion, not bit-exact.",
     "provenance": "G.frontWX / rearWX / axF / axR / wheelR / tireW — exact"
   },
   "STEERING": {
     "param": "steer",
-    "range": [-1, 1],
+    "range": [
+      -1,
+      1
+    ],
     "sense": "+1 = full LEFT lock; the nose swings toward -x",
-    "max_deg": { "inner": 24, "outer": 20.6 },
+    "max_deg": {
+      "inner": 24,
+      "outer": 20.6
+    },
     "ackermann": "outer = atan(1/(1/tan(inner) + track/wheelbase)), front track 1.64 m, wheelbase 3.96 m",
     "axis": "vertical, through each front wheel centre — no kingpin offset, caster or scrub radius is modelled",
-    "applies_to": ["FL", "FR"],
+    "applies_to": [
+      "FL",
+      "FR"
+    ],
     "turning_radius_m": {
       "rear_axle_centre": 8.89,
       "outer_front_wheel_path": 10.49,
@@ -303,35 +886,208 @@
   "YAW": {
     "param": "yaw",
     "units": "degrees",
-    "range": [-45, 45],
+    "range": [
+      -45,
+      45
+    ],
     "what": "heading between the eight facings. The model turns about z before projection under a FIXED key, so the shading is rebaked for the new heading — this is not a rotated sprite.",
     "pivot": "unaffected; the origin projects to the published pivot at any yaw",
     "frame": "yaw is a RENDER param, not geometry. Every metre in this file is in the machine frame and does not move with it.",
     "gameplay": "a heading is dir*45 + yaw. Colliders, reach points and seat refs rotate with the machine as they always did; nothing here needs a yaw correction."
   },
   "ATTACH": {
-    "exhaust_tip": { "pos": [0.55, -3.00, 0.21], "_note": "curb side, aft — smoke/heat FX attach" },
-    "fuel_tank": { "x": [-0.90, -0.50], "y": [-0.50, 0.50], "z": [0.30, 0.50], "side": "street", "_note": "the tank is modelled; the filler neck is not (see _excluded)" },
+    "exhaust_tip": {
+      "pos": [
+        0.55,
+        -3,
+        0.21
+      ],
+      "_note": "curb side, aft — smoke/heat FX attach"
+    },
+    "fuel_tank": {
+      "x": [
+        -0.9,
+        -0.5
+      ],
+      "y": [
+        -0.5,
+        0.5
+      ],
+      "z": [
+        0.3,
+        0.5
+      ],
+      "side": "street",
+      "_note": "the tank is modelled; the filler neck is not (see _excluded)"
+    },
     "engine_bay": {
-      "hood_hinge": { "kind": "x_axis", "at_y": 1.74, "at_z": 1.28 },
+      "hood_hinge": {
+        "kind": "x_axis",
+        "at_y": 1.74,
+        "at_z": 1.28
+      },
       "open_deg": 42,
-      "bay_walls_x": [-0.80, 0.80],
-      "bay_y": [1.74, 2.82],
-      "block": { "x": [-0.34, 0.34], "y": [1.95, 2.60], "top_z": 1.05 },
-      "battery": { "x": [-0.74, -0.44], "y": [2.35, 2.65], "top_z": 1.06, "side": "street" },
-      "visible_facings": ["SE", "S", "SW"],
+      "bay_walls_x": [
+        -0.8,
+        0.8
+      ],
+      "bay_y": [
+        1.74,
+        2.82
+      ],
+      "block": {
+        "x": [
+          -0.34,
+          0.34
+        ],
+        "y": [
+          1.95,
+          2.6
+        ],
+        "top_z": 1.05
+      },
+      "battery": {
+        "x": [
+          -0.74,
+          -0.44
+        ],
+        "y": [
+          2.35,
+          2.65
+        ],
+        "top_z": 1.06,
+        "side": "street"
+      },
+      "visible_facings": [
+        "SE",
+        "S",
+        "SW"
+      ],
       "_note": "a real bay under the stub hood — a repair/jump interaction has something to look at"
     },
-    "slide_track": { "x": [1.005, 1.045], "y": [-2.35, -0.75], "z": [1.30, 1.36], "_note": "the visible rail the curb door runs on" },
-    "roof": { "attach": [0, -0.75, 2.72], "flat_area": { "x": [-0.90, 0.90], "y": [-2.86, 0.95] }, "_note": "rack/ladder attach; z 2.42 and the area runs to y 1.15 on roof:'low'. No rack is modelled." }
+    "slide_track": {
+      "x": [
+        1.005,
+        1.045
+      ],
+      "y": [
+        -2.35,
+        -0.75
+      ],
+      "z": [
+        1.3,
+        1.36
+      ],
+      "_note": "the visible rail the curb door runs on"
+    },
+    "roof": {
+      "attach": [
+        0,
+        -0.75,
+        2.72
+      ],
+      "flat_area": {
+        "x": [
+          -0.9,
+          0.9
+        ],
+        "y": [
+          -2.86,
+          0.95
+        ]
+      },
+      "_note": "rack/ladder attach; z 2.42 and the area runs to y 1.15 on roof:'low'. No rack is modelled."
+    }
   },
   "INTERACT": [
-    { "id": "drive", "action": "enter_drive", "at": "door_fl", "reach_point": [-1.85, 0.35, 0], "visible_facings": ["NE", "E", "SE"] },
-    { "id": "ride", "action": "enter_ride", "at": "door_fr", "reach_point": [1.85, 0.35, 0], "visible_facings": ["SW", "W", "NW"] },
-    { "id": "slide", "action": "open_close_load", "at": "slide", "reach_point": [1.90, -0.02, 0], "visible_facings": ["SW", "W", "NW"] },
-    { "id": "barn", "action": "open_close_load", "at": "barn_l/barn_r", "reach_point": [0, -4.05, 0], "visible_facings": ["N", "NE", "NW"] },
-    { "id": "hood", "action": "open_close_engine", "reach_point": [0, 3.60, 0], "visible_facings": ["SE", "S", "SW"] },
-    { "id": "hitch", "action": "couple", "reach_point": [0, -3.60, 0], "visible_facings": ["N", "NE", "NW"] }
+    {
+      "id": "drive",
+      "action": "enter_drive",
+      "at": "door_fl",
+      "reach_point": [
+        -1.85,
+        0.35,
+        0
+      ],
+      "visible_facings": [
+        "NE",
+        "E",
+        "SE"
+      ]
+    },
+    {
+      "id": "ride",
+      "action": "enter_ride",
+      "at": "door_fr",
+      "reach_point": [
+        1.85,
+        0.35,
+        0
+      ],
+      "visible_facings": [
+        "SW",
+        "W",
+        "NW"
+      ]
+    },
+    {
+      "id": "slide",
+      "action": "open_close_load",
+      "at": "slide",
+      "reach_point": [
+        1.9,
+        -0.02,
+        0
+      ],
+      "visible_facings": [
+        "SW",
+        "W",
+        "NW"
+      ]
+    },
+    {
+      "id": "barn",
+      "action": "open_close_load",
+      "at": "barn_l/barn_r",
+      "reach_point": [
+        0,
+        -4.05,
+        0
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "NW"
+      ]
+    },
+    {
+      "id": "hood",
+      "action": "open_close_engine",
+      "reach_point": [
+        0,
+        3.6,
+        0
+      ],
+      "visible_facings": [
+        "SE",
+        "S",
+        "SW"
+      ]
+    },
+    {
+      "id": "hitch",
+      "action": "couple",
+      "reach_point": [
+        0,
+        -3.6,
+        0
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "NW"
+      ]
+    }
   ],
   "_interact_notes": {
     "reach_point": "a request, not a promise — a ground-level standing spot derived from which face the item is on. NOT validated against terrain, kerb or another vehicle.",
@@ -354,5 +1110,277 @@
     "roof_variant_zs": "barn head_z, roof attach z, headroom and height_m all ride the roof variant. Nothing in this file is pre-shifted; the variant blocks give both values.",
     "reach_points": "six reach points, none tested against a ground collider or against each other.",
     "steering_and_yaw": "STEERING moves the wheels only; YAW moves the machine. Nothing couples them — a game that turns the wheels without yawing (or the reverse) will look wrong, and the rig will not stop it."
+  },
+  "ART_REVISION": {
+    "date": "2026-09-13",
+    "pass": 3,
+    "primary_geometry_contract": "All pass 2 metric constants and at-rest anchors retained, including its van header correction. Door opening shape now tapers with the windshield and roof.",
+    "exterior": "Fitted cab sides, door leaves, jambs and roof headers. Mirrors move with their doors. Use CAB_FIT and fresh mesh bounds for integration.",
+    "source_notes": "See ../FINAL-PASS.md",
+    "world_validation": "Rig geometry and render checks performed; Unity playtest and physics collider fitting not performed."
+  },
+  "CAB_FIT": {
+    "schema": 1,
+    "space": "rig-local metres, unsuspended and untilted",
+    "derivedFromRigSha256": "ebfeff32d9cf82aa05bd694419df3a08b1213e60282e261e949629d74d134684",
+    "profile": {
+      "belt": 1.42,
+      "rake": 0.35,
+      "front": 1.72,
+      "roofY": 1.34,
+      "roofZ": 2.335,
+      "drop": 0.075,
+      "xb": 0.92,
+      "xt": 0.86,
+      "hx": 0.98,
+      "wb": {
+        "y": 1.7,
+        "z": 1.32
+      },
+      "wt": {
+        "y": 1.34,
+        "z": 2.22
+      },
+      "hingeSetback": 0.065
+    },
+    "door_outline_yz": [
+      [
+        0.638,
+        0.534
+      ],
+      [
+        1.595,
+        0.534
+      ],
+      [
+        1.595,
+        1.42
+      ],
+      [
+        1.2778125,
+        2.145
+      ],
+      [
+        1.216125,
+        2.2060000000000004
+      ],
+      [
+        0.675,
+        2.2060000000000004
+      ],
+      [
+        0.638,
+        2.145
+      ],
+      [
+        0.638,
+        1.42
+      ]
+    ],
+    "nominal_threshold_note": "THRESHOLD span/clear_width/head values describe the retained nominal aperture. Use this tapered outline and section widths for the actual fitted opening.",
+    "doors": [
+      {
+        "side": "street",
+        "hinge_xy": [
+          -0.98,
+          1.66
+        ],
+        "swing_deg": 62,
+        "closed_outline_xyz": [
+          [
+            -1.01,
+            0.638,
+            0.534
+          ],
+          [
+            -1.0092091925086435,
+            1.595,
+            0.534
+          ],
+          [
+            -0.9295393066666666,
+            1.595,
+            1.42
+          ],
+          [
+            -0.8973413880004883,
+            1.2778125,
+            2.145
+          ],
+          [
+            -0.9166921671483429,
+            1.216125,
+            2.2060000000000004
+          ],
+          [
+            -0.96677,
+            0.675,
+            2.2060000000000004
+          ],
+          [
+            -0.970125,
+            0.638,
+            2.145
+          ],
+          [
+            -1.01,
+            0.638,
+            1.42
+          ]
+        ],
+        "closed_bounds": [
+          [
+            -1.3,
+            0.6303745019920319,
+            0.534
+          ],
+          [
+            -0.8579124005339192,
+            1.651875,
+            2.2140000000000004
+          ]
+        ],
+        "open_bounds": [
+          [
+            -1.9045979165842435,
+            1.1378185783755912,
+            0.534
+          ],
+          [
+            -0.9810421580145781,
+            1.9387287732672214,
+            2.2140000000000004
+          ]
+        ],
+        "sampled_sweep_bounds": [
+          [
+            -1.9045979165842435,
+            0.6303745019920319,
+            0.534
+          ],
+          [
+            -0.8579124005339192,
+            1.9387287732672214,
+            2.2140000000000004
+          ]
+        ],
+        "sweep_samples": 33,
+        "mirror_closed_bounds": [
+          [
+            -1.3,
+            1.4339471610474737,
+            1.4599999999999997
+          ],
+          [
+            -0.9669588327894019,
+            1.651875,
+            1.8399999999999999
+          ]
+        ],
+        "mirror_rides": "door",
+        "keep_clear_radius_xy_m": 1.030154195326193
+      },
+      {
+        "side": "curb",
+        "hinge_xy": [
+          0.98,
+          1.66
+        ],
+        "swing_deg": 62,
+        "closed_outline_xyz": [
+          [
+            1.01,
+            0.638,
+            0.534
+          ],
+          [
+            1.0092091925086435,
+            1.595,
+            0.534
+          ],
+          [
+            0.9295393066666666,
+            1.595,
+            1.42
+          ],
+          [
+            0.8973413880004883,
+            1.2778125,
+            2.145
+          ],
+          [
+            0.9166921671483429,
+            1.216125,
+            2.2060000000000004
+          ],
+          [
+            0.96677,
+            0.675,
+            2.2060000000000004
+          ],
+          [
+            0.970125,
+            0.638,
+            2.145
+          ],
+          [
+            1.01,
+            0.638,
+            1.42
+          ]
+        ],
+        "closed_bounds": [
+          [
+            0.8579124005339192,
+            0.6303745019920319,
+            0.534
+          ],
+          [
+            1.3,
+            1.651875,
+            2.2140000000000004
+          ]
+        ],
+        "open_bounds": [
+          [
+            0.9810421580145781,
+            1.1378185783755912,
+            0.534
+          ],
+          [
+            1.9045979165842435,
+            1.9387287732672214,
+            2.2140000000000004
+          ]
+        ],
+        "sampled_sweep_bounds": [
+          [
+            0.8579124005339192,
+            0.6303745019920319,
+            0.534
+          ],
+          [
+            1.9045979165842435,
+            1.9387287732672214,
+            2.2140000000000004
+          ]
+        ],
+        "sweep_samples": 33,
+        "mirror_closed_bounds": [
+          [
+            0.9669588327894019,
+            1.4339471610474737,
+            1.4599999999999997
+          ],
+          [
+            1.3,
+            1.651875,
+            1.8399999999999999
+          ]
+        ],
+        "mirror_rides": "door",
+        "keep_clear_radius_xy_m": 1.030154195326193
+      }
+    ]
   }
 }

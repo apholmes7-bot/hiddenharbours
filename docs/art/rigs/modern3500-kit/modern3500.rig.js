@@ -423,7 +423,19 @@
       wheel(rolling,sx*G.rearWXin,G.axR,sx,s.roll+s['wR'+id],false,0,'wheelR'+id+'_inner');
       wheel(rolling,sx*G.rearWXout,G.axR,sx,s.roll+s['wR'+id],true,0,'wheelR'+id+'_outer');
     }
-    for(const f of rolling)f.group=f.group||'axles';return body.concat(rolling);
+    for(const f of rolling)f.group=f.group||'axles';
+    /* JOB 3 — ramp fold, applied inside build() so the game bakes exactly what the sheets show.
+       27 baked ramps -> 16. Folds only: no face added, no material name added or renamed, no
+       geometry touched. Every folded name stays declared in makeMats; unused ramps are free.
+       plate/reverse -> badge, cover -> iron, alloy -> galv, dash/stepGrip/sidewall -> rubber:
+         identical ramp expressions (sidewall also drops its 0.05 polish).
+       seatInsert -> cloth, reflect -> glass, mirror -> glass: each a .slice() of its target.
+       screen -> bedliner: one face, the dash screen. */
+    const FOLD={plate:'badge',reverse:'badge',cover:'iron',alloy:'galv',dash:'rubber',stepGrip:'rubber',
+      sidewall:'rubber',seatInsert:'cloth',reflect:'glass',mirror:'glass',screen:'bedliner'};
+    const out=body.concat(rolling);
+    for(const f of out){const t=FOLD[f.mat];if(t)f.mat=t;}
+    return out;
   }
   function makeMats(s){
     const cool=r=>s.night?r.map(c=>mix(c,'#101d31',.37)):r;
@@ -543,5 +555,5 @@
   }
   root.ModernTruck3500={W,H,PX,DIRS:8,pivot:{x:cx,y:groundY},defaultElev:40,order:['N','NE','E','SE','S','SW','W','NW'],
     BODY,PRESETS,CUES,G,travel:{F:TF,R:TR},version:'1.1.0-aero-art-candidate',list:()=>['modern3500'],dims,resolve,render,frames,project,
-    anchors,anchorPoints,bodyOffset:(y,o={})=>bodyOffset(y,resolve(o)),mesh,obj};
+    anchors,anchorPoints,bodyOffset:(y,o={})=>bodyOffset(y,resolve(o)),mesh,obj,KEY,GAIN,BIAS,LN,build};
 })(typeof globalThis!=='undefined'?globalThis:window);

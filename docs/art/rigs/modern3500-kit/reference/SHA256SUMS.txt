@@ -1,20 +1,23 @@
-d70056fedd78a92872c0e3a94c369eff9ac68462afce0606bc49460391d4159d  ../modern3500.rig.js
-b44363bb7fa8c9e8c1d2ea1000968596ba4db830d831af1c45f974f65b267bae  ../modern3500.contract.json
-f1f801c7612971bdd31e46e00ebb30dbff87ebfa948d3202a8e51bcc665bbe84  ../preview.html
-b760cddfa7833361caaa091ce2c4e3c07a30c02578d8eb37800e5052b1bf771f  ../README.md
-5815ecc98408d8deceef8be92af3c86dc32850f42c211eae9dcaca1cddefcd11  ../../gameplay/vehicles/modern3500.rig.gameplay.json
-00e84b4c403d371956db968c4cf6383626aff099a63cbb7fe87b03f9ed54dd17  Modern3500_doors_W.png
-0b5432f70d660c560c59a0527349882cbfbaadf3ad7d572d2e5060c62bd040fd  Modern3500_drive_W.png
-5d1a7680f2e027442fa0b579ad51c2faebc638f6bf7150c99749d5b7d28c765d  Modern3500_gate_NE.png
-2f4ca55ae6507a8f1a55c4ab23cea2d67a0e9d1c902e93e11a78d1fd7febe9f9  Modern3500_graphite_8dir.png
-5f8ff27162c71ba9cc994fc8b4eadac6dd72bb1239e458df00ebd9e0e8fc1d7d  Modern3500_hood_SE.png
-4c070ab0f11f3a5af7a5d6d4f699e0546a5961bfd90889495ccc9f9e166e6d48  Modern3500_night_8dir.png
-5b95eb06db57e19134bee5f6b4f844fd507cb36a422e7e7b677cdd69a1a659f4  Modern3500_open_8dir.png
-f57f171a0e3517f8b232b55de23988794e7284c51fc649f1de5374874c8db1aa  Modern3500_paints_SE.png
-c7f426431d9355aff5821bd7407940b9d49410dc7506901ae0c07e04c0980092  Modern3500_pearl_8dir.png
-5beff303ccfd075ae657b794a6307c12074b646041d1ca6f763329146fb0499a  Modern3500_steer_SE.png
+3eb1640029e51e28f8597e393418ab5492ad77e3bd33bd8ce0040cff53eddc86  ../modern3500.rig.js
+2703e8990ebad43fd35c932bb1f813537e17415240191ae0ca9bd7db9c75b8e1  ../modern3500.contract.json
+0dd29fcd1b2e48ab2f10fd8f044fd9a9cc03be292597c819806644a7a4d21fd8  ../preview.html
+c51104569e78c32a37bc20914b64bb7b167bf8bbd4c8bd1b7d01dd9c70945191  ../README.md
+72e6801ff8fad93a592539b72976f71a3bfd0a1ffeff900e5c2f3fd463d05f65  ../../gameplay/vehicles/modern3500.rig.gameplay.json
+56b6903ca45d7813129388d358ee9a042c0f57e99ef6674061b1229c2145c445  Modern3500_doors_W.png
+9f4b7c628eb03addb2af14c24cee9bcd47984af9665ff6fadfbb4d29f013d73f  Modern3500_drive_W.png
+884dc62cd325c0370812b75840ac3d1ba76db1981f9bf3087087a9a2b981a023  Modern3500_gate_NE.png
+d40cddf04e4806a4118869007c36192d2f7759bd2b179defbed737b22f977f1e  Modern3500_graphite_8dir.png
+7a82ee2a0e5078ce3ed6a32e7d534bea4ce8eefa6439bef6ce623ef1e94117aa  Modern3500_hood_SE.png
+134d55f67bdcaddb7961e3c0bfbeacb708839391562c3db1702ad7bd6276cf5a  Modern3500_night_8dir.png
+7851a117b0861f19dd2489161cfff6eff4b8b5bd9ca98ee1611f2a8ad50a829d  Modern3500_open_8dir.png
+2edc028d178f134e55a8bf86cab301ff14c795120fe13dd48a9da5707cafd368  Modern3500_paints_SE.png
+c03af15ec51e08c6503f69836e5e61c64fba5c3101911d38b20f360196329d48  Modern3500_pearl_8dir.png
+60486e800d5eaa0c54f11db4c61f6007c617a0fc20031a5acd850f2c56336765  Modern3500_steer_SE.png
 
 # Modern 3500 truck kit, Codex drop of 2026-09-13, intake PR.
+# Re-issued 2026-09-16: the rig folds its palette 27 ramps -> 16; the contract and the ten sheets
+# were re-baked on node from that rig. At intake its exported literal gained KEY, GAIN, BIAS, LN,
+# build (one line), and the three stamps moved to the digest of those bytes.
 #
 # ../modern3500.rig.js's digest above is ALSO modern3500.contract.json's `rigSha256` and the gameplay
 # sidecar's `derivedFromRigSha256`. All three were verified equal on the delivered bytes and again
