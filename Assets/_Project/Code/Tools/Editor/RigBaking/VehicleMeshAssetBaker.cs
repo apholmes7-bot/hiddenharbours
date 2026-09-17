@@ -1268,14 +1268,14 @@ namespace HiddenHarbours.Tools.RigBaking
         ///   <item><b>A probe per state.</b> The part's face COUNT changes across its travel, so
         ///   indices claimed in one build name different geometry in another and each state must be
         ///   claimed inside its own build. The rollup is this — her curtain rolls into a stack and
-        ///   six faces stop existing (1090 → 1084 cabover, 1211 → 1205 conventional).</item>
+        ///   one face stops existing (2555 → 2554 cabover, 3796 → 3795 conventional).</item>
         /// </list>
         ///
         /// <para>⭐ <b>The second way is only sound if the parameter touches the part and nothing
         /// else, so that is PROVED here rather than assumed.</b> Every state's build, minus that
         /// state's claimed faces, must equal the rest build minus its own — face for face, vertex for
-        /// vertex, material for material. Measured today at exactly 0 on both trucks (1072 faces and
-        /// 1190), and re-measured at every bake: a re-stamp that made the rollup nudge anything but
+        /// vertex, material for material. Measured today at exactly 0 on both trucks (2531 faces and
+        /// 3769), and re-measured at every bake: a re-stamp that made the rollup nudge anything but
         /// her own door fails here instead of shipping a body that quietly changes shape when a door
         /// opens.</para>
         ///
@@ -1435,8 +1435,8 @@ namespace HiddenHarbours.Tools.RigBaking
         /// must be the same body — same face count, same materials, same vertices exactly.
         ///
         /// <para>Without this, a per-state claim would be an assumption: "the parameter only moves
-        /// the door". Measured today at worst-vertex-delta 0 on both box trucks (1072 faces and
-        /// 1190), and re-measured here at every bake, it is a fact the bake refuses to proceed
+        /// the door". Measured today at worst-vertex-delta 0 on both box trucks (2531 faces and
+        /// 3769), and re-measured here at every bake, it is a fact the bake refuses to proceed
         /// without. A rig change that made a rollup nudge her own door frame — plausible, invisible
         /// in play, and permanent once baked — stops here.</para>
         /// </summary>

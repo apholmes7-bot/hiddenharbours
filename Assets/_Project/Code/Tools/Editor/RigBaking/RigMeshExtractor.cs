@@ -881,18 +881,18 @@ namespace HiddenHarbours.Tools.RigBaking
                 // binding that was never declared and V8 throws `ReferenceError: MATS is not defined`
                 // — which is exactly what a bake of her did on 2026-09-14, and it is a SYMPTOM.
                 //
-                // ⚠️⚠️ THIS DOES NOT MAKE HER BAKEABLE, and nothing on this side will. She declares 27
-                // ramps and USES all 27 against the shader's 16, so the filter below drops NOTHING —
-                // the measurement, the arithmetic of every available fold, and the art merge it needs
-                // are written out in full on her `VehicleRigFleet.NotBaked` entry. The baker skips her
-                // by that entry and never reaches this expression today.
+                // ⚠️ THIS ALONE DID NOT MAKE HER BAKEABLE. As delivered she declared 27 ramps and USED
+                // all 27 against the shader's 16, so the filter below dropped NOTHING, and a
+                // `VehicleRigFleet.NotBaked` entry kept the baker away from this expression. The rig
+                // re-issued on 2026-09-16 folds her palette to 16 upstream; that entry is gone, and
+                // every bake of her now runs this expression.
                 //
-                // It is registered anyway, for two reasons. The defect is real and was traced rather
-                // than guessed, and a fold changes WHICH keys `makeMats` returns without changing that
-                // it is a function — so this entry outlives the blocker and the bake that follows the
-                // art merge needs no rediscovery. And it is not dead: Modern3500KitProbeTests
-                // evaluates THIS registered string through the same widening the baker uses and counts
-                // what comes back, so CI exercises it on every run.
+                // It was registered while she was still blocked, for two reasons. The defect was real
+                // and was traced rather than guessed. And a fold changes WHICH keys `makeMats` returns
+                // without changing that it is a function, so the entry outlived the blocker and her
+                // first bake needed no rediscovery. Modern3500KitProbeTests also evaluates THIS
+                // registered string through the same widening the baker uses and counts what comes
+                // back, so CI exercises it on every run.
                 //
                 // Character-for-character the Dually's, deliberately — a different shape here would be
                 // a second mechanism to reason about for no gain.
@@ -951,21 +951,22 @@ namespace HiddenHarbours.Tools.RigBaking
                 // rig's own closure, where `makeMats` and `resolve` are in scope. Qualifying them
                 // is the shape a PROBE needs and is wrong here.
                 //
-                // MEASURED in the repo's own V8 through this exact injection, 2026-08-27
-                // (declared → filtered):
-                //     vanIsoRig        17 → 15      aeroSemiIsoRig     17 → 15
-                //     boxIsoRig        17 → 16      classicSemiIsoRig  17 → 16
-                //     convBoxIsoRig    17 → 16
-                // All five fit the facet shader's float4[16] `_RampMeta` at the DEFAULT pose, which
-                // is the pose the face list is extracted at — so the palette and the geometry go on
-                // describing one truck.
+                // MEASURED in the repo's own V8 through this exact injection, 2026-09-16, on the
+                // re-cut fleet (declared → filtered):
+                //     vanIsoRig        25 → 16      aeroSemiIsoRig     25 → 16
+                //     boxIsoRig        25 → 16      classicSemiIsoRig  25 → 16
+                //     convBoxIsoRig    25 → 16
+                // (Before the re-cut, 2026-08-27: 17 → 15 on the van and the aero, 17 → 16 on the
+                // other three.) All five fit the facet shader's float4[16] `_RampMeta` at the DEFAULT
+                // pose — every one AT the cap, with no slot to spare — which is the pose the face
+                // list is extracted at, so the palette and the geometry go on describing one truck.
                 //
                 // ⚠️ WHAT THE FILTER DROPS IS THE NIGHT LAMP, and that is a real limit rather than
                 // an oversight. `head` (unlit) and `glow` (lit) are the two forms of one lamp and
                 // MEASURED NEVER APPEAR IN THE SAME BUILD — so the day pose keeps `head` and drops
                 // `glow`, exactly as the Otter's night pass is dropped. A mesh that had to carry
-                // both would be SEVENTEEN on the two box trucks and the classic semi (the van and
-                // the aero fit at 16). RoadFleetKitProbeTests pins both halves.
+                // both would be SEVENTEEN on all five (before the re-cut, only on the two box trucks
+                // and the classic semi). RoadFleetKitProbeTests pins both halves.
                 ["vanIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["MATS"] =
