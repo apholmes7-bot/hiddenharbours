@@ -167,6 +167,20 @@ namespace HiddenHarbours.Tests.EditMode
             "visual.sport_skiff_mk2_iso",
             "visual.sport_fisher_convertible_iso",
             "visual.sport_fisher_skybridge_iso",
+
+            // ---- S1 — the sail rig kit's two sloops (feat/sloops-on-the-dev-key), mesh-only ------------
+            // The first hulls on this list whose mesh is deliberately NOT the whole boat: her static body,
+            // bare-poled, every face in her rig's static `F`. The boom, the running rigging and the sails
+            // are the rig's dynamicFaces, and drawing them is the SailRigDef's job (the #743 seam ruling).
+            //
+            // ⚠️ Their acceptance is weaker, and says so: extraction parity (HullMeshFleetTests re-extracts
+            // both against the committed defs) plus plates at the play camera after an F-swap at St Peters.
+            // There is NO rig-vs-mesh pixel fixture like IsoFacetFleetPackAcceptanceTests' — the rig's own
+            // render always carries its dynamicFaces (`sails:false` hides the canvas but still draws the
+            // boom), so such a fixture would measure exactly what the mesh rightly leaves out. That fixture
+            // belongs to the SailRigDef.
+            "visual.sloop_iso",
+            "visual.sloop88_iso",
         };
 
         [Test]

@@ -98,9 +98,9 @@ namespace HiddenHarbours.Tools.RigBaking
                 // ⚠️ HER CELL MOVED IN PASS 3 (drop 2026-09-13): 1072×1504, pivot (536,1150) →
                 // 1072×1568, pivot (536,1182). Canvas and pivot each grew 32 px, so anything that
                 // places her BY the pivot moves with them. Nothing committed had to be rebaked for
-                // it: she sits on HullMeshFleet.BakeBlocked rather than in Hulls, and there is no
-                // sloop sprite sheet anywhere in the tree — the cell is what a FUTURE bake would
-                // emit, not a picture that exists.
+                // it: she sat on HullMeshFleet.BakeBlocked rather than in Hulls until S1 baked her
+                // MESH, and there is no sloop sprite sheet anywhere in the tree — the cell is what a
+                // sheet bake would emit, and none is made (below).
                 //
                 // At 1,680,896 px she is the THIRD largest cell in the fleet, behind the coastal
                 // packet's 2112×1760 and the tanker's 1920×1600 — both MeshOnly, neither ever

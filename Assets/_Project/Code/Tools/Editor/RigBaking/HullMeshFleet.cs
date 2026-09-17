@@ -223,9 +223,13 @@ namespace HiddenHarbours.Tools.RigBaking
         /// (more faces, longer straight edges, larger flat panels), so a bake that starts failing
         /// tends to fail from the bottom of this list up.
         ///
-        /// <para>Kept as a list of its own because it is the CONTROL SET: these eleven were baked
+        /// <para>Kept as a list of its own because it is the CONTROL SET: its first eleven were baked
         /// before generators existed, and <c>RigMeshVariantExtractionTests</c> proves the variant
-        /// work left their path bit-for-bit alone by sweeping exactly this list.</para>
+        /// work left their path bit-for-bit alone by sweeping exactly this list. Three one-hull rigs
+        /// have joined since, each in a dated block at the foot rather than interleaved by size — the
+        /// reshaped sport skiff (2026-08-16) and the sail rig kit's two sloops (S1) — and that test
+        /// names the eleven rather than counting the list, so a newcomer widens the sweep without
+        /// joining the control.</para>
         ///
         /// <para>⚠️ Declared BEFORE <see cref="Hulls"/> on purpose — static field initialisers run in
         /// textual order, and <see cref="Hulls"/> reads this one.</para>
@@ -314,13 +318,108 @@ namespace HiddenHarbours.Tools.RigBaking
                      "SportSkiffMk2Iso", "sport_skiff_mk2_iso",
                      "sport skiff Mk2 (~7.0 m, glass — the reshaped hull)"),
 
-            // ⚠️ THE SAIL RIG KIT'S TWO SLOOPS ARE NOT HERE, AND THAT IS MEASURED, NOT AN OMISSION.
-            // See BakeBlocked below: the mesh extractor refuses both hulls, by a guard that is right.
+            // ---- the SAIL RIG KIT (owner drop of 2026-09-06) — the first sails in the fleet -------
+            // Both sat on BakeBlocked (below) from the drop until S1 (feat/sloops-on-the-dev-key),
+            // which ran RigMeshAssetBaker.BakeSloopsCli, committed the two defs and moved them here.
+            // The ledger's measured history came with them, because it is what makes these two rows
+            // bakeable at all.
+            //
+            // ⚠️ THE FIRST RIGS THAT ARE NOT AT THE TOP OF docs/art/rigs/. The kit ships two
+            // READMEs, its writer (_sailKit.js) and its stamp script beside the rigs, so it lands
+            // as a folder. DeckSidecarReader.ResolveRigPath resolves a sidecar's named rig flat
+            // FIRST and only then searches the tree, so no committed hull's resolution moved.
+            //
+            // ⚠️ WHAT IS BAKED IS HER STATIC BODY, BARE-POLED: hull, decks, cabin and the spars and
+            // standing rig that `F` carries. The sails are not in `F` at all — `dynamicFaces(o, pose,
+            // view)` builds them per pose — so nothing here draws a sail. That is the SailRigDef
+            // charter (the continuous-pose seam ruled on #743), not a bake gap.
+            //
+            // ✅ THE BAKE STOPPED REFUSING IN S0 (art/sloop-face-levels). Both rigs publish
+            // `geometry().ids`, which arms RigMeshExtractor's level-tag contract: "this rig publishes
+            // geometry().ids, so every face it hands over must DECLARE its level". Until S0 neither
+            // paid for it. MEASURED in the repo's own V8, on the bytes S0 landed, before and after:
+            //
+            //                        sloop 30                        sloop 88
+            //   faces (at S0)        1,852                           3,088
+            //   lv not in ids  WAS   1,058 (842 with no `lv` at all) 2,302 (1,312 with none)
+            //                  NOW   0                               0
+            //   stamped with   WAS   cabin·lid·rig·under             cabin·lid·rig·under
+            //                  NOW   hull·cockpit·coachroof·         hull·cockpit·aft_deck·
+            //                        foredeck·cabin·rig              coachroof·foredeck·
+            //                        (all 6 ids)                     saloon·lower·rig (all 8)
+            //   ids never stamped    (none)                          (none)
+            //
+            // ⚠️ THOSE ARE THE S0 NUMBERS, AND PASS 3 RE-CUT THE GEOMETRY THEY COUNTED (drop
+            // 2026-09-13). Re-measured on the pass-3 bytes, in the same standalone V8, by a
+            // probe whose control is that it reproduces every S0 number above EXACTLY on main's
+            // bytes — faces, vertices and the per-level histogram alike:
+            //
+            //                        sloop 30                        sloop 88
+            //   faces                2,035  (was 1,852)              4,500  (was 3,088)
+            //   vertices             8,278  (was 7,514)              18,327 (was 12,530)
+            //   lv not in ids        0                               0
+            //   distinct materials   14                              14
+            //   faces by level       cabin      302  (+0)            aft_deck    256  (+138)
+            //                        coachroof  306  (+71)           coachroof   344  (+110)
+            //                        cockpit    355  (+112)          cockpit   1,126  (+644)
+            //                        foredeck    91  (+0)            foredeck    519  (+202)
+            //                        hull       489  (+0)            hull        986  (+284)
+            //                        rig        492  (+0)            lower       271  (+34)
+            //                                                        rig         786  (+0)
+            //                                                        saloon      212  (+0)
+            //
+            // READ THE SHAPE, not just the totals: `rig` does not move on either hull, and
+            // neither does the 88's `saloon` or the 30's `cabin`, `foredeck` and `hull`. Pass 3
+            // is a DECK AND COCKPIT pass — the 88 takes two thirds of her +1,412 in the cockpit
+            // and on the foredeck (the tender), the 30 takes all +183 of hers in the coachroof
+            // and cockpit. Nothing in the standing rig was re-cut, which is why the sidecars'
+            // only changed row field is `heel_deg`. SailRigKitTests moves its two face pins with
+            // them (1,852 → 2,035, 3,088 → 4,500) and that is the only C# the drop touches.
+            //
+            // HOW, because the shape matters more than the counts. `lid` and `under` were never
+            // levels: they were the RIG's own rasteriser switches, sharing the `lv` field with
+            // the level vocabulary. S0 separated the two — each rig carries the pass-3 authoring
+            // cursor, and the three switches moved to face PROPERTIES (`inside` / `lid` /
+            // `under`). Because a level tag can no longer reach the rasteriser, the change is
+            // provably pictureless: 36 renders across both hulls (every heading, the cabin view,
+            // the underbody, sailing poses, stored, grinding) came back BYTE-IDENTICAL, and the
+            // exported geometry — vertices, material, b, db — did not move at all. The 88's 449
+            // faces that said `cabin`, a level she never declared, now say `saloon` or `lower`,
+            // the two rooms she does.
+            //
+            // ⚠️ THE RULE THAT MADE IT A RIG FIX AND NOT A REPO FIX STILL STANDS: never default a
+            // missed stamp to `hull`. The extractor's own refusal says why — "the only defensible
+            // default is 'hull', which means NEVER CULL, so a missed stamp would ship as a room
+            // that quietly stops opening, in one wall, on one heading." And docs/art/rigs/** is
+            // the art director's lane; a fix made on this side comes back wrong on the next
+            // regeneration. S0 was made in the rigs, and the four sidecars were REGENERATED by
+            // the kit's own SAIL_KIT.write() rather than re-stamped by hand.
+            //
+            // ⚠️ WHY THEY WAITED ON THE LEDGER AFTER S0: only because the bake had not been RUN. A
+            // hull belongs here when a committed HullMeshDef stands behind her, and that needs an
+            // editor slot; listing first reddens every fixture that sweeps Hulls. S1 is one PR in
+            // two halves — these rows and the fixtures' tables first (no editor, its reds named in
+            // the PR body), then the two bakes on a granted slot.
+            //
+            // Everything else downstream of the BODY still holds on the pass-3 bytes:
+            // `faces()` is pose-free (same length after renders at opposite poses) and carries no
+            // sail, canvas or batten material; 2,035 / 4,500 faces; 8,278 / 18,327 vertices; and
+            // the filtered ramp table is still 14 of 16 on both. (The unfiltered 18 and 19 —
+            // over the cap, and it fails quietly — is read through the extractor rather than off
+            // the rig, so it is NOT re-measured here and stays an S0 reading.) The reconstruction
+            // entries in RigMeshExtractor are what make that table, and HullPaintSchemeBaker's two
+            // sloop rows filter every scheme to the same fourteen.
+            MeshOnly("sloop30", "sail-rig-kit/sloop-30/sloopIsoRig.js", "SloopIso", "SloopIso",
+                     "sloop_iso", "sloop 30 (~9.4 m — a St Peters resident's boat, and a dev-key rung)"),
+
+            MeshOnly("sloop88", "sail-rig-kit/sloop-88/sloop88IsoRig.js", "Sloop88Iso", "Sloop88Iso",
+                     "sloop88_iso", "sloop 88 (~27 m — the sail workbench hull)"),
         };
 
         /// <summary>
         /// <b>Hulls whose rig is landed and registered but whose mesh CANNOT be baked yet, each with
-        /// the reason, measured.</b>
+        /// the reason, measured.</b> EMPTY since S1 — and kept, because the next rig that lands ahead
+        /// of its bake needs somewhere honest to wait.
         ///
         /// <para>A different claim from <see cref="NotHulls"/>, and worth keeping separate.
         /// <c>NotHulls</c> says "this rig is not a hull". This says "this IS a hull, the table knows
@@ -328,124 +427,29 @@ namespace HiddenHarbours.Tools.RigBaking
         /// classification. Keying it by the same repo-relative script path
         /// <see cref="FleetHull.ScriptPath"/> uses means the entry travels with the file.</para>
         ///
-        /// <para><b>⚠️ Asserted by <c>SailRigKitTests</c>, and the assertion MOVED once already.</b>
-        /// It used to be two-way — a listed rig must still exist AND must still fail the contract
-        /// that blocks it — so that the day the art director fixed a rig the entry went red saying
+        /// <para><b>⚠️ Asserted by <c>SailRigKitTests</c>, and the assertion has MOVED TWICE.</b> It
+        /// started two-way — a listed rig must still exist AND must still fail the contract that
+        /// blocks it — so that the day the art director fixed a rig the entry went red saying
         /// "delist and bake". That is exactly what happened in S0 (<c>art/sloop-face-levels</c>): both
-        /// sloops now stamp every face from their own <c>geometry().ids</c>, the guard was turned
-        /// around, and it pins the fix instead.</para>
+        /// sloops began stamping every face from their own <c>geometry().ids</c>, and the guard was
+        /// turned around to pin the fix. S1 (<c>feat/sloops-on-the-dev-key</c>) delisted both and
+        /// moved them to <see cref="OneHullPerRig"/>, with the ledger's measured history on their
+        /// rows; the guard is now
+        /// <c>SailRigKitTests.BothSloopsAreMeshOnlyFleetHulls_AndTheLedgerNoLongerNamesThem</c>,
+        /// which still holds any FUTURE entry to a rig that exists and a reason that is written.</para>
         ///
-        /// <para><b>So a reason here is no longer always "the extractor refuses".</b> The sloops stay
-        /// listed because a hull needs a COMMITTED <c>HullMeshDef</c> before she can move to
-        /// <see cref="OneHullPerRig"/>, and that bake needs an editor slot. Delisting first would
-        /// redden every fixture that sweeps <see cref="Hulls"/> expecting a def behind each row. Read
-        /// each entry's reason for which of the two it is; the S1 bake lane clears these two.</para>
+        /// <para><b>A reason here need not be "the extractor refuses".</b> A hull whose art is fixed
+        /// but whose <c>HullMeshDef</c> is not yet committed can wait here too, because listing her in
+        /// <see cref="OneHullPerRig"/> reddens every fixture that sweeps <see cref="Hulls"/> expecting
+        /// a def behind each row. Say in the reason which of the two it is.</para>
         /// </summary>
         public static readonly IReadOnlyDictionary<string, string> BakeBlocked =
-            new Dictionary<string, string>(StringComparer.Ordinal)
-            {
-                // ---- the SAIL RIG KIT (owner drop of 2026-09-06) — the first sails in the fleet ---
-                //
-                // ⚠️ THE FIRST RIGS THAT ARE NOT AT THE TOP OF docs/art/rigs/. The kit ships two
-                // READMEs, its writer (_sailKit.js) and its stamp script beside the rigs, so it lands
-                // as a folder. DeckSidecarReader.ResolveRigPath resolves a sidecar's named rig flat
-                // FIRST and only then searches the tree, so no committed hull's resolution moved.
-                //
-                // ✅ THE BAKE NO LONGER REFUSES — THE ART WAS FIXED IN S0 (art/sloop-face-levels).
-                // Both rigs publish `geometry().ids`, which arms RigMeshExtractor's level-tag
-                // contract: "this rig publishes geometry().ids, so every face it hands over must
-                // DECLARE its level". Until S0 neither paid for it. MEASURED in the repo's own V8,
-                // on the bytes S0 landed, before and after:
-                //
-                //                        sloop 30                        sloop 88
-                //   faces (at S0)        1,852                           3,088
-                //   lv not in ids  WAS   1,058 (842 with no `lv` at all) 2,302 (1,312 with none)
-                //                  NOW   0                               0
-                //   stamped with   WAS   cabin·lid·rig·under             cabin·lid·rig·under
-                //                  NOW   hull·cockpit·coachroof·         hull·cockpit·aft_deck·
-                //                        foredeck·cabin·rig              coachroof·foredeck·
-                //                        (all 6 ids)                     saloon·lower·rig (all 8)
-                //   ids never stamped    (none)                          (none)
-                //
-                // ⚠️ THOSE ARE THE S0 NUMBERS, AND PASS 3 RE-CUT THE GEOMETRY THEY COUNTED (drop
-                // 2026-09-13). Re-measured on the pass-3 bytes, in the same standalone V8, by a
-                // probe whose control is that it reproduces every S0 number above EXACTLY on main's
-                // bytes — faces, vertices and the per-level histogram alike:
-                //
-                //                        sloop 30                        sloop 88
-                //   faces                2,035  (was 1,852)              4,500  (was 3,088)
-                //   vertices             8,278  (was 7,514)              18,327 (was 12,530)
-                //   lv not in ids        0                               0
-                //   distinct materials   14                              14
-                //   faces by level       cabin      302  (+0)            aft_deck    256  (+138)
-                //                        coachroof  306  (+71)           coachroof   344  (+110)
-                //                        cockpit    355  (+112)          cockpit   1,126  (+644)
-                //                        foredeck    91  (+0)            foredeck    519  (+202)
-                //                        hull       489  (+0)            hull        986  (+284)
-                //                        rig        492  (+0)            lower       271  (+34)
-                //                                                        rig         786  (+0)
-                //                                                        saloon      212  (+0)
-                //
-                // READ THE SHAPE, not just the totals: `rig` does not move on either hull, and
-                // neither does the 88's `saloon` or the 30's `cabin`, `foredeck` and `hull`. Pass 3
-                // is a DECK AND COCKPIT pass — the 88 takes two thirds of her +1,412 in the cockpit
-                // and on the foredeck (the tender), the 30 takes all +183 of hers in the coachroof
-                // and cockpit. Nothing in the standing rig was re-cut, which is why the sidecars'
-                // only changed row field is `heel_deg`. SailRigKitTests moves its two face pins with
-                // them (1,852 → 2,035, 3,088 → 4,500) and that is the only C# the drop touches.
-                //
-                // HOW, because the shape matters more than the counts. `lid` and `under` were never
-                // levels: they were the RIG's own rasteriser switches, sharing the `lv` field with
-                // the level vocabulary. S0 separated the two — each rig carries the pass-3 authoring
-                // cursor, and the three switches moved to face PROPERTIES (`inside` / `lid` /
-                // `under`). Because a level tag can no longer reach the rasteriser, the change is
-                // provably pictureless: 36 renders across both hulls (every heading, the cabin view,
-                // the underbody, sailing poses, stored, grinding) came back BYTE-IDENTICAL, and the
-                // exported geometry — vertices, material, b, db — did not move at all. The 88's 449
-                // faces that said `cabin`, a level she never declared, now say `saloon` or `lower`,
-                // the two rooms she does.
-                //
-                // ⚠️ THE RULE THAT MADE IT A RIG FIX AND NOT A REPO FIX STILL STANDS: never default a
-                // missed stamp to `hull`. The extractor's own refusal says why — "the only defensible
-                // default is 'hull', which means NEVER CULL, so a missed stamp would ship as a room
-                // that quietly stops opening, in one wall, on one heading." And docs/art/rigs/** is
-                // the art director's lane; a fix made on this side comes back wrong on the next
-                // regeneration. S0 was made in the rigs, and the four sidecars were REGENERATED by
-                // the kit's own SAIL_KIT.write() rather than re-stamped by hand.
-                //
-                // ⚠️ SO WHY ARE THEY STILL LISTED? Only because the bake has not been RUN. A hull
-                // moves to OneHullPerRig when a committed HullMeshDef stands behind her, and that
-                // needs an editor slot; delisting first reddens every fixture that sweeps Hulls. S1
-                // clears both: run RigMeshAssetBaker.BakeSloopsCli, commit the defs, then delete
-                // these two entries and add the hulls to OneHullPerRig as MeshOnly.
-                //
-                // Everything else downstream of the BODY still holds on the pass-3 bytes:
-                // `faces()` is pose-free (same length after renders at opposite poses) and carries no
-                // sail, canvas or batten material; 2,035 / 4,500 faces; 8,278 / 18,327 vertices; and
-                // the filtered ramp table is still 14 of 16 on both. (The unfiltered 18 and 19 —
-                // over the cap, and it fails quietly — is read through the extractor rather than off
-                // the rig, so it is NOT re-measured here and stays an S0 reading.) The reconstruction
-                // entries in RigMeshExtractor and RigMeshAssetBaker.BakeSloopsCli are in place, so
-                // the bake is a slot away.
-                ["docs/art/rigs/sail-rig-kit/sloop-30/sloopIsoRig.js"] =
-                    "ART FIXED, BAKE OWED: faces stamped from ids in S0 (PR #791, art/sloop-face-levels) " +
-                    "and re-measured on the pass-3 drop of 2026-09-13 — 0 of 2,035 faces (1,852 " +
-                    "before pass 3) carry a level her geometry().ids does not name, and all six of " +
-                    "hull/cockpit/coachroof/foredeck/cabin/rig are stamped. RigMeshExtractor " +
-                    "accepts her. She stays here only until S1 runs RigMeshAssetBaker.BakeSloopsCli " +
-                    "and commits the HullMeshDef; bake pending S1.",
-
-                ["docs/art/rigs/sail-rig-kit/sloop-88/sloop88IsoRig.js"] =
-                    "ART FIXED, BAKE OWED: faces stamped from ids in S0 (PR #791, art/sloop-face-levels) " +
-                    "and re-measured on the pass-3 drop of 2026-09-13 — 0 of 4,500 (3,088 before " +
-                    "pass 3), and the 449 faces that said `cabin` (a level she never declared) now " +
-                    "say saloon or lower, the two rooms she does. All eight of her ids are stamped. " +
-                    "Same state as the 30: bake pending S1.",
-            };
+            new Dictionary<string, string>(StringComparer.Ordinal);
 
         /// <summary>
-        /// <b>Every hull the baker knows how to bake</b> — the eleven above, then the lobster
-        /// generator's eighteen.
+        /// <b>Every hull the baker knows how to bake</b> — the one-hull rigs above (fourteen since the
+        /// two sloops joined at S1), then the generator cells: the lobster generator's eighteen, then
+        /// the zodiac and sport fisher builds.
         ///
         /// <para>The eighteen are appended as a BLOCK rather than interleaved into the size order,
         /// and the reason is practical: they span 8.6–14.6 m and would scatter through the middle of
@@ -465,8 +469,9 @@ namespace HiddenHarbours.Tools.RigBaking
             return fleet;
         }
 
-        /// <summary>The hulls that are one cell of a generator rig — today, the eighteen lobster
-        /// variants. Several fixtures need them separately from the eleven, because the questions
+        /// <summary>The hulls that are one cell of a generator rig — the eighteen lobster variants,
+        /// then the zodiac and sport fisher builds. Several fixtures need them separately from
+        /// <see cref="OneHullPerRig"/>, because the questions
         /// that can be asked of them differ (a variant's extraction is non-null; her sidecar is
         /// named for the hull rather than for the rig).</summary>
         public static IEnumerable<FleetHull> VariantHulls

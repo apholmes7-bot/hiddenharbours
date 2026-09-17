@@ -489,12 +489,30 @@ namespace HiddenHarbours.Tests.RigBaking
         //  6. THE FLEET TABLE
         // =========================================================================================
 
+        /// <summary>
+        /// ⭐ <b>S1: BOTH SLOOPS ARE MESH-ONLY FLEET HULLS, AND THE LEDGER NO LONGER NAMES THEM.</b>
+        ///
+        /// <para><b>INVERTED at S1 (<c>feat/sloops-on-the-dev-key</c>), and renamed so the move reads
+        /// as a move rather than a silenced guard.</b> This was
+        /// <c>BothSloopsAreOnTheBakeBlockedLedger_AndTheirRigsExist</c>, which asserted that the ledger
+        /// named exactly these two rigs and that neither key resolved in
+        /// <see cref="HullMeshFleet.Hulls"/>. Its production subjects moved with it:
+        /// <see cref="HullMeshFleet.BakeBlocked"/> lost both entries (it is empty) and
+        /// <see cref="HullMeshFleet.OneHullPerRig"/> gained both rows as MeshOnly. What it held every
+        /// ledger entry to — a rig that exists and a reason that is written — it still holds any
+        /// FUTURE entry to.</para>
+        ///
+        /// <para>The rows are pinned field by field rather than trusted to the factory, because the
+        /// bake writes exactly these paths and ids: a typo in the global or the snake is a def under
+        /// the wrong name that every other fixture would then faithfully agree with.</para>
+        /// </summary>
         [Test]
-        public void BothSloopsAreOnTheBakeBlockedLedger_AndTheirRigsExist()
+        public void BothSloopsAreMeshOnlyFleetHulls_AndTheLedgerNoLongerNamesThem()
         {
-            Assert.That(HullMeshFleet.BakeBlocked.Keys, Is.EquivalentTo(new[] { Rig30, Rig88 }),
-                "the ledger must name exactly the rigs whose bake is blocked, by the same " +
-                "repo-relative path the fleet table uses, so an entry travels with its file.");
+            foreach (string rig in new[] { Rig30, Rig88 })
+                Assert.That(HullMeshFleet.BakeBlocked.ContainsKey(rig), Is.False,
+                    $"BakeBlocked still names '{rig}', but S1 moved her into the fleet table. A hull is " +
+                    "on one list or the other, never both.");
 
             foreach (var kv in HullMeshFleet.BakeBlocked)
             {
@@ -504,11 +522,33 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.That(kv.Value, Is.Not.Empty, $"{kv.Key}: a block without a reason is a shrug.");
             }
 
-            foreach (string key in new[] { "sloop30", "sloop88" })
-                Assert.That(HullMeshFleet.TryGet(key, out _), Is.False,
-                    $"'{key}' is in HullMeshFleet.Hulls while still on the BakeBlocked ledger. A hull " +
-                    "is on one list or the other, never both — every fixture that sweeps Hulls " +
-                    "expects a committed HullMeshDef behind each row.");
+            foreach ((string key, string rig, string global, string snake) in new[]
+                     {
+                         ("sloop30", Rig30, "SloopIso", "sloop_iso"),
+                         ("sloop88", Rig88, "Sloop88Iso", "sloop88_iso"),
+                     })
+            {
+                FileAssert.Exists(Full(rig), $"{key}: her rig is gone from under her fleet row.");
+                Assert.That(HullMeshFleet.TryGet(key, out FleetHull hull), Is.True,
+                    $"'{key}' is not in HullMeshFleet.Hulls, so BakeSloopsCli has nothing to bake.");
+                Assert.That(HullMeshFleet.OneHullPerRig.Any(h => h.Key == key), Is.True,
+                    $"'{key}' belongs in OneHullPerRig: her rig's static F makes exactly one boat.");
+
+                Assert.That(hull.ScriptPath, Is.EqualTo(rig), $"{key}: her row points at another rig.");
+                Assert.That(hull.GlobalName, Is.EqualTo(global), $"{key}: the global her IIFE installs.");
+                Assert.That(hull.IsVariant, Is.False, $"{key}: she is no generator cell.");
+                Assert.That(hull.HasBakedSheet, Is.False,
+                    $"{key}: MESH-ONLY. No sloop sheet exists, so the bake must CREATE her visual " +
+                    "rather than wire a sheeted one.");
+                Assert.That(hull.MeshId, Is.EqualTo($"hullmesh.{snake}"), $"{key}: mesh id.");
+                Assert.That(hull.MeshAssetPath,
+                    Is.EqualTo($"Assets/_Project/Data/Boats/HullMeshes/{global}HullMesh.asset"),
+                    $"{key}: where BakeSloopsCli writes her def.");
+                Assert.That(hull.VisualIds, Is.EqualTo(new[] { $"visual.{snake}" }), $"{key}: visual id.");
+                Assert.That(hull.VisualAssetPaths,
+                    Is.EqualTo(new[] { $"Assets/_Project/Data/Boats/Visuals/{global}.asset" }),
+                    $"{key}: the one mesh-only visual the bake creates for her.");
+            }
         }
 
         /// <summary>
@@ -527,12 +567,11 @@ namespace HiddenHarbours.Tests.RigBaking
         /// three switches the rasteriser used to read off <c>lv</c> became face PROPERTIES
         /// (<c>inside</c> / <c>lid</c> / <c>under</c>), so a level tag can no longer move a pixel —
         /// every render is byte-identical across the change and the exported geometry did not move.
-        /// <b>The bake itself is still owed to S1.</b> These two stay on
-        /// <see cref="HullMeshFleet.BakeBlocked"/> until an editor lane runs
-        /// <c>RigMeshAssetBaker.BakeSloopsCli</c> and commits the <c>HullMeshDef</c>s, because
-        /// delisting without a committed def reddens every fixture that sweeps <c>Hulls</c>. The
-        /// ledger's reasons say exactly that, and
-        /// <see cref="BothSloopsAreOnTheBakeBlockedLedger_AndTheirRigsExist"/> keeps them honest.</para>
+        /// <b>The bake itself was owed to S1, which ran it:</b> <c>RigMeshAssetBaker.BakeSloopsCli</c>
+        /// wrote both <c>HullMeshDef</c>s, both hulls left <see cref="HullMeshFleet.BakeBlocked"/> for
+        /// <see cref="HullMeshFleet.OneHullPerRig"/>, and
+        /// <see cref="BothSloopsAreMeshOnlyFleetHulls_AndTheLedgerNoLongerNamesThem"/> pins the move.
+        /// This contract is what those defs were baked under, so it stays pinned after them.</para>
         /// </summary>
         [Test]
         public void TheLevelContractIsSatisfied_EveryFaceDeclaresALevelItsOwnIdsNames()
@@ -544,7 +583,9 @@ namespace HiddenHarbours.Tests.RigBaking
 
                 Assert.That(host.EvaluateBool($"!!({global}.geometry && {global}.geometry().ids)"), Is.True,
                     $"{global}: the rig no longer publishes geometry().ids, so the level-tag contract " +
-                    "is no longer armed and the bake may simply work. Delist her from BakeBlocked.");
+                    "is no longer armed: the extractor would take her faces without checking their " +
+                    "levels. Her committed HullMeshDef was baked under the contract — read the rig " +
+                    "change with the art director before re-baking her.");
 
                 // ⚠️ EVERY fragment is interpolated, deliberately. A `$"…"` head concatenated with a
                 // plain `"…}}"` tail leaves the tail's braces DOUBLED in the JS, and the engine
