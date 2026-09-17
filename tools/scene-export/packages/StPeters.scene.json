@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-09-10T02:51:25Z",
+  "generatedAt": "2026-09-17T13:18:17Z",
   "region": {
     "id": "region.st_peters",
     "sceneName": "StPeters",
@@ -94447,22 +94447,20 @@
   "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum) — the repo's own convention, the same one docs/art/rigs sidecars publish. A SIBLING of the table rather than a key inside it: the table's keys are family names and nothing else, so iterating it cannot pick up a note.",
   "x-cliffLinesNote": "the region's cliffs, as the format's own key. Each is one CliffWallSurface — the builder pushes one CHUNK per stretch, so a coastline arrives as many short lines and not one long one; joining them would be a derivation this exporter invents. `nodes` is the chunk's brow plan and its stations are SAMPLED at ~0.25 m rather than hand-placed (see each line's x-nodesAre). No `tiles` count: this exporter paints no cliff layer at all, so a 0 would read as a fact about the line instead of about the export.",
   "x-provenance": {
-    "generatedAt": "2026-09-10T02:51:25Z",
+    "generatedAt": "2026-09-17T13:18:17Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/StPeters.unity",
-    "sceneFileSha256": "59785d32460d7eb9f5c4d3c9a39d9141178c59cfdfdd34e41afd083069f5d0eb",
-    "sceneLastBuiltCommit": "ad852bd2583e03886bffc3c33d5f0238d1c33dc7",
-    "sceneLastBuiltDate": "2026-09-07",
-    "sceneLastBuiltSubject": "feat(vehicles): the player rides one, and three machines stand outside the shop (owner ruling 2026-09-07, ATV pack PR 2a) (#774)",
+    "sceneFileSha256": "2183607fafea055b4279d6ba13fef186a7b0d209b96df464859e38999e568e5b",
+    "sceneLastBuiltCommit": "928ed08bc1099e9894bea796d3df9e00c026987b",
+    "sceneLastBuiltDate": "2026-09-17",
+    "sceneLastBuiltSubject": "feat(art): put both sloops on the dev key — fleet rows, paint rows, two rungs and their guards (S1, Phase B)",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
-      "builderCommitsSinceScene": 1,
-      "measuredTo": "e66fce003774747650be366831d9e548842fc1ce",
-      "measuredToDate": "2026-09-09T23:51:25-03:00",
+      "builderCommitsSinceScene": 0,
+      "measuredTo": "928ed08bc1099e9894bea796d3df9e00c026987b",
+      "measuredToDate": null,
       "exact": true,
-      "builderCommits": [
-        "e66fce00 feat(tools): bake every building in one command, and stand every interior with one recipe (#824)"
-      ]
+      "builderCommits": []
     },
     "heightMap": {
       "asset": "Assets/_Project/Data/Terrain/StPetersSeabed.asset",
