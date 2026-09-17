@@ -1,3 +1,4 @@
+// Codex art study: grille, glazing, trim, wheel faces and restrained weathering.
 /* Hidden Harbours — parametric ISO ROAD-VEHICLE rig (SAME turntable + camera + shading as
    camperIsoRig.js / houseIsoRig.js / the fleet). First body: DUALLY 3500 — a crew-cab one-tonne
    dually pickup (long box, flared rear fenders, six wheels). The catalogue is built to grow:
@@ -123,7 +124,7 @@
   const bar = (out,p0,p1,r,mat,b)=> tube(out,p0,p1,r,4,mat,b);
 
   // ---- textures ----
-  function wearTex(w){ return (u,v)=>{ if(w>0.03 && hash2(Math.floor(u*6.5)|0, Math.floor(v*6.5)|0) < w*0.10) return -1; return 0; }; }
+  function wearTex(w){ return (u,v)=>{ if(w>0.03 && hash2(Math.floor(u*6.5)|0, Math.floor(v*6.5)|0) < w*0.035) return -1; return 0; }; }
   function grilleTex(){ const p=0.088; return (u,v)=>{ const f=((v%p)+p)%p; return f<0.036?2:0; }; }
   function ribTex(){ const p=0.15; return (u,v)=>{ const f=((u%p)+p)%p; return f<0.055?-1:0; }; }
   function treadTex(phase){ const c=0.105; return (u,v)=>{ const f=(((u+phase)%c)+c)%c; return f<c*0.42?-1:0; }; }
@@ -255,10 +256,21 @@
       // side marker lamp
       boxAt(out, Math.min(sx*1.035,sx*1.075), Math.max(sx*1.035,sx*1.075), 2.84, 2.96, 0.92, 1.00, 'lensA', 0.3, false);
     }
+    // Art pass: rubber bumper step pads and a recessed front plate.
+    for(const sx of [-1,1]){
+      boxAt(out, Math.min(sx*0.58,sx*1.01), Math.max(sx*0.58,sx*1.01), 3.08,3.26,0.797,0.808,'rubber',-0.25);
+      boxAt(out, Math.min(sx*0.40,sx*0.98), Math.max(sx*0.40,sx*0.98), -3.31,-3.13,0.777,0.786,'rubber',-0.25);
+    }
+    wallY(out,3.305,-0.23,0.23,0.56,0.72,'iron',-0.4,+1);
+    wallY(out,3.309,-0.18,0.18,0.585,0.695,'trim',0.1,+1);
     // nose face: grille + headlamps + paint strips
     const yN=G.noseY;
     out.push(F([[0.60,yN,0.88],[-0.60,yN,0.88],[-0.60,yN,1.30],[0.60,yN,1.30]],'grille',-0.1,0,
       [[0.60,0.88],[-0.60,0.88],[-0.60,1.30],[0.60,1.30]], grilleTex()));
+    // Two legible horizontal grille bars, dark gaps and a small centre badge.
+    for(const z of [0.96,1.15]) boxAt(out,-0.60,0.60,yN+0.008,yN+0.025,z,z+0.052,'chrome',0.2);
+    boxAt(out,-0.11,0.11,yN+0.027,yN+0.039,1.045,1.17,'iron',-0.1);
+    wallY(out,yN+0.041,-0.065,0.065,1.085,1.125,'chrome',0.35,+1);
     for(const sx of [-1,1]){
       boxAt(out, Math.min(sx*0.64,sx*0.98), Math.max(sx*0.64,sx*0.98), yN-0.02, yN+0.03, 1.06, 1.30, s.night?'glow':'head', 0.35, false);
       wallY(out, yN, Math.min(sx*0.64,sx*0.98), Math.max(sx*0.64,sx*0.98), 0.88, 1.06, 'paint', -0.05, +1);
@@ -316,7 +328,11 @@
     // windshield + pillars + header (one raked plane)
     const wb={y:1.78,z:1.52}, wt={y:1.50,z:1.94};
     const wsQ=(x0b,x1b,x0t,x1t,mat,b)=> quad(out,[x1b,wb.y,wb.z],[x0b,wb.y,wb.z],[x0t,wt.y,wt.z],[x1t,wt.y,wt.z],mat,b);
-    wsQ(-0.84,0.84,-0.76,0.76,'glass',-0.18);
+    wsQ(-0.84,0.84,-0.76,0.76,'glass',-0.50);
+    // Raked-plane reflection and two wipers: small, deliberate clusters.
+    const wp=(x,t)=>[x,wb.y+(wt.y-wb.y)*t+0.006,wb.z+(wt.z-wb.z)*t+0.006];
+    quad(out,wp(0.45,0.10),wp(0.24,0.10),wp(-0.17,0.88),wp(0.04,0.88),'glass',0.65);
+    for(const sx of [-1,1]) bar(out,wp(sx*0.48,0.07),wp(sx*0.48-0.24,0.23),0.017,'rubber',-0.35);
     wsQ(0.84,0.92,0.76,0.84,'paint',0.10); wsQ(-0.92,-0.84,-0.84,-0.76,'paint',0.10);
     wallY(out, wt.y-0.01, -0.82, 0.82, wt.z, wt.z+0.02, 'paint', 0.1, +1);
     // roof
@@ -379,7 +395,12 @@
                   sx>0?[xb,y1-0.05,zB]:[-xb,y0+0.05,zB],
                   sx>0?[xb,y0+0.05,zB]:[-xb,y1-0.05,zB], mat, b); };
         gq(G.beltZ, G.glassTop, 'paint', sx>0?0.10:-0.48);                    // door upper shell
-        gq(g0, g1, 'glass', sx>0?-0.15:-0.55, 0.012);                         // pane proud of shell
+        gq(g0, g1, 'glass', sx>0?-0.4:-0.75, 0.012);
+        gq(g0,g0+0.028,'rubber',-0.3,0.018);
+        gq(g1-0.035,g1,'glass',0.6,0.018);
+        // Lower door pressing and sill grime follow each door's own hinge.
+        wallX(T,sx*1.035,y0+0.05,y1-0.05,0.74,0.805,'paint',-0.85,sx);
+        wallX(T,sx*1.036,y0+0.08,y1-0.08,0.815,0.845,'paint',0.30,sx);                         // pane proud of shell
         // inner panel
         wallX(T, sx*0.92, y0+0.02, y1-0.02, 0.74, G.beltZ, 'leaf', -0.7, -sx);
         // handle
@@ -400,12 +421,12 @@
     const wear=wearTex(s.weather);
     for(const sx of [-1,1]){
       wallX(out, sx*G.hwSide, G.tailY, G.bedFront, 0.66, G.railZ, 'paint', sx>0?0.18:-0.42, sx, [[G.tailY,0],[G.bedFront,0],[G.bedFront,1],[G.tailY,1]], wear);
-      boxAt(out, Math.min(sx*0.88,sx*G.hwSide), Math.max(sx*0.88,sx*G.hwSide), G.tailY, G.bedFront, G.railZ, G.railZ+0.05, 'paint', 0.12, false);
+      boxAt(out, Math.min(sx*0.88,sx*G.hwSide), Math.max(sx*0.88,sx*G.hwSide), G.tailY, G.bedFront, G.railZ, G.railZ+0.05, 'rubber', 0.15, false);
       wallX(out, sx*0.88, G.tailY+0.02, G.bedFront-0.06, G.bedFloorZ, G.railZ, 'rubber', -0.55, -sx);   // inner walls
       boxAt(out, Math.min(sx*0.56,sx*0.88), Math.max(sx*0.56,sx*0.88), G.axR-0.55, G.axR+0.55, G.bedFloorZ, 1.24, 'rubber', -0.35); // wheel tubs
     }
     wallY(out, G.bedFront, -G.hwSide, G.hwSide, 0.66, G.railZ, 'paint', 0.05, +1);
-    boxAt(out, -G.hwSide, G.hwSide, G.bedFront-0.06, G.bedFront, G.railZ, G.railZ+0.05, 'paint', 0.12, false);
+    boxAt(out, -G.hwSide, G.hwSide, G.bedFront-0.06, G.bedFront, G.railZ, G.railZ+0.05, 'rubber', 0.15, false);
     wallY(out, G.bedFront-0.06, -0.88, 0.88, G.bedFloorZ, G.railZ, 'rubber', -0.55, -1);
     slab(out, [[-0.88,G.tailY+0.02],[0.88,G.tailY+0.02],[0.88,G.bedFront-0.06],[-0.88,G.bedFront-0.06]], G.bedFloorZ, 'rubber', -0.35, ribTex());
     // tail below the gate + corner caps with lamps
@@ -419,6 +440,9 @@
     const a=s.gate*92*DEG, ca=Math.cos(a), sa=Math.sin(a);
     part(out,(T)=>{
       boxAt(T, -1.00, 1.00, G.tailY, G.tailY+0.05, 0.98, G.railZ, 'paint', 0.0, false, wearTex(s.weather));
+      // Stamped tailgate inset stays with the tailgate articulation.
+      wallY(T,G.tailY-0.006,-0.78,0.78,1.07,1.22,'paint',-0.65,-1);
+      wallY(T,G.tailY-0.009,-0.74,0.74,1.19,1.22,'paint',0.30,-1);
       boxAt(T, -0.16, 0.16, G.tailY-0.015, G.tailY, 1.28, 1.38, 'trim', 0.3, false);  // handle
     }, (p)=>rotX(p, G.tailY+0.05, 1.00, ca, sa));
   }
@@ -461,13 +485,13 @@
     tube(out,[xc-w/2,yc,r],[xc+w/2,yc,r], r, 14, 'rubber', -0.05, true, treadTex(roll*2*Math.PI*r));
     if(!hub) return;
     const xf=xc+sxOut*(w/2+0.012);
-    tube(out,[xc+sxOut*(w/2-0.02),yc,r],[xf,yc,r], r*0.58, 12, 'alloy', 0.25);
+    tube(out,[xc+sxOut*(w/2-0.02),yc,r],[xf,yc,r], r*0.72, 14, 'alloy', 0.35);
     // rotating detail: 8 lugs, 4 hand-holes, one index notch — the notch gives a full-rev period
     for(let k=0;k<8;k++){ const th=ph+k*Math.PI/4, py=yc+Math.cos(th)*0.155, pz=r+Math.sin(th)*0.155;
       tube(out,[xf-sxOut*0.005,py,pz],[xf+sxOut*0.028,py,pz],0.028,6,'galv',0.35); }
-    for(let k=0;k<4;k++){ const th=ph+Math.PI/8+k*Math.PI/2, py=yc+Math.cos(th)*0.26, pz=r+Math.sin(th)*0.26;
-      tube(out,[xf,py,pz],[xf+sxOut*0.012,py,pz],0.05,6,'rubber',-0.6); }
-    { const th=ph+Math.PI/3, py=yc+Math.cos(th)*0.30, pz=r+Math.sin(th)*0.30;
+    for(let k=0;k<4;k++){ const th=ph+Math.PI/8+k*Math.PI/2, py=yc+Math.cos(th)*0.225, pz=r+Math.sin(th)*0.225;
+      tube(out,[xf,py,pz],[xf+sxOut*0.012,py,pz],0.055,6,'shade',-0.6); }
+    { const th=ph+Math.PI/3, py=yc+Math.cos(th)*0.275, pz=r+Math.sin(th)*0.275;
       tube(out,[xf,py,pz],[xf+sxOut*0.02,py,pz],0.022,5,'iron',-0.4); }
     tube(out,[xf,yc,r],[xf+sxOut*0.045,yc,r],0.07,8,'chrome',0.4);           // centre cap
   }
@@ -515,7 +539,7 @@
       iron  :{ ramp:tm(IRON) }, galv:{ ramp:tm(GALV) },
       chrome:{ ramp:t(CHROME) }, alloy:{ ramp:t(CHROME.map(c=>desat(c,0.15))) },
       rubber:{ ramp:t(RUBBER) }, grille:{ ramp:t(IRON) },
-      lensR :{ ramp:LENSR }, lensA:{ ramp:LENSA },
+      lensR :{ ramp:night?LENSR.slice(2):LENSR }, lensA:{ ramp:night?LENSA.slice(2):LENSA },
       head  :{ ramp:GLASSD.map(c=>mix(c,'#dfe6e2',0.35)) },
       glass :{ ramp:night?GLASSN:GLASSD },
       glow  :{ ramp:night?GLOW:['#5f6a5e','#8d9a8b','#b6c2b0','#d3ddcb'] },
@@ -562,12 +586,12 @@
         if(Math.abs(dep[i]-dep[j])>EDGE){ const far=dep[i]>dep[j]?i:j; out[far]=rbuf[far][Math.max(0,ibuf[far]-2)]; } } }
     if(s.weather>0.02){ const rnd=mulberry32(9021);
       for(let i=0;i<N;i++){ const m=nbuf[i]; if(!m||!rbuf[i]) continue;
-        if((m==='paint'||m==='galv'||m==='iron'||m==='rubber') && rnd()<s.weather*0.05)
+        if((m==='paint'||m==='galv'||m==='iron'||m==='rubber') && rnd()<s.weather*(m==='paint'?0.008:0.035))
           out[i]=rbuf[i][Math.max(0,ibuf[i]-1)]; } }
     if(s.night){ for(let y=1;y<H-1;y++) for(let x=1;x<W-1;x++){ const i=y*W+x;
-      if(nbuf[i]!=='glow' && nbuf[i]!=='glass') continue;
+      if(nbuf[i]!=='glow' && nbuf[i]!=='lensA' && nbuf[i]!=='lensR') continue;
       for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const j=(y+dy)*W+(x+dx);
-        if(out[j] && nbuf[j]!=='glow' && nbuf[j]!=='glass') out[j]=mix(out[j],'#f2c25e',nbuf[i]==='glow'?0.30:0.14); } } }
+        if(out[j] && nbuf[j]!=='glow' && nbuf[j]!=='glass') out[j]=mix(out[j],nbuf[i]==='lensR'?'#c93c2a':'#f2c25e',nbuf[i]==='glow'?0.30:0.12); } } }
     for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const i=y*W+x; if(!out[i]) continue; let n=0;
       for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const nx=x+dx,ny=y+dy; if(nx>=0&&nx<W&&ny>=0&&ny<H&&out[ny*W+nx]) n++; }
       if(n===0){ out[i]=null; rbuf[i]=null; } }

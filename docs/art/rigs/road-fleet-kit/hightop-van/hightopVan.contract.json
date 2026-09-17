@@ -2,7 +2,7 @@
   "kit": "vehicle-rig-pack/hightop-van",
   "rig": "vanIsoRig.js",
   "exportSymbol": "VanIso",
-  "rigSha256": "1ac7804ddb045ec3a9c9ba8797b8025547c21649d5ea70c61dc7b6e8ee048eb3",
+  "rigSha256": "ebfeff32d9cf82aa05bd694419df3a08b1213e60282e261e949629d74d134684",
   "body": "hightopVan",
   "label": "Hightop Van",
   "kind": "van",
@@ -71,51 +71,51 @@
     },
     "at_rest": {
       "N": [
-        152,
-        116,
-        231,
+        150,
+        127,
+        233,
         271
       ],
       "NE": [
-        101,
-        112,
+        103,
+        126,
         283,
         262
       ],
       "E": [
         96,
-        129,
+        130,
         291,
         232
       ],
       "SE": [
-        101,
+        103,
         93,
         283,
-        261
+        262
       ],
       "S": [
-        152,
+        150,
         88,
-        231,
-        264
+        233,
+        266
       ],
       "SW": [
         100,
         93,
-        282,
-        261
+        280,
+        262
       ],
       "W": [
         92,
-        129,
+        130,
         287,
         232
       ],
       "NW": [
         100,
-        112,
-        282,
+        126,
+        280,
         262
       ]
     },
@@ -127,95 +127,95 @@
         281
       ],
       "NE": [
-        101,
-        112,
-        304,
+        103,
+        116,
+        303,
         273
       ],
       "E": [
         96,
-        126,
+        122,
         316,
         239
       ],
       "SE": [
-        101,
+        103,
         85,
-        304,
-        261
+        303,
+        262
       ],
       "S": [
         131,
-        77,
+        78,
         252,
-        264
+        266
       ],
       "SW": [
-        79,
+        80,
         85,
-        282,
-        261
+        280,
+        262
       ],
       "W": [
         67,
-        126,
+        122,
         287,
         239
       ],
       "NW": [
-        79,
-        112,
-        282,
+        80,
+        116,
+        280,
         273
       ]
     },
     "lowroof_windows": {
       "N": [
-        152,
-        123,
-        231,
+        150,
+        127,
+        233,
         271
       ],
       "NE": [
-        101,
-        120,
+        103,
+        126,
         283,
         262
       ],
       "E": [
         96,
-        136,
+        137,
         291,
         232
       ],
       "SE": [
+        103,
         101,
-        100,
         283,
-        261
+        262
       ],
       "S": [
-        152,
+        150,
         96,
-        231,
-        264
+        233,
+        266
       ],
       "SW": [
         100,
-        100,
-        282,
-        261
+        101,
+        280,
+        262
       ],
       "W": [
         92,
-        136,
+        137,
         287,
         232
       ],
       "NW": [
         100,
-        120,
-        282,
+        126,
+        280,
         262
       ]
     },
@@ -227,7 +227,7 @@
     ],
     "union_all_open": [
       67,
-      77,
+      78,
       316,
       281
     ],
@@ -239,7 +239,7 @@
     ],
     "union_everything": [
       67,
-      77,
+      78,
       316,
       281
     ],
@@ -325,7 +325,7 @@
         "wRR"
       ],
       "distance_per_rev_m": 2.262,
-      "cyclic": "near — one revolution returns the hub lugs and index notch exactly; the tread advances 2.262 m over a 0.095 m stripe period (23.81 stripes), so roll:1 differs from roll:0 by 10 of 16827 painted px (0.06%). Seamless in motion, not bit-identical."
+      "cyclic": "Exact integer-revolution wrap; 28 tread periods per circumference. Verified for all eight facings in validation.json."
     },
     "suspension": {
       "params": [
@@ -373,8 +373,7 @@
         86,
         293,
         271
-      ],
-      "cost": "the painted union grows to 204 x 186 px over a +/-22.5 sweep"
+      ]
     },
     "variants": {
       "roof": {
@@ -415,7 +414,7 @@
         1
       ],
       "default": 0.32,
-      "effect": "greys and grimes the paint, rusts iron/galv/rubber, speckles at 5% x weather"
+      "effect": "Sparse, object-space localized wear; quieter paint dithering. No screen-space random speckles."
     }
   },
   "paints": [
@@ -1519,6 +1518,64 @@
         "SW",
         "W",
         "NW"
+      ],
+      "frames": [
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "NE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "E",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "SW",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "NW",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        }
       ]
     },
     {
@@ -1539,6 +1596,80 @@
         "SW",
         "W",
         "NW"
+      ],
+      "frames": [
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "teal",
+            "weather": 0.3,
+            "roof": "low",
+            "windows": true
+          }
+        },
+        {
+          "facing": "NE",
+          "pose": {
+            "paint": "teal",
+            "weather": 0.3,
+            "roof": "low",
+            "windows": true
+          }
+        },
+        {
+          "facing": "E",
+          "pose": {
+            "paint": "teal",
+            "weather": 0.3,
+            "roof": "low",
+            "windows": true
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "teal",
+            "weather": 0.3,
+            "roof": "low",
+            "windows": true
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "teal",
+            "weather": 0.3,
+            "roof": "low",
+            "windows": true
+          }
+        },
+        {
+          "facing": "SW",
+          "pose": {
+            "paint": "teal",
+            "weather": 0.3,
+            "roof": "low",
+            "windows": true
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "teal",
+            "weather": 0.3,
+            "roof": "low",
+            "windows": true
+          }
+        },
+        {
+          "facing": "NW",
+          "pose": {
+            "paint": "teal",
+            "weather": 0.3,
+            "roof": "low",
+            "windows": true
+          }
+        }
       ]
     },
     {
@@ -1548,7 +1679,73 @@
         3072,
         320
       ],
-      "pose": "slide cue 0->1 at W — the curb door pops out 0.085 m then runs 1.16 m aft"
+      "pose": "slide cue 0->1 at W — the curb door pops out 0.085 m then runs 1.16 m aft",
+      "frames": [
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "slide": 0
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "slide": 0.14285714285714285
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "slide": 0.2857142857142857
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "slide": 0.42857142857142855
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "slide": 0.5714285714285714
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "slide": 0.7142857142857143
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "slide": 0.8571428571428571
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "slide": 1
+          }
+        }
+      ]
     },
     {
       "file": "HightopVan_barn_N.png",
@@ -1557,7 +1754,81 @@
         3072,
         320
       ],
-      "pose": "barn cue 0->96deg at N, both leaves"
+      "pose": "barn cue 0->96deg at N, both leaves",
+      "frames": [
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "barnL": 0,
+            "barnR": 0
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "barnL": 0.14285714285714285,
+            "barnR": 0.14285714285714285
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "barnL": 0.2857142857142857,
+            "barnR": 0.2857142857142857
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "barnL": 0.42857142857142855,
+            "barnR": 0.42857142857142855
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "barnL": 0.5714285714285714,
+            "barnR": 0.5714285714285714
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "barnL": 0.7142857142857143,
+            "barnR": 0.7142857142857143
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "barnL": 0.8571428571428571,
+            "barnR": 0.8571428571428571
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "barnL": 1,
+            "barnR": 1
+          }
+        }
+      ]
     },
     {
       "file": "HightopVan_roll_W.png",
@@ -1566,7 +1837,109 @@
         3840,
         320
       ],
-      "pose": "bounce cue at W — one wheel revolution + suspension, cyclic (frame 10 wraps to 0)"
+      "pose": "bounce cue at W — one wheel revolution + suspension, cyclic (frame 10 wraps to 0)",
+      "frames": [
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": 0,
+            "susR": 0.6744907297920351,
+            "roll": 0
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": 0.4114496766047312,
+            "susR": 0.6557367694798479,
+            "roll": 0.1
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": 0.6657395614066074,
+            "susR": 0.3865136508994137,
+            "roll": 0.2
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": 0.6657395614066075,
+            "susR": -0.030344545208785226,
+            "roll": 0.3
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": 0.41144967660473125,
+            "susR": -0.435612156420386,
+            "roll": 0.4
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": 8.572527594031472e-17,
+            "susR": -0.674490729792035,
+            "roll": 0.5
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": -0.4114496766047311,
+            "susR": -0.6557367694798479,
+            "roll": 0.6
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": -0.6657395614066074,
+            "susR": -0.38651365089941375,
+            "roll": 0.7
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": -0.6657395614066075,
+            "susR": 0.030344545208785136,
+            "roll": 0.8
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": -0.4114496766047313,
+            "susR": 0.43561215642038587,
+            "roll": 0.9
+          }
+        }
+      ]
     },
     {
       "file": "HightopVan_steer_S.png",
@@ -1576,7 +1949,73 @@
         3072,
         320
       ],
-      "pose": "steer cue at S — full right lock to full left lock"
+      "pose": "steer cue at S — full right lock to full left lock",
+      "frames": [
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": -1
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": -0.7142857142857143
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": -0.4285714285714286
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": -0.1428571428571429
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": 0.1428571428571428
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": 0.4285714285714286
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": 0.7142857142857142
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": 1
+          }
+        }
+      ]
     },
     {
       "file": "HightopVan_paints_SE.png",
@@ -1598,8 +2037,273 @@
         "rustOrange",
         "greyShingle",
         "plum"
+      ],
+      "frames": [
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "cream",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "red",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "sage",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "teal",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "gold",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "rustOrange",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "greyShingle",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "plum",
+            "weather": 0.22
+          }
+        }
+      ]
+    },
+    {
+      "file": "hightopVan_open_review_8dir.png",
+      "cells": 8,
+      "frames": [
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dFL": 1,
+            "dFR": 1,
+            "slide": 1,
+            "barnL": 1,
+            "barnR": 1,
+            "hood": 1
+          }
+        },
+        {
+          "facing": "NE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dFL": 1,
+            "dFR": 1,
+            "slide": 1,
+            "barnL": 1,
+            "barnR": 1,
+            "hood": 1
+          }
+        },
+        {
+          "facing": "E",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dFL": 1,
+            "dFR": 1,
+            "slide": 1,
+            "barnL": 1,
+            "barnR": 1,
+            "hood": 1
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dFL": 1,
+            "dFR": 1,
+            "slide": 1,
+            "barnL": 1,
+            "barnR": 1,
+            "hood": 1
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dFL": 1,
+            "dFR": 1,
+            "slide": 1,
+            "barnL": 1,
+            "barnR": 1,
+            "hood": 1
+          }
+        },
+        {
+          "facing": "SW",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dFL": 1,
+            "dFR": 1,
+            "slide": 1,
+            "barnL": 1,
+            "barnR": 1,
+            "hood": 1
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dFL": 1,
+            "dFR": 1,
+            "slide": 1,
+            "barnL": 1,
+            "barnR": 1,
+            "hood": 1
+          }
+        },
+        {
+          "facing": "NW",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dFL": 1,
+            "dFR": 1,
+            "slide": 1,
+            "barnL": 1,
+            "barnR": 1,
+            "hood": 1
+          }
+        }
+      ]
+    },
+    {
+      "file": "hightopVan_dark_review_8dir.png",
+      "cells": 8,
+      "frames": [
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "NE",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "E",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "SW",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "NW",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        }
       ]
     }
   ],
-  "sidecar": "vanIsoRig.hightopVan.gameplay.json"
+  "sidecar": "vanIsoRig.hightopVan.gameplay.json",
+  "artRevision": {
+    "date": "2026-09-13",
+    "pass": 3,
+    "status": "final art pass for gameplay handoff; not integrated into Unity",
+    "originalRigSha256": "1ac7804ddb045ec3a9c9ba8797b8025547c21649d5ea70c61dc7b6e8ee048eb3",
+    "pass2RigSha256": "085ef686c0e87d1f19c935ace0b10cfa39bf413d77b0d887d6ac2b553b621039",
+    "changes": "See ../FINAL-PASS.md",
+    "geometry": "Pass 2 metric constants and at-rest anchors retained. Cab doors, pillars and roof joins now share a fitted envelope; mirrors follow the door. CAB_FIT in the sidecar carries new door profiles and measured sweep bounds."
+  },
+  "mesh_bounds_at_rest": [
+    [
+      -1.3,
+      -3.12,
+      0.009025951614543504
+    ],
+    [
+      1.3,
+      3.02099995493562,
+      2.727931851851852
+    ]
+  ]
 }

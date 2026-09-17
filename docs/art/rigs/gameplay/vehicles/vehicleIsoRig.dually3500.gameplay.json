@@ -2,7 +2,7 @@
   "rig": "vehicleIsoRig.js",
   "exportSymbol": "VehicleIso",
   "variant": "dually3500",
-  "derivedFromRigSha256": "6486b3359030f459d05f9e964adc751b635a3111b45b8c20679127e6b07c814e",
+  "derivedFromRigSha256": "748f96ebfc0a7e32bddf6f2f2dc9b457c803fa6dd9919e041967e098fca2df7a",
   "kind": "road_vehicle",
   "label": "Dually 3500",
   "generated": "measured off the rig source by hand-transcription with per-value provenance; no generator in the rig",

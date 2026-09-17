@@ -177,15 +177,16 @@ namespace HiddenHarbours.Tools.RigBaking
             /// ⭐ <b>A probe PER STATE — what lets a part whose face COUNT changes still be a
             /// fitting.</b> Optional; null keeps the single-probe behaviour above.
             ///
-            /// <para><b>Why the rollup needs it.</b> Her curtain rolls into a stack and six faces
-            /// stop existing — 1090 → 1084 on the cabover at rollup 25/32, 1211 → 1205 on the
-            /// conventional at 3/4. Across that the face list changes length, so indices claimed in
-            /// the shut build name different geometry in the open one. Each state is therefore
-            /// claimed inside its OWN build, by a probe on its own side of the change.</para>
+            /// <para><b>Why the rollup needs it.</b> Her curtain rolls into a stack and one face
+            /// stops existing — 2555 → 2554 on the cabover at rollup 25/32, 3796 → 3795 on the
+            /// conventional at 3/4 (re-measured on the 2026-09-16 re-cut). Across that the face list
+            /// changes length, so indices claimed in the shut build name different geometry in the
+            /// open one. Each state is therefore claimed inside its OWN build, by a probe on its own
+            /// side of the change.</para>
             ///
             /// <para><b>Why that is sound — measured, not assumed.</b> Take each build, remove that
-            /// state's claimed door, and what is left is the same body <b>to the last bit</b>: 1072
-            /// faces on the cabover, 1190 on the conventional, worst vertex delta exactly 0 and no
+            /// state's claimed door, and what is left is the same body <b>to the last bit</b>: 2531
+            /// faces on the cabover, 3769 on the conventional, worst vertex delta exactly 0 and no
             /// material mismatch. The parameter touches the door and nothing else, so the body can be
             /// baked once. <c>WriteFittingStates</c> re-proves that at every bake rather than
             /// trusting this note, and a re-stamp that made the rollup move anything else goes red.
@@ -649,7 +650,8 @@ namespace HiddenHarbours.Tools.RigBaking
 
             // ⚠️ THE FRONT ROLL AXES FIRST, and the order is the whole plan: `steer` moves the wheel
             // AND its knuckle, so with the tyres already claimed each steer axis finds only its
-            // 40-face knuckle. Listing steer first swallows both front corners.
+            // knuckle (112 faces a side on all five re-cut road rigs). Listing steer first swallows
+            // both front corners.
             axes.Add(new Axis("WheelFL", "{wFL:0.25}", VehicleFitmentMotion.SteerAndRoll,
                               VehicleFitmentSide.Left, 0, new Vector3(-frontWX, axF, wheelR)));
             axes.Add(new Axis("WheelFR", "{wFR:0.25}", VehicleFitmentMotion.SteerAndRoll,
@@ -916,23 +918,25 @@ namespace HiddenHarbours.Tools.RigBaking
         //  Neither can be posed, and they fail that test in DIFFERENT ways — which is why they are
         //  not one mechanism with two settings:
         //
-        //    · the ROLLUP changes TOPOLOGY. Her curtain rolls into a stack and six faces stop
-        //      existing — cabover 1090 → 1084 at rollup 25/32, conventional 1211 → 1205 at 3/4 —
-        //      and she is non-rigid on BOTH sides of that (worst pairwise-distance change 0.298 m
-        //      below it, and the travel above is no better). So the face list changes length and
-        //      each state must be claimed inside its own build: StateProbes.
+        //    · the ROLLUP changes TOPOLOGY. Her curtain rolls into a stack and one face stops
+        //      existing — cabover 2555 → 2554 at rollup 25/32, conventional 3796 → 3795 at 3/4 —
+        //      and she is non-rigid on BOTH sides of that (worst pairwise-distance change
+        //      0.39/0.47 m below it, 0.26/0.34 m above). So the face list changes length and each
+        //      state must be claimed inside its own build: StateProbes.
         //
-        //    · the LIFTGATE keeps every face (1090 and 1211 at EVERY gate value) and is simply not
+        //    · the LIFTGATE keeps every face (2555 and 3796 at EVERY gate value) and is simply not
         //      rigid. Measured by distance preservation — the metric that does not punish a rotation
         //      for rotating, unlike the translation test that made this look decomposable at first:
-        //      swing deforms by 0.67/0.86 m, lower by 0.079/0.063 m, the whole travel by 1.54/1.74 m.
-        //      Splitting by material does not rescue it (galv 0.85 m, iron 0.77 m in swing alone),
-        //      which is her own sidecar's "parallel arms" being true. One face set, four stills.
+        //      swing deforms by 0.67/0.86 m, lower by 0.18/0.16 m, the whole travel by 1.54/1.74 m.
+        //      Splitting by material does not rescue it (galv 0.67/0.85 m, iron 0.58/0.77 m in swing
+        //      alone), which is her own sidecar's "parallel arms" being true. One face set, four
+        //      stills. (Every figure here re-measured on the 2026-09-16 re-cut.)
         //
         //  ⚠️ THE ONLY RIGID THING IN EITHER is the liftgate's flip half: `unfold` moves 6 galv faces
-        //  and NOTHING else, distance change EXACTLY 0 on both trucks. It is not split out, because a
-        //  part that is rigid in one phase of three and carried by a linkage in the others is still
-        //  the linkage's — and posing it alone would leave the other two phases unexplained.
+        //  and NOTHING else, distance change 4.4e-16/1.1e-16 m — float64 round-off. It is not split
+        //  out, because a part that is rigid in one phase of three and carried by a linkage in the
+        //  others is still the linkage's — and posing it alone would leave the other two phases
+        //  unexplained.
 
         /// <summary>
         /// ⭐ <b>The roll-up rear door</b>, baked shut and open.
@@ -973,8 +977,8 @@ namespace HiddenHarbours.Tools.RigBaking
                      stateNames: new[] { "stowed", "docked", "unfolded", "grounded" },
                      statePoses: new[] { "{gate:0}", "{gate:0.45}", "{gate:0.7}", "{gate:1}" });
 
-        // ⭐ The CABOVER's cab TILTS — 237 faces, the largest fitting in the fleet, and her two doors
-        // are cut out of it. They are claimed FIRST and hang off it; see WithDoors and ParentSlot.
+        // ⭐ The CABOVER's cab TILTS — 1014 faces as the probe moves it, 740 once her two doors are
+        // cut out of it. They are claimed FIRST and hang off it; see WithDoors and ParentSlot.
         static readonly Axis[] CaboverBoxAxes = WithDoors(
             BuildRoadAxes(0.78f, 2.62f, 0.71f, 0.334f, -1.50f),
             Hinged("DoorL", "{dL:1}", VehicleFitmentSide.Left,
@@ -1867,10 +1871,11 @@ namespace HiddenHarbours.Tools.RigBaking
             //
             //  A SECOND crew-cab dually, NOT a revision of the first. The drop's own README says it:
             //  "use this as a separate asset entry; do not overwrite the older truck's rig or reuse
-            //  its sidecar." So she gets her own key, her own sidecar, her own def, her own mesh —
-            //  and `dually3500` above is left exactly as she was found.
+            //  its sidecar." So she gets her own key, her own sidecar and her own mesh — and NO def
+            //  yet, by the owner's ruling of 2026-09-16 (her entry below says why) — and `dually3500`
+            //  above is left exactly as she was found.
             //
-            //  ⚠️ ONE HASH, THREE PLACES. `d70056fe…` is the LF sha256 of the rig; it is also the
+            //  ⚠️ ONE HASH, THREE PLACES. `3eb16400…` is the LF sha256 of the rig; it is also the
             //  `rigSha256` in `modern3500.contract.json` and the `derivedFromRigSha256` in her
             //  sidecar. All three agree on disk and `Modern3500KitContractTests` holds them there.
             //  If a bake ever refuses her sidecar hash, the fix is upstream in the kit — NEVER a
@@ -1915,11 +1920,12 @@ namespace HiddenHarbours.Tools.RigBaking
                 },
                 azimuthAftAnchor: "hitch", azimuthForeAnchor: "hoodLatch",
                 bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
-                // ⚠️ NO def and NO vehicleId — deliberately. She is registered ART, not a machine
-                // the world can place: her bake is excused in NotBaked below, and a VehicleDef is a
-                // Data asset that the bake writes. Hand-authoring one to fill this argument would be
-                // inventing the very output the blocker prevents. Her def arrives with her mesh, in
-                // the PR that lands the folded palette.
+                // ⚠️ NO def and NO vehicleId — deliberately. She is BAKED (a mesh and its wheel
+                // fittings, the way the trailers were first baked) since the re-issued rig folded her
+                // palette to 16 ramps, but she is still ART, not a machine the world can place: by
+                // the owner's ruling of 2026-09-16 she wears no VehicleDef and no vehicleId until
+                // her gameplay exists. Hand-authoring a def to fill this argument would be inventing
+                // gameplay nobody has asked for.
                 label: "Modern 3500"),
         };
 
@@ -1974,6 +1980,8 @@ namespace HiddenHarbours.Tools.RigBaking
             // blocked: 9 ramps against the shader's 16, one shared 256×192 cell, and both azimuth
             // oracles agreeing counter-clockwise on every body.
             "enduro250", "trike200", "utilityQuad",
+            // The Modern 3500 — a mesh only, no def (owner, 2026-09-16), once her re-issued rig folded 27 ramps to 16.
+            "modern3500",
         };
 
         /// <summary>
@@ -1981,9 +1989,10 @@ namespace HiddenHarbours.Tools.RigBaking
         /// this, so nothing can be quietly left out — a vehicle in neither <see cref="Baked"/> nor here
         /// fails.
         ///
-        /// <para><b>EMPTY, and that is the steady state to defend.</b> Three entries have lived here
-        /// and all three left the way an entry here should — deleted, not reworded (the last: the
-        /// hightop van's stamp refusal, discharged 2026-08-27 when upstream's re-stamp landed).</para>
+        /// <para><b>EMPTY, and that is the steady state to defend.</b> Four entries have lived here
+        /// and all four left the way an entry here should — deleted, not reworded (the last: the
+        /// Modern 3500's palette refusal, 27 colour ramps against the shader's 16, discharged
+        /// 2026-09-16 when her re-issued rig folded them to 16 upstream).</para>
         ///
         /// <para>The <b>Dually</b> held one from #548 until 2026-08-17, blocked on an architecture
         /// ruling rather than any technical obstacle; the ruling was given (lead-architect, on #548)
@@ -2006,28 +2015,6 @@ namespace HiddenHarbours.Tools.RigBaking
         public static readonly IReadOnlyDictionary<string, string> NotBaked =
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
-                // Three entries lived here before this one and all three left the way an entry here
-                // should — deleted, not reworded. The last was the hightop van's stamp refusal
-                // (2026-08-27, discharged the same day when upstream's re-stamp landed and her
-                // full digest matched her rig — see the git history of SidecarHashRefused).
-
-                // ⭐⭐ THE FOURTH, AND IT IS THE OTTER'S BLOCKER AGAIN — eleven times over.
-                ["modern3500"] =
-                    "She paints 27 colour ramps and USES every one, against the facet shader's " +
-                    "float4[16] _RampMeta. MEASURED on intake through this repo's own V8 " +
-                    "(2026-09-14, rig d70056fe…): 2802 faces, 27 materials declared, 27 used, zero " +
-                    "unused — so the filter-to-used reconstruction that saved the Dually (17 " +
-                    "declared / 16 used) and the zodiac (18 / 14) buys nothing here, and " +
-                    "VehicleMeshDef.IsUsable would refuse the result. Folding every key that " +
-                    "resolves to a byte-identical ramp AND polish reaches 19; also folding " +
-                    "`sidewall` into `rubber` (identical ramp, polish .05 against none) reaches 18. " +
-                    "The last two merges change pixels, so — exactly as with the Otter (#558 until " +
-                    "the art merge of 2026-08-19) — this is an ART fix and no vehicle-side change " +
-                    "can lift it. ⚠️ Any fold rewrites modern3500.rig.js and therefore MOVES the " +
-                    "rig hash her contract and her sidecar both pin, so it arrives as a re-issued " +
-                    "drop and never as an edit to docs/art/rigs/**. " +
-                    "Modern3500KitProbeTests.HerPaletteDoesNotFitTheFacetShader measures the number " +
-                    "on every CI run: when it reads 16, delete this entry rather than rewording it.",
             };
 
         /// <summary>

@@ -83,10 +83,10 @@ namespace HiddenHarbours.Tests.RigBaking
                 Global = "VanIso", Sidecar = "vanIsoRig.hightopVan.gameplay.json",
                 Variant = "hightopVan", Label = "Hightop Van",
                 AzAft = "hitch", AzFore = "hoodLatch",
-                Faces = 959, RollFront = 87, RollRear = 87, RollMaster = 348,
-                SteerMoved = 254, SteerKnuckle = 80,
+                Faces = 3320, RollFront = 137, RollRear = 137, RollMaster = 548,
+                SteerMoved = 498, SteerKnuckle = 224,
                 MaxInnerDeg = 24, MaxOuterDeg = 20.6, OuterAtFullLock = 20.601977,
-                UsedAtBakePose = 15, UsedAcrossAllBuilds = 16,
+                UsedAtBakePose = 16, UsedAcrossAllBuilds = 17,
             },
             new RoadRig
             {
@@ -96,8 +96,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 // ⚠️ NOT hoodLatch. A cabover's cab sits over the engine and TILTS; her fore
                 // centreline anchor is `tiltLatch`, and asking for a hood would be inadmissible.
                 AzAft = "rollup", AzFore = "tiltLatch",
-                Faces = 1090, RollFront = 87, RollRear = 87, RollMaster = 348,
-                SteerMoved = 254, SteerKnuckle = 80,
+                Faces = 2555, RollFront = 137, RollRear = 137, RollMaster = 548,
+                SteerMoved = 498, SteerKnuckle = 224,
                 MaxInnerDeg = 33, MaxOuterDeg = 27.53, OuterAtFullLock = 27.530283,
                 UsedAtBakePose = 16, UsedAcrossAllBuilds = 17,
             },
@@ -107,8 +107,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 Global = "ConvBoxIso", Sidecar = "convBoxIsoRig.convBox.gameplay.json",
                 Variant = "convBox", Label = "Conventional Box Truck",
                 AzAft = "rollup", AzFore = "hoodLatch",
-                Faces = 1211, RollFront = 103, RollRear = 103, RollMaster = 412,
-                SteerMoved = 286, SteerKnuckle = 80,
+                Faces = 3796, RollFront = 153, RollRear = 153, RollMaster = 612,
+                SteerMoved = 530, SteerKnuckle = 224,
                 MaxInnerDeg = 35, MaxOuterDeg = 30.32, OuterAtFullLock = 30.317214,
                 UsedAtBakePose = 16, UsedAcrossAllBuilds = 17,
             },
@@ -118,10 +118,10 @@ namespace HiddenHarbours.Tests.RigBaking
                 Global = "AeroSemiIso", Sidecar = "aeroSemiIsoRig.aeroSemi.gameplay.json",
                 Variant = "aeroSemi", Label = "Aero Sleeper Semi",
                 AzAft = "fifthWheel", AzFore = "hoodLatch",
-                Faces = 1538, RollFront = 119, RollRear = 238, RollMaster = 714,
-                SteerMoved = 318, SteerKnuckle = 80,
+                Faces = 5110, RollFront = 169, RollRear = 338, RollMaster = 1014,
+                SteerMoved = 562, SteerKnuckle = 224,
                 MaxInnerDeg = 32, MaxOuterDeg = 27.51, OuterAtFullLock = 27.507913,
-                UsedAtBakePose = 15, UsedAcrossAllBuilds = 16,
+                UsedAtBakePose = 16, UsedAcrossAllBuilds = 17,
                 TandemStations = new[] { -2.90, -1.70 },
             },
             new RoadRig
@@ -130,8 +130,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 Global = "ClassicSemiIso", Sidecar = "classicSemiIsoRig.classicSemi.gameplay.json",
                 Variant = "classicSemi", Label = "Classic Long-Nose Semi",
                 AzAft = "fifthWheel", AzFore = "hoodLatch",
-                Faces = 1625, RollFront = 119, RollRear = 238, RollMaster = 714,
-                SteerMoved = 318, SteerKnuckle = 80,
+                Faces = 5306, RollFront = 169, RollRear = 338, RollMaster = 1014,
+                SteerMoved = 562, SteerKnuckle = 224,
                 MaxInnerDeg = 30, MaxOuterDeg = 26.23, OuterAtFullLock = 26.232117,
                 UsedAtBakePose = 16, UsedAcrossAllBuilds = 17,
                 TandemStations = new[] { -2.80, -1.60 },
@@ -341,7 +341,7 @@ namespace HiddenHarbours.Tests.RigBaking
         /// ⭐⭐ <b>Four roll groups, perfectly disjoint, and their union is EXACTLY the master axis.</b>
         ///
         /// <para>Asserted as index SETS rather than counts, because counts cannot tell two disjoint
-        /// 87-face groups from two identical ones — and "identical" is what a rig that ignored the
+        /// 137-face groups from two identical ones — and "identical" is what a rig that ignored the
         /// per-wheel key would produce.</para>
         ///
         /// <para>⚠️ <b>The axis is CYCLIC with period 1</b>, which is what makes it measurable and
@@ -403,7 +403,7 @@ namespace HiddenHarbours.Tests.RigBaking
         ///
         /// <para>Asked AFTER the roll axes, so what it finds is only the knuckle: the fender lip,
         /// hub cover and mudflap that swing with the corner but do not turn with the tyre. Measured
-        /// at exactly <b>80 faces on all five rigs, 40 a side</b> — the same fitting, five times.</para>
+        /// at exactly <b>224 faces on all five rigs, 112 a side</b> — the same fitting, five times.</para>
         ///
         /// <para>Not one moved face is <c>paint</c>, and none of them is aft of the centre. If the
         /// body were on the steer axis, the wheels could not be lifted out as fittings and posed
@@ -667,7 +667,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
         /// <summary>
         /// ⭐⭐ <b>Every rig in the pack fits the facet shader at the pose she would be baked at —
-        /// and three of the five do NOT fit if one mesh has to light up at night.</b>
+        /// and NONE of the five fits if one mesh has to light up at night.</b>
         ///
         /// <para><b>Why this is measured now.</b> <c>_RampMeta</c> is a <c>float4[16]</c> and over it
         /// a def is "not usable": the vehicle bakes and is then unplaceable, which is where the
@@ -676,14 +676,15 @@ namespace HiddenHarbours.Tests.RigBaking
         /// was not, because she used all seventeen. So the count is measured before a bake is
         /// attempted, never discovered during one.</para>
         ///
-        /// <para><b>The bake pose fits, everywhere.</b> Measured: 15 / 16 / 16 / 15 / 16 used ramps,
-        /// against 17 declared on every rig. The filter drops what no face names.</para>
+        /// <para><b>The bake pose fits, everywhere — and with no slot to spare.</b> Measured on the
+        /// 2026-09-16 re-cut: 16 / 16 / 16 / 16 / 16 used ramps, against 25 declared on every rig.
+        /// The filter drops what no face names.</para>
         ///
         /// <para>⚠️⚠️ <b>THE NIGHT LAMP IS THE LIMIT, and it is a SWAP rather than an addition.</b>
         /// <c>head</c> (unlit) and <c>glow</c> (lit) are the two forms of one lamp and MEASURED
         /// NEVER APPEAR IN THE SAME BUILD — at night <c>head</c> goes unused and <c>glow</c> takes
-        /// its place, so each build on its own stays at 15 or 16. A single mesh carrying BOTH is 16
-        /// on the van and the aero and <b>17 on the two box trucks and the classic semi</b>.</para>
+        /// its place, so no build on its own goes over 16. A single mesh carrying BOTH is <b>17 on
+        /// all five</b>.</para>
         ///
         /// <para><b>So the measured proposal upstream is NOT a merge.</b> The two ramps are visibly
         /// different colours (a grey-blue lens against a green-white glow) and merging them would
@@ -698,7 +699,7 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             using IRigScriptHost host = BuilderHost(r);
 
-            Assert.That(host.EvaluateNumber("Object.keys(__mats({})).length"), Is.EqualTo(17d),
+            Assert.That(host.EvaluateNumber("Object.keys(__mats({})).length"), Is.EqualTo(25d),
                 $"{r.Key} declares a different number of ramps. Declared is not what the shader " +
                 "counts — used is — but a change here means the palette was reworked.");
 
@@ -736,7 +737,7 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.That(host.EvaluateNumber($"__unionUsed({BuildList(r)}).length"),
                 Is.EqualTo((double)r.UsedAcrossAllBuilds),
                 $"{r.Key}'s all-builds ramp union changed. This is the number a ONE-MESH " +
-                "day-and-night vehicle would need, and three rigs in this pack are at 17 — one over " +
+                "day-and-night vehicle would need, and all five rigs in this pack are at 17 — one over " +
                 "— which is the measured limit PR 2 and the owner have to rule on.");
         }
 
@@ -861,8 +862,8 @@ namespace HiddenHarbours.Tests.RigBaking
               for (var i = 0; i < A.length; i++) if (__differs(A[i].v, B[i].v)) n++;
               return n;
             }
-            // The INDEX SET, so overlap is measured rather than inferred: two disjoint 87-face
-            // groups and two identical ones both read as ""87, 87"".
+            // The INDEX SET, so overlap is measured rather than inferred: two disjoint 137-face
+            // groups and two identical ones both read as ""137, 137"".
             function __movedSet(a, b){
               var A = __faces(a), B = __faces(b), out = [];
               for (var i = 0; i < A.length; i++) if (__differs(A[i].v, B[i].v)) out.push(i);

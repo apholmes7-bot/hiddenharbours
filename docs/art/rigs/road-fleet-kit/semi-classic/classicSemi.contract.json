@@ -88,13 +88,13 @@
     },
     "at_rest": {
       "N": [
-        145,
+        143,
         85,
-        238,
+        240,
         277
       ],
       "NE": [
-        62,
+        64,
         97,
         289,
         273
@@ -106,22 +106,22 @@
         234
       ],
       "SE": [
-        62,
+        64,
         96,
         289,
-        288
+        287
       ],
       "S": [
-        145,
+        143,
         107,
-        238,
-        298
+        240,
+        297
       ],
       "SW": [
         94,
         96,
-        321,
-        288
+        319,
+        287
       ],
       "W": [
         85,
@@ -132,7 +132,7 @@
       "NW": [
         94,
         97,
-        321,
+        319,
         273
       ]
     },
@@ -144,57 +144,57 @@
         277
       ],
       "NE": [
-        47,
-        55,
+        46,
+        54,
         289,
         273
       ],
       "E": [
-        16,
+        19,
         103,
         298,
         234
       ],
       "SE": [
-        47,
+        46,
         96,
         289,
-        288
+        287
       ],
       "S": [
         124,
         107,
         259,
-        299
+        300
       ],
       "SW": [
         94,
         96,
-        336,
-        288
+        337,
+        287
       ],
       "W": [
         85,
         103,
-        367,
+        364,
         234
       ],
       "NW": [
         94,
-        55,
-        336,
+        54,
+        337,
         273
       ]
     },
     "no_visor": {
       "N": [
-        145,
+        143,
         85,
-        238,
+        240,
         277
       ],
       "NE": [
-        62,
+        64,
         97,
         289,
         273
@@ -206,22 +206,22 @@
         234
       ],
       "SE": [
-        62,
+        64,
         96,
         289,
-        288
+        287
       ],
       "S": [
-        145,
+        143,
         107,
-        238,
-        298
+        240,
+        297
       ],
       "SW": [
         94,
         96,
-        321,
-        288
+        319,
+        287
       ],
       "W": [
         85,
@@ -232,7 +232,7 @@
       "NW": [
         94,
         97,
-        321,
+        319,
         273
       ]
     },
@@ -240,25 +240,25 @@
       47,
       85,
       336,
-      298
+      297
     ],
     "union_all_open": [
-      16,
+      19,
       36,
-      367,
-      299
+      364,
+      300
     ],
     "union_no_visor": [
       47,
       85,
       336,
-      298
+      297
     ],
     "union_everything": [
-      16,
+      19,
       36,
-      367,
-      299
+      364,
+      300
     ],
     "crop_note": "pack from union_everything (16,36,367,299) to hold the tilted clip and both doors; union_at_rest is the tight default build. no_visor is IDENTICAL to at_rest — the visor lives under the roofline."
   },
@@ -308,7 +308,7 @@
         "wRR"
       ],
       "distance_per_rev_m": 3.142,
-      "cyclic": "one revolution returns the 10-fold lugs exactly and the tread to a sub-pixel phase (29.008 stripes of 0.1083 m): the seam is 0 px of 19682 painted (0%). Each tandem side shares its corner roll."
+      "cyclic": "Exact integer-revolution wrap; 28 tread periods per circumference. Verified for all eight facings in validation.json."
     },
     "suspension": {
       "params": [
@@ -352,10 +352,10 @@
       "what": "heading off the 45deg facing grid. Rotates the model about z before projection under the fixed key — the shading is REBAKED, not rotated.",
       "pivot": "unaffected — the origin still projects to the published pivot at any yaw",
       "painted_bbox_over_sweep": [
-        44,
-        84,
-        339,
-        300
+        46,
+        85,
+        337,
+        299
       ],
       "coupled": "a tractor+trailer pair is two yaws hinged at the coupling point"
     },
@@ -375,7 +375,7 @@
         1
       ],
       "default": 0.32,
-      "effect": "greys and grimes the paint, rusts iron/galv/rubber, speckles at 5% x weather"
+      "effect": "Sparse, object-space localized wear; quieter paint dithering. No screen-space random speckles."
     }
   },
   "paints": [
@@ -1548,6 +1548,64 @@
         "SW",
         "W",
         "NW"
+      ],
+      "frames": [
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "NE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "E",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "SW",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "NW",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45
+          }
+        }
       ]
     },
     {
@@ -1568,6 +1626,72 @@
         "SW",
         "W",
         "NW"
+      ],
+      "frames": [
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "night": true
+          }
+        },
+        {
+          "facing": "NE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "night": true
+          }
+        },
+        {
+          "facing": "E",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "night": true
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "night": true
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "night": true
+          }
+        },
+        {
+          "facing": "SW",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "night": true
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "night": true
+          }
+        },
+        {
+          "facing": "NW",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "night": true
+          }
+        }
       ]
     },
     {
@@ -1577,7 +1701,81 @@
         3072,
         320
       ],
-      "pose": "doors cue 0->65deg at W"
+      "pose": "doors cue 0->65deg at W",
+      "frames": [
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 0,
+            "dR": 0
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 0.14285714285714285,
+            "dR": 0.14285714285714285
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 0.2857142857142857,
+            "dR": 0.2857142857142857
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 0.42857142857142855,
+            "dR": 0.42857142857142855
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 0.5714285714285714,
+            "dR": 0.5714285714285714
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 0.7142857142857143,
+            "dR": 0.7142857142857143
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 0.8571428571428571,
+            "dR": 0.8571428571428571
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 1,
+            "dR": 1
+          }
+        }
+      ]
     },
     {
       "file": "ClassicSemi_hood_W.png",
@@ -1586,7 +1784,73 @@
         3072,
         320
       ],
-      "pose": "hood cue 0->70deg at W — the long clip bares the big block"
+      "pose": "hood cue 0->70deg at W — the long clip bares the big block",
+      "frames": [
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "hood": 0
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "hood": 0.14285714285714285
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "hood": 0.2857142857142857
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "hood": 0.42857142857142855
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "hood": 0.5714285714285714
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "hood": 0.7142857142857143
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "hood": 0.8571428571428571
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "hood": 1
+          }
+        }
+      ]
     },
     {
       "file": "ClassicSemi_roll_W.png",
@@ -1595,7 +1859,109 @@
         3840,
         320
       ],
-      "pose": "bounce cue at W — one wheel revolution + suspension, cyclic (frame 10 wraps to 0)"
+      "pose": "bounce cue at W — one wheel revolution + suspension, cyclic (frame 10 wraps to 0)",
+      "frames": [
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": 0,
+            "susR": 0.6744907297920351,
+            "roll": 0
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": 0.4114496766047312,
+            "susR": 0.6557367694798479,
+            "roll": 0.1
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": 0.6657395614066074,
+            "susR": 0.3865136508994137,
+            "roll": 0.2
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": 0.6657395614066075,
+            "susR": -0.030344545208785226,
+            "roll": 0.3
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": 0.41144967660473125,
+            "susR": -0.435612156420386,
+            "roll": 0.4
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": 8.572527594031472e-17,
+            "susR": -0.674490729792035,
+            "roll": 0.5
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": -0.4114496766047311,
+            "susR": -0.6557367694798479,
+            "roll": 0.6
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": -0.6657395614066074,
+            "susR": -0.38651365089941375,
+            "roll": 0.7
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": -0.6657395614066075,
+            "susR": 0.030344545208785136,
+            "roll": 0.8
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "susF": -0.4114496766047313,
+            "susR": 0.43561215642038587,
+            "roll": 0.9
+          }
+        }
+      ]
     },
     {
       "file": "ClassicSemi_steer_S.png",
@@ -1605,7 +1971,73 @@
         3072,
         320
       ],
-      "pose": "steer cue at S — full right lock to full left lock"
+      "pose": "steer cue at S — full right lock to full left lock",
+      "frames": [
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": -1
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": -0.7142857142857143
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": -0.4285714285714286
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": -0.1428571428571429
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": 0.1428571428571428
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": 0.4285714285714286
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": 0.7142857142857142
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "steer": 1
+          }
+        }
+      ]
     },
     {
       "file": "ClassicSemi_paints_SE.png",
@@ -1627,9 +2059,250 @@
         "rustOrange",
         "greyShingle",
         "plum"
+      ],
+      "frames": [
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "cream",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "red",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "sage",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "teal",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "gold",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "rustOrange",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "greyShingle",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "plum",
+            "weather": 0.22
+          }
+        }
+      ]
+    },
+    {
+      "file": "classicSemi_open_review_8dir.png",
+      "cells": 8,
+      "frames": [
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 1,
+            "dR": 1,
+            "hood": 1
+          }
+        },
+        {
+          "facing": "NE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 1,
+            "dR": 1,
+            "hood": 1
+          }
+        },
+        {
+          "facing": "E",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 1,
+            "dR": 1,
+            "hood": 1
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 1,
+            "dR": 1,
+            "hood": 1
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 1,
+            "dR": 1,
+            "hood": 1
+          }
+        },
+        {
+          "facing": "SW",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 1,
+            "dR": 1,
+            "hood": 1
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 1,
+            "dR": 1,
+            "hood": 1
+          }
+        },
+        {
+          "facing": "NW",
+          "pose": {
+            "paint": "white",
+            "weather": 0.45,
+            "dL": 1,
+            "dR": 1,
+            "hood": 1
+          }
+        }
+      ]
+    },
+    {
+      "file": "classicSemi_dark_review_8dir.png",
+      "cells": 8,
+      "frames": [
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "NE",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "E",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "SW",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        },
+        {
+          "facing": "NW",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.45
+          }
+        }
       ]
     }
   ],
   "sidecar": "classicSemiIsoRig.classicSemi.gameplay.json",
-  "rigSha256": "287942aa59dd964b74211284ba0dea7373bbb7e5ba7e1eb034598207d4ad5983"
+  "rigSha256": "e426416186bebd8848faa49f00d7d84f944db1ca7f39bb350686e3b067ce9138",
+  "artRevision": {
+    "date": "2026-09-13",
+    "pass": 3,
+    "status": "final art pass for gameplay handoff; not integrated into Unity",
+    "originalRigSha256": "287942aa59dd964b74211284ba0dea7373bbb7e5ba7e1eb034598207d4ad5983",
+    "pass2RigSha256": "7b8b9fdad8f91546a2abbd88b007f4264b031e318f8daf6fcdfce1f2300139d6",
+    "changes": "See ../FINAL-PASS.md",
+    "geometry": "Pass 2 metric constants and at-rest anchors retained. Cab doors, pillars and roof joins now share a fitted envelope; mirrors follow the door. CAB_FIT in the sidecar carries new door profiles and measured sweep bounds."
+  },
+  "mesh_bounds_at_rest": [
+    [
+      -1.54,
+      -3.35,
+      0.01253604390908819
+    ],
+    [
+      1.54,
+      4.520999979769304,
+      3.5509999999999997
+    ]
+  ]
 }

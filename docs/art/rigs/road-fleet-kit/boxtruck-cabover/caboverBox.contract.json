@@ -76,45 +76,45 @@
         270
       ],
       "NE": [
-        88,
-        97,
+        93,
+        101,
         287,
         264
       ],
       "E": [
-        83,
-        118,
+        82,
+        119,
         297,
         233
       ],
       "SE": [
-        88,
-        80,
+        93,
+        81,
         287,
-        270
+        269
       ],
       "S": [
         150,
-        76,
+        77,
         233,
-        276
+        275
       ],
       "SW": [
         96,
-        80,
-        295,
-        270
+        81,
+        290,
+        269
       ],
       "W": [
         86,
-        118,
-        300,
+        119,
+        301,
         233
       ],
       "NW": [
         96,
-        97,
-        295,
+        101,
+        290,
         264
       ]
     },
@@ -126,45 +126,45 @@
         302
       ],
       "NE": [
-        64,
-        78,
+        66,
+        79,
         309,
         289
       ],
       "E": [
-        53,
-        118,
+        57,
+        119,
         329,
         233
       ],
       "SE": [
-        65,
-        80,
+        66,
+        81,
         309,
-        270
+        269
       ],
       "S": [
         129,
-        76,
+        77,
         254,
-        276
+        275
       ],
       "SW": [
         74,
-        80,
-        318,
-        270
+        81,
+        317,
+        269
       ],
       "W": [
         54,
-        118,
-        330,
+        119,
+        326,
         233
       ],
       "NW": [
         74,
-        78,
-        319,
+        79,
+        317,
         289
       ]
     },
@@ -176,70 +176,70 @@
         280
       ],
       "NE": [
-        88,
-        97,
+        93,
+        101,
         309,
         268
       ],
       "E": [
-        83,
-        118,
+        82,
+        119,
         329,
         233
       ],
       "SE": [
-        88,
-        80,
+        93,
+        81,
         309,
-        270
+        269
       ],
       "S": [
         150,
-        76,
+        77,
         233,
-        276
+        275
       ],
       "SW": [
         74,
-        80,
-        295,
-        270
+        81,
+        290,
+        269
       ],
       "W": [
         54,
-        118,
-        300,
+        119,
+        301,
         233
       ],
       "NW": [
         74,
-        97,
-        295,
+        101,
+        290,
         268
       ]
     },
     "union_at_rest": [
-      83,
-      76,
-      300,
-      276
+      82,
+      77,
+      301,
+      275
     ],
     "union_all_open": [
-      53,
-      76,
-      330,
+      54,
+      77,
+      329,
       302
     ],
     "union_dock_work": [
       54,
-      76,
+      77,
       329,
       280
     ],
     "union_everything": [
-      53,
-      76,
-      330,
+      54,
+      77,
+      329,
       302
     ],
     "crop_note": "pack from union_everything (53,76,330,302) to hold the tilted cab, both doors, the rolled door and the grounded platform in one atlas cell; union_at_rest is the tight default build."
@@ -364,7 +364,7 @@
         "wRR"
       ],
       "distance_per_rev_m": 2.099,
-      "cyclic": "one revolution returns hub lugs and hand-holes exactly and the tread to a 0.7 mm phase (21.007 stripes of 0.0999 m): the seam is 0 px of 20154 painted (0.00%). Seamless in motion; the index notch keeps it honest."
+      "cyclic": "Exact integer-revolution wrap; 28 tread periods per circumference. Verified for all eight facings in validation.json."
     },
     "suspension": {
       "params": [
@@ -424,7 +424,7 @@
         1
       ],
       "default": 0.32,
-      "effect": "greys and grimes the paint, rusts iron/galv/rubber, speckles at 5% x weather"
+      "effect": "Sparse, object-space localized wear; quieter paint dithering. No screen-space random speckles."
     }
   },
   "paints": [
@@ -1453,6 +1453,64 @@
         "SW",
         "W",
         "NW"
+      ],
+      "frames": [
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5
+          }
+        },
+        {
+          "facing": "NE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5
+          }
+        },
+        {
+          "facing": "E",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5
+          }
+        },
+        {
+          "facing": "SW",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5
+          }
+        },
+        {
+          "facing": "NW",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5
+          }
+        }
       ]
     },
     {
@@ -1462,7 +1520,73 @@
         3072,
         320
       ],
-      "pose": "rollup cue 0->1 at N — 12 slats climb the track and stack under the roof"
+      "pose": "rollup cue 0->1 at N — 12 slats climb the track and stack under the roof",
+      "frames": [
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "rollup": 0
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "rollup": 0.14285714285714285
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "rollup": 0.2857142857142857
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "rollup": 0.42857142857142855
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "rollup": 0.5714285714285714
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "rollup": 0.7142857142857143
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "rollup": 0.8571428571428571
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "rollup": 1
+          }
+        }
+      ]
     },
     {
       "file": "CaboverBox_gate_N.png",
@@ -1471,7 +1595,73 @@
         3072,
         320
       ],
-      "pose": "gate cue 0->1 at N — swing out, unfold, lower to the ground"
+      "pose": "gate cue 0->1 at N — swing out, unfold, lower to the ground",
+      "frames": [
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "gate": 0
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "gate": 0.14285714285714285
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "gate": 0.2857142857142857
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "gate": 0.42857142857142855
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "gate": 0.5714285714285714
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "gate": 0.7142857142857143
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "gate": 0.8571428571428571
+          }
+        },
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "gate": 1
+          }
+        }
+      ]
     },
     {
       "file": "CaboverBox_tilt_W.png",
@@ -1480,7 +1670,73 @@
         3072,
         320
       ],
-      "pose": "tilt cue 0->38deg at W — the cab bares the engine"
+      "pose": "tilt cue 0->38deg at W — the cab bares the engine",
+      "frames": [
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "tilt": 0
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "tilt": 0.14285714285714285
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "tilt": 0.2857142857142857
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "tilt": 0.42857142857142855
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "tilt": 0.5714285714285714
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "tilt": 0.7142857142857143
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "tilt": 0.8571428571428571
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "tilt": 1
+          }
+        }
+      ]
     },
     {
       "file": "CaboverBox_roll_W.png",
@@ -1489,7 +1745,109 @@
         3840,
         320
       ],
-      "pose": "bounce cue at W — one wheel revolution + suspension, cyclic (frame 10 wraps to 0)"
+      "pose": "bounce cue at W — one wheel revolution + suspension, cyclic (frame 10 wraps to 0)",
+      "frames": [
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "susF": 0,
+            "susR": 0.6744907297920351,
+            "roll": 0
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "susF": 0.4114496766047312,
+            "susR": 0.6557367694798479,
+            "roll": 0.1
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "susF": 0.6657395614066074,
+            "susR": 0.3865136508994137,
+            "roll": 0.2
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "susF": 0.6657395614066075,
+            "susR": -0.030344545208785226,
+            "roll": 0.3
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "susF": 0.41144967660473125,
+            "susR": -0.435612156420386,
+            "roll": 0.4
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "susF": 8.572527594031472e-17,
+            "susR": -0.674490729792035,
+            "roll": 0.5
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "susF": -0.4114496766047311,
+            "susR": -0.6557367694798479,
+            "roll": 0.6
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "susF": -0.6657395614066074,
+            "susR": -0.38651365089941375,
+            "roll": 0.7
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "susF": -0.6657395614066075,
+            "susR": 0.030344545208785136,
+            "roll": 0.8
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "susF": -0.4114496766047313,
+            "susR": 0.43561215642038587,
+            "roll": 0.9
+          }
+        }
+      ]
     },
     {
       "file": "CaboverBox_steer_S.png",
@@ -1499,7 +1857,73 @@
         3072,
         320
       ],
-      "pose": "steer cue at S — full right lock to full left lock"
+      "pose": "steer cue at S — full right lock to full left lock",
+      "frames": [
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "steer": -1
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "steer": -0.7142857142857143
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "steer": -0.4285714285714286
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "steer": -0.1428571428571429
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "steer": 0.1428571428571428
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "steer": 0.4285714285714286
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "steer": 0.7142857142857142
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "steer": 1
+          }
+        }
+      ]
     },
     {
       "file": "CaboverBox_paints_SE.png",
@@ -1521,9 +1945,266 @@
         "rustOrange",
         "greyShingle",
         "plum"
+      ],
+      "frames": [
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "cream",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "red",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "sage",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "teal",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "gold",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "rustOrange",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "greyShingle",
+            "weather": 0.22
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "plum",
+            "weather": 0.22
+          }
+        }
+      ]
+    },
+    {
+      "file": "caboverBox_open_review_8dir.png",
+      "cells": 8,
+      "frames": [
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "dL": 1,
+            "dR": 1,
+            "tilt": 1,
+            "rollup": 1,
+            "gate": 1
+          }
+        },
+        {
+          "facing": "NE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "dL": 1,
+            "dR": 1,
+            "tilt": 1,
+            "rollup": 1,
+            "gate": 1
+          }
+        },
+        {
+          "facing": "E",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "dL": 1,
+            "dR": 1,
+            "tilt": 1,
+            "rollup": 1,
+            "gate": 1
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "dL": 1,
+            "dR": 1,
+            "tilt": 1,
+            "rollup": 1,
+            "gate": 1
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "dL": 1,
+            "dR": 1,
+            "tilt": 1,
+            "rollup": 1,
+            "gate": 1
+          }
+        },
+        {
+          "facing": "SW",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "dL": 1,
+            "dR": 1,
+            "tilt": 1,
+            "rollup": 1,
+            "gate": 1
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "dL": 1,
+            "dR": 1,
+            "tilt": 1,
+            "rollup": 1,
+            "gate": 1
+          }
+        },
+        {
+          "facing": "NW",
+          "pose": {
+            "paint": "white",
+            "weather": 0.5,
+            "dL": 1,
+            "dR": 1,
+            "tilt": 1,
+            "rollup": 1,
+            "gate": 1
+          }
+        }
+      ]
+    },
+    {
+      "file": "caboverBox_dark_review_8dir.png",
+      "cells": 8,
+      "frames": [
+        {
+          "facing": "N",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.5
+          }
+        },
+        {
+          "facing": "NE",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.5
+          }
+        },
+        {
+          "facing": "E",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.5
+          }
+        },
+        {
+          "facing": "SE",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.5
+          }
+        },
+        {
+          "facing": "S",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.5
+          }
+        },
+        {
+          "facing": "SW",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.5
+          }
+        },
+        {
+          "facing": "W",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.5
+          }
+        },
+        {
+          "facing": "NW",
+          "pose": {
+            "paint": "blue",
+            "weather": 0.5
+          }
+        }
       ]
     }
   ],
   "sidecar": "boxIsoRig.caboverBox.gameplay.json",
-  "rigSha256": "a93cb4b3c0bc4805fbe6f15342a0efa2071249f6500ba19a58b6549541ebd704"
+  "rigSha256": "bdcb5e7ff73d387d015bc9fb1ed0811585d8e0231386c6f2ae2b19c77755a12c",
+  "artRevision": {
+    "date": "2026-09-13",
+    "pass": 3,
+    "status": "final art pass for gameplay handoff; not integrated into Unity",
+    "originalRigSha256": "a93cb4b3c0bc4805fbe6f15342a0efa2071249f6500ba19a58b6549541ebd704",
+    "pass2RigSha256": "2ed65428a9d63062f46bdc9433336f2f9bfcc184a686c4e74be8819fcf343329",
+    "changes": "See ../FINAL-PASS.md",
+    "geometry": "Pass 2 metric constants and at-rest anchors retained. Cab doors, pillars and roof joins now share a fitted envelope; mirrors follow the door. CAB_FIT in the sidecar carries new door profiles and measured sweep bounds."
+  },
+  "mesh_bounds_at_rest": [
+    [
+      -1.3,
+      -3.3,
+      0.008374077331270935
+    ],
+    [
+      1.3,
+      3.4409999621144056,
+      3.04
+    ]
+  ]
 }

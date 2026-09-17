@@ -59,7 +59,7 @@ namespace HiddenHarbours.Tests.RigBaking
             {
                 Key = "caboverBox", Global = "BoxIso",
                 CellW = 384, CellH = 320, PivotX = 192, PivotY = 214,
-                Faces = 1090, BodyFaces = 1090 - 348 - 80, UsedRamps = 16,
+                Faces = 2555, BodyFaces = 2555 - 548 - 224, UsedRamps = 16,
                 Slots = new[] { "WheelFL", "WheelFR", "WheelRL", "WheelRR", "KnuckleFL", "KnuckleFR" },
             },
             new Baked
@@ -69,14 +69,14 @@ namespace HiddenHarbours.Tests.RigBaking
                 // the extractor reads off HER global — the assertion that a bake did not quietly
                 // take the road cell and crop her tail.
                 CellW = 448, CellH = 352, PivotX = 224, PivotY = 214,
-                Faces = 1211, BodyFaces = 1211 - 412 - 80, UsedRamps = 16,
+                Faces = 3796, BodyFaces = 3796 - 612 - 224, UsedRamps = 16,
                 Slots = new[] { "WheelFL", "WheelFR", "WheelRL", "WheelRR", "KnuckleFL", "KnuckleFR" },
             },
             new Baked
             {
                 Key = "aeroSemi", Global = "AeroSemiIso",
                 CellW = 384, CellH = 320, PivotX = 192, PivotY = 214,
-                Faces = 1538, BodyFaces = 1538 - 714 - 80, UsedRamps = 15,
+                Faces = 5110, BodyFaces = 5110 - 1014 - 224, UsedRamps = 16,
                 // EIGHT fittings, not six: her rear is a TANDEM on one axis per side, split by
                 // station window into two axles apiece.
                 Slots = new[] { "WheelFL", "WheelFR", "WheelRL1", "WheelRL2", "WheelRR1", "WheelRR2",
@@ -86,7 +86,7 @@ namespace HiddenHarbours.Tests.RigBaking
             {
                 Key = "classicSemi", Global = "ClassicSemiIso",
                 CellW = 384, CellH = 320, PivotX = 192, PivotY = 214,
-                Faces = 1625, BodyFaces = 1625 - 714 - 80, UsedRamps = 16,
+                Faces = 5306, BodyFaces = 5306 - 1014 - 224, UsedRamps = 16,
                 Slots = new[] { "WheelFL", "WheelFR", "WheelRL1", "WheelRL2", "WheelRR1", "WheelRR2",
                                 "KnuckleFL", "KnuckleFR" },
             },
@@ -568,9 +568,9 @@ namespace HiddenHarbours.Tests.RigBaking
         /// ⭐⭐ <b>THE NIGHT-LAMP SLOT-REUSE GUARD (ruled on #668, 2026-08-27).</b>
         ///
         /// <para><c>head</c> (the unlit lens) and <c>glow</c> (the lit one) are two forms of ONE lamp.
-        /// Each build on its own paints 15 or 16 ramps and fits; a single mesh carrying both would be
-        /// SEVENTEEN on the two box trucks and the classic semi, one over the shader's
-        /// <c>float4[16]</c>.</para>
+        /// Each build on its own paints at most 16 ramps and fits; a single mesh carrying both would
+        /// be SEVENTEEN on all five road rigs (re-measured on the 2026-09-16 re-cut), one over the
+        /// shader's <c>float4[16]</c>.</para>
         ///
         /// <para>The ruling was slot reuse rather than a merge — the two ramps are visibly different
         /// colours (a grey-blue lens against a green-white glow) and merging them would lose the night

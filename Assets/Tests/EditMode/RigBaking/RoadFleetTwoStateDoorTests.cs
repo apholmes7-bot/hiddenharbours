@@ -38,8 +38,9 @@ namespace HiddenHarbours.Tests.RigBaking
         ///
         /// <para><b>Nothing measured here is anywhere near it in either direction</b>, which is the
         /// property that makes it a threshold rather than a tuning knob. The one rigid thing in
-        /// either door — the liftgate's flip half through <c>unfold</c> — measures EXACTLY 0, and
-        /// everything that is not rigid misses by 60 mm to 1.7 m.</para>
+        /// either door — the liftgate's flip half through <c>unfold</c> — measures 4.4e-16 m and
+        /// 1.1e-16 m, which is float64 round-off, and everything that is not rigid misses by 390 mm
+        /// to 1.7 m (both re-measured on the 2026-09-16 re-cut).</para>
         /// </summary>
         const double RigidEpsilon = 1e-4;
 
@@ -60,11 +61,11 @@ namespace HiddenHarbours.Tests.RigBaking
         static readonly BoxTruck[] Trucks =
         {
             new BoxTruck { Key = "caboverBox", Label = "Cabover Box Truck",
-                           FacesShut = 1090, FacesOpen = 1084,
-                           RollupShut = 18, RollupOpen = 12, BodyWithoutDoor = 1072 },
+                           FacesShut = 2555, FacesOpen = 2554,
+                           RollupShut = 24, RollupOpen = 23, BodyWithoutDoor = 2531 },
             new BoxTruck { Key = "convBox", Label = "Conventional Box Truck",
-                           FacesShut = 1211, FacesOpen = 1205,
-                           RollupShut = 21, RollupOpen = 15, BodyWithoutDoor = 1190 },
+                           FacesShut = 3796, FacesOpen = 3795,
+                           RollupShut = 27, RollupOpen = 26, BodyWithoutDoor = 3769 },
         };
 
         public static IEnumerable<BoxTruck> Both() => Trucks;
@@ -172,8 +173,8 @@ namespace HiddenHarbours.Tests.RigBaking
         // =============================================================================================
 
         /// <summary>
-        /// ⭐ <b>Her face COUNT changes, and that is the whole reason she is not a pose.</b> Six faces
-        /// stop existing as the curtain rolls into its stack, so a face list claimed shut names
+        /// ⭐ <b>Her face COUNT changes, and that is the whole reason she is not a pose.</b> One face
+        /// stops existing as the curtain rolls into its stack, so a face list claimed shut names
         /// different geometry open — which is exactly what <c>StateProbes</c> exists for.
         /// </summary>
         [Test]
@@ -336,13 +337,14 @@ namespace HiddenHarbours.Tests.RigBaking
 
         /// <summary>
         /// ⚠️ <b>The one rigid thing in either door, pinned so it stays understood.</b> Through
-        /// <c>unfold</c> the flip half moves alone — 6 <c>galv</c> faces, distance change EXACTLY 0.
+        /// <c>unfold</c> the flip half moves alone — 6 <c>galv</c> faces, distance change 4.4e-16 m
+        /// on the cabover and 1.1e-16 m on the conventional: float64 round-off, not motion.
         ///
         /// <para>It is deliberately NOT split out. A part that is rigid in one phase of three and
         /// carried by the linkage in the other two is still the linkage's, and posing it alone would
         /// leave <c>swing</c> and <c>lower</c> unexplained. This test exists so that stays a decision
-        /// rather than an oversight — and because the exact zero is what proves the rigidity metric
-        /// here can detect rigidity at all, rather than merely failing everything.</para>
+        /// rather than an oversight — and because the round-off zero is what proves the rigidity
+        /// metric here can detect rigidity at all, rather than merely failing everything.</para>
         /// </summary>
         [Test]
         public void TheFlipHalfIsExactlyRigidThroughUnfold([ValueSource(nameof(Both))] BoxTruck t)

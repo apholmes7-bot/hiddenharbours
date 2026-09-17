@@ -113,7 +113,7 @@ excluded. So the tailgate reads at `N NE NW`, the grille at `SE S SW`, and top f
 `reach_point` is a **request, not a promise** (same warning as the camper's): it is a ground-level
 standing spot, clear of the door arcs by measurement, but untested against terrain.
 
-`derivedFromRigSha256` is `130580238ab2c6d4…` — the SHA-256 of `vehicleIsoRig.js` **as shipped in this
+`derivedFromRigSha256` is `748f96ebfc0a7e32bddf6f2f2dc9b457c803fa6dd9919e041967e098fca2df7a` — the SHA-256 of `vehicleIsoRig.js` **as shipped in this
 kit**, and the drift tripwire. Nobody types it; the harness re-hashes the file and fails the `sha` group
 if the two disagree. The same sidecar sits byte-identical in the art workspace at
 `Art/gameplay/vehicleIsoRig.dually3500.gameplay.json`.
