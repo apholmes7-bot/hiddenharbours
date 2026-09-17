@@ -14,6 +14,10 @@ namespace HiddenHarbours.Art
         /// <summary>The extracted hull mesh (RigMeshBuilder layout: flat per-face normals, UV0 =
         /// (materialId, faceBias b, depthBias db, 0)).</summary>
         public Mesh Mesh;
+        /// <summary>Her door leaf shut and open, in <see cref="Mesh"/>'s layout
+        /// (<see cref="HiddenHarbours.Core.HullMeshDef.DoorLeafClosed"/>). Both null on a hull with no
+        /// split leaf, and then nothing is drawn beside the hull mesh.</summary>
+        public Mesh DoorLeafClosed, DoorLeafOpen;
         /// <summary>Palette ramp per rig material, in rig MATS order.</summary>
         public Color32[][] Ramps;
         /// <summary>Per-material constant ramp-index offset (the rig's <c>off</c>).</summary>
@@ -61,7 +65,9 @@ namespace HiddenHarbours.Art
     /// <summary>
     /// Draws one rig-extracted hull mesh through the facet pipeline (ADR 0022 phase 3).
     ///
-    /// <para><b>How the image reaches the screen.</b> This component owns two children:</para>
+    /// <para><b>How the image reaches the screen.</b> This component owns two children (three on a
+    /// hull whose door leaf was baked apart: "DoorLeaf", under FacetMesh, drawn the same way; see
+    /// <see cref="ShowDoorLeaf"/>):</para>
     /// <list type="bullet">
     /// <item><b>"FacetMesh"</b> — a MeshRenderer whose only shader pass is LightMode
     /// <c>HHHullFacet</c>. The 2D renderer's own passes skip it (no Universal2D/SRPDefaultUnlit
@@ -91,7 +97,8 @@ namespace HiddenHarbours.Art
     [ExecuteAlways]
     [DisallowMultipleComponent]
     public sealed class IsoFacetHullRenderer : MonoBehaviour,
-        HiddenHarbours.Core.IHullMeshRenderer, HiddenHarbours.Core.IHullCutaway
+        HiddenHarbours.Core.IHullMeshRenderer, HiddenHarbours.Core.IHullCutaway,
+        HiddenHarbours.Core.IHullDoorLeaf
     {
         [Tooltip("Heading in RIG dir units (1 unit = 45°, CCW, fractional allowed).")]
         [SerializeField] private float _headingDirUnits;
@@ -158,6 +165,13 @@ namespace HiddenHarbours.Art
         // version stamp that could say yes while the mesh says nothing.
         private bool _hasRoomGeometry;
         private HiddenHarbours.Core.HullMeshDef.Cut _cutaway;
+
+        // THE DOOR LEAF (owner playtest 2026-09-17). The "DoorLeaf" child under FacetMesh, present
+        // only when the setup carries both poses, and the pose last asked for. The answer outlives a
+        // re-Configure; the child does not (it dies with FacetMesh).
+        private MeshFilter _leafFilter;
+        private MeshRenderer _leafRenderer;
+        private bool _doorLeafOpen;
 
         /// <summary>
         /// True when any face of <paramref name="mesh"/> is flagged as ROOM geometry (TexCoord1.y,
@@ -234,6 +248,39 @@ namespace HiddenHarbours.Art
             _cutaway = cut;
             ApplyCutawayKeyword();
             ApplyPose();          // the level and its lid travel in the property block
+        }
+
+        /// <inheritdoc/>
+        public bool CarriesDoorLeaf => _leafFilter != null;
+
+        /// <inheritdoc/>
+        public bool DoorLeafShownOpen => _doorLeafOpen;
+
+        /// <summary>
+        /// <b>Draw her door leaf open or shut</b>, the Core
+        /// <see cref="HiddenHarbours.Core.IHullDoorLeaf"/> seam, driven by <c>BoatCabinDoor</c> from its
+        /// own <c>IsOpen</c> (owner playtest 2026-09-17: "i dont see the doors open").
+        ///
+        /// <para>A mesh swap on the "DoorLeaf" child and nothing else. Both poses are the same faces in
+        /// the same vertex layout, and the child shares FacetMesh's material and property block, so the
+        /// leaf shades, dithers, composites and cuts away with the house exactly as it did while it was
+        /// baked into the hull mesh.</para>
+        ///
+        /// <para>The answer is kept across <see cref="Configure"/>, so a repaint cannot slam a door the
+        /// player opened. A hull with no split leaf records the answer and draws nothing.</para>
+        /// </summary>
+        public void ShowDoorLeaf(bool open)
+        {
+            if (open == _doorLeafOpen) return;
+            _doorLeafOpen = open;
+            ApplyDoorLeafMesh();
+        }
+
+        private void ApplyDoorLeafMesh()
+        {
+            if (_leafFilter == null || _setup == null) return;
+            Mesh want = _doorLeafOpen ? _setup.DoorLeafOpen : _setup.DoorLeafClosed;
+            if (_leafFilter.sharedMesh != want) _leafFilter.sharedMesh = want;
         }
 
         // ⚠️⚠️ A HULL THAT CARRIES A ROOM MUST KEEP THE KEYWORD ON, EVEN CLOSED UP.
@@ -674,6 +721,25 @@ namespace HiddenHarbours.Art
             _meshRenderer.allowOcclusionWhenDynamic = false;
             _meshChild = meshGo.transform;
 
+            // Her door leaf, when the bake split it out of setup.Mesh. A child of FacetMesh at
+            // identity, so it takes her heading, roll, pitch and heave with no code of its own, and a
+            // renderer on the same material, so the facet feature draws it in every pass (facet,
+            // deck, guard) the hull mesh is drawn in. Its faces keep their 'house' level tag, so the
+            // cutaway takes the leaf with the wall it hangs in.
+            if (setup.DoorLeafClosed != null && setup.DoorLeafOpen != null)
+            {
+                var leafGo = new GameObject("DoorLeaf") { hideFlags = HideFlags.DontSave, layer = meshGo.layer };
+                leafGo.transform.SetParent(_meshChild, false);
+                _leafFilter = leafGo.AddComponent<MeshFilter>();
+                _leafRenderer = leafGo.AddComponent<MeshRenderer>();
+                _leafRenderer.sharedMaterial = _facetMaterial;
+                _leafRenderer.shadowCastingMode = ShadowCastingMode.Off;
+                _leafRenderer.receiveShadows = false;
+                _leafRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+                _leafRenderer.allowOcclusionWhenDynamic = false;
+                ApplyDoorLeafMesh();
+            }
+
             // The overlay quad: the cell rectangle in world metres around the pivot, padded 1 px
             // on every side so the keyline (which floods 1 px OUTSIDE the silhouette) is inside it
             // even when the silhouette touches the cell edge.
@@ -882,6 +948,7 @@ namespace HiddenHarbours.Art
             _props.SetFloat(IsoFacetShaderIds.LevelLid, _cutaway.Lid);
             PublishDeckSlots();
             _meshRenderer.SetPropertyBlock(_props);
+            if (_leafRenderer != null) _leafRenderer.SetPropertyBlock(_props);
             _overlayRenderer.SetPropertyBlock(_props);
         }
 
@@ -1103,6 +1170,9 @@ namespace HiddenHarbours.Art
             _meshChild = null;
             _overlayChild = null;
             _meshRenderer = null;
+            // The leaf's GameObject is a child of FacetMesh and dies with it above.
+            _leafFilter = null;
+            _leafRenderer = null;
             _overlayRenderer = null;
             _facetMaterial = null;
             _overlayMaterial = null;

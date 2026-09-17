@@ -47,11 +47,18 @@ namespace HiddenHarbours.Boats
     /// hand-transcribed-constant failure the sidecars exist to close. A door whose def states no cue
     /// simply opens at once, which is the honest picture of a threshold nobody has measured.</para>
     ///
-    /// <para><b>⚠ The shipped sheets bake at <c>doorOpen: 0</c> only</b> (the interiors contract), so
-    /// there is no leaf artwork to step through yet, and the 2026-08-28 charter HELD the 8-frame bake
-    /// pending the full-mesh ruling. <see cref="CueFrame"/> and <see cref="IsOpen"/> are published for
-    /// whoever draws it; until then the cue is what it honestly is — the time the door takes — and the
-    /// state it lands on is a fact about the boat whether or not a pixel says so yet.</para>
+    /// <para><b>⭐ The leaf is DRAWN on a mesh hull, open or shut, from <see cref="IsOpen"/></b> (owner
+    /// playtest 2026-09-17: <i>"i dont see the doors open"</i>). Her bake keeps the leaf out of the hull
+    /// mesh and stores it in both poses; this component hands its state to the renderer through the
+    /// Core <see cref="IHullDoorLeaf"/> seam and never names the Art type behind it (rule 4). It pushes
+    /// at every change and re-checks once a frame, so a renderer that is rebuilt under a standing door
+    /// (a repaint, a hull swap, the sprite⇄mesh toggle) is put back in step on the next frame.</para>
+    ///
+    /// <para><b>⚠ Still no in-between poses.</b> The 2026-08-28 charter HELD the 8-frame cue bake, so
+    /// the leaf lands in its new pose when the cue ENDS: the cue is what it honestly is, the time the
+    /// door takes. <see cref="CueFrame"/> stays published for whoever bakes the frames. A SPRITE hull
+    /// has no leaf art at all (her sheets bake at <c>doorOpen: 0</c>), and there the state is a fact
+    /// about the boat that no pixel shows.</para>
     ///
     /// <para><b>⚠ A door with no MEASURED opening keeps the old press-through.</b> The passage is the
     /// doorway's own <see cref="BoatInteriorDoor.ClearWidthMeters"/> (see
@@ -131,6 +138,24 @@ namespace HiddenHarbours.Boats
         /// <summary>True once the no-band fallback has been named on the console — said once per door and
         /// not once per press, because a warning on a press path is a warning in a loop.</summary>
         private bool _saidTheDoorHasNoBand;
+
+        /// <summary>
+        /// The hull renderer that draws this door's leaf, once found, or null. Held across frames and
+        /// dropped when Unity destroys it (see <see cref="LeafIsLive"/>).
+        /// </summary>
+        private IHullDoorLeaf _leaf;
+
+        /// <summary>Unscaled seconds until the next search for <see cref="_leaf"/> while none is
+        /// held.</summary>
+        private float _leafSearchIn;
+
+        /// <summary>
+        /// How often a door with no leaf renderer looks for one, in unscaled seconds. A sprite hull never
+        /// has one and a mesh hull is skinned on the skinner's own schedule, so the search has to repeat;
+        /// a search every frame would be a hierarchy walk per door per frame (rule 7). Half a second is
+        /// the longest a freshly skinned hull could show a standing door shut.
+        /// </summary>
+        private const float LeafSearchIntervalSeconds = 0.5f;
 
         // ---- what this door IS ----------------------------------------------------------------
 
@@ -309,7 +334,12 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private void OnDisable() => Interactables.Unregister(this);
 
-        private void Update() => Tick(Time.deltaTime);
+        private void Update()
+        {
+            Tick(Time.deltaTime);
+            // Unscaled: a paused game still owes a freshly skinned hull her standing door.
+            KeepLeafInStep(Time.unscaledDeltaTime);
+        }
 
         // ---- the press and the cue ------------------------------------------------------------
 
@@ -329,6 +359,8 @@ namespace HiddenHarbours.Boats
             _cueElapsed = -1f;
             IsOpen = false;             // the ruling's first sentence, restated at every wiring
             _passageArmed = false;      // see the field: the arrival starts her IN this doorway
+            _leaf = null;               // a re-wired door may stand on a different hull
+            ShowLeafNow();
         }
 
         /// <summary>
@@ -348,6 +380,7 @@ namespace HiddenHarbours.Boats
         {
             IsOpen = open;
             _cueElapsed = -1f;
+            ShowLeafNow();
         }
 
         /// <summary>
@@ -431,11 +464,71 @@ namespace HiddenHarbours.Boats
         {
             _cueElapsed = -1f;
 
-            if (ThresholdIsWalkable) { IsOpen = _cueOpens; return; }
+            if (ThresholdIsWalkable)
+            {
+                IsOpen = _cueOpens;
+                ShowLeafNow();
+                return;
+            }
 
             if (_interior == null) return;
             if (_cueOpens) _interior.TryEnter(_cueLevel);
             else _interior.TryExit();
+        }
+
+        // ---- the drawn leaf ---------------------------------------------------------------------
+
+        /// <summary>
+        /// Put the drawn leaf on <see cref="IsOpen"/> now, searching for the renderer if none is held.
+        /// Called at every change of state; changes are presses and wirings, never frames.
+        ///
+        /// <para><b>Only the main threshold draws.</b> A hull's bake stores ALL her leaves as one pair
+        /// (the sport fisher skybridge's lounge slider is in it with her saloon door), and the pair
+        /// follows the door that is her way in. An additional door keeps its state and draws
+        /// nothing; two doors pushing one pair would fight over it.</para>
+        /// </summary>
+        private void ShowLeafNow()
+        {
+            if (_additionalDoorIndex >= 0) return;
+            if (!LeafIsLive() && !FindLeaf()) return;
+            if (_leaf.DoorLeafShownOpen != IsOpen) _leaf.ShowDoorLeaf(IsOpen);
+        }
+
+        /// <summary>
+        /// The once-a-frame half of <see cref="ShowLeafNow"/>: a held renderer is compared and pushed
+        /// (a field read and an interface call, no allocation), and a missing one is searched for at
+        /// most every <see cref="LeafSearchIntervalSeconds"/>.
+        /// </summary>
+        private void KeepLeafInStep(float unscaledDeltaSeconds)
+        {
+            if (_additionalDoorIndex >= 0) return;
+            if (!LeafIsLive())
+            {
+                _leafSearchIn -= unscaledDeltaSeconds;
+                if (_leafSearchIn > 0f) return;
+                _leafSearchIn = LeafSearchIntervalSeconds;
+                if (!FindLeaf()) return;
+            }
+            if (_leaf.DoorLeafShownOpen != IsOpen) _leaf.ShowDoorLeaf(IsOpen);
+        }
+
+        /// <summary>
+        /// ⚠️ Through <c>UnityEngine.Object</c>'s own <c>==</c>, as <c>BoatCutaway</c> does: an interface
+        /// reference compared with <c>== null</c> is satisfied by a destroyed component's fake-null.
+        /// </summary>
+        private bool LeafIsLive() => _leaf is UnityEngine.Object live && live != null;
+
+        /// <summary>
+        /// Look for the leaf renderer under the boat ROOT: the cabin's own node (the installer puts
+        /// <see cref="BoatInterior"/> there), or this door's parent when no cabin is wired.
+        /// </summary>
+        private bool FindLeaf()
+        {
+            Transform root = _interior != null ? _interior.transform : transform.parent;
+            _leaf = root != null ? root.GetComponentInChildren<IHullDoorLeaf>(includeInactive: true) : null;
+            if (LeafIsLive()) return true;
+            _leaf = null;
+            return false;
         }
 
         // ---- the passage ----------------------------------------------------------------------

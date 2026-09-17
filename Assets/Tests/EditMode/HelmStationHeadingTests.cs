@@ -21,7 +21,7 @@ namespace HiddenHarbours.Tests.EditMode
     /// <para><b>Two bars, and neither is the code's own arithmetic read back</b> (a guard that asks the
     /// code for its own bar is a mirror):
     /// <list type="bullet">
-    ///   <item>the helm must be within <c>_helmReach</c> of <b>where her STERN is drawn</b> — computed from
+    ///   <item>the helm must be within <c>_helmRadius</c> of <b>where her STERN is drawn</b> — computed from
     ///   her authored <see cref="BoatHullDef.LengthMeters"/>, not from the helm offset;</item>
     ///   <item>the helm must lie <b>inside her outline</b> — <see cref="HullFootprint"/>, built from her
     ///   authored length and the half-beam her hull mesh carries.</item>
@@ -57,7 +57,10 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>The helm station as it shipped, and as both scenes still carry it: 1.3 m down-screen
         /// of her origin with her bow north.</summary>
         private static readonly Vector2 ShippedHelmOffset = new Vector2(0f, -1.3f);
-        private const float HelmReach = 0.9f;
+        /// <summary>The helm radius the owner ruled on 2026-09-17 (<c>ControlSwitcher._helmRadius</c>):
+        /// "within a small radius of the helm". It replaced the 0.9 m reach these bars were first written
+        /// against, and both bars still clear it with room to spare.</summary>
+        private const float HelmRadius = 0.5f;
 
         /// <summary>Every heading a dory can be found lying on, including the two that matter at St Peters
         /// (she is banked at rotZ 90°, which is a drawn heading of 270°).</summary>
@@ -126,17 +129,17 @@ namespace HiddenHarbours.Tests.EditMode
                 worstFixed = Mathf.Max(worstFixed, fixedError);
                 worstOld = Mathf.Max(worstOld, oldError);
 
-                Assert.LessOrEqual(fixedError, HelmReach,
+                Assert.LessOrEqual(fixedError, HelmRadius,
                     $"at {heading}° the helm must be within reach of the tiller she is DRAWN with " +
                     $"(it is {fixedError:0.000} m away)");
 
                 Destroy(rig);
             }
 
-            Assert.Less(worstFixed, HelmReach, "the worst heading still leaves the tiller reachable");
-            Assert.Greater(worstOld, HelmReach,
+            Assert.Less(worstFixed, HelmRadius, "the worst heading still leaves the tiller reachable");
+            Assert.Greater(worstOld, HelmRadius,
                 $"the shipped world-axis helm was out of reach of her own stern on some heading " +
-                $"(worst {worstOld:0.000} m against a {HelmReach} m reach) — without this the case above " +
+                $"(worst {worstOld:0.000} m against a {HelmRadius} m radius) — without this the case above " +
                 "would pass on the very code it was written to condemn");
         }
 
@@ -276,7 +279,7 @@ namespace HiddenHarbours.Tests.EditMode
             _spawned.Add(swGo);
             var sw = swGo.AddComponent<ControlSwitcher>();
             sw.Configure(walk, boat, null, null, 0f, null);
-            sw.ConfigureHelm(ShippedHelmOffset, HelmReach);
+            sw.ConfigureHelm(ShippedHelmOffset, HelmRadius);
 
             return new Rig
             {

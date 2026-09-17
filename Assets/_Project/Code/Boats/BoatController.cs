@@ -501,6 +501,22 @@ namespace HiddenHarbours.Boats
             // measured off that — a 12.9 m cape left wearing a 4.5 m dory's outline would refuse a
             // swimmer holding on to her own quarter.
             InstallHullPresence();
+            // …and her cabin is the new hull's too (owner, 2026-09-17). The installer built once at Start,
+            // so a cape islander swapped onto a dory root kept the dory's answer — no door, no room, no
+            // cutaway — for the whole session.
+            RebuildCabin();
+        }
+
+        /// <summary>
+        /// Build this hull's cabin again through the <see cref="BoatInteriorInstaller"/> mounted in
+        /// <see cref="Awake"/>. Play mode only, like the mount itself; free when the hull's picture did
+        /// not change (see <see cref="BoatInteriorInstaller.Rebuild"/>).
+        /// </summary>
+        private void RebuildCabin()
+        {
+            if (!Application.isPlaying) return;
+            var installer = GetComponent<BoatInteriorInstaller>();
+            if (installer != null) installer.Rebuild();
         }
 
         /// <summary>

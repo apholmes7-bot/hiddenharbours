@@ -463,6 +463,9 @@ namespace HiddenHarbours.Art
             return new IsoFacetHullSetup
             {
                 Mesh = def.Mesh,
+                // A pair or nothing: a half-baked def must not draw one pose and never the other.
+                DoorLeafClosed = def.HasDoorLeaf() ? def.DoorLeafClosed : null,
+                DoorLeafOpen = def.HasDoorLeaf() ? def.DoorLeafOpen : null,
                 Ramps = ramps,
                 RampOffsets = offsets,
                 InteriorRamps = interiorRamps,
