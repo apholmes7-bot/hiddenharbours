@@ -13,7 +13,7 @@ namespace HiddenHarbours.Tests.RigBaking
 {
     /// <summary>
     /// The guards ADR 0044 owes for the SKINNED half of the character bake — one bind mesh, one
-    /// skeleton, one clip per <c>ANIMS</c> row (option (d)).
+    /// skeleton, one clip per <c>ANIMS</c> row and one per <c>CARRY_CLIPS</c> row (option (d)).
     ///
     /// <para><b>What this file is NOT.</b> <c>CharacterSkinnedExportTests</c> already guards the
     /// RIG's side of the claim: rig 7's own <c>goldenReport</c>, the byte-identical sprite render,
@@ -31,13 +31,14 @@ namespace HiddenHarbours.Tests.RigBaking
     /// <c>CharacterIso6.facesOf</c>. Nothing in the comparison is a second copy of the baker's
     /// arithmetic; the baker never skins anything.</para>
     ///
-    /// <para><b>Why it composes instead of loading an asset.</b> Nothing can bake the def until the
-    /// editor slot is granted, so there is no <c>.asset</c> in the repo yet to read. The fixture
-    /// calls the shipped <see cref="CharacterSkinAssetBaker.Compose"/> — the disk-free half of the
-    /// bake — rather than a test-local transcription that could be wrong in exactly the way the
-    /// baker is and agree with it perfectly. When the asset does land, this file keeps working
-    /// unchanged and gains a second question worth asking: does the committed asset still equal
-    /// what Compose produces today?</para>
+    /// <para><b>Why it composes instead of loading an asset.</b> The fixture calls the shipped
+    /// <see cref="CharacterSkinAssetBaker.Compose"/> — the disk-free half of the bake — rather than
+    /// a test-local transcription that could be wrong in exactly the way the baker is and agree
+    /// with it perfectly. This was written before the asset existed, and promised a second question
+    /// for the day it landed: does the committed asset still equal what Compose produces today?
+    /// Section 3 asks it now, twice — by the rigs' hashes, and by the bind mesh's content for the
+    /// face chain no hash covers — because a composed def is current by construction, and the def
+    /// the game LOADS is the one that can go stale.</para>
     /// </summary>
     public class CharacterSkinBakeGuardTests
     {
@@ -47,10 +48,19 @@ namespace HiddenHarbours.Tests.RigBaking
         const double FlipbookKb = CharacterSkinAssetBaker.FlipbookKilobytes;
 
         /// <summary>
+        /// The four piloting stances rig 7's <c>CARRY_CLIPS</c> table adds, by the STATE KEY the game
+        /// asks for (<c>CharacterRigBaker.CharacterState.Key</c>: the animation, then the carry).
+        /// Spelled here rather than read back from the baker, so a bake that keyed them differently
+        /// fails by name instead of agreeing with itself.
+        /// </summary>
+        static readonly string[] PilotingStates = { "idle_helm", "walk_helm", "idle_oars", "walk_oars" };
+
+        /// <summary>
         /// The composed preset — the def the game ships, with the face the owner accepted — built
-        /// once. Compose runs the rig, reads 45 bones, 3,108 weighted corners and 35 clips, and
-        /// renders two turntable probes; at roughly two seconds a call there is no reason for eight
-        /// tests to pay for it eight times.
+        /// once. Compose runs the rig, reads 45 bones, 3,108 weighted corners and 39 clips (the 35
+        /// <c>ANIMS</c> rows and the four <c>CARRY_CLIPS</c> piloting stances), and renders two
+        /// turntable probes; at roughly two seconds a call there is no reason for every test here to
+        /// pay for it again.
         /// </summary>
         IRigScriptHost _host;
         CharacterSkinAssetBaker.SkinBake _bake;
@@ -140,6 +150,13 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <para><b>It measures the PROVEN bake</b> (<c>composedFace: false</c>, see
         /// <see cref="Proven"/>), because rig 6 has no posed answer for the composed face. The def the
         /// game ships is tied to it by <see cref="TheShippedDefSharesTheProvenDefsSkeletonAndClips"/>.</para>
+        ///
+        /// <para><b>The carry rows are swept like every other row, and the sweep says it met them.</b>
+        /// The four <c>CARRY_CLIPS</c> stances ride an existing animation plus a carry modifier, so each
+        /// frame is posed here as <c>facesOf(pose(anim, u, build, {carry}))</c>: the clip's own
+        /// <c>Carry</c> is what goes to <c>ExtractPose</c>. A def that dropped them would still pass a
+        /// sweep that only counts what it was handed, so the sweep also asserts it swept each of
+        /// <see cref="PilotingStates"/>, and as many carry rows as the rig declares.</para>
         /// </summary>
         [Test]
         public void TheDefPosesTheRigsOwnGeometry_OnEveryClipRowAndEveryFrame()
@@ -154,12 +171,23 @@ namespace HiddenHarbours.Tests.RigBaking
             var sw = Stopwatch.StartNew();
             double worst = 0; string worstAt = "none";
             int rows = 0, frames = 0, compared = 0, parkedTotal = 0;
+            var carried = new SortedSet<string>(StringComparer.Ordinal);
 
             foreach (CharacterSkinDef.SkinClip clip in def.Clips)
             {
                 var parked = new HashSet<string>(clip.ParkedParts ?? Array.Empty<string>(),
                                                  StringComparer.Ordinal);
                 rows++;
+
+                // A CARRY_CLIPS row is keyed by the state it answers (idle_helm), an ANIMS row by its
+                // animation. That difference is the row kind; the Carry is what the rig poses it with.
+                if (!string.Equals(clip.StateKey, clip.Anim, StringComparison.Ordinal))
+                {
+                    Assert.IsNotEmpty(clip.Carry,
+                        $"'{clip.StateKey}' is keyed as a carry stance riding '{clip.Anim}' and names no " +
+                        "carry, so the sweep would pose the free body and prove the wrong clip.");
+                    carried.Add(clip.StateKey);
+                }
 
                 for (int frame = 0; frame < clip.FrameCount; frame++)
                 {
@@ -178,17 +206,17 @@ namespace HiddenHarbours.Tests.RigBaking
                         }
 
                         Assert.Less(j, reference.Faces.Count,
-                            $"{clip.Anim}[{frame}]: the bind mesh carries drawn face {f} " +
+                            $"{clip.StateKey}[{frame}]: the bind mesh carries drawn face {f} " +
                             $"('{bake.Skin.FacePart[f]}') that rig 6 does not emit at all.");
                         RigFace rf = reference.Faces[j++];
 
                         Assert.AreEqual(bf.V.Length, rf.V.Length,
-                            $"{clip.Anim}[{frame}] face {f} ('{bake.Skin.FacePart[f]}'): the bind " +
+                            $"{clip.StateKey}[{frame}] face {f} ('{bake.Skin.FacePart[f]}'): the bind " +
                             "mesh and rig 6 disagree about how many corners this face has, so the " +
                             "two face lists have gone out of step and every distance after this " +
                             "one is meaningless.");
                         Assert.AreEqual(bake.Bind.Materials[bf.Mat].Name, reference.Materials[rf.Mat].Name,
-                            $"{clip.Anim}[{frame}] face {f}: the bind mesh paints this face " +
+                            $"{clip.StateKey}[{frame}] face {f}: the bind mesh paints this face " +
                             $"'{bake.Bind.Materials[bf.Mat].Name}' and rig 6 paints it " +
                             $"'{reference.Materials[rf.Mat].Name}' — the lists are misaligned.");
 
@@ -200,7 +228,7 @@ namespace HiddenHarbours.Tests.RigBaking
                             if (d > worst)
                             {
                                 worst = d;
-                                worstAt = $"{clip.Anim}[{frame}] face {f} " +
+                                worstAt = $"{clip.StateKey}[{frame}] face {f} " +
                                           $"('{bake.Skin.FacePart[f]}') corner {k}";
                             }
                             compared++;
@@ -209,7 +237,7 @@ namespace HiddenHarbours.Tests.RigBaking
                     }
 
                     Assert.AreEqual(reference.Faces.Count, j,
-                        $"{clip.Anim}[{frame}]: rig 6 emitted {reference.Faces.Count} faces and the " +
+                        $"{clip.StateKey}[{frame}]: rig 6 emitted {reference.Faces.Count} faces and the " +
                         $"def accounted for {j}. The clip's ParkedParts " +
                         $"([{string.Join(", ", clip.ParkedParts ?? Array.Empty<string>())}]) does not " +
                         "describe what the rig actually draws on this FRAME — parking is per frame " +
@@ -228,6 +256,15 @@ namespace HiddenHarbours.Tests.RigBaking
                 $"  sweep {sw.ElapsedMilliseconds:N0} ms");
 
             Assert.AreEqual(def.Clips.Length, rows, "a clip was skipped");
+            CollectionAssert.IsSubsetOf(PilotingStates, carried,
+                $"the sweep met the carry stances [{string.Join(", ", carried)}] and the game's piloting " +
+                $"stances are [{string.Join(", ", PilotingStates)}]. A stance the def does not carry " +
+                "cannot be drawn, and no sweep catches a clip that is not there. The extractor lists them " +
+                "with CharacterSkinExtractor.CarryClipNames; if the rig declares them, the def is stale — " +
+                "re-bake the player (\"Bake character SKIN (the player, ADR 0044 d)\").");
+            Assert.AreEqual(CharacterSkinExtractor.CarryClipNames(_provenHost).Length, carried.Count,
+                "the rig's CARRY_CLIPS table and the carry rows the def carries differ in number — a " +
+                "stance was dropped or doubled on its way into the def.");
             Assert.AreEqual(bake.TotalFrames, frames, "a frame was skipped");
             Assert.Greater(compared, 0, "nothing was compared");
             Assert.LessOrEqual(worst, tol,
@@ -461,6 +498,157 @@ namespace HiddenHarbours.Tests.RigBaking
                       $"{_def.SourceRigSha256[..12]}… / {_def.BaseRigPath} rev {_def.BaseRigRevision} " +
                       $"{_def.BaseRigSha256[..12]}…");
         }
+
+        /// <summary>
+        /// <b>The COMMITTED defs pin the rigs as they are TODAY.</b> The test above is self-consistent by
+        /// construction: it asks a def Compose built a moment ago whether it recorded the files Compose
+        /// just read. The def the game loads is the one on disk, and nothing re-bakes it when a rig
+        /// moves, so a rig edit landed without a re-bake left every other guard in this file green over a
+        /// stale skin. <c>CharacterSkinExtractor.SourceSha256</c> calls the pin "the def's stale-bake
+        /// guard"; this is the test that reads it.
+        ///
+        /// <para><b>Every def, found by type</b>, not the player by path, so a preset's def joins the
+        /// guard the moment it is committed. Red means RE-BAKE, never re-pin: for the player the menu is
+        /// "Bake character SKIN (the player, ADR 0044 d)". A hash edited by hand says the skin matches
+        /// rigs it was never baked from, which is the one thing this pin exists to rule out.</para>
+        /// </summary>
+        [Test]
+        public void EveryCommittedSkinDef_PinsTheRigsAsTheyAreToday()
+        {
+            string liveRig7 = CharacterSkinExtractor.SourceSha256();
+            string liveRig6 = CharacterPoseMeshExtractor.SourceSha256();
+            string[] guids = UnityEditor.AssetDatabase.FindAssets(
+                "t:" + nameof(CharacterSkinDef), new[] { "Assets" });
+            Assert.IsNotEmpty(guids,
+                "the search found no CharacterSkinDef, and the player's is committed — the search is " +
+                "broken, and every check below would pass on nothing.");
+
+            var stale = new List<string>();
+            foreach (string guid in guids)
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                var committed = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(path);
+                Assert.IsNotNull(committed, $"{path} is indexed as a CharacterSkinDef and does not load as one.");
+                Assert.AreEqual(CharacterSkinExtractor.ScriptPath, committed.SourceRigPath,
+                    $"{path} was baked from a different skinned export");
+                Assert.AreEqual(CharacterPoseMeshExtractor.ScriptPath, committed.BaseRigPath,
+                    $"{path} was baked from a different body rig");
+
+                if (!string.Equals(liveRig7, committed.SourceRigSha256, StringComparison.Ordinal))
+                    stale.Add($"{path}: rig 7 {Head(committed.SourceRigSha256)} baked, {Head(liveRig7)} live");
+                if (!string.Equals(liveRig6, committed.BaseRigSha256, StringComparison.Ordinal))
+                    stale.Add($"{path}: rig 6 {Head(committed.BaseRigSha256)} baked, {Head(liveRig6)} live");
+            }
+
+            Assert.IsEmpty(stale,
+                "a committed skin def was baked from rigs that are no longer the ones in the repo:\n  " +
+                string.Join("\n  ", stale) + "\nThe skin the game draws is not the rig's. Re-bake it " +
+                "(the player: \"Bake character SKIN (the player, ADR 0044 d)\") and commit the asset with " +
+                "the rig change. Never edit the hash.");
+            Debug.Log($"[char-skin guard] {guids.Length} committed def(s) pin the live rigs: " +
+                      $"rig 7 {Head(liveRig7)} / rig 6 {Head(liveRig6)}");
+        }
+
+        /// <summary>
+        /// <b>The committed bind mesh is the face the chain composes TODAY</b>, compared by content
+        /// because no hash covers it. The def pins rigs 6 and 7. The face it wears is also read from
+        /// <c>eyeIsoRig</c>, <c>headIsoRig3</c>, <c>characterFaceStudy</c>,
+        /// <c>characterFinishConfig</c>, <c>characterFinish</c>, <c>characterArtStudy</c> and
+        /// <c>characterFaceComposition</c>, and none of those bytes is recorded in the def: an edit to
+        /// any of them changes her face without moving a pinned hash, and the test above stays green.
+        /// So this takes the player's bind mesh as the chain composes it now (the fixture's
+        /// <see cref="CharacterSkinAssetBaker.Compose"/>) and requires the committed
+        /// <c>CharSkin_fisher_bind</c> sub-asset to be that mesh. It reds when the chain moves HER mesh,
+        /// and not on a comment or on another preset's face.
+        ///
+        /// <para><b>What "that mesh" means.</b> Triangles, bone weights and every UV channel (the ramp,
+        /// level and texture attributes) exactly: they are indices and authored numbers carried straight
+        /// through. Positions to the rig's own tolerance (<c>CharacterIso7.TOL</c>, read off the rig):
+        /// the committed mesh was baked on one machine and CI composes on another, a face edit moves a
+        /// corner by millimetres, and a last-bit difference in a float path moves it by nothing a pixel
+        /// can show. The normals follow from those positions and triangles, and the bindposes are the
+        /// skeleton's, pinned above and replayed by
+        /// <see cref="TheShippedDefSharesTheProvenDefsSkeletonAndClips"/>, so neither is compared
+        /// twice.</para>
+        ///
+        /// <para>Hashing the face chain into the def (a <c>FaceChainSha256</c> field) would say the same
+        /// more cheaply. It is a Core schema change and the lead-architect's call, so it is not here.</para>
+        /// </summary>
+        [Test]
+        public void TheCommittedBindMeshIsTheFaceTheChainComposesToday()
+        {
+            string path = CharacterSkinAssetBaker.AssetPathFor(Player);
+            var committed = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(path);
+            Assert.IsNotNull(committed, $"no CharacterSkinDef at {path}: the player's skin is committed content.");
+            Mesh disk = committed.BindMesh, live = _def.BindMesh;
+            Assert.IsNotNull(disk, $"{path} carries no bind mesh sub-asset.");
+            const string rebake = " The face chain moved her face and the committed skin still wears the " +
+                                  "old one: re-bake the player (\"Bake character SKIN (the player, ADR 0044 " +
+                                  "d)\") in the PR that changed the chain, and commit the asset with it.";
+
+            Assert.AreEqual(live.vertexCount, disk.vertexCount,
+                $"the chain composes {live.vertexCount:N0} corners and the committed mesh has " +
+                $"{disk.vertexCount:N0}." + rebake);
+            Assert.AreEqual(live.subMeshCount, disk.subMeshCount, "the sub-mesh count differs." + rebake);
+            int indices = 0;
+            for (int s = 0; s < live.subMeshCount; s++)
+            {
+                int[] a = live.GetTriangles(s), b = disk.GetTriangles(s);
+                Assert.AreEqual(a.Length, b.Length, $"sub-mesh {s}: the index count differs." + rebake);
+                for (int i = 0; i < a.Length; i++)
+                    if (a[i] != b[i])
+                        Assert.Fail($"sub-mesh {s} index {i}: {a[i]} composed, {b[i]} committed; the faces " +
+                                    "are ordered or wound differently." + rebake);
+                indices += a.Length;
+            }
+
+            Vector3[] lv = live.vertices, dv = disk.vertices;
+            double worst = 0; int worstAt = -1;
+            for (int i = 0; i < lv.Length; i++)
+            {
+                double d = Vector3.Distance(lv[i], dv[i]);
+                if (d > worst) { worst = d; worstAt = i; }
+            }
+            Assert.LessOrEqual(worst, _bake.Tolerance,
+                $"corner {worstAt} is {worst:E3} m from where the committed mesh has it, against the rig's " +
+                $"tolerance of {_bake.Tolerance:E1} m." + rebake);
+
+            BoneWeight[] lw = live.boneWeights, dw = disk.boneWeights;
+            Assert.AreEqual(lw.Length, dw.Length, "the bone weight count differs." + rebake);
+            for (int i = 0; i < lw.Length; i++)
+                if (!lw[i].Equals(dw[i]))
+                    Assert.Fail($"corner {i}: composed {lw[i].boneIndex0}×{lw[i].weight0:R} + " +
+                                $"{lw[i].boneIndex1}×{lw[i].weight1:R}, committed {dw[i].boneIndex0}×" +
+                                $"{dw[i].weight0:R} + {dw[i].boneIndex1}×{dw[i].weight1:R}." + rebake);
+
+            int channels = 0;
+            var lu = new List<Vector4>();
+            var du = new List<Vector4>();
+            for (var attr = UnityEngine.Rendering.VertexAttribute.TexCoord0;
+                 attr <= UnityEngine.Rendering.VertexAttribute.TexCoord7; attr++)
+            {
+                int ch = attr - UnityEngine.Rendering.VertexAttribute.TexCoord0;
+                Assert.AreEqual(live.HasVertexAttribute(attr), disk.HasVertexAttribute(attr),
+                    $"UV channel {ch} exists on one mesh and not the other." + rebake);
+                if (!live.HasVertexAttribute(attr)) continue;
+                live.GetUVs(ch, lu);
+                disk.GetUVs(ch, du);
+                Assert.AreEqual(lu.Count, du.Count, $"UV channel {ch}: the corner count differs." + rebake);
+                for (int i = 0; i < lu.Count; i++)
+                    if (lu[i].x != du[i].x || lu[i].y != du[i].y || lu[i].z != du[i].z || lu[i].w != du[i].w)
+                        Assert.Fail($"UV channel {ch} corner {i}: {lu[i]:R} composed, {du[i]:R} committed; " +
+                                    "the face is painted or shaded differently." + rebake);
+                channels++;
+            }
+
+            Debug.Log($"[char-skin guard] the committed {path} bind mesh is the chain's face today: " +
+                      $"{lv.Length:N0} corners (worst {worst:E3} m), {indices:N0} indices, " +
+                      $"{lw.Length:N0} weights, {channels} UV channel(s)");
+        }
+
+        /// <summary>The first twelve hex digits, which is how the PR bodies and the logs name a pin.</summary>
+        static string Head(string sha) =>
+            string.IsNullOrEmpty(sha) ? "<none>" : sha.Length > 12 ? sha.Substring(0, 12) + "…" : sha;
 
         // =======================================================================================
         // 4. the two-weight floor, sabotaged at DEF level
@@ -868,13 +1056,23 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.LessOrEqual(_def.DeformingBoneCount, _def.BoneCount,
                 "more deforming bones than bones");
 
-            Assert.AreEqual(CharacterSkinExtractor.Anims(_host).Length, _def.Clips.Length,
-                "one clip per ANIMS row, or a state the game can reach draws nothing");
+            // One clip per ANIMS row AND one per CARRY_CLIPS row. Until the rig 7 follow-up this read
+            // Anims(_host).Length alone. The piloting stances are a separate table on purpose (ANIMS
+            // stays 35, which CharacterFaceCompositionTests.NoTrackOfAnyAnimationChanges pins), so the
+            // def's row count is the SUM, and a bake that enumerated only one table is short.
+            string[] carryRows = CharacterSkinExtractor.CarryClipNames(_host);
+            Assert.AreEqual(CharacterSkinExtractor.Anims(_host).Length + carryRows.Length, _def.Clips.Length,
+                "one clip per ANIMS row and one per CARRY_CLIPS row, or a state the game can reach draws " +
+                "nothing");
+            var stateKeys = new HashSet<string>(StringComparer.Ordinal);
             foreach (CharacterSkinDef.SkinClip c in _def.Clips)
             {
-                Assert.IsTrue(c.KeysWellFormed(_def.BoneCount), $"clip '{c.Anim}' is malformed");
-                Assert.Greater(c.FramesPerSecond, 0f, $"clip '{c.Anim}' plays at no rate");
+                Assert.IsTrue(c.KeysWellFormed(_def.BoneCount), $"clip '{c.StateKey}' is malformed");
+                Assert.Greater(c.FramesPerSecond, 0f, $"clip '{c.StateKey}' plays at no rate");
                 Assert.IsTrue(_def.TryGetClip(c.StateKey, out _), $"'{c.StateKey}' is not findable");
+                Assert.IsTrue(stateKeys.Add(c.StateKey),
+                    $"two clips answer to '{c.StateKey}'. TryGetClip returns the first, so the second can " +
+                    "never be drawn; a carry stance keyed by the animation it rides is exactly this.");
             }
 
             // A presenter reaches bones BY NAME once, at bind time, and by index every frame after.
@@ -895,7 +1093,9 @@ namespace HiddenHarbours.Tests.RigBaking
                 $"the skinned preset is {totalKb:N1} KB against the flipbook's {FlipbookKb:N0} KB, " +
                 $"only {ratio:N1}× smaller. ADR 0044 §3.6 measured 74×.");
 
-            // MeshStates stays empty in this PR: the art is baked, the game is not switched over.
+            // MeshStates is authored ON the asset and survives a re-bake (the baker keeps it with ??=),
+            // so a composed def only has to hold an array. What the committed one names is held to the
+            // clips it carries by CharacterSkinDefContentTests.TheDefDeclaresOnlyStatesItActuallyCarries.
             Assert.IsNotNull(_def.MeshStates, "MeshStates must be an array, never null");
         }
 

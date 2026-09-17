@@ -339,25 +339,38 @@ namespace HiddenHarbours.Tools.RigBaking
             AttachSkin(built.Mesh, skin, rigBones);
 
             // ---- the clips -------------------------------------------------------------------
+            // The ANIMS rows first, then the CARRY_CLIPS rows (the piloting stances) APPENDED after
+            // them: rows are append-only, so every ANIMS clip keeps the index it had.
             string[] anims = CharacterSkinExtractor.Anims(host);
-            var clips = new List<CharacterSkinDef.SkinClip>(anims.Length);
+            string[] carries = CharacterSkinExtractor.CarryClipNames(host);
+            int rows = anims.Length + carries.Length;
+            var clips = new List<CharacterSkinDef.SkinClip>(rows);
             int totalFrames = 0;
             float worstStepDeg = 0f; string worstStepAt = "";
 
-            for (int i = 0; i < anims.Length; i++)
+            for (int i = 0; i < rows; i++)
             {
-                progress?.Invoke(anims[i], 0.2f + 0.7f * i / anims.Length);
-                RigSkinClip rc = CharacterSkinExtractor.ReadClip(host, preset, anims[i], rigBones.Length);
+                bool carryRow = i >= anims.Length;
+                string row = carryRow ? carries[i - anims.Length] : anims[i];
+                progress?.Invoke(row, 0.2f + 0.7f * i / rows);
+                RigSkinClip rc = carryRow
+                    ? CharacterSkinExtractor.ReadCarryClip(host, preset, row, rigBones.Length)
+                    : CharacterSkinExtractor.ReadClip(host, preset, row, rigBones.Length);
 
-                string[] order = CharacterSkinExtractor.ClipBoneOrder(host, preset, anims[i]);
+                string[] order = carryRow
+                    ? CharacterSkinExtractor.CarryClipBoneOrder(host, preset, row)
+                    : CharacterSkinExtractor.ClipBoneOrder(host, preset, row);
                 for (int b = 0; b < order.Length; b++)
                     if (!string.Equals(order[b], rigBones[b].Id, StringComparison.Ordinal))
                         throw new InvalidOperationException(
-                            $"Clip '{anims[i]}' packs bone {b} as '{order[b]}' and the skeleton has " +
+                            $"Clip '{row}' packs bone {b} as '{order[b]}' and the skeleton has " +
                             $"'{rigBones[b].Id}'. The def stores INDICES, so a permuted clip would " +
                             "animate the right skeleton with the wrong limbs and never throw.");
 
-                clips.Add(ToClip(rc, rigBones.Length, ref worstStepDeg, ref worstStepAt));
+                // A carry row is keyed as the sheets key it — the animation it rides plus its carry,
+                // no power (idle_helm, walk_oars) — so a state asks for it by the name it already has.
+                string state = carryRow ? new CharacterState(rc.Anim, null, rc.Carry).Key : rc.Anim;
+                clips.Add(ToClip(rc, state, rigBones.Length, ref worstStepDeg, ref worstStepAt));
                 totalFrames += rc.Frames;
             }
 
@@ -598,7 +611,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// as DISCRETE SAMPLES. Interpolating between two keys a half-turn apart sweeps a limb
         /// through an orientation that is in no frame of the animation.</para>
         /// </summary>
-        static CharacterSkinDef.SkinClip ToClip(RigSkinClip rc, int boneCount,
+        static CharacterSkinDef.SkinClip ToClip(RigSkinClip rc, string state, int boneCount,
                                                 ref float worstDeg, ref string worstAt)
         {
             var keys = new CharacterSkinDef.BoneKey[rc.Frames * boneCount];
@@ -617,13 +630,13 @@ namespace HiddenHarbours.Tools.RigBaking
                     double dot = Math.Abs(rc.Rx[p] * rc.Rx[i] + rc.Ry[p] * rc.Ry[i]
                                         + rc.Rz[p] * rc.Rz[i] + rc.Rw[p] * rc.Rw[i]);
                     var deg = (float)(2 * Math.Acos(Math.Min(1, dot)) * 180 / Math.PI);
-                    if (deg > worstDeg) { worstDeg = deg; worstAt = $"{rc.Anim} bone {b} f{f - 1}→{f}"; }
+                    if (deg > worstDeg) { worstDeg = deg; worstAt = $"{state} bone {b} f{f - 1}→{f}"; }
                 }
 
             return new CharacterSkinDef.SkinClip
             {
                 Anim = rc.Anim,
-                State = rc.Anim,
+                State = state,
                 FramesPerSecond = (float)(1000.0 / Math.Max(1.0, rc.Ms)),
                 Settle = rc.Settle,
                 Loop = rc.Loop,

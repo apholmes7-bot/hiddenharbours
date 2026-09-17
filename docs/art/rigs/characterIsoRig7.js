@@ -105,6 +105,9 @@
   function matOf(q){ const n=Math.hypot(q[0],q[1],q[2],q[3])||1, x=q[0]/n, y=q[1]/n, z=q[2]/n, w=q[3]/n;
     return [1-2*(y*y+z*z), 2*(x*y+z*w), 2*(x*z-y*w),  2*(x*y-z*w), 1-2*(x*x+z*z), 2*(y*z+x*w),  2*(x*z+y*w), 2*(y*z-x*w), 1-2*(x*x+y*y)]; }
   const rnd=(a)=>a.slice(), rndR=(a)=>a.slice();
+  const qConj=(q)=>[-q[0],-q[1],-q[2],q[3]];
+  const qMulQ=(a,b)=>[a[3]*b[0]+a[0]*b[3]+a[1]*b[2]-a[2]*b[1], a[3]*b[1]-a[0]*b[2]+a[1]*b[3]+a[2]*b[0],
+                      a[3]*b[2]+a[0]*b[1]-a[1]*b[0]+a[2]*b[3], a[3]*b[3]-a[0]*b[0]-a[1]*b[1]-a[2]*b[2]];
 
   /* rig 6's affine helpers, verbatim, so torsoXf / pelvXf are rebuilt from P the same way facesOf does */
   const ID=(p)=>p, TX=(dx,dy,dz)=>(p)=>[p[0]+dx,p[1]+dy,p[2]+dz];
@@ -221,7 +224,7 @@
       bone('knee_'+side,'hip_'+side, shA, limbFrame(shA,a)); bone('knee_'+side+'_tip','knee_'+side, a, BN[IX['knee_'+side]].R);
       let top=null, bootB=null;
       if(G.bootZ>0.02){
-        if(P.board || P.water || P.sleepP || P.reach){
+        if(P.board || P.water || P.sleepP || P.reach || P.mountP || P.liftP){
           const vx=knee[0]-a[0], vy=knee[1]-a[1], vz=knee[2]-a[2];
           const vl=Math.hypot(vx,vy,vz)||1, tt=Math.min(1,(G.bootZ*hS)/vl);
           top=[a[0]+vx*tt, a[1]+vy*tt, a[2]+vz*tt];
@@ -473,6 +476,45 @@
              bones:B.bones.map(x=>x.id), parked, tracks };
   }
   function clips(build, opts){ return Object.keys(ANIMS).map(a=>clip(a, build, null, opts)); }
+  /* ---------------- CARRY_CLIPS: the piloting stances, as NAMED clips ----------------
+     The live sprite carries HelmStance / OarsStance sheets, but rig 7 exported nothing for them:
+     helm and oars are opts.carry MODIFIERS in rig 6 (characterIsoRig.js:38-39, :267-268, :319 —
+     CARRIES at characterIsoRig6.js:375), not animations, so clips() — which maps over ANIMS with one
+     opts — could never emit them and an extractor had no name to ask for.
+
+     WHY A TABLE AND NOT AN ANIMS EXTENSION. ANIMS is append-only per brief §3, so adding helm_idle
+     to it is legal on paper. It is wrong in fact: every ANIMS key is an animation pose() knows how
+     to build, and pose() has no 'helm_idle' — the stance is (existing anim) + (carry modifier).
+     Putting these in ANIMS would demand new posing, which Job 1 forbids. They are therefore a
+     SEPARATE table naming (anim, carry) pairs, and every clip runs through the same clip() ->
+     solveAt() -> C6.pose() path as everything else. rock is null on all of them.
+
+     FRAMES AND MS come from the ridden animation, unchanged: idle 6f/170ms, walk 8f/110ms. Those are
+     already exactly what FisherIso.asset's HelmStance and OarsStance bake, so nothing is re-timed.
+
+     oars_row rides WALK, which is what rig 6 sanctions (CARRIES.oars.anims = ['idle','walk']) and
+     what makes the stroke: under a non-idle anim the oars arm target runs at 4pi, the pull cycle.
+
+     THE BOAT OWNS THE WHEEL AND THE OARS. Nothing here exports that geometry. Each clip names the
+     bones the boat's own rig pins its wheel or oar looms to, in its pin field — the tool-root chain
+     of 09-09 §2.1: carry_L hangs off hand_L, carry_R off hand_R, carry_mid off the torso. */
+  const CARRY_PIN = { helm:['carry_mid','carry_L','carry_R'], oars:['carry_L','carry_R'],
+                      buckets:['carry_L','carry_R'], tray:['carry_mid'], pot:['carry_mid'] };
+  const CARRY_CLIPS = {
+    helm_idle: { anim:'idle', carry:'helm' },   // stood at the wheel / tiller, braced, feet apart
+    helm_walk: { anim:'walk', carry:'helm' },   // walking the wheel across
+    oars_idle: { anim:'idle', carry:'oars' },   // oars shipped, hands on the looms
+    oars_row:  { anim:'walk', carry:'oars' },   // the stroke
+  };
+  function carryClip(name, build, opts){
+    const C=CARRY_CLIPS[name]; if(!C) return null;
+    const k=clip(C.anim, build, null, Object.assign({}, opts||{}, { carry:C.carry, rock:null }));
+    if(!k) return null;
+    k.clip=name; k.name=name; k.rides=C.anim; k.pin=CARRY_PIN[C.carry]||[];
+    return k;
+  }
+  function carryClipNames(){ return Object.keys(CARRY_CLIPS); }
+  function carryClips(build, opts){ return carryClipNames().map(n=>carryClip(n, build, opts)); }
   const FRAME_DOC = { axes:'right-handed metres: +x right (curb), +y forward (nose), +z up; origin = cell pivot on the ground',
     rot:'unit quaternion [x,y,z,w]; local to the parent bone', rotEuler:'the same rotation, degrees, intrinsic Z-Y-X (yaw z, pitch y, roll x)', pos:'metres, local to the parent bone',
     unity:'pos (x, z, y); quaternion (-x, -z, -y, w)', bind:"pose('idle', 0, build)", u:'k/frames, or k/(frames-1) on settle clips (reach, mount*)',
@@ -480,8 +522,82 @@
     bone:'bindMesh: bone[k] = [[boneIndex, weight], ...] for vertex k; one pair at weight 1 except the BLENDED rings', rock:'deck rock is a live hull transform; a clip made with opts.rock carries only the counter-lean rig 6 poses from it' };
   function exportBuild(build, opts){ const b=buildOf(build);
     return { rig:'characterIsoRig7', revision:API.revision, rig6:C6.revision, build:b, frame:FRAME_DOC, blended:BLENDED,
-             skeleton:skeleton(b), skeletonWorld:skeletonWorld(b), bindMesh:bindMesh(b), clips:clips(b, opts) }; }
+             skeleton:skeleton(b), skeletonWorld:skeletonWorld(b), bindMesh:bindMesh(b), clips:clips(b, opts),
+             carryClips:carryClips(b, opts) }; }
 
+  /* ---------------- additive(rock): the deck-rock delta, in bone space ----------------
+     09-09 §2.5 promised additive(rock) -> bone-space deltas for the counter-lean (spine/chest/head)
+     and the head look (neck/head), on the expectation that ~3 bones move. MEASURED, that is not what
+     rig 6 does, and the shape of the table is the finding — see ROCK-FINDING.md. In short:
+
+       * rock enters pose() only through counterLean(), and only when rock.counter is set: it returns
+         POSE PARAMETERS (list, lean), not rotations, and they are added to the torso's list/lean.
+       * 21 of the 45 bones then move. The legs, pelvis, feet and inseam do NOT (24 bones clean), so
+         the IK feet are safe — but BOTH ARM CHAINS move, because rig 6 specifies the hand targets in
+         the FIGURE frame. Listing the torso moves the shoulder while the target stays put, so the arm
+         is re-solved: up to 178.9 deg of local rotation, and up to 176.5 deg of spread across clips
+         and frames for one and the same rock.
+       * even torso, neck and head are clip-dependent (spread 1.8 / 10.6 / 4.7 deg).
+
+     So a delta keyed on (rock, build) alone cannot hold 1e-4 — not for the arms, and not even for the
+     three bones the brief expected. additive() is therefore keyed on the FRAME as well, which is the
+     honest signature for what rig 6 actually computes:
+
+       additive(rock, build, anim, u) -> { rock, anim, u, bones:[{ bone, rot, rotEuler, pos }], ... }
+
+     rot is the LOCAL rotation delta as a unit quaternion, rotEuler the same in degrees, pos the local
+     position delta in metres. Compose it onto the plain clip's local transform for that frame and you
+     get the rocked pose exactly; goldenDiffRocked() proves it against rig 6. */
+  const ROCK_KEYS = ['roll','pitch','heave','counter'];
+  const rockOf=(rock)=>{ const o={}; for(const k of ROCK_KEYS) if(rock&&rock[k]!=null) o[k]=rock[k]; return o; };
+  function additive(rock, build, anim, u){
+    const b=buildOf(build), r=rockOf(rock);
+    if(!ANIMS[anim]) return null;
+    const P=solveAt(anim, u, b, {}), Q=solveAt(anim, u, b, r);
+    const lp=exportLocals(P.bones,null), lq=exportLocals(Q.bones,null);
+    const bones=[];
+    for(const bn of P.bones){
+      const a=lp[bn.id], c=lq[bn.id]; if(!a||!c) continue;
+      const dq=qMulQ(c.rot, qConj(a.rot));
+      const dp=[c.pos[0]-a.pos[0], c.pos[1]-a.pos[1], c.pos[2]-a.pos[2]];
+      const ang=2*Math.acos(Math.max(-1,Math.min(1,Math.abs(dq[3]))))*180/Math.PI;
+      const off=Math.hypot(dp[0],dp[1],dp[2]);
+      if(ang<1e-3 && off<1e-6) continue;                 // below this it is float noise, not a delta
+      bones.push({ bone:bn.id, rot:dq, rotEuler:eulerOf(matOf(dq)), pos:dp, deg:+ang.toFixed(6), off:+off.toFixed(9) });
+    }
+    return { rock:r, anim, u:+u.toFixed(6), build:b.preset||'custom', bones, touched:bones.length, of:P.bones.length };
+  }
+  /* the whole grid for one build: every (roll, pitch, counter) x anim x frame the caller asks for */
+  function additiveGrid(build, grid, anims){
+    const g=grid||{}, rolls=g.roll||[-15,-10,-5,0,5,10,15], pitches=g.pitch||[-15,-10,-5,0,5,10,15], counters=g.counter||[0,0.5,1];
+    const list=anims||['idle','walk','balance','astride'], out=[];
+    for(const roll of rolls) for(const pitch of pitches) for(const counter of counters)
+      for(const anim of list){ const A=ANIMS[anim], den=A.settle?Math.max(1,A.frames-1):A.frames;
+        for(let k=0;k<A.frames;k++) out.push(additive({roll,pitch,counter}, build, anim, k/den)); }
+    return out;
+  }
+  /* goldenDiffRocked: the plain clip PLUS additive(rock) against rig 6's own rocked pose. */
+  function goldenDiffRocked(anim, u, build, rock){
+    const d=goldenDiffRockedDetail(anim, u, build, rock); return d.err ? Infinity : d.max;
+  }
+  function goldenDiffRockedDetail(anim, u, build, rock){
+    const b=buildOf(build), r=rockOf(rock), B=bindOf(b);
+    const P=solveAt(anim, u, b, {}), add=additive(r, b, anim, u);
+    const lp=exportLocals(P.bones,null);
+    const byId={}; for(const e of add.bones) byId[e.bone]=e;
+    const locals={};
+    for(const bn of P.bones){ const a=lp[bn.id], e=byId[bn.id];
+      locals[bn.id] = e ? { pos:[a.pos[0]+e.pos[0], a.pos[1]+e.pos[1], a.pos[2]+e.pos[2]], rot:qMulQ(e.rot, a.rot) } : a; }
+    const W=worldsFromExport(locals, B.bones);
+    const posed=skinFaces(B.faces, skinMats(B.bones, W));
+    const ref=C6.facesOf(solveAt(anim, u, b, r).P, b);
+    let max=0, at=null, err=null;
+    if(posed.length!==ref.length) return { anim, u, rock:r, max:Infinity, err:'face count differs', ok:false };
+    for(let i=0;i<posed.length;i++){ const p=posed[i], q=ref[i];
+      if(p.v.length!==q.v.length){ err='vertex count differs at face '+i; break; }
+      for(let j=0;j<p.v.length;j++){ const e=v_dist(p.v[j], q.v[j]); if(e>max){ max=e; at={face:i, vert:j, part:p.part}; } } }
+    return { anim, u:+u.toFixed(6), rock:r, max, at, faces:posed.length, touched:add.touched, err, ok: !err && max<=TOL };
+  }
   /* ---------------- the golden rule ---------------- */
   /* goldenDiff(anim, u, build) -> the max vertex distance in metres, as the brief asks; Infinity when a
      face has no match. goldenDiffDetail returns the full record. */
@@ -626,6 +742,8 @@
 
   const API = Object.assign(Object.create(C6), {
     skeleton, skeletonWorld, bindMesh, clip, clips, exportBuild, goldenDiff, goldenDiffDetail, goldenRows, goldenRow, goldenReport, sizes, eulerOf,
+    CARRY_CLIPS, CARRY_PIN, carryClip, carryClips, carryClipNames,
+    additive, additiveGrid, goldenDiffRocked, goldenDiffRockedDetail, ROCK_KEYS,
     renderSkinned, diffPixels, poseBones, BLENDED, FRAME_DOC, TOL, solve:solveAt, bindOf,
     quatOf, matOf, pass:7, revision:'7.1', base:C6.revision });
   root.CharacterIso7 = API;
