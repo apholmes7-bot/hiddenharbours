@@ -26,7 +26,9 @@ namespace HiddenHarbours.Tests.EditMode
     ///
     /// <para>The list is the flip's, written out: what PR 1 claims to have copied, not what the array
     /// builder happens to pack (a guard that asks the code for its list is a mirror). Lawn and
-    /// Sandstone are NOT here: the kit has no Lawn, and PR 1 leaves both untouched.</para>
+    /// Sandstone are NOT here: the kit has no Lawn, and PR 1 leaves both untouched. Mud IS here
+    /// although nothing drew it before: the flip adds it (owner ruling M1), and because the kit
+    /// ships no metas, its three are Dirt's import settings under fresh guids.</para>
     /// </summary>
     public class TerrainKitAlbedoBytesTests
     {
@@ -40,6 +42,10 @@ namespace HiddenHarbours.Tests.EditMode
             "Grass", "Marram", "Sand", "Shelf", "Dirt", "Marsh", "Sedge", "Ledge", "Rockweed",
             "Eelgrass", "Irishmoss",
             "Bank",   // a face material: in no array and drawn by nothing yet, but it is the kit's
+            // The seven that left the retired 512 array for the 256 array (owner ruling A2): the kit
+            // ships them at 256 px / 8 m, so their live PNGs changed size as well as bytes.
+            "Shingle", "Ripple", "Silt", "Foreshore", "Talus", "Musselbed", "Oysterreef",
+            "Mud",    // new with the kit (owner ruling M1): splat index 19, E.a
         };
 
         static readonly string[] Steps = { "_Lo", "", "_Hi" };

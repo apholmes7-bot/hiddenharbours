@@ -41,13 +41,12 @@ namespace HiddenHarbours.Art
         [SerializeField] private float _heightMax = 6f;
 
         [Header("Detail arrays (derived — TerrainTexArrayBuilder) + painted splat maps")]
-        [SerializeField] private Texture2DArray _detailArray256;
-        [SerializeField] private Texture2DArray _detailArray512;
+        [SerializeField] private Texture2DArray _detailArray256;   // the ONE array since the px flip (the 512 retired)
         [SerializeField] private Texture2D _splatA;   // r grass, g marram, b sand, a shingle
         [SerializeField] private Texture2D _splatB;   // r ripple, g shelf, b silt, a dirt
         [SerializeField] private Texture2D _splatC;   // r marsh, g sedge, b foreshore, a talus
         [SerializeField] private Texture2D _splatD;   // r ledge, g rockweed, b musselbed, a oysterreef
-        [SerializeField] private Texture2D _splatE;   // r eelgrass, g irishmoss, b and a free
+        [SerializeField] private Texture2D _splatE;   // r eelgrass, g irishmoss, b lawn, a mud
 
         [Header("Bands (builder-pushed from StPetersShoreMap — not owned here)")]
         [SerializeField] private float _floorPaint = -2.6f;
@@ -107,7 +106,6 @@ namespace HiddenHarbours.Art
         private static readonly int IdWeatherFacing = Shader.PropertyToID("_WeatherFacing");
         private static readonly int IdSectorFeather = Shader.PropertyToID("_SectorFeather");
         private static readonly int IdDetailArr256 = Shader.PropertyToID("_DetailArr256");
-        private static readonly int IdDetailArr512 = Shader.PropertyToID("_DetailArr512");
         private static readonly int IdDetailLoaded = Shader.PropertyToID("_DetailLoaded");
         private static readonly int IdSplatA = Shader.PropertyToID("_SplatA");
         private static readonly int IdSplatB = Shader.PropertyToID("_SplatB");
@@ -138,15 +136,19 @@ namespace HiddenHarbours.Art
             _heightMax = maxElevation;
         }
 
-        /// <summary>The kit's packed detail arrays (derived assets — TerrainTexArrayBuilder). Null
-        /// leaves the PR-1 flat-colour fallback active (_DetailLoaded stays 0).</summary>
+        /// <summary>The kit's packed detail array (a derived asset — TerrainTexArrayBuilder). Null
+        /// leaves the PR-1 flat-colour fallback active (_DetailLoaded stays 0).
+        ///
+        /// <para>⚠ <paramref name="array512"/> is IGNORED. The 512-class array retired with the px
+        /// flip (2026-09-17, owner ruling A2); the parameter stays only so the two region builders —
+        /// exporter-tracked, left untouched on purpose — compile as they are. Drop it at their next
+        /// legitimate edit (<c>TerrainTexArrayBuilder.Array512Path</c> carries the same debt).</para></summary>
         public void ConfigureDetail(Texture2DArray array256, Texture2DArray array512)
         {
             _detailArray256 = array256;
-            _detailArray512 = array512;
         }
 
-        /// <summary>The painted splat maps (eighteen material channels across five RGBA textures,
+        /// <summary>The painted splat maps (twenty material channels across five RGBA textures,
         /// same world rect as the height map). Null channels fall back to a transparent 1x1 —
         /// painted nothing — NOT Unity's default "black" whose alpha of 1 would read as a painted
         /// channel (the WaterSurface ClearSeabedFallback lesson). D carries the kit-v2 pair plus two
@@ -322,12 +324,9 @@ namespace HiddenHarbours.Art
                 _mpb.SetVector(IdHWorldSize, new Vector4(_worldSize.x, _worldSize.y, 0f, 0f));
             }
 
-            bool detailLoaded = _detailArray256 != null && _detailArray512 != null;
+            bool detailLoaded = _detailArray256 != null;
             if (detailLoaded)
-            {
                 _mpb.SetTexture(IdDetailArr256, _detailArray256);
-                _mpb.SetTexture(IdDetailArr512, _detailArray512);
-            }
             _mpb.SetFloat(IdDetailLoaded, detailLoaded ? 1f : 0f);
             _mpb.SetTexture(IdSplatA, _splatA != null ? _splatA : ClearSplat());
             _mpb.SetTexture(IdSplatB, _splatB != null ? _splatB : ClearSplat());
