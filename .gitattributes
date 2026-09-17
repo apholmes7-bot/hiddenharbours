@@ -236,6 +236,13 @@ docs/art/rigs/gameplay/vehicles/modern3500.rig.gameplay.json text eol=lf
 *.sh                    text eol=lf
 tools/gauntlet/**       text eol=lf
 
+# The multi-unit building kit (terrace, walk-up, stacked flats — drop of 2026-09-17) stamps five
+# derived-from hashes over its rigs' bytes AS WRITTEN, which are LF, into all SIXTEEN sidecars, and each
+# phase's SHA256SUMS.json lists the same LF digests; MultiunitKitIntakeTests re-hashes both, folding
+# CRLF -> LF itself. `sha256sum` does not fold, so pin the working-tree form, as for the kits around it.
+# The fifth rig, docs/art/rigs/interiorPropRig.js, lies outside this folder and takes no line here.
+docs/art/rigs/multiunit-kit/**                        text eol=lf
+
 # The Rock Px kit (Rock Iso, pass three — drop of 2026-09-11) stamps derivedFromRigSha256 over the
 # rig's bytes AS WRITTEN, which are LF, into all EIGHTEEN of its JSONs, and RockPxKitContractTests
 # re-hashes the working-tree rig against that pin. The test normalises CRLF -> LF itself, but

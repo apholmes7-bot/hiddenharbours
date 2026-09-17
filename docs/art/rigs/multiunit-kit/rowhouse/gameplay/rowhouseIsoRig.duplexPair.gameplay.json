@@ -1,0 +1,5072 @@
+{
+ "schema": "hidden-harbours/building-gameplay@1",
+ "rig": "Art/rowhouseIsoRig.js",
+ "exportSymbol": "globalThis.RowhouseIso",
+ "interiorRig": "Art/rowhouseUnitIsoRig.js",
+ "propRig": "Art/interiorPropRig.js",
+ "variant": "basic_2u_3bed_2st",
+ "derivedFromRigSha256": "ff74001f41a8af068ca4e544a28bbea4fe2a54a758d146298d20dbc56db7059c",
+ "interiorDerivedFromRigSha256": "41b8692001c4ad0dcc3defa5cb00f8d63e20b9713f1c8e0c20887b97909e58c1",
+ "propsDerivedFromRigSha256": "a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6",
+ "placerDerivedFromRigSha256": "ccf6c302b458d7f1b8f0b66bf0805da13fe51421e95a13e6a27174d534bf2206",
+ "writerDerivedFromRigSha256": "49594e4c6a6a9b3fae82d630803b465fb90d2a96b9687e5375a2eb750824e8a8",
+ "generator": "RowhouseIso.gameplayAll(opts)",
+ "phase": "multi-unit phase 1 — the terrace",
+ "build": {
+  "tier": "basic",
+  "units": 2,
+  "beds": 3,
+  "mix": "uniform",
+  "storeys": 2,
+  "clad": "brick",
+  "body": "greyBrick",
+  "accent": "greyBrick",
+  "roofForm": "parapet",
+  "entry": "stoop",
+  "balcony": "none",
+  "stagger": 0,
+  "chimneys": 1,
+  "roofDeck": false
+ },
+ "frame": {
+  "units": "metres",
+  "scale_px_per_m": 32,
+  "origin": "ground centre of the row footprint",
+  "axes": "+x along the row, +y street/front, +z up",
+  "heading_independent": true,
+  "cell": {
+   "w": 1320,
+   "h": 1160,
+   "pivot": {
+    "x": 660,
+    "y": 745
+   }
+  },
+  "note": "the interior rig paints into this same cell and pivot, so a unit interior registers under its bay to the pixel"
+ },
+ "building": {
+  "width_m": 12.4,
+  "depth_m": 10.6,
+  "storeys": 2,
+  "unit_count": 2,
+  "wall_thickness_m": 0.3,
+  "party_wall_thickness_m": 0.26,
+  "floor_thickness_m": 0.24,
+  "storey_height_m": 3,
+  "ceiling_height_m": 2.76,
+  "ground_floor_z": 0.62,
+  "storey_z": [
+   0.62,
+   3.62
+  ],
+  "roof_z": 6.62,
+  "parapet_z": 7.57
+ },
+ "heights": {
+  "storey_rise_m": [
+   3,
+   null
+  ],
+  "room_height_m": [
+   2.76,
+   2.76
+  ],
+  "slab_thickness_m": 0.24,
+  "rule": "room_height = storey_rise - slab_thickness; the top storey has no rise"
+ },
+ "UNITS": [
+  {
+   "id": "unit_1",
+   "bay": 0,
+   "tier": "basic",
+   "beds": 3,
+   "baths": 2,
+   "ensuite": false,
+   "storeys": 2,
+   "floor_area_m2": 115.4,
+   "resident_slots": 4,
+   "interior_box": {
+    "x0": -5.9,
+    "x1": -0.13,
+    "yFront": 5,
+    "yRear": -5
+   },
+   "entry": {
+    "x": -4.34,
+    "y": 5.3,
+    "z": 0.62,
+    "kind": "panelled_single"
+   },
+   "party_walls": [
+    "unit_2"
+   ],
+   "private_outdoor": "stoop",
+   "levels": [
+    {
+     "level": "storey_0",
+     "z": 0.62,
+     "ceil_height_m": 2.76
+    },
+    {
+     "level": "storey_1",
+     "z": 3.62,
+     "ceil_height_m": 2.76
+    }
+   ],
+   "nominal_occupancy": 5,
+   "bedrooms_built": 2,
+   "sleep_anchors": [
+    "unit_1.s1_bed1.sleep_left",
+    "unit_1.s1_bed1.sleep_right",
+    "unit_1.s1_bed2.sleep_left",
+    "unit_1.s1_bed2.sleep_right"
+   ]
+  },
+  {
+   "id": "unit_2",
+   "bay": 1,
+   "tier": "basic",
+   "beds": 3,
+   "baths": 2,
+   "ensuite": false,
+   "storeys": 2,
+   "floor_area_m2": 115.4,
+   "resident_slots": 4,
+   "interior_box": {
+    "x0": 0.13,
+    "x1": 5.9,
+    "yFront": 5,
+    "yRear": -5
+   },
+   "entry": {
+    "x": 1.86,
+    "y": 5.3,
+    "z": 0.62,
+    "kind": "panelled_single"
+   },
+   "party_walls": [
+    "unit_1"
+   ],
+   "private_outdoor": "stoop",
+   "levels": [
+    {
+     "level": "storey_0",
+     "z": 0.62,
+     "ceil_height_m": 2.76
+    },
+    {
+     "level": "storey_1",
+     "z": 3.62,
+     "ceil_height_m": 2.76
+    }
+   ],
+   "nominal_occupancy": 5,
+   "bedrooms_built": 2,
+   "sleep_anchors": [
+    "unit_2.s1_bed1.sleep_left",
+    "unit_2.s1_bed1.sleep_right",
+    "unit_2.s1_bed2.sleep_left",
+    "unit_2.s1_bed2.sleep_right"
+   ]
+  }
+ ],
+ "THRESHOLD": [
+  {
+   "id": "unit_1.entry",
+   "unit": "unit_1",
+   "kind": "entry",
+   "storey": 0,
+   "from": "outside",
+   "to": "g_entry",
+   "axis": "x",
+   "plane": 5.3,
+   "centre": -4.34,
+   "clear_width_m": 1.02,
+   "clear_height_m": 2.1,
+   "sill_z": 0.62,
+   "mechanism": "hinged_single",
+   "hinge_axis": {
+    "x": -4.85,
+    "y": 5.3,
+    "vertical": true
+   },
+   "swing": {
+    "outward": true,
+    "degrees": 95,
+    "keep_clear": [
+     [
+      -4.85,
+      5.3
+     ],
+     [
+      -3.83,
+      6.32
+     ]
+    ]
+   },
+   "default_state": "shut",
+   "leaf": "panelled_single"
+  },
+  {
+   "id": "unit_2.entry",
+   "unit": "unit_2",
+   "kind": "entry",
+   "storey": 0,
+   "from": "outside",
+   "to": "g_entry",
+   "axis": "x",
+   "plane": 5.3,
+   "centre": 1.86,
+   "clear_width_m": 1.02,
+   "clear_height_m": 2.1,
+   "sill_z": 0.62,
+   "mechanism": "hinged_single",
+   "hinge_axis": {
+    "x": 1.35,
+    "y": 5.3,
+    "vertical": true
+   },
+   "swing": {
+    "outward": true,
+    "degrees": 95,
+    "keep_clear": [
+     [
+      1.35,
+      5.3
+     ],
+     [
+      2.37,
+      6.32
+     ]
+    ]
+   },
+   "default_state": "shut",
+   "leaf": "panelled_single"
+  },
+  {
+   "id": "unit_1.g_hall->g_living",
+   "unit": "unit_1",
+   "storey": 0,
+   "level": "storey_0",
+   "from": "g_hall",
+   "to": "g_living",
+   "axis": "y",
+   "plane": -3.477,
+   "centre": 3.02,
+   "clear_width_m": 0.84,
+   "clear_height_m": 2.1,
+   "mechanism": "hinged_single",
+   "shared": false,
+   "keep_clear": {
+    "rule": "leaf_parks_flat_against_wall",
+    "arc": null
+   },
+   "default_state": "shut"
+  },
+  {
+   "id": "unit_1.g_living->g_kitchen",
+   "unit": "unit_1",
+   "storey": 0,
+   "level": "storey_0",
+   "from": "g_living",
+   "to": "g_kitchen",
+   "axis": "x",
+   "plane": -1.8,
+   "centre": -2.607,
+   "clear_width_m": 0.84,
+   "clear_height_m": 2.1,
+   "mechanism": "hinged_single",
+   "shared": false,
+   "keep_clear": {
+    "rule": "leaf_parks_flat_against_wall",
+    "arc": null
+   },
+   "default_state": "shut"
+  },
+  {
+   "id": "unit_1.g_entry->g_hall",
+   "unit": "unit_1",
+   "storey": 0,
+   "level": "storey_0",
+   "from": "g_entry",
+   "to": "g_hall",
+   "axis": "x",
+   "plane": 3.65,
+   "centre": -5.03,
+   "clear_width_m": 0.84,
+   "clear_height_m": 2.1,
+   "mechanism": "hinged_single",
+   "shared": false,
+   "keep_clear": {
+    "rule": "leaf_parks_flat_against_wall",
+    "arc": null
+   },
+   "default_state": "shut"
+  },
+  {
+   "id": "unit_1.s1_landing->s1_bed1",
+   "unit": "unit_1",
+   "storey": 1,
+   "level": "storey_1",
+   "from": "s1_landing",
+   "to": "s1_bed1",
+   "axis": "x",
+   "plane": 1.15,
+   "centre": -4.28,
+   "clear_width_m": 0.84,
+   "clear_height_m": 2.1,
+   "mechanism": "hinged_single",
+   "shared": false,
+   "keep_clear": {
+    "rule": "leaf_parks_flat_against_wall",
+    "arc": null
+   },
+   "default_state": "shut"
+  },
+  {
+   "id": "unit_1.s1_landing->s1_bath",
+   "unit": "unit_1",
+   "storey": 1,
+   "level": "storey_1",
+   "from": "s1_landing",
+   "to": "s1_bath",
+   "axis": "y",
+   "plane": -3.477,
+   "centre": -0.93,
+   "clear_width_m": 0.84,
+   "clear_height_m": 2.1,
+   "mechanism": "hinged_single",
+   "shared": false,
+   "keep_clear": {
+    "rule": "leaf_parks_flat_against_wall",
+    "arc": null
+   },
+   "default_state": "shut"
+  },
+  {
+   "id": "unit_1.s1_landing->s1_bed2",
+   "unit": "unit_1",
+   "storey": 1,
+   "level": "storey_1",
+   "from": "s1_landing",
+   "to": "s1_bed2",
+   "axis": "x",
+   "plane": -1.8,
+   "centre": -4.28,
+   "clear_width_m": 0.84,
+   "clear_height_m": 2.1,
+   "mechanism": "hinged_single",
+   "shared": false,
+   "keep_clear": {
+    "rule": "leaf_parks_flat_against_wall",
+    "arc": null
+   },
+   "default_state": "shut"
+  },
+  {
+   "id": "unit_2.g_hall->g_living",
+   "unit": "unit_2",
+   "storey": 0,
+   "level": "storey_0",
+   "from": "g_hall",
+   "to": "g_living",
+   "axis": "y",
+   "plane": 2.553,
+   "centre": 3.02,
+   "clear_width_m": 0.84,
+   "clear_height_m": 2.1,
+   "mechanism": "hinged_single",
+   "shared": false,
+   "keep_clear": {
+    "rule": "leaf_parks_flat_against_wall",
+    "arc": null
+   },
+   "default_state": "shut"
+  },
+  {
+   "id": "unit_2.g_living->g_kitchen",
+   "unit": "unit_2",
+   "storey": 0,
+   "level": "storey_0",
+   "from": "g_living",
+   "to": "g_kitchen",
+   "axis": "x",
+   "plane": -1.8,
+   "centre": 3.423,
+   "clear_width_m": 0.84,
+   "clear_height_m": 2.1,
+   "mechanism": "hinged_single",
+   "shared": false,
+   "keep_clear": {
+    "rule": "leaf_parks_flat_against_wall",
+    "arc": null
+   },
+   "default_state": "shut"
+  },
+  {
+   "id": "unit_2.g_entry->g_hall",
+   "unit": "unit_2",
+   "storey": 0,
+   "level": "storey_0",
+   "from": "g_entry",
+   "to": "g_hall",
+   "axis": "x",
+   "plane": 3.65,
+   "centre": 1,
+   "clear_width_m": 0.84,
+   "clear_height_m": 2.1,
+   "mechanism": "hinged_single",
+   "shared": false,
+   "keep_clear": {
+    "rule": "leaf_parks_flat_against_wall",
+    "arc": null
+   },
+   "default_state": "shut"
+  },
+  {
+   "id": "unit_2.s1_landing->s1_bed1",
+   "unit": "unit_2",
+   "storey": 1,
+   "level": "storey_1",
+   "from": "s1_landing",
+   "to": "s1_bed1",
+   "axis": "x",
+   "plane": 1.15,
+   "centre": 1.75,
+   "clear_width_m": 0.84,
+   "clear_height_m": 2.1,
+   "mechanism": "hinged_single",
+   "shared": false,
+   "keep_clear": {
+    "rule": "leaf_parks_flat_against_wall",
+    "arc": null
+   },
+   "default_state": "shut"
+  },
+  {
+   "id": "unit_2.s1_landing->s1_bath",
+   "unit": "unit_2",
+   "storey": 1,
+   "level": "storey_1",
+   "from": "s1_landing",
+   "to": "s1_bath",
+   "axis": "y",
+   "plane": 2.553,
+   "centre": -0.93,
+   "clear_width_m": 0.84,
+   "clear_height_m": 2.1,
+   "mechanism": "hinged_single",
+   "shared": false,
+   "keep_clear": {
+    "rule": "leaf_parks_flat_against_wall",
+    "arc": null
+   },
+   "default_state": "shut"
+  },
+  {
+   "id": "unit_2.s1_landing->s1_bed2",
+   "unit": "unit_2",
+   "storey": 1,
+   "level": "storey_1",
+   "from": "s1_landing",
+   "to": "s1_bed2",
+   "axis": "x",
+   "plane": -1.8,
+   "centre": 1.75,
+   "clear_width_m": 0.84,
+   "clear_height_m": 2.1,
+   "mechanism": "hinged_single",
+   "shared": false,
+   "keep_clear": {
+    "rule": "leaf_parks_flat_against_wall",
+    "arc": null
+   },
+   "default_state": "shut"
+  }
+ ],
+ "MAIL": [
+  {
+   "id": "unit_1.mail",
+   "unit": "unit_1",
+   "type": "wall_box",
+   "storey": 0,
+   "pos": [
+    -3.66,
+    5.3,
+    1.8
+   ],
+   "stand": [
+    -3.66,
+    5.85,
+    0
+   ],
+   "accepts": [
+    "letter",
+    "small_parcel"
+   ]
+  },
+  {
+   "id": "unit_2.mail",
+   "unit": "unit_2",
+   "type": "wall_box",
+   "storey": 0,
+   "pos": [
+    2.54,
+    5.3,
+    1.8
+   ],
+   "stand": [
+    2.54,
+    5.85,
+    0
+   ],
+   "accepts": [
+    "letter",
+    "small_parcel"
+   ]
+  }
+ ],
+ "WALK": [
+  {
+   "id": "unit_1.stoop",
+   "unit": "unit_1",
+   "kind": "stoop",
+   "z": 0.62,
+   "polygon": [
+    [
+     -5.19,
+     5.3
+    ],
+    [
+     -3.49,
+     5.3
+    ],
+    [
+     -3.49,
+     6.26
+    ],
+    [
+     -5.19,
+     6.26
+    ]
+   ],
+   "steps": {
+    "count": 3,
+    "rise_m": 0.207,
+    "run_m": 0.32,
+    "handrail": {
+     "sides": "both",
+     "height_m": 0.86,
+     "material": "iron"
+    }
+   },
+   "treatment": "step_up",
+   "note": "stone stoop; three treads from grade to the threshold"
+  },
+  {
+   "id": "unit_2.stoop",
+   "unit": "unit_2",
+   "kind": "stoop",
+   "z": 0.62,
+   "polygon": [
+    [
+     1.01,
+     5.3
+    ],
+    [
+     2.71,
+     5.3
+    ],
+    [
+     2.71,
+     6.26
+    ],
+    [
+     1.01,
+     6.26
+    ]
+   ],
+   "steps": {
+    "count": 3,
+    "rise_m": 0.207,
+    "run_m": 0.32,
+    "handrail": {
+     "sides": "both",
+     "height_m": 0.86,
+     "material": "iron"
+    }
+   },
+   "treatment": "step_up",
+   "note": "stone stoop; three treads from grade to the threshold"
+  }
+ ],
+ "BLOCKERS": [
+  {
+   "what": "building",
+   "level": "grade",
+   "treatment": "wall",
+   "footprint": [
+    [
+     -6.2,
+     -5.3
+    ],
+    [
+     6.2,
+     5.3
+    ]
+   ],
+   "height_above_grade_m": 7.57,
+   "note": "the terrace shell; interior floors are walkable via SOLE"
+  },
+  {
+   "what": "stoop",
+   "unit": "unit_1",
+   "level": "grade",
+   "treatment": "step_up",
+   "footprint": [
+    [
+     -5.19,
+     5.3
+    ],
+    [
+     -3.49,
+     6.26
+    ]
+   ],
+   "height_above_grade_m": 0.62
+  },
+  {
+   "what": "downpipe",
+   "level": "grade",
+   "treatment": "wall",
+   "footprint": [
+    [
+     -0.07,
+     5.32
+    ],
+    [
+     0.07,
+     5.46
+    ]
+   ],
+   "height_above_grade_m": 6.4
+  },
+  {
+   "what": "stoop",
+   "unit": "unit_2",
+   "level": "grade",
+   "treatment": "step_up",
+   "footprint": [
+    [
+     1.01,
+     5.3
+    ],
+    [
+     2.71,
+     6.26
+    ]
+   ],
+   "height_above_grade_m": 0.62
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -6.2,
+     5
+    ],
+    [
+     0,
+     5.3
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -6.2,
+     -5.3
+    ],
+    [
+     0,
+     -5
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -6.2,
+     -5.3
+    ],
+    [
+     -5.9,
+     5.3
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -0.13,
+     -5.3
+    ],
+    [
+     0,
+     5.3
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -3.532,
+     -1.8
+    ],
+    [
+     -3.422,
+     2.6
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -3.532,
+     3.44
+    ],
+    [
+     -3.422,
+     5
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -5.9,
+     -1.855
+    ],
+    [
+     -3.027,
+     -1.745
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -2.187,
+     -1.855
+    ],
+    [
+     -0.13,
+     -1.745
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -5.9,
+     3.595
+    ],
+    [
+     -5.45,
+     3.705
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -4.61,
+     3.595
+    ],
+    [
+     -3.477,
+     3.705
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "bench",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -1.52,
+     -1.68
+    ],
+    [
+     -0.26,
+     -1.32
+    ]
+   ],
+   "height_above_sole_m": 0.45,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "armchair",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -3.357,
+     1.24
+    ],
+    [
+     -2.637,
+     1.96
+    ]
+   ],
+   "height_above_sole_m": 0.86,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "rug",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -2.653,
+     0.531
+    ],
+    [
+     -0.953,
+     1.581
+    ]
+   ],
+   "height_above_sole_m": 0.02,
+   "treatment": "step_over"
+  },
+  {
+   "what": "roundTable",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -2.557,
+     0.844
+    ],
+    [
+     -1.317,
+     2.084
+    ]
+   ],
+   "height_above_sole_m": 0.73,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "shelf",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -1.422,
+     4.58
+    ],
+    [
+     -0.522,
+     4.88
+    ]
+   ],
+   "height_above_sole_m": 1.7,
+   "treatment": "wall"
+  },
+  {
+   "what": "counter",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -5.78,
+     -4.88
+    ],
+    [
+     -2.98,
+     -4.26
+    ]
+   ],
+   "height_above_sole_m": 0.9,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "stove",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -1.37,
+     -4.88
+    ],
+    [
+     -0.25,
+     -4.22
+    ]
+   ],
+   "height_above_sole_m": 1.8,
+   "treatment": "wall"
+  },
+  {
+   "what": "sink",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -5.78,
+     -3.9
+    ],
+    [
+     -5.18,
+     -2.9
+    ]
+   ],
+   "height_above_sole_m": 1.18,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "icebox",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -0.85,
+     -3.76
+    ],
+    [
+     -0.25,
+     -3.04
+    ]
+   ],
+   "height_above_sole_m": 1.2,
+   "treatment": "wall"
+  },
+  {
+   "what": "hutch",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -0.75,
+     -2.98
+    ],
+    [
+     -0.25,
+     -1.93
+    ]
+   ],
+   "height_above_sole_m": 2.03,
+   "treatment": "wall"
+  },
+  {
+   "what": "table",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -3.678,
+     -3.68
+    ],
+    [
+     -2.353,
+     -2.9
+    ]
+   ],
+   "height_above_sole_m": 0.74,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "chair",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -3.566,
+     -4.19
+    ],
+    [
+     -3.126,
+     -3.77
+    ]
+   ],
+   "height_above_sole_m": 1.075,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "chair",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -3.566,
+     -2.81
+    ],
+    [
+     -3.126,
+     -2.39
+    ]
+   ],
+   "height_above_sole_m": 1.075,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "chair",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -2.904,
+     -4.19
+    ],
+    [
+     -2.464,
+     -3.77
+    ]
+   ],
+   "height_above_sole_m": 1.075,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "chair",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -2.904,
+     -2.81
+    ],
+    [
+     -2.464,
+     -2.39
+    ]
+   ],
+   "height_above_sole_m": 1.075,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "stair",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -5.8,
+     -1.66
+    ],
+    [
+     -4.78,
+     1.01
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "stair"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -6.2,
+     5
+    ],
+    [
+     0,
+     5.3
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -6.2,
+     -5.3
+    ],
+    [
+     0,
+     -5
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -6.2,
+     -5.3
+    ],
+    [
+     -5.9,
+     5.3
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -0.13,
+     -5.3
+    ],
+    [
+     0,
+     5.3
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -5.9,
+     1.095
+    ],
+    [
+     -4.7,
+     1.205
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -3.86,
+     1.095
+    ],
+    [
+     -0.13,
+     1.205
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -3.532,
+     -1.8
+    ],
+    [
+     -3.422,
+     -1.35
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -3.532,
+     -0.51
+    ],
+    [
+     -3.422,
+     1.15
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -5.9,
+     -1.855
+    ],
+    [
+     -4.7,
+     -1.745
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -3.86,
+     -1.855
+    ],
+    [
+     -0.13,
+     -1.745
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "bed",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -3.765,
+     1.33
+    ],
+    [
+     -2.265,
+     3.38
+    ]
+   ],
+   "height_above_sole_m": 0.95,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "wardrobe",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -0.83,
+     1.686
+    ],
+    [
+     -0.25,
+     2.736
+    ]
+   ],
+   "height_above_sole_m": 2.03,
+   "treatment": "wall"
+  },
+  {
+   "what": "dresser",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -5.78,
+     2.575
+    ],
+    [
+     -5.28,
+     3.575
+    ]
+   ],
+   "height_above_sole_m": 0.95,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "toilet",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -2.023,
+     -1.68
+    ],
+    [
+     -1.583,
+     -0.96
+    ]
+   ],
+   "height_above_sole_m": 1.7,
+   "treatment": "wall"
+  },
+  {
+   "what": "washstand",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -1.08,
+     -1.68
+    ],
+    [
+     -0.26,
+     -1.2
+    ]
+   ],
+   "height_above_sole_m": 1.06,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "tub",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -2.204,
+     -0.57
+    ],
+    [
+     -1.404,
+     1.03
+    ]
+   ],
+   "height_above_sole_m": 0.86,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "towelRail",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -3.357,
+     0.42
+    ],
+    [
+     -2.957,
+     1.02
+    ]
+   ],
+   "height_above_sole_m": 0.92,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "mirror",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -0.7,
+     -0.605
+    ],
+    [
+     -0.25,
+     -0.045
+    ]
+   ],
+   "height_above_sole_m": 1.5,
+   "treatment": "wall"
+  },
+  {
+   "what": "bed",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -5.72,
+     -4.15
+    ],
+    [
+     -3.67,
+     -2.65
+    ]
+   ],
+   "height_above_sole_m": 0.95,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "wardrobe",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -0.83,
+     -4.568
+    ],
+    [
+     -0.25,
+     -3.518
+    ]
+   ],
+   "height_above_sole_m": 2.03,
+   "treatment": "wall"
+  },
+  {
+   "what": "dresser",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_1",
+   "footprint": [
+    [
+     -3.515,
+     -2.42
+    ],
+    [
+     -2.515,
+     -1.92
+    ]
+   ],
+   "height_above_sole_m": 0.95,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     0,
+     5
+    ],
+    [
+     6.2,
+     5.3
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     0,
+     -5.3
+    ],
+    [
+     6.2,
+     -5
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     0,
+     -5.3
+    ],
+    [
+     0.13,
+     5.3
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     5.9,
+     -5.3
+    ],
+    [
+     6.2,
+     5.3
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     2.498,
+     -1.8
+    ],
+    [
+     2.608,
+     2.6
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     2.498,
+     3.44
+    ],
+    [
+     2.608,
+     5
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     0.13,
+     -1.855
+    ],
+    [
+     3.003,
+     -1.745
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     3.843,
+     -1.855
+    ],
+    [
+     5.9,
+     -1.745
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     0.13,
+     3.595
+    ],
+    [
+     0.58,
+     3.705
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     1.42,
+     3.595
+    ],
+    [
+     2.553,
+     3.705
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "bench",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     4.51,
+     -1.68
+    ],
+    [
+     5.77,
+     -1.32
+    ]
+   ],
+   "height_above_sole_m": 0.45,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "armchair",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     2.673,
+     1.24
+    ],
+    [
+     3.393,
+     1.96
+    ]
+   ],
+   "height_above_sole_m": 0.86,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "rug",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     3.376,
+     0.531
+    ],
+    [
+     5.076,
+     1.581
+    ]
+   ],
+   "height_above_sole_m": 0.02,
+   "treatment": "step_over"
+  },
+  {
+   "what": "roundTable",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     3.473,
+     0.844
+    ],
+    [
+     4.713,
+     2.084
+    ]
+   ],
+   "height_above_sole_m": 0.73,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "shelf",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     4.608,
+     4.58
+    ],
+    [
+     5.508,
+     4.88
+    ]
+   ],
+   "height_above_sole_m": 1.7,
+   "treatment": "wall"
+  },
+  {
+   "what": "counter",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     0.25,
+     -4.88
+    ],
+    [
+     3.05,
+     -4.26
+    ]
+   ],
+   "height_above_sole_m": 0.9,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "stove",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     4.66,
+     -4.88
+    ],
+    [
+     5.78,
+     -4.22
+    ]
+   ],
+   "height_above_sole_m": 1.8,
+   "treatment": "wall"
+  },
+  {
+   "what": "sink",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     0.25,
+     -3.9
+    ],
+    [
+     0.85,
+     -2.9
+    ]
+   ],
+   "height_above_sole_m": 1.18,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "icebox",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     5.18,
+     -3.76
+    ],
+    [
+     5.78,
+     -3.04
+    ]
+   ],
+   "height_above_sole_m": 1.2,
+   "treatment": "wall"
+  },
+  {
+   "what": "hutch",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     5.28,
+     -2.98
+    ],
+    [
+     5.78,
+     -1.93
+    ]
+   ],
+   "height_above_sole_m": 2.03,
+   "treatment": "wall"
+  },
+  {
+   "what": "table",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     2.353,
+     -3.68
+    ],
+    [
+     3.678,
+     -2.9
+    ]
+   ],
+   "height_above_sole_m": 0.74,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "chair",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     2.464,
+     -4.19
+    ],
+    [
+     2.904,
+     -3.77
+    ]
+   ],
+   "height_above_sole_m": 1.075,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "chair",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     2.464,
+     -2.81
+    ],
+    [
+     2.904,
+     -2.39
+    ]
+   ],
+   "height_above_sole_m": 1.075,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "chair",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     3.126,
+     -4.19
+    ],
+    [
+     3.566,
+     -3.77
+    ]
+   ],
+   "height_above_sole_m": 1.075,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "chair",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     3.126,
+     -2.81
+    ],
+    [
+     3.566,
+     -2.39
+    ]
+   ],
+   "height_above_sole_m": 1.075,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "stair",
+   "level": "storey_0",
+   "storey": 0,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     0.23,
+     -1.66
+    ],
+    [
+     1.25,
+     1.01
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "stair"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     0,
+     5
+    ],
+    [
+     6.2,
+     5.3
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     0,
+     -5.3
+    ],
+    [
+     6.2,
+     -5
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     0,
+     -5.3
+    ],
+    [
+     0.13,
+     5.3
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     5.9,
+     -5.3
+    ],
+    [
+     6.2,
+     5.3
+    ]
+   ],
+   "height_above_sole_m": 2.76,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     0.13,
+     1.095
+    ],
+    [
+     1.33,
+     1.205
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     2.17,
+     1.095
+    ],
+    [
+     5.9,
+     1.205
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     2.498,
+     -1.8
+    ],
+    [
+     2.608,
+     -1.35
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     2.498,
+     -0.51
+    ],
+    [
+     2.608,
+     1.15
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     0.13,
+     -1.855
+    ],
+    [
+     1.33,
+     -1.745
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "wall",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     2.17,
+     -1.855
+    ],
+    [
+     5.9,
+     -1.745
+    ]
+   ],
+   "height_above_sole_m": 1.15,
+   "treatment": "wall"
+  },
+  {
+   "what": "bed",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     2.265,
+     1.33
+    ],
+    [
+     3.765,
+     3.38
+    ]
+   ],
+   "height_above_sole_m": 0.95,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "wardrobe",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     5.2,
+     1.686
+    ],
+    [
+     5.78,
+     2.736
+    ]
+   ],
+   "height_above_sole_m": 2.03,
+   "treatment": "wall"
+  },
+  {
+   "what": "dresser",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     0.25,
+     2.575
+    ],
+    [
+     0.75,
+     3.575
+    ]
+   ],
+   "height_above_sole_m": 0.95,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "toilet",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     4.007,
+     -1.68
+    ],
+    [
+     4.447,
+     -0.96
+    ]
+   ],
+   "height_above_sole_m": 1.7,
+   "treatment": "wall"
+  },
+  {
+   "what": "washstand",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     4.95,
+     -1.68
+    ],
+    [
+     5.77,
+     -1.2
+    ]
+   ],
+   "height_above_sole_m": 1.06,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "tub",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     3.826,
+     -0.57
+    ],
+    [
+     4.627,
+     1.03
+    ]
+   ],
+   "height_above_sole_m": 0.86,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "towelRail",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     2.673,
+     0.42
+    ],
+    [
+     3.073,
+     1.02
+    ]
+   ],
+   "height_above_sole_m": 0.92,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "mirror",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     5.33,
+     -0.605
+    ],
+    [
+     5.78,
+     -0.045
+    ]
+   ],
+   "height_above_sole_m": 1.5,
+   "treatment": "wall"
+  },
+  {
+   "what": "bed",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     0.31,
+     -4.15
+    ],
+    [
+     2.36,
+     -2.65
+    ]
+   ],
+   "height_above_sole_m": 0.95,
+   "treatment": "waist_block"
+  },
+  {
+   "what": "wardrobe",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     5.2,
+     -4.568
+    ],
+    [
+     5.78,
+     -3.518
+    ]
+   ],
+   "height_above_sole_m": 2.03,
+   "treatment": "wall"
+  },
+  {
+   "what": "dresser",
+   "level": "storey_1",
+   "storey": 1,
+   "unit": "unit_2",
+   "footprint": [
+    [
+     2.515,
+     -2.42
+    ],
+    [
+     3.515,
+     -1.92
+    ]
+   ],
+   "height_above_sole_m": 0.95,
+   "treatment": "waist_block"
+  }
+ ],
+ "ROOF": {
+  "deck_z": 6.62,
+  "parapet_z": 7.57,
+  "walkable": false,
+  "access": null,
+  "note": "flat membrane behind the parapet; no ladder, no hatch — not walkable"
+ },
+ "SOLE": [
+  {
+   "id": "unit_1.g_hall",
+   "unit": "unit_1",
+   "level": "storey_0",
+   "storey": 0,
+   "kind": "hall",
+   "winding": "ccw_from_above",
+   "z": 0.62,
+   "polygon": [
+    [
+     -5.9,
+     -1.8
+    ],
+    [
+     -3.477,
+     -1.8
+    ],
+    [
+     -3.477,
+     3.65
+    ],
+    [
+     -5.9,
+     3.65
+    ]
+   ],
+   "area_m2": 13.208,
+   "room_height_m": 2.76,
+   "wet": false,
+   "circulation": true,
+   "shared": false
+  },
+  {
+   "id": "unit_1.g_entry",
+   "unit": "unit_1",
+   "level": "storey_0",
+   "storey": 0,
+   "kind": "hall",
+   "winding": "ccw_from_above",
+   "z": 0.62,
+   "polygon": [
+    [
+     -5.9,
+     3.65
+    ],
+    [
+     -3.477,
+     3.65
+    ],
+    [
+     -3.477,
+     5
+    ],
+    [
+     -5.9,
+     5
+    ]
+   ],
+   "area_m2": 3.272,
+   "room_height_m": 2.76,
+   "wet": false,
+   "circulation": true,
+   "shared": false
+  },
+  {
+   "id": "unit_1.g_living",
+   "unit": "unit_1",
+   "level": "storey_0",
+   "storey": 0,
+   "kind": "living",
+   "winding": "ccw_from_above",
+   "z": 0.62,
+   "polygon": [
+    [
+     -3.477,
+     -1.8
+    ],
+    [
+     -0.13,
+     -1.8
+    ],
+    [
+     -0.13,
+     5
+    ],
+    [
+     -3.477,
+     5
+    ]
+   ],
+   "area_m2": 22.757,
+   "room_height_m": 2.76,
+   "wet": false,
+   "circulation": false,
+   "shared": false,
+   "_notes": [
+    {
+     "what": "bench",
+     "footprint": [
+      [
+       -1.52,
+       -1.68
+      ],
+      [
+       -0.26,
+       -1.32
+      ]
+     ],
+     "height_above_sole_m": 0.45,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "armchair",
+     "footprint": [
+      [
+       -3.357,
+       1.24
+      ],
+      [
+       -2.637,
+       1.96
+      ]
+     ],
+     "height_above_sole_m": 0.86,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "rug",
+     "footprint": [
+      [
+       -2.653,
+       0.531
+      ],
+      [
+       -0.953,
+       1.581
+      ]
+     ],
+     "height_above_sole_m": 0.02,
+     "treatment": "step_over"
+    },
+    {
+     "what": "roundTable",
+     "footprint": [
+      [
+       -2.557,
+       0.844
+      ],
+      [
+       -1.317,
+       2.084
+      ]
+     ],
+     "height_above_sole_m": 0.73,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "shelf",
+     "footprint": [
+      [
+       -1.422,
+       4.58
+      ],
+      [
+       -0.522,
+       4.88
+      ]
+     ],
+     "height_above_sole_m": 1.7,
+     "treatment": "wall"
+    }
+   ]
+  },
+  {
+   "id": "unit_1.g_kitchen",
+   "unit": "unit_1",
+   "level": "storey_0",
+   "storey": 0,
+   "kind": "kitchen",
+   "winding": "ccw_from_above",
+   "z": 0.62,
+   "polygon": [
+    [
+     -5.9,
+     -5
+    ],
+    [
+     -0.13,
+     -5
+    ],
+    [
+     -0.13,
+     -1.8
+    ],
+    [
+     -5.9,
+     -1.8
+    ]
+   ],
+   "area_m2": 18.464,
+   "room_height_m": 2.76,
+   "wet": false,
+   "circulation": false,
+   "shared": false,
+   "_notes": [
+    {
+     "what": "counter",
+     "footprint": [
+      [
+       -5.78,
+       -4.88
+      ],
+      [
+       -2.98,
+       -4.26
+      ]
+     ],
+     "height_above_sole_m": 0.9,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "stove",
+     "footprint": [
+      [
+       -1.37,
+       -4.88
+      ],
+      [
+       -0.25,
+       -4.22
+      ]
+     ],
+     "height_above_sole_m": 1.8,
+     "treatment": "wall"
+    },
+    {
+     "what": "sink",
+     "footprint": [
+      [
+       -5.78,
+       -3.9
+      ],
+      [
+       -5.18,
+       -2.9
+      ]
+     ],
+     "height_above_sole_m": 1.18,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "icebox",
+     "footprint": [
+      [
+       -0.85,
+       -3.76
+      ],
+      [
+       -0.25,
+       -3.04
+      ]
+     ],
+     "height_above_sole_m": 1.2,
+     "treatment": "wall"
+    },
+    {
+     "what": "hutch",
+     "footprint": [
+      [
+       -0.75,
+       -2.98
+      ],
+      [
+       -0.25,
+       -1.93
+      ]
+     ],
+     "height_above_sole_m": 2.03,
+     "treatment": "wall"
+    },
+    {
+     "what": "table",
+     "footprint": [
+      [
+       -3.678,
+       -3.68
+      ],
+      [
+       -2.353,
+       -2.9
+      ]
+     ],
+     "height_above_sole_m": 0.74,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "chair",
+     "footprint": [
+      [
+       -3.566,
+       -4.19
+      ],
+      [
+       -3.126,
+       -3.77
+      ]
+     ],
+     "height_above_sole_m": 1.075,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "chair",
+     "footprint": [
+      [
+       -3.566,
+       -2.81
+      ],
+      [
+       -3.126,
+       -2.39
+      ]
+     ],
+     "height_above_sole_m": 1.075,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "chair",
+     "footprint": [
+      [
+       -2.904,
+       -4.19
+      ],
+      [
+       -2.464,
+       -3.77
+      ]
+     ],
+     "height_above_sole_m": 1.075,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "chair",
+     "footprint": [
+      [
+       -2.904,
+       -2.81
+      ],
+      [
+       -2.464,
+       -2.39
+      ]
+     ],
+     "height_above_sole_m": 1.075,
+     "treatment": "waist_block"
+    }
+   ]
+  },
+  {
+   "id": "unit_1.s1_landing",
+   "unit": "unit_1",
+   "level": "storey_1",
+   "storey": 1,
+   "kind": "landing",
+   "winding": "ccw_from_above",
+   "z": 3.62,
+   "polygon": [
+    [
+     -5.9,
+     -1.8
+    ],
+    [
+     -3.477,
+     -1.8
+    ],
+    [
+     -3.477,
+     1.15
+    ],
+    [
+     -5.9,
+     1.15
+    ]
+   ],
+   "area_m2": 7.149,
+   "room_height_m": 2.76,
+   "wet": false,
+   "circulation": true,
+   "shared": false,
+   "holes": [
+    {
+     "reason": "stairwell",
+     "polygon": [
+      [
+       -5.85,
+       -1.71
+      ],
+      [
+       -4.73,
+       -1.71
+      ],
+      [
+       -4.73,
+       -0.56
+      ],
+      [
+       -5.85,
+       -0.56
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "unit_1.s1_bed1",
+   "unit": "unit_1",
+   "level": "storey_1",
+   "storey": 1,
+   "kind": "bed",
+   "winding": "ccw_from_above",
+   "z": 3.62,
+   "polygon": [
+    [
+     -5.9,
+     1.15
+    ],
+    [
+     -0.13,
+     1.15
+    ],
+    [
+     -0.13,
+     5
+    ],
+    [
+     -5.9,
+     5
+    ]
+   ],
+   "area_m2": 22.215,
+   "room_height_m": 2.76,
+   "wet": false,
+   "circulation": false,
+   "shared": false,
+   "_notes": [
+    {
+     "what": "bed",
+     "footprint": [
+      [
+       -3.765,
+       1.33
+      ],
+      [
+       -2.265,
+       3.38
+      ]
+     ],
+     "height_above_sole_m": 0.95,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "wardrobe",
+     "footprint": [
+      [
+       -0.83,
+       1.686
+      ],
+      [
+       -0.25,
+       2.736
+      ]
+     ],
+     "height_above_sole_m": 2.03,
+     "treatment": "wall"
+    },
+    {
+     "what": "dresser",
+     "footprint": [
+      [
+       -5.78,
+       2.575
+      ],
+      [
+       -5.28,
+       3.575
+      ]
+     ],
+     "height_above_sole_m": 0.95,
+     "treatment": "waist_block"
+    }
+   ]
+  },
+  {
+   "id": "unit_1.s1_bath",
+   "unit": "unit_1",
+   "level": "storey_1",
+   "storey": 1,
+   "kind": "bath",
+   "winding": "ccw_from_above",
+   "z": 3.62,
+   "polygon": [
+    [
+     -3.477,
+     -1.8
+    ],
+    [
+     -0.13,
+     -1.8
+    ],
+    [
+     -0.13,
+     1.15
+    ],
+    [
+     -3.477,
+     1.15
+    ]
+   ],
+   "area_m2": 9.872,
+   "room_height_m": 2.76,
+   "wet": true,
+   "circulation": false,
+   "shared": false,
+   "_notes": [
+    {
+     "what": "toilet",
+     "footprint": [
+      [
+       -2.023,
+       -1.68
+      ],
+      [
+       -1.583,
+       -0.96
+      ]
+     ],
+     "height_above_sole_m": 1.7,
+     "treatment": "wall"
+    },
+    {
+     "what": "washstand",
+     "footprint": [
+      [
+       -1.08,
+       -1.68
+      ],
+      [
+       -0.26,
+       -1.2
+      ]
+     ],
+     "height_above_sole_m": 1.06,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "tub",
+     "footprint": [
+      [
+       -2.204,
+       -0.57
+      ],
+      [
+       -1.404,
+       1.03
+      ]
+     ],
+     "height_above_sole_m": 0.86,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "towelRail",
+     "footprint": [
+      [
+       -3.357,
+       0.42
+      ],
+      [
+       -2.957,
+       1.02
+      ]
+     ],
+     "height_above_sole_m": 0.92,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "mirror",
+     "footprint": [
+      [
+       -0.7,
+       -0.605
+      ],
+      [
+       -0.25,
+       -0.045
+      ]
+     ],
+     "height_above_sole_m": 1.5,
+     "treatment": "wall"
+    }
+   ]
+  },
+  {
+   "id": "unit_1.s1_bed2",
+   "unit": "unit_1",
+   "level": "storey_1",
+   "storey": 1,
+   "kind": "bed",
+   "winding": "ccw_from_above",
+   "z": 3.62,
+   "polygon": [
+    [
+     -5.9,
+     -5
+    ],
+    [
+     -0.13,
+     -5
+    ],
+    [
+     -0.13,
+     -1.8
+    ],
+    [
+     -5.9,
+     -1.8
+    ]
+   ],
+   "area_m2": 18.464,
+   "room_height_m": 2.76,
+   "wet": false,
+   "circulation": false,
+   "shared": false,
+   "_notes": [
+    {
+     "what": "bed",
+     "footprint": [
+      [
+       -5.72,
+       -4.15
+      ],
+      [
+       -3.67,
+       -2.65
+      ]
+     ],
+     "height_above_sole_m": 0.95,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "wardrobe",
+     "footprint": [
+      [
+       -0.83,
+       -4.568
+      ],
+      [
+       -0.25,
+       -3.518
+      ]
+     ],
+     "height_above_sole_m": 2.03,
+     "treatment": "wall"
+    },
+    {
+     "what": "dresser",
+     "footprint": [
+      [
+       -3.515,
+       -2.42
+      ],
+      [
+       -2.515,
+       -1.92
+      ]
+     ],
+     "height_above_sole_m": 0.95,
+     "treatment": "waist_block"
+    }
+   ]
+  },
+  {
+   "id": "unit_2.g_hall",
+   "unit": "unit_2",
+   "level": "storey_0",
+   "storey": 0,
+   "kind": "hall",
+   "winding": "ccw_from_above",
+   "z": 0.62,
+   "polygon": [
+    [
+     0.13,
+     -1.8
+    ],
+    [
+     2.553,
+     -1.8
+    ],
+    [
+     2.553,
+     3.65
+    ],
+    [
+     0.13,
+     3.65
+    ]
+   ],
+   "area_m2": 13.208,
+   "room_height_m": 2.76,
+   "wet": false,
+   "circulation": true,
+   "shared": false
+  },
+  {
+   "id": "unit_2.g_entry",
+   "unit": "unit_2",
+   "level": "storey_0",
+   "storey": 0,
+   "kind": "hall",
+   "winding": "ccw_from_above",
+   "z": 0.62,
+   "polygon": [
+    [
+     0.13,
+     3.65
+    ],
+    [
+     2.553,
+     3.65
+    ],
+    [
+     2.553,
+     5
+    ],
+    [
+     0.13,
+     5
+    ]
+   ],
+   "area_m2": 3.272,
+   "room_height_m": 2.76,
+   "wet": false,
+   "circulation": true,
+   "shared": false
+  },
+  {
+   "id": "unit_2.g_living",
+   "unit": "unit_2",
+   "level": "storey_0",
+   "storey": 0,
+   "kind": "living",
+   "winding": "ccw_from_above",
+   "z": 0.62,
+   "polygon": [
+    [
+     2.553,
+     -1.8
+    ],
+    [
+     5.9,
+     -1.8
+    ],
+    [
+     5.9,
+     5
+    ],
+    [
+     2.553,
+     5
+    ]
+   ],
+   "area_m2": 22.757,
+   "room_height_m": 2.76,
+   "wet": false,
+   "circulation": false,
+   "shared": false,
+   "_notes": [
+    {
+     "what": "bench",
+     "footprint": [
+      [
+       4.51,
+       -1.68
+      ],
+      [
+       5.77,
+       -1.32
+      ]
+     ],
+     "height_above_sole_m": 0.45,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "armchair",
+     "footprint": [
+      [
+       2.673,
+       1.24
+      ],
+      [
+       3.393,
+       1.96
+      ]
+     ],
+     "height_above_sole_m": 0.86,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "rug",
+     "footprint": [
+      [
+       3.376,
+       0.531
+      ],
+      [
+       5.076,
+       1.581
+      ]
+     ],
+     "height_above_sole_m": 0.02,
+     "treatment": "step_over"
+    },
+    {
+     "what": "roundTable",
+     "footprint": [
+      [
+       3.473,
+       0.844
+      ],
+      [
+       4.713,
+       2.084
+      ]
+     ],
+     "height_above_sole_m": 0.73,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "shelf",
+     "footprint": [
+      [
+       4.608,
+       4.58
+      ],
+      [
+       5.508,
+       4.88
+      ]
+     ],
+     "height_above_sole_m": 1.7,
+     "treatment": "wall"
+    }
+   ]
+  },
+  {
+   "id": "unit_2.g_kitchen",
+   "unit": "unit_2",
+   "level": "storey_0",
+   "storey": 0,
+   "kind": "kitchen",
+   "winding": "ccw_from_above",
+   "z": 0.62,
+   "polygon": [
+    [
+     0.13,
+     -5
+    ],
+    [
+     5.9,
+     -5
+    ],
+    [
+     5.9,
+     -1.8
+    ],
+    [
+     0.13,
+     -1.8
+    ]
+   ],
+   "area_m2": 18.464,
+   "room_height_m": 2.76,
+   "wet": false,
+   "circulation": false,
+   "shared": false,
+   "_notes": [
+    {
+     "what": "counter",
+     "footprint": [
+      [
+       0.25,
+       -4.88
+      ],
+      [
+       3.05,
+       -4.26
+      ]
+     ],
+     "height_above_sole_m": 0.9,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "stove",
+     "footprint": [
+      [
+       4.66,
+       -4.88
+      ],
+      [
+       5.78,
+       -4.22
+      ]
+     ],
+     "height_above_sole_m": 1.8,
+     "treatment": "wall"
+    },
+    {
+     "what": "sink",
+     "footprint": [
+      [
+       0.25,
+       -3.9
+      ],
+      [
+       0.85,
+       -2.9
+      ]
+     ],
+     "height_above_sole_m": 1.18,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "icebox",
+     "footprint": [
+      [
+       5.18,
+       -3.76
+      ],
+      [
+       5.78,
+       -3.04
+      ]
+     ],
+     "height_above_sole_m": 1.2,
+     "treatment": "wall"
+    },
+    {
+     "what": "hutch",
+     "footprint": [
+      [
+       5.28,
+       -2.98
+      ],
+      [
+       5.78,
+       -1.93
+      ]
+     ],
+     "height_above_sole_m": 2.03,
+     "treatment": "wall"
+    },
+    {
+     "what": "table",
+     "footprint": [
+      [
+       2.353,
+       -3.68
+      ],
+      [
+       3.678,
+       -2.9
+      ]
+     ],
+     "height_above_sole_m": 0.74,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "chair",
+     "footprint": [
+      [
+       2.464,
+       -4.19
+      ],
+      [
+       2.904,
+       -3.77
+      ]
+     ],
+     "height_above_sole_m": 1.075,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "chair",
+     "footprint": [
+      [
+       2.464,
+       -2.81
+      ],
+      [
+       2.904,
+       -2.39
+      ]
+     ],
+     "height_above_sole_m": 1.075,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "chair",
+     "footprint": [
+      [
+       3.126,
+       -4.19
+      ],
+      [
+       3.566,
+       -3.77
+      ]
+     ],
+     "height_above_sole_m": 1.075,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "chair",
+     "footprint": [
+      [
+       3.126,
+       -2.81
+      ],
+      [
+       3.566,
+       -2.39
+      ]
+     ],
+     "height_above_sole_m": 1.075,
+     "treatment": "waist_block"
+    }
+   ]
+  },
+  {
+   "id": "unit_2.s1_landing",
+   "unit": "unit_2",
+   "level": "storey_1",
+   "storey": 1,
+   "kind": "landing",
+   "winding": "ccw_from_above",
+   "z": 3.62,
+   "polygon": [
+    [
+     0.13,
+     -1.8
+    ],
+    [
+     2.553,
+     -1.8
+    ],
+    [
+     2.553,
+     1.15
+    ],
+    [
+     0.13,
+     1.15
+    ]
+   ],
+   "area_m2": 7.149,
+   "room_height_m": 2.76,
+   "wet": false,
+   "circulation": true,
+   "shared": false,
+   "holes": [
+    {
+     "reason": "stairwell",
+     "polygon": [
+      [
+       0.18,
+       -1.71
+      ],
+      [
+       1.3,
+       -1.71
+      ],
+      [
+       1.3,
+       -0.56
+      ],
+      [
+       0.18,
+       -0.56
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "unit_2.s1_bed1",
+   "unit": "unit_2",
+   "level": "storey_1",
+   "storey": 1,
+   "kind": "bed",
+   "winding": "ccw_from_above",
+   "z": 3.62,
+   "polygon": [
+    [
+     0.13,
+     1.15
+    ],
+    [
+     5.9,
+     1.15
+    ],
+    [
+     5.9,
+     5
+    ],
+    [
+     0.13,
+     5
+    ]
+   ],
+   "area_m2": 22.215,
+   "room_height_m": 2.76,
+   "wet": false,
+   "circulation": false,
+   "shared": false,
+   "_notes": [
+    {
+     "what": "bed",
+     "footprint": [
+      [
+       2.265,
+       1.33
+      ],
+      [
+       3.765,
+       3.38
+      ]
+     ],
+     "height_above_sole_m": 0.95,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "wardrobe",
+     "footprint": [
+      [
+       5.2,
+       1.686
+      ],
+      [
+       5.78,
+       2.736
+      ]
+     ],
+     "height_above_sole_m": 2.03,
+     "treatment": "wall"
+    },
+    {
+     "what": "dresser",
+     "footprint": [
+      [
+       0.25,
+       2.575
+      ],
+      [
+       0.75,
+       3.575
+      ]
+     ],
+     "height_above_sole_m": 0.95,
+     "treatment": "waist_block"
+    }
+   ]
+  },
+  {
+   "id": "unit_2.s1_bath",
+   "unit": "unit_2",
+   "level": "storey_1",
+   "storey": 1,
+   "kind": "bath",
+   "winding": "ccw_from_above",
+   "z": 3.62,
+   "polygon": [
+    [
+     2.553,
+     -1.8
+    ],
+    [
+     5.9,
+     -1.8
+    ],
+    [
+     5.9,
+     1.15
+    ],
+    [
+     2.553,
+     1.15
+    ]
+   ],
+   "area_m2": 9.872,
+   "room_height_m": 2.76,
+   "wet": true,
+   "circulation": false,
+   "shared": false,
+   "_notes": [
+    {
+     "what": "toilet",
+     "footprint": [
+      [
+       4.007,
+       -1.68
+      ],
+      [
+       4.447,
+       -0.96
+      ]
+     ],
+     "height_above_sole_m": 1.7,
+     "treatment": "wall"
+    },
+    {
+     "what": "washstand",
+     "footprint": [
+      [
+       4.95,
+       -1.68
+      ],
+      [
+       5.77,
+       -1.2
+      ]
+     ],
+     "height_above_sole_m": 1.06,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "tub",
+     "footprint": [
+      [
+       3.826,
+       -0.57
+      ],
+      [
+       4.627,
+       1.03
+      ]
+     ],
+     "height_above_sole_m": 0.86,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "towelRail",
+     "footprint": [
+      [
+       2.673,
+       0.42
+      ],
+      [
+       3.073,
+       1.02
+      ]
+     ],
+     "height_above_sole_m": 0.92,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "mirror",
+     "footprint": [
+      [
+       5.33,
+       -0.605
+      ],
+      [
+       5.78,
+       -0.045
+      ]
+     ],
+     "height_above_sole_m": 1.5,
+     "treatment": "wall"
+    }
+   ]
+  },
+  {
+   "id": "unit_2.s1_bed2",
+   "unit": "unit_2",
+   "level": "storey_1",
+   "storey": 1,
+   "kind": "bed",
+   "winding": "ccw_from_above",
+   "z": 3.62,
+   "polygon": [
+    [
+     0.13,
+     -5
+    ],
+    [
+     5.9,
+     -5
+    ],
+    [
+     5.9,
+     -1.8
+    ],
+    [
+     0.13,
+     -1.8
+    ]
+   ],
+   "area_m2": 18.464,
+   "room_height_m": 2.76,
+   "wet": false,
+   "circulation": false,
+   "shared": false,
+   "_notes": [
+    {
+     "what": "bed",
+     "footprint": [
+      [
+       0.31,
+       -4.15
+      ],
+      [
+       2.36,
+       -2.65
+      ]
+     ],
+     "height_above_sole_m": 0.95,
+     "treatment": "waist_block"
+    },
+    {
+     "what": "wardrobe",
+     "footprint": [
+      [
+       5.2,
+       -4.568
+      ],
+      [
+       5.78,
+       -3.518
+      ]
+     ],
+     "height_above_sole_m": 2.03,
+     "treatment": "wall"
+    },
+    {
+     "what": "dresser",
+     "footprint": [
+      [
+       2.515,
+       -2.42
+      ],
+      [
+       3.515,
+       -1.92
+      ]
+     ],
+     "height_above_sole_m": 0.95,
+     "treatment": "waist_block"
+    }
+   ]
+  }
+ ],
+ "STAIRS": [
+  {
+   "id": "unit_1.stair_s0",
+   "unit": "unit_1",
+   "from_level": "storey_0",
+   "to_level": "storey_1",
+   "shared": false,
+   "steps": 13,
+   "rise_m": 0.23076923076923078,
+   "run_m": 0.205,
+   "floor_rise_m": 3,
+   "exact": {
+    "rule": "steps x rise_m = floor_rise_m",
+    "product": 3
+   },
+   "direction": "rises_to_rear",
+   "footprint": [
+    [
+     -5.8,
+     -1.66
+    ],
+    [
+     -4.78,
+     1.01
+    ]
+   ],
+   "bottom": {
+    "x": -5.29,
+    "y": -1.91,
+    "z": 0.62
+   },
+   "top": {
+    "x": -5.29,
+    "y": 1.26,
+    "z": 3.62
+   },
+   "handrail": {
+    "side": "open_side",
+    "height_m": 0.9
+   },
+   "landings": {
+    "departure": {
+     "level": "storey_0",
+     "polygon": [
+      [
+       -5.9,
+       -2.71
+      ],
+      [
+       -4.68,
+       -2.71
+      ],
+      [
+       -4.68,
+       -1.66
+      ],
+      [
+       -5.9,
+       -1.66
+      ]
+     ]
+    },
+    "arrival": {
+     "level": "storey_1",
+     "polygon": [
+      [
+       -5.9,
+       1.01
+      ],
+      [
+       -4.68,
+       1.01
+      ],
+      [
+       -4.68,
+       2.06
+      ],
+      [
+       -5.9,
+       2.06
+      ]
+     ]
+    },
+    "rule": "reserved before furnishing; no prop may stand here"
+   },
+   "void_above": {
+    "polygon": [
+     [
+      -5.8,
+      -1.66
+     ],
+     [
+      -4.78,
+      -1.66
+     ],
+     [
+      -4.78,
+      -0.56
+     ],
+     [
+      -5.8,
+      -0.56
+     ]
+    ],
+    "rule": "plate above is cut open here; carries no wall and no furniture"
+   }
+  },
+  {
+   "id": "unit_2.stair_s0",
+   "unit": "unit_2",
+   "from_level": "storey_0",
+   "to_level": "storey_1",
+   "shared": false,
+   "steps": 13,
+   "rise_m": 0.23076923076923078,
+   "run_m": 0.205,
+   "floor_rise_m": 3,
+   "exact": {
+    "rule": "steps x rise_m = floor_rise_m",
+    "product": 3
+   },
+   "direction": "rises_to_rear",
+   "footprint": [
+    [
+     0.23,
+     -1.66
+    ],
+    [
+     1.25,
+     1.01
+    ]
+   ],
+   "bottom": {
+    "x": 0.74,
+    "y": -1.91,
+    "z": 0.62
+   },
+   "top": {
+    "x": 0.74,
+    "y": 1.26,
+    "z": 3.62
+   },
+   "handrail": {
+    "side": "open_side",
+    "height_m": 0.9
+   },
+   "landings": {
+    "departure": {
+     "level": "storey_0",
+     "polygon": [
+      [
+       0.13,
+       -2.71
+      ],
+      [
+       1.35,
+       -2.71
+      ],
+      [
+       1.35,
+       -1.66
+      ],
+      [
+       0.13,
+       -1.66
+      ]
+     ]
+    },
+    "arrival": {
+     "level": "storey_1",
+     "polygon": [
+      [
+       0.13,
+       1.01
+      ],
+      [
+       1.35,
+       1.01
+      ],
+      [
+       1.35,
+       2.06
+      ],
+      [
+       0.13,
+       2.06
+      ]
+     ]
+    },
+    "rule": "reserved before furnishing; no prop may stand here"
+   },
+   "void_above": {
+    "polygon": [
+     [
+      0.23,
+      -1.66
+     ],
+     [
+      1.25,
+      -1.66
+     ],
+     [
+      1.25,
+      -0.56
+     ],
+     [
+      0.23,
+      -0.56
+     ]
+    ],
+    "rule": "plate above is cut open here; carries no wall and no furniture"
+   }
+  }
+ ],
+ "INTERACT": [
+  {
+   "id": "unit_1.g_living.sit_0",
+   "unit": "unit_1",
+   "room": "g_living",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "sit",
+   "verb": "sit",
+   "host": "bench",
+   "stand": {
+    "x": -1.205,
+    "y": -0.98,
+    "z": 1.07
+   },
+   "seat": 0,
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     -1.219,
+     -0.922
+    ],
+    "on": "g_living",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.g_living.sit_1",
+   "unit": "unit_1",
+   "room": "g_living",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "sit",
+   "verb": "sit",
+   "host": "bench",
+   "stand": {
+    "x": -0.575,
+    "y": -0.98,
+    "z": 1.07
+   },
+   "seat": 1,
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     -0.601,
+     -0.926
+    ],
+    "on": "g_living",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.g_living.sit_armchair",
+   "unit": "unit_1",
+   "room": "g_living",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "sit",
+   "verb": "sit",
+   "host": "armchair",
+   "stand": {
+    "x": -2.277,
+    "y": 1.6,
+    "z": 1.04
+   },
+   "seat": "armchair",
+   "reach": {
+    "tested": true,
+    "verdict": "moved",
+    "point": [
+     -1.077,
+     1.6
+    ],
+    "on": "g_living",
+    "dist_m": 1.2,
+    "moved_m": 1.2,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.g_kitchen.cook",
+   "unit": "unit_1",
+   "room": "g_kitchen",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "cook",
+   "verb": "cook",
+   "host": "stove",
+   "stand": {
+    "x": -0.81,
+    "y": -3.76,
+    "z": 0.62
+   },
+   "reach": {
+    "tested": true,
+    "verdict": "moved",
+    "point": [
+     -1.106,
+     -3.712
+    ],
+    "on": "g_kitchen",
+    "dist_m": 0.3,
+    "moved_m": 0.3,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.g_kitchen.wash_dishes",
+   "unit": "unit_1",
+   "room": "g_kitchen",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "wash_dishes",
+   "verb": "wash_dishes",
+   "host": "sink",
+   "stand": {
+    "x": -4.72,
+    "y": -3.4,
+    "z": 0.62
+   },
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     -4.66,
+     -3.4
+    ],
+    "on": "g_kitchen",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.g_kitchen.store",
+   "unit": "unit_1",
+   "room": "g_kitchen",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "storage",
+   "verb": "store",
+   "host": "icebox",
+   "stand": {
+    "x": -1.31,
+    "y": -3.4,
+    "z": 0.62
+   },
+   "fixture": "icebox",
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     -1.37,
+     -3.4
+    ],
+    "on": "g_kitchen",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.g_kitchen.dine_0n",
+   "unit": "unit_1",
+   "room": "g_kitchen",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "dine",
+   "verb": "dine",
+   "host": "counter",
+   "stand": {
+    "x": -3.346,
+    "y": -3.98,
+    "z": 1.08
+   },
+   "seat": "0n",
+   "reach": {
+    "tested": true,
+    "verdict": "flipped",
+    "point": [
+     -3.614,
+     -4.449
+    ],
+    "on": "g_kitchen",
+    "dist_m": 0.54,
+    "moved_m": 0.54,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.g_kitchen.dine_0s",
+   "unit": "unit_1",
+   "room": "g_kitchen",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "dine",
+   "verb": "dine",
+   "host": "table",
+   "stand": {
+    "x": -3.346,
+    "y": -2.6,
+    "z": 1.08
+   },
+   "seat": "0s",
+   "reach": {
+    "tested": true,
+    "verdict": "moved",
+    "point": [
+     -3.162,
+     -3.044
+    ],
+    "on": "g_kitchen",
+    "dist_m": 0.48,
+    "moved_m": 0.481,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.g_kitchen.dine_1n",
+   "unit": "unit_1",
+   "room": "g_kitchen",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "dine",
+   "verb": "dine",
+   "host": "table",
+   "stand": {
+    "x": -2.684,
+    "y": -3.98,
+    "z": 1.08
+   },
+   "seat": "1n",
+   "reach": {
+    "tested": true,
+    "verdict": "moved",
+    "point": [
+     -2.952,
+     -3.511
+    ],
+    "on": "g_kitchen",
+    "dist_m": 0.54,
+    "moved_m": 0.54,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.g_kitchen.dine_1s",
+   "unit": "unit_1",
+   "room": "g_kitchen",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "dine",
+   "verb": "dine",
+   "host": "table",
+   "stand": {
+    "x": -2.684,
+    "y": -2.6,
+    "z": 1.08
+   },
+   "seat": "1s",
+   "reach": {
+    "tested": true,
+    "verdict": "moved",
+    "point": [
+     -2.868,
+     -3.044
+    ],
+    "on": "g_kitchen",
+    "dist_m": 0.48,
+    "moved_m": 0.481,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.s1_bed1.sleep_left",
+   "unit": "unit_1",
+   "room": "s1_bed1",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "sleep_save",
+   "verb": "sleep",
+   "host": "bed",
+   "stand": {
+    "x": -4.125,
+    "y": 2.255,
+    "z": 3.62
+   },
+   "size": "double",
+   "side": "left",
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     -4.077,
+     2.291
+    ],
+    "on": "s1_bed1",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.s1_bed1.sleep_right",
+   "unit": "unit_1",
+   "room": "s1_bed1",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "sleep_save",
+   "verb": "sleep",
+   "host": "bed",
+   "stand": {
+    "x": -1.905,
+    "y": 2.255,
+    "z": 3.62
+   },
+   "size": "double",
+   "side": "right",
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     -1.953,
+     2.291
+    ],
+    "on": "s1_bed1",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.s1_bed1.store",
+   "unit": "unit_1",
+   "room": "s1_bed1",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "storage",
+   "verb": "store",
+   "host": "wardrobe",
+   "stand": {
+    "x": -1.29,
+    "y": 2.211,
+    "z": 3.62
+   },
+   "fixture": "wardrobe",
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     -1.344,
+     2.238
+    ],
+    "on": "s1_bed1",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.s1_bath.toilet",
+   "unit": "unit_1",
+   "room": "s1_bath",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "toilet",
+   "verb": "toilet",
+   "host": "toilet",
+   "stand": {
+    "x": -1.803,
+    "y": -0.52,
+    "z": 3.62
+   },
+   "reach": {
+    "tested": true,
+    "verdict": "flipped",
+    "point": [
+     -1.802,
+     -0.82
+    ],
+    "on": "s1_bath",
+    "dist_m": 0.3,
+    "moved_m": 0.3,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.s1_bath.vanity",
+   "unit": "unit_1",
+   "room": "s1_bath",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "wash",
+   "verb": "vanity",
+   "host": "washstand",
+   "stand": {
+    "x": -0.67,
+    "y": -0.76,
+    "z": 3.62
+   },
+   "reach": {
+    "tested": true,
+    "verdict": "moved",
+    "point": [
+     -0.95,
+     -0.653
+    ],
+    "on": "s1_bath",
+    "dist_m": 0.3,
+    "moved_m": 0.3,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.s1_bath.bathe",
+   "unit": "unit_1",
+   "room": "s1_bath",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "bathe",
+   "verb": "bathe",
+   "host": "tub",
+   "stand": {
+    "x": -1.804,
+    "y": -1.03,
+    "z": 3.62
+   },
+   "fixture": "tub",
+   "reach": {
+    "tested": true,
+    "verdict": "moved",
+    "point": [
+     -1.804,
+     -0.73
+    ],
+    "on": "s1_bath",
+    "dist_m": 0.3,
+    "moved_m": 0.3,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.s1_bed2.sleep_left",
+   "unit": "unit_1",
+   "room": "s1_bed2",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "sleep_save",
+   "verb": "sleep",
+   "host": "bed",
+   "stand": {
+    "x": -4.695,
+    "y": -4.51,
+    "z": 3.62
+   },
+   "size": "double",
+   "side": "left",
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     -4.645,
+     -4.477
+    ],
+    "on": "s1_bed2",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.s1_bed2.sleep_right",
+   "unit": "unit_1",
+   "room": "s1_bed2",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "sleep_save",
+   "verb": "sleep",
+   "host": "bed",
+   "stand": {
+    "x": -4.695,
+    "y": -2.29,
+    "z": 3.62
+   },
+   "size": "double",
+   "side": "right",
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     -4.645,
+     -2.323
+    ],
+    "on": "s1_bed2",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_1.s1_bed2.store",
+   "unit": "unit_1",
+   "room": "s1_bed2",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "storage",
+   "verb": "store",
+   "host": "wardrobe",
+   "stand": {
+    "x": -1.29,
+    "y": -4.043,
+    "z": 3.62
+   },
+   "fixture": "wardrobe",
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     -1.346,
+     -4.022
+    ],
+    "on": "s1_bed2",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.g_living.sit_0",
+   "unit": "unit_2",
+   "room": "g_living",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "sit",
+   "verb": "sit",
+   "host": "bench",
+   "stand": {
+    "x": 4.825,
+    "y": -0.98,
+    "z": 1.07
+   },
+   "seat": 0,
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     4.811,
+     -0.922
+    ],
+    "on": "g_living",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.g_living.sit_1",
+   "unit": "unit_2",
+   "room": "g_living",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "sit",
+   "verb": "sit",
+   "host": "bench",
+   "stand": {
+    "x": 5.455,
+    "y": -0.98,
+    "z": 1.07
+   },
+   "seat": 1,
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     5.429,
+     -0.926
+    ],
+    "on": "g_living",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.g_living.sit_armchair",
+   "unit": "unit_2",
+   "room": "g_living",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "sit",
+   "verb": "sit",
+   "host": "armchair",
+   "stand": {
+    "x": 3.753,
+    "y": 1.6,
+    "z": 1.04
+   },
+   "seat": "armchair",
+   "reach": {
+    "tested": true,
+    "verdict": "moved",
+    "point": [
+     4.953,
+     1.6
+    ],
+    "on": "g_living",
+    "dist_m": 1.2,
+    "moved_m": 1.2,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.g_kitchen.cook",
+   "unit": "unit_2",
+   "room": "g_kitchen",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "cook",
+   "verb": "cook",
+   "host": "stove",
+   "stand": {
+    "x": 5.22,
+    "y": -3.76,
+    "z": 0.62
+   },
+   "reach": {
+    "tested": true,
+    "verdict": "moved",
+    "point": [
+     4.924,
+     -3.712
+    ],
+    "on": "g_kitchen",
+    "dist_m": 0.3,
+    "moved_m": 0.3,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.g_kitchen.wash_dishes",
+   "unit": "unit_2",
+   "room": "g_kitchen",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "wash_dishes",
+   "verb": "wash_dishes",
+   "host": "sink",
+   "stand": {
+    "x": 1.31,
+    "y": -3.4,
+    "z": 0.62
+   },
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     1.37,
+     -3.4
+    ],
+    "on": "g_kitchen",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.g_kitchen.store",
+   "unit": "unit_2",
+   "room": "g_kitchen",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "storage",
+   "verb": "store",
+   "host": "icebox",
+   "stand": {
+    "x": 4.72,
+    "y": -3.4,
+    "z": 0.62
+   },
+   "fixture": "icebox",
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     4.66,
+     -3.4
+    ],
+    "on": "g_kitchen",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.g_kitchen.dine_0n",
+   "unit": "unit_2",
+   "room": "g_kitchen",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "dine",
+   "verb": "dine",
+   "host": "counter",
+   "stand": {
+    "x": 2.684,
+    "y": -3.98,
+    "z": 1.08
+   },
+   "seat": "0n",
+   "reach": {
+    "tested": true,
+    "verdict": "flipped",
+    "point": [
+     2.416,
+     -4.449
+    ],
+    "on": "g_kitchen",
+    "dist_m": 0.54,
+    "moved_m": 0.54,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.g_kitchen.dine_0s",
+   "unit": "unit_2",
+   "room": "g_kitchen",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "dine",
+   "verb": "dine",
+   "host": "table",
+   "stand": {
+    "x": 2.684,
+    "y": -2.6,
+    "z": 1.08
+   },
+   "seat": "0s",
+   "reach": {
+    "tested": true,
+    "verdict": "moved",
+    "point": [
+     2.868,
+     -3.044
+    ],
+    "on": "g_kitchen",
+    "dist_m": 0.48,
+    "moved_m": 0.481,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.g_kitchen.dine_1n",
+   "unit": "unit_2",
+   "room": "g_kitchen",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "dine",
+   "verb": "dine",
+   "host": "table",
+   "stand": {
+    "x": 3.346,
+    "y": -3.98,
+    "z": 1.08
+   },
+   "seat": "1n",
+   "reach": {
+    "tested": true,
+    "verdict": "moved",
+    "point": [
+     3.078,
+     -3.511
+    ],
+    "on": "g_kitchen",
+    "dist_m": 0.54,
+    "moved_m": 0.54,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.g_kitchen.dine_1s",
+   "unit": "unit_2",
+   "room": "g_kitchen",
+   "storey": 0,
+   "level": "storey_0",
+   "action": "dine",
+   "verb": "dine",
+   "host": "table",
+   "stand": {
+    "x": 3.346,
+    "y": -2.6,
+    "z": 1.08
+   },
+   "seat": "1s",
+   "reach": {
+    "tested": true,
+    "verdict": "moved",
+    "point": [
+     3.162,
+     -3.044
+    ],
+    "on": "g_kitchen",
+    "dist_m": 0.48,
+    "moved_m": 0.481,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.s1_bed1.sleep_left",
+   "unit": "unit_2",
+   "room": "s1_bed1",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "sleep_save",
+   "verb": "sleep",
+   "host": "bed",
+   "stand": {
+    "x": 1.905,
+    "y": 2.255,
+    "z": 3.62
+   },
+   "size": "double",
+   "side": "left",
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     1.953,
+     2.291
+    ],
+    "on": "s1_bed1",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.s1_bed1.sleep_right",
+   "unit": "unit_2",
+   "room": "s1_bed1",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "sleep_save",
+   "verb": "sleep",
+   "host": "bed",
+   "stand": {
+    "x": 4.125,
+    "y": 2.255,
+    "z": 3.62
+   },
+   "size": "double",
+   "side": "right",
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     4.077,
+     2.291
+    ],
+    "on": "s1_bed1",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.s1_bed1.store",
+   "unit": "unit_2",
+   "room": "s1_bed1",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "storage",
+   "verb": "store",
+   "host": "wardrobe",
+   "stand": {
+    "x": 4.74,
+    "y": 2.211,
+    "z": 3.62
+   },
+   "fixture": "wardrobe",
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     4.686,
+     2.238
+    ],
+    "on": "s1_bed1",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.s1_bath.toilet",
+   "unit": "unit_2",
+   "room": "s1_bath",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "toilet",
+   "verb": "toilet",
+   "host": "toilet",
+   "stand": {
+    "x": 4.227,
+    "y": -0.52,
+    "z": 3.62
+   },
+   "reach": {
+    "tested": true,
+    "verdict": "flipped",
+    "point": [
+     4.228,
+     -0.82
+    ],
+    "on": "s1_bath",
+    "dist_m": 0.3,
+    "moved_m": 0.3,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.s1_bath.vanity",
+   "unit": "unit_2",
+   "room": "s1_bath",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "wash",
+   "verb": "vanity",
+   "host": "washstand",
+   "stand": {
+    "x": 5.36,
+    "y": -0.76,
+    "z": 3.62
+   },
+   "reach": {
+    "tested": true,
+    "verdict": "moved",
+    "point": [
+     5.08,
+     -0.653
+    ],
+    "on": "s1_bath",
+    "dist_m": 0.3,
+    "moved_m": 0.3,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.s1_bath.bathe",
+   "unit": "unit_2",
+   "room": "s1_bath",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "bathe",
+   "verb": "bathe",
+   "host": "tub",
+   "stand": {
+    "x": 4.226,
+    "y": -1.03,
+    "z": 3.62
+   },
+   "fixture": "tub",
+   "reach": {
+    "tested": true,
+    "verdict": "moved",
+    "point": [
+     4.226,
+     -0.73
+    ],
+    "on": "s1_bath",
+    "dist_m": 0.3,
+    "moved_m": 0.3,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.s1_bed2.sleep_left",
+   "unit": "unit_2",
+   "room": "s1_bed2",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "sleep_save",
+   "verb": "sleep",
+   "host": "bed",
+   "stand": {
+    "x": 1.335,
+    "y": -4.51,
+    "z": 3.62
+   },
+   "size": "double",
+   "side": "left",
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     1.385,
+     -4.477
+    ],
+    "on": "s1_bed2",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.s1_bed2.sleep_right",
+   "unit": "unit_2",
+   "room": "s1_bed2",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "sleep_save",
+   "verb": "sleep",
+   "host": "bed",
+   "stand": {
+    "x": 1.335,
+    "y": -2.29,
+    "z": 3.62
+   },
+   "size": "double",
+   "side": "right",
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     1.385,
+     -2.323
+    ],
+    "on": "s1_bed2",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  },
+  {
+   "id": "unit_2.s1_bed2.store",
+   "unit": "unit_2",
+   "room": "s1_bed2",
+   "storey": 1,
+   "level": "storey_1",
+   "action": "storage",
+   "verb": "store",
+   "host": "wardrobe",
+   "stand": {
+    "x": 4.74,
+    "y": -4.043,
+    "z": 3.62
+   },
+   "fixture": "wardrobe",
+   "reach": {
+    "tested": true,
+    "verdict": "ok",
+    "point": [
+     4.684,
+     -4.022
+    ],
+    "on": "s1_bed2",
+    "dist_m": 0.06,
+    "moved_m": 0,
+    "body_r_m": 0.22,
+    "arm_m": 1.2
+   }
+  }
+ ],
+ "reach_audit": {
+  "checked": 38,
+  "ok": 20,
+  "moved": 14,
+  "flipped": 4,
+  "nulled": 0
+ },
+ "_interiorNote": "SOLE, THRESHOLD, STAIRS, INTERACT and BLOCKERS are generated by Art/rowhouseUnitIsoRig.js off the same layout the bake draws, through Art/_buildingGameplay.js. Furniture geometry is PropIso's — see propsDerivedFromRigSha256.",
+ "_excluded": {
+  "ELEVATOR": "A terrace is walk-up by definition: every unit has its own street door and its own private stair. Elevator, lobby, corridor, shared laundry and basement lockers belong to the walk-up block rig, not here.",
+  "CORRIDOR": "No shared circulation exists — unit doors open straight onto the street.",
+  "LOBBY": "Same: there is no shared entrance to model.",
+  "WASHBOARD": "Not a hull.",
+  "CLEATS": "Not a hull.",
+  "walkable_roof": "Flat membrane behind a parapet, no ladder and no hatch — basic terraces are not walkable up top.",
+  "rear_garden": "The rig bakes the building, not its plot. Yards, bins and bike racks are site dressing placed by the scene."
+ },
+ "_confirm": {
+  "resident_slots": "UNITS[].resident_slots is the count of SLEEP anchors the interior actually built (one per approachable bed side), so a double seats two. nominal_occupancy is the figure units() derives from the bed request; the two differ when a plate cap trims a bedroom. Trust resident_slots — it is the one backed by a bed in a room.",
+  "bedsBuilt": "A plate holds two bedrooms, so a 3-bed unit needs three storeys; a 2-storey 3-bed request builds two and reports it (interior rig bedsBuilt / bedsRequested).",
+  "mail": "Luxury units carry no wall box — a recessed entry takes a slot in the door, which is not modelled. MAIL is omitted rather than invented.",
+  "entry_swing": "Street doors are given a 95 degree outward swing and its swept rect. The bake draws the leaf shut, so the arc is declared, not measured off pixels."
+ }
+}

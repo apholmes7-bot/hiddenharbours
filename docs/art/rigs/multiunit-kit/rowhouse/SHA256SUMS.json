@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-09-17T00:30:31.333Z",
+  "algorithm": "sha256",
+  "note": "Every file in this kit except this one. Rehash and compare to verify a sidecar stamp and its source agree.",
+  "files": {
+    "rigs/rowhouseIsoRig.js": "ff74001f41a8af068ca4e544a28bbea4fe2a54a758d146298d20dbc56db7059c",
+    "rigs/rowhouseUnitIsoRig.js": "41b8692001c4ad0dcc3defa5cb00f8d63e20b9713f1c8e0c20887b97909e58c1",
+    "rigs/interiorPropRig.js": "a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6",
+    "rigs/_interiorPlacer.js": "ccf6c302b458d7f1b8f0b66bf0805da13fe51421e95a13e6a27174d534bf2206",
+    "rigs/_buildingGameplay.js": "49594e4c6a6a9b3fae82d630803b465fb90d2a96b9687e5375a2eb750824e8a8",
+    "rigs/_sidecarExport.js": "8802ab1152d163e69ac1f3ef0f02b801b0924f5ccf07f3bc767d6873f4ed2b9d",
+    "rigs/_multiunitKit.js": "10943e19d2f32e0a77bff64d76beb936974d5126921ad9bc01ff7510141268a0",
+    "gameplay/rowhouseIsoRig.coastalRow4.gameplay.json": "ee3914fc2882708b58b537c6a14dfcbb15e160a5b1f5deae3eb3a5e3cc84d780",
+    "gameplay/rowhouseIsoRig.duplexPair.gameplay.json": "d483b91086048472ebbc6484e0b8df8a747c88251559ea4d864b559d9be58c19",
+    "gameplay/rowhouseIsoRig.millRow4.gameplay.json": "60122b8f052286fbca99223eca783edd0ec1bdac1643437783c8f2a67b42ce39",
+    "README.md": "a51bfa682ae59227da4d9ac6d4da06ced8b68616c97162eae596425eadad65ef",
+    "CONTRACT.md": "8fddf36d1a5a3b0a266ab1a039f362915f83063ffb86b88700401735d704f999"
+  }
+}

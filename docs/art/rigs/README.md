@@ -1080,3 +1080,31 @@ pixel on a `powerPole` and 15.2 % on a clam, the perimeter-cost law from
 
 The gate changes what the *rigs* draw; the shipped sheets still carry the ring until the owner
 re-runs the bake. That is ADR 0031 §4's mixed period, working as intended.
+
+---
+
+## The multi-unit building kit (imported 2026-09-17) — terrace · walk-up · stacked flats
+
+Three phases of multi-unit housing under [`multiunit-kit/`](multiunit-kit/), landed verbatim with each
+phase's README, `SHA256SUMS.json` and generated gameplay sidecars: one schema
+(`hidden-harbours/building-gameplay@1`), one writer, **sixteen sidecars**.
+
+| folder | globals | presets |
+|---|---|---|
+| `rowhouse/` | `RowhouseIso` + `RowhouseUnitIso` | 3 terraces |
+| `walkup/` | `WalkupIso` + `WalkupUnitIso` | 6 walk-up blocks |
+| `stack/` | `StackFlatsIso` + `StackUnitIso` | 7 three-deckers and captain's houses |
+| `shared/` | `MultiunitKit` · `BuildingGameplay` · `InteriorPlacer` · `SidecarExport` | the generator, writer, placer and stamp |
+
+The kit furnishes its rooms with a newer `interiorPropRig.js`, so this import **replaced the 2026-07-19
+copy at the same path**. The committed interior sheets are untouched; the next interior re-bake redraws
+the bed and narrows the table's footprint from 2.315 m to 1.415 m (measured in
+[`multiunit-kit/IMPORT.md`](multiunit-kit/IMPORT.md)).
+
+- **UNBAKED.** No sheet, no `RigCatalog` entry, no collider, no def, nothing in a scene.
+- **Azimuth handedness UNVERIFIED.** No rig in the kit has been measured; THE AZIMUTH SPLIT at the top of
+  this file applies, and a bake must measure it rather than read it here.
+- **No site.** Where these buildings stand is unruled.
+
+Provenance, layout and the paths the move changed: [`multiunit-kit/README.md`](multiunit-kit/README.md).
+Guard: `MultiunitKitIntakeTests` (EditMode, RigBaking).
