@@ -21,7 +21,7 @@ namespace HiddenHarbours.Core
         IsoCharacterSprite FigureCharacter { get; }
 
         /// <summary>The hull VISUAL transform the character is standing on — the object the hull's
-        /// renderer is installed on — or null ashore. A mesh figure can only be drawn through a facet hull,
+        /// renderer is installed on — or null ashore. Today a mesh figure is drawn only through a facet hull,
         /// so this is also where the figure is parented.</summary>
         Transform FigureHull { get; }
 
