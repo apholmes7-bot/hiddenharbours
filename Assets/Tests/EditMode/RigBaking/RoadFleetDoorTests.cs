@@ -51,46 +51,46 @@ namespace HiddenHarbours.Tests.RigBaking
         // no HOOD block, and the rig is the authority on geometry).
         static readonly Door[] Hinges =
         {
-            new Door { Vehicle = "hightopVan", Slot = "DoorFL", Probe = "{dFL:1}", Faces = 21,
+            new Door { Vehicle = "hightopVan", Slot = "DoorFL", Probe = "{dFL:1}", Faces = 137,
                        Axis = VehicleHingeAxis.Vertical, PinA = -0.98f, PinB = 1.66f, Sweep = -62f },
-            new Door { Vehicle = "hightopVan", Slot = "DoorFR", Probe = "{dFR:1}", Faces = 21,
+            new Door { Vehicle = "hightopVan", Slot = "DoorFR", Probe = "{dFR:1}", Faces = 137,
                        Axis = VehicleHingeAxis.Vertical, PinA = 0.98f, PinB = 1.66f, Sweep = 62f },
-            new Door { Vehicle = "hightopVan", Slot = "BarnL", Probe = "{barnL:1}", Faces = 10,
+            new Door { Vehicle = "hightopVan", Slot = "BarnL", Probe = "{barnL:1}", Faces = 62,
                        Axis = VehicleHingeAxis.Vertical, PinA = -0.98f, PinB = -2.92f, Sweep = -96f },
-            new Door { Vehicle = "hightopVan", Slot = "BarnR", Probe = "{barnR:1}", Faces = 10,
+            new Door { Vehicle = "hightopVan", Slot = "BarnR", Probe = "{barnR:1}", Faces = 62,
                        Axis = VehicleHingeAxis.Vertical, PinA = 0.98f, PinB = -2.92f, Sweep = 96f },
-            new Door { Vehicle = "hightopVan", Slot = "Hood", Probe = "{hood:1}", Faces = 5,
+            new Door { Vehicle = "hightopVan", Slot = "Hood", Probe = "{hood:1}", Faces = 336,
                        Axis = VehicleHingeAxis.Lateral, PinA = 1.74f, PinB = 1.28f, Sweep = 42f },
 
-            new Door { Vehicle = "caboverBox", Slot = "DoorL", Probe = "{dL:1}", Faces = 9,
+            new Door { Vehicle = "caboverBox", Slot = "DoorL", Probe = "{dL:1}", Faces = 137,
                        Axis = VehicleHingeAxis.Vertical, PinA = -0.94f, PinB = 2.96f, Sweep = -65f },
-            new Door { Vehicle = "caboverBox", Slot = "DoorR", Probe = "{dR:1}", Faces = 9,
+            new Door { Vehicle = "caboverBox", Slot = "DoorR", Probe = "{dR:1}", Faces = 137,
                        Axis = VehicleHingeAxis.Vertical, PinA = 0.94f, PinB = 2.96f, Sweep = 65f },
-            // ⚠️ 237 is what the PROBE moves — the whole cab, her two leaves included. The baked
-            // fitting keeps 219, because the doors are claimed first and ride it back as children;
+            // ⚠️ 1014 is what the PROBE moves — the whole cab, her two leaves included. The baked
+            // fitting keeps 740, because the doors are claimed first and ride it back as children;
             // TheCaboversDoorsAreCutOutOfHerCabAndRideIt asserts that half.
-            new Door { Vehicle = "caboverBox", Slot = "CabTilt", Probe = "{tilt:1}", Faces = 237,
+            new Door { Vehicle = "caboverBox", Slot = "CabTilt", Probe = "{tilt:1}", Faces = 1014,
                        Axis = VehicleHingeAxis.Lateral, PinA = 3.20f, PinB = 0.50f, Sweep = -38f },
 
-            new Door { Vehicle = "convBox", Slot = "DoorL", Probe = "{dL:1}", Faces = 9,
+            new Door { Vehicle = "convBox", Slot = "DoorL", Probe = "{dL:1}", Faces = 137,
                        Axis = VehicleHingeAxis.Vertical, PinA = -0.98f, PinB = 2.38f, Sweep = -65f },
-            new Door { Vehicle = "convBox", Slot = "DoorR", Probe = "{dR:1}", Faces = 9,
+            new Door { Vehicle = "convBox", Slot = "DoorR", Probe = "{dR:1}", Faces = 137,
                        Axis = VehicleHingeAxis.Vertical, PinA = 0.98f, PinB = 2.38f, Sweep = 65f },
-            new Door { Vehicle = "convBox", Slot = "Hood", Probe = "{hood:1}", Faces = 76,
+            new Door { Vehicle = "convBox", Slot = "Hood", Probe = "{hood:1}", Faces = 1096,
                        Axis = VehicleHingeAxis.Lateral, PinA = 4.08f, PinB = 0.60f, Sweep = -70f },
 
-            new Door { Vehicle = "aeroSemi", Slot = "DoorL", Probe = "{dL:1}", Faces = 9,
+            new Door { Vehicle = "aeroSemi", Slot = "DoorL", Probe = "{dL:1}", Faces = 137,
                        Axis = VehicleHingeAxis.Vertical, PinA = -1.18f, PinB = 1.77f, Sweep = -65f },
-            new Door { Vehicle = "aeroSemi", Slot = "DoorR", Probe = "{dR:1}", Faces = 9,
+            new Door { Vehicle = "aeroSemi", Slot = "DoorR", Probe = "{dR:1}", Faces = 137,
                        Axis = VehicleHingeAxis.Vertical, PinA = 1.18f, PinB = 1.77f, Sweep = 65f },
-            new Door { Vehicle = "aeroSemi", Slot = "Hood", Probe = "{hood:1}", Faces = 71,
+            new Door { Vehicle = "aeroSemi", Slot = "Hood", Probe = "{hood:1}", Faces = 1086,
                        Axis = VehicleHingeAxis.Lateral, PinA = 4.02f, PinB = 0.55f, Sweep = -72f },
 
-            new Door { Vehicle = "classicSemi", Slot = "DoorL", Probe = "{dL:1}", Faces = 9,
+            new Door { Vehicle = "classicSemi", Slot = "DoorL", Probe = "{dL:1}", Faces = 143,
                        Axis = VehicleHingeAxis.Vertical, PinA = -1.18f, PinB = 1.67f, Sweep = -65f },
-            new Door { Vehicle = "classicSemi", Slot = "DoorR", Probe = "{dR:1}", Faces = 9,
+            new Door { Vehicle = "classicSemi", Slot = "DoorR", Probe = "{dR:1}", Faces = 143,
                        Axis = VehicleHingeAxis.Vertical, PinA = 1.18f, PinB = 1.67f, Sweep = 65f },
-            new Door { Vehicle = "classicSemi", Slot = "Hood", Probe = "{hood:1}", Faces = 69,
+            new Door { Vehicle = "classicSemi", Slot = "Hood", Probe = "{hood:1}", Faces = 902,
                        Axis = VehicleHingeAxis.Lateral, PinA = 4.42f, PinB = 0.55f, Sweep = -70f },
 
             new Door { Vehicle = "trailerReefer28", Slot = "BarnL", Probe = "{barnL:1}", Faces = 27,
@@ -151,7 +151,7 @@ namespace HiddenHarbours.Tests.RigBaking
             double measured = r[0], residual = r[1], faces = r[2];
 
             // ⚠️ What the PROBE moves in the rig, which is not always what the FITTING keeps: the
-            // cabover's tilt moves 237 faces and her CabTilt fitting is 219, because her two door
+            // cabover's tilt moves 1014 faces and her CabTilt fitting is 740, because her two door
             // leaves are claimed out of the cab before it is asked what is left.
             Assert.That(faces, Is.EqualTo((double)d.Faces),
                 $"'{d.Vehicle}.{d.Slot}' moves a different number of faces than the drop measured.");
@@ -389,8 +389,8 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <summary>
         /// ⭐ <b>The cabover's doors are cut OUT of her tilting cab, and ride it.</b>
         ///
-        /// <para>Her <c>tilt</c> moves 237 faces — the whole cab, her two leaves included. The doors
-        /// are claimed first, so the cab's own mesh is 219 and each leaf is its own fitting; without
+        /// <para>Her <c>tilt</c> moves 1014 faces — the whole cab, her two leaves included. The doors
+        /// are claimed first, so the cab's own mesh is 740 and each leaf is its own fitting; without
         /// the parent link they would then hang in the air the moment the cab went over. Her sidecar
         /// says it in as many words: the door keep-clear arc <i>"RIDES THE TILT — a tilted cab
         /// carries its door arcs with it"</i>.</para>
@@ -412,9 +412,9 @@ namespace HiddenHarbours.Tests.RigBaking
             using IRigScriptHost host = Host("caboverBox");
             Assert.That(def.Wheels.First(f => f.Slot == "CabTilt").Prop.Mesh.vertexCount,
                 Is.GreaterThan(0), "the cab baked an empty mesh.");
-            Assert.That(host.EvaluateNumber("__moved({tilt:1})"), Is.EqualTo(237d),
-                "the tilt moves a different amount. It is the whole cab INCLUDING her doors — 237 " +
-                "faces, of which the two leaves are 18 and the CabTilt fitting keeps 219.");
+            Assert.That(host.EvaluateNumber("__moved({tilt:1})"), Is.EqualTo(1014d),
+                "the tilt moves a different amount. It is the whole cab INCLUDING her doors — 1014 " +
+                "faces, of which the two leaves are 274 and the CabTilt fitting keeps 740.");
         }
 
         // =============================================================================================
