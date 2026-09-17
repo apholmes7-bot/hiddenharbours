@@ -158,9 +158,21 @@ namespace HiddenHarbours.Art
             _pass.renderPassEvent = RenderPassEvent.BeforeRenderingTransparents;
         }
 
+        /// <summary>
+        /// <b>Is there a subject for the facet block?</b> A registered mesh hull, or a figure holding a
+        /// facet id with no hull under her (ADR 0044, ashore). The first reader of
+        /// <see cref="AddRenderPasses"/>'s gate: false ⇒ the facet block is not recorded, so a scene
+        /// with neither pays for it exactly what it paid before figures could draw ashore — nothing.
+        /// </summary>
+        internal static bool FacetSubjectsLive =>
+            IsoFacetHullRegistry.Count > 0 || IsoFacetHullRegistry.FigureCount > 0;
+
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            bool hulls = IsoFacetHullRegistry.Count > 0;
+            // "Hulls" is the facet block: every subject of the HHHullFacet list. A mesh hull is one;
+            // a skinned figure standing on NO hull (ADR 0044, ashore) is the other, and only while
+            // she holds a figure id. With neither registered this is false and nothing below changes.
+            bool hulls = FacetSubjectsLive;
             // ADR 0023 phase 2: the displaced water surface joins this feature's off-screen
             // recording (its own colour target + the SAME private depth buffer). Active only when
             // a DisplacedWaterSurface is toggled on — the A/B's OFF side records nothing extra.

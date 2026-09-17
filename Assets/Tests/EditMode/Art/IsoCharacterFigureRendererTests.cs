@@ -1,6 +1,9 @@
 using System;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.TestTools;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
 
@@ -12,10 +15,18 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// <para>Two things have to be true at once for the skinned player to be drawn correctly, and
     /// they pull against each other. She must carry the SAME facet material a hull carries, or she
     /// inks in a different palette from the boat she is standing on. And she must NOT register in
-    /// <c>IsoFacetHullRegistry</c>, because <c>Count &gt; 0</c> is the gate that decides whether the
-    /// facet block is recorded at all — a figure that registered would turn the pass on ASHORE, where
-    /// this PR's charter says she cannot draw, and would spend a hull id plus a twelve-wide fore block
-    /// out of the 255 the whole fleet shares.</para>
+    /// <c>IsoFacetHullRegistry</c> as a hull: a hull spends an id plus a twelve-wide fore block out of
+    /// the 255 the whole fleet shares, and <c>Count</c> is the fleet.</para>
+    ///
+    /// <para><b>Ashore the premise moved on purpose (ADR 0044, ashore PR 1).</b> She may now draw
+    /// with no hull — but only through an explicit <c>EnterAshore</c>, which takes ONE figure id and
+    /// raises <c>FigureCount</c>, never <c>Count</c>. Configuring her still registers nothing, and
+    /// nothing in a shipped scene calls <c>EnterAshore</c>. The ashore guards below hold what she
+    /// carries for herself there: her own id with no fore block on both renderers, the hull's frame,
+    /// the cell overlay at the sprite's sort, the refusals, and a clean way back. Each takes its ids
+    /// from a fresh pool and leaves ashore in <c>TearDown</c>, because neither <c>OnDisable</c> nor
+    /// <c>OnDestroy</c> runs for this component in EditMode and a leaked figure id would hold the
+    /// facet gate open for the rest of the domain.</para>
     ///
     /// <para>So: one test that the registry does not move, and one that the material matches a hull
     /// built from the same numbers. The second is the test
@@ -36,19 +47,32 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private CharacterSkinDef _def;
         private GameObject _figureGo;
         private GameObject _hullGo;
+        private GameObject _spriteGo;
         private Mesh _bind;
+        private IsoFacetIdPool _livePool;
 
         [TearDown]
         public void TearDown()
         {
-            if (_figureGo != null) UnityEngine.Object.DestroyImmediate(_figureGo);
+            if (_figureGo != null)
+            {
+                // EditMode runs neither OnDisable nor OnDestroy for the figure: give the id back here.
+                var figure = _figureGo.GetComponent<IsoCharacterFigureRenderer>();
+                if (figure != null) figure.LeaveAshore();
+                UnityEngine.Object.DestroyImmediate(_figureGo);
+            }
+            if (_spriteGo != null) UnityEngine.Object.DestroyImmediate(_spriteGo);
             if (_hullGo != null) UnityEngine.Object.DestroyImmediate(_hullGo);
             if (_def != null) UnityEngine.Object.DestroyImmediate(_def);
             if (_bind != null) UnityEngine.Object.DestroyImmediate(_bind);
+            // Last, after every id taken from the fresh pool has been given back to it.
+            if (_livePool != null) IsoFacetHullRegistry.SwapIdPoolForTests(_livePool);
             _figureGo = null;
+            _spriteGo = null;
             _hullGo = null;
             _def = null;
             _bind = null;
+            _livePool = null;
         }
 
         // =================================================================== the synthetic def
@@ -183,13 +207,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void TheFigureDoesNotRegisterAsAHull()
         {
             int before = IsoFacetHullRegistry.Count;
+            int figuresBefore = IsoFacetHullRegistry.FigureCount;
             IsoCharacterFigureRenderer figure = MakeFigure(MakeDef());
 
             Assert.AreEqual(before, IsoFacetHullRegistry.Count,
-                "the figure took a place in IsoFacetHullRegistry. Count > 0 is gate 1 — the test " +
-                "that decides whether the facet block is recorded AT ALL — so a registered figure " +
-                "would draw herself ashore, where this PR says she cannot draw, and would spend a " +
-                "hull id plus a twelve-wide fore block out of the 255 the fleet shares.");
+                "the figure took a place in IsoFacetHullRegistry as a HULL. Count is the fleet: a " +
+                "figure counted there would spend a hull id plus a twelve-wide fore block out of the " +
+                "255 the fleet shares.");
+            Assert.AreEqual(figuresBefore, IsoFacetHullRegistry.FigureCount,
+                "CONFIGURING the figure took a figure id. Only EnterAshore may — a figure that " +
+                "registered on Configure would open the facet gate in every scene that merely builds her.");
+            Assert.IsFalse(figure.IsAshore, "a configured figure is ashore without EnterAshore");
 
             Assert.IsNull(figure.GetComponent<IsoFacetHullRenderer>(),
                 "the figure carries a hull renderer of its own");
@@ -203,8 +231,231 @@ namespace HiddenHarbours.Tests.Art.EditMode
             IsoCharacterFigureRenderer figure = MakeFigure(MakeDef());
 
             Assert.IsNull(figure.Hull,
-                "a figure standing on nothing must resolve no hull — ashore there is no facet pass " +
-                "to draw her through, and the presenter's gate is exactly this answer");
+                "a figure standing on nothing must resolve no hull — ashore she draws through her OWN " +
+                "figure id (EnterAshore), never through a hull she is not standing on");
+        }
+
+        // =================================================================== ashore
+
+        private static readonly Regex FigureExhausted = new Regex(@"this figure gets NO facet id");
+
+        /// <summary>Ids for this test come from a fresh pool; TearDown puts the live one back last.</summary>
+        private void UseFreshIdPool(IsoFacetIdPool pool = null)
+        {
+            IsoFacetIdPool old = IsoFacetHullRegistry.SwapIdPoolForTests(pool ?? new IsoFacetIdPool());
+            if (_livePool == null) _livePool = old;
+        }
+
+        private SpriteRenderer MakeSortSource(int sortingOrder)
+        {
+            _spriteGo = new GameObject("TestSortSource");
+            var sprite = _spriteGo.AddComponent<SpriteRenderer>();
+            sprite.sortingOrder = sortingOrder;
+            return sprite;
+        }
+
+        private static MeshRenderer FacetRendererOf(IsoCharacterFigureRenderer figure)
+        {
+            foreach (MeshRenderer r in figure.GetComponentsInChildren<MeshRenderer>(true))
+                if (r.gameObject.name == "FacetFigure") return r;
+            Assert.Fail("the figure has no FacetFigure child");
+            return null;
+        }
+
+        [Test]
+        public void EnterAshoreTakesOneFigureId_AndLeaveAshoreGivesItBack()
+        {
+            UseFreshIdPool();
+            IsoCharacterFigureRenderer figure = MakeFigure(MakeDef());
+            SpriteRenderer sprite = MakeSortSource(3);
+            int hulls = IsoFacetHullRegistry.Count;
+            int figures = IsoFacetHullRegistry.FigureCount;
+
+            Assert.IsTrue(figure.EnterAshore(sprite), "a configured figure standing on nothing could not go ashore");
+            Assert.IsTrue(figure.IsAshore);
+            Assert.That(figure.FigureId, Is.InRange(1, 254), "an ashore figure holds the overflow id or none");
+            Assert.AreEqual(figures + 1, IsoFacetHullRegistry.FigureCount);
+            Assert.AreEqual(hulls, IsoFacetHullRegistry.Count, "going ashore counted her as a hull");
+            Assert.IsTrue(IsoFacetHullFeature.FacetSubjectsLive, "an ashore figure did not open the facet gate");
+
+            Assert.IsTrue(figure.EnterAshore(sprite), "entering again must re-point the sort, not refuse");
+            Assert.AreEqual(figures + 1, IsoFacetHullRegistry.FigureCount, "entering again took a second id");
+
+            figure.LeaveAshore();
+            Assert.IsFalse(figure.IsAshore);
+            Assert.AreEqual(0, figure.FigureId);
+            Assert.AreEqual(figures, IsoFacetHullRegistry.FigureCount, "leaving ashore kept the id");
+            Assert.AreEqual(IsoFacetHullRegistry.Count > 0, IsoFacetHullFeature.FacetSubjectsLive,
+                "with her id given back the gate must be main's gate again");
+            Assert.IsNull(figure.AshoreOverlay, "leaving ashore kept the overlay");
+
+            figure.LeaveAshore();
+            Assert.AreEqual(figures, IsoFacetHullRegistry.FigureCount, "leaving twice gave an id back twice");
+        }
+
+        [Test]
+        public void EnterAshoreRefusesAFigureStandingOnAHull()
+        {
+            UseFreshIdPool();
+            IsoCharacterFigureRenderer figure = MakeFigure(MakeDef());
+            SpriteRenderer sprite = MakeSortSource(0);
+            _hullGo = new GameObject("TestHull");
+            _hullGo.AddComponent<IsoFacetHullRenderer>();
+            _figureGo.transform.SetParent(_hullGo.transform, false);
+            int figures = IsoFacetHullRegistry.FigureCount;
+
+            Assert.IsFalse(figure.EnterAshore(sprite),
+                "a figure standing on a hull went ashore — aboard is the hull's frame and the hull's " +
+                "id, and she would be kept by two overlays at once");
+            Assert.IsFalse(figure.IsAshore);
+            Assert.AreEqual(figures, IsoFacetHullRegistry.FigureCount);
+            Assert.IsNull(figure.AshoreOverlay);
+        }
+
+        [Test]
+        public void AnUnconfiguredFigureCannotGoAshore()
+        {
+            UseFreshIdPool();
+            _figureGo = new GameObject("TestFigure");
+            var figure = _figureGo.AddComponent<IsoCharacterFigureRenderer>();
+            int figures = IsoFacetHullRegistry.FigureCount;
+
+            Assert.IsFalse(figure.EnterAshore(MakeSortSource(0)), "an unconfigured figure went ashore");
+            Assert.AreEqual(figures, IsoFacetHullRegistry.FigureCount, "an unconfigured figure took an id");
+            Assert.Throws<ArgumentNullException>(() => figure.EnterAshore(null));
+        }
+
+        [Test]
+        public void AtExhaustion_EnterAshoreRefusesAndBuildsNothing()
+        {
+            var drained = new IsoFacetIdPool();
+            for (int i = 1; i < 255; i++) drained.TakeId();
+            UseFreshIdPool(drained);
+            IsoCharacterFigureRenderer figure = MakeFigure(MakeDef());
+            SpriteRenderer sprite = MakeSortSource(0);
+            int figures = IsoFacetHullRegistry.FigureCount;
+
+            LogAssert.Expect(LogType.Warning, FigureExhausted);
+            Assert.IsFalse(figure.EnterAshore(sprite), "a refused figure went ashore anyway");
+            Assert.IsFalse(figure.IsAshore);
+            Assert.AreEqual(figures, IsoFacetHullRegistry.FigureCount);
+            Assert.IsNull(figure.AshoreOverlay, "a refused figure built an overlay");
+            Assert.AreEqual(figure.transform, FacetRendererOf(figure).transform.parent,
+                "a refused figure moved her facet child into a frame");
+            Assert.AreEqual(1, figure.transform.childCount, "a refused figure built a frame or an overlay");
+        }
+
+        [Test]
+        public void AnAshoreFigureWritesItsOwnIdWithNoForeBlock_OnBothRenderers()
+        {
+            UseFreshIdPool();
+            IsoCharacterFigureRenderer figure = MakeFigure(MakeDef());
+            _figureGo.transform.position = new Vector3(4.5f, -2.25f, 0f);
+            Assert.IsTrue(figure.EnterAshore(MakeSortSource(0)));
+
+            foreach (Renderer r in new Renderer[] { FacetRendererOf(figure), figure.AshoreOverlay })
+            {
+                var block = new MaterialPropertyBlock();
+                r.GetPropertyBlock(block);
+                Assert.AreEqual(figure.FigureId / 255f, block.GetFloat(IsoFacetShaderIds.HullId), 1e-6f,
+                    r.name + " does not carry her figure id — the overlay would keep none of her pixels");
+                Assert.AreEqual(0f, block.GetFloat(IsoFacetShaderIds.HullIdFore),
+                    r.name + " carries a fore block — she would keep another boat's crew pixels as her own");
+                Assert.AreEqual(0f, block.GetFloat(IsoFacetShaderIds.HullIdForeSpan), r.name);
+                Vector4 origin = block.GetVector(IsoFacetShaderIds.HullOrigin);
+                Assert.AreEqual(4.5f, origin.x, 1e-5f, r.name + " dither origin x is not her own root");
+                Assert.AreEqual(-2.25f, origin.y, 1e-5f, r.name + " dither origin y is not her own root");
+            }
+        }
+
+        [Test]
+        public void AnAshoreFigureStandsInTheHullsFrame_AndLeavingPutsHerBack()
+        {
+            UseFreshIdPool();
+            CharacterSkinDef def = MakeDef();
+            IsoCharacterFigureRenderer figure = MakeFigure(def);
+            MeshRenderer facet = FacetRendererOf(figure);
+            Assert.IsTrue(figure.EnterAshore(MakeSortSource(0)));
+
+            Transform frame = facet.transform.parent;
+            Assert.AreNotEqual(figure.transform, frame, "her facet child did not move into a frame");
+            Assert.AreEqual(figure.transform, frame.parent);
+            Quaternion expected = IsoFacetMath.HullRotation(0d, def.ElevationDeg);
+            Assert.That(Quaternion.Angle(expected, frame.localRotation), Is.LessThan(1e-3f),
+                "the ashore frame is not the rotation a hull's posed mesh child wears");
+            Assert.AreEqual(IsoFacetMath.HullScale, frame.localScale, "the ashore frame lost the hull's mirror");
+
+            figure.SetAshoreYaw(90f);
+            Assert.That(Quaternion.Angle(Quaternion.AngleAxis(90f, Vector3.forward), facet.transform.localRotation),
+                Is.LessThan(1e-3f), "her facing is not written inside the frame");
+
+            figure.LeaveAshore();
+            Assert.AreEqual(figure.transform, facet.transform.parent, "leaving ashore did not put her facet child back");
+            Assert.AreEqual(Vector3.zero, facet.transform.localPosition);
+            Assert.AreEqual(Quaternion.identity, facet.transform.localRotation);
+            Assert.AreEqual(Vector3.one, facet.transform.localScale);
+            Assert.IsFalse(facet.HasPropertyBlock(), "leaving ashore left her figure id on the facet renderer");
+            Assert.AreEqual(1, figure.transform.childCount, "the ashore frame or overlay outlived LeaveAshore");
+        }
+
+        [Test]
+        public void TheAshoreOverlayIsTheDefsCellPaddedOnePixel()
+        {
+            UseFreshIdPool();
+            CharacterSkinDef def = MakeDef();
+            IsoCharacterFigureRenderer figure = MakeFigure(def);
+            Assert.IsTrue(figure.EnterAshore(MakeSortSource(0)));
+
+            MeshRenderer overlay = figure.AshoreOverlay;
+            Assert.IsNotNull(overlay);
+            Assert.AreEqual("HiddenHarbours/IsoFacetOverlay", overlay.sharedMaterial.shader.name);
+            Assert.AreEqual(figure.transform, overlay.transform.parent);
+            Assert.AreEqual(Vector3.zero, overlay.transform.localPosition);
+            Assert.IsNotNull(overlay.GetComponent<SortingGroup>(),
+                "the overlay has no SortingGroup — a mesh renderer does not sort against sprites without one");
+            Assert.AreEqual(ShadowCastingMode.Off, overlay.shadowCastingMode);
+
+            float ppu = def.PxPerMetre, pad = 1f / ppu;
+            Bounds b = overlay.GetComponent<MeshFilter>().sharedMesh.bounds;
+            Assert.AreEqual(-def.PivotPx.x / ppu - pad, b.min.x, 1e-5f, "left");
+            Assert.AreEqual((def.CellW - def.PivotPx.x) / ppu + pad, b.max.x, 1e-5f, "right");
+            Assert.AreEqual(def.PivotPx.y / ppu + pad, b.max.y, 1e-5f, "top");
+            Assert.AreEqual(-(def.CellH - def.PivotPx.y) / ppu - pad, b.min.y, 1e-5f, "bottom");
+        }
+
+        [Test]
+        public void TheAshoreOverlayCopiesTheSpritesSort_OnEveryWrite()
+        {
+            UseFreshIdPool();
+            IsoCharacterFigureRenderer figure = MakeFigure(MakeDef());
+            SpriteRenderer sprite = MakeSortSource(17);
+            Assert.IsTrue(figure.EnterAshore(sprite));
+
+            MeshRenderer overlay = figure.AshoreOverlay;
+            SortingGroup group = overlay.GetComponent<SortingGroup>();
+            Assert.AreEqual(17, group.sortingOrder, "the SortingGroup did not take the sprite's order on entry");
+            Assert.AreEqual(17, overlay.sortingOrder);
+            Assert.AreEqual(sprite.sortingLayerID, group.sortingLayerID);
+            Assert.AreEqual(sprite.sortingLayerID, overlay.sortingLayerID);
+
+            sprite.sortingOrder = -4;
+            figure.WriteAshoreProperties();
+            Assert.AreEqual(-4, group.sortingOrder, "the SortingGroup did not follow the sprite's re-sort");
+            Assert.AreEqual(-4, overlay.sortingOrder, "the overlay did not follow the sprite's re-sort");
+        }
+
+        [Test]
+        public void VisibleHidesTheAshoreOverlayWithTheFigure()
+        {
+            UseFreshIdPool();
+            IsoCharacterFigureRenderer figure = MakeFigure(MakeDef());
+            Assert.IsTrue(figure.EnterAshore(MakeSortSource(0)));
+
+            figure.Visible = false;
+            Assert.IsFalse(FacetRendererOf(figure).enabled);
+            Assert.IsFalse(figure.AshoreOverlay.enabled, "a hidden figure left her overlay drawing");
+            figure.Visible = true;
+            Assert.IsTrue(figure.AshoreOverlay.enabled);
         }
 
         // =================================================================== the same ink

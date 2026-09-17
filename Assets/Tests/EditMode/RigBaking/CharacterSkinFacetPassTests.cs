@@ -26,9 +26,11 @@ namespace HiddenHarbours.Tests.RigBaking
     ///
     /// <list type="number">
     /// <item><b>Is the pass recorded at all?</b> <c>AddRenderPasses</c> opens with
-    /// <c>bool hulls = IsoFacetHullRegistry.Count &gt; 0</c> and returns early when nothing else
-    /// wants the frame. A character standing in a field, with no boat anywhere, enqueues NOTHING —
-    /// and no property of her renderer can change that. Measured below, headlessly, on CI.</item>
+    /// <c>bool hulls = FacetSubjectsLive</c> — a registered mesh hull OR a figure that took an id
+    /// through <c>IsoCharacterFigureRenderer.EnterAshore</c> (ashore PR 1; before it, <c>Count &gt; 0</c>
+    /// alone) — and returns early when nothing else wants the frame. A character standing in a field
+    /// who has not gone ashore through that call enqueues NOTHING, and no property of her renderer
+    /// can change that. Measured below, headlessly, on CI.</item>
     /// <item><b>Given the pass IS recorded, does the renderer list include her?</b> That is a
     /// question about <c>CreateRendererList</c> and needs pixels. Gated on a graphics device,
     /// skipped loudly on CI, and the headless test above it establishes the NECESSARY conditions so
@@ -98,32 +100,36 @@ namespace HiddenHarbours.Tests.RigBaking
         // =======================================================================================
 
         /// <summary>
-        /// <b>The facet pass is gated on the HULL registry, and a character cannot join it.</b>
+        /// <b>The facet pass is gated on the HULL registry plus ONE named door for a figure, and
+        /// nothing else can open it.</b>
         ///
         /// <para>This is the finding that outranks the renderer-list question, because it applies to
         /// BOTH candidate paths equally — a CPU-skinned <see cref="MeshRenderer"/> (option b) is
-        /// exactly as invisible ashore as a <see cref="SkinnedMeshRenderer"/> (option a). Whatever
-        /// the presenter does with the mesh, the feature records <c>HH Hull Facet</c> only when
-        /// <c>IsoFacetHullRegistry.Count &gt; 0</c>, and the only thing that can raise that count is
-        /// an <see cref="IsoFacetHullRenderer"/>: <c>Register</c> is <c>internal</c> AND typed to
-        /// that component, so there is no seam a character could take even from inside
-        /// <c>HiddenHarbours.Art</c> without a code change.</para>
+        /// exactly as invisible ashore as a <see cref="SkinnedMeshRenderer"/> (option a) unless the
+        /// gate is open. The feature records <c>HH Hull Facet</c> only while
+        /// <c>IsoFacetHullFeature.FacetSubjectsLive</c>: a registered
+        /// <see cref="IsoFacetHullRenderer"/> (<c>Register</c>, <c>internal</c> AND typed to that
+        /// component) or a figure id taken through <c>RegisterFigure</c> (<c>internal</c>,
+        /// parameterless, counted in <c>FigureCount</c> and never in <c>Count</c>), whose only caller
+        /// is <c>IsoCharacterFigureRenderer.EnterAshore</c>.</para>
         ///
-        /// <para><b>What that means for the presenter, stated so it cannot be discovered the
-        /// expensive way:</b> a mesh figure draws through the facet path only while she shares a
-        /// frame with a registered mesh hull. Aboard the dory that is free. On the wharf it is not.
-        /// Opening the gate is a change to <c>IsoFacetHullFeature</c>/<c>IsoFacetHullRegistry</c>,
-        /// which belong to the water lane — so it is FILED here, not fixed here.</para>
+        /// <para><b>Re-based by ashore PR 1.</b> This test was
+        /// <c>TheFacetPassRecordsNothingUnlessAMeshHullIsRegistered</c> and was "meant to redden the
+        /// day someone opens the registry to non-hulls". That day is ashore PR 1, on the owner's GO:
+        /// its premise — only a hull can open the gate — moved on purpose. What it still holds is
+        /// that the door is exactly two named, internal methods and that the gate reads nothing
+        /// else; the figure door's own guards are <c>IsoFacetFigureIdTests</c>.</para>
         ///
-        /// <para><b>This test is a statement about today's code and it is meant to redden</b> the day
-        /// someone opens the registry to non-hulls. That is not a false alarm; that is the
-        /// notification this lane is asking for.</para>
+        /// <para><b>What that means for the presenter:</b> aboard, she draws while she shares a frame
+        /// with a registered mesh hull, as before. Ashore she draws only after
+        /// <c>EnterAshore</c> took her an id — and no shipped scene makes that call yet.</para>
         /// </summary>
         [Test]
-        public void TheFacetPassRecordsNothingUnlessAMeshHullIsRegistered()
+        public void TheFacetPassRecordsNothingUnlessAMeshHullOrAnAshoreFigureIsRegistered()
         {
-            MethodInfo register = typeof(IsoFacetHullRegistry).GetMethod(
-                "Register", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            const BindingFlags AnyStatic = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+
+            MethodInfo register = typeof(IsoFacetHullRegistry).GetMethod("Register", AnyStatic);
             Assert.IsNotNull(register,
                 "IsoFacetHullRegistry.Register is gone — the gate this test describes has moved, and " +
                 "the presenter's assumption about where facet subjects come from must be re-read.");
@@ -131,33 +137,48 @@ namespace HiddenHarbours.Tests.RigBaking
             ParameterInfo[] args = register.GetParameters();
             Assert.AreEqual(1, args.Length, "Register's shape changed; re-read the gate.");
             Assert.AreEqual(typeof(IsoFacetHullRenderer), args[0].ParameterType,
-                "Register now takes something other than an IsoFacetHullRenderer — the facet pass " +
-                "may have learned about non-hull subjects, which is exactly the change a mesh " +
-                "character needs. Re-read IsoFacetHullFeature.AddRenderPasses and update ADR 0044.");
+                "Register now takes something other than an IsoFacetHullRenderer — a non-hull could " +
+                "raise Count and spend a hull id plus a fore block. Figures have their own door, " +
+                "RegisterFigure; re-read IsoFacetHullFeature.AddRenderPasses and ADR 0044.");
             Assert.IsFalse(register.IsPublic,
-                "Register became public — a character could now raise the count that gates the " +
+                "Register became public — anything could now raise the count that gates the " +
                 "facet pass. Re-read the gate before relying on this test's conclusion.");
 
-            // And the other half: nothing else in the registry's PUBLIC surface can raise Count.
+            MethodInfo figureDoor = typeof(IsoFacetHullRegistry).GetMethod("RegisterFigure", AnyStatic);
+            Assert.IsNotNull(figureDoor,
+                "IsoFacetHullRegistry.RegisterFigure is gone — an ashore figure has no door to the facet " +
+                "pass, or it moved; re-read the gate.");
+            Assert.IsFalse(figureDoor.IsPublic,
+                "RegisterFigure became public — any script could open the facet gate without " +
+                "IsoCharacterFigureRenderer.EnterAshore's refusals.");
+            Assert.AreEqual(0, figureDoor.GetParameters().Length, "RegisterFigure's shape changed; re-read the gate.");
+            Assert.AreEqual(typeof(int), figureDoor.ReturnType,
+                "RegisterFigure no longer hands back an id (0 = refused); re-read the gate.");
+
+            // And the other half: nothing in the registry's PUBLIC surface is a way in.
             foreach (MethodInfo m in typeof(IsoFacetHullRegistry)
                          .GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly))
             {
                 Assert.IsFalse(m.Name.StartsWith("Register", StringComparison.Ordinal),
-                    $"IsoFacetHullRegistry.{m.Name} is public and looks like a way in. If a " +
-                    "character can now register as a facet subject, ADR 0044's presenter section is " +
-                    "out of date.");
+                    $"IsoFacetHullRegistry.{m.Name} is public and looks like a way in. If anything " +
+                    "but a hull or EnterAshore can register as a facet subject, ADR 0044's presenter " +
+                    "section is out of date.");
             }
 
+            Assert.AreEqual(IsoFacetHullRegistry.Count > 0 || IsoFacetHullRegistry.FigureCount > 0,
+                IsoFacetHullFeature.FacetSubjectsLive,
+                "the facet gate reads something other than the hull count and the figure count");
+
             Debug.Log(
-                "FACET PASS GATE 1 — the pass is recorded only while IsoFacetHullRegistry.Count > 0, " +
-                "and Register is internal + typed to IsoFacetHullRenderer.\n" +
-                "  → a mesh character draws through the facet path ONLY in a frame that also carries " +
-                "a registered mesh hull.\n" +
+                "FACET PASS GATE 1 — the pass is recorded only while IsoFacetHullRegistry.Count > 0 " +
+                "(Register: internal + typed to IsoFacetHullRenderer) or FigureCount > 0 (RegisterFigure: " +
+                "internal, called only by IsoCharacterFigureRenderer.EnterAshore).\n" +
+                "  → aboard, a mesh character draws in a frame that carries a registered mesh hull.\n" +
+                "  → ashore, only after EnterAshore took her a figure id; no shipped scene calls it yet.\n" +
                 "  → this is true of BOTH option (a) SkinnedMeshRenderer and option (b) CPU-skinned " +
                 "MeshRenderer: it does not choose between them, it prices them both.\n" +
-                "  → opening it is a change to IsoFacetHullFeature / IsoFacetHullRegistry, the water " +
-                "lane's files. FILED, not fixed here.\n" +
-                $"  registry count as this test ran: {IsoFacetHullRegistry.Count}");
+                $"  hull count / figure count as this test ran: {IsoFacetHullRegistry.Count} / " +
+                $"{IsoFacetHullRegistry.FigureCount}");
         }
 
         // =======================================================================================
