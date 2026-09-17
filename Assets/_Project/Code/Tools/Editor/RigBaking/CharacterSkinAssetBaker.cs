@@ -14,9 +14,10 @@ namespace HiddenHarbours.Tools.RigBaking
     ///
     /// <para><b>What this replaces, and by how much.</b> The flipbook baker beside this one writes
     /// one <see cref="Mesh"/> per POSE: 334 meshes for the player recipe, 45,153 KB. This writes one
-    /// mesh and 308 frames of 45 bone transforms: <b>611 KB, 74× smaller</b>. The saving is not a
-    /// compression trick — it is the observation that every pose of a character is the same 2,992
-    /// vertices in a different arrangement, so the vertices need storing once.</para>
+    /// mesh and 308 frames of 45 bone transforms: <b>619 KB, 73× smaller</b> (ADR 0044 §3.6 measured
+    /// 611 KB and 74× on rig 6's own head, before the accepted face). The saving is not a compression
+    /// trick — it is the observation that every pose of a character is the same 3,108 vertices in a
+    /// different arrangement, so the vertices need storing once.</para>
     ///
     /// <para><b>This does not switch the game over, and a re-bake never switches it either.</b>
     /// <see cref="CharacterMeshDef"/> stays exactly as it is and stays the fallback. A FRESH bake — one
@@ -243,9 +244,21 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         /// <param name="target">An existing def to refresh in place (keeps its guid), or null to
         /// create a fresh in-memory instance.</param>
+        /// <param name="composedFace">Bake the pass-05/06 face instead of rig 6's own head.
+        /// <b>On by default, because the owner accepted this face on 2026-09-16.</b> The whole nose
+        /// paints rig 6's own <c>skin</c>, and its away-side plane carries a half-step darkening so it
+        /// parts from the cheek. The composed path still refuses, by name, in
+        /// <see cref="CharacterSkinExtractor.AssertComposedFaceAgrees"/> the moment the study paints a
+        /// material rig 6 does not declare.
+        /// <para><c>false</c> is kept on purpose, and not as a fallback for the game: it bakes rig 6's
+        /// own head, the only mesh rig 6's <c>facesOf</c> can answer for on every frame. The face layer
+        /// is a BIND-pose list, so the guards that replay a def against rig 6 frame by frame measure
+        /// that bake, and a separate guard proves the shipped def shares its skeleton and
+        /// clips.</para></param>
         public static SkinBake Compose(IRigScriptHost host, string preset,
                                        CharacterSkinDef target = null,
-                                       Action<string, float> progress = null)
+                                       Action<string, float> progress = null,
+                                       bool composedFace = true)
         {
             if (host == null) throw new ArgumentNullException(nameof(host));
             if (string.IsNullOrEmpty(preset)) throw new ArgumentNullException(nameof(preset));
@@ -263,7 +276,21 @@ namespace HiddenHarbours.Tools.RigBaking
                     $"{g}.BUILDS has no preset '{preset}'. The rig is the authority on its own cast; " +
                     "a typo here would bake the DEFAULT man under a cast member's name.");
 
+            // ⚠️ AssertKitLoaded keeps asking rig 7's OWN untouched export whether it still
+            // re-expresses rig 6's build. That premise does not get weaker because a face went on
+            // top of it, so it is asserted for both paths and the composed mesh gets its own
+            // companion check rather than inheriting a loosened one.
             CharacterSkinExtractor.AssertKitLoaded(host, preset);
+
+            string faceLayer = null;
+            if (composedFace)
+            {
+                RigCatalog.InstallModule(host, RigCatalog.Get(CharacterSkinExtractor.FaceCatalogKey));
+                CharacterSkinExtractor.AssertComposedFaceAgrees(host, preset);
+                faceLayer = CharacterSkinExtractor.FaceLayerJs(preset);
+                Debug.Log($"[char-skin] composing the pass-05/06 face for '{preset}'.");
+            }
+
             Debug.Log($"[char-skin] census — {CharacterSkinExtractor.Census(host, preset)}");
 
             double tol = CharacterSkinExtractor.Tolerance(host);
@@ -276,13 +303,17 @@ namespace HiddenHarbours.Tools.RigBaking
             // ---- the skinning, then the geometry it belongs to ------------------------------
             progress?.Invoke("bind mesh", 0.08f);
             RigSkinning skin = CharacterSkinExtractor.ReadSkinning(
-                host, preset, CharacterSkinDef.MaxBoneInfluences);
+                host, preset, CharacterSkinDef.MaxBoneInfluences, faceLayer);
             CharacterSkinExtractor.MarkOwnership(rigBones, skin);
 
             // The GEOMETRY comes from the flipbook's own extractor, at idle frame 0 — which is
             // exactly rig 7's bind pose. So the skinned bind mesh is byte-identical to the sheet's
             // first frame rather than a second transcription of it, and AssertBindAgrees proves it.
-            RigMeshData bind = CharacterPoseMeshExtractor.ExtractPose(host, preset, "idle", 0);
+            // Both sides take the SAME faceLayer, so AssertBindAgrees still compares one list
+            // against itself read twice — the property that makes it worth running at all. Handing
+            // the face to only one of them is the mistake this seam exists to make visible.
+            RigMeshData bind = CharacterPoseMeshExtractor.ExtractPose(
+                host, preset, "idle", 0, faceLayerJs: faceLayer);
             CharacterSkinExtractor.AssertBindAgrees(bind, skin, tol);
 
             // One mesh means one material table, and the bind pose's table is all of it: the rig's

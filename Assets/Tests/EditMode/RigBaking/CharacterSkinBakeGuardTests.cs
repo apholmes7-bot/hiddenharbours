@@ -47,13 +47,42 @@ namespace HiddenHarbours.Tests.RigBaking
         const double FlipbookKb = CharacterSkinAssetBaker.FlipbookKilobytes;
 
         /// <summary>
-        /// The composed preset, built once. Compose runs the rig, reads 45 bones, 2,992 weighted
-        /// corners and 35 clips, and renders two turntable probes; at roughly two seconds a call
-        /// there is no reason for nine tests to pay for it nine times.
+        /// The composed preset — the def the game ships, with the face the owner accepted — built
+        /// once. Compose runs the rig, reads 45 bones, 3,108 weighted corners and 35 clips, and
+        /// renders two turntable probes; at roughly two seconds a call there is no reason for eight
+        /// tests to pay for it eight times.
         /// </summary>
         IRigScriptHost _host;
         CharacterSkinAssetBaker.SkinBake _bake;
         CharacterSkinDef _def;
+
+        /// <summary>
+        /// The PROVEN bake: the same preset with <c>composedFace: false</c>, which is rig 6's own head.
+        /// The two guards that replay a def against rig 6's <c>facesOf</c> on every clip and frame can
+        /// only be pointed at a mesh rig 6 draws itself. The composed face is a BIND-pose layer, so
+        /// there is no posed reference for it, and using the layer as one would make the def's own bind
+        /// faces its oracle. Those two guards measure this bake, and
+        /// <see cref="TheShippedDefSharesTheProvenDefsSkeletonAndClips"/> proves the shipped def plays
+        /// back through the same skeleton, bindposes and clip keys.
+        ///
+        /// <para>In a host of its OWN, so the oracle's host never has the face modules installed.
+        /// Built on first use, once, because only three tests ask for it.</para>
+        /// </summary>
+        IRigScriptHost _provenHost;
+        CharacterSkinAssetBaker.SkinBake _proven;
+
+        CharacterSkinAssetBaker.SkinBake Proven
+        {
+            get
+            {
+                if (_proven == null)
+                {
+                    _provenHost ??= RigScriptHostFactory.Create();
+                    _proven = CharacterSkinAssetBaker.Compose(_provenHost, Player, composedFace: false);
+                }
+                return _proven;
+            }
+        }
 
         [OneTimeSetUp]
         public void ComposeOnce()
@@ -66,15 +95,21 @@ namespace HiddenHarbours.Tests.RigBaking
         [OneTimeTearDown]
         public void Dispose()
         {
-            // The def and its bind mesh are loose objects no asset owns — leaving them behind
+            // The defs and their bind meshes are loose objects no asset owns — leaving them behind
             // leaks a Mesh into the editor for the rest of the run.
-            if (_def != null)
-            {
-                if (_def.BindMesh != null) UnityEngine.Object.DestroyImmediate(_def.BindMesh);
-                UnityEngine.Object.DestroyImmediate(_def);
-            }
+            DestroyDef(_def);
+            DestroyDef(_proven?.Def);
             _host?.Dispose();
+            _provenHost?.Dispose();
             _host = null; _bake = null; _def = null;
+            _provenHost = null; _proven = null;
+        }
+
+        static void DestroyDef(CharacterSkinDef def)
+        {
+            if (def == null) return;
+            if (def.BindMesh != null) UnityEngine.Object.DestroyImmediate(def.BindMesh);
+            UnityEngine.Object.DestroyImmediate(def);
         }
 
         // =======================================================================================
@@ -101,20 +136,26 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <c>Mat</c> is an index into a table that differs between two poses of one figure.
         /// Comparing the indices would pass on frames where the tables happen to align and fail on
         /// the rest, for a reason having nothing to do with skinning.</para>
+        ///
+        /// <para><b>It measures the PROVEN bake</b> (<c>composedFace: false</c>, see
+        /// <see cref="Proven"/>), because rig 6 has no posed answer for the composed face. The def the
+        /// game ships is tied to it by <see cref="TheShippedDefSharesTheProvenDefsSkeletonAndClips"/>.</para>
         /// </summary>
         [Test]
         public void TheDefPosesTheRigsOwnGeometry_OnEveryClipRowAndEveryFrame()
         {
-            double tol = _bake.Tolerance;
-            var bindFaces = _bake.Bind.Faces;
-            Vector3[] bindVerts = _def.BindMesh.vertices;
-            BoneWeight[] weights = _def.BindMesh.boneWeights;
+            CharacterSkinAssetBaker.SkinBake bake = Proven;
+            CharacterSkinDef def = bake.Def;
+            double tol = bake.Tolerance;
+            var bindFaces = bake.Bind.Faces;
+            Vector3[] bindVerts = def.BindMesh.vertices;
+            BoneWeight[] weights = def.BindMesh.boneWeights;
 
             var sw = Stopwatch.StartNew();
             double worst = 0; string worstAt = "none";
             int rows = 0, frames = 0, compared = 0, parkedTotal = 0;
 
-            foreach (CharacterSkinDef.SkinClip clip in _def.Clips)
+            foreach (CharacterSkinDef.SkinClip clip in def.Clips)
             {
                 var parked = new HashSet<string>(clip.ParkedParts ?? Array.Empty<string>(),
                                                  StringComparer.Ordinal);
@@ -123,44 +164,44 @@ namespace HiddenHarbours.Tests.RigBaking
                 for (int frame = 0; frame < clip.FrameCount; frame++)
                 {
                     RigMeshData reference = CharacterPoseMeshExtractor.ExtractPose(
-                        _host, Player, clip.Anim, frame, Nz(clip.Carry), Nz(clip.Power));
-                    Matrix4x4[] skin = SkinMatrices(_def, clip, frame);
+                        _provenHost, Player, clip.Anim, frame, Nz(clip.Carry), Nz(clip.Power));
+                    Matrix4x4[] skin = SkinMatrices(def, clip, frame);
                     frames++;
 
                     int corner = 0, j = 0;
                     for (int f = 0; f < bindFaces.Count; f++)
                     {
                         RigFace bf = bindFaces[f];
-                        if (parked.Contains(_bake.Skin.FacePart[f]))
+                        if (parked.Contains(bake.Skin.FacePart[f]))
                         {
                             corner += bf.V.Length; parkedTotal++; continue;
                         }
 
                         Assert.Less(j, reference.Faces.Count,
                             $"{clip.Anim}[{frame}]: the bind mesh carries drawn face {f} " +
-                            $"('{_bake.Skin.FacePart[f]}') that rig 6 does not emit at all.");
+                            $"('{bake.Skin.FacePart[f]}') that rig 6 does not emit at all.");
                         RigFace rf = reference.Faces[j++];
 
                         Assert.AreEqual(bf.V.Length, rf.V.Length,
-                            $"{clip.Anim}[{frame}] face {f} ('{_bake.Skin.FacePart[f]}'): the bind " +
+                            $"{clip.Anim}[{frame}] face {f} ('{bake.Skin.FacePart[f]}'): the bind " +
                             "mesh and rig 6 disagree about how many corners this face has, so the " +
                             "two face lists have gone out of step and every distance after this " +
                             "one is meaningless.");
-                        Assert.AreEqual(_bake.Bind.Materials[bf.Mat].Name, reference.Materials[rf.Mat].Name,
+                        Assert.AreEqual(bake.Bind.Materials[bf.Mat].Name, reference.Materials[rf.Mat].Name,
                             $"{clip.Anim}[{frame}] face {f}: the bind mesh paints this face " +
-                            $"'{_bake.Bind.Materials[bf.Mat].Name}' and rig 6 paints it " +
+                            $"'{bake.Bind.Materials[bf.Mat].Name}' and rig 6 paints it " +
                             $"'{reference.Materials[rf.Mat].Name}' — the lists are misaligned.");
 
                         for (int k = 0; k < bf.V.Length; k++)
                         {
                             Vector3 posed = SkinVertex(bindVerts[corner + k], weights[corner + k],
-                                                       skin, _def.MaxInfluences);
+                                                       skin, def.MaxInfluences);
                             double d = Vector3.Distance(posed, rf.V[k].ToVector3());
                             if (d > worst)
                             {
                                 worst = d;
                                 worstAt = $"{clip.Anim}[{frame}] face {f} " +
-                                          $"('{_bake.Skin.FacePart[f]}') corner {k}";
+                                          $"('{bake.Skin.FacePart[f]}') corner {k}";
                             }
                             compared++;
                         }
@@ -186,8 +227,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 $"  tolerance {tol:E1} m (CharacterIso7.TOL) — margin {tol / Math.Max(worst, 1e-18):N0}×\n" +
                 $"  sweep {sw.ElapsedMilliseconds:N0} ms");
 
-            Assert.AreEqual(_def.Clips.Length, rows, "a clip was skipped");
-            Assert.AreEqual(_bake.TotalFrames, frames, "a frame was skipped");
+            Assert.AreEqual(def.Clips.Length, rows, "a clip was skipped");
+            Assert.AreEqual(bake.TotalFrames, frames, "a frame was skipped");
             Assert.Greater(compared, 0, "nothing was compared");
             Assert.LessOrEqual(worst, tol,
                 $"the def does not reproduce the rig: worst {worst:E3} m at {worstAt}, against a " +
@@ -197,6 +238,120 @@ namespace HiddenHarbours.Tests.RigBaking
                 "parent-index remap, the frame-major flattening, or the float32 quantisation.");
         }
 
+        /// <summary>
+        /// <b>The shipped def is the proven def with a different face on it — and nothing else that
+        /// moves her.</b> The sweep above measures the PROVEN bake (<c>composedFace: false</c>),
+        /// because rig 6 can only answer for its own head. The game ships the COMPOSED bake. This
+        /// asserts that everything the sweep proved about playback is the SAME in the def the game
+        /// gets: the bones in order, with their parents and rests; the bindposes; every clip's
+        /// identity, timing, parking and carry; every key of every bone on every frame; and the
+        /// influence width. Exact equality throughout — both bakes read one rig through one code path,
+        /// and the face layer is never handed to the skeleton or clip readers, so any difference at
+        /// all is a different skeleton or a different clip, not rounding.
+        ///
+        /// <para><b>Deliberately NOT compared, and why that is legitimate:</b> the bind mesh's
+        /// vertices and weights, and <see cref="CharacterSkinDef.Bone.OwnsVertex"/>. Those are facts
+        /// about the MESH, and the two meshes differ on purpose: the composed one drops rig 6's head
+        /// and the inseam panel, adds the pass-05/06 head, and rebuilds the body through the finish
+        /// pass. OwnsVertex follows the weights, so a bone that only moved dropped faces stops owning a
+        /// vertex. The bones whose flag differs are logged by name.</para>
+        ///
+        /// <para><b>The gap this leaves, named:</b> no guard replays the COMPOSED mesh's own vertices
+        /// and weights against a posed oracle, because none exists — the face layer is a bind-pose list
+        /// and rig 6 draws a different head. What the shipped mesh has instead is its bind-pose checks
+        /// (<c>AssertBindAgrees</c> and <c>AssertComposedFaceAgrees</c> inside the bake, and
+        /// <see cref="TheBindMeshVertexOrderIsTheRigsCornerOrder"/>) and this proof that the proven
+        /// skeleton and clips drive it.</para>
+        /// </summary>
+        [Test]
+        public void TheShippedDefSharesTheProvenDefsSkeletonAndClips()
+        {
+            CharacterSkinDef shipped = _def, proven = Proven.Def;
+            Assert.AreNotSame(proven, shipped, "the two bakes must be two defs, or this compares one with itself");
+            Assert.AreEqual(proven.Preset, shipped.Preset, "the two bakes are of different presets");
+            Assert.AreEqual(proven.MaxInfluences, shipped.MaxInfluences,
+                "the shipped def carries a different influence width from the def the collapse guard " +
+                "measured, so its Bone2 requirement no longer transfers to the def the game draws.");
+
+            // ---- the skeleton, in order ----------------------------------------------------------
+            Assert.AreEqual(proven.Bones.Length, shipped.Bones.Length,
+                "the shipped def has a different bone count; clips store bone INDICES.");
+            var ownershipMoved = new List<string>();
+            for (int b = 0; b < proven.Bones.Length; b++)
+            {
+                CharacterSkinDef.Bone p = proven.Bones[b], s = shipped.Bones[b];
+                string at = $"bone {b} ('{p.Id}')";
+                Assert.AreEqual(p.Id, s.Id,
+                    $"{at}: the shipped def has '{s.Id}' here. The bone ORDER differs, and clips store indices.");
+                Assert.AreEqual(p.Parent, s.Parent, $"{at}: the shipped def parents it to a different bone.");
+                Assert.IsTrue(Same(p.RestPosition, s.RestPosition),
+                    $"{at}: rest position {s.RestPosition:F6} in the shipped def, {p.RestPosition:F6} in the proven one.");
+                Assert.IsTrue(Same(p.RestRotation, s.RestRotation),
+                    $"{at}: rest rotation {s.RestRotation:F6} in the shipped def, {p.RestRotation:F6} in the proven one.");
+                if (p.OwnsVertex != s.OwnsVertex)
+                    ownershipMoved.Add($"{p.Id} {(p.OwnsVertex ? "owns" : "moves none")} → {(s.OwnsVertex ? "owns" : "moves none")}");
+            }
+
+            // ---- the bindposes -------------------------------------------------------------------
+            Matrix4x4[] pb = proven.BindMesh.bindposes, sb = shipped.BindMesh.bindposes;
+            Assert.AreEqual(pb.Length, sb.Length, "the shipped bind mesh carries a different bindpose count.");
+            for (int b = 0; b < pb.Length; b++)
+                for (int e = 0; e < 16; e++)
+                    if (pb[b][e] != sb[b][e])
+                        Assert.Fail($"bindpose {b} ('{proven.Bones[b].Id}') element {e}: {sb[b][e]:R} in the " +
+                                    $"shipped def, {pb[b][e]:R} in the proven one. The sweep's skinning proof " +
+                                    "does not carry to a mesh with different bindposes.");
+
+            // ---- the clips, every key on every frame ---------------------------------------------
+            int boneCount = proven.Bones.Length;
+            long keys = 0;
+            Assert.AreEqual(proven.Clips.Length, shipped.Clips.Length, "the shipped def carries a different clip count.");
+            for (int c = 0; c < proven.Clips.Length; c++)
+            {
+                CharacterSkinDef.SkinClip p = proven.Clips[c], s = shipped.Clips[c];
+                string at = $"clip {c} ('{p.Anim}')";
+                Assert.AreEqual(p.Anim, s.Anim, $"{at}: the shipped def has '{s.Anim}' here; clip ORDER differs.");
+                Assert.AreEqual(p.State, s.State, $"{at}: state");
+                Assert.AreEqual(p.FramesPerSecond, s.FramesPerSecond, $"{at}: frames per second");
+                Assert.AreEqual(p.Settle, s.Settle, $"{at}: settle");
+                Assert.AreEqual(p.Loop, s.Loop, $"{at}: loop");
+                Assert.AreEqual(p.FrameCount, s.FrameCount, $"{at}: frame count");
+                Assert.AreEqual(p.Mount, s.Mount, $"{at}: mount");
+                Assert.AreEqual(p.Carry, s.Carry, $"{at}: carry");
+                Assert.AreEqual(p.Power, s.Power, $"{at}: power");
+                CollectionAssert.AreEqual(p.ParkedParts ?? Array.Empty<string>(), s.ParkedParts ?? Array.Empty<string>(),
+                    $"{at}: parked parts");
+                Assert.IsTrue(p.KeysWellFormed(boneCount) && s.KeysWellFormed(boneCount),
+                    $"{at}: a key array is not FrameCount × BoneCount.");
+
+                for (int frame = 0; frame < p.FrameCount; frame++)
+                    for (int b = 0; b < boneCount; b++)
+                    {
+                        CharacterSkinDef.BoneKey pk = p.KeyOf(frame, b, boneCount), sk = s.KeyOf(frame, b, boneCount);
+                        if (!Same(pk.Position, sk.Position) || !Same(pk.Rotation, sk.Rotation))
+                            Assert.Fail($"{at} frame {frame} bone {b} ('{proven.Bones[b].Id}'): the shipped key " +
+                                        $"is {sk.Position:F6} {sk.Rotation:F6} and the proven key is " +
+                                        $"{pk.Position:F6} {pk.Rotation:F6}. The sweep proved the proven def's " +
+                                        "playback, and this frame of the shipped def is not that playback.");
+                        keys++;
+                    }
+            }
+
+            Debug.Log(
+                $"[char-skin guard] the shipped (composed) def against the proven (rig 6 head) def:\n" +
+                $"  identical: {boneCount} bones, {pb.Length} bindposes, {proven.Clips.Length} clips, " +
+                $"{keys:N0} bone keys, {shipped.MaxInfluences} influences\n" +
+                $"  meshes (differ on purpose): shipped {shipped.BindMesh.vertexCount:N0} vertices, " +
+                $"proven {proven.BindMesh.vertexCount:N0}\n" +
+                $"  OwnsVertex differs on {ownershipMoved.Count} bone(s): " +
+                (ownershipMoved.Count == 0 ? "none" : string.Join(", ", ownershipMoved)));
+        }
+
+        /// <summary>Bit-exact: both sides are float32 casts of one double read from one rig.</summary>
+        static bool Same(Vector3 a, Vector3 b) => a.x == b.x && a.y == b.y && a.z == b.z;
+
+        static bool Same(Quaternion a, Quaternion b) => a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w;
+
         // =======================================================================================
         // 2. the mesh Unity will hand the GPU is the mesh the weights were measured on
         // =======================================================================================
@@ -204,7 +359,7 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <summary>
         /// The weights are attached by INDEX to a mesh a different class built. If
         /// <see cref="RigMeshBuilder"/> ever welds, reorders or drops a corner, every weight lands
-        /// on the wrong vertex — all 2,992 of them, each by a different amount, and nothing throws.
+        /// on the wrong vertex — all 3,108 of them, each by a different amount, and nothing throws.
         /// So the identity is asserted rather than assumed: vertex <c>c</c> of the asset is corner
         /// <c>c</c> of the rig's bind mesh, bit for bit, because both sides are the same float.
         ///
@@ -327,15 +482,22 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <c>SkinnedMeshRenderer.quality</c> must be set to at least
         /// <see cref="SkinQuality.Bone2"/>. Unity's project default can be Bone1, and a renderer
         /// left on it would silently reproduce this failure on the shipped character.</para>
+        ///
+        /// <para><b>It measures the PROVEN bake</b> (<c>composedFace: false</c>, see
+        /// <see cref="Proven"/>) for the same reason the sweep above does: rig 6 keeps answering, and
+        /// it cannot answer for the composed face. The shipped def carries the same influence width,
+        /// asserted in <see cref="TheShippedDefSharesTheProvenDefsSkeletonAndClips"/>.</para>
         /// </summary>
         [Test]
         public void CollapsingTheBlendedRingsToOneBone_MovesTheHemsByOrdersOfMagnitude()
         {
-            Assert.AreEqual(CharacterSkinDef.MaxBoneInfluences, _def.MaxInfluences,
+            CharacterSkinAssetBaker.SkinBake bake = Proven;
+            CharacterSkinDef def = bake.Def;
+            Assert.AreEqual(CharacterSkinDef.MaxBoneInfluences, def.MaxInfluences,
                 "the def must carry the measured influence width, not a convenient one");
 
-            BoneWeight[] weights = _def.BindMesh.boneWeights;
-            Vector3[] verts = _def.BindMesh.vertices;
+            BoneWeight[] weights = def.BindMesh.boneWeights;
+            Vector3[] verts = def.BindMesh.vertices;
 
             int blended = 0;
             var collapsed = new BoneWeight[weights.Length];
@@ -361,11 +523,11 @@ namespace HiddenHarbours.Tests.RigBaking
             // Sweep every clip the def carries. Measured 2026-09-10 in the standalone V8 harness:
             // worst 4.516e-2 m on 'sleep', frame 1, face 396 ('upper_R'); then toss 3.389e-2,
             // reach 3.295e-2, ladderDown 3.227e-2. Do not narrow this back to one clip.
-            var bindFaces = _bake.Bind.Faces;
+            var bindFaces = bake.Bind.Faces;
             double worst = 0; string at = "none";
             var perClip = new List<KeyValuePair<string, double>>();
 
-            foreach (CharacterSkinDef.SkinClip clip in _def.Clips)
+            foreach (CharacterSkinDef.SkinClip clip in def.Clips)
             {
                 var parked = new HashSet<string>(clip.ParkedParts ?? Array.Empty<string>(), StringComparer.Ordinal);
                 double clipWorst = 0;
@@ -373,14 +535,14 @@ namespace HiddenHarbours.Tests.RigBaking
                 for (int frame = 0; frame < clip.FrameCount; frame++)
                 {
                     RigMeshData reference = CharacterPoseMeshExtractor.ExtractPose(
-                        _host, Player, clip.Anim, frame, Nz(clip.Carry), Nz(clip.Power));
-                    Matrix4x4[] skin = SkinMatrices(_def, clip, frame);
+                        _provenHost, Player, clip.Anim, frame, Nz(clip.Carry), Nz(clip.Power));
+                    Matrix4x4[] skin = SkinMatrices(def, clip, frame);
 
                     int corner = 0, j = 0;
                     for (int f = 0; f < bindFaces.Count; f++)
                     {
                         RigFace bf = bindFaces[f];
-                        if (parked.Contains(_bake.Skin.FacePart[f])) { corner += bf.V.Length; continue; }
+                        if (parked.Contains(bake.Skin.FacePart[f])) { corner += bf.V.Length; continue; }
                         RigFace rf = reference.Faces[j++];
                         for (int k = 0; k < bf.V.Length; k++)
                         {
@@ -391,7 +553,7 @@ namespace HiddenHarbours.Tests.RigBaking
                             {
                                 worst = d;
                                 at = $"'{clip.Anim}' frame {frame} face {f} " +
-                                     $"('{_bake.Skin.FacePart[f]}') corner {k}";
+                                     $"('{bake.Skin.FacePart[f]}') corner {k}";
                             }
                         }
                         corner += bf.V.Length;
@@ -402,7 +564,7 @@ namespace HiddenHarbours.Tests.RigBaking
             }
 
             perClip.Sort((x, y) => y.Value.CompareTo(x.Value));
-            double tol = _bake.Tolerance;
+            double tol = bake.Tolerance;
             var loudest = new StringBuilder();
             for (int i = 0; i < 4 && i < perClip.Count; i++)
                 loudest.Append(i == 0 ? "" : ", ").Append(perClip[i].Key).Append(' ')

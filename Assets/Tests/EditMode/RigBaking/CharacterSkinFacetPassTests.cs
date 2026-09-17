@@ -330,7 +330,7 @@ namespace HiddenHarbours.Tests.RigBaking
         /// stopwatch measures this machine on this day; a tight bar here would be a hardware test
         /// wearing a budget's clothes. The ceiling below only reddens on a change of ORDER — a
         /// presenter that started skinning four influences, or lost the pre-allocated buffers and
-        /// started allocating 2,992 Vector3s a frame.</para>
+        /// started allocating 3,108 Vector3s a frame.</para>
         ///
         /// <para>Buffers are allocated ONCE, outside the timed loop, because that is how a presenter
         /// would hold them: a per-frame allocation of this size is a GC pause, not a cost.</para>
