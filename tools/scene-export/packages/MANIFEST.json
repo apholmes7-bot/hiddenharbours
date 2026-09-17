@@ -13,7 +13,7 @@
     {
       "region": "region.st_peters",
       "file": "StPeters.scene.json",
-      "sha256": "0973f09927888af0440918dca8e935b871031354b41336825db50223735617e8",
+      "sha256": "a9e27f400e9ce1dcef255a065cec3e558f714265c264ab67d4dbbc947fc039eb",
       "entities": 1330,
       "paths": 11,
       "rigsPinned": 10,

@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-09-17T00:30:31.333Z",
+  "algorithm": "sha256",
+  "note": "Every file in this kit except this one. Rehash and compare to verify a sidecar stamp and its source agree.",
+  "files": {
+    "rigs/walkupIsoRig.js": "b7c2936781e1719994d2676e92b725626c225f7c388d04a9243474cb17901604",
+    "rigs/walkupUnitIsoRig.js": "987df029405b0e4aa71b4ef7d4e78b1e338f55652342ab6ff22e0e67c362aab9",
+    "rigs/interiorPropRig.js": "a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6",
+    "rigs/_interiorPlacer.js": "ccf6c302b458d7f1b8f0b66bf0805da13fe51421e95a13e6a27174d534bf2206",
+    "rigs/_buildingGameplay.js": "49594e4c6a6a9b3fae82d630803b465fb90d2a96b9687e5375a2eb750824e8a8",
+    "rigs/_sidecarExport.js": "8802ab1152d163e69ac1f3ef0f02b801b0924f5ccf07f3bc767d6873f4ed2b9d",
+    "rigs/_multiunitKit.js": "10943e19d2f32e0a77bff64d76beb936974d5126921ad9bc01ff7510141268a0",
+    "gameplay/walkupIsoRig.cannery12.gameplay.json": "0153550913434d948d0330b65f74e452c89b33e048ea426b6337ec48562925c7",
+    "gameplay/walkupIsoRig.cannery8Loft.gameplay.json": "137b6c8601c2af72f3d09154e50bc1167f8c8cfa433b0d78eb5465b2320f671d",
+    "gameplay/walkupIsoRig.walkup12.gameplay.json": "c77769142bcf739967215d898cc3c197cb89a9d9b5f9d2eb982a040621a2f9fe",
+    "gameplay/walkupIsoRig.walkup12Fam.gameplay.json": "3ad7b8f2d98840cc8970facc57cdce94be4fcd408c4bd293b944aedc534784ef",
+    "gameplay/walkupIsoRig.walkup4.gameplay.json": "d0e92f869d28dda7580ed52c2557f867ac05a5bab9e5ac7a09c45a0fbd058478",
+    "gameplay/walkupIsoRig.walkup8.gameplay.json": "a94065e16ff0e51181af5eeb4898df8a4410d5e23f2b046acb99872a9066ca89",
+    "README.md": "1f9b1c1dc18cfe5193ca0d9e0bf7b9cdd6ff05e12eeff16711ae1ca57a17e835",
+    "CONTRACT.md": "8fddf36d1a5a3b0a266ab1a039f362915f83063ffb86b88700401735d704f999"
+  }
+}
