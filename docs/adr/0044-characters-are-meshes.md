@@ -6,6 +6,9 @@
   because the owner's overrule of 2026-09-09 changed a ratified decision and the change must be
   recorded in the PR that makes it. **The seat ratifies.** Nothing here retires a sheet by itself:
   the retirements are PR 3's, one per state, each at measured parity (the ADR 0041 law).
+  **Amended 2026-09-17 by the cast (`feat/cast-to-mesh`):** §7 records the owner's ruling that the
+  cast follows the player onto skinned meshes, and closes §5 items 1, 3 and 4. Item 2 stays with the
+  water lane.
 - **Date:** 2026-09-09
 - **Decision owner:** the owner ruled the scope; `lead-architect` ratifies the record.
   **`art-pipeline`** owns the facet look, **`tools-editor`** owns the baking, **`gameplay-systems`**
@@ -390,11 +393,18 @@ this PR leaves it EMPTY, and PR 3 flips it per state.
    **TAKEN 2026-09-09 by the owner, and landed by this PR as §3.6: option (d), ship the skinned
    Def.** What stays open under this heading is only the CAST — §3.6’s 5.96 MB for ten presets is a
    number, not yet a ruling.
+   **CLOSED 2026-09-17 (§7.1):** the owner ruled "yes make everyone a mesh now". The cast ships the
+   skinned Def the player ships, one `charskin.<preset>` per preset, aboard first (§7.3).
 2. **The shader widening** — `_RampMeta.zw` for per-material gain/bias, plus a per-object
    dither-mode uniform. `IsoFacetHullFeature` and the facet resolve shader are the **WATER lane's**;
    this is a boundary question, not this lane's to take.
+   **Unchanged 2026-09-17:** still the water lane's. The cast amendment (§7) does not touch the
+   shader.
 3. **deckboss and packer declare 17 materials** against a 16-slot ramp table. The baker refuses
    above 16 rather than silently truncating. Widen the table, or split the preset.
+   **CLOSED 2026-09-17 (§7.2), neither widened nor split:** the 17 was counted on rig 6's own head.
+   Through the bake's composed face (#854) every preset fits, and deckboss and packer use exactly 16
+   of the 16 slots.
 4. **PR 2 re-lands the presenter** that the retired `DeckCharacterMeshSpikeRig` stood in for,
    behind a Core `ICharacterMeshPresenter` seam.
    **LANDED 2026-09-12 by the character-mesh-presenter PR**, with three things to record rather
@@ -423,6 +433,11 @@ this PR leaves it EMPTY, and PR 3 flips it per state.
    by 2 bones of the 45. Every one of the other 31 clips holds every bone inside **1.19 m**, so
    `CharacterSkinPose.FenceMetres = 8` sits in an empty gap rather than on a judgement call. Filed,
    not fixed: `docs/art/rigs/**` is the art-director's.
+   **CLOSED 2026-09-17 (§7.4):** item 1 was answered yes, so the seam moved to Core as this item said
+   it would. `IDeckRiderFigure` is now `ICharacterFigure` and `ICharacterFigureStand` in
+   `HiddenHarbours.Core` (`Core/Iso/CharacterFigurePresentation.cs`), and the player's presenter and
+   rider implement them with the same values. The `mount*` excursion stays filed with the
+   art-director (§7.7).
 
 ## 6. Guards
 
@@ -474,3 +489,162 @@ this PR leaves it EMPTY, and PR 3 flips it per state.
 - **the facet-pass gates** (§3.7) — gate 1 asserted headlessly and meant to REDDEN the day the
   registry opens to non-hulls; gate 2's necessary conditions headless, its evidence GPU-gated and
   skipping loudly on CI.
+
+## 7. Amendment 2026-09-17: the cast follows the player
+
+### 7.1 The ruling
+
+§5 item 1 left the cast open after the player's mesh shipped ON. On 2026-09-17 (~02:00Z) the owner
+answered it: **"yes make everyone a mesh now."** The nine cast presets (`CharacterRigBakeMenu.Cast`)
+get the Def the player already ships (§3.6), one `charskin.<preset>` each, linked from the
+character's art def (`CharacterVisualDef.Skin`).
+
+The lane measured what the ruling can reach (§7.2, §7.3) and reported before it built anything. The
+owner then chose the narrower first step: **"GO for Phase B, option (b). Villagers stay sprites
+ashore."** A skipper aboard a moored boat draws as a mesh. A villager ashore draws the sprite, exactly
+as today.
+
+### 7.2 §5 item 3, measured: every preset fits the 16 ramp slots
+
+Measured 2026-09-17 on `idle` frame 0, through the bake's bind table and the extractor the bake
+uses. The first column is what the bake composes, face included (#854), and it is the column the
+guard holds. The second column is the same extractor with the face layer held back, which reads rig
+6's own head. §5 item 3's 17 was counted there.
+
+| preset | composed, as baked (of 16) | face layer held back |
+|---|---:|---:|
+| fisher | 10 | 12 |
+| ginny | 14 | 14 |
+| skipper | 12 | 12 |
+| nan | 13 | 13 |
+| deckboss | **16** | 17 |
+| packer | **16** | 17 |
+| cutter | 13 | 14 |
+| hand | 14 | 15 |
+| boy | 13 | 13 |
+| girl | 11 | 12 |
+
+**Neither widened nor split.** Deckboss and packer have no slot to spare. The guards are in
+`CharacterSkinCastBakeTests`:
+
+- `EveryComposedMaterialTableFitsTheRampSlots` names any preset whose composed table outgrows the
+  slots.
+- `TheComposedRampCountsAreTheTableADR0044Quotes` holds the first column exactly, so a change to it
+  must change this section in the same PR.
+- `WithTheFaceHeldBackTheDeckbossAndThePackerNeedASeventeenthRamp` keeps the 17 as a control: the
+  counter is shown to see past 16, not to clamp at it.
+- The bake itself still refuses a 17th ramp inside `Compose` rather than truncating, and the cast
+  bake fails loud on that preset (§7.5).
+
+### 7.3 Ashore is still gated, so the owner ruled option (b)
+
+§3.7's gate 1 stands: **a mesh character draws through the facet path only in a frame that also
+carries a registered mesh hull.** Aboard, the hull under the figure is that hull. Ashore, a figure
+would draw only while some mesh hull happened to be on screen, and not at all without one. Opening
+the gate means changing `IsoFacetHullFeature` and `IsoFacetHullRegistry`, the water lane's files
+(§5 item 2). Under option (b):
+
+- **A `MooredBoat` skipper is wired.** It is the one cast member who stands on a facet hull, and the
+  PlayMode proof is there.
+- **Villagers are not wired.** `VillagerRoutine` attaches nothing, and the routine's shelter still
+  owns `SpriteRenderer.enabled`. With the switch ON, a PlayMode guard loads St Peters and requires
+  every villager's sprite. No villager carries a presenter or a figure, and no presenter exists off a
+  moored boat.
+- **The arrival keeps its staging.** The St Peters arrival re-sorts its skipper's sprite over the
+  cabin room. The presenter reads the changed sort and hands the draw back to the sprite
+  (`SpriteRestaged`) until the arrival puts the sort back.
+- **Opening ashore is a separate charter** on the facet-hull files, not this amendment.
+
+### 7.4 The presenter: in Art, behind a seam in Core
+
+- **The seam is in Core** (`Core/Iso/CharacterFigurePresentation.cs`). `ICharacterFigureStand` is
+  what a figure is posed from: the character, the hull, the stand point in the hull's rig metres and
+  the deck bearing. `ICharacterFigure` is the figure: `DrawsInsteadOfSprite` and
+  `PoseFigure(stand, aboard)`. `ICharacterFigurePresentationService.Attach(host, stand)` is reached
+  through the static locator `CharacterFigurePresentation.Service`. Boats and World still declare
+  Core and no Art, and their compiled assemblies reference no Art either (rule 4). The player's
+  `DeckRiderMeshPresenter` and `DeckRiderVisual` implement the same seam in place of
+  `IDeckRiderFigure`, and every member reads the value the player's presenter read before.
+- **Art registers the service.** `CharacterFigurePresentationService` fills the locator at
+  `BeforeSceneLoad` and never replaces a service already there, so a test double stays. `Attach`
+  adds nothing to a character whose art def links no Skin: no presenter and no component. That is
+  what makes "the sprite, exactly as today" checkable.
+- **Wired through the data, not the scene.** `MooredBoat` asks Core for a figure as the last step of
+  standing its skipper, after the sprite is sorted and the deck slot is claimed. A skin reaches the
+  skipper only through the art def. No scene or builder changes, so the exporter does not re-run.
+- **The sprite's flags.** The presenter READS `SpriteRenderer.enabled` and writes only
+  `forceRenderingOff`. It gives that flag back whenever it stops, and it never clears a hide that
+  something else set (`SpriteHiddenElsewhere`).
+- **The same picture as the sprite.** The state is the requested stance with the gait the sprite
+  plays, resolved through `CharacterSkinStateMap`. The frame comes from `CharacterSkinPose.FrameFor`
+  on the game clock and the world seed (rule 5), as the player's does.
+- **Where the figure stands.** `MeshCastFigure` is a child of the hull's posed mesh, on the hull's
+  layer, at the deck slot's stand point, turned by the deck bearing. `IsoFacetHullRegistry` still
+  takes hulls only. `FigureHull` answers only while the skipper holds a deck slot; a sprite hull
+  never grants one, so there the sprite stands, as it always has.
+- **It refuses by name, in order**, with no allocation per frame (`CharacterFigurePresenter.Refusal`):
+  no stand; ashore; no sprite renderer; a sprite disabled, hidden elsewhere or restaged; no config;
+  the switch off; no character; a suspended character (a clip player or work animator owns the
+  picture); no skin; an unusable skin; not a facet hull; no clip for the state; the state not in
+  `MeshStates`; the figure refused; the clip vanished; the pose refused. Every refusal gives the draw
+  back to the sprite. The figure is hidden, not destroyed, and a destroyed hull releases the figure
+  and the sprite together.
+
+### 7.5 The switches
+
+- **`GameConfig.MeshCast`** is the cast's switch, and it ships **ON** under the ruling. It is read
+  live, so it flips with the game running, and OFF gives every cast sprite back exactly.
+  `GameConfig.MeshCharacter` still governs the player alone (§5 item 4).
+- **`MeshStates` is authored once, when a Def is created.** `CharacterSkinAssetBaker.BakeCastCli`
+  bakes the player first, as a refresh that re-proves the path, then the nine cast presets. A Def it
+  CREATES gets the four states the player's committed Def switched on, `idle`, `walk`, `run` and
+  `balance` (`CastMeshStates`, held to `Skin/fisher.asset` by a guard). If the preset lacks a clip
+  for any of them, the bake throws and names every such state. A committed Def keeps its list. An
+  empty committed list is reported and never refilled, because emptying it is how a character goes
+  back to sprites.
+- **A link is never re-pointed.** `LinkSkin` refuses, by name, an art def that already links another
+  preset's Skin. The cast bake stops at the first preset that fails, names it, and exits 1.
+- **The bake output joins this PR on an editor slot.** The PR lands the code and the guards first.
+  The nine new `charskin.*` Defs and the nine art-def links are added on a granted slot, by name, and
+  the PR stays a draft until they are in.
+
+### 7.6 Guards added by this amendment
+
+**EditMode** (no editor; CI runs them):
+
+- **`CharacterSkinCastBakeTests` (12).** The bake order: the player, then the nine in the rig's own
+  cast order. A build entry, an art def and no crossed link for every preset. §7.2's table, its fit
+  and its 17-control. The player's composed table checked against the committed Def's. The cast's
+  states checked against the player's, each one a clip the rig bakes. The fresh-switch rules.
+  **`EveryCastArtDefLinksItsOwnUsableSkin` is red until the bake output is in** (§7.5).
+- **`CharacterFigurePresenterTests` (15).** A usable skin on a facet hull draws the figure and hides
+  the sprite only through `forceRenderingOff`, and posing every frame reuses one figure. No skin
+  means no presenter and no component. The switch off, a state the skin does not switch on, an
+  unusable skin, ashore, a sprite hull and a suspended character each keep the sprite. `enabled` is
+  read and never written, and a hide someone else set is never cleared. A restaged sprite takes the
+  draw back until its staging returns. A destroyed hull releases both. A second `Attach` keeps one
+  presenter. The registration fills an empty locator and never replaces a double.
+- **`CharacterFigureSeamTests` (4).** A figure is asked for and posed through Core alone. The seam is
+  compiled into Core. Neither Boats nor World declares Art, and neither compiled assembly references
+  it.
+
+**PlayMode:**
+
+- **`CharacterMeshCastAboardPlayTests` (4).** A moored skipper wearing a skin draws as their mesh.
+  The figure is a child of the hull's posed mesh at the slot's stand point, and the sprite is forced
+  off but still enabled. The switch hands the draw both ways with the game running. An art def that
+  names no skin gets nothing at all. Every skipper on the owners' register draws their own baked
+  mesh (**red until the bake output is in**).
+- **`CharacterMeshCastAshorePlayTests` (2).** With the switch ON, every villager on St Peters draws
+  their sprite exactly as today, with no presenter or figure on any of them. One skinned def is a mesh
+  aboard and a sprite ashore, in the same world.
+
+### 7.7 Debts carried, not taken
+
+The cast inherits the player's debts. This amendment takes none of them:
+
+- the helm and oars clips, the additive rock table, the `mount*` boot excursion (§5 item 4) and the
+  boy/girl noses at 32 ppm, all four in `BRIEF-2026-09-17-rig7-helm-oars-rock-mount-and-noses.md`
+  for Claude Design;
+- the shader look pass (43–57 % off the inked art), a separate handoff;
+- the shin-clamp re-bake.

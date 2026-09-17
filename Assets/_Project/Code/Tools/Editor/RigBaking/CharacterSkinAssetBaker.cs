@@ -22,7 +22,10 @@ namespace HiddenHarbours.Tools.RigBaking
     /// <para><b>This does not switch the game over, and a re-bake never switches it either.</b>
     /// <see cref="CharacterMeshDef"/> stays exactly as it is and stays the fallback. A FRESH bake — one
     /// with no committed asset to refresh — leaves <see cref="CharacterSkinDef.MeshStates"/> EMPTY, so
-    /// nothing draws from a def this baker invented on its own.</para>
+    /// nothing draws from a def this baker invented on its own. The one exception is named by its
+    /// caller: <see cref="BakeCastCli"/> creates nine defs that no presenter PR could have switched on
+    /// beforehand, so it hands <see cref="Bake"/> the states the PLAYER proved
+    /// (<see cref="CastMeshStates"/>) and they are written on creation only.</para>
     ///
     /// <para>The per-state switch is AUTHORED ON THE COMMITTED ASSET (ADR 0041), by the presenter PR
     /// that proved those states draw. <see cref="Compose"/> refreshes the existing def IN PLACE, and the
@@ -186,6 +189,130 @@ namespace HiddenHarbours.Tools.RigBaking
                 Debug.LogError($"[char-skin] CLI bake FAILED: {e}");
                 EditorApplication.Exit(1);
             }
+        }
+
+        // ---- the cast (ADR 0044, amendment 2026-09-17) ------------------------------------------
+
+        /// <summary>
+        /// The states a FRESH cast def is created with: the four the player's committed def switched
+        /// on once its presenter had drawn them (<c>Skin/fisher.asset</c>). A guard holds this list to
+        /// that asset, so the cast cannot switch on a state the player never drew.
+        /// </summary>
+        public static readonly string[] CastMeshStates =
+        {
+            CharacterSkinStateMap.Idle, CharacterSkinStateMap.Walk,
+            CharacterSkinStateMap.Run, CharacterSkinStateMap.Balance,
+        };
+
+        /// <summary>Where the characters' art defs live, one <c>{stem}Iso.asset</c> each. The
+        /// visual-library builder that writes them refreshes in place, so it keeps the
+        /// <see cref="CharacterVisualDef.Skin"/> link <see cref="LinkSkin"/> writes.</summary>
+        public const string VisualFolder = "Assets/_Project/Data/Characters";
+
+        /// <summary>The player's stem. <see cref="CharacterRigBakeMenu.Cast"/> leaves the player
+        /// out on purpose, so the cast entry names the player itself.</summary>
+        public const string PlayerStem = "Fisher";
+
+        public static string VisualPathFor(string stem) => $"{VisualFolder}/{stem}Iso.asset";
+
+        /// <summary>Every preset <see cref="BakeCastCli"/> bakes, in order: the player first — a
+        /// refresh of the player's committed def, which re-proves the path before nine new files are
+        /// written — then <see cref="CharacterRigBakeMenu.Cast"/>.</summary>
+        public static (string preset, string stem)[] CastBakeOrder()
+        {
+            var order = new (string preset, string stem)[CharacterRigBakeMenu.Cast.Length + 1];
+            order[0] = (CharacterRigBakeMenu.PlayerPreset, PlayerStem);
+            Array.Copy(CharacterRigBakeMenu.Cast, 0, order, 1, CharacterRigBakeMenu.Cast.Length);
+            return order;
+        }
+
+        /// <summary>
+        /// Headless entry for the whole cast (<c>-executeMethod</c>): the player and the nine NPC
+        /// presets, each through <see cref="Bake"/> and each linked from its art def. It logs one
+        /// <c>[char-skin] &lt;preset&gt; OK</c> line per preset and a closing <c>CLI cast bake OK</c>
+        /// line. Grep for all eleven: a fresh worktree skips <c>-executeMethod</c> and still exits 0
+        /// (see <see cref="BakePlayerCli"/>).
+        ///
+        /// <para><b>It fails loud on the first preset that fails</b>, names it, and exits 1. There is
+        /// no skip. A preset whose composed face needs a 17th ramp throws inside <see cref="Compose"/>,
+        /// and a cast that baked nine of ten would ship one character on sprites with nothing on the
+        /// board saying why.</para>
+        ///
+        /// <para><b>It authors the switch once.</b> A fresh def gets <see cref="CastMeshStates"/>. A
+        /// committed def keeps whatever its asset says. An EMPTY committed list is reported and never
+        /// refilled, because emptying it is how a character goes back to sprites.</para>
+        /// </summary>
+        public static void BakeCastCli()
+        {
+            string current = null;
+            try
+            {
+                (string preset, string stem)[] order = CastBakeOrder();
+                foreach ((string preset, string stem) in order)
+                {
+                    current = preset;
+                    Bake(preset, freshMeshStates: CastMeshStates);
+
+                    // Read back from DISK, not the instance Bake handed over: the line reports what the
+                    // commit will carry.
+                    string path = AssetPathFor(preset);
+                    var def = AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(path);
+                    if (def == null)
+                        throw new InvalidOperationException($"{path} did not survive its own save.");
+
+                    string link = LinkSkin(stem, preset);
+                    string[] states = def.MeshStates ?? Array.Empty<string>();
+                    Debug.Log(
+                        $"[char-skin] {preset} OK — {def.Id}, {def.Materials.Length}/{CharacterSkinDef.RampSlots} " +
+                        $"ramps, {def.Clips.Length} clips, MeshStates [{string.Join(", ", states)}]" +
+                        (states.Length == 0 ? " EMPTY on the committed asset, draws nothing, left as found" : "") +
+                        $", {link}");
+                }
+
+                current = null;
+                Debug.Log($"[char-skin] CLI cast bake OK — {order.Length} presets.");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[char-skin] CLI cast bake FAILED at '{current ?? "the closing line"}': {e}");
+                EditorApplication.Exit(1);
+            }
+        }
+
+        /// <summary>
+        /// Point <c>{stem}Iso</c> at <paramref name="preset"/>'s saved skin, and say what was done.
+        ///
+        /// <para><b>It never RE-points a link.</b> A def that already names a different skin is refused
+        /// by name. A link says which character this is, and a table slip that swapped two presets
+        /// would otherwise dress Nan as the skipper without a sound.</para>
+        /// </summary>
+        public static string LinkSkin(string stem, string preset)
+        {
+            string skinPath = AssetPathFor(preset);
+            var skin = AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(skinPath);
+            if (skin == null)
+                throw new InvalidOperationException($"{skinPath} does not exist; bake it before linking it.");
+
+            string visualPath = VisualPathFor(stem);
+            var visual = AssetDatabase.LoadAssetAtPath<CharacterVisualDef>(visualPath);
+            if (visual == null)
+                throw new InvalidOperationException(
+                    $"{visualPath} does not exist, so '{skin.Id}' would bake and nothing would ever draw it.");
+
+            if (visual.Skin != null)
+            {
+                string linked = AssetDatabase.GetAssetPath(visual.Skin);
+                if (string.Equals(linked, skinPath, StringComparison.Ordinal))
+                    return $"{stem}Iso already links it";
+                throw new InvalidOperationException(
+                    $"{visualPath} already links {linked}, not {skinPath}. The cast entry never re-points a " +
+                    "link: if the table is right, clear it by hand and re-run.");
+            }
+
+            visual.Skin = skin;
+            EditorUtility.SetDirty(visual);
+            AssetDatabase.SaveAssets();
+            return $"{stem}Iso linked";
         }
 
         // -------------------------------------------------------------------------------------
@@ -472,7 +599,12 @@ namespace HiddenHarbours.Tools.RigBaking
         ///
         /// <para>All the thinking is in <see cref="Compose"/>; this is the half that touches disk.</para>
         /// </summary>
-        public static CharacterSkinDef Bake(string preset, Action<string, float> progress = null)
+        /// <param name="freshMeshStates">The <see cref="CharacterSkinDef.MeshStates"/> to write IF THIS
+        /// CALL CREATES THE ASSET, and only then; each must name a clip the def carries. A refresh
+        /// ignores it, so the committed switch is never moved by a bake. Null (the default) keeps the
+        /// old rule: a fresh def draws nothing.</param>
+        public static CharacterSkinDef Bake(string preset, Action<string, float> progress = null,
+                                            string[] freshMeshStates = null)
         {
             if (string.IsNullOrEmpty(preset)) throw new ArgumentNullException(nameof(preset));
 
@@ -487,6 +619,12 @@ namespace HiddenHarbours.Tools.RigBaking
 
             CharacterSkinDef def = bake.Def;
             Debug.Log($"[char-skin] {preset} turntable sign:\n{bake.SignReport}");
+
+            // ⚠ CREATION ONLY, and before CreateAsset, so no file ever exists with the list empty. A
+            // refresh must not reach this line with the states in hand: that is the `??=` rule in
+            // Compose, kept.
+            if (created && freshMeshStates != null)
+                def.MeshStates = StatesWithClips(def, freshMeshStates);
 
             progress?.Invoke("write", 0.98f);
 
@@ -634,6 +772,38 @@ namespace HiddenHarbours.Tools.RigBaking
                 Carry = rc.Carry,
                 Power = rc.Power,
             };
+        }
+
+        /// <summary>A copy of <paramref name="states"/>, or a throw naming every state the def has no
+        /// clip for, names twice, or leaves blank. <see cref="CharacterSkinDef.DrawsAsMesh"/> would
+        /// otherwise switch on a state that <see cref="CharacterSkinStateMap.Resolve"/> can never land
+        /// on, and the list would promise a pose the def cannot draw.</summary>
+        public static string[] StatesWithClips(CharacterSkinDef def, string[] states)
+        {
+            if (states.Length == 0)
+                throw new InvalidOperationException(
+                    $"'{def.Id}': an empty state list draws nothing. Pass null to leave a fresh def off.");
+
+            var bad = new List<string>();
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            foreach (string state in states)
+            {
+                if (string.IsNullOrEmpty(state)) bad.Add("(blank)");
+                else if (!seen.Add(state)) bad.Add($"{state} (twice)");
+                else if (!def.TryGetClip(state, out _)) bad.Add($"{state} (no clip)");
+            }
+            if (bad.Count > 0)
+                throw new InvalidOperationException(
+                    $"'{def.Id}' cannot switch on [{string.Join(", ", bad)}]; its clips are " +
+                    $"[{string.Join(", ", ClipKeysOf(def))}].");
+            return (string[])states.Clone();
+        }
+
+        static string[] ClipKeysOf(CharacterSkinDef def)
+        {
+            var keys = new string[def.Clips?.Length ?? 0];
+            for (int i = 0; i < keys.Length; i++) keys[i] = def.Clips[i].StateKey;
+            return keys;
         }
 
         static string[] NamesOfDef(CharacterSkinDef.Material[] mats)
