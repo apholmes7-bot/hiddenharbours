@@ -1,0 +1,448 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!43 &-7236679229912470684
+Mesh:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: modern3500DoorRLMesh
+  serializedVersion: 12
+  m_SubMeshes:
+  - serializedVersion: 2
+    firstByte: 0
+    indexCount: 108
+    topology: 0
+    baseVertex: 0
+    firstVertex: 0
+    vertexCount: 72
+    localAABB:
+      m_Center: {x: -1.0065, y: -0.425, z: 1.145}
+      m_Extent: {x: 0.09650001, y: 0.65500003, z: 0.345}
+  m_Shapes:
+    vertices: []
+    shapes: []
+    channels: []
+    fullWeights: []
+  m_BindPose: []
+  m_BoneNameHashes: 
+  m_RootBoneNameHash: 0
+  m_BonesAABB: []
+  m_VariableBoneCountWeights:
+    m_Data: 
+  m_MeshCompression: 0
+  m_IsReadable: 1
+  m_KeepVertices: 1
+  m_KeepIndices: 1
+  m_IndexFormat: 0
+  m_IndexBuffer: 000001000200000002000300040005000600040006000700080009000a0008000a000b000c000d000e000c000e000f00100011001200100012001300140015001600140016001700180019001a0018001a001b001c001d001e001c001e001f00200021002200200022002300240025002600240026002700280029002a0028002a002b002c002d002e002c002e002f00300031003200300032003300340035003600340036003700380039003a0038003a003b003c003d003e003c003e003f00400041004200400042004300440045004600440046004700
+  m_VertexData:
+    serializedVersion: 3
+    m_VertexCount: 72
+    m_Channels:
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 3
+    - stream: 0
+      offset: 12
+      format: 0
+      dimension: 3
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 24
+      format: 0
+      dimension: 4
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    m_DataSize: 2880
+    _typelessdata: 23db89bf5c8f423eae47613f000080bf000000000000000000000000c3f5a83e000000000000000023db89bfb81e85bfae47613f000080bf000000000000000000000000c3f5a83e000000000000000023db89bfb81e85bf713d6a3f000080bf000000000000000000000000c3f5a83e000000000000000023db89bf5c8f423e713d6a3f000080bf000000000000000000000000c3f5a83e00000000000000001f858bbf48e17abfcdccac3f00000000000080bf00000000000000419a9919bf0000000000000000c74b87bf48e17abfcdccac3f00000000000080bf00000000000000419a9919bf0000000000000000c74b87bf48e17abf8195b33f00000000000080bf00000000000000419a9919bf00000000000000001f858bbf48e17abf8195b33f00000000000080bf00000000000000419a9919bf0000000000000000c74b87bf48e13abfcdccac3f000000000000803f0000000000000041cdcc4cbe00000000000000001f858bbf48e13abfcdccac3f000000000000803f0000000000000041cdcc4cbe00000000000000001f858bbf48e13abf8195b33f000000000000803f0000000000000041cdcc4cbe0000000000000000c74b87bf48e13abf8195b33f000000000000803f0000000000000041cdcc4cbe0000000000000000c74b87bf48e17abfcdccac3f0000803f0000000000000000000000418fc2f5bd0000000000000000c74b87bf48e13abfcdccac3f0000803f0000000000000000000000418fc2f5bd0000000000000000c74b87bf48e13abf8195b33f0000803f0000000000000000000000418fc2f5bd0000000000000000c74b87bf48e17abf8195b33f0000803f0000000000000000000000418fc2f5bd00000000000000001f858bbf48e13abfcdccac3f000080bf000000000000000000000041ec5138bf00000000000000001f858bbf48e17abfcdccac3f000080bf000000000000000000000041ec5138bf00000000000000001f858bbf48e17abf8195b33f000080bf000000000000000000000041ec5138bf00000000000000001f858bbf48e13abf8195b33f000080bf000000000000000000000041ec5138bf00000000000000001f858bbf48e17abf8195b33f00000000000000000000803f000000410ad7233d0000000000000000c74b87bf48e17abf8195b33f00000000000000000000803f000000410ad7233d0000000000000000c74b87bf48e13abf8195b33f00000000000000000000803f000000410ad7233d00000000000000001f858bbf48e13abf8195b33f00000000000000000000803f000000410ad7233d00000000000000001b2f8dbf333373bf77beaf3f00000000000080bf00000000000000409a9919be0000000000000000e3a58bbf333373bf77beaf3f00000000000080bf00000000000000409a9919be0000000000000000e3a58bbf333373bfb81eb53f00000000000080bf00000000000000409a9919be00000000000000001b2f8dbf333373bfb81eb53f00000000000080bf00000000000000409a9919be0000000000000000e3a58bbf52b83ebf77beaf3f000000000000803f00000000000000400000803e00000000000000001b2f8dbf52b83ebf77beaf3f000000000000803f00000000000000400000803e00000000000000001b2f8dbf52b83ebfb81eb53f000000000000803f00000000000000400000803e0000000000000000e3a58bbf52b83ebfb81eb53f000000000000803f00000000000000400000803e0000000000000000e3a58bbf333373bf77beaf3f0000803f000000000000000000000040c3f5a83e0000000000000000e3a58bbf52b83ebf77beaf3f0000803f000000000000000000000040c3f5a83e0000000000000000e3a58bbf52b83ebfb81eb53f0000803f000000000000000000000040c3f5a83e0000000000000000e3a58bbf333373bfb81eb53f0000803f000000000000000000000040c3f5a83e00000000000000001b2f8dbf52b83ebf77beaf3f000080bf000000000000000000000040713d8abe00000000000000001b2f8dbf333373bf77beaf3f000080bf000000000000000000000040713d8abe00000000000000001b2f8dbf333373bfb81eb53f000080bf000000000000000000000040713d8abe00000000000000001b2f8dbf52b83ebfb81eb53f000080bf000000000000000000000040713d8abe00000000000000001b2f8dbf333373bfb81eb53f00000000000000000000803f0000004048e1fa3e0000000000000000e3a58bbf333373bfb81eb53f00000000000000000000803f0000004048e1fa3e0000000000000000e3a58bbf52b83ebfb81eb53f00000000000000000000803f0000004048e1fa3e00000000000000001b2f8dbf52b83ebfb81eb53f00000000000000000000803f0000004048e1fa3e0000000000000000e17a74bf1f856b3ecdcc4c3f000080bf0000000000000000000020419a9999be0000000000000000e17a74bf713d8abfcdcc4c3f000080bf0000000000000000000020419a9999be0000000000000000e17a74bf713d8abf52b8be3f000080bf0000000000000000000020419a9999be0000000000000000e17a74bf1f856b3e52b8be3f000080bf0000000000000000000020419a9999be0000000000000000e17a74bf666666bf7b148e3f00000000000080bf000000000000e040cdccccbe0000000000000000c3f568bf666666bf7b148e3f00000000000080bf000000000000e040cdccccbe0000000000000000c3f568bf666666bf3d0a973f00000000000080bf000000000000e040cdccccbe0000000000000000e17a74bf666666bf3d0a973f00000000000080bf000000000000e040cdccccbe0000000000000000c3f568bf9a99193e7b148e3f000000000000803f000000000000e040000000000000000000000000e17a74bf9a99193e7b148e3f000000000000803f000000000000e040000000000000000000000000e17a74bf9a99193e3d0a973f000000000000803f000000000000e040000000000000000000000000c3f568bf9a99193e3d0a973f000000000000803f000000000000e040000000000000000000000000c3f568bf666666bf7b148e3f0000803f00000000000000000000e0400ad7a33d0000000000000000c3f568bf9a99193e7b148e3f0000803f00000000000000000000e0400ad7a33d0000000000000000c3f568bf9a99193e3d0a973f0000803f00000000000000000000e0400ad7a33d0000000000000000c3f568bf666666bf3d0a973f0000803f00000000000000000000e0400ad7a33d0000000000000000e17a74bf9a99193e7b148e3f000080bf00000000000000000000e040b81e05bf0000000000000000e17a74bf666666bf7b148e3f000080bf00000000000000000000e040b81e05bf0000000000000000e17a74bf666666bf3d0a973f000080bf00000000000000000000e040b81e05bf0000000000000000e17a74bf9a99193e3d0a973f000080bf00000000000000000000e040b81e05bf0000000000000000e17a74bf666666bf3d0a973f00000000000000000000803f0000e0408fc2753e0000000000000000c3f568bf666666bf3d0a973f00000000000000000000803f0000e0408fc2753e0000000000000000c3f568bf9a99193e3d0a973f00000000000000000000803f0000e0408fc2753e0000000000000000e17a74bf9a99193e3d0a973f00000000000000000000803f0000e0408fc2753e00000000000000005eba69bf0ad763bf6666663f0000803f000000000000000000000041000000bf00000000000000005eba69bf333333bf6666663f0000803f000000000000000000000041000000bf00000000000000005eba69bf333333bf14ae873f0000803f000000000000000000000041000000bf00000000000000005eba69bf0ad763bf14ae873f0000803f000000000000000000000041000000bf0000000000000000
+  m_CompressedMesh:
+    m_Vertices:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_UV:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Normals:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Tangents:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Weights:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_NormalSigns:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_TangentSigns:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_FloatColors:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_BoneIndices:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Triangles:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_UVInfo: 0
+  m_LocalAABB:
+    m_Center: {x: -1.0065, y: -0.425, z: 1.145}
+    m_Extent: {x: 0.09650001, y: 0.65500003, z: 0.345}
+  m_MeshUsageFlags: 0
+  m_CookingOptions: 30
+  m_BakedConvexCollisionMesh: 
+  m_BakedTriangleCollisionMesh: 
+  'm_MeshMetrics[0]': 1
+  'm_MeshMetrics[1]': 1
+  m_MeshOptimizationFlags: 1
+  m_StreamData:
+    serializedVersion: 2
+    offset: 0
+    size: 0
+    path: 
+  m_MeshLodInfo:
+    serializedVersion: 2
+    m_LodSelectionCurve:
+      serializedVersion: 1
+      m_LodSlope: 0
+      m_LodBias: 0
+    m_NumLevels: 1
+    m_SubMeshes:
+    - serializedVersion: 2
+      m_Levels:
+      - serializedVersion: 1
+        m_IndexStart: 0
+        m_IndexCount: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7a183bdcbdd04f40ba313a1453773cd, type: 3}
+  m_Name: modern3500_DoorRL
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPropMeshDef
+  Id: vehicleprop.modern3500_door_rl
+  SourceRigPath: docs/art/rigs/modern3500-kit/modern3500.rig.js
+  SourceFaceBuilder: build(ModernTruck3500.resolve({}))
+  Mesh: {fileID: -7236679229912470684}
+  FixedMesh: {fileID: 0}
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280556822
+    - serializedVersion: 2
+      rgba: 4281740323
+    - serializedVersion: 2
+      rgba: 4283318579
+    - serializedVersion: 2
+      rgba: 4284963144
+    - serializedVersion: 2
+      rgba: 4286871140
+    - serializedVersion: 2
+      rgba: 4289043083
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280688150
+    - serializedVersion: 2
+      rgba: 4281740322
+    - serializedVersion: 2
+      rgba: 4283186993
+    - serializedVersion: 2
+      rgba: 4284634436
+    - serializedVersion: 2
+      rgba: 4286410589
+    - serializedVersion: 2
+      rgba: 4288385152
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283912522
+    - serializedVersion: 2
+      rgba: 4285491551
+    - serializedVersion: 2
+      rgba: 4287399291
+    - serializedVersion: 2
+      rgba: 4289175959
+    - serializedVersion: 2
+      rgba: 4290887093
+    - serializedVersion: 2
+      rgba: 4292664021
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283912522
+    - serializedVersion: 2
+      rgba: 4285491551
+    - serializedVersion: 2
+      rgba: 4287399291
+    - serializedVersion: 2
+      rgba: 4289175959
+    - serializedVersion: 2
+      rgba: 4290887093
+    - serializedVersion: 2
+      rgba: 4292664021
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4287402636
+    - serializedVersion: 2
+      rgba: 4288850598
+    - serializedVersion: 2
+      rgba: 4290364095
+    - serializedVersion: 2
+      rgba: 4291811541
+    - serializedVersion: 2
+      rgba: 4292930023
+    - serializedVersion: 2
+      rgba: 4293719283
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279636497
+    - serializedVersion: 2
+      rgba: 4280491548
+    - serializedVersion: 2
+      rgba: 4281543978
+    - serializedVersion: 2
+      rgba: 4282793530
+    - serializedVersion: 2
+      rgba: 4284109389
+    - serializedVersion: 2
+      rgba: 4285557091
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284439382
+    - serializedVersion: 2
+      rgba: 4285952621
+    - serializedVersion: 2
+      rgba: 4287597446
+    - serializedVersion: 2
+      rgba: 4289242528
+    - serializedVersion: 2
+      rgba: 4290887611
+    - serializedVersion: 2
+      rgba: 4292532694
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702546
+    - serializedVersion: 2
+      rgba: 4280294425
+    - serializedVersion: 2
+      rgba: 4281017890
+    - serializedVersion: 2
+      rgba: 4281807148
+    - serializedVersion: 2
+      rgba: 4282727992
+    - serializedVersion: 2
+      rgba: 4283780422
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279307787
+    - serializedVersion: 2
+      rgba: 4279768079
+    - serializedVersion: 2
+      rgba: 4280228372
+    - serializedVersion: 2
+      rgba: 4280819994
+    - serializedVersion: 2
+      rgba: 4281412129
+    - serializedVersion: 2
+      rgba: 4282004008
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281017883
+    - serializedVersion: 2
+      rgba: 4281872932
+    - serializedVersion: 2
+      rgba: 4282990895
+    - serializedVersion: 2
+      rgba: 4284240957
+    - serializedVersion: 2
+      rgba: 4286741341
+    - serializedVersion: 2
+      rgba: 4290426518
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281017891
+    - serializedVersion: 2
+      rgba: 4281872942
+    - serializedVersion: 2
+      rgba: 4282793786
+    - serializedVersion: 2
+      rgba: 4283846216
+    - serializedVersion: 2
+      rgba: 4284964439
+    - serializedVersion: 2
+      rgba: 4286148456
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280162580
+    - serializedVersion: 2
+      rgba: 4280951580
+    - serializedVersion: 2
+      rgba: 4281937958
+    - serializedVersion: 2
+      rgba: 4282859058
+    - serializedVersion: 2
+      rgba: 4284043329
+    - serializedVersion: 2
+      rgba: 4285162323
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281872932
+    - serializedVersion: 2
+      rgba: 4282990895
+    - serializedVersion: 2
+      rgba: 4284240957
+    - serializedVersion: 2
+      rgba: 4286741341
+    - serializedVersion: 2
+      rgba: 4290426518
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4288977797
+    - serializedVersion: 2
+      rgba: 4291215790
+    - serializedVersion: 2
+      rgba: 4293125335
+    - serializedVersion: 2
+      rgba: 4293652973
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278660170
+    - serializedVersion: 2
+      rgba: 4278927981
+    - serializedVersion: 2
+      rgba: 4279392911
+    - serializedVersion: 2
+      rgba: 4280252336
+    - serializedVersion: 2
+      rgba: 4281571020
+    - serializedVersion: 2
+      rgba: 4283806949
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278848570
+    - serializedVersion: 2
+      rgba: 4279112282
+    - serializedVersion: 2
+      rgba: 4279508093
+    - serializedVersion: 2
+      rgba: 4280101541
+    - serializedVersion: 2
+      rgba: 4280958153
+    - serializedVersion: 2
+      rgba: 4282341348
+    Offset: 0
+  LightN: {x: -0.42750445, y: 0.73286474, z: 0.5292912}
+  Gain: 3.1
+  Bias: 2.55
+  Bayer16:
+  - 0.03125
+  - 0.53125
+  - 0.15625
+  - 0.65625
+  - 0.78125
+  - 0.28125
+  - 0.90625
+  - 0.40625
+  - 0.21875
+  - 0.71875
+  - 0.09375
+  - 0.59375
+  - 0.96875
+  - 0.46875
+  - 0.84375
+  - 0.34375
+  Keyline:
+    serializedVersion: 2
+    rgba: 4280425498
+  PivotPx: {x: 192, y: 214}
+  PxPerMetre: 32
+  CellW: 384
+  CellH: 320
+  ElevationDeg: 40
+  PivotLocalMeters: {x: -1.015, y: 0.27, z: 0}
+  MaxSteerDegrees: 0
+  MaxTiltDegrees: 0
+  LateralMountsMeters: []
