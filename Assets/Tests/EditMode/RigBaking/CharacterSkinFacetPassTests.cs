@@ -165,8 +165,15 @@ namespace HiddenHarbours.Tests.RigBaking
                     "section is out of date.");
             }
 
+            // By reflection: this assembly does not reference URP, and IsoFacetHullFeature derives
+            // from a URP type.
+            PropertyInfo gate = typeof(IsoFacetHullRegistry).Assembly
+                .GetType("HiddenHarbours.Art.IsoFacetHullFeature")?
+                .GetProperty("FacetSubjectsLive", AnyStatic);
+            Assert.IsNotNull(gate,
+                "IsoFacetHullFeature.FacetSubjectsLive is gone — the facet gate moved; re-read AddRenderPasses.");
             Assert.AreEqual(IsoFacetHullRegistry.Count > 0 || IsoFacetHullRegistry.FigureCount > 0,
-                IsoFacetHullFeature.FacetSubjectsLive,
+                (bool)gate.GetValue(null),
                 "the facet gate reads something other than the hull count and the figure count");
 
             Debug.Log(
