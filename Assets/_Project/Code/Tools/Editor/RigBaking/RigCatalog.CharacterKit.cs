@@ -92,6 +92,84 @@ namespace HiddenHarbours.Tools.RigBaking
                                                  "CharacterIso7",
                                                  AzimuthConvention.Clockwise,
                                                  prerequisites: new[] { "character" }),
+
+                // ---- the PASS-05/06 FACE layers (workbench drop of 2026-09-14) -------------------
+                //
+                // Files six through ten, and the reason the mesh gets a face the sprite does not. The
+                // owner's driver was one sentence — "The eyes do not look good" — so pass 06 revises
+                // pass 05's flat dark openings and unfocused gaze. These four layers were proved
+                // OFFLINE in docs/art/character-workbench/ and are promoted here UNCHANGED, so what
+                // the bake runs is the file the checkers scored.
+                //
+                // ⚠️ None of them draws a cell either. All five install with InstallModule.
+
+                // The tailoring TABLE the finish rig reads, as a module rather than a JSON sidecar:
+                // the V8 host has no file system, so a sidecar would have to be injected host-side
+                // BEFORE characterFinish ran — and InstallModule has no such hook. characterFinish
+                // binds root.CharacterFinishConfig at LOAD time, so a wrong order would NOT throw; it
+                // would fail later, inside a bake, on one preset. As a module it is simply a
+                // prerequisite, and the missing-global assert catches the order for free.
+                // Regenerated from docs/art/character-workbench/character-finish.json, which
+                // CharacterFinishConfigTests re-checks value for value. Holds no pixels to measure,
+                // so its convention is inherited, not observed.
+                ["characterFinishConfig"] = new RigEntry($"{RigFolder}/characterFinishConfig.js",
+                                                         "CharacterFinishConfig",
+                                                         AzimuthConvention.Clockwise),
+
+                // Pass-05 garment/jaw tailoring. Reads NOTHING but the table above — the body faces,
+                // the build and the bind skeleton all arrive as arguments — which is what lets it
+                // re-tailor garment volumes without ever seeing a bone it could move.
+                ["characterFinish"] = new RigEntry($"{RigFolder}/characterFinish.js",
+                                                   "CharacterFinish",
+                                                   AzimuthConvention.Clockwise,
+                                                   prerequisites: new[] { "characterFinishConfig" }),
+
+                // Pass-06 head: the eyes, brows, mouth and the cheek/jaw planes. It does not replace
+                // the head rig, it DRESSES it — poseState() calls root.HeadIso.loopLook() for gaze,
+                // lid, blink and speech, so expressions stay the head rig's own state machine and
+                // only the surface changes. Hence characterHead, whose file installs HeadIso3,
+                // HeadIso2 and HeadIso as the same object (pass 7 is a superset).
+                ["characterFaceStudy"] = new RigEntry($"{RigFolder}/characterFaceStudy.js",
+                                                      "CharacterHeadStudy",
+                                                      AzimuthConvention.Clockwise,
+                                                      prerequisites: new[] { "characterHead" }),
+
+                // The Fisher-only body study (the bounded clothing-assembly proof). Self-contained by
+                // construction — build, skeletonWorld and bindMesh are all parameters — so it declares
+                // no prerequisite: there is no global it could read in the wrong order. Only the
+                // 'fisher' preset routes through it; the other nine take their bind faces straight.
+                ["characterArtStudy"] = new RigEntry($"{RigFolder}/characterArtStudy.js",
+                                                     "CharacterArtStudy",
+                                                     AzimuthConvention.Clockwise),
+
+                // ---- the COMPOSITION, and the only layer that changes what the bake exports -------
+                //
+                // The production form of the workbench cast-engine: finish-tailored body + pass-06
+                // head, the head rebound rigidly to the existing head bone at weight 1.
+                //
+                // ⚠️ It PATCHES NOTHING — installing it is inert, and that is deliberate. Wrapping
+                // CharacterIso7.bindMesh reads like the tidiest seam and is wrong: the skinned bake
+                // takes its GEOMETRY from rig 6 and only its WEIGHTS from bindMesh, then requires the
+                // two to agree corner for corner. Composing one side would not produce a new face, it
+                // would produce a bake that throws. The C# caller opts in at a named step instead.
+                //
+                // Nothing here calls skeleton(), skeletonWorld(), clip() or clips(). Metre scale, physical
+                // heights and hand/foot/attachment anchors are gameplay pins; leaving their code paths
+                // untouched makes "unchanged" provable by reading the file rather than by trusting a
+                // measurement. Measured anyway, all ten presets, on the standalone V8 harness:
+                // skeletonWorld identical (worst delta 0 m), local bind skeleton identical, all 350
+                // preset x animation clip rows identical, max bone influences still 2, and every
+                // preset gains head-tagged faces. CharacterSkinnedPinTests re-measures it on CI.
+                //
+                // ⚠️ It names all four layers as prerequisites AND asserts them itself, because a
+                // missing layer here is the one failure that would otherwise be silent-ish: without
+                // the composition installed the bake simply exports the OLD face and passes.
+                ["characterFaceComposition"] = new RigEntry(
+                    $"{RigFolder}/characterFaceComposition.js",
+                    "CharacterFaceComposition",
+                    AzimuthConvention.Clockwise,
+                    prerequisites: new[] { "characterSkin", "characterFaceStudy",
+                                           "characterFinish", "characterArtStudy" }),
             };
     }
 }

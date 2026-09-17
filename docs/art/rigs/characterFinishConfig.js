@@ -1,0 +1,621 @@
+/* Character finish CONFIG — the per-preset tailoring table characterFinish.js reads.
+
+   Data, not code: every shape/value decision for the pass-05 garment finish is authored here, per
+   preset, and characterFinish.js does the arithmetic. It is a .js and not a .json for one reason —
+   the V8 rig host has no file system, so a JSON sidecar would have to be injected by the C# caller
+   BEFORE the finish rig ran, and RigCatalog.InstallModule has no such hook. characterFinish.js
+   binds root.CharacterFinishConfig at LOAD time, so a wrong order would not throw; it would fail
+   later, inside a bake, on a preset. Registering the table as a module of its own makes the
+   catalog's own prerequisite chain load it first, and the missing-global assert catch a wrong order.
+
+   The authored source of truth is docs/art/character-workbench/character-finish.json, and
+   CharacterFinishConfigTests asserts this file still matches it value for value. Edit the workbench
+   JSON, then regenerate; do not hand-edit one of the two. */
+(function(root){
+  'use strict';
+  root.CharacterFinishConfig={
+    "SchemaVersion": 1,
+    "Purpose": "Review-only fitted body tailoring. Exact cast proportions and bone layouts; no production rig mutation or universal clothing fit.",
+    "BoneLayouts": {
+      "trouser_45": [
+        "root",
+        "pelvis",
+        "torso",
+        "neck",
+        "neck_tip",
+        "head",
+        "inseam_top",
+        "inseam_bot",
+        "hip_L",
+        "hip_L_tip",
+        "knee_L",
+        "knee_L_tip",
+        "ankle_L",
+        "ankle_L_tip",
+        "ankle_L_cuff",
+        "foot_L",
+        "hip_R",
+        "hip_R_tip",
+        "knee_R",
+        "knee_R_tip",
+        "ankle_R",
+        "ankle_R_tip",
+        "ankle_R_cuff",
+        "foot_R",
+        "shoulder_L",
+        "shoulder_L_tip",
+        "elbow_L",
+        "elbow_L_tip",
+        "wrist_L",
+        "hand_L",
+        "shoulder_R",
+        "shoulder_R_tip",
+        "elbow_R",
+        "elbow_R_tip",
+        "wrist_R",
+        "hand_R",
+        "tool_R",
+        "tool_L",
+        "tool_R_1",
+        "tool_R_2",
+        "tool_L_1",
+        "tool_L_2",
+        "carry_L",
+        "carry_R",
+        "carry_mid"
+      ],
+      "skirt_44": [
+        "root",
+        "pelvis",
+        "torso",
+        "neck",
+        "neck_tip",
+        "head",
+        "skirt_hem",
+        "hip_L",
+        "hip_L_tip",
+        "knee_L",
+        "knee_L_tip",
+        "ankle_L",
+        "ankle_L_tip",
+        "ankle_L_cuff",
+        "foot_L",
+        "hip_R",
+        "hip_R_tip",
+        "knee_R",
+        "knee_R_tip",
+        "ankle_R",
+        "ankle_R_tip",
+        "ankle_R_cuff",
+        "foot_R",
+        "shoulder_L",
+        "shoulder_L_tip",
+        "elbow_L",
+        "elbow_L_tip",
+        "wrist_L",
+        "hand_L",
+        "shoulder_R",
+        "shoulder_R_tip",
+        "elbow_R",
+        "elbow_R_tip",
+        "wrist_R",
+        "hand_R",
+        "tool_R",
+        "tool_L",
+        "tool_R_1",
+        "tool_R_2",
+        "tool_L_1",
+        "tool_L_2",
+        "carry_L",
+        "carry_R",
+        "carry_mid"
+      ],
+      "apron_46": [
+        "root",
+        "pelvis",
+        "torso",
+        "neck",
+        "neck_tip",
+        "head",
+        "inseam_top",
+        "inseam_bot",
+        "apron_hem",
+        "hip_L",
+        "hip_L_tip",
+        "knee_L",
+        "knee_L_tip",
+        "ankle_L",
+        "ankle_L_tip",
+        "ankle_L_cuff",
+        "foot_L",
+        "hip_R",
+        "hip_R_tip",
+        "knee_R",
+        "knee_R_tip",
+        "ankle_R",
+        "ankle_R_tip",
+        "ankle_R_cuff",
+        "foot_R",
+        "shoulder_L",
+        "shoulder_L_tip",
+        "elbow_L",
+        "elbow_L_tip",
+        "wrist_L",
+        "hand_L",
+        "shoulder_R",
+        "shoulder_R_tip",
+        "elbow_R",
+        "elbow_R_tip",
+        "wrist_R",
+        "hand_R",
+        "tool_R",
+        "tool_L",
+        "tool_R_1",
+        "tool_R_2",
+        "tool_L_1",
+        "tool_L_2",
+        "carry_L",
+        "carry_R",
+        "carry_mid"
+      ]
+    },
+    "ProtectedParts": [
+      "head",
+      "hair",
+      "eye",
+      "brow",
+      "ear",
+      "nose",
+      "mouth",
+      "neck"
+    ],
+    "ProtectedPartPrefixes": [
+      "hand_",
+      "thumb_",
+      "foot_"
+    ],
+    "Palettes": {
+      "teal": [
+        "#17383e",
+        "#285b60",
+        "#43857d",
+        "#81b2a0"
+      ],
+      "tealSeam": [
+        "#1b353c",
+        "#2e5357",
+        "#527e73",
+        "#88a999"
+      ],
+      "slateShirt": [
+        "#263843",
+        "#465d6c",
+        "#718992",
+        "#b0c0b9"
+      ],
+      "rust": [
+        "#54282b",
+        "#893f34",
+        "#b65a3e",
+        "#d9895b"
+      ],
+      "rustSeam": [
+        "#452a2c",
+        "#6f392f",
+        "#9c4e37",
+        "#c77950"
+      ],
+      "mossShirt": [
+        "#263a35",
+        "#435948",
+        "#73826a",
+        "#aaba96"
+      ],
+      "oilskin": [
+        "#5d4217",
+        "#947023",
+        "#c49a33",
+        "#e5c360"
+      ],
+      "oilskinSeam": [
+        "#47361e",
+        "#775a27",
+        "#a88032",
+        "#cfaa59"
+      ],
+      "deepBlue": [
+        "#172f3d",
+        "#294e62",
+        "#4c7689",
+        "#87a8b2"
+      ],
+      "navy": [
+        "#203442",
+        "#344f62",
+        "#54738a",
+        "#8aa2ac"
+      ],
+      "slate": [
+        "#283b44",
+        "#465e69",
+        "#72868c",
+        "#a5b5b2"
+      ],
+      "slateSeam": [
+        "#293d44",
+        "#40545f",
+        "#61737b",
+        "#93a5a4"
+      ],
+      "cream": [
+        "#665945",
+        "#968369",
+        "#c4b498",
+        "#e6dcc1"
+      ],
+      "creamSeam": [
+        "#514d3e",
+        "#7c7560",
+        "#afa78f",
+        "#d5cdb4"
+      ],
+      "canvas": [
+        "#4b5045",
+        "#747460",
+        "#a19e82",
+        "#cec5a6"
+      ],
+      "canvasSeam": [
+        "#3d4941",
+        "#606857",
+        "#909780",
+        "#bac0a3"
+      ],
+      "ochre": [
+        "#554126",
+        "#81643a",
+        "#af8d52",
+        "#d6bb80"
+      ],
+      "ochreSeam": [
+        "#51442f",
+        "#75633f",
+        "#a18a57",
+        "#c5b07c"
+      ],
+      "forest": [
+        "#243b33",
+        "#435b43",
+        "#6c805b",
+        "#9bad86"
+      ],
+      "redKnit": [
+        "#512c31",
+        "#8b4140",
+        "#bc6051",
+        "#dc9074"
+      ],
+      "redCuff": [
+        "#452c32",
+        "#783b3e",
+        "#a3564d",
+        "#ca836b"
+      ],
+      "boot": [
+        "#17262e",
+        "#2b4049",
+        "#4b6168",
+        "#849393"
+      ],
+      "bootCuff": [
+        "#20313a",
+        "#39505a",
+        "#60777b",
+        "#95a7a3"
+      ],
+      "sole": [
+        "#16252b",
+        "#273a40",
+        "#42585b",
+        "#718580"
+      ],
+      "leather": [
+        "#382f2c",
+        "#5d4c3d",
+        "#897257",
+        "#b9a27b"
+      ],
+      "brass": [
+        "#604a2e",
+        "#8b6c3c",
+        "#b69957",
+        "#ddc580"
+      ]
+    },
+    "CommonMaterials": {
+      "boot": "boot",
+      "bootL": "bootCuff",
+      "sole": "sole",
+      "belt": "leather",
+      "brass": "brass"
+    },
+    "PaintGain": 0.82,
+    "PaintBias": 1.8,
+    "Presets": {
+      "fisher": {
+        "Sex": "m",
+        "Age": "adult",
+        "Garment": "overalls",
+        "BoneLayout": "trouser_45",
+        "TorsoChestWidth": 1.04,
+        "TorsoWaistWidth": 1.03,
+        "TorsoDepth": 1.03,
+        "PelvisWidth": 1.03,
+        "PelvisDepth": 1.03,
+        "UpperRadius": 1.06,
+        "ForeRadius": 1.1,
+        "ThighRadius": 1.08,
+        "ShinRadius": 1.1,
+        "BootUpperRadius": 1.04,
+        "SkirtHemWidth": 1,
+        "ApronWidth": 1,
+        "Materials": {
+          "over": "teal",
+          "overD": "tealSeam",
+          "shirt": "slateShirt",
+          "sleeve": "slateShirt"
+        }
+      },
+      "ginny": {
+        "Sex": "f",
+        "Age": "adult",
+        "Garment": "overalls",
+        "BoneLayout": "trouser_45",
+        "TorsoChestWidth": 1.16,
+        "TorsoWaistWidth": 1.1,
+        "TorsoDepth": 1.08,
+        "PelvisWidth": 1.08,
+        "PelvisDepth": 1.06,
+        "UpperRadius": 1.18,
+        "ForeRadius": 1.16,
+        "ThighRadius": 1.22,
+        "ShinRadius": 1.22,
+        "BootUpperRadius": 1.08,
+        "SkirtHemWidth": 1,
+        "ApronWidth": 1,
+        "Materials": {
+          "over": "rust",
+          "overD": "rustSeam",
+          "shirt": "mossShirt",
+          "sleeve": "mossShirt",
+          "collar": "creamSeam",
+          "hat": "rust",
+          "hatD": "rustSeam"
+        }
+      },
+      "skipper": {
+        "Sex": "m",
+        "Age": "elder",
+        "Garment": "oilskins",
+        "BoneLayout": "trouser_45",
+        "TorsoChestWidth": 1.15,
+        "TorsoWaistWidth": 1.14,
+        "TorsoDepth": 1.1,
+        "PelvisWidth": 1.1,
+        "PelvisDepth": 1.08,
+        "UpperRadius": 1.24,
+        "ForeRadius": 1.2,
+        "ThighRadius": 1.26,
+        "ShinRadius": 1.22,
+        "BootUpperRadius": 1.1,
+        "SkirtHemWidth": 1,
+        "ApronWidth": 1,
+        "Materials": {
+          "over": "oilskin",
+          "overD": "oilskinSeam",
+          "shirt": "deepBlue",
+          "hat": "oilskin",
+          "hatD": "oilskinSeam"
+        },
+        "MaterialRemaps": [
+          {
+            "Parts": [
+              "pelvis",
+              "thigh_L",
+              "thigh_R",
+              "shin_L",
+              "shin_R"
+            ],
+            "From": "over",
+            "To": "overD"
+          }
+        ]
+      },
+      "nan": {
+        "Sex": "f",
+        "Age": "elder",
+        "Garment": "skirt",
+        "BoneLayout": "skirt_44",
+        "TorsoChestWidth": 1.12,
+        "TorsoWaistWidth": 1.12,
+        "TorsoDepth": 1.06,
+        "PelvisWidth": 1.08,
+        "PelvisDepth": 1.06,
+        "UpperRadius": 1.2,
+        "ForeRadius": 1.18,
+        "ThighRadius": 1.12,
+        "ShinRadius": 1.16,
+        "BootUpperRadius": 1.04,
+        "SkirtHemWidth": 0.93,
+        "ApronWidth": 1,
+        "Materials": {
+          "over": "slate",
+          "overD": "slateSeam",
+          "shirt": "cream",
+          "sleeve": "cream",
+          "collar": "creamSeam",
+          "hat": "rust",
+          "hatD": "rustSeam"
+        }
+      },
+      "deckboss": {
+        "Sex": "m",
+        "Age": "adult",
+        "Garment": "vest",
+        "BoneLayout": "trouser_45",
+        "TorsoChestWidth": 1.2,
+        "TorsoWaistWidth": 1.12,
+        "TorsoDepth": 1.12,
+        "PelvisWidth": 1.1,
+        "PelvisDepth": 1.08,
+        "UpperRadius": 1.25,
+        "ForeRadius": 1.22,
+        "ThighRadius": 1.25,
+        "ShinRadius": 1.23,
+        "BootUpperRadius": 1.1,
+        "SkirtHemWidth": 1,
+        "ApronWidth": 1,
+        "Materials": {
+          "over": "navy",
+          "shirt": "slate",
+          "shirtL": "creamSeam",
+          "shirtD": "deepBlue",
+          "sleeve": "slate",
+          "hat": "navy",
+          "hatD": "deepBlue"
+        }
+      },
+      "packer": {
+        "Sex": "f",
+        "Age": "adult",
+        "Garment": "apron",
+        "BoneLayout": "apron_46",
+        "TorsoChestWidth": 1.15,
+        "TorsoWaistWidth": 1.1,
+        "TorsoDepth": 1.06,
+        "PelvisWidth": 1.08,
+        "PelvisDepth": 1.06,
+        "UpperRadius": 1.18,
+        "ForeRadius": 1.17,
+        "ThighRadius": 1.2,
+        "ShinRadius": 1.2,
+        "BootUpperRadius": 1.07,
+        "SkirtHemWidth": 1,
+        "ApronWidth": 1.09,
+        "Materials": {
+          "over": "slate",
+          "shirt": "cream",
+          "sleeve": "cream",
+          "collar": "creamSeam",
+          "apron": "canvas",
+          "apronD": "canvasSeam",
+          "hat": "teal",
+          "hatD": "tealSeam"
+        }
+      },
+      "cutter": {
+        "Sex": "f",
+        "Age": "youth",
+        "Garment": "apron",
+        "BoneLayout": "apron_46",
+        "TorsoChestWidth": 1.14,
+        "TorsoWaistWidth": 1.1,
+        "TorsoDepth": 1.07,
+        "PelvisWidth": 1.08,
+        "PelvisDepth": 1.06,
+        "UpperRadius": 1.2,
+        "ForeRadius": 1.18,
+        "ThighRadius": 1.22,
+        "ShinRadius": 1.2,
+        "BootUpperRadius": 1.06,
+        "SkirtHemWidth": 1,
+        "ApronWidth": 1.09,
+        "Materials": {
+          "over": "forest",
+          "shirt": "ochre",
+          "sleeve": "ochre",
+          "collar": "creamSeam",
+          "apron": "slate",
+          "apronD": "slateSeam"
+        }
+      },
+      "hand": {
+        "Sex": "m",
+        "Age": "youth",
+        "Garment": "workshirt",
+        "BoneLayout": "trouser_45",
+        "TorsoChestWidth": 1.15,
+        "TorsoWaistWidth": 1.09,
+        "TorsoDepth": 1.07,
+        "PelvisWidth": 1.08,
+        "PelvisDepth": 1.06,
+        "UpperRadius": 1.18,
+        "ForeRadius": 1.16,
+        "ThighRadius": 1.22,
+        "ShinRadius": 1.2,
+        "BootUpperRadius": 1.07,
+        "SkirtHemWidth": 1,
+        "ApronWidth": 1,
+        "Materials": {
+          "over": "slate",
+          "shirt": "ochre",
+          "shirtD": "ochreSeam",
+          "sleeve": "ochre",
+          "hat": "navy",
+          "hatD": "deepBlue"
+        }
+      },
+      "boy": {
+        "Sex": "m",
+        "Age": "child",
+        "Garment": "sweater",
+        "BoneLayout": "trouser_45",
+        "TorsoChestWidth": 1.14,
+        "TorsoWaistWidth": 1.12,
+        "TorsoDepth": 1.08,
+        "PelvisWidth": 1.1,
+        "PelvisDepth": 1.07,
+        "UpperRadius": 1.2,
+        "ForeRadius": 1.18,
+        "ThighRadius": 1.24,
+        "ShinRadius": 1.2,
+        "BootUpperRadius": 1.06,
+        "SkirtHemWidth": 1,
+        "ApronWidth": 1,
+        "Materials": {
+          "over": "navy",
+          "overD": "deepBlue",
+          "shirt": "redKnit",
+          "shirtD": "redCuff",
+          "sleeve": "redKnit",
+          "hat": "navy",
+          "hatD": "deepBlue"
+        }
+      },
+      "girl": {
+        "Sex": "f",
+        "Age": "child",
+        "Garment": "workshirt",
+        "BoneLayout": "trouser_45",
+        "TorsoChestWidth": 1.15,
+        "TorsoWaistWidth": 1.11,
+        "TorsoDepth": 1.08,
+        "PelvisWidth": 1.1,
+        "PelvisDepth": 1.06,
+        "UpperRadius": 1.2,
+        "ForeRadius": 1.17,
+        "ThighRadius": 1.24,
+        "ShinRadius": 1.2,
+        "BootUpperRadius": 1.06,
+        "SkirtHemWidth": 1,
+        "ApronWidth": 1,
+        "Materials": {
+          "over": "forest",
+          "shirt": "cream",
+          "shirtD": "creamSeam",
+          "sleeve": "cream"
+        }
+      }
+    }
+  };
+})(globalThis);
