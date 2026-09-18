@@ -1464,6 +1464,39 @@ namespace HiddenHarbours.App.Editor
         public static readonly Vector3 TruckParkPos = new Vector3(-120f, 106f, 0f);
 
         /// <summary>
+        /// ⭐ <b>THE MODERN 3500'S BAY — the owner's ruling D2 (2026-09-18): "Park her at Nine Mile
+        /// Creek beside the Dually."</b> The park's WEST bay: one
+        /// <see cref="NineMileCreekRoads.ParkedVehicleLengthMetres"/> west of <see cref="TruckParkPos"/>,
+        /// on the park's own grid of <see cref="NineMileCreekRoads.ParkBaysAcross"/> bays of that
+        /// envelope. It derives from the one constant the whole park derives from, so the walk verdict
+        /// that moves the park moves her with it, in the same one-line change.
+        ///
+        /// <para><b>Why west, not east.</b> The east bay is the one the laydown journeys drive THROUGH
+        /// (<c>RoadFleetJourneyPlayTests.TheParksSpareBay</c>, "through the park, not through her"),
+        /// and her solid box stood there would clear the laydown spur's carriageway by 0.054 m. The
+        /// west bay leaves both of those alone.</para>
+        ///
+        /// <para><b>Measured, not assumed</b> (2026-09-18, headless: her sidecar's collider and the
+        /// Dually's baked one, against the published <c>Ways()</c> and pads). Her box stands 4.134 m
+        /// clear of his and 2.475 m from the post his driver waits at (a pace is 1.5 m); it clears the
+        /// park spur's carriageway by 2.781 m, the laydown spur's by 2.874 m and Wharf Road's by
+        /// 9.233 m; the nearest other pad, the laydown's, is 9.094 m off. These numbers are the record,
+        /// not the guard:
+        /// <c>NineMileCreekTruckParkTests.SheStandsOnTheParkClearOfTheDuallyHisDriverAndEveryWay</c>
+        /// holds every one of them through her PLACED transform, so they cannot go stale silently.</para>
+        ///
+        /// <para>⚠️ She is 7.001 m bumper to bumper, over the park's declared
+        /// <see cref="NineMileCreekRoads.ParkedVehicleLengthMetres"/> envelope. The park is two
+        /// envelopes deep, so she still stands wholly on it (3.155 m to spare at its south edge,
+        /// 3.244 m at its north), and that test asserts the park, not the envelope.</para>
+        ///
+        /// <para>⚠️ Declared AFTER <see cref="TruckParkPos"/> on purpose: static readonly initialisers
+        /// run in textual order, and one declared first would read the park as (0, 0, 0).</para>
+        /// </summary>
+        public static readonly Vector3 Modern3500ParkPos =
+            TruckParkPos + Vector3.left * NineMileCreekRoads.ParkedVehicleLengthMetres;
+
+        /// <summary>
         /// ⭐ <b>THE LAYDOWN — where the road fleet is stood, and THE ONE NUMBER THAT SITES IT.</b>
         ///
         /// <para><b>This is a PROPOSAL awaiting the owner's walk</b>, exactly as
