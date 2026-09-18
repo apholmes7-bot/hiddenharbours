@@ -1,8 +1,8 @@
 {
-  "schema": "hidden-harbours-gameplay/modern3500/v1",
-  "derivedFromRigSha256": "3eb1640029e51e28f8597e393418ab5492ad77e3bd33bd8ce0040cff53eddc86",
+  "schema": "hidden-harbours-gameplay/modern3500/v2",
+  "derivedFromRigSha256": "0601bc98435533aa024804532725c491d3cdc31b86b506706cd4cff79d3ced27",
   "kind": "road_vehicle",
-  "status": "Integration candidate; collision and reach tests in world remain to be done.",
+  "status": "Integration candidate. Re-keyed to the fleet schema 2026-09-18 (BODY.collider_bbox, INTERACT drive and ride), every number measured off the rig on node; collision and reach in the world remain to be tested.",
   "coordinate_frame": {
     "units": "metres",
     "x": "right/passenger",
@@ -34,6 +34,22 @@
         2.19
       ]
     ],
+    "collider_bbox": {
+      "x": [
+        -1.326,
+        1.326
+      ],
+      "y": [
+        -3.545,
+        3.456
+      ],
+      "z": [
+        0,
+        2.19
+      ],
+      "_note": "flares, not mirrors. The mirrors reach |x| 1.418 (mirrors_width_m) at z 1.47..1.91 and the outer rear hub caps |x| 1.3505; neither is solid. y stops at the rear plate: the receiver and ball reach -3.63 (hitch_reaches_y) and are not solid either, as the Dually's box stops short of its own receiver.",
+      "provenance": "measured on node off the rig at rest (resolve({}), 2738 faces, rig sha256 0601bc98...): x = the widest face of the body group, the flares (+/-1.326); y = the mesh with hitch:false, front plate 3.456 to rear plate -3.545; z = the mesh's own floor and top, tyres 0 to marker lamps 2.19. It equals main_body_bbox but for the rear plate's 5 mm."
+    },
     "mirrors_width_m": 2.836,
     "hitch_reaches_y": -3.63,
     "note": "A coarse main-body box, excluding mirror and hitch reach; not a fitted collider."
@@ -804,6 +820,36 @@
   },
   "INTERACT": [
     {
+      "id": "drive",
+      "action": "enter_drive",
+      "at": "door_fl",
+      "reach_point": [
+        -1.836,
+        0.35,
+        0
+      ],
+      "visible_facings": [
+        "NE",
+        "E",
+        "SE"
+      ]
+    },
+    {
+      "id": "ride",
+      "action": "enter_ride",
+      "at": "door_fr",
+      "reach_point": [
+        1.836,
+        0.35,
+        0
+      ],
+      "visible_facings": [
+        "SW",
+        "W",
+        "NW"
+      ]
+    },
+    {
       "id": "door_fl",
       "anchor": "doorFL",
       "action": "toggle door"
@@ -844,11 +890,20 @@
       "action": "attach trailer"
     }
   ],
+  "_interact_notes": {
+    "reach_point": "a request, not a promise - a ground-level standing spot derived from which face the item is on. NOT validated against terrain, kerb or another vehicle.",
+    "visible_facings": "computed, not asserted by eye: a feature with outward normal n is listed for facing d when nx*sin(d*45) + ny*cos(d*45) < -0.3 (the Dually's rule: the near-side test paint() uses, with edge-on excluded). Her driver's door faces -x: NE, E, SE; her passenger's faces +x: SW, W, NW.",
+    "drive_reach_point": "x -1.836 = -(1.326 + 0.51): her flare line plus the Dually's own standoff (its drive point stands 1.75 m out from its 1.24 m flares). y 0.35 = G.doorF[0], the latch seam between her front and rear doors. Checked on node against both left doors swept 0..68 deg in 69 steps: 0.284 m clear of DoorFL, 0.320 m clear of DoorRL. The Dually's own point (-1.75, 0.10) would stand 0.056 m off her rear door's arc, so it was not copied.",
+    "ride_reach_point": "the drive point mirrored in x. Her right doors mirror her left (pins at x +1.015 against -1.015), and the same sweep measures the same 0.284 m (DoorFR) and 0.320 m (DoorRR)."
+  },
   "_confirm": {
     "cargo_walkability": "undecided",
     "character_clearance": "requires world testing",
     "trailer_physics": "engine-owned",
-    "roof": "not a walkable surface"
+    "roof": "not a walkable surface",
+    "mirror_collider": "BODY.collider_bbox stops at the flares. The mirrors reach 2.836 m over (|x| 1.418 at z 1.47..1.91) - decide before a mirror clips a doorframe.",
+    "reach_points": "two reach points, checked against her own swept doors only (0.284 / 0.320 m clear); none tested against a ground collider, a kerb or another vehicle.",
+    "towing": "OWNER RULING D4 (2026-09-18): no towing in this PR. TOW.ball, TOW.receiver and INTERACT tow are inert data; nothing couples a trailer to her. Debt, recorded."
   },
   "_excluded": [
     "driving controller",
