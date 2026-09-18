@@ -76,9 +76,11 @@ namespace HiddenHarbours.Player
         private BoatDeckDef _deck;          // the authored areas (resolved at Bind; null = the rectangle)
 
         // Her cabin doorway, through the Core seam (rule 4 — Player never names the door's own type), and
-        // the hull it was looked for under. Null for most of the fleet, which has no measured interior.
+        // the hull it was looked for under — the root, and the skin the root wore at the time. Null for most
+        // of the fleet, which has no measured interior.
         private ICabinThreshold _doorway;
         private Transform _doorwaySearchedUnder;
+        private IBoatHullPresenter _doorwaySearchedSkin;
 
         // The player's position IN THE HULL FRAME — the authoritative state on the polygon path, because
         // the projection cannot be inverted from a screen offset alone (along-hull distance and height
@@ -737,20 +739,38 @@ namespace HiddenHarbours.Player
         /// <para><b>The searched-root latch is rule 7, not tidiness.</b> Most of the fleet has no
         /// measured interior, and without it every hull with no cabin would pay a whole-hierarchy walk
         /// on every tick of every deck walk. One search per hull answers "she has none" for good, and a
-        /// re-skin under her feet (a new root, or a door torn off) starts a fresh one.</para>
+        /// re-skin under her feet (a new root, a door torn off, or a new skin) starts a fresh one.</para>
+        ///
+        /// <para><b>⚠ "A new skin" is what lets a door APPEAR.</b> A hull swap rebuilds the cabin in
+        /// <c>SetHull</c> (owner, 2026-09-17), and the skinner publishes a new presenter in the same
+        /// call. Keyed on the root alone, a dory that answered "none" would go on answering it for the
+        /// cape islander swapped on under the player's feet.</para>
         /// </summary>
         private ICabinThreshold LiveCabinThreshold()
         {
             if (_doorway is UnityEngine.Object live && live != null) return _doorway;
             if (_doorway != null) { _doorway = null; _doorwaySearchedUnder = null; }
 
-            if (ReferenceEquals(_doorwaySearchedUnder, _boatRoot)) return null;
+            IBoatHullPresenter skin = PublishedSkin();
+            if (ReferenceEquals(_doorwaySearchedUnder, _boatRoot) && ReferenceEquals(_doorwaySearchedSkin, skin))
+                return null;
 
             _doorwaySearchedUnder = _boatRoot;
+            _doorwaySearchedSkin = skin;
             _doorway = _boatRoot != null
                 ? _boatRoot.GetComponentInChildren<ICabinThreshold>(includeInactive: true)
                 : null;
             return _doorway is UnityEngine.Object found && found != null ? _doorway : null;
+        }
+
+        /// <summary>The presenter the skinner has published on the bound root, or null — the host's
+        /// field only, with none of <see cref="LiveHull"/>'s fallbacks: the last of those builds a new
+        /// presenter per call, which as a latch key would search (and allocate) every tick.</summary>
+        private IBoatHullPresenter PublishedSkin()
+        {
+            if (_boatRoot == null) return null;
+            var host = _boatRoot.GetComponent<BoatHullPresenterHost>();
+            return host != null ? host.Presenter : null;
         }
 
         /// <summary>Deck-walking ended (helm taken / stepped ashore / teardown) — the player no longer

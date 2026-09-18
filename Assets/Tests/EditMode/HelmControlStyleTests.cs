@@ -34,6 +34,15 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void StyleFor_SailHull_ShowsNothing()
+        {
+            // 📌 A sloop has no engine helm to draw (her rudder is on the keys; her auxiliary is a later
+            // PR's, which moves this pin by name).
+            Assert.That(HelmControlRelay.StyleFor(Hull(PropulsionType.Sail)),
+                        Is.EqualTo(HelmControlStyle.None));
+        }
+
+        [Test]
         public void StyleFor_EngineHull_WithoutConsole_IsTheTiller()
         {
             // A motor earns one tiller (dory outboard, the punts).

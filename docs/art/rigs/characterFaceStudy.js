@@ -78,6 +78,14 @@
   const add=(v,mat,bias)=>F.push({v:v.map(p=>[center[0]+p[0]*scale,center[1]+p[1]*scale,center[2]+p[2]*scale]),mat,b:bias||0,part:'head'});
   // Small real nose and ears preserve readable profiles without the old spectacle-like eye blocks.
   const p=[[-.016,.106,.012],[.016,.106,.012],[.021,.109,-.044],[-.021,.109,-.044],[0,.141,-.026]];
+  /* A CHILD NOSE IS SPECIFIED IN WORLD METRES, NOT HEAD UNITS. These points are head-local and get
+     multiplied by scale, so a child's 0.873 head shrinks the nose with it: at 32 px/m the triangles
+     span under a pixel, no pixel centre lands inside them, and the nose rasterises into the cheek at
+     the front and profile headings. The child head takes a world-metre correction instead: +3 mm
+     forward and +3 mm wider. Measured at 32 px/m (see checks.txt): width alone resolves 0deg and
+     45deg but not the profile, forward alone resolves nothing, and 1 mm of either leaves two of the
+     four resolving headings blank. 3 mm lands 2 px on the weakest of them. */
+  if(b.age==='child'){const k=.003/scale;for(const q of p)q[0]+=Math.sign(q[0])*k;p[4][1]+=k;}
   // The whole nose is skin: the light already separates its planes. The away-side plane alone landed on
  // the cheek's own ramp step at the front heading, so it carries a half-step darkening to part from it.
  for(const [i,ids] of [[0,[0,1,4]],[1,[1,2,4]],[2,[2,3,4]],[3,[3,0,4]]])add(ids.map(i=>p[i]),'skin',i===1?-.5:0);

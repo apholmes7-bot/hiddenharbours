@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using NUnit.Framework;
 using HiddenHarbours.Tools.RigBaking;
 
@@ -29,6 +32,11 @@ namespace HiddenHarbours.Tests.RigBaking
     /// a BLOCKER, not a success: two presets sit above the ramp ceiling on rig 7's own export. It passes
     /// on the truth as measured, so that the day someone fixes it CI says so out loud instead of
     /// leaving a stale claim in a PR body. Both name what to do when they go red.</para>
+    ///
+    /// <para><b>The nose at the player's scale.</b> The last section measures what the face looks like
+    /// at 32 px/m rather than what it is made of: the boy's and the girl's noses must land a pixel at
+    /// every heading that faces the camera, and the push that made them land must have moved no adult's
+    /// face. Both run the rig's JavaScript in V8 and need no GPU.</para>
     /// </summary>
     public class CharacterFaceCompositionTests
     {
@@ -486,6 +494,197 @@ namespace HiddenHarbours.Tests.RigBaking
                         ", past the " + HiddenHarbours.Core.CharacterSkinDef.RampSlots + " ramp slots. " +
                         "Dropping rig 6's head is supposed to buy headroom, not spend it.");
                 }
+            }
+        }
+
+        // ---- the nose at the player's scale ---------------------------------------------------------
+
+        /// <summary>
+        /// The instrument: rig 7 follow-up job 4's own nose measure (its kit's <c>face-render.cjs</c>
+        /// and <c>check-child-nose.cjs</c>) as one script, proven to return the kit's number at all
+        /// eighty preset × heading cells on both the old and the new rigs, in node and in the ClearScript
+        /// V8 the editor runs.
+        ///
+        /// <para><c>nosePixels(preset, heading)</c> rasterises the preset's study head at the rig's own
+        /// scale and camera (<c>CharacterIso6.PX</c>, <c>defaultElev</c>) and shading (<c>GAIN</c>,
+        /// <c>BIAS</c>, <c>LN</c>, <c>makeMats</c>), all read off the rig, then rasterises it again without
+        /// the nose (the triangles meeting the head's forward-most vertex) and counts the pixels that
+        /// differ. A nose that changes no pixel is not there. The numbers that are the kit's and not the
+        /// rig's are the viewer's: the 0.76 m head cell and the outline darkening (.53/.59/.69). They
+        /// decide where a pixel lands, not what the bar is.</para>
+        ///
+        /// <para><c>composedMicrons(preset)</c> is the composed bind-pose face list (every corner,
+        /// material, bone, part and uv) serialised with each number rounded to one micron, so its
+        /// SHA-256 names the mesh to 1 µm, which is 3e-5 px at 32 px/m, and no two machines' last float
+        /// bit can move it.</para>
+        /// </summary>
+        const string NoseMeasureJs = @"(function(root){
+  'use strict';
+  var R=root.CharacterIso6, H=root.CharacterHeadStudy, F=root.CharacterFaceComposition;
+  if(!R||!H||!F) throw new Error('nose measure: install characterFaceComposition first');
+  var ELEV=R.defaultElev, PPM=R.PX, CELL=Math.ceil(PPM*0.76);
+  function raster(faces,mats,angle){
+    var w=CELL,h=CELL,cx=CELL/2+0.5,cy=CELL/2,scale=PPM;
+    var pixels=new Uint8ClampedArray(w*h*4),depth=new Float32Array(w*h).fill(-1e9);
+    var a=angle*Math.PI/180,e=ELEV*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),ce=Math.cos(e),se=Math.sin(e);
+    for(var fi=0;fi<faces.length;fi++){
+      var f=faces[fi],mat=mats[f.mat];
+      var c=mat.ramp[Math.max(0,Math.min(mat.ramp.length-1,mat.idx))];
+      var rgb=Array.isArray(c)?c:[parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];
+      var p=f.v.map(function(q){var x=q[0]*ca-q[1]*sa,y=q[0]*sa+q[1]*ca,z=q[2];return [cx+x*scale,cy+(y*se-z*ce)*scale,y*ce+z*se];});
+      for(var k=1;k<p.length-1;k++){
+        var A=p[0],B=p[k],C=p[k+1],den=(B[1]-C[1])*(A[0]-C[0])+(C[0]-B[0])*(A[1]-C[1]);if(Math.abs(den)<1e-10)continue;
+        for(var y=Math.max(0,Math.floor(Math.min(A[1],B[1],C[1])));y<=Math.min(h-1,Math.ceil(Math.max(A[1],B[1],C[1])));y++)
+        for(var x=Math.max(0,Math.floor(Math.min(A[0],B[0],C[0])));x<=Math.min(w-1,Math.ceil(Math.max(A[0],B[0],C[0])));x++){
+          var wa=((B[1]-C[1])*(x+.5-C[0])+(C[0]-B[0])*(y+.5-C[1]))/den,wb=((C[1]-A[1])*(x+.5-C[0])+(A[0]-C[0])*(y+.5-C[1]))/den,wc=1-wa-wb;
+          if(wa<0||wb<0||wc<0)continue;var d=wa*A[2]+wb*B[2]+wc*C[2],i=y*w+x;if(d<=depth[i])continue;depth[i]=d;
+          pixels[i*4]=rgb[0];pixels[i*4+1]=rgb[1];pixels[i*4+2]=rgb[2];pixels[i*4+3]=255;
+        }
+      }
+    }
+    var edge=[];for(var yy=1;yy<h-1;yy++)for(var xx=1;xx<w-1;xx++){var j=yy*w+xx;if(pixels[j*4+3]&&(!pixels[(j+1)*4+3]||!pixels[(j+w)*4+3]))edge.push(j);}
+    for(var n=0;n<edge.length;n++){var e2=edge[n];pixels[e2*4]=Math.round(pixels[e2*4]*.53);pixels[e2*4+1]=Math.round(pixels[e2*4+1]*.59);pixels[e2*4+2]=Math.round(pixels[e2*4+2]*.69);}
+    return pixels;
+  }
+  function gameFaces(build,faces,angle){
+    var M=R.makeMats(build).MATS,LN=R.LN;
+    var a=angle*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),e=ELEV*Math.PI/180,se=Math.sin(e),ce=Math.cos(e);
+    var mats={},res=[];
+    faces.forEach(function(f,i){
+      var key='face'+i;res.push(Object.assign({},f,{mat:key}));
+      var m=M[f.mat];if(!m){mats[key]={ramp:['#ff00ff'],idx:0};return;}
+      var v=f.v.map(function(q){return [q[0]*ca-q[1]*sa,q[0]*sa+q[1]*ca,q[2]];});
+      var u=[0,1,2].map(function(k){return v[1][k]-v[0][k];}),t=[0,1,2].map(function(k){return v[2][k]-v[0][k];});
+      var nn=[u[1]*t[2]-u[2]*t[1],u[2]*t[0]-u[0]*t[2],u[0]*t[1]-u[1]*t[0]];
+      var len=Math.hypot(nn[0],nn[1],nn[2])||1;nn=nn.map(function(x){return x/len;});
+      var shade=function(d){return d[0]*LN[0]+(-d[1]*se+d[2]*ce)*LN[1]+(d[1]*ce+d[2]*se)*LN[2];};
+      var b=f.b||0,sh=shade(nn);
+      if(sh<0&&b<=-1)sh=shade(nn.map(function(x){return -x;}))*0.9;
+      var idx=Math.round(sh*R.GAIN+R.BIAS+b)+(m.off||0);
+      mats[key]={ramp:m.ramp,idx:Math.max(0,Math.min(m.ramp.length-1,idx))};
+    });
+    return {faces:res,mats:mats};
+  }
+  function nosePixels(preset,angle){
+    var b=R.resolveBuild({build:{preset:preset}});
+    var faces=H.createHead(Object.assign({},b,{headSize:R.propsOf(b).headK}),[0,0,0]);
+    var apex=null;faces.forEach(function(f){f.v.forEach(function(v){if(!apex||v[1]>apex[1])apex=v;});});
+    var near=function(p,q){return Math.hypot(p[0]-q[0],p[1]-q[1],p[2]-q[2])<1e-12;};
+    var kept=faces.filter(function(f){return !(f.v.length===3&&f.v.some(function(v){return near(v,apex);}));});
+    var W=gameFaces(b,faces,angle),K=gameFaces(b,kept,angle);
+    var P=raster(W.faces,W.mats,angle),Q=raster(K.faces,K.mats,angle),d=0;
+    for(var i=0;i<P.length;i+=4)if(P[i]!==Q[i]||P[i+1]!==Q[i+1]||P[i+2]!==Q[i+2]||P[i+3]!==Q[i+3])d++;
+    return d;
+  }
+  function composedMicrons(preset){
+    return JSON.stringify(F.composed(preset),function(k,v){return typeof v==='number'?Math.round(v*1e6):v;});
+  }
+  root.__hhNose={nosePixels:nosePixels,composedMicrons:composedMicrons};
+})(globalThis);";
+
+        /// <summary>The headings a nose CAN land at: job 4 measured 135°, 180° and 225° looking at the
+        /// back of the head for all ten presets, so asking those for a nose asks the wrong question.</summary>
+        static readonly int[] FacingHeadingsDeg = { 0, 45, 90, 270, 315 };
+
+        static readonly string[] Children = { "boy", "girl" };
+
+        /// <summary>
+        /// The eight adults' composed faces as they are on main at 40f4656f, to the micron (see
+        /// <see cref="NoseMeasureJs"/>). The rig 7 follow-up's rigs reproduce every one exactly.
+        /// </summary>
+        static readonly (string Preset, string Sha256)[] AdultFacesOnMain =
+        {
+            ("fisher", "d62c22340a3127c8dd9dd9d1fea434029ef640be361ed86e4427918fa859d71e"),
+            ("ginny", "60fbee9663e5cdcdcf6d8f1c996a0c7bedeb9b1e739d2f300d13a701b717e9fa"),
+            ("skipper", "557bfac55e1cdef0c9b2e6b6a1cc70203d620d52c0218c50072ad4558b42ea3b"),
+            ("nan", "5a7c145567f5810ab0ca939b0d3678b7425ba3fe615ec45325c5d827f238c6d1"),
+            ("deckboss", "358db32a7b418acede58388ca7259d7fbbf48191347d2ea0c218517b7b86637a"),
+            ("packer", "c48d10c43e0938924ad3d741ea8c7bf9fd7522c3936464405027d713f22f1911"),
+            ("cutter", "a496adfaffb9a45a13deee0f234cef9471fe118bd63a91107fb1e4bdcafd83b0"),
+            ("hand", "c8ca09a2189c15e55fb60b12097165f06201ea1e208acd5056c2788a214359e9"),
+        };
+
+        static IRigScriptHost MeasuringHost()
+        {
+            IRigScriptHost host = BaseHost();
+            InstallFace(host);
+            host.Execute(NoseMeasureJs);
+            return host;
+        }
+
+        static string Sha256Hex(string text)
+        {
+            using var h = SHA256.Create();
+            var sb = new StringBuilder(64);
+            foreach (byte b in h.ComputeHash(Encoding.UTF8.GetBytes(text))) sb.Append(b.ToString("x2"));
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// <b>The children's noses land at the player's scale.</b> The pass-05/06 face scales the nose
+        /// with the head, and a child's head is 0.873 of an adult's: on 40f4656f's rigs the boy's and the
+        /// girl's noses land 0, 1, 0, 0, 1 px across the five facing headings at 32 px/m, which is no nose
+        /// from the front, from the side or from the back three-quarter. Job 4 pushes the child nose 3 mm
+        /// forward and 3 mm wide (<c>characterFaceStudy.js</c>) and they land 2, 2, 2, 4, 2. The bar is
+        /// ONE pixel at EVERY facing heading, not a count: the brief asked for a nose that reads.
+        /// </summary>
+        [Test]
+        public void TheChildrenResolveANoseAtEveryFacingHeading([ValueSource(nameof(Children))] string preset)
+        {
+            using (IRigScriptHost host = MeasuringHost())
+            {
+                var landed = new List<string>();
+                var none = new List<string>();
+                foreach (int heading in FacingHeadingsDeg)
+                {
+                    int px = (int)host.EvaluateNumber("__hhNose.nosePixels(" + Js(preset) + "," +
+                                                      heading.ToString(CultureInfo.InvariantCulture) + ")");
+                    landed.Add(heading + "°: " + px + " px");
+                    if (px <= 0) none.Add(heading + "°");
+                }
+
+                Assert.That(none, Is.Empty,
+                    "'" + preset + "' shows no nose at " + string.Join(", ", none) + " at the player's " +
+                    "scale (" + string.Join(", ", landed) + "). At 32 px/m a child's nose falls below a " +
+                    "pixel unless the face study pushes it out; that push lives in characterFaceStudy.js " +
+                    "(b.age === 'child'), and the fix is there, never a lower bar.");
+            }
+        }
+
+        /// <summary>
+        /// <b>The child push moved no adult's face.</b> Job 4 gates the push on <c>b.age === 'child'</c>;
+        /// this proves the gate held, by content: each adult's composed face, to the micron, is the one
+        /// on main at 40f4656f.
+        ///
+        /// <para>It is a PIN and it is green on main by design; its job is the NEXT edit. When the owner
+        /// accepts a change to an adult face, re-record that preset's digest from this test's message in
+        /// the PR that changes the face, and say so in the PR body. Never re-record to turn a build
+        /// green.</para>
+        /// </summary>
+        [Test]
+        public void TheChildNosePushMovesNoAdultsFace()
+        {
+            var covered = new List<string>(Children);
+            foreach (var (preset, _) in AdultFacesOnMain) covered.Add(preset);
+            CollectionAssert.AreEquivalent(Cast, covered,
+                "every preset in the cast is either a child the nose guard measures or an adult this pins; " +
+                "a preset in neither list is guarded by nothing.");
+
+            using (IRigScriptHost host = MeasuringHost())
+            {
+                var moved = new List<string>();
+                foreach (var (preset, pinned) in AdultFacesOnMain)
+                {
+                    string live = Sha256Hex(host.EvaluateString("__hhNose.composedMicrons(" + Js(preset) + ")"));
+                    if (!string.Equals(live, pinned, StringComparison.Ordinal))
+                        moved.Add("'" + preset + "' is now " + live + " (pinned " + pinned + ")");
+                }
+
+                Assert.That(moved, Is.Empty,
+                    "an adult's composed face moved:\n  " + string.Join("\n  ", moved) + "\nThe child " +
+                    "nose push is gated on b.age === 'child', so either that gate leaked or another edit " +
+                    "moved the face. If the owner accepted the change, re-record the digest in the same PR " +
+                    "and name it in the PR body.");
             }
         }
     }

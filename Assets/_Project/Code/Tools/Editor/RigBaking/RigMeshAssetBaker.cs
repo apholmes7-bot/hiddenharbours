@@ -973,12 +973,162 @@ namespace HiddenHarbours.Tools.RigBaking
             return room.Report;
         }
 
+        /// <summary>The door-leaf poses the bake keeps: the two ends of the rig's <c>doorOpen</c>
+        /// range. The rig's in-between poses (the 8-frame cue) are deliberately not baked.</summary>
+        public const double DoorLeafShutPose = 0.0, DoorLeafOpenPose = 1.0;
+
+        /// <summary>
+        /// A hull's cabin-door LEAF, found at the tail of her extracted faces and read again at both
+        /// end poses. See <see cref="FindDoorLeaf"/>.
+        /// </summary>
+        public sealed class DoorLeafFaces
+        {
+            /// <summary>Where the shut leaf starts in the hull's face list. It runs to the end of the
+            /// rig's own faces; a converted hull's room is appended after it.</summary>
+            public int Start;
+
+            /// <summary>Faces in the leaf, the same at both poses (checked).</summary>
+            public int Count;
+
+            /// <summary>The leaf's faces as they sit in the hull's list, by reference, so the lift can
+            /// prove it removes THESE and not whatever moved into their slots.</summary>
+            public List<RigFace> InHull;
+
+            /// <summary>The leaf at <see cref="DoorLeafShutPose"/> and <see cref="DoorLeafOpenPose"/>,
+            /// on the hull's materials and level vocabulary.</summary>
+            public RigMeshData Closed, Open;
+        }
+
+        /// <summary>
+        /// Find this hull's cabin-door leaf, or null when she has none. Call it on the faces exactly as
+        /// <see cref="RigMeshExtractor.ExtractFrom"/> returned them, before a room is appended.
+        ///
+        /// <para><b>Why the leaf leaves the hull mesh (2026-09-17).</b> The owner's playtest: "i dont
+        /// see the doors open". The leaf was baked into <see cref="HullMeshDef.Mesh"/> at
+        /// <c>doorOpen 0</c> (<see cref="RigMeshSymbols.Reconstructions"/> composes
+        /// <c>F.concat(doorFaces({doorOpen:0}))</c>), so pressing E flipped the door's state and the
+        /// picture could not move. The bake now lifts the leaf out
+        /// (<see cref="LiftDoorLeaf"/>) and stores it twice, shut and open, for the renderer to swap.
+        /// </para>
+        ///
+        /// <para><b>Refused, not guessed, when the tail is not the leaf.</b> The shut leaf is read from
+        /// the rig's own <c>doorFaces</c> and must match the last faces of the hull, face for face and
+        /// bit for bit. A rig that composes its leaf anywhere else would otherwise have a piece of her
+        /// house cut away and drawn as a door.</para>
+        ///
+        /// <para><b>Public, shared with the fleet adjudicator</b>, for the reason
+        /// <see cref="AppendMeshInteriorIfConverted"/> gives: one copy of the rule, two callers.</para>
+        /// </summary>
+        public static DoorLeafFaces FindDoorLeaf(IRigScriptHost host, string globalName, RigMeshData data,
+                                                 RigHullExtraction extraction = null)
+        {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            RigMeshData closed = RigMeshExtractor.ExtractDoorLeaf(host, globalName, extraction, data,
+                                                                  DoorLeafShutPose);
+            if (closed == null || closed.Faces.Count == 0) return null;
+
+            RigMeshData open = RigMeshExtractor.ExtractDoorLeaf(host, globalName, extraction, data,
+                                                                DoorLeafOpenPose);
+            int count = closed.Faces.Count;
+            if (open == null || open.Faces.Count != count)
+                throw new InvalidOperationException(
+                    $"{globalName}: her door leaf has {count} faces shut and " +
+                    $"{(open == null ? 0 : open.Faces.Count)} open. The renderer swaps one leaf mesh " +
+                    "for the other, so the two poses must be the same faces moved, not different faces.");
+
+            int start = data.Faces.Count - count;
+            for (int i = 0; i < count; i++)
+            {
+                if (start >= 0 && SameFace(data.Faces[start + i], closed.Faces[i])) continue;
+                throw new InvalidOperationException(
+                    $"{globalName}: the last {count} faces of her extraction are not her door leaf at " +
+                    $"doorOpen {DoorLeafShutPose} (leaf face {i} does not match). The bake lifts the leaf " +
+                    "off the TAIL, where RigMeshSymbols.Reconstructions composes it " +
+                    "(`F.concat(doorFaces({doorOpen:0}))`). If the rig now composes it elsewhere, re-aim " +
+                    "this lookup rather than bake, or a piece of her house is cut out and drawn as a door.");
+            }
+
+            return new DoorLeafFaces
+            {
+                Start = start,
+                Count = count,
+                InHull = data.Faces.GetRange(start, count),
+                Closed = closed,
+                Open = open,
+            };
+        }
+
+        /// <summary>
+        /// Remove the leaf <see cref="FindDoorLeaf"/> found from <paramref name="data"/>, and the
+        /// matching entries from <paramref name="sides"/>; returns the shortened side codes (null in,
+        /// null out). Null <paramref name="leaf"/> changes nothing.
+        ///
+        /// <para>Call it AFTER the room is appended: the leaf sits in front of the room, so removal
+        /// only shifts room faces, and the room extraction reads the hull as it has always read it.
+        /// Also gives both leaf poses the hull's interior palette, so a converted hull's leaf meshes
+        /// carry the same vertex channels as her hull mesh.</para>
+        /// </summary>
+        public static byte[] LiftDoorLeaf(RigMeshData data, DoorLeafFaces leaf, byte[] sides)
+        {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (leaf == null) return sides;
+
+            int end = leaf.Start + leaf.Count;
+            if (leaf.Start < 0 || end > data.Faces.Count)
+                throw new InvalidOperationException(
+                    $"{data.GlobalName}: the door leaf [{leaf.Start}, {end}) is outside her " +
+                    $"{data.Faces.Count} faces. Something removed faces between finding the leaf and lifting it.");
+            for (int i = 0; i < leaf.Count; i++)
+                if (!ReferenceEquals(data.Faces[leaf.Start + i], leaf.InHull[i]))
+                    throw new InvalidOperationException(
+                        $"{data.GlobalName}: face {leaf.Start + i} is no longer the door leaf face found " +
+                        "there. Faces were inserted or reordered between finding the leaf and lifting it.");
+
+            data.Faces.RemoveRange(leaf.Start, leaf.Count);
+            leaf.Closed.InteriorMaterials = data.InteriorMaterials;
+            leaf.Open.InteriorMaterials = data.InteriorMaterials;
+
+            if (sides == null) return null;
+            int head = Math.Min(sides.Length, leaf.Start);
+            int tail = Math.Max(0, sides.Length - end);
+            var kept = new byte[head + tail];
+            Array.Copy(sides, 0, kept, 0, head);
+            if (tail > 0) Array.Copy(sides, end, kept, head, tail);
+            return kept;
+        }
+
+        /// <summary>Bit-exact face equality: both lists come out of the same V8 evaluating the same
+        /// arithmetic, so any difference at all means a different face.</summary>
+        static bool SameFace(RigFace a, RigFace b)
+        {
+            if (a.Mat != b.Mat || a.Level != b.Level || a.B != b.B || a.Db != b.Db ||
+                a.V.Length != b.V.Length)
+                return false;
+            for (int k = 0; k < a.V.Length; k++)
+                if (a.V[k].X != b.V[k].X || a.V[k].Y != b.V[k].Y || a.V[k].Z != b.V[k].Z)
+                    return false;
+            return true;
+        }
+
+        /// <summary>Take a mesh sub-asset out of its def's file and destroy it; null is a no-op.</summary>
+        static void RemoveSubMesh(Mesh old)
+        {
+            if (old == null) return;
+            AssetDatabase.RemoveObjectFromAsset(old);
+            UnityEngine.Object.DestroyImmediate(old, allowDestroyingAssets: true);
+        }
+
         public static HullMeshDef Bake(string scriptPath, string globalName, string assetPath, string id,
                                        RigHullExtraction extraction = null)
         {
             using IRigScriptHost host = RigScriptHostFactory.Create();
             RigMeshData data = RigMeshExtractor.ExtractFrom(host, scriptPath, globalName,
                                                            hull: extraction);
+
+            // THE DOOR LEAF (2026-09-17), found while it is still the tail of her own faces. It stays
+            // in `data` through the classification and the room below, so every committed side code
+            // and room face is derived exactly as before; it is lifted out just before the build.
+            DoorLeafFaces leaf = FindDoorLeaf(host, globalName, data, extraction);
 
             // The per-face INTERIOR MASK (ADR 0023). HULLS ONLY — never fittings, whose legs and
             // propellers must stay wettable (see RigMeshBuilder.Build's parameter doc). The log
@@ -988,6 +1138,22 @@ namespace HiddenHarbours.Tools.RigBaking
             // hand-measured HullMeshDef.WatertightDeckHeightMeters — it does for 9 of the 11 hulls,
             // which is the independent cross-check that says the classifier is right.
             byte[] interiorSides = RigMeshInteriorClassifier.ClassifySides(data);
+
+            // The leaf's side codes, per pose. SHUT is its slice of the mask above, the codes it has
+            // always shipped with. OPEN is classified again with the open leaf in place of the shut
+            // one, because a leaf slid along the house is reached by a different sea.
+            byte[] leafSidesClosed = null, leafSidesOpen = null;
+            if (leaf != null)
+            {
+                leafSidesClosed = new byte[leaf.Count];
+                Array.Copy(interiorSides, leaf.Start, leafSidesClosed, 0, leaf.Count);
+
+                List<RigFace> openPose = data.Faces.GetRange(0, leaf.Start);
+                openPose.AddRange(leaf.Open.Faces);
+                byte[] openSides = RigMeshInteriorClassifier.ClassifySides(data.WithFaces(openPose));
+                leafSidesOpen = new byte[leaf.Count];
+                Array.Copy(openSides, leaf.Start, leafSidesOpen, 0, leaf.Count);
+            }
 
             // ---- THE ROOM, AS GEOMETRY (ADR 0038, full mesh interiors) --------------------------
             //
@@ -1004,8 +1170,18 @@ namespace HiddenHarbours.Tools.RigBaking
                 Debug.Log(roomReport.TrimEnd());
             }
 
-            RigMeshBuild build = RigMeshBuilder.Build(data, $"{globalName}HullMesh", interiorSides);
+            // Logged BEFORE the lift, over the faces as extracted, so the evidence trail keeps
+            // counting what it counted before the leaf moved to its own meshes.
             LogInteriorMask(globalName, data, interiorSides);
+
+            interiorSides = LiftDoorLeaf(data, leaf, interiorSides);
+            RigMeshBuild build = RigMeshBuilder.Build(data, $"{globalName}HullMesh", interiorSides);
+            RigMeshBuild leafClosedBuild = leaf != null
+                ? RigMeshBuilder.Build(leaf.Closed, $"{globalName}DoorLeafClosed", leafSidesClosed)
+                : null;
+            RigMeshBuild leafOpenBuild = leaf != null
+                ? RigMeshBuilder.Build(leaf.Open, $"{globalName}DoorLeafOpen", leafSidesOpen)
+                : null;
 
             // --- the measured azimuth convention (quarter turn: broadside, least ambiguous) --------
             AzimuthConvention convention = MeasureAzimuth(host, globalName, data, extraction);
@@ -1108,20 +1284,32 @@ namespace HiddenHarbours.Tools.RigBaking
             // already had, so nothing moves.
             def.LevelTags = LevelTableFor(data);
 
-            // The mesh sub-asset: replace, never accumulate. DestroyImmediate on the old one removes
-            // it from the asset file; the new one is added under the same def.
+            // The mesh sub-assets: replace, never accumulate. DestroyImmediate on the old one removes
+            // it from the asset file; the new one is added under the same def. The two leaf poses are
+            // both-or-neither, and a hull re-baked without a door loses a stale pair rather than
+            // drawing a leaf on a wall that no longer has one.
             Mesh oldMesh = def.Mesh;
+            Mesh oldLeafClosed = def.DoorLeafClosed;
+            Mesh oldLeafOpen = def.DoorLeafOpen;
             def.Mesh = build.Mesh;
+            def.DoorLeafClosed = leafClosedBuild?.Mesh;
+            def.DoorLeafOpen = leafOpenBuild?.Mesh;
             if (created)
             {
                 AssetDatabase.CreateAsset(def, assetPath);
             }
-            else if (oldMesh != null)
+            else
             {
-                AssetDatabase.RemoveObjectFromAsset(oldMesh);
-                UnityEngine.Object.DestroyImmediate(oldMesh, allowDestroyingAssets: true);
+                RemoveSubMesh(oldMesh);
+                RemoveSubMesh(oldLeafClosed);
+                RemoveSubMesh(oldLeafOpen);
             }
             AssetDatabase.AddObjectToAsset(build.Mesh, def);
+            if (leaf != null)
+            {
+                AssetDatabase.AddObjectToAsset(leafClosedBuild.Mesh, def);
+                AssetDatabase.AddObjectToAsset(leafOpenBuild.Mesh, def);
+            }
             EditorUtility.SetDirty(def);
             AssetDatabase.SaveAssets();
             AssetDatabase.ImportAsset(assetPath);
@@ -1129,6 +1317,10 @@ namespace HiddenHarbours.Tools.RigBaking
             Debug.Log($"[rig-mesh] {(created ? "Created" : "Refreshed")} {assetPath}: {build} — " +
                       $"azimuth {(def.AzimuthCounterClockwise ? "CCW (mapping negates)" : "CW")}, " +
                       $"rock ({rollA}, {pitchA}, {heaveA}), usable = {def.IsUsable()}" +
+                      (leaf != null
+                          ? $", door leaf {leaf.Count} faces lifted into DoorLeafClosed ({leafClosedBuild}) " +
+                            $"and DoorLeafOpen ({leafOpenBuild})"
+                          : ", no door leaf") +
                       (def.LevelTags.Length > 0
                           ? $", cutaway levels [{string.Join(" · ", data.Levels)}]"
                           : ", no cutaway (her rig publishes no geometry())") + ".");

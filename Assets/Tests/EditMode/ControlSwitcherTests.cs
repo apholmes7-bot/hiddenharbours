@@ -535,6 +535,217 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "which is a place on her deck, not a mode");
         }
 
+        // =====================================================================================
+        //  AT A CABIN DOOR, E ONLY OPENS THE DOOR (owner playtest, 2026-09-17)
+        //
+        //  "only open the door, you should need to be within a small radius of the helm to push e and
+        //  take control". Two halves, pinned apart: the helm radius is SMALL, and inside it a cabin door
+        //  she stands NEARER than the helm keeps the press. Every other fixture keeps the 08-25 ranking
+        //  (the helm is a station and beats a pail at your feet), and that is pinned again here too.
+        // =====================================================================================
+
+        /// <summary>The owner's "small radius", in metres. A literal on purpose: a guard that asked the
+        /// switcher for its own radius would pass whatever the radius became.</summary>
+        private const float OwnersHelmRadius = 0.5f;
+
+        /// <summary>
+        /// A cabin door as the switcher sees one — a candidate that is also an <see cref="ICabinThreshold"/>.
+        /// A plain object for the reason <see cref="Fake"/> is one, and a resolve counter the same way.
+        /// </summary>
+        private sealed class FakeDoor : IInteractable, ICabinThreshold
+        {
+            public string Id { get; set; } = "test.cabin_door";
+            public Vector2 WorldPosition { get; set; }
+            public float ReachMeters { get; set; } = 1.2f;
+            public int Priority { get; set; } = InteractPriority.Fixture;
+            public InteractContext Contexts { get; set; } = InteractContext.OnDeck;
+            public bool RequiresFacing { get; set; }
+            public string VerbLabel { get; set; } = "Open the door";
+
+            /// <summary>False is a door playing its cue: a moving leaf answers unavailable.</summary>
+            public bool Available = true;
+
+            public int Calls;
+            public int Resolves;
+
+            public bool IsAvailable { get { Resolves++; return Available; } }
+
+            public void Interact(in InteractActor actor) => Calls++;
+
+            public bool TryWalkThrough(Vector2 hullLocalMetres) => false;
+        }
+
+        private static FakeDoor DoorAt(Vector3 at)
+        {
+            var door = new FakeDoor { WorldPosition = at };
+            Interactables.Register(door);
+            return door;
+        }
+
+        /// <summary>Aboard over open water — no dock, no land, so no step ashore can take the press — and
+        /// standing <paramref name="fromTheHelm"/> off the helm spot, which is handed back.</summary>
+        private (ControlSwitcher sw, BoatController boat, GameObject playerGo, Vector3 helm)
+            AboardInOpenWaterAt(Vector2 fromTheHelm)
+        {
+            var (sw, _, boat, _, playerGo, _) = Build(new Vector3(50f, 50f, 0f), new Vector3(51f, 50f, 0f));
+            NoBoardingMove(sw);
+            Assert.IsTrue(sw.TryInteract(), "harness: she has to actually get aboard");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
+            Assert.IsFalse(sw.CanStepAshore(), "harness: open water, nothing to step onto");
+
+            Vector3 helm = sw.HelmWorldPosition;
+            playerGo.transform.position = helm + (Vector3)fromTheHelm;
+            _modeEvents.Clear(); _boatEvents.Clear();
+            return (sw, boat, playerGo, helm);
+        }
+
+        [Test]
+        public void TheHelmRadius_IsTheOwnersSmallRadius()
+        {
+            var (sw, _, playerGo, helm) = AboardInOpenWaterAt(new Vector2(OwnersHelmRadius - 0.01f, 0f));
+            Assert.IsTrue(sw.WithinHelmReach(), "just inside half a metre, the helm is in reach");
+
+            playerGo.transform.position = helm + new Vector3(0f, -(OwnersHelmRadius - 0.01f), 0f);
+            Assert.IsTrue(sw.WithinHelmReach(), "…in every direction: it is a radius");
+
+            playerGo.transform.position = helm + new Vector3(OwnersHelmRadius + 0.01f, 0f, 0f);
+            Assert.IsFalse(sw.WithinHelmReach(), "just outside it, it is not");
+            Assert.IsFalse(sw.TryInteract(), "and E there takes nothing");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
+            Assert.AreEqual(0, _boatEvents.Count, "the camera never went to the boat");
+        }
+
+        [Test]
+        public void InsideTheHelmRadius_NearerACabinDoor_EOpensTheDoor_AndNeverTakesTheHelm()
+        {
+            // The owner's playtest: a wheelhouse door a pace from the wheel, the fisher at the door and
+            // inside the helm radius. Before 2026-09-17 this press took the helm and the door never moved.
+            var (sw, boat, _, helm) = AboardInOpenWaterAt(new Vector2(0.3f, 0f));
+            FakeDoor door = DoorAt(helm + new Vector3(0.5f, 0f, 0f));
+
+            Assert.IsTrue(sw.WithinHelmReach(), "harness: she IS inside the helm radius");
+            Assert.IsFalse(sw.TakesTheHelmOnThisPress(), "…but she is standing at the door");
+            Assert.IsFalse(sw.CanInteract(), "so the switcher has nothing of its own to offer there");
+
+            Assert.IsTrue(sw.BeginInteract(), "the press was spent");
+
+            Assert.AreEqual(1, door.Calls, "…on the door");
+            Assert.AreEqual(1, door.Resolves, "one press, one resolve, as everywhere else on the deck");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "she is still on deck, not at the helm");
+            Assert.IsFalse(boat.enabled, "nobody is steering");
+            Assert.AreEqual(0, _boatEvents.Count, "and the camera never went to the boat");
+            Assert.AreEqual(0, _modeEvents.Count);
+        }
+
+        [Test]
+        public void OnTheHelmSpot_TheHelmStillWins_OverACabinDoorBesideIt()
+        {
+            var (sw, boat, _, helm) = AboardInOpenWaterAt(Vector2.zero);
+            FakeDoor door = DoorAt(helm + new Vector3(0.4f, 0f, 0f));
+
+            Assert.IsTrue(sw.TakesTheHelmOnThisPress(), "on the spot, the helm is nearer than any door");
+            Assert.IsTrue(sw.BeginInteract());
+
+            Assert.AreEqual(ControlMode.Aboard, sw.Mode, "E took the helm");
+            Assert.IsTrue(boat.enabled);
+            Assert.AreEqual(1, _boatEvents.Count);
+            Assert.AreEqual(0, door.Calls, "the door never heard the press");
+            Assert.AreEqual(0, door.Resolves, "…and was not even resolved: the helm answers first");
+        }
+
+        [Test]
+        public void ADoorMidSwing_StillKeepsTheHelmFromThePress()
+        {
+            // A door playing its cue answers unavailable, so the resolver skips it. A second press during
+            // the swing must not fall through to the helm: she is still standing at the door.
+            var (sw, boat, _, helm) = AboardInOpenWaterAt(new Vector2(0.3f, 0f));
+            FakeDoor door = DoorAt(helm + new Vector3(0.5f, 0f, 0f));
+            door.Available = false;
+
+            Assert.IsFalse(sw.TakesTheHelmOnThisPress(), "where she stands, not what the door is doing, decides");
+
+            sw.BeginInteract();   // where else the press goes (the rail, over open water) is not this case's
+
+            Assert.AreNotEqual(ControlMode.Aboard, sw.Mode, "E mid-swing never takes the helm");
+            Assert.IsFalse(boat.enabled);
+            Assert.AreEqual(0, _boatEvents.Count);
+            Assert.AreEqual(0, door.Calls, "an unavailable door is not worked");
+        }
+
+        [Test]
+        public void ADoorThatDoesNotReachHer_LeavesTheHelmItsPress()
+        {
+            var (sw, _, _, helm) = AboardInOpenWaterAt(new Vector2(0.3f, 0f));
+            FakeDoor door = DoorAt(helm + new Vector3(0.5f, 0f, 0f));
+            door.ReachMeters = 0.1f;   // nearer than the helm, but she is outside the door's own reach
+
+            Assert.IsTrue(sw.TakesTheHelmOnThisPress(), "a door she cannot work is not a door she is at");
+            Assert.IsTrue(sw.BeginInteract());
+
+            Assert.AreEqual(ControlMode.Aboard, sw.Mode);
+            Assert.AreEqual(0, door.Calls);
+        }
+
+        [Test]
+        public void OnlyADoorYields_APailNearerThanTheHelmStillLosesToIt()
+        {
+            var (sw, _, _, helm) = AboardInOpenWaterAt(new Vector2(0.3f, 0f));
+            Fake pail = Candidate(helm + new Vector3(0.5f, 0f, 0f));
+
+            Assert.IsTrue(sw.TakesTheHelmOnThisPress(), "not a door: the helm is still a station");
+            Assert.IsTrue(sw.BeginInteract());
+
+            Assert.AreEqual(ControlMode.Aboard, sw.Mode);
+            Assert.AreEqual(0, pail.Calls);
+            Assert.AreEqual(0, pail.Resolves, "the helm answered first, exactly as it did before the ruling");
+        }
+
+        [Test]
+        public void WithTheVerbSwitchedOff_TheHelmTakesThePressAtTheDoor()
+        {
+            // The escape hatch: with the verb off E cannot open a door at all, so there is nothing to yield
+            // to and the helm radius alone decides.
+            var (sw, boat, _, helm) = AboardInOpenWaterAt(new Vector2(0.3f, 0f));
+            FakeDoor door = DoorAt(helm + new Vector3(0.5f, 0f, 0f));
+            sw.ConfigureInteractVerb(false, InteractResolver.DefaultFacingArcDegrees);
+
+            Assert.IsTrue(sw.TakesTheHelmOnThisPress());
+            Assert.IsTrue(sw.BeginInteract());
+
+            Assert.AreEqual(ControlMode.Aboard, sw.Mode);
+            Assert.IsTrue(boat.enabled);
+            Assert.AreEqual(0, door.Calls);
+            Assert.AreEqual(0, door.Resolves);
+        }
+
+        [Test]
+        public void ThePopupAgrees_AtTheDoorItOffersTheDoor_OnTheHelmSpotTheHelm()
+        {
+            var (sw, _, playerGo, helm) = AboardInOpenWaterAt(new Vector2(0.3f, 0f));
+            FakeDoor door = DoorAt(helm + new Vector3(0.5f, 0f, 0f));
+            // Update() would also read the keyboard and the shell; the popup is these two calls of it.
+            System.Reflection.MethodInfo updateOffer = typeof(ControlSwitcher).GetMethod(
+                "UpdateOffer", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            Assert.IsNotNull(updateOffer, "harness: the switcher's popup refresh");
+
+            void Refresh()
+            {
+                InteractVerb.PublishCandidate(
+                    InteractActor.For(playerGo.transform.position, Vector2.zero, ControlMode.OnDeck),
+                    InteractResolver.DefaultFacingArcDegrees);
+                updateOffer.Invoke(sw, null);
+            }
+
+            Refresh();
+            Assert.IsTrue(InteractOffer.Current.Has, "something is offered at the door");
+            Assert.AreEqual(door.Id, InteractOffer.Current.Id, "…and it is the door, not the helm");
+            Assert.AreEqual("Open the door", InteractOffer.Current.Label);
+
+            playerGo.transform.position = helm;
+            Refresh();
+            Assert.AreEqual(ControlStrings.IdTakeHelm, InteractOffer.Current.Id, "on the spot the popup says the helm");
+        }
+
         // ---- the deck clamp maths (pure) ------------------------------------------------------
 
         [Test]
