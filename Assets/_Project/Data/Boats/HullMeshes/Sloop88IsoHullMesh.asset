@@ -476,7 +476,7 @@ MonoBehaviour:
   RockPitchDegrees: 0.55
   RockHeavePixels: 1
   RestingDraftMeters: 1.35
-  WatertightDeckHeightMeters: 2.55
+  WatertightDeckHeightMeters: 1.1
   WatertightHalfBeamMeters: 3.4
   WakeSternOffsetMeters: 13.5
   Lamps: []
