@@ -18,6 +18,14 @@ namespace HiddenHarbours.Boats
     /// — she builds nothing and costs one null check on load. The owner enrolling a hull later is a Def
     /// edit with nothing to re-wire.</para>
     ///
+    /// <para><b>⭐ REBUILT ON EVERY HULL CHANGE</b> (owner, 2026-09-17). The hulls a player actually
+    /// sails are swaps onto a root that never stopped existing — the dev picker, a purchase and a save
+    /// restore all go through <see cref="BoatController.SetHull"/> — and a cabin built once at
+    /// <c>Start</c> stayed the FIRST hull's cabin for the rest of the session: a cape islander or a
+    /// lobster boat swapped onto a dory root had no door, no room and no cutaway at all.
+    /// <see cref="Rebuild"/> takes the old cabin down and builds the one the new hull's data
+    /// describes.</para>
+    ///
     /// <para><b>⭐ WHAT IT BUILDS, AND WHY THE SHAPE.</b> Two children of the boat ROOT, each a
     /// <see cref="HullLocalAnchor"/> so it stays square to the screen while the body under it yaws:</para>
     /// <list type="bullet">
@@ -75,11 +83,23 @@ namespace HiddenHarbours.Boats
         /// the fleet and is not a fault.</summary>
         public bool Built => Interior != null;
 
+        /// <summary>The visual def the last <see cref="Build"/> read — the cabin standing now was built
+        /// from it, and "she has none" is an answer too. <see cref="Rebuild"/> compares against it.</summary>
+        private BoatVisualDef _builtFrom;
+
+        /// <summary>True once <see cref="Build"/> has read a hull. Before that, <c>Start</c>'s own build
+        /// is still to come and will read whatever hull she wears by then.</summary>
+        private bool _hasRead;
+
+        /// <summary>The sprite room's node, or null on a mesh-room hull.</summary>
+        private GameObject _room;
+
         private void Start() => Build();
 
         /// <summary>
-        /// Build the cabin, once. Public so a test drives it without waiting on a frame, and idempotent
-        /// so a second call is free.
+        /// Build the cabin for the hull she wears now. Public so a test drives it without waiting on a
+        /// frame, and idempotent so a second call is free — a DIFFERENT hull goes through
+        /// <see cref="Rebuild"/>.
         /// </summary>
         public void Build()
         {
@@ -89,6 +109,8 @@ namespace HiddenHarbours.Boats
             BoatHullDef hull = controller != null ? controller.Hull : null;
             BoatVisualDef visual = hull != null ? hull.Visual : null;
             BoatInteriorDef def = visual != null ? visual.Interior : null;
+            _builtFrom = visual;
+            _hasRead = true;
 
             // ABSENCE IS DATA — most of the fleet has never been measured. Silent, and cheap.
             if (def == null || !def.HasInterior()) return;
@@ -130,6 +152,7 @@ namespace HiddenHarbours.Boats
                 roomRenderer.sortingOrder = _sortingOrderAboveHull;
                 roomRenderer.enabled = false;   // nobody is inside a boat that has just been built
                 roomPivot = roomGo.transform;
+                _room = roomGo;
             }
 
             Interior = gameObject.AddComponent<BoatInterior>();
@@ -189,6 +212,53 @@ namespace HiddenHarbours.Boats
                            // a press that opens a door would be the words drifting from the action, which
                            // is the exact failure VerbLabel derives itself to avoid (rule 6).
                            ReachMetres(door), "Open the door", "Close the door");
+        }
+
+        /// <summary>
+        /// <b>Her hull has changed: take the old cabin down and build the new hull's.</b> Called by
+        /// <see cref="BoatController.SetHull"/>. Free when nothing changed — the same visual def is the
+        /// same cabin, so a save restore of the hull she already wears keeps a player who is below
+        /// exactly where they are — and a no-op before the first <see cref="Build"/>, whose read of the
+        /// hull is still to come.
+        /// </summary>
+        public void Rebuild()
+        {
+            if (!_hasRead) return;
+
+            var controller = GetComponent<BoatController>();
+            BoatHullDef hull = controller != null ? controller.Hull : null;
+            BoatVisualDef visual = hull != null ? hull.Visual : null;
+            if (ReferenceEquals(visual, _builtFrom)) return;
+
+            TearDown();
+            Build();
+        }
+
+        /// <summary>
+        /// Remove everything <see cref="Build"/> made.
+        ///
+        /// <para><b>Out through the cabin's own exit first</b>, so <c>CabinLeft</c> is published while
+        /// the cutaway that closes the house on it still exists.</para>
+        ///
+        /// <para>⚠ <b><c>DestroyImmediate</c>, not <c>Destroy</c>.</b> <see cref="BoatInterior"/>,
+        /// <see cref="BoatCutaway"/> and <see cref="BoatCabinDoor"/> are all
+        /// <c>[DisallowMultipleComponent]</c>, and <c>Destroy</c> only marks them: the old ones would
+        /// stand until the end of the frame, refusing the <c>AddComponent</c> of the build that follows
+        /// in this same call, and a doorway search in between would find the old door.</para>
+        /// </summary>
+        private void TearDown()
+        {
+            if (Interior != null && Interior.IsInside) Interior.TryExit();
+
+            if (Door != null) DestroyImmediate(Door.gameObject);
+            if (_room != null) DestroyImmediate(_room);
+            if (Cutaway != null) DestroyImmediate(Cutaway);
+            if (Interior != null) DestroyImmediate(Interior);
+
+            Door = null;
+            _room = null;
+            Cutaway = null;
+            Interior = null;
         }
 
         /// <summary>The door's own id, or a stable stand-in. Ids must be unique among live registrants,

@@ -172,6 +172,49 @@ namespace HiddenHarbours.Tests.RigBaking
             return m;
         }
 
+        /// <summary>
+        /// <b>One mesh holding <paramref name="first"/>'s faces and then <paramref name="second"/>'s</b>,
+        /// positions, normals, TexCoord0 and TexCoord1 — the channels
+        /// <see cref="MeshWithoutTheRoom"/> keeps, for the same CPU oracle.
+        ///
+        /// <para>For a hull whose door leaf is baked apart (2026-09-17): the GPU draws the hull and the
+        /// renderer's "DoorLeaf" child in one picture, and the reference rasterizer takes one mesh.
+        /// A mesh without level tags reads as zero tags, which is what the bake writes for it.</para>
+        /// </summary>
+        public static Mesh MeshWithAppended(Mesh first, Mesh second)
+        {
+            var verts = new List<Vector3>();
+            var norms = new List<Vector3>();
+            var attrs = new List<Vector4>();
+            var tags = new List<Vector2>();
+            var tris = new List<int>();
+            foreach (Mesh part in new[] { first, second })
+            {
+                int baseIndex = verts.Count;
+                verts.AddRange(part.vertices);
+                norms.AddRange(part.normals);
+                var partAttrs = new List<Vector4>();
+                part.GetUVs(0, partAttrs);
+                var partTags = new List<Vector2>();
+                part.GetUVs(1, partTags);
+                if (partTags.Count != part.vertexCount)
+                    partTags = Enumerable.Repeat(Vector2.zero, part.vertexCount).ToList();
+                attrs.AddRange(partAttrs);
+                tags.AddRange(partTags);
+                foreach (int i in part.triangles) tris.Add(baseIndex + i);
+            }
+
+            var m = new Mesh
+            {
+                name = first.name + "+" + second.name,
+                indexFormat = UnityEngine.Rendering.IndexFormat.UInt32,
+            };
+            m.SetVertices(verts); m.SetNormals(norms);
+            m.SetUVs(0, attrs); m.SetUVs(1, tags);
+            m.SetTriangles(tris, 0, true);
+            return m;
+        }
+
         public static HashSet<string> DefIds() =>
             new HashSet<string>(All().Select(c => c.DefId), StringComparer.Ordinal);
 
