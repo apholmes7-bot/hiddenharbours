@@ -1,7 +1,7 @@
 {
  "build": "fisher",
  "derivedFromRigSha256": {
-  "characterIsoRig6.js": "c2eab86b4a0b8aefa695756fbdd84559befa2ef5b8529a7ab669d9f31606a4a4",
+  "characterIsoRig6.js": "e440095542dce0c8c68b65e59a7a62f6f9eab10f98a11745f1a139f34a20bb28",
   "shovelIsoRig.js": "f79bb1c82377f4c910c1952a83f091588df1d71b40b0fcc4f24bbd3e57e1464e"
  },
  "order": ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],

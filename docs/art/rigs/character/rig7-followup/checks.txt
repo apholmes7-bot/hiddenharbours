@@ -1,0 +1,123 @@
+== 0. inputs: the merged bytes
+PASS main and merged both hold all 9 chain + face files
+NOTE eyeIsoRig.js                   main 2a1fc9375f26  merged 2a1fc9375f26
+NOTE headIsoRig3.js                 main 88c2acf89df4  merged 88c2acf89df4
+NOTE characterIsoRig6.js            main c2eab86b4a0b  merged e440095542dc
+NOTE characterIsoRig7.js            main 0dddf45345f4  merged f2c51c3be2a9
+NOTE characterFaceStudy.js          main 2adcfb56514a  merged 001dbcc01c59
+NOTE characterFinishConfig.js       main 7883aa5cc565  merged 7883aa5cc565
+NOTE characterFinish.js             main 68361f5b9d9a  merged 68361f5b9d9a
+NOTE characterArtStudy.js           main 7e50dde30af1  merged 7e50dde30af1
+NOTE characterFaceComposition.js    main 0c91a955e962  merged 0c91a955e962
+PASS the three edited files carry the landing hashes: rig 6 e4400955, rig 7 f2c51c3b, face study 001dbcc0
+PASS exactly three files differ from main — characterIsoRig6.js, characterIsoRig7.js, characterFaceStudy.js
+REBASE job1 "only characterIsoRig7.js was edited"
+         old: edited set == {rig 7}
+         new: edited set vs main == {rig 6, rig 7, face study}, each at its landing hash
+REBASE job2 "only characterIsoRig7.js was edited"
+         old: edited set == {rig 7}
+         new: same as job1
+REBASE job3 "only characterIsoRig6.js and characterIsoRig7.js were edited"
+         old: edited set == {rig 6, rig 7} over the 4 chain files
+         new: same as job1 (the face study is outside job 3's 4-file chain)
+REBASE job4 "only characterFaceStudy.js was edited"
+         old: edited set == {face study} over 9 files
+         new: same as job1
+PASS rig 6 is +2 lines; rig 7 is +118 = job1 +41 plus job2 +77, and job 3 adds 0 to it (in-place token)
+REBASE job3 "the edit is 2 new lines in rig 6 and 0 in rig 7"
+         old: rig 7 line delta vs main == 0
+         new: rig 7 line delta vs main == job1 delta + job2 delta (41 + 77); job 3's own delta still 0
+PASS job 3's fix is present in both merged rigs
+PASS main's rig 7 has no carryClips/additive; the merged rig 7 has both APIs
+PASS revision strings unbumped: rig 7 7.1, rig 6 6.10, CharacterIso7.base == CharacterIso6.revision
+
+== 1. job 1: the carry-clip table
+PASS CARRY_CLIPS names, in order: helm_idle, helm_walk, oars_idle, oars_row
+  clip        rides  carry  frames    ms  loop   settle mount   power  parked      pin
+  helm_idle  idle   helm       6    170  true   false  free    short  []          carry_mid+carry_L+carry_R
+  helm_walk  walk   helm       8    110  true   false  free    short  []          carry_mid+carry_L+carry_R
+  oars_idle  idle   oars       6    170  true   false  free    short  []          carry_L+carry_R
+  oars_row   walk   oars       8    110  true   false  free    short  []          carry_L+carry_R
+PASS frames/ms match FisherIso.asset HelmStance/OarsStance: idle 6f/170ms, walk 8f/110ms
+PASS every carry clip rides an anim rig 6 sanctions for that carry (CARRIES[carry].anims)
+PASS rock is null on every carry clip
+PASS every pin bone exists in the skeleton
+PASS a carry clip carries the full bone list on all ten presets (no bone added)
+PASS NEW cross-kit pin: carryClips() on the merged chain is byte-identical to job 1's delivered chain, all ten presets
+PASS exportBuild(): carryClips 4, clips 35
+
+== 2. THE GOLDEN RULE on the merged chain
+PASS all 35 clips x 10 presets x every frame (3080 frames): goldenDiff max 1.04e-15 m (girl astrideStand f5) <= 0.0001
+PASS the 4 carry clips x 10 presets x every frame (280 frames) vs facesOf(pose(anim,u,build,{carry})): max 5.56e-16 m (fisher oars_row f1)
+
+== 3. job 3: mount* and lift under 3 m (rig 6 facesOf, merged)
+PASS mountUp max |vertex| = 1.946 m (ginny f13)
+PASS mountDown max |vertex| = 1.946 m (ginny f0)
+PASS mountCab max |vertex| = 1.946 m (ginny f15)
+PASS mountCabDown max |vertex| = 1.994 m (cutter f7)
+PASS lift max |vertex| = 1.549 m (fisher f6)
+NOTE worst of mount* + lift across ten presets: 1.994 m (mountCabDown cutter f7)
+PASS rig 6 facesOf bit-identical to MAIN on the other 30 clips x 10 presets x every frame
+PASS rig 6 facesOf bit-identical to JOB 3's delivered chain on the 5 fixed clips (the merge moved none of job 3's frames)
+
+== 4. clip() records: what a bake reads
+PASS clip() byte-identical to MAIN on the 30 untouched clips x 10 presets
+PASS clip() byte-identical to JOB 3's delivered chain on the 5 fixed clips x 10 presets
+REBASE job1 "the existing 35 clips are byte-identical on all ten presets"
+         old: clips() == as-delivered (main) for all 35
+         new: 30 clips == main; mountUp/mountDown/mountCab/mountCabDown/lift == job 3 delivered
+REBASE job2 "the existing 35 clips are byte-identical on all ten presets"
+         old: clips() == as-delivered (main) for all 35
+         new: same as job1
+  fisher, per fixed clip: frames whose float32 keys differ from main (the def stores float32)
+    mountUp      16/16 frames  header(frames,ms,loop,settle,mount,carry,power,parked) same: true  f0(0.009m) f1(0.009m) f2(0.027m) f3(0.187m) f4(0.963m) f5(147.493m) f6(233.756m) f7(292.471m) f8(275.562m) f9(197.292m) f10(1.245m) f11(0.546m) f12(0.547m) f13(0.539m) f14(0.469m) f15(0.443m)
+    mountDown    14/14 frames  header(frames,ms,loop,settle,mount,carry,power,parked) same: true  f0(0.443m) f1(0.477m) f2(0.559m) f3(0.510m) f4(0.807m) f5(23.389m) f6(271.170m) f7(290.645m) f8(214.054m) f9(111.842m) f10(0.367m) f11(0.059m) f12(0.009m) f13(0.009m)
+    mountCab     18/18 frames  header(frames,ms,loop,settle,mount,carry,power,parked) same: true  f0(0.009m) f1(0.009m) f2(0.006m) f3(0.061m) f4(0.241m) f5(0.808m) f6(3.156m) f7(232.762m) f8(355.843m) f9(305.675m) f10(257.199m) f11(5.494m) f12(1.092m) f13(0.572m) f14(0.531m) f15(0.502m) f16(0.459m) f17(0.443m)
+    mountCabDown 16/16 frames  header(frames,ms,loop,settle,mount,carry,power,parked) same: true  f0(0.443m) f1(0.463m) f2(0.516m) f3(0.515m) f4(0.744m) f5(2.978m) f6(242.156m) f7(304.816m) f8(352.043m) f9(215.262m) f10(1.942m) f11(0.455m) f12(0.113m) f13(0.005m) f14(0.009m) f15(0.009m)
+    lift         8/8 frames  header(frames,ms,loop,settle,mount,carry,power,parked) same: true  f0(0.084m) f1(0.584m) f2(0.730m) f3(0.184m) f4(0.105m) f5(0.029m) f6(0.011m) f7(0.011m)
+NOTE bone key order: unchanged
+
+== 5. job 2: the additive rock on the merged chain (fisher)
+PASS goldenDiffRocked over the brief's grid, 1176 rows: worst 6.80e-16 m {"roll":-10,"pitch":10,"counter":1,"anim":"walk","frame":0}
+PASS NEW cross-kit pin: additive() byte-identical to job 2's delivered chain on all 1176 grid rows
+PASS the finding reproduces: rock {10,5,1} touches 21 of 45 bones, legs/pelvis/feet/inseam clean (0)
+NOTE touched: torso neck neck_tip head shoulder_L shoulder_L_tip elbow_L elbow_L_tip wrist_L hand_L shoulder_R shoulder_R_tip elbow_R elbow_R_tip wrist_R hand_R tool_R tool_L carry_L carry_R carry_mid
+PASS the unrocked golden at u=0 is identical to job 3's delivered chain on every clip and preset
+REBASE job2 "the unrocked golden rule is unmoved on every clip and preset"
+         old: goldenDiff(anim,0) == as-delivered (main)
+         new: goldenDiff(anim,0) == job 3 delivered (main differs on mount*/lift by design)
+
+== 6. the pins (brief §3)
+PASS 45 bones, ids and order identical to main on all ten presets
+PASS skeleton() and skeletonWorld() byte-identical to main, all ten presets (every bone incl. tool_* and carry_* rest positions)
+PASS rig 6 anchors() identical to main: 4 named anchors (handL,handR,head,hip) x 8 facings x 30 clips f0 x 10 presets = 2400 calls
+PASS 14 named anchors (CharacterFaceCompositionTests.Anchors: root,pelvis,torso,neck,head,hand_L,hand_R,foot_L,foot_R,tool_L,tool_R,carry_L,carry_R,carry_mid) present and pos+rot identical to main, 10 presets = 140 pins
+PASS cell (W,H,PX), pivot, DIRS, GAIN, BIAS, LN, BAYER, CAST, BUILDS and ANIMS byte-identical to main — ANIMS 35
+PASS propsOf() byte-identical to main, all ten presets
+PASS rig 7 bindMesh() byte-identical to main, all ten presets
+
+== 7. materials (<= 16 per COMPOSED preset)
+PASS every composed preset <= 16 materials
+PASS composed material sets identical to main, all ten presets
+NOTE fisher base 12 composed 10 | ginny base 14 composed 14 | skipper base 12 composed 12 | nan base 13 composed 13 | deckboss base 17 composed 16 | packer base 17 composed 16 | cutter base 14 composed 13 | hand base 15 composed 14 | boy base 13 composed 13 | girl base 12 composed 11
+
+== 8. job 4: child noses at 32 px/m; adults bit-identical
+PASS age "child" is exactly boy and girl
+PASS boy resolves a nose at all 5 resolving headings — 2,2,2,4,2 px (main 0,1,0,0,1)
+PASS girl resolves a nose at all 5 resolving headings — 2,2,2,4,2 px (main 0,1,0,0,1)
+PASS the eight adults' study heads are byte-identical to main
+PASS the eight adults paint identical nose pixels at all eight headings
+PASS the eight adults' COMPOSED meshes (the bake's FaceLayerJs) are byte-identical to main
+PASS boy and girl: every non-head composed face is byte-identical to main (the change is the head only)
+PASS head face count and head material set unchanged, all ten presets
+NOTE deckboss nose pixels (FINDING carried from job 4, not caused by it): main 0,0,0,0,0,0,0,0 merged 0,0,0,0,0,0,0,0
+REBASE job4 composition chain
+         old: rig 6 / rig 7 at main bytes
+         new: rig 6 / rig 7 at the merged bytes; adult composed meshes still byte-identical to main (gate above)
+
+== 9. the fence, on the keys the def stores (CharacterSkinPose.FrameIsHonest: |local pos| <= 8 m)
+PASS EVERY clip the def would carry (35 + 4 carry) x 10 presets x every frame: every local key within 8 m; worst 1.596 m (cutter mountCabDown f7 knee_R_tip)
+NOTE on MAIN, frames with a key past the fence across mount*/lift x 10 presets: 172 (the defect job 3 fixes)
+NOTE fisher max |local key| per clip (m): idle 0.61, walk 0.61, run 0.59, hold 0.61, cast 0.61, dig 0.61, balance 0.61, stagger 0.60, bite 0.61, strike 0.61, reel 0.61, land 0.61, castBack 0.61, castRelease 0.61, board 1.16, boardDown 1.16, haul 0.61, ladderDown 0.58, hauler 0.61, bench 0.61, chop 0.61, lift 0.61, place 0.61, toss 0.61, swim 0.50, tread 0.54, sleep 0.50, drive 0.50, reach 0.61, astride 1.01, astrideStand 1.19, mountUp 1.19, mountDown 1.19, mountCab 1.19, mountCabDown 1.19, helm_idle 0.61, helm_walk 0.61, oars_idle 0.61, oars_row 0.61
+
+GATES: 48 passed, 0 failed  (all gates hold)   [29.3 s]

@@ -15,12 +15,16 @@ namespace HiddenHarbours.Tests.EditMode
     /// just as happily against a def full of blow-ups. Whether the asset the game actually loads is
     /// clean is a different question, and only the committed def can answer it.</para>
     ///
-    /// <para><b>The invariant is narrow on purpose: every state the map can NAME must be entirely
-    /// honest.</b> A rig drop that re-poisons <c>walk</c> reds this on the next CI run. One that
-    /// changes the four <c>mount*</c> clips does not — no state key reaches them, so they cannot
-    /// reach the player — and asserting their frame numbers here would pin the art-director's
-    /// current excursion as though it were a contract. <c>docs/art/rigs/**</c> is his to change;
-    /// what this guards is that nothing he changes can put a broken pose on the player.</para>
+    /// <para><b>Two invariants, the narrow one first.</b> Every state the map can NAME must be entirely
+    /// honest: a rig drop that re-poisons <c>walk</c> reds that on the next CI run, naming the key the
+    /// player would have reached. Then EVERY clip the def carries must be honest too, reachable or not.
+    /// The second is a moved premise, said out loud: this class used to leave the four <c>mount*</c>
+    /// clips out on purpose, because their boots stepped past the fence (18 of fisher's 64 mount frames
+    /// on 40f4656f's rigs) and no state key reached them. Job 3 of the rig 7 follow-up re-authored
+    /// those boots inside it, and a clip that is unreachable today is one state-map entry away from the
+    /// player, so the fence now holds for all of them. Neither test pins a frame number or an
+    /// excursion: the fence (<see cref="CharacterSkinPose.FenceMetres"/>) is a blow-up bar, and
+    /// everything inside it stays the art-director's to change in <c>docs/art/rigs/**</c>.</para>
     ///
     /// <para>The reachable set is ENUMERATED FROM THE MAP rather than spelled out below. A stance
     /// that later earns its own ANIMS row joins this guard the moment it is mapped, instead of
@@ -93,6 +97,35 @@ namespace HiddenHarbours.Tests.EditMode
                     "fence exists so a POISONED clip cannot be drawn, not so a poisoned clip can " +
                     "be shipped and quietly patched at runtime.");
             }
+        }
+
+        /// <summary>
+        /// <b>Every clip, not only the reachable ones.</b> On the def committed at 40f4656f this names
+        /// <c>mountUp</c>, <c>mountDown</c>, <c>mountCab</c> and <c>mountCabDown</c>; after the re-bake of
+        /// job 3's boots it names nothing.
+        /// </summary>
+        [Test]
+        public void EveryClipTheDefCarriesIsEntirelyInsideTheFence()
+        {
+            CharacterSkinDef def = Load();
+            Assert.IsNotEmpty(def.Clips,
+                "the def carries no clips, and every assertion below would pass vacuously.");
+
+            var past = new List<string>();
+            foreach (CharacterSkinDef.SkinClip clip in def.Clips)
+            {
+                CharacterSkinPose.BuildHonestFrameMap(
+                    clip, def.BoneCount, CharacterSkinPose.FenceMetres, out int fenced);
+                if (fenced > 0) past.Add($"'{clip.StateKey}' {fenced} of {clip.FrameCount}");
+            }
+
+            Assert.IsEmpty(past,
+                $"{past.Count} of the def's {def.Clips.Length} clips have frames past the " +
+                $"{CharacterSkinPose.FenceMetres} m fence: {string.Join(", ", past)}. The fence hides such " +
+                "frames at runtime, which is a crash guard and not a licence: every clip is one state-map " +
+                "entry away from the player. If the rigs already fix these clips the committed def is " +
+                "STALE, so re-bake the player (\"Bake character SKIN (the player, ADR 0044 d)\"); if they " +
+                "do not, the fix is in the rig, never a wider fence.");
         }
 
         [Test]
