@@ -88,6 +88,12 @@ namespace HiddenHarbours.Tools.RigBaking
     /// 0.28, dory 0.06, lobster 0.50, punt 0.06, dragger 2.05, sport skiff 0.28, trawler 1.75,
     /// Mk2 1.75. Two entirely independent derivations, the same numbers.</para>
     ///
+    /// <para>⚠️ The two keelboats added in S1 are the deliberate exception: they carry
+    /// accommodation modelled under their deck, so the lowest interior face here is their CABIN
+    /// sole (sloop30 0.35, sloop88 1.10) while their boarding line is their COCKPIT sole (1.15 /
+    /// 2.55). Both are right, and they are pinned against the rig's own constants instead — see
+    /// <c>HullMeshFleetTests.CabinSoleHulls</c>.</para>
+    ///
     /// <para>⚠️ <b>This is a GOLDEN MASTER, not a formula.</b> 5–30% of the sea-band faces move
     /// under a doubling of the azimuth count. The sampling constants below are committed data:
     /// changing one silently re-classifies the whole fleet at the next bake. A test pins the
