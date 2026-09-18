@@ -34,6 +34,12 @@ namespace HiddenHarbours.Player
     ///   alone would leave them staring the wrong way.</item>
     ///   <item><b>OnFoot</b> → completely inert. The child renderer is off, the root renderer is back on
     ///   and the stance is released, so the ashore fisher is byte-identical to before this existed.</item>
+    ///   <item><b>Carried</b> (<see cref="Carry"/>, the Core <see cref="ICarriedFigure"/> seam) → a
+    ///   PASSENGER on a hull she is not steering: the arrival's cape islander. The carrier states the
+    ///   hull, the stand point, the stance, the heading and the speed, and she is drawn exactly as she is
+    ///   on her own deck with those in place of this component's own reads: the same slot, the same ride
+    ///   and the same figure, mesh or sprite. The switcher's mode is kept but does not unbind her, and
+    ///   <see cref="Release"/> hands her back to whatever the switcher last said.</item>
     /// </list>
     ///
     /// <para><b>How the ride is read — TWO channels, because a deck moves in two ways.</b></para>
@@ -109,7 +115,7 @@ namespace HiddenHarbours.Player
     // (DirectionalBoatSprite −110), the character's own cell and the player's Y-sort order (both at the
     // default 0). Running last is what makes the mirror a mirror rather than a frame-late copy.
     [DefaultExecutionOrder(100)]
-    public sealed class DeckRiderVisual : MonoBehaviour
+    public sealed class DeckRiderVisual : MonoBehaviour, ICarriedFigure
     {
         [Header("Wiring (the builder sets these)")]
         [Tooltip("The CHILD renderer the on-deck / pilot figure is drawn into — the one thing here that " +
@@ -217,6 +223,15 @@ namespace HiddenHarbours.Player
 
         private ControlMode _mode = ControlMode.OnFoot;
         private Transform _boatRoot;
+
+        // ⭐ CARRIED (see Carry). While set, the hull, the stand point, the stance and both holds are the
+        // CARRIER's statement, and the switcher's own binding waits in _switcherRoot for Release.
+        private bool _carried;
+        private Transform _switcherRoot;
+        private Vector3 _carriedStand;
+        private CharacterStance _carriedStance;
+        private float _carriedHeadingDegrees;
+        private float _carriedSpeed;
 
         // The boat's components, resolved ONCE per binding (rule 7) — re-armed when the BOAT changes.
         // The PRESENTER is the exception: a hull swapped in place does not change the boat, so _hull is
@@ -331,6 +346,10 @@ namespace HiddenHarbours.Player
         /// <summary>True when a rider child is wired at all. A rig without one is legal and inert.</summary>
         public bool HasRider => _riderRenderer != null;
 
+        /// <summary>True while somebody else is carrying this fisher (<see cref="Carry"/>): a passenger on
+        /// a hull she is not steering. For tests / tooling.</summary>
+        public bool IsCarried => _carried;
+
         // ------------------------------------------------------------------ the mesh-figure seam
         //
         // ⭐ ONE PUBLICATION, TWO CONSUMERS. Everything below is already computed for the sprite
@@ -428,21 +447,103 @@ namespace HiddenHarbours.Player
         public void SetMode(ControlMode mode, Transform boatRoot)
         {
             _mode = mode;
-            if (_boatRoot != boatRoot)
-            {
-                // The boat we are LEAVING must be told her deck is empty before we forget her — a
-                // stranded occupant would keep her splitting her own image, hiding the next thing
-                // that ever stands in front of her, with nobody aboard to explain it.
-                ClearDeckOccupant();
-                _boatRoot = boatRoot;
-                _boatResolved = false;    // a different boat — re-find her rock, her helm and her skin
-            }
+            _switcherRoot = boatRoot;
+            // ⚠ A CARRIED passenger keeps the hull she is standing on. The switcher re-asserts its mode
+            // after a region hop whatever else is happening, and its boat is not the one under her, so
+            // unbinding here would stand her figure down mid-passage. Release() restores this binding.
+            if (!_carried) Rebind(boatRoot);
             // Every transition re-seats the fisher (BoardDeck / TakeHelm / LeaveHelm all snap them), so the
             // deck-frame step measured across one is a TELEPORT, not a stride. Drop the track and let the
             // next tick re-seed both it and the bearing.
             _deckTracked = false;
             StateContext();   // the presenter must not pick one cell from the OLD mode
             Apply();
+        }
+
+        /// <summary>
+        /// ⭐ <b>A PASSENGER, STATED BY WHOEVER IS CARRYING HER</b> (<see cref="ICarriedFigure"/>). The
+        /// arrival is the carrier: she stands on the skipper's hull, not her own, and walks a cabin and a
+        /// deck the switcher knows nothing about.
+        ///
+        /// <para>The owner's report (2026-09-18: <i>"character was not mesh on intro boat"</i>) was this
+        /// method's absence. The opening wrote her stance and holds straight onto the sprite and never
+        /// bound this rider, so <see cref="Aboard"/> read false, the mesh presenter was told she was
+        /// ashore, and the sheets drew her the whole way in. Carried, she is aboard on the carrier's word:
+        /// the same slot, ride and figure as on her own deck, with the carrier's stand point, stance,
+        /// heading and speed in place of the deck walk's. That walk is not hers on somebody else's
+        /// boat.</para>
+        ///
+        /// <para>The holds are also written straight through, so a rig with no rider child, or a rider
+        /// switched off, still draws her braced and facing the right way on the sheets. That is the path
+        /// that shipped. Called from the carrier's <c>Update</c>, before this component's
+        /// <see cref="StateContext"/> at order 100 states the same values again.</para>
+        /// </summary>
+        public void Carry(Transform hullRoot, Vector3 standRigLocalMetres, CharacterStance stance,
+                          float headingDegrees, float speedMetresPerSecond)
+        {
+            // A carrier holds this through the seam, a plain C# reference that outlives the object, so a
+            // rig destroyed mid-passage (a scene unload, a fixture's teardown) must answer nothing.
+            if (this == null) return;
+            bool boarding = !_carried || _boatRoot != hullRoot;
+            _carried = true;
+            _carriedStand = standRigLocalMetres;
+            _carriedStance = stance;
+            _carriedHeadingDegrees = headingDegrees;
+            _carriedSpeed = Mathf.Max(0f, speedMetresPerSecond);
+
+            if (_character != null)
+            {
+                _character.Stance = stance;
+                _character.HoldHeading(headingDegrees);
+                _character.HoldSpeed(_carriedSpeed);
+            }
+
+            if (!boarding) return;
+            // Carried aboard, or across to another hull: bind her, and draw her on it THIS frame. The
+            // arrival's first carry lands inside its own spawn, and one frame of the wrong drawer is one
+            // frame too many.
+            Rebind(hullRoot);
+            _deckTracked = false;
+            StateContext();
+            Apply();
+        }
+
+        /// <summary>
+        /// Set her down (idempotent). The stance goes back to free and both holds to her own motion.
+        /// ReleaseHeading KEEPS the last heading held, so she steps off looking where she was looking.
+        /// The rider goes back to whatever the switcher last said. Ashore that is OnFoot and no boat, so
+        /// this stands the rider down: the mesh figure stops and the body renderer draws again.
+        /// </summary>
+        public void Release()
+        {
+            if (!_carried) return;
+            _carried = false;
+            if (this == null) return;   // destroyed with her rig: nothing left to hand back (see Carry)
+
+            if (_character != null)
+            {
+                _character.Stance = CharacterStance.Free;
+                _character.ReleaseHeading();
+                _character.ReleaseSpeed();
+            }
+            RequestedStance = CharacterStance.Free;
+
+            Rebind(_switcherRoot);
+            _deckTracked = false;
+            StateContext();
+            Apply();
+        }
+
+        /// <summary>Bind the rider to a boat's physics root, or to none.</summary>
+        private void Rebind(Transform boatRoot)
+        {
+            if (_boatRoot == boatRoot) return;
+            // The boat we are LEAVING must be told her deck is empty before we forget her — a
+            // stranded occupant would keep her splitting her own image, hiding the next thing
+            // that ever stands in front of her, with nobody aboard to explain it.
+            ClearDeckOccupant();
+            _boatRoot = boatRoot;
+            _boatResolved = false;    // a different boat — re-find her rock, her helm and her skin
         }
 
         private void Awake()
@@ -538,10 +639,21 @@ namespace HiddenHarbours.Player
             ApplyFacing();
         }
 
-        /// <summary>Is a figure being drawn on a boat right now? On deck always; at the helm only with the
-        /// pilot switched on.</summary>
+        /// <summary>Is a figure being drawn on a boat right now? Carried always; on deck always; at the
+        /// helm only with the pilot switched on.</summary>
         private bool Aboard()
-            => _mode == ControlMode.OnDeck || (_mode == ControlMode.Aboard && _drawPilot);
+            => _carried || _mode == ControlMode.OnDeck || (_mode == ControlMode.Aboard && _drawPilot);
+
+        /// <summary>Where she is standing, in the hull's rig metres: the carrier's stated point while
+        /// carried, else the deck walk's point at its deck height. The ONE read the occupant slot, the
+        /// mesh figure's placement and the ride's lever arm all take.</summary>
+        private Vector3 StandPointRigLocal()
+        {
+            if (_carried) return _carriedStand;
+            if (_deckWalk == null) return Vector3.zero;
+            Vector2 stand = _deckWalk.DeckLocalPosition;
+            return new Vector3(stand.x, stand.y, _deckWalk.DeckHeightMeters);
+        }
 
         /// <summary>Present the character for the current mode. Idempotent and cheap — safe to call from
         /// the mode switch and from every LateUpdate.</summary>
@@ -683,12 +795,10 @@ namespace HiddenHarbours.Player
                     // her exact id with no reclaim to lose.
                     bool below = BelowDecks;
 
-                    Vector2 stand = _deckWalk != null ? _deckWalk.DeckLocalPosition : Vector2.zero;
-                    float height = _deckWalk != null ? _deckWalk.DeckHeightMeters : 0f;
                     // Held as well as published: the mesh figure is PLACED at this point, and
                     // taking it from anywhere but the line that feeds the slot would be the second
                     // authority this seam exists to avoid.
-                    DeckStandRigLocal = new Vector3(stand.x, stand.y, height);
+                    DeckStandRigLocal = StandPointRigLocal();
                     slots.Set(_occupantSlot, this, DeckStandRigLocal, !below);
                     if (!below)
                     {
@@ -798,6 +908,21 @@ namespace HiddenHarbours.Player
         /// </summary>
         private void ApplyFacing()
         {
+            if (_carried)
+            {
+                // ⭐ CARRIED: the carrier's compass heading and floor speed are the truth. The deck
+                // bearing is DERIVED from them against the hull picture, not tracked, because the mesh
+                // figure is yawed by the bearing and the sheets by the heading, and both must show the
+                // same face. The switcher's deck walk is not hers on this boat.
+                _deckBearingDegrees = _boatRoot != null
+                    ? DeckRiderFacingMath.DeckBearingFor(_carriedHeadingDegrees, DrawnHeadingDegrees())
+                    : 0f;
+                _deckTracked = false;
+                _character.HoldHeading(_carriedHeadingDegrees);
+                _character.HoldSpeed(_carriedSpeed);
+                return;
+            }
+
             if (_boatRoot == null)
             {
                 _character.ReleaseHeading();
@@ -1012,6 +1137,7 @@ namespace HiddenHarbours.Player
         /// visual def wired (greybox, tests) reads Free and simply stands there.</summary>
         private CharacterStance StanceForMode()
         {
+            if (_carried) return _carriedStance;   // the carrier's word, not this mode's
             if (_mode == ControlMode.OnDeck) return CharacterStance.Balance;
 
             BoatVisualDef visual = _boat != null && _boat.Hull != null ? _boat.Hull.Visual : null;
@@ -1061,11 +1187,9 @@ namespace HiddenHarbours.Player
             // share it, and the dory's oar rock is untouched by construction.
             if (hull != null && hull.SupportsContinuousRock)
             {
-                Vector2 stand = _deckWalk != null ? _deckWalk.DeckLocalPosition : Vector2.zero;
-                float standHeight = _deckWalk != null ? _deckWalk.DeckHeightMeters : 0f;
                 float rockHeaveMeters = hull.AppliedHeaveMeters - hull.DrawnRideMeters;
                 DeckRidePose mirrored = MountedRockPoseMath.MirrorHull(
-                    new Vector3(stand.x, stand.y, standHeight), hull.DrawnHeadingDegrees(),
+                    StandPointRigLocal(), hull.DrawnHeadingDegrees(),
                     hull.AppliedRollDegrees, hull.AppliedPitchDegrees, rockHeaveMeters,
                     hull.BakeElevationDegrees, _rideStrength * _hullMirrorStrength);
                 return DeckRideMath.RidingHull(mirrored, hull.DrawnRideMeters,
