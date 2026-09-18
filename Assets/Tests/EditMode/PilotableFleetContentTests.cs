@@ -97,6 +97,11 @@ namespace HiddenHarbours.Tests.EditMode
             ("SportFisherConvertible", 0), ("SportFisherSkybridge", 0),
             ("LobsterInshoreOpenNorthumberland", 0), ("LobsterStandardHardtopNorthumberland", 0),
             ("LobsterOffshoreOpenNorthumberland", 0),
+            // …and the sail rig kit's two sloops (S1), on the F key since feat/sloops-on-the-dev-key: drawn
+            // BARE-POLED by her static body — no boom and no sails until the SailRigDef. The 88 is the sail
+            // workbench hull; the 30 is a St Peters resident's boat that ALSO takes a workbench rung (the
+            // owner's 09-07 and 09-17 rulings).
+            ("Sloop30", 0), ("Sloop88", 0),
         };
 
         static string[] FleetFiles => Fleet.Select(f => f.File).ToArray();

@@ -107,13 +107,15 @@ namespace HiddenHarbours.App.Editor
         /// the only way for a test to make a claim about the cycle's SHAPE that cannot rot: add a rung here
         /// and the guard grows with it.</para>
         ///
-        /// <para>The order is deliberate and is NOT one rule. Rungs 1–11 are a SPEED ramp — the dory at
+        /// <para>The order is deliberate and is NOT one rule. Rungs 1–10 are a SPEED ramp — the dory at
         /// 1.7 m/s up to the Zodiac Hurricane at 5.9, because at this end of the fleet what a press of F
-        /// should buy you is "faster than the last one". From the Cape Islander on it is a SIZE ladder —
-        /// 12.9 m to the tanker's 110 — because up there the boats differ by an order of magnitude in
+        /// should buy you is "faster than the last one". From the sloop 30 on it is a SIZE ladder —
+        /// 9.4 m to the tanker's 110 — because up there the boats differ by an order of magnitude in
         /// displacement and speed stops being the interesting axis (the tanker is the SLOWEST powered hull
         /// afloat). The two sport fishers are placed by length inside the upper ladder even though they
-        /// out-run their neighbours, so the size story stays readable.</para>
+        /// out-run their neighbours, so the size story stays readable; the two sloops are placed by length
+        /// because a sail hull has no designed speed to rank at all — her speed IS the wind, off her own
+        /// polar.</para>
         ///
         /// <para><c>Punt</c> is builder-generated and NOT committed, so on a clean clone she loads null and
         /// the roster is one shorter. That is why the builder filters nulls and warns rather than throwing,
@@ -143,7 +145,16 @@ namespace HiddenHarbours.App.Editor
             // being ordered by speed, because a planing RIB slotted at her 6.7/7.3 m length would break it.
             "ZodiacFrc",
             "ZodiacHurricane",
-            // --- the size ladder: 12.9 m to 110 m ---
+            // --- the size ladder: 9.4 m to 110 m ---
+            // THE SAIL RIG KIT'S SLOOPS take their places by LENGTH, like the sport fishers below, but for a
+            // different reason: a sail hull has no designed speed to rank — her speed IS the wind, off her
+            // own polar (#750) — so length is the one axis she shares with every rung. The 30's 9.4 m is
+            // longer than every hull on the speed ramp (the Hurricane's 7.28 the longest) and shorter than
+            // the Cape Islander's 12.9, so she OPENS the size ladder. She is a St Peters resident's boat
+            // (the owner's 09-07 ruling) AND, since 09-17, a workbench rung: the rung does not take her from
+            // the resident. ⚠️ Both sloops land BARE-POLED (no boom, no sails: the SailRigDef's charter) and
+            // cannot yet be steered, trimmed or stopped from the keys (the sail helm is its own lane).
+            "Sloop30",
             "CapeIslander",
             "LobsterBoat",
             // THE LOBSTER FAMILY, THREE RUNGS FOR EIGHTEEN HULLS. All 18 variants are authored as Defs,
@@ -162,6 +173,9 @@ namespace HiddenHarbours.App.Editor
             // dragger's 3.48) — the point of a battlewagon, and felt at once cycling into one off a workboat.
             "SportFisherConvertible",
             "SideDragger",
+            // The sloop 88, the sail WORKBENCH hull (the owner's 09-07 ruling), by length for the reason the
+            // 30 gives above: her 27.0 m sits between the dragger's 25 and the skybridge's 27.4.
+            "Sloop88",
             "SportFisherSkybridge",
             "SternTrawler",
             "SternTrawlerMk2",

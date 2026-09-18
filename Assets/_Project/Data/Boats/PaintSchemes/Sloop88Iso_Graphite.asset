@@ -1,0 +1,217 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: Sloop88Iso_Graphite
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.sloop_88_graphite
+  Label: Graphite
+  Note: dark glass, teal cove, silvered teak, black canvas, dark laminate
+  HullMeshId: hullmesh.sloop88_iso
+  SourceRigPath: docs/art/rigs/sail-rig-kit/sloop-88/sloop88IsoRig.js
+  RigPaintId: graphite
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280688665
+    - serializedVersion: 2
+      rgba: 4281149216
+    - serializedVersion: 2
+      rgba: 4281543974
+    - serializedVersion: 2
+      rgba: 4281872939
+    - serializedVersion: 2
+      rgba: 4282201904
+    - serializedVersion: 2
+      rgba: 4283517764
+    - serializedVersion: 2
+      rgba: 4287004792
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283518723
+    - serializedVersion: 2
+      rgba: 4285361683
+    - serializedVersion: 2
+      rgba: 4286941459
+    - serializedVersion: 2
+      rgba: 4288324395
+    - serializedVersion: 2
+      rgba: 4290628466
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280557595
+    - serializedVersion: 2
+      rgba: 4280952353
+    - serializedVersion: 2
+      rgba: 4281215525
+    - serializedVersion: 2
+      rgba: 4281544490
+    - serializedVersion: 2
+      rgba: 4286281586
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282074195
+    - serializedVersion: 2
+      rgba: 4283653740
+    - serializedVersion: 2
+      rgba: 4285101441
+    - serializedVersion: 2
+      rgba: 4286483350
+    - serializedVersion: 2
+      rgba: 4287996588
+    - serializedVersion: 2
+      rgba: 4289641154
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280688665
+    - serializedVersion: 2
+      rgba: 4281149216
+    - serializedVersion: 2
+      rgba: 4281543974
+    - serializedVersion: 2
+      rgba: 4281872939
+    - serializedVersion: 2
+      rgba: 4282201904
+    - serializedVersion: 2
+      rgba: 4283517764
+    - serializedVersion: 2
+      rgba: 4287004792
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278588224
+    - serializedVersion: 2
+      rgba: 4279182159
+    - serializedVersion: 2
+      rgba: 4279775580
+    - serializedVersion: 2
+      rgba: 4280368999
+    - serializedVersion: 2
+      rgba: 4282145664
+    - serializedVersion: 2
+      rgba: 4285171625
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281877571
+    - serializedVersion: 2
+      rgba: 4283588191
+    - serializedVersion: 2
+      rgba: 4285167225
+    - serializedVersion: 2
+      rgba: 4286811795
+    - serializedVersion: 2
+      rgba: 4289377721
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4287860358
+    - serializedVersion: 2
+      rgba: 4289637026
+    - serializedVersion: 2
+      rgba: 4291217087
+    - serializedVersion: 2
+      rgba: 4292336598
+    - serializedVersion: 2
+      rgba: 4293258216
+    - serializedVersion: 2
+      rgba: 4293850354
+    - serializedVersion: 2
+      rgba: 4294376699
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282925370
+    - serializedVersion: 2
+      rgba: 4284899158
+    - serializedVersion: 2
+      rgba: 4287399290
+    - serializedVersion: 2
+      rgba: 4289833887
+    - serializedVersion: 2
+      rgba: 4292005571
+    - serializedVersion: 2
+      rgba: 4293848550
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285557341
+    - serializedVersion: 2
+      rgba: 4287663230
+    - serializedVersion: 2
+      rgba: 4289835171
+    - serializedVersion: 2
+      rgba: 4291481026
+    - serializedVersion: 2
+      rgba: 4292863453
+    - serializedVersion: 2
+      rgba: 4293587182
+    - serializedVersion: 2
+      rgba: 4294179063
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282925370
+    - serializedVersion: 2
+      rgba: 4284899158
+    - serializedVersion: 2
+      rgba: 4287399290
+    - serializedVersion: 2
+      rgba: 4289833887
+    - serializedVersion: 2
+      rgba: 4292005571
+    - serializedVersion: 2
+      rgba: 4293848550
+    Offset: -2
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281090900
+    - serializedVersion: 2
+      rgba: 4282540666
+    - serializedVersion: 2
+      rgba: 4284911529
+    - serializedVersion: 2
+      rgba: 4288134861
+    - serializedVersion: 2
+      rgba: 4290894819
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280359696
+    - serializedVersion: 2
+      rgba: 4281148952
+    - serializedVersion: 2
+      rgba: 4282201380
+    - serializedVersion: 2
+      rgba: 4283648565
+    - serializedVersion: 2
+      rgba: 4285687890
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -2

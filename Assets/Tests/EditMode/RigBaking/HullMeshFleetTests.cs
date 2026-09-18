@@ -351,6 +351,18 @@ namespace HiddenHarbours.Tests.RigBaking
                 "A boat that floats needs a design waterline: " + string.Join(", ", afloat));
         }
 
+        /// <summary>The hulls that carry modelled accommodation UNDER their deck, with the height
+        /// their lowest fully-interior face must land on and the rig constant it comes from. These
+        /// are pinned instead of their boarding line — see the premise note on the test below. The
+        /// heights are read off the rig sources, which the classifier never opens, so this stays an
+        /// independent cross-check.</summary>
+        static readonly (string Key, float LowestInterior, string Whence)[] CabinSoleHulls =
+        {
+            ("sloop30", 0.35f, "cabin sole (sloopIsoRig.js CAB_SOLE = 0.35; DWL 0.55, cockpit SOLE 1.15)"),
+            ("sloop88", 1.10f, "foot of the lower-accommodation bulkheads (sloop88IsoRig.js LOW - 0.1 " +
+                               "= 1.10, they land on the hull below the sole; DWL 1.35, cockpit SOLE 2.55)"),
+        };
+
         /// <summary>
         /// <b>Every committed hull carries the per-face INTERIOR MASK, and it agrees with the
         /// hand-measured deck line.</b>
@@ -374,6 +386,19 @@ namespace HiddenHarbours.Tests.RigBaking
         /// EXACTLY (dory/punt/trawler/Mk2) or within 18 mm; the coastal packet is the one outlier
         /// at −0.27 m and the least stable hull under perturbation — she is called out here rather
         /// than hidden by a loose global tolerance.</para>
+        ///
+        /// <para>⚠️ <b>THE PREMISE MOVED when the sloops landed (S1, 2026-09-18).</b> "Lowest
+        /// interior face == boarding line" held for eleven hulls because none of them had anything
+        /// modelled UNDER their deck: their lowest dry interior surface is the one the sea must be
+        /// kept below, so the two heights are the same height. A keelboat carries accommodation
+        /// inside the watertight canoe body, BELOW her own design waterline, so her lowest interior
+        /// face is her cabin sole and her boarding line is her cockpit sole — a metre apart, and
+        /// both correct. Those hulls are named in <see cref="CabinSoleHulls"/> and cross-checked
+        /// against the rig's own constant instead. That keeps this a guard and not a mirror: the
+        /// pinned height still comes from a source the classifier never reads, so a classifier
+        /// drift still moves it. Setting the def's field to the classifier's own output would have
+        /// made the comparison self-fulfilling — and would have put sloop30's boarding line 0.20 m
+        /// UNDER her waterline, rebuilding the "riding high" defect the clamp exists to cure.</para>
         /// </summary>
         [Test]
         public void EveryCommittedHullMesh_CarriesTheInteriorMaskAndAgreesWithItsDeckLine()
@@ -413,6 +438,30 @@ namespace HiddenHarbours.Tests.RigBaking
                     missing.Add($"{hull.Key} (0 of {attrs.Count} vertices flagged)");
                     continue;
                 }
+
+                // A hull with accommodation modelled under her deck is pinned to her RIG's own
+                // constant, not to her boarding line — the two are a metre apart on a keelboat and
+                // both are correct. She is not counted toward the tight-agreement tally either: the
+                // tally measures the classifier against the hand-measured deck line, and that is
+                // not the comparison being made here.
+                bool cabinSole = false;
+                foreach (var cabin in CabinSoleHulls)
+                {
+                    if (cabin.Key != hull.Key) continue;
+                    cabinSole = true;
+
+                    if (Mathf.Abs(lowest - cabin.LowestInterior) > Tight)
+                        drifted.Add($"{hull.Key}: lowest interior {lowest:0.###} m is no longer her " +
+                                    $"{cabin.Whence}");
+
+                    // Her boarding line must still clear everything modelled inside her, or the
+                    // clamp would hold the sea below her own accommodation.
+                    if (def.WatertightDeckHeightMeters <= lowest)
+                        drifted.Add($"{hull.Key}: boarding line {def.WatertightDeckHeightMeters:0.##} m " +
+                                    $"is at or below her lowest interior face {lowest:0.###} m");
+                    break;
+                }
+                if (cabinSole) continue;
 
                 float delta = lowest - def.WatertightDeckHeightMeters;
                 if (Mathf.Abs(delta) <= Tight) agreeTightly++;
