@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatHullDef
   Id: boat.sloop_30
   DisplayName: The Sloop 30
-  Visual: {fileID: 0}
+  Visual: {fileID: 11400000, guid: b4bcd79e15bc3f2479a0942e9efcea4f, type: 2}
   Sprite: {fileID: 0}
   LengthMeters: 9.4
   DraughtMeters: 1.9
