@@ -662,3 +662,4 @@ MonoBehaviour:
     FramesPerSecond: 10
     Loops: 0
     FacingCount: 0
+  Skin: {fileID: 11400000, guid: 908aaa6f6c12ed84a92250870fe7da46, type: 2}
