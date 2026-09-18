@@ -20,8 +20,8 @@ namespace HiddenHarbours.Player
     /// all. This component does not fake one: it asks the rider for the hull she is standing on and
     /// gives up if that hull is not an <see cref="IsoFacetHullRenderer"/> — which is also, for free,
     /// the right answer aboard a SPRITE hull, where the same pass does not exist either. It never
-    /// touches <c>IsoFacetHullFeature</c> or <c>IsoFacetHullRegistry</c>; those are the water lane's
-    /// files.</para>
+    /// touches <c>IsoFacetHullFeature</c> or <c>IsoFacetHullRegistry</c>; opening the ashore gate
+    /// means changing those, and that gate is ADR 0044 §7.3, not this component.</para>
     ///
     /// <para><b>Occlusion is per pixel and costs nothing.</b> The figure wears the hull's own
     /// <c>HHHullFacet</c> pass and shares her private depth buffer with <c>ZWrite On / ZTest

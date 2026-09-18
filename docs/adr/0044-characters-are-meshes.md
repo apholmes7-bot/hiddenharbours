@@ -538,13 +538,15 @@ guard holds. The second column is the same extractor with the face layer held ba
 
 ### 7.3 Ashore is still gated, so the owner ruled option (b)
 
-§3.7's gate 1 stands: **a mesh character draws through the facet path only in a frame that also
-carries a registered mesh hull.** Aboard, the hull under the figure is that hull. Ashore, a figure
-would draw only while some mesh hull happened to be on screen, and not at all without one. Opening
-the gate means changing `IsoFacetHullFeature`, `IsoFacetHullRegistry` and
-`IsoCharacterFigureRenderer`. For the ashore work those files belong to the ashore charter,
-`HANDOFF-2026-09-17-mesh-figures-draw-ashore.md` (box `C:/hh-ashore`, draft PR #861). Under
-option (b):
+When the owner ruled, §3.7's gate 1 stood: **a mesh character drew through the facet path only in a
+frame that also carried a registered mesh hull.** Aboard, the hull under the figure is that hull.
+Ashore, a figure would have drawn only while some mesh hull happened to be on screen, and not at all
+without one. Opening the gate means changing `IsoFacetHullFeature`, `IsoFacetHullRegistry` and
+`IsoCharacterFigureRenderer`, and those three are the ashore charter's,
+`HANDOFF-2026-09-17-mesh-figures-draw-ashore.md` (box `C:/hh-ashore`). Its PR 1 (#861, merged
+`95835699`) has since landed the machinery — a figure can hold a facet id with no hull under her and
+the pass records for her — but nothing in a shipped scene calls it yet, and the switch and the plates
+are its PR 2, after this one. Under option (b):
 
 - **A `MooredBoat` skipper is wired.** It is the one cast member who stands on a facet hull, and the
   PlayMode proof is there.
