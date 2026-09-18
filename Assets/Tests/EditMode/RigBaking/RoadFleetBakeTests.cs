@@ -91,35 +91,37 @@ namespace HiddenHarbours.Tests.RigBaking
                                 "KnuckleFL", "KnuckleFR" },
             },
 
-            // ---- the four towed bodies. No steer, so no knuckles; the landing gear stays in the
-            //      body; the landing gear is split out (shoes slide, legs swap) — see
-            //      TheLandingGearsSplitIsStillTheOneTheMeasurementSupports below.
+            // ---- the four towed bodies. No steer, so no knuckles; the landing gear is split out
+            //      of the body (shoes slide, legs swap) — see
+            //      TheLandingGearsSplitIsStillTheOneTheMeasurementSupports below. Re-measured
+            //      2026-09-18 on the re-cut rig (2822a7fa…): 177 faces a wheel station, 127 before;
+            //      the four bodies' union of ramps is 16, the cap, where it was 12.
             new Baked
             {
                 Key = "trailerFlatbed28", Global = "TrailerIso", Pick = "flatbed28",
                 CellW = 384, CellH = 320, PivotX = 192, PivotY = 214,
-                Faces = 643, BodyFaces = 643 - 254, UsedRamps = 12,
+                Faces = 1633, BodyFaces = 1633 - 354, UsedRamps = 16,
                 Slots = new[] { "WheelL", "WheelR" }, WearsAVehicleDef = false,
             },
             new Baked
             {
                 Key = "trailerFlatbed53", Global = "TrailerIso", Pick = "flatbed53",
                 CellW = 640, CellH = 480, PivotX = 320, PivotY = 300,
-                Faces = 1119, BodyFaces = 1119 - 508, UsedRamps = 12,
+                Faces = 2950, BodyFaces = 2950 - 708, UsedRamps = 16,
                 Slots = new[] { "WheelL1", "WheelL2", "WheelR1", "WheelR2" }, WearsAVehicleDef = false,
             },
             new Baked
             {
                 Key = "trailerReefer28", Global = "TrailerIso", Pick = "reefer28",
                 CellW = 384, CellH = 320, PivotX = 192, PivotY = 214,
-                Faces = 656, BodyFaces = 656 - 254, UsedRamps = 12,
+                Faces = 1610, BodyFaces = 1610 - 354, UsedRamps = 16,
                 Slots = new[] { "WheelL", "WheelR" }, WearsAVehicleDef = false,
             },
             new Baked
             {
                 Key = "trailerReefer53", Global = "TrailerIso", Pick = "reefer53",
                 CellW = 640, CellH = 480, PivotX = 320, PivotY = 300,
-                Faces = 1067, BodyFaces = 1067 - 508, UsedRamps = 12,
+                Faces = 2433, BodyFaces = 2433 - 708, UsedRamps = 16,
                 Slots = new[] { "WheelL1", "WheelL2", "WheelR1", "WheelR2" }, WearsAVehicleDef = false,
             },
         };
