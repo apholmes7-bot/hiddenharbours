@@ -48,7 +48,8 @@ namespace HiddenHarbours.Tools.RigBaking
         public int MaxInfluences;
     }
 
-    /// <summary>One <c>ANIMS</c> row of bone animation, straight off <c>CharacterIso7.clip</c>.</summary>
+    /// <summary>One <c>ANIMS</c> row of bone animation, straight off <c>CharacterIso7.clip</c> — or one
+    /// <c>CARRY_CLIPS</c> row off <c>carryClip</c>, whose <see cref="Anim"/> is the animation it rides.</summary>
     public sealed class RigSkinClip
     {
         public string Anim;
@@ -628,6 +629,58 @@ namespace HiddenHarbours.Tools.RigBaking
                     $"'{anim}'. Clips are enumerated FROM that table, so this means the table moved " +
                     "under the bake mid-run.");
 
+            return ReadLoadedClip(host, $"clip('{anim}','{preset}')", anim, boneCount);
+        }
+
+        /// <summary>
+        /// Every <c>CARRY_CLIPS</c> name, in the rig's own declaration order: the piloting stances
+        /// (<c>helm_idle</c>, <c>helm_walk</c>, <c>oars_idle</c>, <c>oars_row</c>), which rig 6 poses
+        /// as an existing animation plus a carry MODIFIER and so never appear in <c>ANIMS</c>. A rig
+        /// without the table is an error, not an empty list: a silent fallback would bake a def with
+        /// no helm and no oars and every guard that counts rows would count the smaller number.
+        /// </summary>
+        public static string[] CarryClipNames(IRigScriptHost host)
+        {
+            string g = GlobalName;
+            if (!host.EvaluateBool($"typeof {g}.carryClipNames === 'function'"))
+                throw new InvalidOperationException(
+                    $"{g} has no carryClipNames(). The skinned export this bake reads names its " +
+                    "piloting stances there; a rig without it is older than the def it would bake.");
+            return host.EvaluateString($"{g}.carryClipNames().join(',')")
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        /// <summary>
+        /// Read one <c>CARRY_CLIPS</c> row. The rig runs it through the same <c>clip()</c> as every
+        /// <c>ANIMS</c> row, so the result is read the same way; <see cref="RigSkinClip.Anim"/> is the
+        /// animation it RIDES (<c>idle</c>, <c>walk</c>) and <see cref="RigSkinClip.Carry"/> the
+        /// modifier, which is exactly the pair rig 6's <c>pose()</c> is asked for.
+        /// </summary>
+        public static RigSkinClip ReadCarryClip(IRigScriptHost host, string preset, string name,
+                                                int boneCount)
+        {
+            string g = GlobalName;
+            host.Execute($"globalThis.__hhClip={g}.carryClip({Js(name)},{Js(preset)});");
+            if (!host.EvaluateBool("globalThis.__hhClip !== null && globalThis.__hhClip !== undefined"))
+                throw new InvalidOperationException(
+                    $"carryClip('{name}','{preset}') returned null — the rig's CARRY_CLIPS table does " +
+                    $"not carry '{name}'. Carry clips are enumerated FROM that table, so this means " +
+                    "the table moved under the bake mid-run.");
+
+            string rides = host.EvaluateString("String(globalThis.__hhClip.rides||'')");
+            if (rides.Length == 0)
+                throw new InvalidOperationException(
+                    $"carryClip('{name}','{preset}') names no animation it rides. The def keys a " +
+                    "carry clip by that animation plus its carry; without it there is no state.");
+
+            return ReadLoadedClip(host, $"carryClip('{name}','{preset}')", rides, boneCount);
+        }
+
+        /// <summary>Reads the clip <c>globalThis.__hhClip</c> holds — the tail both
+        /// <see cref="ReadClip"/> and <see cref="ReadCarryClip"/> share.</summary>
+        static RigSkinClip ReadLoadedClip(IRigScriptHost host, string label, string anim,
+                                          int boneCount)
+        {
             var clip = new RigSkinClip
             {
                 Anim = anim,
@@ -645,7 +698,7 @@ namespace HiddenHarbours.Tools.RigBaking
             int tracks = (int)host.EvaluateNumber("globalThis.__hhClip.tracks.length");
             if (tracks != clip.Frames)
                 throw new InvalidOperationException(
-                    $"clip('{anim}','{preset}') declares {clip.Frames} frames and carries {tracks} " +
+                    $"{label} declares {clip.Frames} frames and carries {tracks} " +
                     "tracks. A clip whose declaration and payload disagree plays a different pose " +
                     "than the sheet baked, one frame at a time.");
 
@@ -672,7 +725,7 @@ namespace HiddenHarbours.Tools.RigBaking
             string[] ids = order.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             if (ids.Length != boneCount)
                 throw new InvalidOperationException(
-                    $"clip('{anim}','{preset}') animates {ids.Length} bones and the skeleton has " +
+                    $"{label} animates {ids.Length} bones and the skeleton has " +
                     $"{boneCount}.");
 
             int n = clip.Frames * boneCount;
@@ -689,7 +742,7 @@ namespace HiddenHarbours.Tools.RigBaking
             }
             if (off != blob.Length)
                 throw new InvalidOperationException(
-                    $"Clip blob for '{anim}' was {blob.Length} bytes and {off} consumed.");
+                    $"Clip blob for {label} was {blob.Length} bytes and {off} consumed.");
             return clip;
         }
 
@@ -697,6 +750,11 @@ namespace HiddenHarbours.Tools.RigBaking
         /// so a permutation cannot animate the right rig with the wrong limbs.</summary>
         public static string[] ClipBoneOrder(IRigScriptHost host, string preset, string anim) =>
             host.EvaluateString($"{GlobalName}.clip({Js(anim)},{Js(preset)}).bones.join(',')")
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+        /// <summary><see cref="ClipBoneOrder"/> for a <c>CARRY_CLIPS</c> row.</summary>
+        public static string[] CarryClipBoneOrder(IRigScriptHost host, string preset, string name) =>
+            host.EvaluateString($"{GlobalName}.carryClip({Js(name)},{Js(preset)}).bones.join(',')")
                 .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
         // ---------------------------------------------------------------------------------------

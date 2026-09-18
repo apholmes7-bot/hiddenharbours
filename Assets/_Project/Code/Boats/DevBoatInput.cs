@@ -24,6 +24,12 @@ namespace HiddenHarbours.Boats
     ///     .SteerEaseSeconds (S4.5) instead of slamming lock-to-lock in a frame — so the dash wheel,
     ///     which mirrors the steer, winds round like a wheel. Gamepad rides the SAME actions: D-pad
     ///     up/down = detents, B (east) = neutral, left stick X = steer (analog, passed through undamped).
+    ///   • Sail (a hull with a usable sail plan, <see cref="BoatHullDef.HasSailPlan"/> — the sloops) —
+    ///     the RUDDER only, on the SAME steer read as the engine helm: A/D/←/→ = the eased momentary
+    ///     target, left stick X = analog. W/S/Z/Space do nothing — the wind is her drive, so there is
+    ///     no throttle to step and no oar to pull, and <see cref="DriveSailHelm"/> writes the throttle
+    ///     0 every frame. ⭐ Gated on the helm slot exactly as the oars are
+    ///     (<see cref="RowingStationManned"/>): unmanned, the rudder is written to centre.
     /// The drive value lives in <see cref="BoatController"/> alone (read back through
     /// <see cref="BoatController.Throttle"/> each frame) — this component holds only repeat TIMERS,
     /// so the mouse drag path (HelmControlRelay) and these keys can never fight over a second copy.
@@ -147,8 +153,13 @@ namespace HiddenHarbours.Boats
             // The propulsion branch is the SAME decision the controller's physics uses (one source of
             // truth in BoatController.UsesEngineHelm) so input + physics can never disagree about a hull:
             // the Punt (Engine) gets the outboard helm, the Dory (Oars) keeps per-oar rowing.
+            // ⚠️ Sail is tested FIRST and on HasSailPlan, in the order StepPhysics tests it: a sloop read
+            // as oars would never write her steer, so a rudder left over on the controller (a hull swap,
+            // an earlier writer) would keep turning her with nobody at the helm.
             BoatHullDef hull = _boat.Hull;
-            if (hull == null || BoatController.UsesEngineHelm(hull.Propulsion))
+            if (hull != null && hull.HasSailPlan)
+                ReadSail(kb, gp);
+            else if (hull == null || BoatController.UsesEngineHelm(hull.Propulsion))
                 ReadEngine(kb, gp);
             else if (kb != null)
                 ReadOars(kb);
@@ -207,7 +218,7 @@ namespace HiddenHarbours.Boats
 
         // Engine helm — the STEPPED-AND-HELD notched throttle (owner directive 2026-08-03). Presses
         // step a detent; the drive HOLDS between presses (read back from the controller — the ONE
-        // owner); held keys walk on after a data-driven delay; X (or gamepad B) chops to neutral.
+        // owner); held keys walk on after a data-driven delay; Z (or gamepad B) chops to neutral.
         // Steer stays momentary: keys full-lock, gamepad stick analog.
         private void ReadEngine(Keyboard kb, Gamepad gp)
         {
@@ -237,6 +248,14 @@ namespace HiddenHarbours.Boats
             if (neutral) drive = 0f;
             else if (steps != 0) drive = HelmThrottleStepMath.StepMany(drive, steps, aheadN, asternN);
 
+            _boat.SetControl(drive, ReadSteer(kb, gp, dt));
+        }
+
+        // The steer read the engine helm and the sail helm SHARE — the momentary key target, the
+        // analog stick, the wheel-session arbitration and the ease, in that order. One read, so the
+        // rudder answers A/D the same way whatever is driving her.
+        private float ReadSteer(Keyboard kb, Gamepad gp, float dt)
+        {
             // Steer keys are a momentary TARGET (−1/0/+1), not the command itself (S4.5).
             float target = ((kb != null && (kb.dKey.isPressed || kb.rightArrowKey.isPressed)) ? 1f : 0f)
                          - ((kb != null && (kb.aKey.isPressed || kb.leftArrowKey.isPressed)) ? 1f : 0f);
@@ -264,11 +283,50 @@ namespace HiddenHarbours.Boats
             // the live steer back from the ONE owner rather than keeping a copy, so taking the channel
             // over from a held wheel session starts at the wheel's own angle and cannot snap, and a
             // live session (whose arbitrated target IS the held steer) is passed through untouched.
-            float steer = analog
+            return analog
                 ? target
                 : HelmSteerEase.Step(_boat.Steer, target, dt, GameServices.HelmWheel.SteerEaseSeconds);
+        }
 
-            _boat.SetControl(drive, steer);
+        // Sail helm — the rudder and nothing else (see DriveSailHelm).
+        private void ReadSail(Keyboard kb, Gamepad gp) => DriveSailHelm(ReadSteer(kb, gp, Time.deltaTime));
+
+        /// <summary>
+        /// <b>The one way a sail hull's helm reaches her.</b> The sail twin of <see cref="DriveOars"/>,
+        /// behind the same gate and for the same reason: every read that wants to steer a sloop comes
+        /// through here, so "only from the helm" is stated once.
+        ///
+        /// <para><b>Manned</b> (<see cref="RowingStationManned"/> — the helm slot names this hull), the
+        /// steer goes to the controller and the throttle is written <b>0</b>. The wind is her drive
+        /// (<c>ApplySailDrive</c> never reads the throttle), and the zero is not decoration: a throttle
+        /// carried in from an engine hull by a hull swap would otherwise sit on the controller, and the
+        /// next engine hull she swaps to reads her drive back from there.</para>
+        ///
+        /// <para><b>Unmanned</b>, it writes a ZERO steer and throttle rather than declining — the
+        /// DriveOars rule: returning early would leave the last rudder standing, a sloop that keeps
+        /// turning because she was turning when the helmsman stood up.</para>
+        ///
+        /// <para><b>⚠ It writes only the controller on its own GameObject.</b> A hull another writer
+        /// drives — the arrival skipper's (<c>HelmedBoat</c>), an NPC's later — carries no
+        /// DevBoatInput, so this zero cannot reach her; and on the player's own hull the Player lane's
+        /// <c>ControlSwitcher</c> disables this component whenever she is not Aboard.</para>
+        ///
+        /// <para>Arbitration: on a sail hull the relay reports no engine helm, so
+        /// <c>HelmControlRelay.SteerDragActive</c> is false and <see cref="ArbitrateSteer"/> passes the
+        /// key read straight through. Public for the reason DriveOars is: a fixture can vary the gate
+        /// and watch the rudder without an input device headless CI does not have.</para>
+        /// </summary>
+        public void DriveSailHelm(float steer)
+        {
+            if (_boat == null) return;
+
+            if (!RowingStationManned)
+            {
+                _boat.SetControl(0f, 0f);
+                return;
+            }
+
+            _boat.SetControl(0f, steer);
         }
     }
 }

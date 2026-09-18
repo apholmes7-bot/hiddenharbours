@@ -1627,6 +1627,8 @@
            : rch ? { pitch:rch.pitch*DEG, yaw:rch.yaw*DEG, bend:0, advisory:true } : null;
     P.board = brd; P.haul = hl; P.ladder = lad; P.work = wk; P.rise = brd ? brd.rise : 0;
     P.water = wat; P.sleepP = slp; P.drive = drv; P.yOff = yOff; P.reach = rch;
+    P.mountP = mnt;
+    P.liftP = (anim==='lift') ? wk : null;
     return P;
   }
 
@@ -1691,7 +1693,7 @@
          drops below its own ankle, which is the same degenerate cut. */
       if(G.bootZ>0.02){
         let top;
-        if(P.board || P.water || P.sleepP || P.reach){
+        if(P.board || P.water || P.sleepP || P.reach || P.mountP || P.liftP){
           const vx=knee[0]-a[0], vy=knee[1]-a[1], vz=knee[2]-a[2];
           const vl=Math.hypot(vx,vy,vz)||1, tt=Math.min(1,(G.bootZ*hS)/vl);
           top=[a[0]+vx*tt, a[1]+vy*tt, a[2]+vz*tt];

@@ -4,35 +4,45 @@ using UnityEngine;
 namespace HiddenHarbours.Art
 {
     /// <summary>
-    /// The live set of mesh hulls (ADR 0022 phase 3). Exists for two narrow reasons:
+    /// The live set of mesh hulls (ADR 0022 phase 3), and of the skinned figures drawn through the
+    /// facet pass with no hull under them (ADR 0044, ashore). Exists for two narrow reasons:
     ///
     /// <list type="number">
     /// <item><b>The zero-cost guarantee.</b> <see cref="IsoFacetHullFeature"/> is on the project's
-    /// 2D renderer for EVERY camera; it consults <see cref="Count"/> and enqueues nothing at all
-    /// when no hull is alive, so scenes without mesh hulls pay nothing (CLAUDE.md rule 7).</item>
-    /// <item><b>Hull ids.</b> Every hull carries a stable id in [1, 255] written into the facet
+    /// 2D renderer for EVERY camera; it consults <see cref="Count"/> and <see cref="FigureCount"/>
+    /// and enqueues nothing at all when neither a hull nor an ashore figure is alive, so scenes
+    /// without them pay nothing (CLAUDE.md rule 7).</item>
+    /// <item><b>Facet ids.</b> Every hull carries a stable id in [1, 255] written into the facet
     /// buffer's alpha channel, so each hull's screen overlay re-composes only ITS OWN pixels —
     /// two overlapping hulls must not paint each other's image at each other's sorting position.
-    /// 0 is reserved for "no hull here".</item>
+    /// An ashore figure carries one the same way, from the same 8-bit pool. 0 is reserved for
+    /// "nothing here".</item>
     /// </list>
+    ///
+    /// <para><b>A figure is not a hull and is not counted as one.</b> <see cref="Count"/> stays the
+    /// number of boats; <see cref="FigureCount"/> is kept apart so nothing that budgets off the
+    /// fleet (the fore blocks, the "19 hulls" arithmetic) starts counting people.</para>
     /// </summary>
     public static class IsoFacetHullRegistry
     {
         static readonly List<IsoFacetHullRenderer> s_Hulls = new List<IsoFacetHullRenderer>();
-        static readonly Stack<int> s_FreeIds = new Stack<int>();
-        static readonly Stack<int> s_FreeForeBlocks = new Stack<int>();
-        static int s_NextId = 1;
+        static readonly HashSet<int> s_FigureIds = new HashSet<int>();
+        static IsoFacetIdPool s_Pool = new IsoFacetIdPool();
         static Texture2D s_ClearFallback;
         static Texture2D s_GuardFallback;
 
-        /// <summary>How many hulls are live. The renderer feature's cheap gate.</summary>
+        /// <summary>How many hulls are live. Half of the renderer feature's cheap gate.</summary>
         public static int Count => s_Hulls.Count;
+
+        /// <summary>How many figures hold a facet id with no hull under them (ashore). The other
+        /// half of the renderer feature's gate; never folded into <see cref="Count"/>.</summary>
+        public static int FigureCount => s_FigureIds.Count;
 
         internal static int Register(IsoFacetHullRenderer hull)
         {
             s_Hulls.Add(hull);
             EnsureFallbackBound();
-            return TakeId();
+            return s_Pool.TakeId();
         }
 
         /// <summary>
@@ -60,60 +70,59 @@ namespace HiddenHarbours.Art
         /// block would make one boat's crew discard against another boat's planking, which is a
         /// wrong picture, where 0 is merely the pre-split one.</para>
         /// </summary>
-        internal static int RegisterForeBlock(int count) => TakeIdBlock(count);
+        internal static int RegisterForeBlock(int count) => s_Pool.TakeIdBlock(count);
 
         internal static void Unregister(IsoFacetHullRenderer hull, int id)
         {
-            if (s_Hulls.Remove(hull) && id >= 1 && id < 255)
-                s_FreeIds.Push(id);
+            if (s_Hulls.Remove(hull))
+                s_Pool.FreeId(id);
         }
 
         /// <summary>Give a FORE block back. Not paired with the hull list — the hull's own
         /// <see cref="Unregister"/> owns that; this only returns the numbers.</summary>
-        internal static void UnregisterForeBlock(int baseId, int count)
+        internal static void UnregisterForeBlock(int baseId, int count) => s_Pool.FreeBlock(baseId, count);
+
+        /// <summary>
+        /// <b>One facet id for a figure with no hull under her</b> (ADR 0044, ashore), or <b>0</b>
+        /// when the pool cannot spare one — in which case NOTHING is counted and the caller keeps
+        /// her sprite. A non-zero return raises <see cref="FigureCount"/>, which opens the facet
+        /// gate exactly as a hull does.
+        ///
+        /// <para><b>Two rules, each held by a named guard.</b> A figure takes a SINGLE id and never
+        /// touches the fore-block stack in either direction (<see cref="IsoFacetIdPool.TakeFigureId"/>),
+        /// because freed blocks are recycled whole and their width is not recorded: a one-wide take
+        /// from that stack would later be handed to a hull asking for twelve. And a figure REFUSES
+        /// at exhaustion where a hull shares id 255: a hull sharing 255 composites over another hull,
+        /// a figure sharing it would be re-composed by every surplus hull's overlay.</para>
+        /// </summary>
+        internal static int RegisterFigure()
         {
-            if (baseId >= 1 && count >= 1 && baseId + count - 1 <= 255)
-                s_FreeForeBlocks.Push(baseId);
+            int id = s_Pool.TakeFigureId();
+            if (id == 0) return 0;
+            s_FigureIds.Add(id);
+            EnsureFallbackBound();
+            return id;
         }
 
-        static int TakeId()
+        /// <summary>Give a figure's id back. Only an id this registry handed to a figure and has not
+        /// already taken back is freed, so a double release cannot push one id onto the free stack
+        /// twice.</summary>
+        internal static void UnregisterFigure(int id)
         {
-            if (s_FreeIds.Count > 0) return s_FreeIds.Pop();
-            if (s_NextId > 255)
-            {
-                // 255 ids — shared between hull ids and their fore blocks — would be a fleet nobody
-                // budgeted for; collapsing onto id 255 degrades overlap separation for the surplus,
-                // nothing worse.
-                Debug.LogWarning("[IsoFacetHullRegistry] Facet hull ids exhausted (255 in use); " +
-                                 "further hulls share id 255 and may composite over one another.");
-                return 255;
-            }
-            return s_NextId++;
+            if (s_FigureIds.Remove(id))
+                s_Pool.FreeId(id);
         }
 
         /// <summary>
-        /// <paramref name="count"/> contiguous ids, or 0 if the pool cannot spare them.
-        ///
-        /// <para>Freed blocks are reused whole, never split: every block this hands out is the same
-        /// size, so a returned one always fits the next request exactly and the pool cannot
-        /// fragment.</para>
+        /// TEST SEAM. Swap the id pool and return the old one, so a guard can drive a pool to
+        /// exhaustion without starving every hull the rest of the domain registers (the live pool's
+        /// next id never rewinds). The caller restores the old pool in a <c>finally</c>.
         /// </summary>
-        static int TakeIdBlock(int count)
+        internal static IsoFacetIdPool SwapIdPoolForTests(IsoFacetIdPool pool)
         {
-            if (count < 1) return 0;
-            if (s_FreeForeBlocks.Count > 0) return s_FreeForeBlocks.Pop();
-            if (s_NextId + count - 1 > 255)
-            {
-                Debug.LogWarning(
-                    $"[IsoFacetHullRegistry] Facet hull ids exhausted ({s_NextId - 1} in use); this " +
-                    $"hull gets NO deck-occupant block ({count} contiguous ids needed). Anything " +
-                    "standing on her deck will draw over her cabins instead of behind them. Each " +
-                    "hull costs 1 + " + count + " ids out of 255.");
-                return 0;
-            }
-            int baseId = s_NextId;
-            s_NextId += count;
-            return baseId;
+            IsoFacetIdPool old = s_Pool;
+            s_Pool = pool ?? throw new System.ArgumentNullException(nameof(pool));
+            return old;
         }
 
         /// <summary>
@@ -160,6 +169,97 @@ namespace HiddenHarbours.Art
             s_GuardFallback.SetPixel(0, 0, Color.black);
             s_GuardFallback.Apply(false, true);
             Shader.SetGlobalTexture(IsoFacetShaderIds.GuardTex, s_GuardFallback);
+        }
+    }
+
+    /// <summary>
+    /// The 8-bit facet id space shared by hull ids, their fore blocks and ashore figures: one alpha
+    /// channel, 1..255, 0 = nothing. Held apart from <see cref="IsoFacetHullRegistry"/> only so a
+    /// guard can exhaust a pool of its own; the hull arithmetic is the registry's, moved unchanged.
+    ///
+    /// <para><b>Singles and blocks never cross.</b> <see cref="TakeId"/> and
+    /// <see cref="TakeFigureId"/> pop only the singles stack; <see cref="TakeIdBlock"/> pops only the
+    /// block stack. A freed single can therefore never become a block base, and a freed block can
+    /// never be handed out as a single.</para>
+    /// </summary>
+    internal sealed class IsoFacetIdPool
+    {
+        readonly Stack<int> _freeIds = new Stack<int>();
+        readonly Stack<int> _freeForeBlocks = new Stack<int>();
+        int _nextId = 1;
+
+        /// <summary>A hull's own id. At exhaustion it SHARES 255, as it always has.</summary>
+        internal int TakeId()
+        {
+            if (_freeIds.Count > 0) return _freeIds.Pop();
+            if (_nextId > 255)
+            {
+                // 255 ids — shared between hull ids and their fore blocks — would be a fleet nobody
+                // budgeted for; collapsing onto id 255 degrades overlap separation for the surplus,
+                // nothing worse.
+                Debug.LogWarning("[IsoFacetHullRegistry] Facet hull ids exhausted (255 in use); " +
+                                 "further hulls share id 255 and may composite over one another.");
+                return 255;
+            }
+            return _nextId++;
+        }
+
+        /// <summary>
+        /// An ashore figure's id, or 0. <b>Never 255 and never shared:</b> 255 is the id hulls
+        /// collapse onto at exhaustion, so a figure holding it would be re-composed by every surplus
+        /// hull's overlay. Refusing costs one figure her mesh (she keeps her sprite); sharing would
+        /// cost a wrong picture.
+        /// </summary>
+        internal int TakeFigureId()
+        {
+            if (_freeIds.Count > 0) return _freeIds.Pop();
+            if (_nextId >= 255)
+            {
+                Debug.LogWarning(
+                    $"[IsoFacetHullRegistry] Facet ids exhausted ({_nextId - 1} in use); this figure " +
+                    "gets NO facet id and keeps her sprite. A figure never shares id 255.");
+                return 0;
+            }
+            return _nextId++;
+        }
+
+        /// <summary>
+        /// <paramref name="count"/> contiguous ids, or 0 if the pool cannot spare them.
+        ///
+        /// <para>Freed blocks are reused whole, never split: every block this hands out is the same
+        /// size, so a returned one always fits the next request exactly and the pool cannot
+        /// fragment.</para>
+        /// </summary>
+        internal int TakeIdBlock(int count)
+        {
+            if (count < 1) return 0;
+            if (_freeForeBlocks.Count > 0) return _freeForeBlocks.Pop();
+            if (_nextId + count - 1 > 255)
+            {
+                Debug.LogWarning(
+                    $"[IsoFacetHullRegistry] Facet hull ids exhausted ({_nextId - 1} in use); this " +
+                    $"hull gets NO deck-occupant block ({count} contiguous ids needed). Anything " +
+                    "standing on her deck will draw over her cabins instead of behind them. Each " +
+                    "hull costs 1 + " + count + " ids out of 255.");
+                return 0;
+            }
+            int baseId = _nextId;
+            _nextId += count;
+            return baseId;
+        }
+
+        /// <summary>Return a single id. 0 and 255 (the shared overflow id) are never pushed.</summary>
+        internal void FreeId(int id)
+        {
+            if (id >= 1 && id < 255)
+                _freeIds.Push(id);
+        }
+
+        /// <summary>Return a fore block whole.</summary>
+        internal void FreeBlock(int baseId, int count)
+        {
+            if (baseId >= 1 && count >= 1 && baseId + count - 1 <= 255)
+                _freeForeBlocks.Push(baseId);
         }
     }
 

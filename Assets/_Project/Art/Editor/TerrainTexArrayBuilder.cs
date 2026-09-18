@@ -4,18 +4,23 @@ using UnityEngine;
 namespace HiddenHarbours.Art.Editor
 {
     /// <summary>
-    /// Packs the terrain material kit (docs/art/rigs/terrain — ADR 0028 PR 2) into the two
-    /// Texture2DArrays the splat shader samples: one 256-class array and one 512-class array,
-    /// three slices per material (_Lo / base / _Hi — the kit's intensity ladder, README §2).
+    /// Packs the terrain material kit (docs/art/rigs/terrain — ADR 0028 PR 2) into the ONE
+    /// Texture2DArray the splat shader samples: a 256-class array (8 m tiles), three slices per
+    /// material (_Lo / base / _Hi — the kit's intensity ladder, README §2).
     ///
-    /// <para>The arrays are DERIVED assets (never hand-edited): re-run this after a kit re-bake.
-    /// The asset is created once and thereafter written IN PLACE (CopySerialized) so its GUID —
-    /// which scenes reference — survives every rebuild (the ShoreIso2 lesson, inverted: these ARE
+    /// <para>One array since the px flip (2026-09-17, owner ruling A2). The greenery px kit ships
+    /// every plan material at 256 px / 8 m (one pixel per texel), so the seven that used to fill a
+    /// 512-class array were APPENDED to <see cref="Order256"/> after Lawn and the 512 array was
+    /// retired. See <see cref="Array512Path"/> for the one name that outlives it.</para>
+    ///
+    /// <para>The array is a DERIVED asset (never hand-edited): re-run this after the kit's PNGs
+    /// change. The asset is created once and thereafter written IN PLACE (CopySerialized) so its
+    /// GUID — which scenes reference — survives every rebuild (the ShoreIso2 lesson, inverted: it IS
     /// scene-referenced, so the GUID must be stable).</para>
     ///
-    /// <para>⚠ <see cref="Order256"/>/<see cref="Order512"/> and the slice layout are MIRRORED by
-    /// the static tables in <c>HiddenHarboursTerrainSplat.shader</c> (MAT_ARRAY/MAT_SLICE/
-    /// MAT_METRES/MAT_OFFSET). A pin test holds the two in sync — change one, change both.</para>
+    /// <para>⚠ <see cref="Order256"/> and the slice layout are MIRRORED by the static tables in
+    /// <c>HiddenHarboursTerrainSplat.shader</c> (MAT_SLICE/MAT_METRES/MAT_OFFSET). A pin test holds
+    /// the two in sync — change one, change both.</para>
     ///
     /// <para>Only the kit's PLAN-projection materials are packed here. Sandstone and Bank are cliff
     /// FACES (their UVs run along and down a wall, not over the ground) and the five edge strips are
@@ -27,10 +32,16 @@ namespace HiddenHarbours.Art.Editor
         public const string TexDir = "Assets/_Project/Art/Terrain";
         public const string DerivedDir = TexDir + "/Derived";
         public const string Array256Path = DerivedDir + "/TerrainDetail256.asset";
+        /// <summary>⚠ OUTLIVES ITS ASSET. The 512-class array was retired by the px flip (2026-09-17,
+        /// owner ruling A2): nothing builds it and the asset is deleted. The path stays only because
+        /// the two region builders (StPetersBuilder, NineMileCreekBuilder — exporter-tracked, left
+        /// untouched on purpose) still load it for <c>TerrainSplatSurface.ConfigureDetail</c>'s second
+        /// argument, which now loads null and is ignored. Drop the path and that argument at the
+        /// builders' next legitimate edit.</summary>
         public const string Array512Path = DerivedDir + "/TerrainDetail512.asset";
 
-        /// <summary>256-class materials (8 m tiles) in canonical slice order — slice base = index × 3.
-        /// APPEND ONLY: the shader's MAT_SLICE table reads these positions by number.
+        /// <summary>The plan materials (256 px, 8 m tiles) in canonical slice order — slice base =
+        /// index × 3. APPEND ONLY: the shader's MAT_SLICE table reads these positions by number.
         /// Eelgrass and Irishmoss arrived with kit v3 (materials.json sizes them 256).</summary>
         public static readonly string[] Order256 =
         {
@@ -40,13 +51,14 @@ namespace HiddenHarbours.Art.Editor
             // holds each material's base slice as a literal — inserting anywhere but the end would
             // silently repaint every material after it.
             "Lawn",
+            // The px flip (2026-09-17, owner ruling A2): the kit ships these seven at 256 px / 8 m, so
+            // they left the retired 512 array and were APPENDED here, after Lawn (slices 36..54). Their
+            // splat indices (3, 4, 6, 10, 11, 14, 15) do not move; only their MAT_SLICE and MAT_METRES
+            // rows in the shader do.
+            "Shingle", "Ripple", "Silt", "Foreshore", "Talus", "Musselbed", "Oysterreef",
+            // Mud, new with the px kit (2026-09-17, owner ruling M1): splat index 19, _SplatE.a. Slice 57.
+            "Mud",
         };
-
-        /// <summary>512-class materials (16 m tiles) in canonical slice order. Append only.
-        /// Musselbed and Oysterreef arrived with kit v3 (materials.json sizes them 512 — a bed's
-        /// hummock and cluster structure needs the bigger tile to avoid an obvious repeat).</summary>
-        public static readonly string[] Order512 =
-            { "Shingle", "Ripple", "Silt", "Foreshore", "Talus", "Musselbed", "Oysterreef" };
 
         /// <summary>The ladder suffixes, in slice order (README §2: _Lo = 0, base = 1, _Hi = 2).</summary>
         public static readonly string[] LadderSteps = { "_Lo", "", "_Hi" };
@@ -54,18 +66,16 @@ namespace HiddenHarbours.Art.Editor
         [MenuItem("Hidden Harbours/Art/Build Terrain Texture Arrays", priority = 24)]
         public static void BuildMenu() => Build();
 
-        /// <summary>Build both arrays. Returns total slices written, 0 if the kit is absent
+        /// <summary>Build the array. Returns the slices written, 0 if the kit is absent
         /// (warn-and-skip, the shore painter's convention — never half a kit).</summary>
         public static int Build()
         {
             var a256 = BuildArray(Order256, 256);
-            var a512 = BuildArray(Order512, 512);
-            if (a256 == null || a512 == null) return 0;
+            if (a256 == null) return 0;
 
             if (!AssetDatabase.IsValidFolder(DerivedDir))
                 AssetDatabase.CreateFolder(TexDir, "Derived");
             SaveInPlace(a256, Array256Path);
-            SaveInPlace(a512, Array512Path);
             AssetDatabase.SaveAssets();
             // ⚠ Read the PERSISTED assets, never the temps: on the REBUILD path SaveInPlace has just
             // CopySerialized'd the temp into the existing asset and DESTROYED the temp — so `a256.depth`
@@ -74,10 +84,9 @@ namespace HiddenHarbours.Art.Editor
             // builds into a fresh worktree, takes the CreateAsset path, and never sees it). Reading back
             // from the path also proves the save actually landed.
             var p256 = AssetDatabase.LoadAssetAtPath<Texture2DArray>(Array256Path);
-            var p512 = AssetDatabase.LoadAssetAtPath<Texture2DArray>(Array512Path);
-            int slices = (p256 != null ? p256.depth : 0) + (p512 != null ? p512.depth : 0);
+            int slices = p256 != null ? p256.depth : 0;
             Debug.Log($"[TerrainTexArrayBuilder] Packed {slices} slices " +
-                      $"({Order256.Length} + {Order512.Length} materials x {LadderSteps.Length} steps).");
+                      $"({Order256.Length} materials x {LadderSteps.Length} steps).");
             return slices;
         }
 

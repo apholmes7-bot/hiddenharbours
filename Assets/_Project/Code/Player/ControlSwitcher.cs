@@ -132,9 +132,17 @@ namespace HiddenHarbours.Player
                  "console, an outboard dory's transom tiller and a rowed dory's oar seat are four " +
                  "different places. Walk to the station + E to take the helm.")]
         [SerializeField] private Vector2 _helmLocalOffset = new Vector2(0f, -1.3f);
-        [Tooltip("How close (m) the on-deck player must stand to the helm spot for E to take the helm. " +
-                 "Kept tighter than the deck so there's still deck left to disembark from.")]
-        [SerializeField] private float _helmReach = 0.9f;
+        [Tooltip("⭐ THE HELM RADIUS (owner, 2026-09-17: \"you should need to be within a small radius of " +
+                 "the helm to push e and take control\") — how close (m) the on-deck player must stand to " +
+                 "the helm spot for E to take the helm. 0.5 m still reaches every seated helm the fleet " +
+                 "publishes from the sole beneath it (the widest gap is the Zodiac Hurricane's, 0.47 m " +
+                 "drawn).\n\n" +
+                 "Even inside it, a cabin door the player stands NEARER than the helm keeps the press: at " +
+                 "a door, E only opens the door.\n\n" +
+                 "Renamed from _helmReach (0.9 m) on purpose and with no FormerlySerializedAs: both " +
+                 "region scenes still serialize the old 0.9, and the rename is what lets this default " +
+                 "reach them without a scene edit.")]
+        [SerializeField] private float _helmRadius = 0.5f;
         [Tooltip("Where boarding LANDS you on the deck — an offset from the boat's position WITH HER " +
                  "BOW NORTH, in the drawn (screen) metres this was tuned in, clamped to her walkable " +
                  "deck. It is a place ON THE HULL: amidships and a step FORWARD of the helm, and it " +
@@ -452,8 +460,8 @@ namespace HiddenHarbours.Player
         /// frames.</b> <c>DeckWalkController</c> places the player through
         /// <c>DeckToWorld(deckLocal, deckHeight, …)</c>, so a player standing AT the wheel is already
         /// lifted by her deck height × cos(elev) — 0.57 m on the cape’s 0.74 m station at a 40° bake,
-        /// against a 0.9 m <see cref="_helmReach"/>. A helm spot pinned at height 0 would sit that far
-        /// below her feet and eat most of the reach.</para>
+        /// against a 0.5 m <see cref="_helmRadius"/>. A helm spot pinned at height 0 would sit further
+        /// below her feet than the whole radius.</para>
         ///
         /// <para><b>Zero for the fallback</b>, which is what shipped: the tuned offset is a drawn
         /// screen measurement that already has whatever lift it has baked into it, and adding a height
@@ -531,10 +539,74 @@ namespace HiddenHarbours.Player
             => DeckWalkController.BakeElevationDegreesOf(Boat);
 
         /// <summary>True when the player stands close enough to the helm spot for E to take the helm
-        /// (pure proximity; the mode dispatch decides when it applies).</summary>
+        /// (pure proximity; the mode dispatch decides when it applies). Whether a press actually takes
+        /// it is <see cref="TakesTheHelmOnThisPress"/>, which also hears the cabin door.</summary>
         public bool WithinHelmReach()
             => Player != null && Boat != null
-               && Vector2.Distance(Player.position, HelmWorldPosition) <= _helmReach;
+               && Vector2.Distance(Player.position, HelmWorldPosition) <= _helmRadius;
+
+        /// <summary>
+        /// ⭐ <b>Does E take the helm on this press?</b> Inside <see cref="_helmRadius"/>, and not standing
+        /// at a cabin door — the owner's 2026-09-17 ruling in full: <i>"only open the door, you should need
+        /// to be within a small radius of the helm to push e and take control"</i>.
+        ///
+        /// <para>Named because the four deck sites — <see cref="CanInteract"/>, <see cref="TryInteract"/>,
+        /// <see cref="BeginInteract"/>'s ladder and the popup — must agree on it, for the reason they
+        /// agree on <see cref="StepAshoreOnThisPress"/>.</para>
+        /// </summary>
+        public bool TakesTheHelmOnThisPress() => WithinHelmReach() && !ACabinDoorStandsNearerThanTheHelm();
+
+        /// <summary>
+        /// <b>Is the player standing at a cabin door rather than at the helm?</b> True when a registered
+        /// <see cref="ICabinThreshold"/> candidate for the player's context has her inside its own reach
+        /// AND stands strictly nearer her than the helm spot does.
+        ///
+        /// <para><b>Why a door, and only a door.</b> A wheelhouse puts its door within a pace of its
+        /// wheel — the cape islander's threshold came inside the old 0.9 m reach at every heading — and
+        /// the 2026-08-25 deck ladder ranks the helm above the registry, so E at that door took the helm
+        /// and the owner never saw a door open. Every other fixture keeps the old ranking: the helm is
+        /// still a station, and it still beats a bucket at your feet.</para>
+        ///
+        /// <para><b>Nearer, not merely in reach.</b> A door's reach (1.2 m and up) is wider than the whole
+        /// helm radius, so "in reach of a door" alone would take the helm away from any wheel with a door
+        /// beside it. Whichever of the two she stands closer to is the one she meant.</para>
+        ///
+        /// <para><b>Availability is deliberately NOT read.</b> A door playing its cue answers unavailable,
+        /// so the resolver skips it, and a second press during the swing would otherwise fall through to
+        /// the helm. She is still standing at the door while it moves.</para>
+        ///
+        /// <para><b>The <c>_interactVerb</c> read is load-bearing</b>, as it is in
+        /// <see cref="AFixtureWouldTakeThePress"/>: with the verb switched off E cannot open a door at
+        /// all, so there is nothing to yield to and the pre-M2-39 ladder comes back exactly.</para>
+        ///
+        /// <para>A registry WALK, never a resolve, so <see cref="Update"/>'s one-resolve-per-frame still
+        /// holds and no candidate's <c>IsAvailable</c> is asked. Rule 7: an indexed walk and a type test,
+        /// no allocation.</para>
+        /// </summary>
+        private bool ACabinDoorStandsNearerThanTheHelm()
+        {
+            Transform p = Player;
+            if (!_interactVerb || p == null || Boat == null) return false;
+
+            Vector2 at = p.position;
+            float helmSqr = ((Vector2)HelmWorldPosition - at).sqrMagnitude;
+            InteractContext context = InteractActor.ContextFor(Mode);
+            var registered = Interactables.Active;
+            for (int i = 0; i < registered.Count; i++)
+            {
+                IInteractable candidate = registered[i];
+                if (!(candidate is ICabinThreshold)) continue;
+                // ICabinThreshold's own liveness rule: a destroyed door still answers through the interface.
+                if (candidate is UnityEngine.Object o && o == null) continue;
+                if ((candidate.Contexts & context) == 0) continue;
+
+                // The resolver's own reach test, so "in reach" means what the press means by it.
+                float sqr = (candidate.WorldPosition - at).sqrMagnitude;
+                float reach = Mathf.Max(0f, candidate.ReachMeters);
+                if (sqr <= reach * reach && sqr < helmSqr) return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// Pure test: is the step-off point over standable LAND by tidal terrain — i.e. the ground is EXPOSED
@@ -610,7 +682,8 @@ namespace HiddenHarbours.Player
         /// <summary>True if INTERACT would transition right now.
         /// <para><b>On foot</b>: you may board (→ the DECK) whenever within reach of the boat (anywhere)
         /// and the boat is boardable (a damaged dory blocks boarding until repaired).</para>
-        /// <para><b>On deck</b>: E is contextual — at the helm spot it takes the helm; elsewhere it
+        /// <para><b>On deck</b>: E is contextual — at the helm spot it takes the helm (unless she stands at
+        /// a cabin door, <see cref="TakesTheHelmOnThisPress"/>); elsewhere it
         /// disembarks, allowed only onto a standable step-off: at an authored DOCK/wharf (you step onto
         /// the planks) OR where the boat is over standable LAND (<see cref="OnLand"/>) — NEVER over open
         /// or merely-shallow-but-submerged water (owner playtest: you couldn't step off onto water).</para>
@@ -618,7 +691,7 @@ namespace HiddenHarbours.Player
         public bool CanInteract() => Mode switch
         {
             ControlMode.OnFoot => WithinBoardReach() && BoardableNow(),
-            ControlMode.OnDeck => WithinHelmReach() || StepAshoreOnThisPress(),
+            ControlMode.OnDeck => TakesTheHelmOnThisPress() || StepAshoreOnThisPress(),
             _ => true,   // at the helm → step back onto the deck, always allowed
         };
 
@@ -823,8 +896,10 @@ namespace HiddenHarbours.Player
 
                 case ControlMode.OnDeck:
                     // The helm is a STATION: standing at it, E takes the helm; elsewhere on the deck,
-                    // E steps ashore (when a standable step-off is there).
-                    if (WithinHelmReach()) { TakeHelm(); return true; }
+                    // E steps ashore (when a standable step-off is there). ⭐ At a cabin door inside the
+                    // helm radius the helm stands down (owner, 2026-09-17): the door keeps the press, and
+                    // BeginInteract is what hands it over.
+                    if (TakesTheHelmOnThisPress()) { TakeHelm(); return true; }
                     if (StepAshoreOnThisPress()) { Disembark(); return true; }
                     return false;
 
@@ -876,6 +951,12 @@ namespace HiddenHarbours.Player
         /// deck's early consult stands the tail one down, and both go through
         /// <see cref="TryInteractCandidate"/>, so the <c>_interactVerb</c> A/B still restores the
         /// pre-seam behaviour exactly.</para>
+        ///
+        /// <para>⭐ <b>The one exception to "the helm wins" is the owner's</b> (2026-09-17): <i>"only open
+        /// the door, you should need to be within a small radius of the helm to push e and take
+        /// control"</i>. Inside the helm radius but nearer a cabin door than the helm,
+        /// <see cref="TakesTheHelmOnThisPress"/> answers no, and the ladder runs exactly as it runs
+        /// anywhere else away from the helm: the registry hears the press first, and the door opens.</para>
         /// </summary>
         /// <returns>True if a move started or a transition happened.</returns>
         public bool BeginInteract()
@@ -888,8 +969,9 @@ namespace HiddenHarbours.Player
             // ⭐ ON DECK, AWAY FROM THE HELM, THE REGISTRY IS ASKED BEFORE STEP-ASHORE (the ruling above).
             // Read ONCE and used twice, because the tail must not resolve the same press a second time.
             // It changes nothing where nothing is registered in reach: the consult resolves nothing and
-            // the two branches below run exactly as they always did.
-            bool onDeckAwayFromTheHelm = Mode == ControlMode.OnDeck && !WithinHelmReach();
+            // the two branches below run exactly as they always did. "Away from the helm" means THIS
+            // press does not take it, which includes a cabin door inside the helm radius (2026-09-17).
+            bool onDeckAwayFromTheHelm = Mode == ControlMode.OnDeck && !TakesTheHelmOnThisPress();
             if (onDeckAwayFromTheHelm && TryInteractCandidate()) return true;
 
             // ⚠ The consult above covers BOTH routes off the deck: this move branch, and the fall-through
@@ -1100,7 +1182,7 @@ namespace HiddenHarbours.Player
         /// input goes live.</summary>
         private void TakeHelm()
         {
-            // Stand ON the helm, not merely within reach of it. E fires anywhere inside _helmReach, so a
+            // Stand ON the helm, not merely within reach of it. E fires anywhere inside _helmRadius, so a
             // figure left where the player happened to be standing would be drawn up to that far off the
             // tiller — visible slop the hidden sprite used to conceal. Seated BEFORE the mode applies, so
             // the rider's first frame already has them in place.
@@ -2184,7 +2266,7 @@ namespace HiddenHarbours.Player
         ///
         /// <para>Deliberately NOT a re-dispatch through <see cref="TryInteract"/>. By the far end the
         /// fisher has moved, and E is contextual on POSITION: a fisher who has just arced onto a small
-        /// hull's deck can easily be standing inside <see cref="_helmReach"/>, so re-dispatching would
+        /// hull's deck can be standing inside <see cref="_helmRadius"/>, so re-dispatching would
         /// answer "take the helm" to a move that set out to step ashore. A move finishes the transition it
         /// started or none at all.</para>
         /// </summary>
@@ -2573,11 +2655,11 @@ namespace HiddenHarbours.Player
 
         /// <summary>Tune the helm station in one call (tests / editor): where the helm spot sits on the
         /// boat (the offset from her origin with her bow NORTH — see <see cref="HelmWorldPosition"/> for
-        /// the frame) and how close E must be pressed to take it.</summary>
-        public void ConfigureHelm(Vector2 helmLocalOffset, float helmReach)
+        /// the frame) and the radius E must be pressed inside to take it.</summary>
+        public void ConfigureHelm(Vector2 helmLocalOffset, float helmRadius)
         {
             _helmLocalOffset = helmLocalOffset;
-            _helmReach = helmReach;
+            _helmRadius = helmRadius;
         }
 
         /// <summary>Tune the one interact VERB in one call (tests / editor feel sessions). Passing
@@ -2915,8 +2997,10 @@ namespace HiddenHarbours.Player
                 case ControlMode.OnDeck:
                     // Helm, then the registry, then the step off — BeginInteract's own deck ladder, read
                     // in its own order. The middle rung is not offered from here: the verb states it
-                    // itself on the Fixture slot, so all this branch owes it is to STAND DOWN.
-                    if (WithinHelmReach()) { id = ControlStrings.IdTakeHelm; label = ControlStrings.TakeHelm; }
+                    // itself on the Fixture slot, so all this branch owes it is to STAND DOWN. That now
+                    // includes the helm's own line at a cabin door (2026-09-17): Transit outranks the
+                    // Fixture slot, so a TakeHelm offer left standing there would hide the door's.
+                    if (TakesTheHelmOnThisPress()) { id = ControlStrings.IdTakeHelm; label = ControlStrings.TakeHelm; }
                     // ⭐ …and the step off is offered only while she is LOOKING at it (2026-09-07). The
                     // offer appearing as you turn toward the wharf is how the facing rule teaches itself:
                     // the player reads the decision before making it, exactly as the washboard's own

@@ -19,7 +19,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void MaterialOrder_IsTheCanonicalSplatOrder()
         {
             // The one order everything shares: the shader's channel unpack (A.rgba B.rgba C.rgba
-            // D.rgba E.rg), the pin tests, and every committed splat PNG. Append-only, never reorder.
+            // D.rgba E.rgba), the pin tests, and every committed splat PNG. Append-only, never reorder.
             CollectionAssert.AreEqual(
                 new[]
                 {
@@ -27,6 +27,7 @@ namespace HiddenHarbours.Tests.EditMode
                     "Dirt", "Marsh", "Sedge", "Foreshore", "Talus", "Ledge", "Rockweed",
                     "Musselbed", "Oysterreef", "Eelgrass", "Irishmoss",
                     "Lawn",
+                    "Mud",
                 },
                 TerrainSplatBrush.MaterialNames,
                 "The brush's material order drifted from the canonical splat channel order.");
@@ -35,10 +36,10 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EveryBrushMaterial_ExistsInTheKitPackOrders()
         {
+            // One pack order since the px flip retired the 512 array (2026-09-17, owner ruling A2).
             foreach (string name in TerrainSplatBrush.MaterialNames)
-                Assert.IsTrue(TerrainTexArrayBuilder.Order256.Contains(name) ||
-                              TerrainTexArrayBuilder.Order512.Contains(name),
-                    $"'{name}' is paintable but in neither TerrainTexArrayBuilder pack order — " +
+                Assert.IsTrue(TerrainTexArrayBuilder.Order256.Contains(name),
+                    $"'{name}' is paintable but not in TerrainTexArrayBuilder.Order256 — " +
                     "the shader would have no detail slices for it.");
         }
 
@@ -55,10 +56,10 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(m, TerrainSplatBrush.MaterialOf(tex, ch),
                     $"material {m} does not round-trip through (texture, channel).");
             }
-            // Texture E carries only two channels (eelgrass, irishmoss) — the last valid material
-            // is 18 (Lawn, at E.b), so E.a is the ONE slot left free.
+            // Texture E is FULL: the last valid material is 19 (Mud, at E.a, 2026-09-17), after
+            // Eelgrass, Irishmoss and Lawn.
             Assert.AreEqual(4, TerrainSplatBrush.TextureOf(TerrainSplatBrush.MaterialCount - 1));
-            Assert.AreEqual(2, TerrainSplatBrush.ChannelOf(TerrainSplatBrush.MaterialCount - 1));
+            Assert.AreEqual(3, TerrainSplatBrush.ChannelOf(TerrainSplatBrush.MaterialCount - 1));
         }
 
         [Test]
@@ -97,18 +98,28 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheTwoFreeSlots_AreAtTheEnd_SoTheNextAppendCannotCollide()
+        public void Mud_LandsOnSplatEA_AsTheOwnerRuled()
         {
-            // 19 materials in 20 channels. MaterialOf() is only meaningful below MaterialCount, so
-            // spell out WHICH two are spare — a future kit appending at 18 must land on E.b.
-            Assert.AreEqual(18, TerrainSplatBrush.MaterialOf(4, 2), "E.b should be the next slot (18).");
+            // Owner ruling M1 (2026-09-17): the px kit's Mud takes index 19, the last channel of the
+            // five maps. Stated as the PR body states it — if this ever shifts, every committed
+            // SplatE PNG's alpha changes meaning.
+            Assert.AreEqual("SplatE.a", TerrainSplatBrush.ChannelLabel(19), "Mud");
+            Assert.AreEqual("Mud", TerrainSplatBrush.MaterialNames[19]);
+        }
+
+        [Test]
+        public void NoSplatChannelIsFree_TheNextMaterialNeedsASixthMap()
+        {
+            // 20 materials in 20 channels. ⭐ SAID DELIBERATELY: Lawn took E.b (2026-08-26) and Mud
+            // took E.a (2026-09-17, owner ruling M1), so the old "one channel free" count went to
+            // zero on purpose. The next material (the px kit's Path is waiting) needs a SIXTH splat
+            // map, _SplatF — every region's committed PNGs, the surface's binding and the byte-zero
+            // gate all move — which is its own PR, decided on purpose; this is what says so.
             Assert.AreEqual(19, TerrainSplatBrush.MaterialOf(4, 3), "E.a should be the last slot (19).");
-            // ⭐ SAID DELIBERATELY, 2026-08-26: Lawn took E.b, so ONE channel is free, not two. The
-            // next material after it needs a SIXTH splat map — every region's committed PNGs, the
-            // surface's binding and the byte-zero gate all move — so this number going to 0 is a
-            // decision somebody has to make on purpose, which is what this assertion is for.
-            Assert.AreEqual(TerrainSplatBrush.TextureCount * 4 - 1, TerrainSplatBrush.MaterialCount,
-                "Exactly ONE channel should be free — if that changed, say so deliberately.");
+            Assert.AreEqual(TerrainSplatBrush.TextureCount * 4, TerrainSplatBrush.MaterialCount,
+                "Every channel of the five maps should be spoken for — if that changed, say so deliberately.");
+            Assert.AreEqual(TerrainSplatBrush.TextureCount, TerrainSplatBrush.TextureOf(TerrainSplatBrush.MaterialCount),
+                "The next material must fall on a map that does not exist yet (the sixth).");
         }
 
         [Test]

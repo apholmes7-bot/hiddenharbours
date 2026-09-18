@@ -52,6 +52,13 @@ namespace HiddenHarbours.Tests.RigBaking
         /// </summary>
         const string HullSignal = "rollA";
 
+        /// <summary>
+        /// How far a committed door leaf's bounds may sit from a fresh extraction's, in rig units
+        /// (metres). Both come from the same rig through float32, so they agree to far less than a
+        /// millimetre; a leaf baked in the wrong pose is off by a door's travel, tens of centimetres.
+        /// </summary>
+        const float LeafBoundsToleranceMetres = 0.001f;
+
         static IEnumerable<string> HullRigFilesOnDisk() =>
             Directory.EnumerateFiles(RigFolder, "*.js")
                      .Where(f => File.ReadAllText(f).Contains(HullSignal))
@@ -171,8 +178,22 @@ namespace HiddenHarbours.Tests.RigBaking
                 // BAKER's own method, never a copy of it: a second transcription of "which hulls are
                 // converted and how their room is appended" is exactly the drift this test exists to
                 // catch, and it would be catching it in the wrong direction.
+                //
+                // The cabin door's LEAF (2026-09-17) is not in the hull mesh any more: the bake lifts it
+                // into two sub-meshes, shut and open. Found and lifted through the baker's own two
+                // methods, in the baker's order (found before the room, lifted after it), for the same
+                // reason the room goes through its method.
+                RigMeshAssetBaker.DoorLeafFaces leaf =
+                    RigMeshAssetBaker.FindDoorLeaf(host, hull.GlobalName, fresh, hull.Extraction);
                 RigMeshAssetBaker.AppendMeshInteriorIfConverted(host, hull.GlobalName, fresh, hull.Extraction);
+                RigMeshAssetBaker.LiftDoorLeaf(fresh, leaf, null);
                 RigMeshBuild built = RigMeshBuilder.Build(fresh, $"{hull.GlobalName}Check");
+                RigMeshBuild leafShut = leaf != null
+                    ? RigMeshBuilder.Build(leaf.Closed, $"{hull.GlobalName}DoorLeafClosedCheck")
+                    : null;
+                RigMeshBuild leafOpen = leaf != null
+                    ? RigMeshBuilder.Build(leaf.Open, $"{hull.GlobalName}DoorLeafOpenCheck")
+                    : null;
 
                 try
                 {
@@ -184,6 +205,24 @@ namespace HiddenHarbours.Tests.RigBaking
 
                     Same("verts", def.Mesh.vertexCount, built.Mesh.vertexCount);
                     Same("tris", def.Mesh.triangles.Length, built.Mesh.triangles.Length);
+
+                    // Both poses, and WHERE each one stands: the two carry identical counts, so only
+                    // the bounds can tell a swapped pair (a door drawn open while shut) from a right one.
+                    Same("DoorLeaf", def.HasDoorLeaf(), leaf != null);
+                    if (leaf != null && def.HasDoorLeaf())
+                    {
+                        void SameLeaf(string pose, Mesh committed, Mesh rig)
+                        {
+                            Same($"{pose}.verts", committed.vertexCount, rig.vertexCount);
+                            Same($"{pose}.tris", committed.triangles.Length, rig.triangles.Length);
+                            if (Vector3.Distance(committed.bounds.center, rig.bounds.center) > LeafBoundsToleranceMetres ||
+                                Vector3.Distance(committed.bounds.size, rig.bounds.size) > LeafBoundsToleranceMetres)
+                                stale.Add($"{hull.Key}.{pose}.bounds: committed {committed.bounds}, rig says {rig.bounds}");
+                        }
+
+                        SameLeaf(nameof(HullMeshDef.DoorLeafClosed), def.DoorLeafClosed, leafShut.Mesh);
+                        SameLeaf(nameof(HullMeshDef.DoorLeafOpen), def.DoorLeafOpen, leafOpen.Mesh);
+                    }
                     Same("CellW", def.CellW, fresh.W);
                     Same("CellH", def.CellH, fresh.H);
                     Same("PxPerMetre", def.PxPerMetre, fresh.PxPerMetre);
@@ -201,6 +240,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 finally
                 {
                     UnityEngine.Object.DestroyImmediate(built.Mesh);
+                    if (leafShut != null) UnityEngine.Object.DestroyImmediate(leafShut.Mesh);
+                    if (leafOpen != null) UnityEngine.Object.DestroyImmediate(leafOpen.Mesh);
                 }
             }
 

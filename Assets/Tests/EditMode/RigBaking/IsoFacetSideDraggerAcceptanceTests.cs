@@ -133,7 +133,11 @@ namespace HiddenHarbours.Tests.RigBaking
             if (s_Rig != null) return s_Rig;
             using var host = RigScriptHostFactory.Create();
             RigMeshData data = RigMeshExtractor.ExtractFrom(host, RigPath, RigGlobal);
+            // Her wheelhouse door LEAF (2026-09-17) is baked apart from her mesh, found before the
+            // room and lifted after it — the baker's order, through the baker's methods.
+            RigMeshAssetBaker.DoorLeafFaces leaf = RigMeshAssetBaker.FindDoorLeaf(host, RigGlobal, data);
             RigMeshAssetBaker.AppendMeshInteriorIfConverted(host, RigGlobal, data);
+            RigMeshAssetBaker.LiftDoorLeaf(data, leaf, null);
             s_Rig = data;
             return s_Rig;
         }
@@ -151,6 +155,10 @@ namespace HiddenHarbours.Tests.RigBaking
         /// removing from the oracle exactly what the shader removes from the picture — no floors moved,
         /// no keyword forced, and her EXTERIOR is still the whole subject, which is what this fixture
         /// has always been about.</para>
+        ///
+        /// <para>Plus her door leaf, SHUT: since 2026-09-17 the leaf is not in her mesh but drawn by the
+        /// renderer's own "DoorLeaf" child, which the GPU arm renders shut. The rig draws it shut too
+        /// (<c>doorOpen</c> 0), so leaving it out of the oracle would report her own door as a defect.</para>
         /// </summary>
         static Mesh ExteriorOnly(HullMeshDef def)
         {
@@ -159,7 +167,12 @@ namespace HiddenHarbours.Tests.RigBaking
                 "the dragger's committed mesh carries no room-flagged vertices — she is on " +
                 "RigMeshAssetBaker.MeshInteriorHulls, so either she was not re-baked or the room flag " +
                 "stopped being written, and this fixture would be comparing the same mesh twice.");
-            return stripped;
+            Assert.IsTrue(def.HasDoorLeaf(),
+                "the dragger's committed def carries no door leaf — her rig has one (doorFaces), so she " +
+                "was not re-baked since the leaf was split out, and the GPU arm would draw no door at all.");
+            Mesh withLeaf = ConvertedInteriors.MeshWithAppended(stripped, def.DoorLeafClosed);
+            Object.DestroyImmediate(stripped);
+            return withLeaf;
         }
 
         static HullMeshDef LoadDef()

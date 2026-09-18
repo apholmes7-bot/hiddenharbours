@@ -122,6 +122,30 @@ namespace HiddenHarbours.Core
                  "per-face normals, UV0 = (materialId, faceBias b, depthBias db, 0).")]
         public Mesh Mesh;
 
+        /// <summary>
+        /// <b>Her cabin door's LEAF, shut</b> (the rig's <c>doorFaces({doorOpen:0})</c>), a sub-asset
+        /// beside <see cref="Mesh"/> in the same vertex layout. Null on every hull whose rig draws no
+        /// door, and on a door hull baked before the leaf was split out, whose leaf is still inside
+        /// <see cref="Mesh"/> at <c>doorOpen 0</c>.
+        ///
+        /// <para>⚠️ <b>Once this is set the leaf is NOT in <see cref="Mesh"/></b>, and that is the
+        /// point: a leaf drawn in the hull mesh AND beside it can never look open. The renderer draws
+        /// this or <see cref="DoorLeafOpen"/>, whichever matches the door
+        /// (<see cref="IHullDoorLeaf"/>).</para>
+        /// </summary>
+        [Tooltip("The cabin door's leaf at doorOpen 0, as its own sub-asset. Null = no door, or a mesh " +
+                 "baked before the leaf was split out (its leaf is still inside Mesh, drawn shut).")]
+        public Mesh DoorLeafClosed;
+
+        /// <summary>The same leaf at <c>doorOpen 1</c>: the same faces in the same order, swung.
+        /// Always set together with <see cref="DoorLeafClosed"/>.</summary>
+        [Tooltip("The cabin door's leaf at doorOpen 1: the same faces as DoorLeafClosed, swung open.")]
+        public Mesh DoorLeafOpen;
+
+        /// <summary>True when the bake split her door leaf out in both poses, so a renderer can draw
+        /// the door open. See <see cref="DoorLeafClosed"/>.</summary>
+        public bool HasDoorLeaf() => DoorLeafClosed != null && DoorLeafOpen != null;
+
         [Header("Shading (the rig's own pipeline, verbatim)")]
         [Tooltip("Palette ramp + offset per rig material, in the rig's MATS order (max 16 — the facet shader's _RampMeta).")]
         public Ramp[] Ramps = Array.Empty<Ramp>();

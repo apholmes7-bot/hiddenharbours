@@ -558,6 +558,33 @@ namespace HiddenHarbours.Tests.PlayMode
                 "the engine one as the player one drew a passenger somebody else's wheel");
         }
 
+        /// <summary>
+        /// ⭐ <b>The skipper's hull carries no key layer.</b> <see cref="DevBoatInput"/> writes only to the
+        /// controller on its own GameObject, and an unmanned one writes her rudder to CENTRE every frame
+        /// (the sail helm's rule, and the oars'). So the one thing that keeps that zero write off the hull
+        /// the arrival's skipper is steering is that she never carries one: she is driven through
+        /// <see cref="HelmedBoat"/>, and the passenger is not at her helm. If a builder ever adds the dev
+        /// key layer to her, this test is the one that says so.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheSkippersHull_CarriesNoKeyLayer_SoNoUnmannedHelmWriteCanReachHerRudder()
+        {
+            GameServices.Helm.Reset();
+            var opening = Build(hasRestAnchor: false, alreadyArrived: false);
+            Assert.IsTrue(opening.TryBegin(), "the arrival must start on a fresh save");
+            yield return null;
+            yield return null;
+
+            Assert.IsNotNull(opening.Boat, "premise: the arrival spawned her hull");
+            Assert.IsNotNull(opening.Boat.GetComponent<HelmControlRelay>(),
+                "positive, on the same GameObject: the components the controller self-installs are here " +
+                "to be found, so the absence below is a real absence and not a wrong object");
+            Assert.IsNull(opening.Boat.GetComponent<DevBoatInput>(),
+                "the skipper's hull must carry no dev key layer: an unmanned one writes her rudder to " +
+                "centre every frame, over the skipper's own steer");
+            Assert.IsNull(opening.Boat.GetComponentInChildren<DevBoatInput>(true), "nor anywhere under her");
+        }
+
         /// <summary>A current no pilot can take off: whatever she does, she makes 0.3 m/s along +x.
         /// Runs in FixedUpdate after the controller so it has the last word on the body each step.</summary>
         private sealed class HoldOffHerStop : MonoBehaviour

@@ -1731,6 +1731,56 @@ namespace HiddenHarbours.Tools.RigBaking
             return data;
         }
 
+        /// <summary>
+        /// <b>The cabin door's LEAF on its own, at one pose</b>: the rig's own <c>doorFaces</c>, called
+        /// on the hull's scope with the hull's view options and <c>doorOpen</c> set, and read through
+        /// the same packer as the hull. Null when the rig publishes no <c>doorFaces</c> there (no
+        /// door, or a kit copy that keeps the builder private).
+        ///
+        /// <para><b>Why this exists.</b> The 2026-09-17 playtest: "i dont see the doors open". Every
+        /// door rig's <c>render()</c> composes <c>F.concat(doorFaces(opts))</c>, and the bake took that
+        /// composition at <c>doorOpen 0</c> straight into <c>HullMeshDef.Mesh</c> (the
+        /// <see cref="RigMeshSymbols.Reconstructions"/> shims), so a press flipped
+        /// <c>BoatCabinDoor.IsOpen</c> and the picture could not move. The baker reads the leaf at both
+        /// end poses, checks the shut one against the tail of the hull's face list, and lifts it out
+        /// into <c>HullMeshDef.DoorLeafClosed</c> / <c>DoorLeafOpen</c>
+        /// (<see cref="RigMeshAssetBaker.FindDoorLeaf"/>).</para>
+        ///
+        /// <para><b>Only the two END poses.</b> The rig's in-between poses (its 8-frame cue) are not
+        /// baked: nothing at runtime animates the door.</para>
+        ///
+        /// <para>The returned data shares <paramref name="hull"/>'s materials, light, cell and level
+        /// vocabulary (<see cref="RigMeshData.WithFaces"/>), so a leaf face's material index and level
+        /// code mean what they mean in the hull.</para>
+        /// </summary>
+        /// <param name="extraction">The hull's extraction, or null for a static-F hull. Its
+        /// <see cref="RigHullExtraction.ViewOptions"/> go into the call: a generator resolves the
+        /// variant from the same bag <c>render()</c> takes, and an empty bag poses the DEFAULT hull's
+        /// leaf.</param>
+        /// <param name="doorOpen">0 = shut, 1 = fully open. The rig clamps it.</param>
+        public static RigMeshData ExtractDoorLeaf(IRigScriptHost host, string globalName,
+                                                  RigHullExtraction extraction, RigMeshData hull,
+                                                  double doorOpen)
+        {
+            if (host == null) throw new ArgumentNullException(nameof(host));
+            if (hull == null) throw new ArgumentNullException(nameof(hull));
+
+            string scope = extraction != null ? extraction.ScopeOr(globalName) : globalName;
+            if (!host.EvaluateBool($"typeof {scope}.doorFaces === 'function'")) return null;
+
+            string view = extraction != null && !string.IsNullOrEmpty(extraction.ViewOptions)
+                ? extraction.ViewOptions
+                : "{}";
+            string pose = doorOpen.ToString("R", CultureInfo.InvariantCulture);
+            string faceSource =
+                $"(function(){{var o=Object.assign({{}},{view});o.doorOpen={pose};return {scope}.doorFaces(o);}})()";
+
+            RigMeshData leaf = hull.WithFaces(new List<RigFace>());
+            leaf.SourceFaceExpression = faceSource;
+            ReadFaces(host, globalName, faceSource, leaf);
+            return leaf;
+        }
+
         // ⚠️ ONE interpolated string, deliberately. Splitting it across a `$"…" + "…"` concat is how
         // the brace escaping goes wrong: `}}` only collapses to `}` inside an INTERPOLATED string,
         // so a plain second fragment emits a stray brace and V8 answers "SyntaxError: Unexpected

@@ -102,8 +102,9 @@ cheapest first:
    the moment a 17th material is declared, so this cannot be walked into by accident.
 
 Note the strips would want their **own** array anyway — they are 256×128, and
-`TerrainTexArrayBuilder` builds square 256/512 arrays. A `TerrainEdge256x128` array with
-12 slices (4 strips × 3 steps) is the parallel to `Order256`/`Order512`.
+`TerrainTexArrayBuilder` builds one square 256 array (the 512 array was retired by the px flip,
+2026-09-17). A `TerrainEdge256x128` array with 12 slices (4 strips × 3 steps) is the parallel to
+`Order256`.
 
 ## 6. The fifth strip the kit knows is missing
 
