@@ -71,8 +71,8 @@ namespace HiddenHarbours.Tests.EditMode
         //  pins parse the shader source (batch-safe, no compile needed) and hold all three together.
         // =========================================================================================
 
-        /// <summary>Canonical material order 0..17 — the shader header's list and the splat channel
-        /// packing (A.rgba, B.rgba, C.rgba, D.rgba, E.rg) both follow it. Written out as a LITERAL on
+        /// <summary>Canonical material order 0..19 — the shader header's list and the splat channel
+        /// packing (A.rgba, B.rgba, C.rgba, D.rgba, E.rgba) both follow it. Written out as a LITERAL on
         /// purpose: deriving it from the code under test would pin nothing.</summary>
         private static readonly string[] CanonicalOrder =
         {
@@ -80,6 +80,7 @@ namespace HiddenHarbours.Tests.EditMode
             "Dirt", "Marsh", "Sedge", "Foreshore", "Talus", "Ledge", "Rockweed",
             "Musselbed", "Oysterreef", "Eelgrass", "Irishmoss",
             "Lawn",                                    // kit v4, 2026-08-26 — the mown dooryard
+            "Mud",                                     // the px kit, 2026-09-17 — owner ruling M1, E.a
         };
 
         /// <summary>The order as SHIPPED before kit v3 — indices 0..13 can never move, because
@@ -95,10 +96,16 @@ namespace HiddenHarbours.Tests.EditMode
             "Foreshore", "Talus", "Ledge", "Rockweed",
         };
 
-        /// <summary>MAT_ARRAY/MAT_SLICE/MAT_METRES/MAT_OFFSET at indices 0..13, as shipped before v3.</summary>
-        private static readonly float[] FrozenArrayShipped  = { 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0 };
-        private static readonly float[] FrozenSliceShipped  = { 0, 3, 6, 0, 3, 9, 6, 12, 15, 18, 9, 12, 21, 24 };
-        private static readonly float[] FrozenMetresShipped = { 8, 8, 8, 16, 16, 8, 16, 8, 8, 8, 16, 16, 8, 8 };
+        /// <summary>MAT_SLICE/MAT_METRES/MAT_OFFSET at indices 0..13.
+        ///
+        /// <para>⚠ RE-FROZEN by the px flip (2026-09-17, owner ruling A2): a MOVED PREMISE, not a
+        /// silenced guard. The px kit ships every material at 256 px / 8 m, so Shingle, Ripple, Silt,
+        /// Foreshore and Talus left the retired 512 array (slices 0, 3, 6, 9, 12 at 16 m) for the one
+        /// 256 array (slices 36, 39, 42, 45, 48 at 8 m), and the MAT_ARRAY selector this freeze also
+        /// held retired with that array. What did NOT move: the index meaning
+        /// (<see cref="FrozenPrefixShipped"/>) and every MAT_OFFSET byte.</para></summary>
+        private static readonly float[] FrozenSliceShipped  = { 0, 3, 6, 36, 39, 9, 42, 12, 15, 18, 45, 48, 21, 24 };
+        private static readonly float[] FrozenMetresShipped = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 };
         private static readonly float[] FrozenOffsetShipped = { 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0 };
 
         private const string SplatShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursTerrainSplat.shader";
@@ -133,8 +140,6 @@ namespace HiddenHarbours.Tests.EditMode
                 "old meaning per channel — a reorder repaints St Peters silently. APPEND instead.");
 
             string src = File.ReadAllText(SplatShaderPath);
-            CollectionAssert.AreEqual(FrozenArrayShipped,
-                ParseShaderTable(src, "MAT_ARRAY").Take(n).ToArray(), $"MAT_ARRAY[0..{n - 1}] moved.");
             CollectionAssert.AreEqual(FrozenSliceShipped,
                 ParseShaderTable(src, "MAT_SLICE").Take(n).ToArray(), $"MAT_SLICE[0..{n - 1}] moved.");
             CollectionAssert.AreEqual(FrozenMetresShipped,
@@ -144,8 +149,8 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // ⭐ The four v3 beds need no pin of their own here. Every table test below is generic over
-        // CanonicalOrder: ShaderMaterialTables_MatchTheArrayBuilderPackOrder derives their array,
-        // slice and tile metres from the pack order; ShaderOffsetFlags_MatchTheKitManifest reads
+        // CanonicalOrder: ShaderMaterialTables_MatchTheArrayBuilderPackOrder derives their slice and
+        // tile metres from the pack order; ShaderOffsetFlags_MatchTheKitManifest reads
         // their chunkOffset straight out of materials.json (so the mussel/eelgrass "never offset"
         // ruling is checked against the kit's own word, not a copy of it); and
         // KitTextures_ExistAtTheSizesThePackOrderExpects proves the twelve new PNGs imported at the
@@ -165,8 +170,9 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void SplatMapCount_CoversEveryMaterialChannel()
         {
-            // Five RGBA maps = 20 channels for 19 materials (E.a is the last free slot). The
-            // moment a 21st material is wanted
+            // Five RGBA maps = 20 channels for 20 materials: Mud took E.a, the last free slot
+            // (2026-09-17, owner ruling M1). The moment a 21st material is wanted (the px kit's Path
+            // is waiting for its _SplatF PR)
             // this fails, which is the point: a sixth map is a deliberate decision, not a surprise.
             // (It fired for real on kit v3 — 14 + 4 beds did not fit four maps, and this is where
             // that was found rather than in a silently-unpainted eelgrass meadow.)
@@ -181,27 +187,42 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void ShaderMaterialTables_MatchTheArrayBuilderPackOrder()
         {
+            // One array since the px flip (2026-09-17, owner ruling A2): one pack order to derive a
+            // slice from and one tile size, and the MAT_ARRAY half of this check retired with the 512
+            // array (DetailArray512_IsRetired_TheShaderNeverReachesForIt holds that it stays gone).
             string src = File.ReadAllText(SplatShaderPath);
-            float[] arr = ParseShaderTable(src, "MAT_ARRAY");
             float[] slice = ParseShaderTable(src, "MAT_SLICE");
             float[] metres = ParseShaderTable(src, "MAT_METRES");
 
             for (int i = 0; i < CanonicalOrder.Length; i++)
             {
                 string name = CanonicalOrder[i];
-                int i512 = System.Array.IndexOf(TerrainTexArrayBuilder.Order512, name);
                 int i256 = System.Array.IndexOf(TerrainTexArrayBuilder.Order256, name);
-                Assert.IsTrue(i512 >= 0 || i256 >= 0,
-                    $"'{name}' is in neither pack order — the builder cannot supply the shader's slice.");
+                Assert.IsTrue(i256 >= 0,
+                    $"'{name}' is not in the pack order — the builder cannot supply the shader's slice.");
 
-                float expArr = i512 >= 0 ? 1f : 0f;
-                float expSlice = (i512 >= 0 ? i512 : i256) * TerrainTexArrayBuilder.LadderSteps.Length;
-                float expMetres = i512 >= 0 ? 16f : 8f;   // the kit: 512 px = 16 m, 256 px = 8 m at 32 px/m
+                float expSlice = i256 * TerrainTexArrayBuilder.LadderSteps.Length;
+                const float expMetres = 8f;   // the kit: 256 px = 8 m at 32 px/m, every material
 
-                Assert.AreEqual(expArr, arr[i], $"MAT_ARRAY[{i}] ({name}) disagrees with the pack order.");
                 Assert.AreEqual(expSlice, slice[i], $"MAT_SLICE[{i}] ({name}) disagrees with the pack order.");
                 Assert.AreEqual(expMetres, metres[i], $"MAT_METRES[{i}] ({name}) disagrees with the kit sizing.");
             }
+        }
+
+        [Test]
+        public void DetailArray512_IsRetired_TheShaderNeverReachesForIt()
+        {
+            // The px flip (2026-09-17, owner ruling A2) retired the 512-class array: nothing builds it
+            // and its asset is deleted. A half-revert that brings back the selector table or the
+            // sampler would read an array no build supplies — black ground, and no compile error to
+            // say so — so the retirement is pinned here rather than trusted.
+            string src = File.ReadAllText(SplatShaderPath);
+            Assert.IsFalse(Regex.IsMatch(src, @"MAT_ARRAY\s*\["),
+                "MAT_ARRAY is back in the terrain splat shader — the 512 array it selected retired " +
+                "with the px flip; every material samples _DetailArr256.");
+            StringAssert.DoesNotContain("_DetailArr512", src,
+                "_DetailArr512 is back in the terrain splat shader — nothing builds that array since " +
+                "the px flip (owner ruling A2).");
         }
 
         [Test]
@@ -231,9 +252,9 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void KitTextures_ExistAtTheSizesThePackOrderExpects()
         {
-            foreach (var (order, size) in new[]
-                     { (TerrainTexArrayBuilder.Order256, 256), (TerrainTexArrayBuilder.Order512, 512) })
-            foreach (string name in order)
+            // One pack order at one size since the px flip retired the 512 array (owner ruling A2).
+            const int size = 256;
+            foreach (string name in TerrainTexArrayBuilder.Order256)
             foreach (string step in TerrainTexArrayBuilder.LadderSteps)
             {
                 string path = $"{TerrainTexArrayBuilder.TexDir}/{name}{step}.png";
@@ -253,7 +274,7 @@ namespace HiddenHarbours.Tests.EditMode
             // These four are not cosmetic. isReadable off makes the array pack fail; sRGB off
             // gamma-warps every albedo; a compressed or filtered import is DXT blocking and
             // blur on a kit whose whole contract is "Repeat + Point, exactly periodic".
-            foreach (string name in TerrainTexArrayBuilder.Order256.Concat(TerrainTexArrayBuilder.Order512))
+            foreach (string name in TerrainTexArrayBuilder.Order256)
             foreach (string step in TerrainTexArrayBuilder.LadderSteps)
             {
                 string path = $"{TerrainTexArrayBuilder.TexDir}/{name}{step}.png";

@@ -13,12 +13,15 @@ namespace HiddenHarbours.Tests.EditMode
     /// line then read <c>.depth</c> off the destroyed temps — a MissingReferenceException that killed
     /// every St Peters build on the one machine class that matters. This suite runs BOTH paths, which
     /// is exactly what no fresh-checkout run ever did.
+    ///
+    /// <para>Since the px flip (2026-09-17, owner ruling A2) there is ONE array: the 512-class array
+    /// retired, so its GUID-survival half retired with it, and the suite pins the retirement instead
+    /// (no build may bring the 512 asset back).</para>
     /// </summary>
     public class TerrainTexArrayBuilderTests
     {
         static int ExpectedSlices =>
-            (TerrainTexArrayBuilder.Order256.Length + TerrainTexArrayBuilder.Order512.Length)
-            * TerrainTexArrayBuilder.LadderSteps.Length;
+            TerrainTexArrayBuilder.Order256.Length * TerrainTexArrayBuilder.LadderSteps.Length;
 
         [Test]
         public void Build_Twice_TheInPlaceRebuildSurvives_AndTheGuidHolds()
@@ -31,7 +34,6 @@ namespace HiddenHarbours.Tests.EditMode
                 "the first build must pack every material x every ladder step");
 
             string guid256 = AssetDatabase.AssetPathToGUID(TerrainTexArrayBuilder.Array256Path);
-            string guid512 = AssetDatabase.AssetPathToGUID(TerrainTexArrayBuilder.Array512Path);
             Assert.IsNotEmpty(guid256, "the 256 array must exist as an asset after the first build");
 
             // The second run is the one the owner's machine takes on EVERY rebuild: assets exist, so
@@ -41,8 +43,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(first, second, "the in-place rebuild must repack the same kit");
             Assert.AreEqual(guid256, AssetDatabase.AssetPathToGUID(TerrainTexArrayBuilder.Array256Path),
                 "the 256 array's GUID must survive an in-place rebuild — scenes reference it");
-            Assert.AreEqual(guid512, AssetDatabase.AssetPathToGUID(TerrainTexArrayBuilder.Array512Path),
-                "the 512 array's GUID must survive an in-place rebuild — scenes reference it");
+            Assert.IsNull(AssetDatabase.LoadAssetAtPath<Texture2DArray>(TerrainTexArrayBuilder.Array512Path),
+                "the 512 array retired with the px flip (owner ruling A2) — no build may bring it back; its " +
+                "seven materials pack into the 256 array now");
 
             // And the persisted asset must genuinely carry the new pack, not a husk: depth is readable
             // and right on a fresh load after the in-place save.
