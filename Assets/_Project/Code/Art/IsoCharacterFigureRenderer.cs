@@ -21,20 +21,29 @@ namespace HiddenHarbours.Art
     /// by nobody else: it is what splits the hull's id for the SPRITE path and for the keyline
     /// resolve, and this renderer consumes it without ever claiming a slot of its own.</para>
     ///
-    /// <para><b>⚠ IT MUST NOT REGISTER AS A HULL.</b> <see cref="IsoFacetHullRenderer"/> registers
-    /// itself in <see cref="IsoFacetHullRegistry"/> from <c>OnEnable</c>, unconditionally, and
-    /// <c>Count &gt; 0</c> is the gate that decides whether the facet block is recorded at all. A
-    /// figure that registered would draw herself ASHORE, where the charter says she cannot draw —
-    /// and would spend a hull id plus a twelve-wide fore block out of the 255 the whole fleet shares.
-    /// So this is a plain MonoBehaviour and there is a test that says so.</para>
+    /// <para><b>⚠ IT NEVER REGISTERS AS A HULL.</b> <see cref="IsoFacetHullRenderer"/> registers
+    /// itself in <see cref="IsoFacetHullRegistry"/> from <c>OnEnable</c>, unconditionally, and a hull
+    /// spends an id plus a twelve-wide fore block out of the 255 the whole fleet shares. A figure
+    /// spends neither: configuring her registers NOTHING, and <see cref="IsoFacetHullRegistry.Count"/>
+    /// never moves for her. There is a test that says so.</para>
     ///
-    /// <para><b>⚠ SHE IS INKED AS HULL GEOMETRY, with no keyline between her and the deck.</b> She
-    /// writes the hull's own <c>_HullId</c>, exactly as a prop does, so the resolve inks her against
-    /// the sea and the sky but not against the boat she is standing on. Giving her a keyline needs one
-    /// id of her own, and the registry cannot currently hand one out: freed fore blocks are recycled
-    /// whole and their width is not recorded ("every block this hands out is the same size"), so a
-    /// one-wide take would be popped later by a hull asking for twelve and two boats would share a
-    /// fore range. That is the water lane's file. The debt is owed, not taken.</para>
+    /// <para><b>ASHORE — and only through <see cref="EnterAshore"/> — she takes ONE figure id</b>
+    /// (<see cref="IsoFacetHullRegistry.RegisterFigure"/>). A single, from the singles stack only, so
+    /// it can never be a recycled fore block nor become one; never the shared overflow id 255; and
+    /// REFUSED at exhaustion, in which case <see cref="EnterAshore"/> returns false and the caller
+    /// keeps her sprite. Holding it raises <see cref="IsoFacetHullRegistry.FigureCount"/>, which is
+    /// what opens the facet gate with no hull in the frame. With her id she carries what a hull
+    /// carries for herself: a frame that stands in for the posed mesh child (the iso rotation and the
+    /// mirror scale), the depth bias and shear at her own root, and a cell-sized overlay quad at the
+    /// sort of the sprite she replaces. Nothing in a shipped scene calls it yet (ADR 0044, ashore
+    /// PR 1): the switch and the presenter are the next PR's.</para>
+    ///
+    /// <para><b>⚠ ABOARD SHE IS INKED AS HULL GEOMETRY, with no keyline between her and the deck.</b>
+    /// She writes the hull's own <c>_HullId</c>, exactly as a prop does, so the resolve inks her
+    /// against the sea and the sky but not against the boat she is standing on. The registry CAN now
+    /// hand out a single id safely — the ashore path is exactly that — but an id of her own aboard
+    /// would also need an overlay of her own inside the hull's sort, which is a picture decision, not
+    /// a bookkeeping one. Aboard is unchanged by the ashore path; that debt is still owed.</para>
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class IsoCharacterFigureRenderer : MonoBehaviour
@@ -48,6 +57,16 @@ namespace HiddenHarbours.Art
         private Mesh _posedMesh;
         private IsoFacetHullRenderer _hull;
         private MaterialPropertyBlock _props;
+
+        // Ashore only (EnterAshore → LeaveAshore). _figureId 0 ⇔ not ashore.
+        private int _figureId;
+        private Renderer _sortSource;
+        private Transform _ashoreFrame;
+        private Transform _overlayChild;
+        private MeshRenderer _overlayRenderer;
+        private SortingGroup _overlaySortingGroup;
+        private Mesh _overlayQuad;
+        private Material _overlayMaterial;
 
         // Bind-mesh sources, read once. The posed mesh is written into every frame the pose changes.
         private Vector3[] _srcVerts, _srcNorms, _outVerts, _outNorms;
@@ -81,12 +100,25 @@ namespace HiddenHarbours.Art
         public bool Visible
         {
             get => _meshRenderer != null && _meshRenderer.enabled;
-            set { if (_meshRenderer != null) _meshRenderer.enabled = value; }
+            set
+            {
+                if (_meshRenderer != null) _meshRenderer.enabled = value;
+                if (_overlayRenderer != null) _overlayRenderer.enabled = value;
+            }
         }
 
         /// <summary>The hull this figure is riding, or null ashore. Read from the parent chain, not
         /// bound, because a hull re-skinned under her feet is a NEW component.</summary>
         public IsoFacetHullRenderer Hull => _hull;
+
+        /// <summary>True while she holds a figure id and draws with no hull (<see cref="EnterAshore"/>).</summary>
+        public bool IsAshore => _figureId != 0;
+
+        /// <summary>Her facet id ashore, in [1, 254]; 0 when not ashore.</summary>
+        public int FigureId => _figureId;
+
+        /// <summary>Her overlay quad ashore — the renderer that competes with sprites — or null.</summary>
+        public MeshRenderer AshoreOverlay => _overlayRenderer;
 
         public void Configure(CharacterSkinDef def)
         {
@@ -357,7 +389,200 @@ namespace HiddenHarbours.Art
             return true;
         }
 
-        private void LateUpdate() => WriteHullProperties();
+        private void LateUpdate()
+        {
+            if (IsAshore) WriteAshoreProperties();
+            else WriteHullProperties();
+        }
+
+        // ---------------------------------------------------------------- ashore
+
+        /// <summary>
+        /// <b>Draw her with no hull under her.</b> Takes one figure id, stands a frame in for the
+        /// hull's posed mesh child, and builds a cell-sized overlay quad that copies
+        /// <paramref name="sortSource"/>'s sorting layer and order every frame. Returns false — and
+        /// changes nothing — when she is not configured, when she is standing on a hull (aboard is the
+        /// hull's frame, not this one), or when the registry refuses the id at exhaustion; the caller
+        /// keeps her sprite in every one of those cases.
+        ///
+        /// <para>Calling it again while ashore only re-points the sort source. Re-configuring,
+        /// disabling or destroying her leaves ashore and gives the id back.</para>
+        ///
+        /// <para>⚠️ The caller hides the sprite and owns the frame order: this copies the source's
+        /// sort in <c>LateUpdate</c>, and a source re-sorted later in the same frame is one frame
+        /// stale. Boarding must <see cref="LeaveAshore"/> BEFORE she is parented under a hull.</para>
+        /// </summary>
+        public bool EnterAshore(Renderer sortSource)
+        {
+            if (sortSource == null) throw new ArgumentNullException(nameof(sortSource));
+            if (!IsConfigured) return false;
+            if (IsAshore)
+            {
+                _sortSource = sortSource;
+                WriteAshoreProperties();
+                return true;
+            }
+            if (GetComponentInParent<IsoFacetHullRenderer>() != null) return false;
+
+            // Find the shader BEFORE taking an id, so a missing import cannot leak one.
+            var overlayShader = Shader.Find("HiddenHarbours/IsoFacetOverlay");
+            if (overlayShader == null)
+                throw new InvalidOperationException(
+                    "IsoFacetOverlay shader not found — see the shader compile-guard test.");
+
+            int id = IsoFacetHullRegistry.RegisterFigure();
+            if (id == 0) return false;
+
+            _figureId = id;
+            _sortSource = sortSource;
+            _hull = null;
+            BuildAshoreFrame();
+            BuildAshoreOverlay(overlayShader);
+            WriteAshoreProperties();
+            return true;
+        }
+
+        /// <summary>
+        /// Give the figure id back, put the facet child back where <see cref="Configure"/> built it
+        /// and destroy the frame and the overlay. A no-op when not ashore, so it never clears an
+        /// aboard figure's hull properties.
+        /// </summary>
+        public void LeaveAshore()
+        {
+            if (!IsAshore && _ashoreFrame == null && _overlayChild == null) return;
+
+            if (_figureId != 0) IsoFacetHullRegistry.UnregisterFigure(_figureId);
+            _figureId = 0;
+            _sortSource = null;
+
+            if (_meshChild != null && _meshChild.parent != transform)
+            {
+                _meshChild.SetParent(transform, false);
+                _meshChild.localPosition = Vector3.zero;
+                _meshChild.localRotation = Quaternion.identity;
+                _meshChild.localScale = Vector3.one;
+            }
+            if (_meshRenderer != null) _meshRenderer.SetPropertyBlock(null);
+            _props?.Clear();
+
+            if (_overlayChild != null) DestroySafely(_overlayChild.gameObject);
+            if (_ashoreFrame != null) DestroySafely(_ashoreFrame.gameObject);
+            if (_overlayQuad != null) DestroySafely(_overlayQuad);
+            if (_overlayMaterial != null) DestroySafely(_overlayMaterial);
+            _overlayChild = null;
+            _overlayRenderer = null;
+            _overlaySortingGroup = null;
+            _ashoreFrame = null;
+            _overlayQuad = null;
+            _overlayMaterial = null;
+        }
+
+        /// <summary>Ashore, her facing: the angle the deck presenter writes onto her own transform
+        /// aboard (about the rig's up), written here inside the ashore frame instead. No-op aboard.</summary>
+        public void SetAshoreYaw(float degrees)
+        {
+            if (!IsAshore || _meshChild == null) return;
+            _meshChild.localRotation = Quaternion.AngleAxis(degrees, Vector3.forward);
+        }
+
+        /// <summary>
+        /// The frame a hull's posed mesh child would be: <c>HullRotation</c> at heading 0 and the
+        /// def's bake elevation, and the <c>HullScale</c> mirror. Her facet child moves under it, so
+        /// aboard and ashore she is the same mesh under the same projection.
+        /// </summary>
+        private void BuildAshoreFrame()
+        {
+            var go = new GameObject("AshoreFrame") { hideFlags = HideFlags.DontSave, layer = gameObject.layer };
+            go.transform.SetParent(transform, false);
+            go.transform.localRotation = IsoFacetMath.HullRotation(0d, _def.ElevationDeg);
+            go.transform.localScale = IsoFacetMath.HullScale;
+            _ashoreFrame = go.transform;
+
+            _meshChild.SetParent(_ashoreFrame, false);
+            _meshChild.localPosition = Vector3.zero;
+            _meshChild.localRotation = Quaternion.identity;
+            _meshChild.localScale = Vector3.one;
+        }
+
+        /// <summary>
+        /// Her overlay: the def's cell rectangle around the pivot, padded 1 px, built exactly as
+        /// <see cref="IsoFacetHullRenderer"/> builds a hull's from its setup — and, like it, under a
+        /// SortingGroup, because a mesh renderer does not sort against sprites without one.
+        /// </summary>
+        private void BuildAshoreOverlay(Shader overlayShader)
+        {
+            _overlayMaterial = new Material(overlayShader) { hideFlags = HideFlags.HideAndDontSave };
+
+            float ppu = _def.PxPerMetre;
+            float pad = 1f / ppu;
+            float left = -_def.PivotPx.x / ppu - pad;
+            float right = (_def.CellW - _def.PivotPx.x) / ppu + pad;
+            float top = _def.PivotPx.y / ppu + pad;
+            float bottom = -(_def.CellH - _def.PivotPx.y) / ppu - pad;
+
+            _overlayQuad = new Mesh { name = "HHFigureOverlayQuad", hideFlags = HideFlags.HideAndDontSave };
+            _overlayQuad.SetVertices(new[]
+            {
+                new Vector3(left, bottom, 0f), new Vector3(right, bottom, 0f),
+                new Vector3(right, top, 0f), new Vector3(left, top, 0f),
+            });
+            _overlayQuad.SetTriangles(new[] { 0, 1, 2, 0, 2, 3 }, 0);
+
+            var go = new GameObject("FigureOverlay") { hideFlags = HideFlags.DontSave, layer = gameObject.layer };
+            go.transform.SetParent(transform, false);
+            go.AddComponent<MeshFilter>().sharedMesh = _overlayQuad;
+            _overlayRenderer = go.AddComponent<MeshRenderer>();
+            _overlayRenderer.sharedMaterial = _overlayMaterial;
+            _overlayRenderer.shadowCastingMode = ShadowCastingMode.Off;
+            _overlayRenderer.receiveShadows = false;
+            _overlayRenderer.lightProbeUsage = LightProbeUsage.Off;
+            _overlayRenderer.enabled = _meshRenderer.enabled;
+            _overlaySortingGroup = go.AddComponent<SortingGroup>();
+            _overlayChild = go.transform;
+        }
+
+        /// <summary>
+        /// <b>Ashore, what a hull writes for itself</b> — for her own root, with her own id: the
+        /// dither origin, the depth shear, the id with NO fore block, the frame's calibrated depth
+        /// (bias plus shear compensation, at zero heave, exactly as <c>IsoFacetHullRenderer.ApplyPose</c>
+        /// places a hull; no displaced sea ⇒ no frame ⇒ no bias and no shear), and the sort copied
+        /// from the source onto the SortingGroup and the overlay, as <c>SetSorting</c> writes a hull's.
+        /// </summary>
+        internal void WriteAshoreProperties()
+        {
+            if (!IsAshore || _meshRenderer == null || _overlayRenderer == null) return;
+
+            Vector3 p = transform.position;
+            Vector4 shear = Vector4.zero;
+            Vector3 framePosition = p;
+            if (DisplacedWaterRegistry.TryGetIsoDepthFrame(out WaterIsoDepthFrame frame))
+            {
+                shear = new Vector4(DisplacedWaterMath.HullDepthShear(_def.ElevationDeg), frame.ReferenceY, 0f, 0f);
+                framePosition.z = DisplacedWaterMath.HullDepthBias(p.y, 0f, in frame)
+                                  + DisplacedWaterMath.HullShearCompensation(p.y, 0f, shear.x, in frame);
+            }
+            if (_ashoreFrame.position != framePosition)
+                _ashoreFrame.position = framePosition;
+
+            _props ??= new MaterialPropertyBlock();
+            _props.SetVector(IsoFacetShaderIds.HullOrigin, new Vector4(p.x, p.y, 0f, 0f));
+            _props.SetVector(IsoFacetShaderIds.HullShear, shear);
+            _props.SetFloat(IsoFacetShaderIds.HullId, _figureId / 255f);
+            _props.SetFloat(IsoFacetShaderIds.HullIdFore, 0f);
+            _props.SetFloat(IsoFacetShaderIds.HullIdForeSpan, 0f);
+            _meshRenderer.SetPropertyBlock(_props);
+            _overlayRenderer.SetPropertyBlock(_props);
+
+            if (_sortSource == null) return;
+            int layerId = _sortSource.sortingLayerID;
+            int order = _sortSource.sortingOrder;
+            if (_overlaySortingGroup.sortingLayerID != layerId) _overlaySortingGroup.sortingLayerID = layerId;
+            if (_overlaySortingGroup.sortingOrder != order) _overlaySortingGroup.sortingOrder = order;
+            if (_overlayRenderer.sortingLayerID != layerId) _overlayRenderer.sortingLayerID = layerId;
+            if (_overlayRenderer.sortingOrder != order) _overlayRenderer.sortingOrder = order;
+        }
+
+        // ---------------------------------------------------------------- aboard
 
         /// <summary>
         /// <b>The uniforms that belong to the BOAT, not to the figure</b> — the dither origin, the
@@ -367,9 +592,9 @@ namespace HiddenHarbours.Art
         /// not read as empty.
         ///
         /// <para>The hull is re-read every frame rather than bound at Configure, because a boat
-        /// re-skinned under her feet (the dev picker does exactly that) is a new component. Ashore
-        /// there is no hull and nothing is written — and ashore the whole facet block is not recorded
-        /// anyway, so she is not drawn at all.</para>
+        /// re-skinned under her feet (the dev picker does exactly that) is a new component. With no
+        /// hull nothing is written; and unless <see cref="EnterAshore"/> gave her a figure id, a frame
+        /// with no hull and no figure does not record the facet block at all, so she is not drawn.</para>
         /// </summary>
         private void WriteHullProperties()
         {
@@ -385,10 +610,15 @@ namespace HiddenHarbours.Art
             _meshRenderer.SetPropertyBlock(_props);
         }
 
+        // Disabling her must not leave an id holding the facet gate open: leave ashore. The caller
+        // re-enters. (Neither callback runs in EditMode for this component — tests call LeaveAshore.)
+        private void OnDisable() => LeaveAshore();
+
         private void OnDestroy() => Teardown(keepDef: false);
 
         private void Teardown(bool keepDef)
         {
+            LeaveAshore();
             if (_meshChild != null) DestroySafely(_meshChild.gameObject);
             if (_posedMesh != null) DestroySafely(_posedMesh);
             if (_facetMaterial != null) DestroySafely(_facetMaterial);
