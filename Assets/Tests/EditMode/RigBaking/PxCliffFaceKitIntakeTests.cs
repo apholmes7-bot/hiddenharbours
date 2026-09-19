@@ -12,11 +12,12 @@ namespace HiddenHarbours.Tests.RigBaking
     /// The INTAKE contract for the pixel-language cliff kit (<c>docs/art/rigs/px-cliff-face-kit/</c>),
     /// landed beside — not over — the v10 photoreal kit.
     ///
-    /// <para><b>This PR wires nothing.</b> <c>CliffBaker</c> still drives the v10 <c>cliffRig.js</c>;
-    /// the flip is a later PR. So this suite is the whole of the kit's guard: it proves the landed
-    /// bytes are the ones the sidecar was stamped over, that the rig runs headless under V8, that its
-    /// geometry really is v10's (the claim the whole arc rests on), and that the landed sample PNGs
-    /// are what the landed rig actually bakes.</para>
+    /// <para><b>This suite guards the kit AS LANDED; <c>PxCliffRigBakeTests</c> guards the wiring.</b>
+    /// The kit landed wired to nothing; <c>CliffBaker</c> now drives it behind the menu's
+    /// "Bake Cliff Kit — px" (the owner's bake switch, 09-18), and the v10 <c>cliffRig.js</c> stays the
+    /// shipped default. This suite proves the landed bytes are the ones the sidecar was stamped over,
+    /// that the rig runs headless under V8, that its geometry really is v10's (the claim the whole arc
+    /// rests on), and that the landed sample PNGs are what the landed rig actually bakes.</para>
     ///
     /// <para>Everything here is CPU-side — file reads, the JsEngine, and PNG decodes through
     /// <see cref="ImageConversion.LoadImage"/> — so it passes on CI's GPU-less agent, exactly like

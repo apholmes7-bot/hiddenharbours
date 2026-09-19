@@ -1,7 +1,10 @@
+using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Art;
+using HiddenHarbours.Art.Editor;
 using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tests.Art.EditMode
@@ -251,6 +254,133 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("float elevationValid = HasToeElevations ? 1f : 0f", src,
                 "the fallback must be SAID in the mesh, not implied by a zero that looks like datum.");
             StringAssert.Contains("elevationValid);", src);
+        }
+
+        // ==== the px look (owner, 09-18: "day only for now") =========================================
+
+        /// <summary>
+        /// The px look replaces the LIGHT and nothing else, so it meets the sea exactly as v10 does: the
+        /// waterline tints whatever <c>lit</c> the look branch left, and it has to stay outside that
+        /// branch. Moved inside the <c>#else</c> it would be v10's alone, and a px wall would draw dry
+        /// rock into a flood tide with nothing red anywhere — CI has no graphics device to see it.
+        /// </summary>
+        [Test]
+        public void ThePxLook_MeetsTheSameWaterline()
+        {
+            string src = ReadRepoText(CliffShaderPath);
+            StringAssert.Contains($"#pragma shader_feature_local _ {CliffCatalog.PxKeyword}", src,
+                "the px look is the material keyword the bake menu sets; with no pragma declaring it, a " +
+                "px bake would leave every wall drawing v10's lighting over palette indices.");
+
+            string pxIf = $"#if defined({CliffCatalog.PxKeyword})";
+            int branch = Find(src, pxIf);
+            Assert.GreaterOrEqual(branch, 0, "the fragment has no px branch.");
+            Assert.AreEqual(branch, src.LastIndexOf(pxIf, System.StringComparison.Ordinal),
+                "the px look must be ONE branch of the fragment.");
+            int orV10 = Find(src, "#else", branch);
+            int end = Find(src, "#endif", branch);
+            Assert.Greater(orV10, branch, "the px branch has no v10 side.");
+            Assert.Greater(end, orV10, "the px branch never closes after its v10 side.");
+
+            int relight = Find(src, "lit = CliffPxRelight(", branch);
+            Assert.IsTrue(relight > branch && relight < orV10,
+                "the palette relight must be the px side of the branch.");
+
+            const string gate = "_WaterlineStrength > 0.001";
+            int waterline = Find(src, gate);
+            Assert.AreEqual(waterline, src.LastIndexOf(gate, System.StringComparison.Ordinal),
+                "ONE waterline, shared by both looks — a second copy is a second sea.");
+            Assert.Greater(waterline, end,
+                "the waterline must come AFTER the look branch closes, so it tints whichever look ran.");
+        }
+
+        /// <summary>
+        /// ⭐ The px branch IS the arithmetic <see cref="CliffPxRelightMath"/> runs, and that twin is what
+        /// <c>PxCliffRigBakeTests</c> drives over the rig's own faces, because CI cannot run a fragment
+        /// shader. So every number and every step the two share is pinned equal HERE. A threshold edited
+        /// on one side only would leave every test green and the coast stepping at a light nobody priced.
+        /// </summary>
+        [Test]
+        public void ThePxBranch_IsTheTwinTheTestsDrive()
+        {
+            string src = ReadRepoText(CliffShaderPath);
+
+            AssertDefine(src, "CLIFF_PX_BAND_UP", CliffPxRelightMath.BandUp);
+            AssertDefine(src, "CLIFF_PX_BAND_DOWN", CliffPxRelightMath.BandDown);
+            AssertDefine(src, "CLIFF_PX_SHADOW_ONE", CliffPxRelightMath.ShadowOneTier);
+            AssertDefine(src, "CLIFF_PX_SHADOW_TWO", CliffPxRelightMath.ShadowTwoTiers);
+            AssertDefine(src, "CLIFF_PX_SHADOW_DEPTH", CliffPxRelightMath.ShadowDepth);
+            AssertDefine(src, "CLIFF_PX_SHADOW_GUARD", CliffPxRelightMath.ShadowGuard);
+            AssertDefine(src, "CLIFF_PX_TIERS", CliffPxRelightMath.TiersPerRock);
+            AssertDefine(src, "CLIFF_PX_BANDS", CliffCatalog.PxPaletteBands);
+            AssertDefine(src, "CLIFF_PX_LUT_W", CliffCatalog.PxPaletteWidth);
+            AssertDefine(src, "CLIFF_PX_LUT_H", CliffCatalog.PxPaletteHeight);
+
+            // The key the mask was baked at. The px bake writes the catalog's onto the shipped material;
+            // a fresh material reads this default, so the two must be the same light.
+            Match key = Regex.Match(src,
+                @"_PxKey\s*\(""[^""]*"",\s*Vector\)\s*=\s*\(([^,]+),([^,]+),([^,]+),[^)]+\)");
+            Assert.IsTrue(key.Success, "the shader declares no _PxKey default.");
+            var declared = new Vector3(Num(key.Groups[1].Value), Num(key.Groups[2].Value),
+                                       Num(key.Groups[3].Value));
+            Assert.Less((declared - CliffCatalog.PxBakeKey).magnitude, 1e-3f,
+                $"_PxKey defaults to {declared} and the px bake wrote its mask at {CliffCatalog.PxBakeKey}: " +
+                "a fresh material would divide the wrong N dot L out of the mask and shadow the wrong texels.");
+            StringAssert.Contains("normalize(_PxKey.xyz)", src);
+
+            // …tipped by the batter as the rig tips it, and flipped into the frame _Normal is packed in.
+            Match batter = Regex.Match(src, @"radians\(90\.0 - clamp\(_Batter,\s*([-0-9.]+),\s*([-0-9.]+)\)\)");
+            Assert.IsTrue(batter.Success, "the px bake key is not tipped by the wall's batter.");
+            Assert.AreEqual(CliffPxRelightMath.MinBatter, Num(batter.Groups[1].Value), "the batter clamp's floor");
+            Assert.AreEqual(CliffPxRelightMath.MaxBatter, Num(batter.Groups[2].Value), "the batter clamp's ceiling");
+            StringAssert.Contains("return float3(k.x, -(k.y * ct + k.z * st), k.z * ct - k.y * st);", src,
+                "PackedFrame(BakeKeyAt(key, batter)): y negated, because the rig's key runs DOWN the face " +
+                "and the normal it packs runs UP it. Unflipped, the recovered shadow agrees with the rig's " +
+                "on only 69–82% of cells.");
+
+            // The shadow, recovered by dividing the bake's own N dot L out of mask.R, guarded near zero;
+            // and the LUT's v counted DOWN from the top, as LutUv counts it.
+            StringAssert.Contains("bakeNdl > CLIFF_PX_SHADOW_GUARD", src);
+            StringAssert.Contains("saturate((1.0 - saturate(maskR / bakeNdl)) / CLIFF_PX_SHADOW_DEPTH)", src);
+            StringAssert.Contains("1.0 - (row + 0.5) / CLIFF_PX_LUT_H", src);
+
+            // The fragment's px side: the live light, the sun-down gate, the relight at the px key.
+            int branch = Find(src, $"#if defined({CliffCatalog.PxKeyword})");
+            int orV10 = branch < 0 ? -1 : Find(src, "#else", branch);
+            Assert.IsTrue(branch >= 0 && orV10 > branch, "the fragment has no px branch.");
+            string px = src.Substring(branch, orV10 - branch);
+            Assert.IsTrue(Regex.IsMatch(px,
+                    @"ndl\s*=\s*\(cycleOn\s*&&\s*e\s*<=\s*0\.0\)\s*\?\s*0\.0\s*:\s*dot\(N,\s*L\)"),
+                "the sun-down gate (LiveNdl): with the cycle on and the sun at or below the horizon, the " +
+                "live N dot L is 0 — one band down everywhere, and no wall lit from under the planet.");
+            StringAssert.Contains("CliffPxRelight(unlit, ndl, dot(N, Lpx), msk.r)", px,
+                "the shadow comes out of the mask at the PX key, the light the mask was baked at.");
+            StringAssert.DoesNotContain("_BakeL", px,
+                "_BakeL is the v10 kit's per-aspect key; the px mask was never baked at it.");
+            StringAssert.Contains("if (_PxDecal < 0.5)", px,
+                "a px decal is the rig's own pre-lit strip and is drawn as baked, not relit.");
+
+            // …and the wall is what tells the shader which pieces are decals.
+            string wall = ReadRepoText(WallSurfacePath);
+            StringAssert.Contains("Shader.PropertyToID(\"_PxDecal\")", wall);
+            StringAssert.Contains("_mpb.SetFloat(IdPxDecal, decal ? 1f : 0f)", wall,
+                "every renderer's block SAYS whether it is a decal; a px decal relit as a band would read " +
+                "its pre-lit colours as palette indices.");
+            StringAssert.Contains("decal: true", wall, "the brow and toe strips are the pieces flagged.");
+        }
+
+        private static int Find(string src, string what, int from = 0) =>
+            src.IndexOf(what, from, System.StringComparison.Ordinal);
+
+        private static float Num(string s) => float.Parse(s.Trim(), CultureInfo.InvariantCulture);
+
+        private static void AssertDefine(string src, string name, float twin)
+        {
+            Match m = Regex.Match(src, @"#define\s+" + name + @"\s+([-0-9.]+)");
+            Assert.IsTrue(m.Success, $"the shader has no #define {name}.");
+            Assert.AreEqual(twin, Num(m.Groups[1].Value), 1e-6f,
+                $"{name} is {m.Groups[1].Value} in the shader and {twin} in its C# twin — the tests " +
+                "would be pricing a relight the wall does not run.");
         }
     }
 }
