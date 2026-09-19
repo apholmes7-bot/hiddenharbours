@@ -189,6 +189,16 @@ the inactive context returns 0 everywhere and the wake sits on the flat plane ex
 A/B contract). The resting draft is deliberately **not** applied: foam rides the water surface, and the
 draft exists to sink the *hull* to its waterline — the surface (and everything on it) doesn't move.
 
+**The tide frame (owner report 2026-09-18).** A hull's picture rides the tide: `BoatWaveMotion` lifts her
+visual child up-screen by `HullTideRide.ScreenRiseNow()`. The wake is laid from `Boat.transform`, the datum
+frame, and it used to be drawn there too, so off her baked waterline the whole wake sat the tide's drawn
+rise away from her picture (21–30 px above her stern at the intro's ebb). Every element — foam, droplets,
+bubbles, plume, spray, crests — now adds the **water's** drawn rise under her,
+`TidalRide.ScreenRise(water level, her baked waterline)`, where it is **drawn**, never where it is laid:
+births, advection, drift and ageing stay in the plan frame. The water, not her grounded waterline, because
+the foam floats on the water; the two agree whenever she is afloat. A hull without a `HullTideRide` draws no
+tide under her picture, so her wake gets none either. Guarded by `WakeTideFramePlayTests`.
+
 **The rendered read (owner playtest 2026-07-23, same day).** The first deposition build read as *"small
 horizontal lines … it should bubble close to the boat, be foamy close to the boat, and then the wake
 should be a long wake pattern."* The deposition was right; the **render** of it was wrong, three ways at
