@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatHullDef
   Id: boat.sloop_88
   DisplayName: The Sloop 88
-  Visual: {fileID: 0}
+  Visual: {fileID: 11400000, guid: 581f8dc65e28cb04a98d13f60d53452c, type: 2}
   Sprite: {fileID: 0}
   LengthMeters: 27
   DraughtMeters: 4.6

@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.App.Editor;
+using HiddenHarbours.Art.Editor;
 using HiddenHarbours.Boats;
 
 namespace HiddenHarbours.Tests.EditMode
@@ -176,6 +178,19 @@ namespace HiddenHarbours.Tests.EditMode
         /// PR was derived. Asserted fleet-wide at the band the shipped hulls actually occupy (the upgraded
         /// punt and the sport twin sit high, both being "same hull, heavier engine" cases where the gameplay
         /// draught was bumped and the art never re-lofted), and tight on the hulls derived by it.</para>
+        ///
+        /// <para>⚠️ <b>THE PREMISE MOVED WITH THE FIRST KEELBOATS</b> (feat/sloops-on-the-dev-key). Every hull
+        /// that ratio was measured on is keel-less — her canoe body is her deepest point, so where she grounds
+        /// is a fixed multiple of where the sea is drawn on her. A fin keel breaks that. The sail kit's two
+        /// sloops draw the sea at their canoe body (the rig's own DWL, 0.55 / 1.35 m, kept as measured) and
+        /// ground on a fin that reaches 1.9 / 4.52 m. Their gameplay draughts are 1.90 and 4.60 (the 88 keeps
+        /// the 4.60 m design draft her README states), so the ratio reads 3.45 and 3.41, which no band that
+        /// still means anything for the motor fleet could admit. So they are excused BY NAME, in
+        /// <see cref="Keelboats"/>,
+        /// and each of their two drafts is held to the number her own rig publishes instead —
+        /// <see cref="TheKeelboats_GroundOnTheirFinKeel"/> and
+        /// <see cref="TheKeelboats_DrawTheSeaAtTheirCanoeBody"/>. A hull joins that table with her sidecar or
+        /// not at all.</para>
         /// </summary>
         [Test]
         public void TheGameplayDraught_IsTheMeshDraftOnTheFleetsOwnRatio()
@@ -192,6 +207,7 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var h in everyHull)
             {
                 if (h.Visual == null || !h.Visual.HasHullMesh()) continue;      // sprite-only hulls opt out
+                if (Keelboats.Any(k => k.Id == h.Id)) continue;                 // the NAMED clause, below
                 float mesh = h.Visual.HullMesh.RestingDraftMeters;
                 if (mesh <= 0f) continue;
 
@@ -223,6 +239,92 @@ namespace HiddenHarbours.Tests.EditMode
                     $"{h.Visual.HullMesh.RestingDraftMeters:0.00} m puts her at {expected:0.00} m on the " +
                     "fleet's ratio. Either the art side re-lofted her and the gameplay draught did not " +
                     "follow, or this number was typed rather than derived.");
+            }
+        }
+
+        // ---- the keelboats: the two-draft rule's NAMED clause -----------------------------------
+
+        /// <summary>
+        /// The hulls the fleet's draught ratio does NOT describe — stated here rather than inferred from data,
+        /// so the clause cannot be widened by editing the thing it excuses. Each is named with the gameplay
+        /// sidecar her rig publishes, whose <c>WATERLINE.draft_m</c> measures both of her drafts off the loft:
+        /// the canoe body (where the sea is drawn on her) and the fin keel (where she touches bottom). That
+        /// block is the "WATERLINE symbol in the export contract" <c>HullMeshDef.RestingDraftMeters</c> names
+        /// as its own long-term home.
+        /// </summary>
+        static readonly (string Id, string File, string Sidecar)[] Keelboats =
+        {
+            ("boat.sloop_30", "Sloop30", "docs/art/rigs/gameplay/sail/sloopIsoRig.gameplay.json"),
+            ("boat.sloop_88", "Sloop88", "docs/art/rigs/gameplay/sail/sloop88IsoRig.gameplay.json"),
+        };
+
+        /// <summary>How much deeper than her lofted fin a keelboat's gameplay draught may sit. Deeper is the
+        /// safe side — she grounds a little early rather than sailing over a bar her keel cannot clear — and
+        /// the one hull that uses it is the 88: <c>Sloop88.asset</c> carries the 4.60 m design draft her
+        /// README states (written in by #750), where her loft puts the bottom of the bulb at 4.52 m.</summary>
+        const float KeelDesignAllowanceMeters = 0.10f;
+
+        static BoatHullDef KeelboatHull((string Id, string File, string Sidecar) k)
+        {
+            var h = AssetDatabase.LoadAssetAtPath<BoatHullDef>($"{DataBoats}/{k.File}.asset");
+            Assert.IsNotNull(h, $"{DataBoats}/{k.File}.asset is missing — the keelboat clause names a hull " +
+                                "that is not on disk.");
+            Assert.AreEqual(k.Id, h.Id, $"{k.File}: the keelboat clause excuses {k.Id} by id, and her id has " +
+                                        "moved — the clause no longer names her.");
+            return h;
+        }
+
+        static (float CanoeBody, float Keel) SidecarDrafts(string sidecar)
+        {
+            string path = Path.Combine(Directory.GetParent(Application.dataPath).FullName, sidecar);
+            Assert.IsTrue(File.Exists(path), $"{sidecar} is missing — a keelboat is named with the sidecar " +
+                                             "that measures her drafts, or not at all.");
+            var drafts = MiniJson.Dict(MiniJson.Dict(MiniJson.Parse(File.ReadAllText(path)), "WATERLINE"),
+                                       "draft_m");
+            Assert.IsTrue(MiniJson.Has(drafts, "canoe_body") && MiniJson.Has(drafts, "keel"),
+                $"{sidecar}: no WATERLINE.draft_m {{ canoe_body, keel }} — the export contract this clause " +
+                "reads has moved.");
+            return (MiniJson.Float(drafts, "canoe_body"), MiniJson.Float(drafts, "keel"));
+        }
+
+        /// <summary>
+        /// A keelboat grounds on her FIN — not on her canoe body, and not on the fleet's ratio. The failure
+        /// this catches is the tempting one: a draught derived the way every motor hull's was (drawn draft /
+        /// 0.38, to the 0.05) comes out at 1.45 m for the 30 and 3.55 m for the 88, both SHALLOWER than the
+        /// keel her rig lofts, so she would sail across a bar with her fin buried in it.
+        /// </summary>
+        [Test]
+        public void TheKeelboats_GroundOnTheirFinKeel()
+        {
+            foreach (var k in Keelboats)
+            {
+                var h = KeelboatHull(k);
+                var (_, keel) = SidecarDrafts(k.Sidecar);
+                Assert.That(h.DraughtMeters, Is.InRange(keel - 0.001f, keel + KeelDesignAllowanceMeters),
+                    $"{h.Id}: gameplay draught {h.DraughtMeters:0.00} m, but her rig lofts the fin to " +
+                    $"{keel:0.00} m ({k.Sidecar}, WATERLINE.draft_m.keel). Shallower and she sails over ground " +
+                    $"her keel is buried in; more than {KeelDesignAllowanceMeters:0.00} m deeper and the number " +
+                    "was typed, not measured.");
+            }
+        }
+
+        /// <summary>
+        /// …and she DRAWS the sea at her canoe body: the rig's own DWL, the boot-top bottom the water shader
+        /// cuts at (her sidecar's <c>clip_rule</c>), kept exactly as the loft measures it.
+        /// </summary>
+        [Test]
+        public void TheKeelboats_DrawTheSeaAtTheirCanoeBody()
+        {
+            foreach (var k in Keelboats)
+            {
+                var h = KeelboatHull(k);
+                Assert.IsTrue(h.Visual != null && h.Visual.HasHullMesh(),
+                    $"{h.Id}: no hull mesh resolves through her Visual, so there is no drawn waterline to hold " +
+                    "to her rig's.");
+                var (canoeBody, _) = SidecarDrafts(k.Sidecar);
+                Assert.AreEqual(canoeBody, h.Visual.HullMesh.RestingDraftMeters, 0.005f,
+                    $"{h.Id}: the sea is drawn {h.Visual.HullMesh.RestingDraftMeters:0.00} m up her, but her " +
+                    $"rig's DWL is {canoeBody:0.00} m ({k.Sidecar}, WATERLINE.draft_m.canoe_body).");
             }
         }
 

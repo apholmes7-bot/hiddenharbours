@@ -13,11 +13,11 @@
     {
       "region": "region.st_peters",
       "file": "StPeters.scene.json",
-      "sha256": "e26694c259cd4799a1f9b6958683adf03ea504fe70767d823a89dd13a1229724",
+      "sha256": "ea7db53650e3bd3c2fb6da2e34adbe04aa101ec32d9e4d5ca3baef6eb05f3f8b",
       "entities": 1330,
       "paths": 11,
       "rigsPinned": 10,
-      "sceneLastBuiltCommit": "ad852bd2583e03886bffc3c33d5f0238d1c33dc7"
+      "sceneLastBuiltCommit": "a14bdd6d5a26935e4221c0497aa03bc4751163ca"
     }
   ]
 }

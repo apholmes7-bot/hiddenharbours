@@ -377,20 +377,26 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
-        /// Why there is no sloop to bake — read off <see cref="HullMeshFleet.BakeBlocked"/> so the
-        /// person who clicked the menu item gets the measured upstream ask instead of a
+        /// Why a sloop is missing from the fleet table — read off <see cref="HullMeshFleet.BakeBlocked"/>
+        /// so the person who clicked the menu item gets the measured reason instead of a
         /// <c>KeyNotFoundException</c> naming a key they have never heard of.
+        ///
+        /// <para>Unreachable while both sloop rows stand in <see cref="HullMeshFleet.OneHullPerRig"/>,
+        /// which is where S1 put them (and emptied the ledger). Kept rather than deleted because a row
+        /// that goes missing should still fail by saying where a blocked hull writes its reason.</para>
         /// </summary>
         static string BlockedReport(string key)
         {
             var sb = new StringBuilder(
-                $"'{key}' is not in HullMeshFleet.Hulls: the sail rig kit's hulls are landed and " +
-                "registered, but their mesh bake is BLOCKED UPSTREAM and the block is measured, not " +
-                "assumed.\n\n");
+                $"'{key}' is not in HullMeshFleet.Hulls. The sail rig kit's two sloops have been fleet " +
+                "hulls since S1, so a missing one means her OneHullPerRig row was removed. A hull that " +
+                "cannot be baked says why on HullMeshFleet.BakeBlocked:\n\n");
+            if (HullMeshFleet.BakeBlocked.Count == 0) sb.Append("  (the ledger is empty)\n");
             foreach (var kv in HullMeshFleet.BakeBlocked) sb.Append($"  · {kv.Key}\n      {kv.Value}\n");
-            sb.Append("\nThe fix is in docs/art/rigs/** (the art director's lane) — do not default the " +
-                      "untagged faces to 'hull' here, and do not patch the rig. When the rigs land " +
-                      "stamped, delete their BakeBlocked entries and this entry point works unchanged.");
+            sb.Append("\nA refusal is fixed in docs/art/rigs/** (the art director's lane) — do not default " +
+                      "untagged faces to 'hull' here, and do not patch the rig. When a blocked rig lands " +
+                      "stamped, delete its BakeBlocked entry, restore her row, and this entry point works " +
+                      "unchanged.");
             return sb.ToString();
         }
 

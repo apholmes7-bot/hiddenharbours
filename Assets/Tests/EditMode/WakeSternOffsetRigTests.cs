@@ -63,6 +63,10 @@ namespace HiddenHarbours.Tests.EditMode
             // label length over the tubes. The wake is shed at the transom, so it is L.
             ("ZodiacHurricaneIsoHullMesh", "zodiacIsoRig.js", @"id:'hurricane'[\s\S]{0,200}?\bL:\s*([0-9.]+)"),
             ("ZodiacFrcIsoHullMesh",       "zodiacIsoRig.js", @"id:'frc'[\s\S]{0,200}?\bL:\s*([0-9.]+)"),
+            // The sail rig kit's two sloops (S1, feat/sloops-on-the-dev-key). Their rigs live in the kit's
+            // own folder, so this column carries the path under docs/art/rigs rather than a bare file name.
+            ("SloopIsoHullMesh",   "sail-rig-kit/sloop-30/sloopIsoRig.js",   @"\bconst L\s*=\s*([0-9.]+)"),
+            ("Sloop88IsoHullMesh", "sail-rig-kit/sloop-88/sloop88IsoRig.js", @"\bconst L\s*=\s*([0-9.]+)"),
         };
 
         static IEnumerable<(string Def, string Rig, string Pattern)> AllHulls()
@@ -148,7 +152,7 @@ namespace HiddenHarbours.Tests.EditMode
             }
 
             TestContext.WriteLine(report.ToString());
-            Assert.AreEqual(34, checkedHulls, "The fleet is 34 hulls; this table has drifted from it.");
+            Assert.AreEqual(36, checkedHulls, "The fleet is 36 hulls; this table has drifted from it.");
             Assert.IsEmpty(failures.ToString(), "\n" + failures);
         }
 

@@ -41,12 +41,13 @@ namespace HiddenHarbours.Tools.RigBaking
         public const string SchemeFolder = "Assets/_Project/Data/Boats/PaintSchemes";
 
         /// <summary>
-        /// A hull whose rig carries a paint axis. TWENTY-FIVE of them now, across TWO different paint
+        /// A hull whose rig carries a paint axis. TWENTY-SEVEN of them now, across TWO different paint
         /// APIs — which is the design working harder than it was asked to: the second, third and
         /// fourth hulls cost a line each, and the twenty-one that arrived with the fleet rig pack
         /// cost two <see cref="Painted(LobsterVariant)"/> helpers and no new baker at all.
-        /// (Four of the five one-hull rows share one line verbatim; the lobster's differs only
-        /// because her kit predates the small craft's and keeps its resolver private.)
+        /// (Four of the seven one-hull rows share one line verbatim and the two sloops share a
+        /// FILTERED form of it; the lobster's differs only because her kit predates the small
+        /// craft's and keeps its resolver private.)
         /// <see cref="AssetPrefix"/> keeps two hulls' tables from colliding on disk, and
         /// <see cref="IdPrefix"/> keeps their ids apart (ids are append-only and stable, CLAUDE.md §5).
         /// </summary>
@@ -177,10 +178,51 @@ namespace HiddenHarbours.Tools.RigBaking
                             schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];" +
                                             "return [id,s.name||'',s.note||''];})",
                             defaultSchemeExpr: "defaultScheme"),
+
+            // The sail rig kit's two sloops (S1) — the small-craft API again, but FILTERED, for the
+            // reason RigMeshExtractor's two sloop MATS reconstructions give: `palette({scheme:id}).mats`
+            // is EIGHTEEN materials on the 30 and NINETEEN on the 88, and ReadMaterialTable throws
+            // above the facet shader's 16. Her hull def is baked from that table filtered to the
+            // materials her static face list names — FOURTEEN on both — so every scheme is filtered
+            // the same way: off the rig's own `faces()`, in the rig's own key order. What the filter
+            // drops is the sails' palette (canvas, sail, batten, moto; mast on the 88, whose spars
+            // paint from `spar`), which nothing in `F` points at.
+            //
+            // ⚠️ Why it is a REDUCE: only the HEAD of a MatsExpr is prefixed with the global, and
+            // ReadMaterialTable splices it into `var M=<G>.<expr>,o=[]` — so it must be ONE member
+            // chain. An IIFE cannot take the prefix, and a comma would end the `var`.
+            // `schemeIds.slice(0,1).reduce(fn,{})` is a member chain that calls `fn` exactly once, on
+            // `{}`, and returns what `fn` returns; `{G}` reaches back into the rig from inside it.
+            //
+            // MEASURED in Node over both rigs on this base (2026-09-17), all eight schemes each: every
+            // table is fourteen materials in the default scheme's key order, and the default scheme's
+            // table equals the extractor's reconstruction name for name, offset for offset and ramp
+            // for ramp — so "unset scheme = today's boat" holds here as it does for the rows above.
+            //
+            // 'sloop_30' / 'sloop_88', not 'sloop': the table is hull-specific and the 30's mesh id
+            // (hullmesh.sloop_iso) does not say which sloop, so the prefix takes its number from her
+            // BoatHullDef id (boat.sloop_30). Ids are append-only; a prefix cannot be narrowed later.
+            new PaintedHull("sloop30", "hullmesh.sloop_iso", "SloopIso", "paint.sloop_30_",
+                            matsExpr: "schemeIds.slice(0,1).reduce(function(t){" +
+                                      "var M={G}.palette({scheme:{0}}).mats,F={G}.faces(),u={};" +
+                                      "for(var i=0;i<F.length;i++)u[F[i].mat]=1;" +
+                                      "for(var k in M)if(u[k])t[k]=M[k];return t;},{})",
+                            schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];" +
+                                            "return [id,s.name||'',s.note||''];})",
+                            defaultSchemeExpr: "defaultScheme"),
+
+            new PaintedHull("sloop88", "hullmesh.sloop88_iso", "Sloop88Iso", "paint.sloop_88_",
+                            matsExpr: "schemeIds.slice(0,1).reduce(function(t){" +
+                                      "var M={G}.palette({scheme:{0}}).mats,F={G}.faces(),u={};" +
+                                      "for(var i=0;i<F.length;i++)u[F[i].mat]=1;" +
+                                      "for(var k in M)if(u[k])t[k]=M[k];return t;},{})",
+                            schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];" +
+                                            "return [id,s.name||'',s.note||''];})",
+                            defaultSchemeExpr: "defaultScheme"),
         };
 
         /// <summary>
-        /// <b>Every hull whose rig carries a paint axis</b> — the five above, then the two GENERATOR
+        /// <b>Every hull whose rig carries a paint axis</b> — the seven above, then the two GENERATOR
         /// families whose hulls share one palette between them.
         ///
         /// <para>Built rather than written out for the reason <see cref="HullMeshFleet.Hulls"/> is:
