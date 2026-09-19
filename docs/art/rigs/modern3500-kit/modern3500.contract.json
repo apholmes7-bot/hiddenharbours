@@ -3,7 +3,7 @@
   "status": "art candidate; requires game integration review",
   "rig": "modern3500.rig.js",
   "exportSymbol": "ModernTruck3500",
-  "rigSha256": "3eb1640029e51e28f8597e393418ab5492ad77e3bd33bd8ce0040cff53eddc86",
+  "rigSha256": "0601bc98435533aa024804532725c491d3cdc31b86b506706cd4cff79d3ced27",
   "source": "New geometry from user-supplied Ram 3500 reference collage; renderer/helpers adapted from user-supplied vehicleIsoRig.js.",
   "bake": {
     "scale_px_per_m": 32,
@@ -239,8 +239,8 @@
     }
   },
   "mesh": {
-    "faces": 2802,
-    "triangles": 6856,
+    "faces": 2738,
+    "triangles": 6728,
     "groups": [
       "body",
       "frontClip",

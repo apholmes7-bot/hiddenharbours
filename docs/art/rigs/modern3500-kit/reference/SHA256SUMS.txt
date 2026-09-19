@@ -1,8 +1,8 @@
-3eb1640029e51e28f8597e393418ab5492ad77e3bd33bd8ce0040cff53eddc86  ../modern3500.rig.js
-2703e8990ebad43fd35c932bb1f813537e17415240191ae0ca9bd7db9c75b8e1  ../modern3500.contract.json
-0dd29fcd1b2e48ab2f10fd8f044fd9a9cc03be292597c819806644a7a4d21fd8  ../preview.html
-c51104569e78c32a37bc20914b64bb7b167bf8bbd4c8bd1b7d01dd9c70945191  ../README.md
-72e6801ff8fad93a592539b72976f71a3bfd0a1ffeff900e5c2f3fd463d05f65  ../../gameplay/vehicles/modern3500.rig.gameplay.json
+0601bc98435533aa024804532725c491d3cdc31b86b506706cd4cff79d3ced27  ../modern3500.rig.js
+9eaf8b6667f88beea0932b7bdabd0258f3b4eee4ca288b2aa16e3e5c1862791c  ../modern3500.contract.json
+bd1710e85954a620b3548b4dfa022afd00bdb79cff0a3705275dd905e55031b6  ../preview.html
+ad1782bd0d53e7de5e782b5d0bdc82ef059a2b57673f20216e0ea52e25a59e1b  ../README.md
+eeb054ec396673b0151e0387d70b86bae9b57d10c23671f2d631e080eeab609b  ../../gameplay/vehicles/modern3500.rig.gameplay.json
 56b6903ca45d7813129388d358ee9a042c0f57e99ef6674061b1229c2145c445  Modern3500_doors_W.png
 9f4b7c628eb03addb2af14c24cee9bcd47984af9665ff6fadfbb4d29f013d73f  Modern3500_drive_W.png
 884dc62cd325c0370812b75840ac3d1ba76db1981f9bf3087087a9a2b981a023  Modern3500_gate_NE.png
@@ -18,6 +18,16 @@ c03af15ec51e08c6503f69836e5e61c64fba5c3101911d38b20f360196329d48  Modern3500_pea
 # Re-issued 2026-09-16: the rig folds its palette 27 ramps -> 16; the contract and the ten sheets
 # were re-baked on node from that rig. At intake its exported literal gained KEY, GAIN, BIAS, LN,
 # build (one line), and the three stamps moved to the digest of those bytes.
+#
+# Re-issued 2026-09-18 on OUR side, by the owner's ruling D1 ("Badge off"): the rig's two 'RAM'
+# lettering draws were cut with nothing in their place (faces 2802 -> 2738, triangles 6856 -> 6728).
+# The contract's `rigSha256` and the sidecar's `derivedFromRigSha256` were re-derived from the cut
+# rig's bytes in the same commit, and the five text digests above were recomputed (the sidecar was
+# also re-keyed to the fleet schema, and the README records the rulings). The ten sheet lines are
+# unchanged: the sheets were not re-baked, predate the cut, and stay reference only. This is NOT the
+# refusal case at the foot of this file -- the rig moved HERE, under a ruling, and its stamps moved
+# with it. But the upstream Codex drop still draws the lettering, so a regeneration taken from
+# upstream brings the badge back: the D1 cut has to go upstream before one is re-taken.
 #
 # ../modern3500.rig.js's digest above is ALSO modern3500.contract.json's `rigSha256` and the gameplay
 # sidecar's `derivedFromRigSha256`. All three were verified equal on the delivered bytes and again

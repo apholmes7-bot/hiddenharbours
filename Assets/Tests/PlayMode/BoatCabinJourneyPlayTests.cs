@@ -74,6 +74,7 @@ namespace HiddenHarbours.Tests.PlayMode
         private readonly List<CabinLeft> _left = new();
         private GameConfig _config;
         private MaterialPropertyBlock _readBlock;
+        private ISaveService _saveBefore;
 
         [SetUp]
         public void SetUp()
@@ -99,6 +100,14 @@ namespace HiddenHarbours.Tests.PlayMode
             _spawned.Add(_config);
             GameServices.Config = _config;
 
+            // ⚠️ No save, whatever this machine holds. SaveService wires GameServices.Save with the live
+            // savegame before the first scene loads, and a save that owns her hull (boat.lobster_boat) and
+            // has not repaired it makes ControlSwitcher.BoardableNow refuse the rig's first E. These cases
+            // used to run clean only behind an earlier fixture's GameServices.Reset(); the previous value
+            // goes back in TearDown.
+            _saveBefore = GameServices.Save;
+            GameServices.Save = null;
+
             _readBlock = new MaterialPropertyBlock();
 
             // ⚠ An AudioListener, because a listener-less play scene logs a warning EVERY frame — and a
@@ -116,6 +125,7 @@ namespace HiddenHarbours.Tests.PlayMode
             InteractOffer.Reset();
             InteractionGate.Reset();
             GameServices.Config = null;
+            GameServices.Save = _saveBefore;
 
             for (int i = 0; i < _spawned.Count; i++)
                 if (_spawned[i] != null) UnityEngine.Object.Destroy(_spawned[i]);

@@ -76,7 +76,7 @@ namespace HiddenHarbours.Boats
     /// <see cref="BoatCabinThreshold"/>.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class BoatCabinDoor : MonoBehaviour, IInteractable, ICabinThreshold
+    public sealed class BoatCabinDoor : MonoBehaviour, IInteractable, ICabinThreshold, ICabinThresholdAtHeight
     {
         [Tooltip("The cabin this door opens. Required — a door with no interior is INERT rather than " +
                  "broken, which is the right answer for a hull nobody has measured yet.")]
@@ -132,8 +132,20 @@ namespace HiddenHarbours.Boats
         /// arrival opens with the player already standing in Armand's doorway (a threshold is on the
         /// sole's edge by construction), and an armed latch would walk her out of his cabin on the first
         /// frame of a new game.</para>
+        ///
+        /// <para><b>⚠ …and her FIRST step after a (re)wiring seeds it</b> (<see cref="_passageSeeded"/>;
+        /// owner ruling R1, 2026-09-18: <i>"the latch arms on her first step outside the band"</i>). A
+        /// door is re-wired every time a hull is swapped on under her, and the swap leaves her at the
+        /// helm — on sixteen hulls nearer the threshold than the release radius, so the disarmed seed
+        /// never re-armed and walking in did nothing. Standing OUTSIDE the band on that first step is not
+        /// the arrival's case (the arrival stands her IN it), so the seed is armed; standing inside it
+        /// keeps the old rule and waits for her to be clear.</para>
         /// </summary>
         private bool _passageArmed;
+
+        /// <summary>True once <see cref="_passageArmed"/> has been seeded from her first walk step since
+        /// <see cref="Configure"/>. Cleared by every wiring, so a rebuilt door seeds again.</summary>
+        private bool _passageSeeded;
 
         /// <summary>True once the no-band fallback has been named on the console — said once per door and
         /// not once per press, because a warning on a press path is a warning in a loop.</summary>
@@ -359,6 +371,7 @@ namespace HiddenHarbours.Boats
             _cueElapsed = -1f;
             IsOpen = false;             // the ruling's first sentence, restated at every wiring
             _passageArmed = false;      // see the field: the arrival starts her IN this doorway
+            _passageSeeded = false;     // …and her first step decides whether she is (R1)
             _leaf = null;               // a re-wired door may stand on a different hull
             ShowLeafNow();
         }
@@ -553,22 +566,47 @@ namespace HiddenHarbours.Boats
         /// not. That is the whole trick of an interior (ADR 0038) and the reason this returns a bool
         /// rather than a position.</para>
         ///
-        /// <para><b>The four gates, in the order they are asked.</b> She must have been clear of the
+        /// <para><b>The five gates, in the order they are asked.</b> She must have been clear of the
         /// doorway at some point since the last crossing (the latch — one approach, one crossing); the
-        /// leaf must be standing open and still; she must be IN the band; and going IN she must be
-        /// allowed in at all. <b>Coming OUT is never gated on the entry policy</b> — a cabin that stopped
-        /// being enterable while somebody was inside must not thereby become a room she cannot leave.
-        /// </para>
+        /// leaf must be standing open and still; she must be IN the band; she must be standing on the
+        /// sill's own floor, when the walker says which floor that is
+        /// (<see cref="TryWalkThroughAt"/>); and going IN she must be allowed in at all. <b>Coming OUT
+        /// is never gated on the entry policy</b> — a cabin that stopped being enterable while somebody
+        /// was inside must not thereby become a room she cannot leave.</para>
         ///
         /// <para><b>⚠ Hull-local metres, not world.</b> See <see cref="BoatCabinThreshold"/>: the sole
         /// walk and the deck walk project through different handedness conventions, and a threshold asked
         /// in world offsets would have to pick one of them and would mirror the doorway end for end on
         /// the hulls that disagree.</para>
         /// </summary>
-        public bool TryWalkThrough(Vector2 hullLocalMetres)
+        public bool TryWalkThrough(Vector2 hullLocalMetres) => Pass(hullLocalMetres, false, 0f);
+
+        /// <summary>
+        /// ⭐ <b>WALK THROUGH IT, from a floor she names</b> — <see cref="ICabinThresholdAtHeight"/>:
+        /// <see cref="TryWalkThrough"/> with the height of the floor she stands on, so that a walker on
+        /// a deck stacked over (or under) this doorway's sill is never walked through it. The height is
+        /// the only thing added: the latch still seeds and re-arms in PLAN, so a walker who stood over
+        /// the doorway on another floor has to get clear of it before it will take her, exactly as one
+        /// who stood in it.
+        /// </summary>
+        public bool TryWalkThroughAt(Vector3 hullLocalMetres)
+            => Pass(new Vector2(hullLocalMetres.x, hullLocalMetres.y), true, hullLocalMetres.z);
+
+        /// <summary>The passage itself, for both entry points — <paramref name="floorKnown"/> false is the
+        /// plan question the seam always asked.</summary>
+        private bool Pass(Vector2 hullLocalMetres, bool floorKnown, float floorZMetres)
         {
             BoatInteriorDoor door = Door;
             if (_interior == null || door == null) return false;
+
+            // Her first step since the wiring seeds the latch (R1, see the field): outside the band is
+            // not the arrival's doorway, so the approach she is making is already a fresh one.
+            if (!_passageSeeded)
+            {
+                _passageSeeded = true;
+                _passageArmed = BoatCabinThreshold.HasBand(door)
+                                && !BoatCabinThreshold.IsInBand(door, hullLocalMetres);
+            }
 
             // Re-arm the moment she is measurably clear of the doorway — asked whatever the leaf is
             // doing, so that the approach she makes AFTER opening a door is a fresh one rather than one
@@ -577,6 +615,11 @@ namespace HiddenHarbours.Boats
 
             if (!_passageArmed || !IsOpen || IsCueing) return false;
             if (!BoatCabinThreshold.IsInBand(door, hullLocalMetres)) return false;
+
+            // Standing over the doorway on another floor is not standing in it (the Phase A finding —
+            // see ICabinThresholdAtHeight). Refused without spending the latch: she never crossed.
+            if (floorKnown && !BoatCabinThreshold.IsOnTheSill(door, floorZMetres, _interior.Def.FloorTolerance))
+                return false;
 
             bool goingIn = WouldEnter;
             if (goingIn && !BoatInteriorEntryPolicy.MayOffer(_interior)) return false;

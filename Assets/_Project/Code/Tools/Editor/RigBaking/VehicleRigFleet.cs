@@ -1871,15 +1871,17 @@ namespace HiddenHarbours.Tools.RigBaking
             //
             //  A SECOND crew-cab dually, NOT a revision of the first. The drop's own README says it:
             //  "use this as a separate asset entry; do not overwrite the older truck's rig or reuse
-            //  its sidecar." So she gets her own key, her own sidecar and her own mesh — and NO def
-            //  yet, by the owner's ruling of 2026-09-16 (her entry below says why) — and `dually3500`
-            //  above is left exactly as she was found.
+            //  its sidecar." So she gets her own key, her own sidecar, her own mesh and — since the
+            //  owner's ruling of 2026-09-18 (her entry below says why) — her own def and id, and
+            //  `dually3500` above is left exactly as she was found.
             //
-            //  ⚠️ ONE HASH, THREE PLACES. `3eb16400…` is the LF sha256 of the rig; it is also the
+            //  ⚠️ ONE HASH, THREE PLACES. `0601bc98…` is the LF sha256 of the rig; it is also the
             //  `rigSha256` in `modern3500.contract.json` and the `derivedFromRigSha256` in her
             //  sidecar. All three agree on disk and `Modern3500KitContractTests` holds them there.
-            //  If a bake ever refuses her sidecar hash, the fix is upstream in the kit — NEVER a
-            //  re-stamp here.
+            //  It was `3eb16400…` until 2026-09-18, when the owner's ruling D1 cut her two badge
+            //  lettering draws out of the rig and her sidecar was re-derived, on node, from the cut
+            //  rig. If a bake ever refuses her sidecar hash, the fix is a sidecar re-derived from the
+            //  rig on disk — NEVER a re-stamp here.
             //
             //  ⚠️ `resolve` MUST be written qualified. Every expression below is evaluated with the
             //  rig's globals in scope but not its closure, so `build(ModernTruck3500.resolve({}))`
@@ -1920,12 +1922,16 @@ namespace HiddenHarbours.Tools.RigBaking
                 },
                 azimuthAftAnchor: "hitch", azimuthForeAnchor: "hoodLatch",
                 bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
-                // ⚠️ NO def and NO vehicleId — deliberately. She is BAKED (a mesh and its wheel
-                // fittings, the way the trailers were first baked) since the re-issued rig folded her
-                // palette to 16 ramps, but she is still ART, not a machine the world can place: by
-                // the owner's ruling of 2026-09-16 she wears no VehicleDef and no vehicleId until
-                // her gameplay exists. Hand-authoring a def to fill this argument would be inventing
-                // gameplay nobody has asked for.
+                // ⭐ HER DEF AND HER ID — the owner's ruling of 2026-09-18, which replaces the one of
+                // 2026-09-16 ("a mesh only: no def and no vehicle id until her gameplay exists").
+                // Her gameplay exists now: she parks, drivable, at Nine Mile Creek beside the Dually,
+                // and her sidecar was re-keyed to the fleet's collider and way in. The def is the
+                // BAKER'S to create, at the class's own defaults like every def in this table, and
+                // never a hand-written asset. The owner's D3 (the Dually's handling numbers, to
+                // start) is set on it after that first bake. The id is append-only from the day it
+                // ships.
+                vehicleDefPath: "Assets/_Project/Data/Vehicles/Modern3500.asset",
+                vehicleId: "vehicle.modern_3500",
                 label: "Modern 3500"),
         };
 
@@ -1980,7 +1986,7 @@ namespace HiddenHarbours.Tools.RigBaking
             // blocked: 9 ramps against the shader's 16, one shared 256×192 cell, and both azimuth
             // oracles agreeing counter-clockwise on every body.
             "enduro250", "trike200", "utilityQuad",
-            // The Modern 3500 — a mesh only, no def (owner, 2026-09-16), once her re-issued rig folded 27 ramps to 16.
+            // The Modern 3500 — baked once her re-issued rig folded 27 ramps to 16 (2026-09-16); her def and id since 2026-09-18.
             "modern3500",
         };
 

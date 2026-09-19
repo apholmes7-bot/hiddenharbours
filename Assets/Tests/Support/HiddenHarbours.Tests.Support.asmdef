@@ -1,0 +1,17 @@
+{
+    "name": "HiddenHarbours.Tests.Support",
+    "rootNamespace": "HiddenHarbours.Tests.Support",
+    "references": [
+        "HiddenHarbours.Core",
+        "HiddenHarbours.Boats",
+        "HiddenHarbours.Player",
+        "HiddenHarbours.Art.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "autoReferenced": false
+}

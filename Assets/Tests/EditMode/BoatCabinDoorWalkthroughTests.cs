@@ -330,6 +330,44 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(rig.Interior.IsInside);
         }
 
+        [Test]
+        public void ARebuiltDoor_ArmsHerPassage_WhenHerFirstStepIsOutsideTheBand()
+        {
+            // ⭐ Cause 1 of the 2026-09-18 fleet report, and the owner's ruling R1 on it ("the latch arms
+            // on her first step outside the band"). A swap re-wires the door and leaves her at the helm,
+            // and on sixteen hulls the helm stands nearer the threshold than one clear width: her first
+            // step is in the RING, neither in the doorway nor clear of it, and the disarmed seed never
+            // re-armed — she walked to an open door and nothing happened. The arrival's case, her first
+            // step IN the band, is the test above and still holds.
+            Rig rig = NewRig();
+            BoatInteriorDoor door = rig.Door.Door;
+            Vector2 besideTheDoor = Doorway + new Vector2(0.5f, 0f);   // 0.36 < 0.5 < 0.72
+            Assert.IsFalse(BoatCabinThreshold.IsInBand(door, besideTheDoor));
+            Assert.IsFalse(BoatCabinThreshold.IsClearOfBand(door, besideTheDoor),
+                           "the premise: she starts in the ring the old latch could never re-arm from");
+
+            Open(rig);
+            Assert.IsFalse(rig.Door.TryWalkThrough(besideTheDoor), "beside the doorway is not through it");
+            Assert.IsTrue(rig.Door.PassageIsArmed, "her first step outside the band arms the approach");
+            Assert.IsTrue(rig.Door.TryWalkThrough(Doorway), "…and her next, into the doorway, takes her in");
+            Assert.IsTrue(rig.Interior.IsInside);
+
+            // The seed is ONE step. After a crossing the ring is the hysteresis again, exactly as before.
+            Assert.IsFalse(rig.Door.TryWalkThrough(besideTheDoor));
+            Assert.IsFalse(rig.Door.PassageIsArmed, "a spent approach is not re-armed from the ring");
+
+            // A rebuild (the swap's teardown lets her out, and the door is wired again) seeds it afresh.
+            Assert.IsTrue(rig.Interior.TryExit());
+            rig.Door.Configure(rig.Interior, "fixture.boat.walkthrough_test.cabin_door", -1, 1.2f,
+                               "Open the door", "Close the door");
+            Assert.IsFalse(rig.Door.PassageIsArmed, "a wiring still disarms — the arrival relies on it");
+            Open(rig);
+            Assert.IsFalse(rig.Door.TryWalkThrough(besideTheDoor));
+            Assert.IsTrue(rig.Door.PassageIsArmed, "the rebuilt door's first step seeds it again");
+            Assert.IsTrue(rig.Door.TryWalkThrough(Doorway), "and she walks in through the rebuilt door");
+            Assert.IsTrue(rig.Interior.IsInside);
+        }
+
         // =====================================================================================
         //  5 · THE FALLBACK — a door with no measured opening keeps the old press-through
         // =====================================================================================

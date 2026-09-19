@@ -284,16 +284,31 @@ MonoBehaviour:
     Mechanism: InteriorStair
     Exterior: 0
     TotalRiseMeters: 5
+    Placed: 1
+    FromPoint: {x: 2.6999998, y: -25.15, z: 5}
+    ToPoint: {x: 2.6999998, y: -22.75, z: 10}
+    NotPlacedBecause: 
   - Id: house_to_below
     FromLevel: house_sole
     ToLevel: below_sole
     Mechanism: InteriorStair
     Exterior: 0
     TotalRiseMeters: 2.8
+    Placed: 1
+    FromPoint: {x: -2.925, y: -24.3, z: 5}
+    ToPoint: {x: -2.925, y: -25.5, z: 2.2}
+    NotPlacedBecause: 
   - Id: boat_deck_ladder
     FromLevel: 
     ToLevel: 
     Mechanism: vertical_ladder
     Exterior: 1
     TotalRiseMeters: 2.63
+    Placed: 0
+    FromPoint: {x: 0, y: 0, z: 0}
+    ToPoint: {x: 0, y: 0, z: 0}
+    NotPlacedBecause: 'it does not name the two floors it joins (connects: [foot,
+      head])'
+  FloorToleranceMetres: 0.1
+  RouteEndReachMetres: 0.3
   RidesHullRock: 1

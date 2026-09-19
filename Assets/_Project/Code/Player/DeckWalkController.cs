@@ -75,12 +75,39 @@ namespace HiddenHarbours.Player
         private IBoatHullPresenter _hull;   // the drawn-facing read (resolved at Bind; null = smooth hull)
         private BoatDeckDef _deck;          // the authored areas (resolved at Bind; null = the rectangle)
 
-        // Her cabin doorway, through the Core seam (rule 4 — Player never names the door's own type), and
-        // the hull it was looked for under — the root, and the skin the root wore at the time. Null for most
-        // of the fleet, which has no measured interior.
-        private ICabinThreshold _doorway;
+        // Her cabin doorways, through the Core seam (rule 4 — Player never names the door's own type), and
+        // the hull they were looked for under — the root, and the skin the root wore at the time. Empty for
+        // most of the fleet, which has no measured interior; two on a hull whose def names an additional
+        // door (the Skybridge's skylounge slider onto her aft deck).
+        private ICabinThreshold[] _doorways = System.Array.Empty<ICabinThreshold>();
         private Transform _doorwaySearchedUnder;
         private IBoatHullPresenter _doorwaySearchedSkin;
+
+        // Her cabin's FLOORS, through the second Core seam (ICabinFloors, Phase B 2026-09-19): what lets
+        // this walk take a companionway, a stair or a ladder her def places. Looked for under the same
+        // root-and-skin key as the doorways, for the same reasons; null for most of the fleet.
+        private ICabinFloors _floors;
+        private Transform _floorsSearchedUnder;
+        private IBoatHullPresenter _floorsSearchedSkin;
+        private bool _floorsSearched;
+
+        // True when the last tick walked her on one of the cabin's LEVELS rather than on the deck areas,
+        // so the first deck tick after it seats her by HEIGHT (BoatDeckDef.SeatNearest) instead of letting
+        // a plan-only clamp choose between the floors stacked under her.
+        private bool _walkedInside;
+
+        // One latch per route — the doorway's one-crossing-per-approach rule, per stair: taken once on
+        // arriving at an end, not again until she has walked clear of both. Sized to the def and
+        // reallocated only when the def changes; re-seeded after every transition, door and snap.
+        private bool[] _routeArmed = System.Array.Empty<bool>();
+        private BoatInteriorDef _routesOf;
+        private bool _routesSeeded;
+
+        /// <summary>How far past <see cref="BoatInteriorDef.RouteEndReach"/> she must walk from BOTH ends
+        /// of a route before it will carry her again, as a multiple of that reach. Hysteresis, not a feel
+        /// knob: at 1 a walker standing on the reach circle would re-arm and re-take a stair on float
+        /// noise; at 2 she has visibly walked away. The reach itself is the owner's, on the def.</summary>
+        private const float RouteRearmReachMultiple = 2f;
 
         // The player's position IN THE HULL FRAME — the authoritative state on the polygon path, because
         // the projection cannot be inverted from a screen offset alone (along-hull distance and height
@@ -204,7 +231,49 @@ namespace HiddenHarbours.Player
                                                 float drawnHeadingDeg, float bakeElevationDegrees,
                                                 BoatDeckDef deck, ref int areaHint, out float heightMeters)
         {
-            Vector2 next = deckLocal;
+            Vector2 next = StepInHullFrame(deckLocal, moveInput, speed, dt, drawnHeadingDeg, bakeElevationDegrees);
+            if (deck == null) { heightMeters = 0f; return next; }
+            return deck.ClampToWalkable(next, ref areaHint, out heightMeters);
+        }
+
+        /// <summary>
+        /// ⭐ One walk step on one of her cabin's LEVELS (Phase B, 2026-09-19) — the same step as
+        /// <see cref="StepOnDeckPolygon"/>, held to the level's sole and clear of its furniture instead of
+        /// to the deck areas.
+        ///
+        /// <para><b>The deck walk's direction maths, not the intro cabin's.</b> The arrival cabin
+        /// (<c>BoatCabinWalkMath.Step</c>) turns input through the turntable heading of a hull that is not
+        /// hers; this walk is on HER hull, drawn exactly as the deck she stepped off, so "press up, go
+        /// up-screen" must mean the same thing either side of a doorway. It is literally the same code
+        /// (<see cref="StepInHullFrame"/>). The previous point is the clamp's fallback: standable by
+        /// induction, because this and <see cref="SeatOnLevel"/> are the only things that produce one.</para>
+        /// </summary>
+        public static Vector2 StepOnInteriorLevel(Vector2 local, Vector2 moveInput, float speed, float dt,
+                                                  float drawnHeadingDeg, float bakeElevationDegrees,
+                                                  BoatInteriorLevel level)
+            => BoatCabinWalkMath.ClampToSole(level,
+                   StepInHullFrame(local, moveInput, speed, dt, drawnHeadingDeg, bakeElevationDegrees), local);
+
+        /// <summary>
+        /// Put her on <paramref name="level"/> as near <paramref name="wanted"/> as the room allows — the
+        /// seat for a walker arriving on a level (through her door, off a stair, out of a helm). Falls back
+        /// to the level's centroid when that is standable, the same rule as the arrival's own start point,
+        /// so a seat can never leave her wedged in a locker.
+        /// </summary>
+        public static Vector2 SeatOnLevel(BoatInteriorLevel level, Vector2 wanted)
+        {
+            if (level == null || !level.IsUsable()) return wanted;
+            Vector2 centre = BoatCabinWalkMath.CentroidOf(level.Outline);
+            return BoatCabinWalkMath.ClampToSole(level, wanted,
+                                                 BoatCabinWalkMath.IsStandable(level, centre) ? centre : wanted);
+        }
+
+        /// <summary>The input, turned into the hull-frame direction that draws along it and advanced one
+        /// step — shared by the deck and the level walks so they cannot disagree about a keypress.</summary>
+        private static Vector2 StepInHullFrame(Vector2 local, Vector2 moveInput, float speed, float dt,
+                                               float drawnHeadingDeg, float bakeElevationDegrees)
+        {
+            Vector2 next = local;
             float mag = Mathf.Min(1f, moveInput.magnitude);
             if (mag > 1e-4f)
             {
@@ -212,9 +281,79 @@ namespace HiddenHarbours.Player
                 if (dir.sqrMagnitude > 1e-10f)
                     next += dir.normalized * (mag * Mathf.Max(0f, speed) * Mathf.Max(0f, dt));
             }
+            return next;
+        }
 
-            if (deck == null) { heightMeters = 0f; return next; }
-            return deck.ClampToWalkable(next, ref areaHint, out heightMeters);
+        /// <summary>What one end of a <see cref="BoatInteriorRoute"/> is, to the walker who would arrive
+        /// there.</summary>
+        public enum RouteEnd
+        {
+            /// <summary>Nowhere she can stand: a level no picture draws with no deck under it, or a name
+            /// that is neither a level nor a place on the deck.</summary>
+            None,
+            /// <summary>A place on the DECK — an exterior area id, or a level no picture draws that has
+            /// deck under it (the ships' <c>main_deck</c>). Arriving there puts her outside.</summary>
+            Deck,
+            /// <summary>A ROOM — a level this cabin draws. Arriving there puts her inside, on it.</summary>
+            Room,
+        }
+
+        /// <summary>
+        /// ⭐ <b>Is this route end a room, a place on the deck, or nowhere?</b> Asked of the DATA the hull
+        /// actually wears: a level id is a room exactly when her cabin can draw her standing in it
+        /// (<see cref="ICabinFloors.IsDrawnLevel"/>), and anything else is a place on the deck exactly when
+        /// there IS deck there, within the def's own <see cref="BoatInteriorDef.FloorTolerance"/>
+        /// (<see cref="BoatDeckDef.HasFloorAt"/>) — the importer's landing test, asked again at run time.
+        /// A route with a <see cref="RouteEnd.None"/> end is never taken: a stair onto a floor no picture
+        /// draws and no deck holds (the Convertible's <c>helm_deck</c>) would put her in the air.
+        /// </summary>
+        /// <param name="levelIndex">The level's index in the def when the answer is
+        /// <see cref="RouteEnd.Room"/>; −1 otherwise.</param>
+        public static RouteEnd ClassifyRouteEnd(ICabinFloors floors, BoatDeckDef deck, string levelId,
+                                                Vector3 point, out int levelIndex)
+        {
+            levelIndex = -1;
+            BoatInteriorDef def = floors != null ? floors.Def : null;
+            if (def == null) return RouteEnd.None;
+
+            int index = IndexOfLevel(def, levelId);
+            if (index >= 0 && floors.IsDrawnLevel(index)) { levelIndex = index; return RouteEnd.Room; }
+            return deck != null && deck.HasFloorAt(point, def.FloorTolerance) ? RouteEnd.Deck : RouteEnd.None;
+        }
+
+        /// <summary>The index of the level with this id, by ordinal match, or −1.</summary>
+        private static int IndexOfLevel(BoatInteriorDef def, string levelId)
+        {
+            BoatInteriorLevel[] levels = def.Levels;
+            if (levels == null || string.IsNullOrEmpty(levelId)) return -1;
+            for (int i = 0; i < levels.Length; i++)
+                if (levels[i] != null && string.Equals(levels[i].Id, levelId, System.StringComparison.Ordinal))
+                    return i;
+            return -1;
+        }
+
+        /// <summary>
+        /// Does <paramref name="levelId"/> carry a route she can take — placed, and with neither end
+        /// <see cref="RouteEnd.None"/>? This is what switches the walk onto a level: a floor with no way
+        /// off it but her door is walked on the deck areas exactly as it always was, which is what keeps
+        /// the cape and the lobster boat (whose one companionway is unplaced) walking bit-for-bit as
+        /// before.
+        /// </summary>
+        public static bool CarriesATakeableRoute(ICabinFloors floors, BoatDeckDef deck, string levelId)
+        {
+            BoatInteriorDef def = floors != null ? floors.Def : null;
+            if (def == null || def.Routes == null || string.IsNullOrEmpty(levelId)) return false;
+            for (int i = 0; i < def.Routes.Length; i++)
+            {
+                BoatInteriorRoute r = def.Routes[i];
+                if (r == null || !r.Placed) continue;
+                if (!string.Equals(r.FromLevel, levelId, System.StringComparison.Ordinal)
+                    && !string.Equals(r.ToLevel, levelId, System.StringComparison.Ordinal)) continue;
+                if (ClassifyRouteEnd(floors, deck, r.FromLevel, r.FromPoint, out _) == RouteEnd.None) continue;
+                if (ClassifyRouteEnd(floors, deck, r.ToLevel, r.ToPoint, out _) == RouteEnd.None) continue;
+                return true;
+            }
+            return false;
         }
 
         // ---- lifecycle ----------------------------------------------------------------------
@@ -234,8 +373,14 @@ namespace HiddenHarbours.Player
             // Look for her doorway again on the next tick. A bind is exactly the moment a cached "she has
             // no cabin" could be stale — the installer builds in its own Start, and a test stands a whole
             // boat up inside one frame.
-            _doorway = null;
+            _doorways = System.Array.Empty<ICabinThreshold>();
             _doorwaySearchedUnder = null;
+            // …and her floors, and whatever the last hull's stairs had armed: a new bind is a new walk.
+            _floors = null;
+            _floorsSearched = false;
+            _floorsSearchedUnder = null;
+            _walkedInside = false;
+            _routesSeeded = false;
             SeedDeckLocalFromTransform();
         }
 
@@ -293,19 +438,65 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>Snap the player onto the deck at a boat-relative WORLD-axis spot (clamped onto the
-        /// drawn hull's walkable area) — used by the switcher when boarding lands you on deck / stepping
-        /// back from the helm.</summary>
-        public void SnapTo(Vector2 boatRelative)
+        /// drawn hull's walkable area). The switcher's snap for a spot that names no floor — the tuned
+        /// helm fallback of a hull that publishes no station — and what the fixtures place her with. The
+        /// boarding seat and a measured helm station take the two below (Phase B, 2026-09-19), which know
+        /// which floor they mean.</summary>
+        public void SnapTo(Vector2 boatRelative) => Snap(boatRelative, false, 0f);
+
+        /// <summary>
+        /// ⭐ <see cref="SnapTo"/> for a spot NAMED AT A HEIGHT — the boarding seat (Phase B, 2026-09-19).
+        ///
+        /// <para><b>Why the plain snap boarded the sport fishers onto the roof.</b> Its seed starts at
+        /// height 0 and takes the FIRST area in the import's order under the point in plan. The board seat
+        /// is authored at height 0 — the deck she steps down onto from the wharf — but on the Convertible
+        /// and the Skybridge the plan there is stacked, and the first area under it stands metres over the
+        /// cockpit. Held to the floor the spot names (<see cref="SeedDeckLocalOnFloorPure"/>) she lands in
+        /// the cockpit on both, at every heading; the tanker's seat stops reaching up onto the catwalk; and
+        /// every other hull lands exactly where the boarding vault has always ended (<c>c4_band.py</c>,
+        /// 360 headings each).</para>
+        ///
+        /// <para><b>Only on a hull with a cabin.</b> How far apart two areas may stand and still be one
+        /// floor is the cabin def's own <see cref="BoatInteriorDef.FloorTolerance"/>; a hull with no cabin
+        /// has no such number, and takes <see cref="SnapTo"/> exactly. Inside, on a floor with a way off
+        /// it, the snap lands on THAT floor, as <see cref="SnapTo"/>'s does.</para>
+        /// </summary>
+        public void SnapToFloorAtHeight(Vector2 boatRelative, float namedAtHeightMeters)
+            => Snap(boatRelative, true, namedAtHeightMeters);
+
+        /// <summary>The one snap both public forms are: <paramref name="onTheNamedFloor"/> false is
+        /// <see cref="SnapTo"/> as it always was; true holds the deck seat to the floor
+        /// <paramref name="namedAtHeightMeters"/> names, from no hint — the question the vault's end asks —
+        /// whenever her cabin gives the tolerance to do it.</summary>
+        private void Snap(Vector2 boatRelative, bool onTheNamedFloor, float namedAtHeightMeters)
         {
             if (_boatRoot == null) return;
             Vector2 boatPos = _boatRoot.position;
             float heading = DrawnHeadingDegrees();
             BoatDeckDef deck = LiveDeck();
+            _routesSeeded = false;   // wherever she lands, the stairs re-read which ends she is standing on
+
+            // Inside, on a floor with a way off it: the snap lands on THAT floor, not on a deck polygon.
+            if (SeatOnTheLevelSheIsOn(boatRelative, heading, deck))
+            {
+                transform.position = boatPos + DeckAreaMath.DeckToWorld(_deckLocal, _deckHeight, heading,
+                                                                        BakeElevationDegrees());
+                return;
+            }
+            _walkedInside = false;
 
             if (deck != null && deck.HasWalkableDeck())
             {
                 float elevation = BakeElevationDegrees();
-                SeedDeckLocal(boatRelative, heading, elevation, deck);
+                if (onTheNamedFloor && TryCabinFloorTolerance(out float tolerance))
+                {
+                    _deckArea = -1;   // no hint, as TryDeckPointWorldAtHeight asks: the arc ends on the seat
+                    _deckLocal = SeedDeckLocalOnFloorPure(boatRelative, heading, elevation, deck,
+                                                          namedAtHeightMeters, tolerance,
+                                                          ref _deckArea, out _deckHeight);
+                }
+                else
+                    SeedDeckLocal(boatRelative, heading, elevation, deck);
                 transform.position = boatPos + DeckAreaMath.DeckToWorld(_deckLocal, _deckHeight,
                                                                         heading, elevation);
                 return;
@@ -316,6 +507,160 @@ namespace HiddenHarbours.Player
             _deckHeight = 0f;
             _deckArea = -1;
             transform.position = boatPos + clamped;
+        }
+
+        /// <summary>
+        /// ⭐ <b>Stand her on the floor NEAREST a hull-frame point</b> — her helm station, as she takes it
+        /// and as she steps back from it (Phase B, 2026-09-19). False, changing nothing, on a hull with no
+        /// measured deck and no room to stand her in: the caller's own snap applies there, unchanged.
+        ///
+        /// <para><b>Why the station could not go through <see cref="SnapTo"/> any more.</b> A station is a
+        /// point in the hull's own metres, height and all. Projected to the screen and read back by the
+        /// snap, it lost the height again and the seed took the first area under it in plan — on the
+        /// Convertible not the flybridge the helm stands on, and on the Skybridge not the skylounge the
+        /// owner ruled it stands in (R3), which is a room, not a deck area at all. So this asks in three
+        /// dimensions: the deck point nearest the station (<see cref="BoatDeckDef.SeatNearest"/>), against
+        /// every ROOM of her cabin she could be held to — drawn, usable, and with a route she can take off
+        /// it (the level walk's own gate, <see cref="CarriesATakeableRoute"/>) — seated at the station's
+        /// plan position, each scored by plan distance and height gap together. The deck keeps a tie; a
+        /// room has to be genuinely nearer.</para>
+        ///
+        /// <para><b>A room is entered through the cabin, never by writing a flag.</b> Outside, the cabin is
+        /// asked to <see cref="ICabinFloors.TryEnter"/> (its picture brought in first, as the door does);
+        /// inside, to <see cref="ICabinFloors.TryGoToLevel"/>; refused, the deck answers instead. And the
+        /// deck takes her OUT of the cabin only when she was being held to a room with a way off it: on the
+        /// cape and the lobster boat the wheelhouse is walked on the deck areas, inside, and taking the
+        /// wheel must not throw her out of it.</para>
+        ///
+        /// <para>The choice itself is <see cref="ChooseTheFloorNearest"/> (C6): the reachability guard
+        /// starts her where this stands her by asking the same function.</para>
+        /// </summary>
+        public bool StandOnTheFloorNearest(Vector3 hullLocal)
+        {
+            if (_boatRoot == null) return false;
+            BoatDeckDef deck = LiveDeck();
+            ICabinFloors floors = LiveCabinFloors();
+            BoatInteriorDef def = floors != null ? floors.Def : null;
+            int room = ChooseTheFloorNearest(deck, floors, hullLocal, _onWashboard, out Vector2 roomSeat,
+                                             out bool measured, out Vector2 deckSeat, out int deckArea,
+                                             out float deckHeight);
+
+            if (room >= 0 && StandInside(floors, room))
+            {
+                _deckLocal = roomSeat;
+                _deckHeight = def.Levels[room].SoleZMeters;
+                _deckArea = -1;
+                _walkedInside = true;
+            }
+            else if (measured)
+            {
+                if (floors != null && floors.IsInside && WalkableLevel(floors, deck) != null) floors.TryExit();
+                _deckLocal = deckSeat;
+                _deckArea = deckArea;
+                _deckHeight = deckHeight;
+                _walkedInside = false;
+            }
+            else return false;
+
+            _routesSeeded = false;   // wherever she stands, the stairs re-read which ends she is standing on
+            Vector2 boatPos = _boatRoot.position;
+            transform.position = boatPos + DeckAreaMath.DeckToWorld(_deckLocal, _deckHeight, DrawnHeadingDegrees(),
+                                                                    BakeElevationDegrees());
+            return true;
+        }
+
+        /// <summary>
+        /// Does the walk ALREADY stand her on the deck area nearest a hull-frame point? True when her deck,
+        /// not a room, is the floor nearest it (<see cref="ChooseTheFloorNearest"/>, the choice
+        /// <see cref="StandOnTheFloorNearest"/> makes), she is held to no room, and she stands on that very
+        /// area — so the stand would move her nowhere but along it. Reads; never moves her.
+        ///
+        /// <para><b>Why the helm asks it before standing her</b> (2026-09-19, found by
+        /// <c>DoryAboardPlayTests</c> in the Phase C run). The screen snap reads the helm spot back onto the
+        /// deck at the floor's own height, so the figure is DRAWN on the spot; the stand seats her at the
+        /// station's plan position, so she is drawn the station's height above that floor lower on the
+        /// screen. The dory's station is her thwart, 0.2164 m above her sole: stood on, her pilot was drawn
+        /// 0.166 m below his seat at the bake's 40°. Where the snap already has her on the area the stand
+        /// would choose, the snap stands.</para>
+        /// </summary>
+        public bool StandsOnTheDeckAreaNearest(Vector3 hullLocal)
+        {
+            if (_boatRoot == null || _walkedInside) return false;
+            BoatDeckDef deck = LiveDeck();
+            ICabinFloors floors = LiveCabinFloors();
+            if (floors != null && floors.IsInside && WalkableLevel(floors, deck) != null) return false;
+            int room = ChooseTheFloorNearest(deck, floors, hullLocal, _onWashboard, out _, out bool measured,
+                                             out _, out int deckArea, out _);
+            return room < 0 && measured && deckArea >= 0 && _deckArea == deckArea;
+        }
+
+        /// <summary>Have her cabin put her on <paramref name="level"/>: she stays if she is on it, changes
+        /// level if she is inside, goes in (its picture brought in first) if she is out. False when the
+        /// cabin refuses.</summary>
+        private static bool StandInside(ICabinFloors floors, int level)
+        {
+            if (floors.IsInside) return floors.Level == level || floors.TryGoToLevel(level);
+            floors.EnsureCells();
+            return floors.TryEnter(level);
+        }
+
+        /// <summary>
+        /// ⭐ <b>WHICH floor is nearest a hull-frame point</b> — the choice <see cref="StandOnTheFloorNearest"/>
+        /// makes, and nothing of what it then does. Returns the index of the cabin room that wins, or −1
+        /// when the deck does (or nothing can: <paramref name="measured"/> false). Pure + static +
+        /// allocation-free; it asks the cabin only what it draws, never to move her.
+        ///
+        /// <para><b>Why it stands on its own</b> (Phase B, 2026-09-19, C6). The guard that every hull with a
+        /// cabin reaches its door from where the helm leaves her has to start her where the GAME does. A
+        /// copy of this scoring in a test would be a second opinion that drifts; the test asks this, the
+        /// walker asks this, and the two cannot disagree about where she stands.</para>
+        ///
+        /// <para>The scoring is the one the walker always used, unchanged: the deck's nearest point in
+        /// three dimensions (<see cref="BoatDeckDef.SeatNearest"/>) against every room she could be held to
+        /// — usable, drawn, with a route she can take off it (<see cref="CarriesATakeableRoute"/>) — seated
+        /// at the point's plan position, each scored by plan distance and height gap together. The deck
+        /// keeps a tie; a room has to be genuinely nearer. On a washboard no room is asked.</para>
+        /// </summary>
+        public static int ChooseTheFloorNearest(BoatDeckDef deck, ICabinFloors floors, Vector3 hullLocal,
+                                                bool onWashboard, out Vector2 roomSeat, out bool measured,
+                                                out Vector2 deckSeat, out int deckArea, out float deckHeight)
+        {
+            Vector2 plan = new Vector2(hullLocal.x, hullLocal.y);
+
+            // The deck's nearest point, in three dimensions…
+            measured = deck != null && deck.HasWalkableDeck();
+            deckArea = -1;
+            deckHeight = 0f;
+            deckSeat = plan;
+            float best = float.PositiveInfinity;
+            if (measured)
+            {
+                deckSeat = deck.SeatNearest(hullLocal, ref deckArea, out deckHeight);
+                float gap = deckHeight - hullLocal.z;
+                best = (deckSeat - plan).sqrMagnitude + gap * gap;
+            }
+
+            // …against every room she could be held to, seated where the station is.
+            BoatInteriorDef def = floors != null ? floors.Def : null;
+            int room = -1;
+            roomSeat = plan;
+            if (!onWashboard && def != null && def.Levels != null)
+            {
+                for (int i = 0; i < def.Levels.Length; i++)
+                {
+                    BoatInteriorLevel level = def.Levels[i];
+                    if (level == null || !level.IsUsable() || !floors.IsDrawnLevel(i)
+                        || !CarriesATakeableRoute(floors, deck, level.Id)) continue;
+                    Vector2 seat = SeatOnLevel(level, plan);
+                    float gap = level.SoleZMeters - hullLocal.z;
+                    float score = (seat - plan).sqrMagnitude + gap * gap;
+                    if (score >= best) continue;
+                    best = score;
+                    room = i;
+                    roomSeat = seat;
+                }
+            }
+            return room;
         }
 
         /// <summary>
@@ -356,6 +701,8 @@ namespace HiddenHarbours.Player
             float elevation = BakeElevationDegrees();
             _deckLocal = deckLocal;
             _deckArea = -1;                                    // off the walkable areas: no hint to keep
+            _walkedInside = false;                             // the rail is deck, never a room
+            _routesSeeded = false;
             transform.position = _boatRoot.position
                                + (Vector3)DeckAreaMath.DeckToWorld(deckLocal, _deckHeight,
                                                                    heading, elevation);
@@ -384,6 +731,31 @@ namespace HiddenHarbours.Player
         /// left at <see cref="Vector3.zero"/> — the caller falls back to its own placement.</returns>
         public bool TryDeckPointWorld(Vector2 boatRelative, bool includeWashboards, out Vector3 world)
             => TryDeckPointWorldOn(_boatRoot, boatRelative, includeWashboards, out world);
+
+        /// <summary>
+        /// ⭐ <see cref="TryDeckPointWorld"/> for a spot NAMED AT A HEIGHT (Phase B, 2026-09-19): where
+        /// <see cref="SnapToFloorAtHeight"/> will seat her, asked without moving anybody — the boarding
+        /// vault's end, every tick of the arc, so the arc lands on the seat and not on the roof over it.
+        /// The bound hull only, because the floor's tolerance is her cabin's; washboards stay out, as they
+        /// do for the seat. On a hull with no cabin or no measured deck it is
+        /// <see cref="TryDeckPointWorld"/> exactly.
+        /// </summary>
+        public bool TryDeckPointWorldAtHeight(Vector2 boatRelative, float namedAtHeightMeters, out Vector3 world)
+        {
+            world = Vector3.zero;
+            if (_boatRoot == null) return false;
+            BoatDeckDef deck = DeckOf(_boatRoot);
+            if (deck == null || !deck.HasWalkableDeck() || !TryCabinFloorTolerance(out float tolerance))
+                return TryDeckPointWorld(boatRelative, false, out world);
+
+            float heading = DrawnHeadingDegreesOf(_boatRoot);
+            float elevation = BakeElevationDegreesOf(_boatRoot);
+            int hint = -1;
+            Vector2 local = SeedDeckLocalOnFloorPure(boatRelative, heading, elevation, deck, namedAtHeightMeters,
+                                                     tolerance, ref hint, out float height);
+            world = _boatRoot.position + (Vector3)DeckAreaMath.DeckToWorld(local, height, heading, elevation);
+            return true;
+        }
 
         /// <summary>
         /// ⭐ <b>The same query about a hull this walk is NOT bound to</b> — added 2026-09-03 for the
@@ -638,6 +1010,12 @@ namespace HiddenHarbours.Player
             Vector2 input = DeckInputSource.Read().Move;
 
             Vector2 relative, stanceCenter, stanceHalfExtents;
+            bool floorKnown;   // does _deckHeight name the floor she stands on? (the door's sill gate)
+
+            // Her cabin's floors, and the level she walks if she is inside on one with a way off it
+            // (WalkableLevel) — null on every tick of every hull whose cabin has no placed route.
+            ICabinFloors floors = LiveCabinFloors();
+            BoatInteriorLevel level = WalkableLevel(floors, deck);
 
             // ⭐ OUT ON THE RAIL, the walkable shape is her BOX, not her polygons (2026-09-02).
             //
@@ -653,8 +1031,30 @@ namespace HiddenHarbours.Player
                                       drawnHeading, railCentre, railHalf);
                 _deckLocal = WorldToDeckFrame(relative, drawnHeading);
                 _deckArea = -1;
+                floorKnown = false;
                 stanceCenter = railCentre;
                 stanceHalfExtents = railHalf;
+                _walkedInside = false;
+            }
+            else if (level != null)
+            {
+                // ⭐ INSIDE, ON A LEVEL WITH A WAY OFF IT (Phase B, 2026-09-19): the saloon a companionway
+                // climbs out of, the skylounge a stair comes down from. A route's ends are placed on the
+                // def's LEVELS, inside the interior's own outlines, so she has to be walking that outline
+                // to reach one; the deck areas were measured for the deck. Same step, same projection and
+                // the same floor-known door question as the deck — only the clamp is the level's.
+                float elevation = BakeElevationDegrees();
+                if (!_walkedInside) _deckLocal = SeatOnLevel(level, _deckLocal);   // she just came in
+                _deckLocal = StepOnInteriorLevel(_deckLocal, input, _moveSpeed, Time.deltaTime,
+                                                 drawnHeading, elevation, level);
+                _deckHeight = level.SoleZMeters;
+                _deckArea = -1;
+                _walkedInside = true;
+                relative = DeckAreaMath.DeckToWorld(_deckLocal, _deckHeight, drawnHeading, elevation);
+                floorKnown = true;
+                bool measured = deck != null && deck.HasWalkableDeck();
+                stanceCenter = measured ? deck.WalkCenter : _deckCenter;
+                stanceHalfExtents = measured ? deck.WalkHalfExtents : _deckHalfExtents;
             }
             else if (deck != null && deck.HasWalkableDeck())
             {
@@ -662,9 +1062,19 @@ namespace HiddenHarbours.Player
                 // resulting point onto the drawn hull. The polygon never moves, so a heading change
                 // costs nothing (rule 7).
                 float elevation = BakeElevationDegrees();
+                // Just off a level (through her door, down a stair onto the deck): seat her on the deck
+                // by HEIGHT first. The plan under a sport fisher's doorway is three floors deep, and the
+                // hint-less clamp would take whichever of them the import happened to list first.
+                if (_walkedInside)
+                {
+                    _deckLocal = deck.SeatNearest(new Vector3(_deckLocal.x, _deckLocal.y, _deckHeight),
+                                                  ref _deckArea, out _deckHeight);
+                    _walkedInside = false;
+                }
                 _deckLocal = StepOnDeckPolygon(_deckLocal, input, _moveSpeed, Time.deltaTime,
                                                drawnHeading, elevation, deck, ref _deckArea, out _deckHeight);
                 relative = DeckAreaMath.DeckToWorld(_deckLocal, _deckHeight, drawnHeading, elevation);
+                floorKnown = true;
                 stanceCenter = deck.WalkCenter;
                 stanceHalfExtents = deck.WalkHalfExtents;
             }
@@ -678,8 +1088,10 @@ namespace HiddenHarbours.Player
                 _deckLocal = WorldToDeckFrame(relative, drawnHeading);
                 _deckHeight = 0f;
                 _deckArea = -1;
+                floorKnown = false;   // a placeholder 0, not a floor: the doors are asked in plan
                 stanceCenter = _deckCenter;
                 stanceHalfExtents = _deckHalfExtents;
+                _walkedInside = false;
             }
 
             transform.position = boatPos + relative;
@@ -692,7 +1104,19 @@ namespace HiddenHarbours.Player
             // ⚠ Not on the rail. Out on the washboard _deckLocal is read back off her world offset with
             // no foreshortening inverted, so it is not the hull-frame point the threshold is measured in
             // — and a doorway is not something you cross from the gunwale anyway.
-            if (!_onWashboard) WalkThroughAnOpenCabinDoor();
+            //
+            // ⭐ …and on a tick with no door in it, her STAIRS (Phase B, 2026-09-19): a companionway, a
+            // ladder or a stair the def places, taken by stepping onto its end (TakeACabinRoute). Only
+            // where the floor is known, because a route end is a height as much as a place — the
+            // flybridge's end of the Convertible's stair stands 3.08 m over the saloon's.
+            if (!_onWashboard)
+            {
+                if (WalkThroughAnOpenCabinDoor(floorKnown))
+                    _routesSeeded = false;   // a doorway is a transition: the stairs re-read where she is
+                else if (floorKnown && TakeACabinRoute(floors, deck, level != null))
+                    transform.position = boatPos + DeckAreaMath.DeckToWorld(_deckLocal, _deckHeight,
+                                                                            drawnHeading, BakeElevationDegrees());
+            }
 
             // Publish the LIVE deck frame through Core (DeckStance — Rod Fishing v2 §4): hull position,
             // the drawn facing, the walkable bounds and where the angler actually stands in them,
@@ -706,7 +1130,7 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
-        /// ⭐ <b>Has she just stepped through this hull's cabin door?</b> One call a tick, handing the
+        /// ⭐ <b>Has she just stepped through one of this hull's cabin doors?</b> One call a tick, handing the
         /// doorway where she is standing in the HULL's own metres — the frame <c>_deckLocal</c> is
         /// already in, and the frame a threshold is measured in, so nothing is projected, inverted or
         /// re-derived here.
@@ -718,15 +1142,33 @@ namespace HiddenHarbours.Player
         /// this approach has already been spent, which way it goes, and whether the room will have her.
         /// This component owns where the player stands and nothing else — the same division of labour it
         /// keeps with the hull presenter and the deck areas.</para>
+        ///
+        /// <para><b>⭐ …and which FLOOR she is on, where she knows it</b> (2026-09-19,
+        /// <see cref="ICabinThresholdAtHeight"/>). On the sport fishers two and three floors stack over
+        /// one doorway, and a threshold asked in plan would walk her into the saloon from the flybridge
+        /// deck over it. <paramref name="floorKnown"/> is false only on the greybox rectangle, whose
+        /// height is a placeholder 0 rather than a floor; there the plan question is asked as it always
+        /// was. <b>One crossing a tick</b>: the Skybridge's two doors stand one over the other, and the
+        /// second must not be asked about a step the first has already taken.</para>
+        ///
+        /// <para>True when a door took her through this tick — so the same tick takes no stair.</para>
         /// </summary>
-        private void WalkThroughAnOpenCabinDoor()
+        private bool WalkThroughAnOpenCabinDoor(bool floorKnown)
         {
-            ICabinThreshold doorway = LiveCabinThreshold();
-            if (doorway != null) doorway.TryWalkThrough(_deckLocal);
+            ICabinThreshold[] doorways = LiveCabinThresholds();
+            for (int i = 0; i < doorways.Length; i++)
+            {
+                ICabinThreshold doorway = doorways[i];
+                bool crossed = floorKnown && doorway is ICabinThresholdAtHeight atHeight
+                    ? atHeight.TryWalkThroughAt(new Vector3(_deckLocal.x, _deckLocal.y, _deckHeight))
+                    : doorway.TryWalkThrough(_deckLocal);
+                if (crossed) return true;
+            }
+            return false;
         }
 
         /// <summary>
-        /// This hull's doorway, or null — the same live-read discipline as <see cref="LiveHull"/> and
+        /// This hull's doorways, or none — the same live-read discipline as <see cref="LiveHull"/> and
         /// <see cref="LiveDeck"/>, for the same reason: the dev hull picker changes the boat under the
         /// player's feet, and a doorway captured at boarding would be the previous hull's.
         ///
@@ -745,22 +1187,31 @@ namespace HiddenHarbours.Player
         /// <c>SetHull</c> (owner, 2026-09-17), and the skinner publishes a new presenter in the same
         /// call. Keyed on the root alone, a dory that answered "none" would go on answering it for the
         /// cape islander swapped on under the player's feet.</para>
+        ///
+        /// <para><b>ALL of them, in one search</b> (2026-09-19): a def may name additional doors, and the
+        /// installer builds every one as its own threshold. One dead door re-searches the lot — a rebuild
+        /// tears them all down together (<c>DestroyImmediate</c>), so a half-live cache is a stale one.</para>
         /// </summary>
-        private ICabinThreshold LiveCabinThreshold()
+        private ICabinThreshold[] LiveCabinThresholds()
         {
-            if (_doorway is UnityEngine.Object live && live != null) return _doorway;
-            if (_doorway != null) { _doorway = null; _doorwaySearchedUnder = null; }
-
             IBoatHullPresenter skin = PublishedSkin();
-            if (ReferenceEquals(_doorwaySearchedUnder, _boatRoot) && ReferenceEquals(_doorwaySearchedSkin, skin))
-                return null;
+            if (ReferenceEquals(_doorwaySearchedUnder, _boatRoot) && ReferenceEquals(_doorwaySearchedSkin, skin)
+                && AllLive(_doorways))
+                return _doorways;
 
             _doorwaySearchedUnder = _boatRoot;
             _doorwaySearchedSkin = skin;
-            _doorway = _boatRoot != null
-                ? _boatRoot.GetComponentInChildren<ICabinThreshold>(includeInactive: true)
-                : null;
-            return _doorway is UnityEngine.Object found && found != null ? _doorway : null;
+            _doorways = _boatRoot != null
+                ? _boatRoot.GetComponentsInChildren<ICabinThreshold>(includeInactive: true)
+                : System.Array.Empty<ICabinThreshold>();
+            return _doorways;
+        }
+
+        private static bool AllLive(ICabinThreshold[] doorways)
+        {
+            for (int i = 0; i < doorways.Length; i++)
+                if (!(doorways[i] is UnityEngine.Object live && live != null)) return false;
+            return true;
         }
 
         /// <summary>The presenter the skinner has published on the bound root, or null — the host's
@@ -771,6 +1222,198 @@ namespace HiddenHarbours.Player
             if (_boatRoot == null) return null;
             var host = _boatRoot.GetComponent<BoatHullPresenterHost>();
             return host != null ? host.Presenter : null;
+        }
+
+        /// <summary>
+        /// This hull's cabin floors, or null — <see cref="LiveCabinThresholds"/>' discipline exactly: one
+        /// search per root-and-skin (rule 7; most of the fleet has no cabin and must not pay a hierarchy
+        /// walk a tick to say so), a fresh one on a new skin (a swap builds a new cabin under her feet),
+        /// and liveness through <c>UnityEngine.Object</c>'s own <c>==</c>, because an interface reference
+        /// to a torn-down cabin is not null.
+        /// </summary>
+        private ICabinFloors LiveCabinFloors()
+        {
+            IBoatHullPresenter skin = PublishedSkin();
+            if (_floorsSearched && ReferenceEquals(_floorsSearchedUnder, _boatRoot)
+                && ReferenceEquals(_floorsSearchedSkin, skin)
+                && (_floors == null || (_floors is UnityEngine.Object live && live != null)))
+                return _floors;
+
+            _floorsSearched = true;
+            _floorsSearchedUnder = _boatRoot;
+            _floorsSearchedSkin = skin;
+            _floors = _boatRoot != null ? _boatRoot.GetComponentInChildren<ICabinFloors>(includeInactive: true) : null;
+            return _floors;
+        }
+
+        /// <summary>How far apart two deck areas may stand and still be ONE floor, on this hull: her cabin
+        /// def's own <see cref="BoatInteriorDef.FloorTolerance"/>, the number its routes were placed by.
+        /// False on a hull with no cabin def — most of the fleet — whose seats are seeded exactly as they
+        /// always were.</summary>
+        private bool TryCabinFloorTolerance(out float toleranceMetres)
+        {
+            ICabinFloors floors = LiveCabinFloors();
+            BoatInteriorDef def = floors != null ? floors.Def : null;
+            toleranceMetres = def != null ? def.FloorTolerance : 0f;
+            return def != null;
+        }
+
+        /// <summary>
+        /// ⭐ <b>The level this walk holds her to, or null for the deck areas</b> (Phase B, 2026-09-19):
+        /// the one she is inside on, when it is usable and carries a route she can take
+        /// (<see cref="CarriesATakeableRoute"/>). Everything else — outside, out on the rail, a cabin
+        /// with no placed route — is walked on the deck exactly as before, which is how this whole change
+        /// stays inert on the cape and the lobster boat and on every def the importer has not yet
+        /// re-placed.
+        /// </summary>
+        private BoatInteriorLevel WalkableLevel(ICabinFloors floors, BoatDeckDef deck)
+        {
+            if (_onWashboard || floors == null || !floors.IsInside) return null;
+            BoatInteriorDef def = floors.Def;
+            if (def == null || def.Levels == null) return null;
+            int here = floors.Level;
+            if (here < 0 || here >= def.Levels.Length) return null;
+            BoatInteriorLevel level = def.Levels[here];
+            if (level == null || !level.IsUsable()) return null;
+            return CarriesATakeableRoute(floors, deck, level.Id) ? level : null;
+        }
+
+        /// <summary>
+        /// ⭐ <b>Has she just stepped onto the end of one of her cabin's routes — and if so, take it.</b>
+        /// A companionway, a stair or a ladder leg is a <see cref="BoatInteriorRoute"/> with a point at
+        /// each end, placed by the importer on the floor each end names; stepping within
+        /// <see cref="BoatInteriorDef.RouteEndReach"/> of an end, at that end's height to within
+        /// <see cref="BoatInteriorDef.FloorTolerance"/>, carries her to the other. Deck to room goes in
+        /// (<see cref="ICabinFloors.TryEnter"/>), room to room changes level
+        /// (<see cref="ICabinFloors.TryGoToLevel"/>), room to deck comes out
+        /// (<see cref="ICabinFloors.TryExit"/>), and deck to deck — the tanker's poop break — only
+        /// moves her. The CABIN makes every transition, and refuses the ones that do not apply.
+        ///
+        /// <para><b>Which end she may start from.</b> Walking a level: an end ON that level. Outside: an
+        /// end on the deck. Inside but walked on the deck areas (a level with no takeable route): none —
+        /// by construction no route there has an end she could be on.</para>
+        ///
+        /// <para><b>One route per arrival.</b> Each route is latched like a doorway: spent on any attempt,
+        /// taken or refused, and re-armed only once she stands clear of both its ends
+        /// (<see cref="RouteRearmReachMultiple"/> × the reach, or off the ends' floors). After every
+        /// transition the latches re-seed from where she now stands, so she arrives ON the far end
+        /// without being carried straight back. One transition a tick.</para>
+        /// </summary>
+        /// <returns>True when she was moved; the caller re-projects her.</returns>
+        private bool TakeACabinRoute(ICabinFloors floors, BoatDeckDef deck, bool walkingALevel)
+        {
+            BoatInteriorDef def = floors != null ? floors.Def : null;
+            BoatInteriorRoute[] routes = def != null ? def.Routes : null;
+            if (routes == null || routes.Length == 0) return false;
+
+            bool inside = floors.IsInside;
+            if (inside && !walkingALevel) return false;
+
+            Vector3 here = new Vector3(_deckLocal.x, _deckLocal.y, _deckHeight);
+            float reach = def.RouteEndReach;
+            float tolerance = def.FloorTolerance;
+
+            if (!ReferenceEquals(_routesOf, def) || _routeArmed.Length != routes.Length)
+            {
+                _routesOf = def;
+                _routeArmed = new bool[routes.Length];   // on a new def only, never per tick (rule 7)
+                _routesSeeded = false;
+            }
+            if (!_routesSeeded)
+            {
+                for (int i = 0; i < routes.Length; i++)
+                    _routeArmed[i] = routes[i] != null
+                                     && !IsOnRouteEnd(here, routes[i].FromPoint, reach, tolerance)
+                                     && !IsOnRouteEnd(here, routes[i].ToPoint, reach, tolerance);
+                _routesSeeded = true;
+            }
+
+            for (int i = 0; i < routes.Length; i++)
+            {
+                BoatInteriorRoute r = routes[i];
+                if (r == null || !r.Placed) continue;
+                if (!_routeArmed[i])
+                {
+                    _routeArmed[i] = IsClearOfRouteEnd(here, r.FromPoint, reach, tolerance)
+                                     && IsClearOfRouteEnd(here, r.ToPoint, reach, tolerance);
+                    continue;
+                }
+
+                bool fromHere = IsOnRouteEnd(here, r.FromPoint, reach, tolerance);
+                if (!fromHere && !IsOnRouteEnd(here, r.ToPoint, reach, tolerance)) continue;
+
+                RouteEnd near = ClassifyRouteEnd(floors, deck, fromHere ? r.FromLevel : r.ToLevel,
+                                                 fromHere ? r.FromPoint : r.ToPoint, out int nearLevel);
+                if (inside ? near != RouteEnd.Room || nearLevel != floors.Level : near != RouteEnd.Deck) continue;
+
+                Vector3 farPoint = fromHere ? r.ToPoint : r.FromPoint;
+                RouteEnd far = ClassifyRouteEnd(floors, deck, fromHere ? r.ToLevel : r.FromLevel, farPoint,
+                                                out int farLevel);
+                if (far == RouteEnd.None) continue;
+
+                _routeArmed[i] = false;   // spent on the attempt, taken or refused
+                if (far == RouteEnd.Room)
+                {
+                    bool moved;
+                    if (inside) moved = floors.TryGoToLevel(farLevel);
+                    else
+                    {
+                        floors.EnsureCells();   // the room's picture before she arrives in it, as the door does
+                        moved = floors.TryEnter(farLevel);
+                    }
+                    if (!moved) continue;
+
+                    BoatInteriorLevel arrived = def.Levels[farLevel];
+                    _deckLocal = SeatOnLevel(arrived, new Vector2(farPoint.x, farPoint.y));
+                    _deckHeight = arrived.SoleZMeters;
+                    _deckArea = -1;
+                    _walkedInside = true;
+                }
+                else
+                {
+                    if (inside) floors.TryExit();
+                    _deckLocal = deck.SeatNearest(farPoint, ref _deckArea, out _deckHeight);
+                    _walkedInside = false;
+                }
+                _routesSeeded = false;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>Is <paramref name="here"/> on this route end: within the reach in plan, and on its
+        /// floor to within the tolerance?</summary>
+        private static bool IsOnRouteEnd(Vector3 here, Vector3 end, float reach, float tolerance)
+        {
+            float dx = here.x - end.x, dy = here.y - end.y;
+            return dx * dx + dy * dy <= reach * reach && Mathf.Abs(here.z - end.z) <= tolerance;
+        }
+
+        /// <summary>Has she walked clear of this route end — past <see cref="RouteRearmReachMultiple"/>
+        /// × the reach in plan, or off its floor?</summary>
+        private static bool IsClearOfRouteEnd(Vector3 here, Vector3 end, float reach, float tolerance)
+        {
+            float dx = here.x - end.x, dy = here.y - end.y;
+            float clear = RouteRearmReachMultiple * reach;
+            return dx * dx + dy * dy > clear * clear || Mathf.Abs(here.z - end.z) > tolerance;
+        }
+
+        /// <summary>
+        /// Seat her from a boat-relative WORLD offset onto the level she is inside on, when this walk holds
+        /// her to one (<see cref="WalkableLevel"/>) — the snap and the re-seed on enable, inside. The
+        /// offset is read back at that level's own height, so a snap from a helm lands on the floor the
+        /// helm stands on, not on a deck polygon under it. False, changing nothing, otherwise.
+        /// </summary>
+        private bool SeatOnTheLevelSheIsOn(Vector2 worldRelative, float heading, BoatDeckDef deck)
+        {
+            BoatInteriorLevel level = WalkableLevel(LiveCabinFloors(), deck);
+            if (level == null) return false;
+            _deckLocal = SeatOnLevel(level, DeckAreaMath.WorldToDeck(worldRelative, level.SoleZMeters, heading,
+                                                                      BakeElevationDegrees()));
+            _deckHeight = level.SoleZMeters;
+            _deckArea = -1;
+            _walkedInside = true;
+            return true;
         }
 
         /// <summary>Deck-walking ended (helm taken / stepped ashore / teardown) — the player no longer
@@ -794,6 +1437,10 @@ namespace HiddenHarbours.Player
             Vector2 relative = (Vector2)transform.position - (Vector2)_boatRoot.position;
             float heading = DrawnHeadingDegrees();
             BoatDeckDef deck = LiveDeck();
+            _routesSeeded = false;
+
+            if (SeatOnTheLevelSheIsOn(relative, heading, deck)) return;
+            _walkedInside = false;
 
             if (deck != null && deck.HasWalkableDeck())
             {
@@ -845,6 +1492,41 @@ namespace HiddenHarbours.Player
             {
                 Vector2 local = DeckAreaMath.WorldToDeck(worldRelative, height, heading, elevation);
                 seated = deck.ClampToWalkable(local, ref areaHint, out height, includeWashboards);
+            }
+            heightMeters = height;
+            return seated;
+        }
+
+        /// <summary>
+        /// ⭐ <see cref="SeedDeckLocalPure"/>, held to the FLOOR a spot was named on (Phase B, 2026-09-19) —
+        /// the boarding seat's seeding, shared by the snap that seats her (<see cref="SnapToFloorAtHeight"/>)
+        /// and the vault that ends there (<see cref="TryDeckPointWorldAtHeight"/>), so the two are one
+        /// answer.
+        ///
+        /// <para>The spot is read back at the height it was named at; the floor it means is the deck
+        /// standing nearest that height there (<see cref="BoatDeckDef.TryFloorNearestHeight"/>); and the
+        /// same fixed-point iteration then runs, from the same start, over only the areas on that floor to
+        /// within <paramref name="toleranceMetres"/> (<see cref="BoatDeckDef.ClampToWalkableOnFloor"/>).
+        /// A hull with no deck floor at all takes the unheld seed. Pure, static and allocation-free: the
+        /// vault asks it every tick.</para>
+        /// </summary>
+        public static Vector2 SeedDeckLocalOnFloorPure(Vector2 worldRelative, float heading, float elevation,
+                                                       BoatDeckDef deck, float namedAtHeightMeters,
+                                                       float toleranceMetres, ref int areaHint,
+                                                       out float heightMeters)
+        {
+            Vector2 named = DeckAreaMath.WorldToDeck(worldRelative, namedAtHeightMeters, heading, elevation);
+            if (!deck.TryFloorNearestHeight(named, namedAtHeightMeters, out float floor))
+                return SeedDeckLocalPure(worldRelative, heading, elevation, deck, false, ref areaHint,
+                                         out heightMeters);
+
+            float height = namedAtHeightMeters;
+            Vector2 seated = Vector2.zero;
+            for (int pass = 0; pass < SeedPasses; pass++)
+            {
+                Vector2 local = DeckAreaMath.WorldToDeck(worldRelative, height, heading, elevation);
+                seated = deck.ClampToWalkableOnFloor(local, ref areaHint, out height, named, floor,
+                                                     toleranceMetres);
             }
             heightMeters = height;
             return seated;

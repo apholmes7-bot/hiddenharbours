@@ -700,6 +700,12 @@ namespace HiddenHarbours.App.Editor
             // constant, so the walk verdict moves her with the park. See NineMileCreekTruckPark.
             GameObject buyersTruck = NineMileCreekTruckPark.Place();
 
+            // ⭐ THE MODERN 3500, IN THE BAY BESIDE HIM — the owner's ruling D2 (2026-09-18): "Park her
+            // at Nine Mile Creek beside the Dually." The park's west bay, derived from the same one
+            // constant; the east bay stays the laydown journeys' way through. Places and does NOT
+            // draw, per the moorage law above. See NineMileCreekTruckPark.PlaceModern3500.
+            NineMileCreekTruckPark.PlaceModern3500();
+
             // ⭐ THE LAYDOWN — one of each of the road fleet, stood off the park spur. The owner's ask
             // after the nine baked: the truck park (three 6.7 m bays) cannot hold a 16.43 m trailer, let
             // alone the 21.8 m coupled pair, so the yard that can is its own ground. Places and does NOT

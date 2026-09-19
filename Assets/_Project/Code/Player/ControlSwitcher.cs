@@ -452,6 +452,13 @@ namespace HiddenHarbours.Player
                    ? new Vector2(station.x, station.y)
                    : DeckAreaMath.WorldToDeck(_helmLocalOffset, 0f, 0f, HullBakeElevationDegrees);
 
+        /// <summary>The fallback helm offset exactly as serialized — bow north, drawn metres, read-only.
+        /// What <see cref="HelmDeckOffset"/> un-projects for a hull whose rig publishes no station. Exposed
+        /// (Phase B, 2026-09-19, C6) so the guard that walks every cabin hull from where the helm leaves
+        /// her starts from the number the game uses, not a copy of it; both region scenes serialize the
+        /// default (checked 2026-09-19).</summary>
+        public Vector2 HelmLocalOffset => _helmLocalOffset;
+
         /// <summary>
         /// How high above the keel her helm station stands (m) — what lifts the spot up-screen onto a
         /// raised sole, exactly as the deck walk lifts the PLAYER standing there.
@@ -2343,8 +2350,22 @@ namespace HiddenHarbours.Player
         /// while she is still in the zone, the boat's own spot the moment she drifts out of it.</summary>
         private Vector3 VaultEndWorld()
         {
-            if (_moveKind == BoardingMoveKind.Boarding) return DeckPointWorld(BoardBoatRelativeOffset());
+            if (_moveKind == BoardingMoveKind.Boarding) return BoardSeatWorld();
             return TryDisembarkLanding(out Vector3 landing) ? landing : _moveShoreWorld;
+        }
+
+        /// <summary>The boarding seat in world — <see cref="DeckPointWorld"/> held to the floor the seat is
+        /// authored on (Phase B, 2026-09-19), so the vault ends exactly where
+        /// <see cref="SnapPlayerToTheBoardSpot"/> is about to seat her: in the sport fishers' cockpits, not
+        /// on the flybridge over them. Asked of the walk the move bound; falls back exactly as
+        /// <see cref="DeckPointWorld"/> does.</summary>
+        private Vector3 BoardSeatWorld()
+        {
+            Vector2 relative = BoardBoatRelativeOffset();
+            var deck = DeckWalk;
+            if (deck != null && deck.TryDeckPointWorldAtHeight(relative, BoardSpotHeightMeters, out Vector3 world))
+                return world;
+            return DeckPointWorld(relative);
         }
 
         /// <summary>A boat-relative offset as the world point it lands on for this hull. Falls back to the
@@ -2612,20 +2633,45 @@ namespace HiddenHarbours.Player
         /// heading. Heading 0 is bit-identical, so neither scene's serialized value moves.</para>
         /// </summary>
         public Vector2 BoardDeckOffset()
-            => DeckAreaMath.WorldToDeck(_boardLocalOffset, 0f, 0f, HullBakeElevationDegrees);
+            => DeckAreaMath.WorldToDeck(_boardLocalOffset, BoardSpotHeightMeters, 0f, HullBakeElevationDegrees);
+
+        /// <summary>The boarding offset exactly as serialized — bow north, drawn metres, read-only. What
+        /// <see cref="BoardDeckOffset"/> un-projects. Exposed (Phase B, 2026-09-19, C6) for the same guard
+        /// as <see cref="HelmLocalOffset"/>: it starts her where boarding lands her, from the game's own
+        /// number; both region scenes serialize the default (checked 2026-09-19).</summary>
+        public Vector2 BoardLocalOffset => _boardLocalOffset;
+
+        /// <summary>The height the boarding seat is authored at (m above the keel): none. The tuned
+        /// offset is a screen measurement of the deck she steps down onto from the wharf, and 0 is the
+        /// height it is un-projected and re-projected at — which is also what tells the deck walk WHICH
+        /// floor it names on a hull that stacks several over that spot (Phase B, 2026-09-19): the one
+        /// standing nearest this height, the lowest. Public (C6) so the reachability guard names the
+        /// same floor.</summary>
+        public const float BoardSpotHeightMeters = 0f;
 
         /// <summary>The boarding seat as a boat-relative WORLD (screen-axis) offset — the frame the deck
         /// walk and the vault's end point both speak.</summary>
         private Vector2 BoardBoatRelativeOffset()
-            => DeckAreaMath.DeckToWorld(BoardDeckOffset(), 0f,
+            => DeckAreaMath.DeckToWorld(BoardDeckOffset(), BoardSpotHeightMeters,
                                         DeckWalkController.DrawnHeadingDegreesOf(Boat),
                                         HullBakeElevationDegrees);
 
         /// <summary>Seat the player where boarding lands her. ⚠ Deliberately not
         /// <c>SnapPlayerToDeck(_boardLocalOffset)</c>, for the reason
         /// <see cref="SnapPlayerToTheHelm"/> is not: the deck walk takes a boat-relative WORLD offset,
-        /// and this one is authored with her bow north.</summary>
-        private void SnapPlayerToTheBoardSpot() => SnapPlayerToDeck(BoardBoatRelativeOffset());
+        /// and this one is authored with her bow north.
+        ///
+        /// <para>⭐ <b>On the floor the seat names</b> (Phase B, 2026-09-19): through
+        /// <see cref="DeckWalkController.SnapToFloorAtHeight"/>, the same seed the vault's end asks
+        /// (<see cref="BoardSeatWorld"/>). The plain snap took the first area under the seat in plan, and
+        /// on both sport fishers that stood over the cockpit — she boarded onto the roof.</para></summary>
+        private void SnapPlayerToTheBoardSpot()
+        {
+            var deck = DeckWalk;
+            if (Player != null && Boat != null && deck != null)
+                deck.SnapToFloorAtHeight(BoardBoatRelativeOffset(), BoardSpotHeightMeters);
+            else SnapPlayerToDeck(BoardBoatRelativeOffset());
+        }
 
         /// <summary>Seat the player ON the helm station. ⚠ Deliberately not
         /// <c>SnapPlayerToDeck(_helmLocalOffset)</c>, which is what the three call sites read until
@@ -2633,8 +2679,26 @@ namespace HiddenHarbours.Player
         /// the helm offset is authored with her bow north. Handing the raw field to it seated the pilot
         /// 1.3 m down-SCREEN of her origin whichever way she was pointing — off the tiller on every
         /// heading but one, and off the boat entirely on a hull lying athwart. The clamp onto the
-        /// walkable deck then hid how far off it was.</summary>
-        private void SnapPlayerToTheHelm() => SnapPlayerToDeck(HelmBoatRelativeOffset());
+        /// walkable deck then hid how far off it was.
+        ///
+        /// <para>⭐ <b>A measured station is stood on in three dimensions where the snap misses its
+        /// floor</b> (Phase B, 2026-09-19): the screen offset's snap took the first area under the helm in
+        /// plan, which is not the floor the helm stands on for the Convertible's flybridge helm, or the
+        /// Skybridge's in the skylounge (R3). Wherever the snap leaves her on a different floor from the one
+        /// nearest the station's HEIGHT as well as its plan, a cabin room or another deck area,
+        /// <see cref="DeckWalkController.StandOnTheFloorNearest"/> stands her on that floor. Where the snap
+        /// already has her on it, the snap stands (<see cref="DeckWalkController.StandsOnTheDeckAreaNearest"/>),
+        /// because only the snap draws her ON the spot: the dory's station is her thwart, 0.2164 m above her
+        /// sole, and stood on it her pilot was drawn 0.166 m below his seat (<c>DoryAboardPlayTests</c>,
+        /// Phase C run). A hull with no station takes the snap it always took, bit for bit.</para></summary>
+        private void SnapPlayerToTheHelm()
+        {
+            SnapPlayerToDeck(HelmBoatRelativeOffset());
+            var deck = DeckWalk;
+            if (Player != null && Boat != null && deck != null && TryHullHelmStation(out Vector3 station)
+                && !deck.StandsOnTheDeckAreaNearest(station))
+                deck.StandOnTheFloorNearest(station);
+        }
 
         /// <summary>Wire the switcher in one call (tests / editor) and start on foot.</summary>
         public void Configure(PlayerWalkController playerWalk, BoatController boatController, Behaviour boatInput,
