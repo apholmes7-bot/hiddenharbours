@@ -193,6 +193,7 @@ namespace HiddenHarbours.Art
         private static readonly int IdBakeL = Shader.PropertyToID("_BakeL");
         private static readonly int IdTileMetresS = Shader.PropertyToID("_TileMetresS");
         private static readonly int IdTileMetresT = Shader.PropertyToID("_TileMetresT");
+        private static readonly int IdPxDecal = Shader.PropertyToID("_PxDecal");
 
         /// <summary>The name of the generated child carrying a band's quads, so a hierarchy reads as
         /// geology and a test can find one without a magic string of its own.</summary>
@@ -580,7 +581,7 @@ namespace HiddenHarbours.Art
             // ⭐ localOrder 1: INSIDE the sorting group, so a decal composites over the rock it finishes
             // without spending an order of the region's decor band.
             Emit(childName, verts, uvs, tris, strip, null, null, localOrder: 1,
-                 elevationUv, seaPlanUv);
+                 elevationUv, seaPlanUv, decal: true);
         }
 
         private static void Triangulate(int[] tris, int stations, int rows)
@@ -604,7 +605,7 @@ namespace HiddenHarbours.Art
 
         private void Emit(string childName, Vector3[] verts, Vector2[] uvs, int[] tris,
                           Texture2D unlit, Texture2D normal, Texture2D mask, int localOrder,
-                          Vector2[] elevationUv = null, Vector2[] seaPlanUv = null)
+                          Vector2[] elevationUv = null, Vector2[] seaPlanUv = null, bool decal = false)
         {
             var mesh = new Mesh { name = "HH" + childName, hideFlags = HideFlags.HideAndDontSave };
             mesh.SetVertices(verts);
@@ -631,7 +632,7 @@ namespace HiddenHarbours.Art
             renderer.allowOcclusionWhenDynamic = false;
             renderer.sortingOrder = SortingOrder + localOrder;
 
-            PushMaterial(renderer, unlit, normal, mask);
+            PushMaterial(renderer, unlit, normal, mask, decal);
             _generated.Add(go);
             RendererCount++;
         }
@@ -651,8 +652,17 @@ namespace HiddenHarbours.Art
         /// FLAT texel of the wall it sits on — it tracks the sun with the face instead of sitting still
         /// beside it — and this project does not gain a second cliff shader to force-compile, which on a
         /// CI runner with no graphics device is a magenta face nobody would catch.</para>
+        ///
+        /// <para><b>⚠ The px look draws the same decal by a FLAG instead.</b> There a face's
+        /// <c>_Unlit</c> slot holds the px kit's <c>_index</c> map (palette rows and bands, not colours),
+        /// and a shader cannot tell that from a strip's pre-lit colours by looking at them. So a decal
+        /// renderer carries <c>_PxDecal</c> = 1 and the px branch draws its strip exactly as the rig
+        /// baked it. Said by the caller, not guessed from a missing normal, because a face band whose
+        /// normal and mask failed to load would otherwise be drawn as raw index values. The v10 branch
+        /// never reads the flag.</para>
         /// </summary>
-        private void PushMaterial(MeshRenderer renderer, Texture2D unlit, Texture2D normal, Texture2D mask)
+        private void PushMaterial(MeshRenderer renderer, Texture2D unlit, Texture2D normal, Texture2D mask,
+                                  bool decal)
         {
             if (renderer == null) return;
             _mpb ??= new MaterialPropertyBlock();
@@ -664,6 +674,7 @@ namespace HiddenHarbours.Art
             if (unlit != null) _mpb.SetTexture(IdUnlit, unlit);
             if (normal != null) _mpb.SetTexture(IdNormal, normal);
             if (mask != null) _mpb.SetTexture(IdMask, mask);
+            _mpb.SetFloat(IdPxDecal, decal ? 1f : 0f);
             _mpb.SetFloat(IdWallAzimuth, _wallAzimuth);
             _mpb.SetFloat(IdBatter, _batter);
             _mpb.SetVector(IdBakeL, new Vector4(_bakeLight.x, _bakeLight.y, _bakeLight.z, 0f));

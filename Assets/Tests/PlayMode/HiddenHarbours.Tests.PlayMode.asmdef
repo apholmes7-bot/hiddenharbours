@@ -17,6 +17,7 @@
         "HiddenHarbours.World",
         "HiddenHarbours.Environment",
         "HiddenHarbours.Art",
+        "HiddenHarbours.Tests.Support",
         "Unity.InputSystem"
     ],
     "includePlatforms": [],

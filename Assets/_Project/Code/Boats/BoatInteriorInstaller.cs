@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using HiddenHarbours.Core;
 
@@ -26,7 +27,7 @@ namespace HiddenHarbours.Boats
     /// <see cref="Rebuild"/> takes the old cabin down and builds the one the new hull's data
     /// describes.</para>
     ///
-    /// <para><b>⭐ WHAT IT BUILDS, AND WHY THE SHAPE.</b> Two children of the boat ROOT, each a
+    /// <para><b>⭐ WHAT IT BUILDS, AND WHY THE SHAPE.</b> Children of the boat ROOT, each a
     /// <see cref="HullLocalAnchor"/> so it stays square to the screen while the body under it yaws:</para>
     /// <list type="bullet">
     ///   <item><b>the room</b> — at the hull's own pivot (rig-local zero), carrying the
@@ -37,6 +38,10 @@ namespace HiddenHarbours.Boats
     ///   <item><b>the door</b> — at the def's <see cref="BoatInteriorDoor.ThresholdPoint"/>, projected
     ///   onto the drawn hull, carrying an ordinary <see cref="BoatCabinDoor"/>. It follows her round as
     ///   she turns, so the threshold is where the art puts it at every heading.</item>
+    ///   <item><b>every additional door</b> — one per <see cref="BoatInteriorDef.AdditionalDoors"/>
+    ///   entry (the 90's skylounge slider), each on its own child named
+    ///   <c><see cref="DoorChildName"/>.&lt;id&gt;</c>, built exactly as the main door is and pointed at
+    ///   the same cabin by its index. Only the main threshold draws the baked leaf pair.</item>
     /// </list>
     ///
     /// <para><b>⚠ THE EXTERIOR HALF IS DELIBERATELY NULL, AND THE DOOR IS DELIBERATELY SILENT.</b> The S0
@@ -75,6 +80,12 @@ namespace HiddenHarbours.Boats
 
         /// <summary>The door it built, or null.</summary>
         public BoatCabinDoor Door { get; private set; }
+
+        /// <summary>The ADDITIONAL doors it built, in the def's order — empty on every hull with one way
+        /// in. Read by tests; the walker finds doors by searching the root, as it always has.</summary>
+        public IReadOnlyList<BoatCabinDoor> AdditionalDoors => _additionalDoors;
+
+        private readonly List<BoatCabinDoor> _additionalDoors = new List<BoatCabinDoor>();
 
         /// <summary>The cutaway it built, or null on a hull with no mesh to cut. Read by tests.</summary>
         public BoatCutaway Cutaway { get; private set; }
@@ -181,7 +192,11 @@ namespace HiddenHarbours.Boats
                 cellRowForLevel: null,
                 // The mesh itself, not a flag off it: the cabin re-asks it which levels are rooms
                 // (LevelIndexAtHeight), which a bool could not answer.
-                meshRoom: roomIsGeometry ? visual.HullMesh : null);
+                meshRoom: roomIsGeometry ? visual.HullMesh : null,
+                // …and a SPRITE cabin that still wears a hull mesh reads which levels are rooms off
+                // that mesh's level table until her cells arrive (the Convertible, the Skybridge, the
+                // tanker): the walker taking a companionway must know before the sheets are loaded.
+                levelTable: visual.HasHullMesh() ? visual.HullMesh : null);
 
             // --- the cutaway --------------------------------------------------------------------
             // The owner's 2026-08-26 ruling: below decks, her house is CUT AWAY rather than covered
@@ -196,22 +211,47 @@ namespace HiddenHarbours.Boats
                 Cutaway.Configure(Interior, visual.HullMesh, transform, controller);
             }
 
-            // --- the door -----------------------------------------------------------------------
-            BoatInteriorDoor door = def.Door;
-            if (door == null) return;   // a measured interior with no threshold: nothing to press
+            // --- the doors ----------------------------------------------------------------------
+            // The main threshold, then every ADDITIONAL door the def names (Phase A, C5) — the 90's
+            // skylounge slider onto her upper aft deck, which the def carried and nothing built, so the
+            // skylounge had no way out but the stairs. Each is the same shape as the main door: its
+            // own child, its own anchor at its own sill, an ordinary BoatCabinDoor pointed at the ONE
+            // cabin by its index. A def with no main threshold still builds its extras.
+            if (def.Door != null)
+                Door = BuildDoor(DoorChildName, def, def.Door, -1, exteriorCcw, elevation);
 
-            var doorGo = new GameObject(DoorChildName);
+            BoatInteriorDoor[] extras = def.AdditionalDoors;
+            if (extras == null) return;
+            for (int i = 0; i < extras.Length; i++)
+            {
+                BoatInteriorDoor extra = extras[i];
+                if (extra == null) continue;
+                _additionalDoors.Add(BuildDoor($"{DoorChildName}.{DoorId(extra, i)}", def, extra, i,
+                                               exteriorCcw, elevation));
+            }
+        }
+
+        /// <summary>
+        /// One door: a child of the root anchored at its own sill on the drawn hull, carrying a
+        /// <see cref="BoatCabinDoor"/> that reads its threshold off the def by
+        /// <paramref name="additionalIndex"/> (-1 = the main threshold).
+        /// </summary>
+        private BoatCabinDoor BuildDoor(string childName, BoatInteriorDef def, BoatInteriorDoor door,
+                                        int additionalIndex, bool exteriorCcw, float elevation)
+        {
+            var doorGo = new GameObject(childName);
             doorGo.transform.SetParent(transform, false);
             var doorAnchor = doorGo.AddComponent<HullLocalAnchor>();
             doorAnchor.Configure(transform, door.ThresholdPoint, exteriorCcw, elevation);
 
-            Door = doorGo.AddComponent<BoatCabinDoor>();
-            Door.Configure(Interior, $"fixture.boat.{def.Id}.{DoorId(door)}", -1,
-                           // ⚠ The labels name what the PRESS does, and since 2026-08-28 the press moves
-                           // the LEAF — going below is a walk and has no prompt of its own. "Go below" on
-                           // a press that opens a door would be the words drifting from the action, which
-                           // is the exact failure VerbLabel derives itself to avoid (rule 6).
-                           ReachMetres(door), "Open the door", "Close the door");
+            var built = doorGo.AddComponent<BoatCabinDoor>();
+            built.Configure(Interior, $"fixture.boat.{def.Id}.{DoorId(door, additionalIndex)}", additionalIndex,
+                            // ⚠ The labels name what the PRESS does, and since 2026-08-28 the press moves
+                            // the LEAF — going below is a walk and has no prompt of its own. "Go below" on
+                            // a press that opens a door would be the words drifting from the action, which
+                            // is the exact failure VerbLabel derives itself to avoid (rule 6).
+                            ReachMetres(door), "Open the door", "Close the door");
+            return built;
         }
 
         /// <summary>
@@ -251,11 +291,14 @@ namespace HiddenHarbours.Boats
             if (Interior != null && Interior.IsInside) Interior.TryExit();
 
             if (Door != null) DestroyImmediate(Door.gameObject);
+            for (int i = 0; i < _additionalDoors.Count; i++)
+                if (_additionalDoors[i] != null) DestroyImmediate(_additionalDoors[i].gameObject);
             if (_room != null) DestroyImmediate(_room);
             if (Cutaway != null) DestroyImmediate(Cutaway);
             if (Interior != null) DestroyImmediate(Interior);
 
             Door = null;
+            _additionalDoors.Clear();
             _room = null;
             Cutaway = null;
             Interior = null;
@@ -263,9 +306,12 @@ namespace HiddenHarbours.Boats
 
         /// <summary>The door's own id, or a stable stand-in. Ids must be unique among live registrants,
         /// and two boats of one class are two live registrants — the def id in the prefix is what
-        /// separates them.</summary>
-        private static string DoorId(BoatInteriorDoor door)
-            => string.IsNullOrEmpty(door.Id) ? "entry" : door.Id;
+        /// separates them. An unnamed ADDITIONAL door is named by its index, so it can never take the
+        /// main door's stand-in.</summary>
+        private static string DoorId(BoatInteriorDoor door, int additionalIndex)
+            => !string.IsNullOrEmpty(door.Id) ? door.Id
+             : additionalIndex < 0 ? "entry"
+             : $"additional_{additionalIndex}";
 
         /// <summary>
         /// How close you must stand to work this door. Derived from the leaf the kit measured rather

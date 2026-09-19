@@ -457,5 +457,208 @@ namespace HiddenHarbours.Tests.EditMode
             }
             finally { if (truck != null) Object.DestroyImmediate(truck); }
         }
+
+        // =============================================================================================
+        //  7. THE MODERN 3500 IS BESIDE HIM — the owner's ruling D2 of 2026-09-18
+        // =============================================================================================
+
+        /// <summary>
+        /// ⭐ <b>"Park her at Nine Mile Creek beside the Dually."</b> The owner's ruling D2 (2026-09-18),
+        /// pinned the way section 4 pins him: one drivable
+        /// <see cref="HiddenHarbours.Vehicles.ParkedVehicle"/>, on a published constant that derives from
+        /// the park's own, carrying the def her row in the fleet bake produces.
+        ///
+        /// <para>⚠️ RED until her def is baked — the state section 4 was in before #556. The failure
+        /// names the path and the bake, so red here reads as "not baked", never as a mystery.</para>
+        /// </summary>
+        [Test]
+        public void TheBuilderParksADrivableModern3500InTheBayBesideTheDually()
+        {
+            GameObject truck = NineMileCreekTruckPark.PlaceModern3500();
+            try
+            {
+                Assert.IsNotNull(truck,
+                    "PlaceModern3500() returned nothing — her def is missing from " +
+                    NineMileCreekTruckPark.Modern3500DefPath + ". Run the fleet bake (her row in " +
+                    "VehicleRigFleet) before the region, or her bay builds empty.");
+
+                Assert.AreEqual(NineMileCreekTruckPark.Modern3500Name, truck.name,
+                    "she is not under her own name, so a rebuild cannot tell her from him.");
+
+                Assert.AreEqual((Vector2)NineMileCreekMainland.Modern3500ParkPos,
+                                (Vector2)truck.transform.position,
+                    "she is not on her published constant. She must derive from Modern3500ParkPos " +
+                    "(itself off TruckParkPos) so the owner's walk verdict moves her with the park.");
+
+                var parked = truck.GetComponent<HiddenHarbours.Vehicles.ParkedVehicle>();
+                Assert.IsNotNull(parked, "no ParkedVehicle — she would never skin at play.");
+                Assert.IsNotNull(parked.Vehicle, "no def on her — a truck with no identity.");
+                Assert.AreEqual("vehicle.modern_3500", parked.Vehicle.Id,
+                    "her bay carries something other than the Modern 3500.");
+
+                Assert.IsNotNull(truck.GetComponent<HiddenHarbours.Vehicles.VehicleDoor>(),
+                    "no driver's door — parked scenery, not the drivable truck the ruling asked for.");
+
+                Assert.AreEqual(0f, truck.GetComponent<Rigidbody2D>().gravityScale,
+                    "her serialized gravityScale is not 0 — in a top-down world that is a truck " +
+                    "accelerating south through the village.");
+            }
+            finally { if (truck != null) Object.DestroyImmediate(truck); }
+        }
+
+        /// <summary>
+        /// ⭐ <b>Beside him means clear of him — and of everything else on that ground.</b> Her SOLID box
+        /// (the collider her sidecar publishes and the bake copies onto her mesh def) is carried through
+        /// her placed transform, and so is his. She must stand wholly on the park, clear of his box, a
+        /// pace clear of the post his driver waits at, off every way's carriageway and off every other
+        /// pad.
+        ///
+        /// <para>The clearances are computed HERE, from the boxes and the published routes, so the test
+        /// does not borrow the code it is checking; the only numbers it takes from the plan are the ones
+        /// the plan publishes (the routes, their half-widths, the pads, the pace).</para>
+        ///
+        /// <para>⚠️ RED until her def is baked, for the same reason as the placement test above.</para>
+        /// </summary>
+        [Test]
+        public void SheStandsOnTheParkClearOfTheDuallyHisDriverAndEveryWay()
+        {
+            GameObject his = NineMileCreekTruckPark.Place();
+            GameObject hers = NineMileCreekTruckPark.PlaceModern3500();
+            try
+            {
+                Assert.IsNotNull(his, "no Dually to stand her beside — see section 4.");
+                Assert.IsNotNull(hers, "no Modern 3500 to measure — see the placement test above.");
+
+                Rect herBox = SolidFootprintOf(hers, "the Modern 3500");
+                Rect hisBox = SolidFootprintOf(his, "the Dually");
+
+                // Explicit edges, not Rect.Contains: Contains excludes the max edge.
+                Assert.IsTrue(herBox.xMin >= Park.xMin && herBox.xMax <= Park.xMax &&
+                              herBox.yMin >= Park.yMin && herBox.yMax <= Park.yMax,
+                    $"she overhangs the park: her box {RectText(herBox)} vs the park {RectText(Park)}.");
+
+                Assert.Greater(GapBetween(herBox, hisBox), 0f,
+                    $"her box {RectText(herBox)} touches his {RectText(hisBox)} — beside became into.");
+
+                Vector2 post = NineMileCreekTrips.ParkPost();
+                Assert.GreaterOrEqual(DistanceFromRect(herBox, post), NineMileCreekTrips.PaceMetres,
+                    $"his driver's post {post} is within a pace of her box {RectText(herBox)} — he " +
+                    "would be standing in her.");
+
+                foreach (NineMileCreekRoads.Way way in NineMileCreekRoads.Ways())
+                    Assert.Greater(DistanceFromRectToRoute(herBox, way.Route), way.HalfWidth,
+                        $"her box {RectText(herBox)} reaches onto {way.Name}'s carriageway " +
+                        $"(half-width {way.HalfWidth} m).");
+
+                foreach (NineMileCreekRoads.Pad pad in NineMileCreekRoads.Pads())
+                {
+                    if (pad.Name == NineMileCreekRoads.TruckParkName) continue;   // hers to stand on
+                    Assert.Greater(GapBetween(herBox, pad.Area), 0f,
+                        $"her box {RectText(herBox)} touches the {pad.Name} pad {RectText(pad.Area)}.");
+                }
+            }
+            finally
+            {
+                if (hers != null) Object.DestroyImmediate(hers);
+                if (his != null) Object.DestroyImmediate(his);
+            }
+        }
+
+        /// <summary>Her placed name is hers — not his, not the otter's, not the outboard man's box — so
+        /// a rebuild or a test that finds a truck by name can never pick up the wrong one.</summary>
+        [Test]
+        public void HerNameIsHerOwn()
+        {
+            string hers = NineMileCreekTruckPark.Modern3500Name;
+            Assert.That(hers, Is.Not.Null.And.Not.Empty, "she has no name to be found by.");
+            Assert.That(hers, Is.Not.EqualTo(NineMileCreekTruckPark.TruckName),
+                "she and the Dually share a name — a lookup by name would find whichever came first.");
+            Assert.That(hers, Is.Not.EqualTo(NineMileCreekOtterLanding.OtterName),
+                "she and the otter share a name.");
+            Assert.That(hers, Is.Not.EqualTo(NineMileCreekTrips.OutboardTruckName),
+                "she and the outboard man's box share a name.");
+        }
+
+        /// <summary>
+        /// The world box around a placed vehicle's SOLID box — the collider its mesh def carries (rig
+        /// metres: +x curb side, +y nose), taken corner by corner through its transform so a rotated
+        /// placement is measured as placed.
+        /// </summary>
+        static Rect SolidFootprintOf(GameObject truck, string who)
+        {
+            var mesh = truck.GetComponent<HiddenHarbours.Vehicles.ParkedVehicle>().Vehicle.Mesh;
+            Assert.IsNotNull(mesh, $"{who}'s def carries no mesh — the bake regressed.");
+            Assert.IsTrue(mesh.HasCollider, $"{who}'s mesh publishes no collider box to measure.");
+
+            Vector3 lo = mesh.ColliderMinMeters, hi = mesh.ColliderMaxMeters;
+            float xMin = float.MaxValue, yMin = float.MaxValue, xMax = float.MinValue, yMax = float.MinValue;
+            foreach (Vector2 corner in new[] { new Vector2(lo.x, lo.y), new Vector2(hi.x, lo.y),
+                                               new Vector2(hi.x, hi.y), new Vector2(lo.x, hi.y) })
+            {
+                Vector3 world = truck.transform.TransformPoint(corner);
+                xMin = Mathf.Min(xMin, world.x); xMax = Mathf.Max(xMax, world.x);
+                yMin = Mathf.Min(yMin, world.y); yMax = Mathf.Max(yMax, world.y);
+            }
+            return Rect.MinMaxRect(xMin, yMin, xMax, yMax);
+        }
+
+        /// <summary>The gap between two boxes: 0 when they touch or overlap.</summary>
+        static float GapBetween(Rect a, Rect b)
+        {
+            float dx = Mathf.Max(a.xMin - b.xMax, 0f, b.xMin - a.xMax);
+            float dy = Mathf.Max(a.yMin - b.yMax, 0f, b.yMin - a.yMax);
+            return Mathf.Sqrt(dx * dx + dy * dy);
+        }
+
+        /// <summary>
+        /// The shortest distance from a box to a route's centre line: 0 when any leg meets the box,
+        /// else the least of every leg-end-to-box and box-corner-to-leg distance — exact for a box and
+        /// a segment that do not meet, since the nearest pair then has a vertex at one end.
+        /// </summary>
+        static float DistanceFromRectToRoute(Rect r, Vector2[] route)
+        {
+            if (route.Length == 1) return DistanceFromRect(r, route[0]);
+
+            var corners = new[] { new Vector2(r.xMin, r.yMin), new Vector2(r.xMax, r.yMin),
+                                  new Vector2(r.xMax, r.yMax), new Vector2(r.xMin, r.yMax) };
+            float best = float.MaxValue;
+            for (int i = 0; i + 1 < route.Length; i++)
+            {
+                Vector2 a = route[i], b = route[i + 1];
+                if (SegmentMeetsRect(a, b, r)) return 0f;
+                best = Mathf.Min(best, DistanceFromRect(r, a), DistanceFromRect(r, b));
+                foreach (Vector2 corner in corners) best = Mathf.Min(best, DistanceFromSegment(corner, a, b));
+            }
+            return best;
+        }
+
+        /// <summary>Whether segment a→b touches the box (a Liang–Barsky clip).</summary>
+        static bool SegmentMeetsRect(Vector2 a, Vector2 b, Rect r)
+        {
+            Vector2 d = b - a;
+            float[] p = { -d.x, d.x, -d.y, d.y };
+            float[] q = { a.x - r.xMin, r.xMax - a.x, a.y - r.yMin, r.yMax - a.y };
+            float enter = 0f, leave = 1f;
+            for (int i = 0; i < 4; i++)
+            {
+                if (p[i] == 0f)
+                {
+                    if (q[i] < 0f) return false;   // parallel to this edge and outside it
+                    continue;
+                }
+                float t = q[i] / p[i];
+                if (p[i] < 0f) { if (t > leave) return false; if (t > enter) enter = t; }
+                else { if (t < enter) return false; if (t < leave) leave = t; }
+            }
+            return true;
+        }
+
+        /// <summary>Distance from a point to segment a→b.</summary>
+        static float DistanceFromSegment(Vector2 p, Vector2 a, Vector2 b)
+        {
+            Vector2 ab = b - a;
+            float t = ab.sqrMagnitude > 0f ? Mathf.Clamp01(Vector2.Dot(p - a, ab) / ab.sqrMagnitude) : 0f;
+            return Vector2.Distance(p, a + ab * t);
+        }
     }
 }

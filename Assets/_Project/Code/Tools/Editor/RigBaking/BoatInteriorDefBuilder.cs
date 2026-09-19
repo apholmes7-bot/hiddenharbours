@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tools.RigBaking
@@ -129,16 +130,19 @@ namespace HiddenHarbours.Tools.RigBaking
             Array.Sort(sidecars, StringComparer.Ordinal);
             log.Append($"  {sidecars.Length} interior sidecar(s) found\n\n");
 
+            int linksRefused = 0;
             foreach (string path in sidecars)
             {
                 string rel = RepoRelative(repo, path);
-                if (BuildOne(repo, path, rel, interiorRigBytes, ledger, catalogue, log)) built++;
+                if (BuildOne(repo, path, rel, interiorRigBytes, ledger, catalogue, log, ref linksRefused)) built++;
                 else refused++;
             }
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             log.Append($"\n  {built} built, {refused} refused.\n");
+            log.Append($"  {linksRefused} route link(s) refused — each is named above with its metres; its " +
+                       "hull still built, and the walk offers no way there.\n");
             return log.ToString();
         }
 
@@ -146,7 +150,8 @@ namespace HiddenHarbours.Tools.RigBaking
 
         static bool BuildOne(string repo, string path, string rel, byte[] interiorRigBytes,
                              Dictionary<string, BoatInteriorS0Entry> ledger,
-                             IReadOnlyList<HullSidecarIdentity> catalogue, StringBuilder log)
+                             IReadOnlyList<HullSidecarIdentity> catalogue, StringBuilder log,
+                             ref int linksRefused)
         {
             string json;
             try { json = File.ReadAllText(path); }
@@ -182,11 +187,17 @@ namespace HiddenHarbours.Tools.RigBaking
 
             string assetPath = $"{InteriorFolder}/{BoatInteriorHullResolver.AssetName(resolved.HullFileStem)}.asset";
             BoatInteriorDef def = Upsert(assetPath, read, resolved.HullFileStem, hullRigRel);
+            List<string> links = LandRoutes(def, resolved.HullFileStem);
+            linksRefused += links.Count;
 
+            int placed = 0;
+            for (int i = 0; i < def.Routes.Length; i++)
+                if (def.Routes[i] != null && def.Routes[i].Placed) placed++;
             log.Append($"  ✓ {rel}\n      → {def.Id}  ({def.Levels.Length} level(s), " +
-                       $"{def.Anchors.Length} anchor(s), {def.Routes.Length} route(s), " +
+                       $"{def.Anchors.Length} anchor(s), {def.Routes.Length} route(s), {placed} placed, " +
                        $"{def.PixelsPerMetre} px/m)\n");
             foreach (string n in read.Notes) log.Append($"      note: {n}\n");
+            foreach (string l in links) log.Append($"      ✗ link refused: {l}\n");
             ReportRigDivergence(repo, read.HullRigStem, hullRigBytes, log);
 
             ReportMerge(repo, resolved.HullFileStem, json, log);
@@ -218,9 +229,31 @@ namespace HiddenHarbours.Tools.RigBaking
             def.Routes = read.Routes.ToArray();
             def.RidesHullRock = read.RidesHullRock;
 
+            // The walk tunables are the owner's (see the def's class doc): written only where unset.
+            if (def.FloorToleranceMetres <= 0f)
+                def.FloorToleranceMetres = BoatInteriorDef.DefaultFloorToleranceMetres;
+            if (def.RouteEndReachMetres <= 0f)
+                def.RouteEndReachMetres = BoatInteriorDef.DefaultRouteEndReachMetres;
+
             if (fresh) AssetDatabase.CreateAsset(def, assetPath);
             else EditorUtility.SetDirty(def);
             return def;
+        }
+
+        /// <summary>
+        /// Land every placed route on the floor it names — an interior level, or an exterior deck area
+        /// of her own deck def (<see cref="BoatInteriorRouteLanding"/>). A link that misses is refused
+        /// LOUDLY, with its metres, and left unplaced; it does not refuse the hull, whose rooms and door
+        /// are sound, so BuildAllCli's exit code is the S0 and reader gates' alone.
+        /// </summary>
+        static List<string> LandRoutes(BoatInteriorDef def, string hullFileStem)
+        {
+            var deck = AssetDatabase.LoadAssetAtPath<BoatDeckDef>(DeckSidecarImporter.DeckAssetPath(hullFileStem));
+            List<string> refused = BoatInteriorRouteLanding.Land(def.Id, def.Routes, def.Levels,
+                                                                 deck != null ? deck.Areas : null,
+                                                                 def.FloorTolerance);
+            EditorUtility.SetDirty(def);
+            return refused;
         }
 
         /// <summary>

@@ -17,6 +17,7 @@
         "HiddenHarbours.Art.Editor",
         "HiddenHarbours.Player",
         "HiddenHarbours.World",
+        "HiddenHarbours.Tests.Support",
         "Unity.InputSystem"
     ],
     "includePlatforms": [

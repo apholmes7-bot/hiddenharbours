@@ -49,6 +49,39 @@ namespace HiddenHarbours.Art.Editor
         public const string BakeRoot = "Assets/_Project/Art/Terrain/Cliffs";
 
         // =====================================================================================
+        //  THE PX SKIN (docs/art/rigs/px-cliff-face-kit/) — a second SKIN on the same field
+        // =====================================================================================
+
+        /// <summary>
+        /// The px cliff face rig — the pixel-language re-skin of the kit above.
+        ///
+        /// <para><b>⭐ A SKIN, NOT A FIELD.</b> Its <c>profile()</c> is bit-identical to the v10 rig's
+        /// (<c>PxCliffFaceKitIntakeTests.TheProfileIsBitIdenticalToTheV10Rig</c>), so baking px moves no
+        /// collider and no traverse rule. What it changes is the pixels of the three wall channels and
+        /// the brow/toe decals, and the wall's <c>_unlit</c> slot carries the palette INDEX instead of a
+        /// colour (see <see cref="IndexChannel"/>).</para>
+        ///
+        /// <para><b>⚠ It does not run alone.</b> It reads <c>globalThis.PxLang</c> at load, so
+        /// <see cref="PxLanguagePath"/> runs FIRST in the same host — the two files concatenated, the
+        /// kit's own order.</para>
+        /// </summary>
+        public const string PxRigScriptPath = "docs/art/rigs/px-cliff-face-kit/bake/pxCliffFaceRig.js";
+
+        /// <summary>The px kit's copy of the pixel language — bands, hex maths and the key light.</summary>
+        public const string PxLanguagePath = "docs/art/rigs/px-cliff-face-kit/bake/pixelLanguage.js";
+
+        /// <summary>The px kit's gameplay sidecar: the relight thresholds the shader's px branch
+        /// ports, read by <c>PxCliffRigBakeTests</c> so a re-drop that moves one fails CI.</summary>
+        public const string PxSidecarPath = "docs/art/rigs/px-cliff-face-kit/pxCliffFaceRig.gameplay.json";
+
+        /// <summary>The JS globals the px pair installs.</summary>
+        public const string PxRigGlobalName = "PxCliffFace", PxLanguageGlobalName = "PxLang";
+
+        /// <summary>The palette LUT as the kit shipped it — the reference the baked
+        /// <see cref="PxPalettePath"/> is held equal to, pixel for pixel.</summary>
+        public const string PxKitPalettePath = "docs/art/rigs/px-cliff-face-kit/CliffPx_palette.png";
+
+        // =====================================================================================
         //  THE VOCABULARY (mirrors cliff.json "axes"; CliffRigBakeTests asserts the two agree)
         // =====================================================================================
 
@@ -91,8 +124,16 @@ namespace HiddenHarbours.Art.Editor
         /// own <c>N·Lbake</c> (<c>HiddenHarboursCliffFace.shader</c>, <c>_BakeL</c>). Feed it the wrong
         /// aspect's key and the division leaves a residue of the wrong bake's shading — a face that is
         /// subtly, uniformly mis-lit, which reads as "the rock looks a bit flat" rather than as an error.
-        /// The shader's PROPERTY DEFAULT is the S row below, which is the standing proof that the rig's
-        /// frame and the shader's tangent frame are the same one and no flip is owed.</para>
+        /// The shader's PROPERTY DEFAULT is the S row below.</para>
+        ///
+        /// <para><b>⚠ A frame mismatch, noted and NOT fixed here (px lane, 09-18).</b> Both kits pack the
+        /// normal's G channel y-UP the face (<c>cliffRig.js</c> :867, <c>pxCliffFaceRig.js</c> :579),
+        /// while these keys are in the rig's y-DOWN frame, and the v10 shader dots them raw. So the v10
+        /// cast-shadow recovery divides by a slightly wrong <c>N·Lbake</c>. It is pre-existing and it is
+        /// not this lane's to change. The px branch does not inherit it: it flips the key into the
+        /// packed frame (<see cref="CliffPxRelightMath.PackedFrame"/>), and on the kit's own sample the
+        /// recovered shadow tier then agrees with the rig's for 98.9% of cells, against 80.9% unflipped
+        /// (<c>PxCliffRigBakeTests</c> holds the property).</para>
         ///
         /// <para><c>CliffRigBakeTests</c> reads <c>CliffRig.ASPECT</c> through V8 and holds these equal,
         /// because a table copied out of a rig by eye is a table that drifts on the next drop.</para>
@@ -144,10 +185,32 @@ namespace HiddenHarbours.Art.Editor
         /// </summary>
         public static readonly string[] LiveChannels = { "_unlit", "_normal", "_mask" };
 
-        /// <summary>Whether a channel imports as sRGB. Albedo is colour; the normal, the mask and the
-        /// displacement profile are DATA and must import linear or every lighting term is gamma-bent.</summary>
+        /// <summary>The v10 colour channel — the wall's first texture slot.</summary>
+        public const string UnlitChannel = "_unlit";
+
+        /// <summary>
+        /// The px kit's palette INDEX channel: R the LUT row, G the band 0..4, B "a rock texel, may take
+        /// a tier step", A coverage.
+        ///
+        /// <para><b>⭐ ROUTE (b): IT RIDES THE <c>_unlit</c> SLOT.</b> The scenes on both coasts reference
+        /// each band's <c>_unlit</c> texture by GUID, and there is no fourth slot. So a px bake MOVES each
+        /// <c>&lt;face&gt;_unlit.png</c> to <c>&lt;face&gt;_index.png</c> with
+        /// <c>AssetDatabase.MoveAsset</c> — which keeps the GUID — before writing the index bytes into it.
+        /// Every serialised reference then resolves to the index with no scene change; a v10 bake moves
+        /// it back. Renaming the band field itself is PR 3.</para>
+        /// </summary>
+        public const string IndexChannel = "_index";
+
+        /// <summary>The px bake's three wall channels — <see cref="LiveChannels"/> with the colour slot
+        /// carrying <see cref="IndexChannel"/>.</summary>
+        public static readonly string[] PxLiveChannels = { IndexChannel, "_normal", "_mask" };
+
+        /// <summary>Whether a channel imports as sRGB. Albedo is colour; the normal, the mask, the
+        /// displacement profile and the px index are DATA and must import linear — the first three or
+        /// every lighting term is gamma-bent, the index or every row and band it holds is a wrong
+        /// palette entry.</summary>
         public static bool IsSrgb(string channelSuffix) =>
-            channelSuffix != "_normal" && channelSuffix != "_mask";
+            channelSuffix != "_normal" && channelSuffix != "_mask" && channelSuffix != IndexChannel;
 
         // =====================================================================================
         //  CANVAS SIZES (cliff.json; CliffRigBakeTests pins the rig's actual output against these)
@@ -222,14 +285,57 @@ namespace HiddenHarbours.Art.Editor
         public const bool ProfileIsAspectIndependent = true;
 
         // =====================================================================================
+        //  THE MATERIAL AND THE PX PALETTE
+        // =====================================================================================
+
+        /// <summary>The one shipped wall material every band and chunk shares through a property
+        /// block. The px bake flips <see cref="PxKeyword"/> on it and hands it the LUT.</summary>
+        public const string MaterialPath = "Assets/_Project/Art/Materials/CliffFace.mat";
+
+        /// <summary>
+        /// The <c>shader_feature_local</c> keyword that selects the shader's px branch.
+        ///
+        /// <para><b>A BAKE-TIME switch, never a runtime one</b> (owner, 09-18: "bake switch"). The bake
+        /// menu sets it and clears it with the pixels it writes, because the <c>_unlit</c> slot holds
+        /// either colour or an index and the branch must match what is on disk. The material ships
+        /// with it OFF.</para>
+        /// </summary>
+        public const string PxKeyword = "_HH_CLIFF_PX";
+
+        /// <summary>
+        /// Where the px palette LUT lives — <b>TRACKED</b>, outside the gitignored
+        /// <see cref="BakeRoot"/>. The material is committed and references it by GUID, so the LUT and
+        /// its meta are committed too: a clone must never hold a material whose palette resolves only
+        /// on the machine that baked it.
+        /// </summary>
+        public const string PxPaletteFolder = "Assets/_Project/Art/Terrain/CliffPx";
+        public const string PxPaletteName = "CliffPx_palette";
+        public const string PxPalettePath = PxPaletteFolder + "/" + PxPaletteName + ".png";
+
+        /// <summary>The LUT: 8 columns (bands 0..4, then 5..7 repeating band 4 to a power of two) ×
+        /// 32 rows (25 used: three rocks × six tiers, then seven accessory palettes; 25..31 alpha 0).</summary>
+        public const int PxPaletteWidth = 8, PxPaletteHeight = 32, PxPaletteBands = 5, PxPaletteRows = 25;
+
+        /// <summary>
+        /// The px rig's ONE key light, in the rig frame, before the batter tips it:
+        /// <c>PxLang.LIGHT.key</c>. The px kit bakes all five aspects at this one key (the v10 kit
+        /// baked each at its own, <see cref="AspectBakeLights"/>), so the shader's px branch divides the
+        /// mask by this key, tipped per batter and flipped into the packed frame.
+        /// <c>PxCliffRigBakeTests</c> holds it equal to the rig's.
+        /// </summary>
+        public static readonly Vector3 PxBakeKey = new Vector3(-0.55f, -0.66f, 0.52f).normalized;
+
+        // =====================================================================================
         //  IMPORT CONTRACT (README §6)
         // =====================================================================================
 
         /// <summary>Faces and profiles tile along the shore, so they wrap in S. Only the faces wrap in T
         /// as well (a face is periodic in both; a profile and a strip are clamped at top and bottom, and
-        /// Unity's importer has one wrap mode per axis).</summary>
+        /// Unity's importer has one wrap mode per axis). The ledges and the px palette clamp both ways
+        /// — a wrapping LUT would bleed band 4 into band 0 at the column edge.</summary>
         public static TextureWrapMode WrapU(CliffAssetKind kind) =>
-            kind == CliffAssetKind.Ledge ? TextureWrapMode.Clamp : TextureWrapMode.Repeat;
+            kind == CliffAssetKind.Ledge || kind == CliffAssetKind.Palette
+                ? TextureWrapMode.Clamp : TextureWrapMode.Repeat;
 
         public static TextureWrapMode WrapV(CliffAssetKind kind) =>
             kind == CliffAssetKind.Face ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
@@ -312,5 +418,8 @@ namespace HiddenHarbours.Art.Editor
         Ledge = 2,
         /// <summary>The plan-displacement map, in metres, that gives the wall its real silhouette.</summary>
         Profile = 3,
+        /// <summary>The px kit's 8 × 32 palette LUT (<see cref="CliffCatalog.PxPalettePath"/>) — colour,
+        /// point-sampled, clamped both ways.</summary>
+        Palette = 4,
     }
 }

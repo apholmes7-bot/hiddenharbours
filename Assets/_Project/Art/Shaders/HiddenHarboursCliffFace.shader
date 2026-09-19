@@ -43,6 +43,29 @@
 // inside it, which is the exact shape HiddenHarboursWater.shader's WaveFieldSample uses. The shipped
 // CliffFace.mat variant is force compiled headless by
 // Assets/Tests/EditMode/Art/CliffShaderCompileGuardTests.cs.
+//
+// THE PX LOOK (keyword _HH_CLIFF_PX; OFF in CliffFace.mat as shipped, ON after Hidden Harbours, Dev,
+// Bake Cliff Kit px). The px cliff kit (docs/art/rigs/px-cliff-face-kit) is not lit by multiplying a
+// colour. It STEPS THE INDEX the texel was cut from and looks the result up in the rock's own palette,
+// so every colour on screen is one a pixel artist put in the ramp: the kit's
+// shaders/relight_palette.glsl, ported in CliffPxRelight below.
+//   The px bake puts the kit's _index channel in the _Unlit slot (R the palette row, G the band 0 to 4,
+//   B the tier shiftable flag, A coverage), so no wall is rebuilt to change look. The live sun moves a
+//   texel ONE band up or down; a cast shadow moves a rock texel one or two TIERS down.
+//   The kit reads that shadow from an engine shadow map this project does not have for a wall, so it
+//   is RECOVERED: the px rig bakes mask.R as N dot L times (1 minus 0.78 times the shadow) at its own
+//   key, and dividing that N dot L back out leaves the shadow. The divide is guarded near zero, where
+//   the mask carries no shadow at all. That key is _PxKey, tipped by the batter and turned into the
+//   frame the normals are packed in (y UP the face, where the rig's key runs y down). It is not
+//   _BakeL, which is the v10 kit's key and stays the v10 path's.
+//   The kit's _AspectShift is 0 here, as its own ASPECT note asks when L is built per wall.
+//   SAMPLES: three textures (index, normal, mask) and one LUT tap, where the kit's glsl reads two and
+//   one, because the shadow comes from the mask instead of a shadow map.
+//   A brow or toe decal is the px rig's own pre lit strip. The wall flags it (_PxDecal) and it is
+//   drawn as baked.
+//   The night stays the overlay's, exactly as for v10: this path reads ONE daylight table, and with
+//   the sun down there is no direct light, which in a palette is one band down everywhere.
+//   Mirrored term for term by Assets/_Project/Art/Editor/CliffPxRelightMath.cs.
 Shader "HiddenHarbours/CliffFace"
 {
     Properties
@@ -69,6 +92,16 @@ Shader "HiddenHarbours/CliffFace"
         // Used ONLY to un divide the baked cast shadow in mask.R. Pushed per sector alongside the
         // face texture; the default is the kit's S aspect key.
         _BakeL ("Bake light in tangent space", Vector) = (-0.6, -0.55, 0.58, 0)
+
+        [Header(Px look. Read only when the px keyword is on)]
+        // The px kit's palette, 8 by 32: the row is the rock and its tier, the column the band. Set on
+        // the MATERIAL by the px bake (CliffBakeMenu.SetLook), never per wall.
+        [NoScaleOffset] _Palette ("Px palette LUT 8 by 32", 2D) = "black" {}
+        // The px rig's key light UNTIPPED, PxLang.LIGHT.key. The shader tips it by _Batter the way the
+        // rig's setSlope does before it bakes, so one number serves every batter.
+        _PxKey ("Px rig key light, untipped", Vector) = (-0.5477, -0.6572, 0.5178, 0)
+        // 1 on a brow or toe decal, pushed per renderer by CliffWallSurface.
+        [HideInInspector] _PxDecal ("Px decal flag", Float) = 0
 
         [Header(Shade. Defaults mirror CliffLightMath and are pinned by test)]
         _SkyFloor ("Sky light at full occlusion", Range(0, 1)) = 0.34
@@ -126,6 +159,9 @@ Shader "HiddenHarbours/CliffFace"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_instancing
+            // The px look (header). A FEATURE keyword: the material says which look it ships, and a
+            // player build keeps only the variant a material uses.
+            #pragma shader_feature_local _ _HH_CLIFF_PX
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
@@ -164,6 +200,7 @@ Shader "HiddenHarbours/CliffFace"
             TEXTURE2D(_Unlit);  SAMPLER(sampler_Unlit);
             TEXTURE2D(_Normal); SAMPLER(sampler_Normal);
             TEXTURE2D(_Mask);   SAMPLER(sampler_Mask);
+            TEXTURE2D(_Palette); SAMPLER(sampler_Palette);   // the px look only
 
             // GLOBALS set by DayNightController (Shader.SetGlobal*), OUTSIDE the per material CBUFFER
             // exactly like _SunDir in the water shader — so an art scene with no day/night controller
@@ -225,6 +262,10 @@ Shader "HiddenHarbours/CliffFace"
                 float  _FoamCollarMetres;
                 float  _FoamCollarBias;
                 float  _SurgeGain;
+                // The px look's two, declared in BOTH variants so the per material buffer has one
+                // layout whichever look the material ships.
+                float4 _PxKey;
+                float  _PxDecal;
             CBUFFER_END
 
             // The shared field's HEIGHT at a plan position, transcribed from the water shader's
@@ -279,6 +320,68 @@ Shader "HiddenHarbours/CliffFace"
                 up = cross(tangent, normalW);
             }
 
+            // ---- THE PX LOOK (see the header) ---------------------------------------------------------
+            // The kit's LIGHTING.thresholds verbatim, and the depth the rig cuts its cast shadow into
+            // mask.R with. Mirrored by CliffPxRelightMath and pinned equal to it by CliffWaterlineTests.
+            #define CLIFF_PX_BAND_UP      0.74
+            #define CLIFF_PX_BAND_DOWN    0.40
+            #define CLIFF_PX_SHADOW_ONE   0.45
+            #define CLIFF_PX_SHADOW_TWO   0.85
+            #define CLIFF_PX_SHADOW_DEPTH 0.78
+            #define CLIFF_PX_SHADOW_GUARD 0.02
+            #define CLIFF_PX_TIERS        6.0
+            #define CLIFF_PX_BANDS        5.0
+            #define CLIFF_PX_LUT_W        8.0
+            #define CLIFF_PX_LUT_H        32.0
+
+            // The px rig's key at this wall's batter, in the frame _Normal is packed in. The rig tips its
+            // key by the slope before it bakes (PxCliffFace.keyFor after setSlope, clamped 30 to 90), and
+            // its key runs y DOWN the face where the normal it packs runs y UP, hence the sign on y.
+            // Twin: CliffPxRelightMath.PackedFrame(CliffPxRelightMath.BakeKeyAt(key, batter)).
+            float3 CliffPxBakeKey()
+            {
+                float3 k  = normalize(_PxKey.xyz);
+                float  th = radians(90.0 - clamp(_Batter, 30.0, 90.0));
+                float  ct = cos(th);
+                float  st = sin(th);
+                return float3(k.x, -(k.y * ct + k.z * st), k.z * ct - k.y * st);
+            }
+
+            // The palette relight on one texel: the kit's relight_palette.glsl with its shadow map
+            // replaced by the RECOVERED shadow. idx is the _index texel, ndl the live N dot L, bakeNdl the
+            // same normal against CliffPxBakeKey, maskR the baked key light with its cast shadow.
+            // Twin: CliffPxRelightMath.RecoverShadow, then CliffPxRelightMath.Relight, then LutUv.
+            float3 CliffPxRelight(float4 idx, float ndl, float bakeNdl, float maskR)
+            {
+                float row  = floor(idx.r * 255.0 + 0.5);   // 0 to 24: the rock and its tier
+                float band = floor(idx.g * 255.0 + 0.5);   // 0 to 4
+                bool  rock = idx.b > 0.5;                  // accessory rows never take a tier step
+
+                // The detail light: ONE band step, never more. The law that keeps it pixel art.
+                if (ndl > CLIFF_PX_BAND_UP) band += 1.0;
+                else if (ndl < CLIFF_PX_BAND_DOWN) band -= 1.0;
+
+                // Cast shadow moves the TIER, and only on the rock rows: lichen does not go the colour
+                // of shadowed rock. The divide is guarded where the bake's own N dot L is near zero,
+                // because there the rig wrote mask.R 0 whatever the shadow was.
+                if (rock)
+                {
+                    float shadow = bakeNdl > CLIFF_PX_SHADOW_GUARD
+                                 ? saturate((1.0 - saturate(maskR / bakeNdl)) / CLIFF_PX_SHADOW_DEPTH)
+                                 : 0.0;
+                    float tier = fmod(row, CLIFF_PX_TIERS);
+                    float rockRow = row - tier;            // 0 sandstone, 6 till, 12 basalt
+                    tier -= shadow > CLIFF_PX_SHADOW_TWO ? 2.0 : (shadow > CLIFF_PX_SHADOW_ONE ? 1.0 : 0.0);
+                    row = rockRow + clamp(tier, 0.0, CLIFF_PX_TIERS - 1.0);
+                }
+
+                band = clamp(band, 0.0, CLIFF_PX_BANDS - 1.0);
+                // v counts DOWN from the top: Unity's v 0 is the BOTTOM of the PNG, whose row 0 is its
+                // top. Read it the glsl's way round and sandstone samples the empty padding rows.
+                float2 lutUv = float2((band + 0.5) / CLIFF_PX_LUT_W, 1.0 - (row + 0.5) / CLIFF_PX_LUT_H);
+                return SAMPLE_TEXTURE2D_LOD(_Palette, sampler_Palette, lutUv, 0).rgb;
+            }
+
             Varyings vert(Attributes IN)
             {
                 Varyings OUT;
@@ -325,6 +428,18 @@ Shader "HiddenHarbours/CliffFace"
                 // the wall the way the rig drew it, instead of flat or black.
                 bool   cycleOn = glen > 1e-4;
                 float3 S = cycleOn ? float3(gdir / glen * horiz, e) : float3(0, 0, 1);
+            #if defined(_HH_CLIFF_PX)
+                // THE PX LOOK (header). The same live sun in the same frame. With the cycle off it falls
+                // back to the px rig's own key, which draws the face the way the rig baked it; with the
+                // sun down there is no direct light, the px twin of the v10 day term below.
+                float3 Lpx = CliffPxBakeKey();
+                float3 L   = cycleOn ? normalize(float3(dot(S, Ts), dot(S, Up), dot(S, Nw))) : Lpx;
+                float  ndl = (cycleOn && e <= 0.0) ? 0.0 : dot(N, L);
+
+                float3 lit = unlit.rgb;   // a decal: the px rig's own pre lit strip, drawn as baked
+                if (_PxDecal < 0.5)
+                    lit = CliffPxRelight(unlit, ndl, dot(N, Lpx), msk.r);
+            #else
                 float3 L = cycleOn
                          ? float3(dot(S, Ts), dot(S, Up), dot(S, Nw))
                          : normalize(_BakeL.xyz);
@@ -353,6 +468,7 @@ Shader "HiddenHarbours/CliffFace"
                 float3 lit = unlit.rgb * (sky * _SkyColour.rgb
                                         + bnc * _BounceColour.rgb
                                         + sun * _SunColour.rgb);
+            #endif
 
                 // ---- THE WATERLINE (owner ask 2026 08 06) --------------------------------------------
                 // Gated THREE times over, and every gate is an exact passthrough: the material's own

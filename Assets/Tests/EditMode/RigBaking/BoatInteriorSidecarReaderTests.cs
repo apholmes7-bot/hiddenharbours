@@ -452,5 +452,117 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.IsTrue(ladder.Exterior);
             Assert.AreEqual(3.08f, ladder.TotalRiseMeters, 1e-3f);
         }
+
+        // ---- routes are placed from what the sidecar says, or left honestly unplaced --------------------
+
+        /// <summary>The fixture's one companionway (house_sole 1.1 → cuddy_sole 0.4), with
+        /// <paramref name="fields"/> added to it.</summary>
+        static string WithStair(string fields, string to = "cuddy_sole") =>
+            Sidecar().Replace("\"total_rise_m\": 0.7 }", "\"total_rise_m\": 0.7, " + fields + " }")
+                     .Replace("\"to\": \"cuddy_sole\"", $"\"to\": \"{to}\"");
+
+        static void AssertPoint(Vector3 expected, Vector3 actual, string what)
+        {
+            Assert.AreEqual(expected.x, actual.x, 1e-4f, what + " x");
+            Assert.AreEqual(expected.y, actual.y, 1e-4f, what + " y");
+            Assert.AreEqual(expected.z, actual.z, 1e-4f, what + " z");
+        }
+
+        [Test]
+        public void ACompanionway_IsPlacedFromItsOpeningItsDirectionAndItsTreads()
+        {
+            // Down going forward: she steps into the hole at its AFT edge (y0 1.9) on the house sole and
+            // descends one run (0.25 + 0.25 + 0.3) forward, onto the cuddy sole, on the opening's centre.
+            BoatInteriorRead read = Read(WithStair(
+                "\"opening\": { \"x0\": -0.4, \"x1\": 0.2, \"y0\": 1.9, \"y1\": 2.4, \"in\": \"house_sole\" }, " +
+                "\"direction\": \"down going forward (+y)\", \"treads\": [ { \"top_z\": 0.87, \"going_m\": 0.25 }, " +
+                "{ \"top_z\": 0.63, \"going_m\": 0.25 }, { \"top_z\": 0.4, \"going_m\": 0.3 } ]"));
+
+            Assert.IsTrue(read.Ok, string.Join(" | ", read.Errors));
+            BoatInteriorRoute stair = read.Routes.Single(r => r.Id == "house_to_cuddy");
+            Assert.IsTrue(stair.Placed, stair.NotPlacedBecause);
+            Assert.IsEmpty(stair.NotPlacedBecause);
+            AssertPoint(new Vector3(-0.1f, 1.9f, 1.1f), stair.FromPoint, "the top, on house_sole");
+            AssertPoint(new Vector3(-0.1f, 2.7f, 0.4f), stair.ToPoint, "the foot, on cuddy_sole");
+        }
+
+        [Test]
+        public void ACompanionwayUpToAnExteriorDeck_TakesItsHeadHeightFromItsStatedRise()
+        {
+            // The 53's shape: up going aft onto bridge_sole, which is not a level of this interior. The
+            // head is the opening's aft edge (y0 0.6); the foot is one run (1.2) forward of it; the head
+            // sits the stated rise (0.7) above the house sole, because nothing else here can say.
+            BoatInteriorRead read = Read(WithStair(
+                "\"opening\": { \"x0\": 0.4, \"x1\": 1.1, \"y0\": 0.6, \"y1\": 1.0, \"in\": \"bridge_sole\" }, " +
+                "\"direction\": \"up going aft (-y)\", \"treads\": [ { \"top_z\": 1.45, \"going_m\": 0.6 }, " +
+                "{ \"top_z\": 1.8, \"going_m\": 0.6 } ]", to: "bridge_sole"));
+
+            Assert.IsTrue(read.Ok, string.Join(" | ", read.Errors));
+            BoatInteriorRoute stair = read.Routes.Single(r => r.Id == "house_to_cuddy");
+            Assert.IsTrue(stair.Placed, stair.NotPlacedBecause);
+            AssertPoint(new Vector3(0.75f, 1.8f, 1.1f), stair.FromPoint, "the foot, on house_sole");
+            AssertPoint(new Vector3(0.75f, 0.6f, 1.8f), stair.ToPoint, "the head, on bridge_sole");
+        }
+
+        [Test]
+        public void ACompanionwayWhoseOpeningIsABulkheadLine_StaysUnplacedAndSaysWhy()
+        {
+            // The cape's and the lobster boat's cuddy companionways: an opening AT a line, no hole.
+            BoatInteriorRead read = Read(WithStair(
+                "\"opening\": { \"x0\": -0.3, \"x1\": 0.3, \"at_y\": 2.5, \"z0\": 0.3, \"z1\": 1.8 }, " +
+                "\"direction\": \"down going forward (+y)\", \"treads\": [ { \"top_z\": 0.75, \"going_m\": 0.3 } ]"));
+
+            Assert.IsTrue(read.Ok, string.Join(" | ", read.Errors));
+            BoatInteriorRoute stair = read.Routes.Single(r => r.Id == "house_to_cuddy");
+            Assert.IsFalse(stair.Placed);
+            StringAssert.Contains("at_y", stair.NotPlacedBecause);
+            Assert.IsTrue(read.Notes.Any(n => n.Contains("house_to_cuddy") && n.Contains("not placed")),
+                          string.Join(" | ", read.Notes));
+        }
+
+        [Test]
+        public void ACompanionwayWhoseDirectionContradictsItself_StaysUnplaced()
+        {
+            BoatInteriorRead read = Read(WithStair(
+                "\"opening\": { \"x0\": -0.4, \"x1\": 0.2, \"y0\": 1.9, \"y1\": 2.4 }, " +
+                "\"direction\": \"down going aft (+y)\", \"treads\": [ { \"top_z\": 0.4, \"going_m\": 0.8 } ]"));
+
+            BoatInteriorRoute stair = read.Routes.Single(r => r.Id == "house_to_cuddy");
+            Assert.IsFalse(stair.Placed);
+            StringAssert.Contains("direction", stair.NotPlacedBecause);
+        }
+
+        [Test]
+        public void ALadderLeg_CarriesItsBaseItsHeightsAndTheTwoFloorsItJoins()
+        {
+            string json = Sidecar(extra:
+                ",\n  \"LADDER\": [ { \"id\": \"flybridge_ladder\", \"kind\": \"vertical_ladder\",\n" +
+                "    \"exterior\": true, \"base\": [1.3, -5.3], \"z0\": 1.78, \"z1\": 4.86, \"face\": \"aft\",\n" +
+                "    \"connects\": [\"mezzanine\", \"bridge_sole\"] } ]");
+            BoatInteriorRead read = Read(json);
+
+            Assert.IsTrue(read.Ok, string.Join(" | ", read.Errors));
+            BoatInteriorRoute ladder = read.Routes.Single(r => r.Id == "flybridge_ladder");
+            Assert.IsTrue(ladder.Placed, ladder.NotPlacedBecause);
+            Assert.AreEqual("mezzanine", ladder.FromLevel);
+            Assert.AreEqual("bridge_sole", ladder.ToLevel);
+            AssertPoint(new Vector3(1.3f, -5.3f, 1.78f), ladder.FromPoint, "the foot");
+            AssertPoint(new Vector3(1.3f, -5.3f, 4.86f), ladder.ToPoint, "the head");
+        }
+
+        [Test]
+        public void ALadderLegWithNoBase_StaysUnplacedAndSaysWhy()
+        {
+            // Four of the kit's legs give no connects, and a leg with no base has nowhere to stand: the
+            // walk must not invent one.
+            string json = Sidecar(extra:
+                ",\n  \"LADDER\": [ { \"id\": \"boat_deck_ladder\", \"kind\": \"vertical_ladder\",\n" +
+                "    \"exterior\": true, \"z0\": 1.78, \"z1\": 4.86, \"connects\": [\"mezzanine\", \"boat_deck\"] } ]");
+            BoatInteriorRead read = Read(json);
+
+            BoatInteriorRoute ladder = read.Routes.Single(r => r.Id == "boat_deck_ladder");
+            Assert.IsFalse(ladder.Placed);
+            StringAssert.Contains("base", ladder.NotPlacedBecause);
+        }
     }
 }
