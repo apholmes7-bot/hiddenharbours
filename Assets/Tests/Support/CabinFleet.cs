@@ -18,11 +18,12 @@ namespace HiddenHarbours.Tests.Support
         public static readonly IReadOnlyDictionary<string, string> BlockedOnArt = new Dictionary<string, string>
         {
             ["Tanker"] =
-                "blocked on ART (fleet report 2026-09-18, Cause 3): the Tanker's door is on an island. Its band " +
-                "is 14.04 m from any deck she can walk; the only route is a ladder the importer turns " +
-                "position-less, and the Tanker has no helm station. A3: the art side owes a walkable way to " +
-                "the crew door and a helm station — an alley that meets the poop, or a door on a deck she " +
-                "can reach.",
+                "blocked on ART (fleet report 2026-09-18, Cause 3): the Tanker's door is on an island. On 09-18 " +
+                "its band was 14.04 m from any deck she could walk; since the Phase C regen (09-19) the only " +
+                "route up to it, her boat_deck_ladder, is refused by name: its to end names 'boat_deck', which " +
+                "is neither a level of her interior nor a deck area of her hull. The Tanker has no helm " +
+                "station. A3: the art side owes a walkable way to the crew door and a helm station — an alley " +
+                "that meets the poop, or a door on a deck she can reach.",
         };
     }
 }
