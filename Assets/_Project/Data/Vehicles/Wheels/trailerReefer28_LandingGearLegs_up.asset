@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: vehicleprop.trailer_reefer28_landing_gear_legs_up
   SourceRigPath: docs/art/rigs/road-fleet-kit/trailers/trailerIsoRig.js
   SourceFaceBuilder: build(TrailerIso.resolve({body:'reefer28'}))
-  Mesh: {fileID: 8671886231017909959}
+  Mesh: {fileID: 2381980389687521165}
   FixedMesh: {fileID: 0}
   Ramps:
   - Colors:
@@ -90,31 +90,31 @@ MonoBehaviour:
     Offset: 0
   - Colors:
     - serializedVersion: 2
-      rgba: 4283715657
+      rgba: 4282004521
     - serializedVersion: 2
-      rgba: 4285228894
+      rgba: 4284438086
     - serializedVersion: 2
-      rgba: 4287070585
+      rgba: 4287728246
     - serializedVersion: 2
-      rgba: 4288847253
+      rgba: 4290360482
     - serializedVersion: 2
-      rgba: 4290492594
+      rgba: 4292336335
     - serializedVersion: 2
-      rgba: 4292203727
+      rgba: 4293061866
     Offset: 0
   - Colors:
     - serializedVersion: 2
-      rgba: 4283650122
+      rgba: 4281873450
     - serializedVersion: 2
-      rgba: 4285163359
+      rgba: 4284306760
     - serializedVersion: 2
-      rgba: 4287005050
+      rgba: 4287596920
     - serializedVersion: 2
-      rgba: 4288781718
+      rgba: 4290229156
     - serializedVersion: 2
-      rgba: 4290492594
+      rgba: 4292336080
     - serializedVersion: 2
-      rgba: 4292203728
+      rgba: 4293127402
     Offset: 0
   - Colors:
     - serializedVersion: 2
@@ -186,6 +186,62 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4283806949
     Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282398246
+    - serializedVersion: 2
+      rgba: 4285818704
+    - serializedVersion: 2
+      rgba: 4289438604
+    - serializedVersion: 2
+      rgba: 4292006079
+    - serializedVersion: 2
+      rgba: 4292995555
+    - serializedVersion: 2
+      rgba: 4293786623
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280885268
+    - serializedVersion: 2
+      rgba: 4282266659
+    - serializedVersion: 2
+      rgba: 4283779893
+    - serializedVersion: 2
+      rgba: 4285688141
+    - serializedVersion: 2
+      rgba: 4287925361
+    - serializedVersion: 2
+      rgba: 4290492578
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284304949
+    - serializedVersion: 2
+      rgba: 4286278734
+    - serializedVersion: 2
+      rgba: 4288319601
+    - serializedVersion: 2
+      rgba: 4289833614
+    - serializedVersion: 2
+      rgba: 4291545267
+    - serializedVersion: 2
+      rgba: 4292599250
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282070052
+    - serializedVersion: 2
+      rgba: 4284109891
+    - serializedVersion: 2
+      rgba: 4287531897
+    - serializedVersion: 2
+      rgba: 4290033577
+    - serializedVersion: 2
+      rgba: 4291746000
+    - serializedVersion: 2
+      rgba: 4292799977
+    Offset: 0
   LightN: {x: -0.42750445, y: 0.73286474, z: 0.5292912}
   Gain: 3.1
   Bias: 2.55
@@ -218,7 +274,7 @@ MonoBehaviour:
   MaxSteerDegrees: 0
   MaxTiltDegrees: 0
   LateralMountsMeters: []
---- !u!43 &8671886231017909959
+--- !u!43 &2381980389687521165
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
