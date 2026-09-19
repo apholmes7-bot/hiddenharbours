@@ -13,6 +13,13 @@ namespace HiddenHarbours.Tools.RigBaking
     {
         public string Name, AssetPath;
         public CliffAssetKind Kind;
+
+        /// <summary>The face channel this PNG is (<c>_unlit</c>, <c>_index</c>, <c>_normal</c>,
+        /// <c>_mask</c>), or empty for a strip, a ledge sheet and a profile — what
+        /// <see cref="CliffBaker.ApplyImportSettings"/> takes. Carried rather than re-derived from the
+        /// file name, because a suffix list that forgets <c>_index</c> imports it as sRGB colour.</summary>
+        public string Channel = "";
+
         public int Width, Height;
         public long PngBytes;
 
@@ -23,6 +30,11 @@ namespace HiddenHarbours.Tools.RigBaking
     public sealed class CliffBakeResult
     {
         public string EngineName;
+
+        /// <summary>True when the faces and decals were the px kit's (<see cref="CliffBaker.BakeAll"/>
+        /// <c>px: true</c>).</summary>
+        public bool Px;
+
         public readonly List<CliffAssetBake> Assets = new List<CliffAssetBake>();
         public double RenderMilliseconds, TotalMilliseconds;
         public long TotalPngBytes;
@@ -54,6 +66,16 @@ namespace HiddenHarbours.Tools.RigBaking
     /// <para>Like every sibling baker this stops at "PNGs on disk"; the import contract is
     /// <see cref="ApplyImportSettings"/>'s (README §6 — Repeat/Point on the faces, linear on the data
     /// channels, bilinear on the profile because it is geometry rather than pixels).</para>
+    ///
+    /// <para><b>⭐ AND IT BAKES A SECOND SKIN OVER THE SAME FIELD: the px kit</b>
+    /// (<c>docs/art/rigs/px-cliff-face-kit/</c>, <c>BakeAll(px: true)</c>). Same files, same GUIDs:
+    /// the colour slot carries the px <c>_index</c> where v10 put <c>_unlit</c> (<see cref="ClaimSlot"/>
+    /// MOVES the asset, so the GUID a scene holds keeps resolving), and <c>_normal</c>, <c>_mask</c>, the
+    /// brow and the toes are the px rig's. Ledges and profiles stay v10's in both looks — the px rig
+    /// draws no ledge and no contact, and its profile is v10's field by contract. Which skin is on disk
+    /// is the material's keyword (<see cref="CliffCatalog.PxKeyword"/>), and
+    /// <see cref="CliffBakeMenu"/> moves the two together. The palette LUT the px branch reads is the
+    /// one TRACKED thing a px bake writes (<see cref="WritePaletteLut"/>).</para>
     /// </summary>
     public static class CliffBaker
     {
@@ -94,30 +116,43 @@ namespace HiddenHarbours.Tools.RigBaking
         /// rendering four times — a face set costs ~830 ms, so this is not a micro-optimisation.</summary>
         const string ResultGlobal = "__hhCliffBake";
         const string G = CliffCatalog.RigGlobalName;
+        const string PG = CliffCatalog.PxRigGlobalName;
+        const string PL = CliffCatalog.PxLanguageGlobalName;
 
         // =====================================================================================
         //  the bake
         // =====================================================================================
 
+        /// <param name="px">Bake the px kit's skin instead of v10's: the px faces (<c>_index</c> in the
+        /// colour slot), brow and toes. Ledges and profiles are v10's either way.</param>
         public static CliffBakeResult BakeAll(string outputFolder = null, string rock = null,
-                                              Action<string, float> progress = null)
+                                              Action<string, float> progress = null, bool px = false)
         {
             outputFolder ??= DefaultOutputFolder;
             rock ??= DefaultRock;
             var total = Stopwatch.StartNew();
 
+            // Before anything renders: a set holding BOTH colour-slot files is one this baker will not
+            // resolve by guessing which of them a scene's GUID means.
+            AssertSlotsUnambiguous(outputFolder, new[] { rock });
+
             using IRigScriptHost host = RigScriptHostFactory.Create();
             InstallRig(host);
+            // The px skin gets an engine of its own: two rigs' top-level declarations in one global
+            // scope are one rename away from a collision, and v10's host still bakes the ledges and
+            // profiles below. A null using is legal and disposes nothing.
+            using IRigScriptHost pxHost = px ? RigScriptHostFactory.Create() : null;
+            if (px) InstallPxRig(pxHost);
 
-            var result = new CliffBakeResult { EngineName = host.EngineName };
+            var result = new CliffBakeResult { EngineName = host.EngineName, Px = px };
             var renderClock = new Stopwatch();
 
             foreach (CliffAssetKind kind in new[] { CliffAssetKind.Face, CliffAssetKind.Strip,
                                                     CliffAssetKind.Ledge, CliffAssetKind.Profile })
                 Directory.CreateDirectory(Path.Combine(RigCatalog.RepoRoot, SubFolder(outputFolder, kind)));
 
-            BakeFaces(host, result, renderClock, outputFolder, rock, progress);
-            BakeStrips(host, result, renderClock, outputFolder, progress);
+            BakeFaces(px ? pxHost : host, px, result, renderClock, outputFolder, rock, progress);
+            BakeStrips(px ? pxHost : host, px ? PG : G, result, renderClock, outputFolder, progress);
             BakeLedges(host, result, renderClock, outputFolder, rock, progress);
             BakeProfiles(host, result, renderClock, outputFolder, rock, progress);
 
@@ -127,44 +162,61 @@ namespace HiddenHarbours.Tools.RigBaking
             return result;
         }
 
-        static void BakeFaces(IRigScriptHost host, CliffBakeResult result, Stopwatch clock,
+        static void BakeFaces(IRigScriptHost host, bool px, CliffBakeResult result, Stopwatch clock,
                               string outputFolder, string rock, Action<string, float> progress)
         {
             int done = 0, todo = CliffCatalog.Aspects.Length * DefaultBatters.Length;
+            string[] channels = px ? CliffCatalog.PxLiveChannels : CliffCatalog.LiveChannels;
 
             foreach (int batter in DefaultBatters)
             {
                 string slope = CliffCatalog.Batters[batter];
                 foreach (string aspect in CliffCatalog.Aspects)
                 {
-                    progress?.Invoke($"face {rock} {aspect} {slope}", (float)done++ / todo);
+                    progress?.Invoke($"face {rock} {aspect} {slope}{(px ? " (px)" : "")}", (float)done++ / todo);
 
                     clock.Start();
-                    host.Execute($"globalThis.{ResultGlobal} = {G}.face({Js(rock)}, {Js(aspect)}, " +
-                                 $"{CliffCatalog.BaseStep}, {{slope: {Js(slope)}}});");
+                    if (px)
+                        // ⚠ ONE script, face then channels: channels() lights with keyFor(), which reads
+                        // the batter face() just set — split them and a later face's batter could win.
+                        // {index: true} is what makes it pack the _index the palette relight reads.
+                        host.Execute($"globalThis.{ResultGlobal} = {PG}.face({Js(rock)}, {Js(aspect)}, " +
+                                     $"{CliffCatalog.BaseStep}, {{slope: {Js(slope)}}}); " +
+                                     $"globalThis.{ResultGlobal}.__ch = " +
+                                     $"{PG}.channels(globalThis.{ResultGlobal}, {{index: true}});");
+                    else
+                        host.Execute($"globalThis.{ResultGlobal} = {G}.face({Js(rock)}, {Js(aspect)}, " +
+                                     $"{CliffCatalog.BaseStep}, {{slope: {Js(slope)}}});");
                     int w = (int)host.EvaluateNumber($"{ResultGlobal}.W");
                     int h = (int)host.EvaluateNumber($"{ResultGlobal}.H");
                     clock.Stop();
 
                     AssertFaceCanvas(rock, aspect, slope, w, h);
 
+                    // The colour slot is this look's file BEFORE its bytes land on it — see ClaimSlot.
+                    ClaimSlot(outputFolder, rock, aspect, batter, px);
+
                     // Three reads off ONE render — the channels are co-registered by construction, and
                     // re-rendering per channel would both cost 3× and risk them drifting apart.
-                    foreach (string channel in CliffCatalog.LiveChannels)
+                    foreach (string channel in channels)
                     {
-                        byte[] rgba = host.EvaluateBytes($"{ResultGlobal}.{ChannelField(channel)}");
+                        byte[] rgba = host.EvaluateBytes(px ? $"{ResultGlobal}.__ch[{Js(channel)}]"
+                                                            : $"{ResultGlobal}.{ChannelField(channel)}");
                         AssertChannel(rock, aspect, slope, channel, w, h, rgba);
 
                         string name = CliffCatalog.FaceName(rock, aspect, batter,
                                                             CliffCatalog.BaseStep, channel);
-                        Write(result, CliffAssetKind.Face, name, outputFolder, rgba, w, h);
+                        Write(result, CliffAssetKind.Face, name, outputFolder, rgba, w, h, channel);
                     }
                     result.FaceCount++;
                 }
             }
         }
 
-        static void BakeStrips(IRigScriptHost host, CliffBakeResult result, Stopwatch clock,
+        /// <param name="rig">The global whose <c>brow()</c>/<c>toe()</c> draw the strips —
+        /// <see cref="G"/> or <see cref="PG"/>. Both rigs take the same calls and hand back one straight-
+        /// alpha image (<c>{W, H, data}</c>) per strip.</param>
+        static void BakeStrips(IRigScriptHost host, string rig, CliffBakeResult result, Stopwatch clock,
                                string outputFolder, Action<string, float> progress)
         {
             foreach (string aspect in CliffCatalog.Aspects)
@@ -172,7 +224,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 progress?.Invoke($"brow/toe {aspect}", 0.6f);
 
                 clock.Start();
-                host.Execute($"globalThis.{ResultGlobal} = {G}.brow({Js(aspect)}, {CliffCatalog.BaseStep});");
+                host.Execute($"globalThis.{ResultGlobal} = {rig}.brow({Js(aspect)}, {CliffCatalog.BaseStep});");
                 byte[] brow = ReadStrip(host, out int bw, out int bh);
                 clock.Stop();
                 AssertStripCanvas($"brow {aspect}", bw, bh, brow);
@@ -187,7 +239,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     clock.Start();
                     string opts = feature == "notch" ? "{}" : $"{{feature: {Js(feature)}}}";
                     host.Execute($"globalThis.{ResultGlobal} = " +
-                                 $"{G}.toe({Js(aspect)}, {CliffCatalog.BaseStep}, {opts});");
+                                 $"{rig}.toe({Js(aspect)}, {CliffCatalog.BaseStep}, {opts});");
                     byte[] toe = ReadStrip(host, out int tw, out int th);
                     clock.Stop();
                     AssertStripCanvas($"toe {aspect} {feature}", tw, th, toe);
@@ -350,6 +402,200 @@ namespace HiddenHarbours.Tools.RigBaking
                 throw new InvalidOperationException($"{G}.SLOPES is missing — the rig changed shape.");
         }
 
+        // =====================================================================================
+        //  the px skin
+        // =====================================================================================
+
+        /// <summary>
+        /// Loads the px kit — <c>pixelLanguage.js</c> and <c>pxCliffFaceRig.js</c> as ONE script, the
+        /// language first, because the rig reads <c>PxLang</c> when it loads and on every render — and
+        /// asserts both globals and every export this baker and its tests call.
+        /// </summary>
+        public static void InstallPxRig(IRigScriptHost host)
+        {
+            string lang = Path.Combine(RigCatalog.RepoRoot, CliffCatalog.PxLanguagePath);
+            string rig = Path.Combine(RigCatalog.RepoRoot, CliffCatalog.PxRigScriptPath);
+            foreach (string path in new[] { lang, rig })
+                if (!File.Exists(path))
+                    throw new FileNotFoundException(
+                        $"Px cliff kit source missing at {path}. The kit is committed under " +
+                        "docs/art/rigs/px-cliff-face-kit/ — if this fired, the branch predates that intake.",
+                        path);
+            host.Execute(File.ReadAllText(lang) + "\n;\n" + File.ReadAllText(rig));
+
+            foreach (string global in new[] { PL, PG })
+                if (!host.EvaluateBool($"typeof {global} === 'object' && {global} !== null"))
+                    throw new InvalidOperationException(
+                        $"the px kit ran but did not install globalThis.{global} — the kit changed shape.");
+
+            foreach (string fn in new[] { "face", "channels", "brow", "toe", "profile", "paletteLUT",
+                                          "keyFor", "setSlope" })
+                if (!host.EvaluateBool($"typeof {PG}.{fn} === 'function'"))
+                    throw new InvalidOperationException(
+                        $"{PG}.{fn}() is missing — this baker calls the px rig's public API directly " +
+                        "(no shim), so a renamed export must fail loudly here.");
+
+            if (!host.EvaluateBool($"typeof {PL}.h2r === 'function'"))
+                throw new InvalidOperationException($"{PL}.h2r() is missing — the palette LUT is decoded with it.");
+
+            foreach (string arr in new[] { "ROCKS", "ASPECTS" })
+                if (!host.EvaluateBool($"Array.isArray({PG}.{arr})"))
+                    throw new InvalidOperationException($"{PG}.{arr} is missing — the px rig changed shape.");
+
+            if (!host.EvaluateBool($"typeof {PG}.SLOPES === 'object' && {PG}.SLOPES !== null"))
+                throw new InvalidOperationException($"{PG}.SLOPES is missing — the px rig changed shape.");
+        }
+
+        /// <summary>A face channel's asset path — where <see cref="Write"/> puts it.</summary>
+        public static string FaceAssetPath(string outputFolder, string rock, string aspect, int batter,
+                                           string channelSuffix) =>
+            $"{SubFolder(outputFolder, CliffAssetKind.Face)}/" +
+            $"{CliffCatalog.FaceName(rock, aspect, batter, CliffCatalog.BaseStep, channelSuffix)}.png";
+
+        /// <summary>
+        /// 🔴 The pre-flight. A face set holding BOTH <c>_unlit</c> and <c>_index</c> is one this baker
+        /// refuses to touch: only one of the two carries the GUID a scene means, and nothing on disk says
+        /// which. Checked for every set of every rock a bake will write, before anything renders, so a
+        /// refusal never leaves a half-baked kit behind. Throws naming every pair.
+        /// </summary>
+        public static void AssertSlotsUnambiguous(string outputFolder, IEnumerable<string> rocks)
+        {
+            var both = new List<string>();
+            foreach (string rock in rocks)
+                foreach (int batter in DefaultBatters)
+                    foreach (string aspect in CliffCatalog.Aspects)
+                    {
+                        string unlit = FaceAssetPath(outputFolder, rock, aspect, batter, CliffCatalog.UnlitChannel);
+                        string index = FaceAssetPath(outputFolder, rock, aspect, batter, CliffCatalog.IndexChannel);
+                        if (OnDisk(unlit) && OnDisk(index)) both.Add($"{unlit}  AND  {index}");
+                    }
+            if (both.Count > 0)
+                throw new InvalidOperationException(
+                    $"[cliff-baker] {both.Count} face set(s) hold BOTH colour-slot files, and a set holds " +
+                    "exactly one — v10's _unlit or the px _index — because the walls reference it by the " +
+                    "GUID in its .meta and only one of the two can be the one they mean. Nothing was " +
+                    "baked. Ask the cliff lane before deleting either:\n  " + string.Join("\n  ", both));
+        }
+
+        /// <summary>
+        /// Makes one face set's colour slot the file this look writes, BEFORE the bytes are written: px
+        /// wants <c>_index</c>, v10 wants <c>_unlit</c>, and whichever of the two is on disk is MOVED
+        /// (<see cref="AssetDatabase.MoveAsset"/>), never deleted and re-created.
+        ///
+        /// <para><b>⭐ Why a move.</b> The walls reference a face by the GUID in its <c>.meta</c>, and
+        /// those GUIDs exist only in the checkout that baked them (the bake is gitignored). A move keeps
+        /// the GUID, so a coast built on the v10 look samples the px pixels with no rebuild and no scene
+        /// change; a fresh file would mint a new GUID and leave every wall pointing at nothing. The
+        /// rename to an honest field name is PR 3's.</para>
+        /// </summary>
+        public static void ClaimSlot(string outputFolder, string rock, string aspect, int batter, bool px)
+        {
+            string want = FaceAssetPath(outputFolder, rock, aspect, batter,
+                                        px ? CliffCatalog.IndexChannel : CliffCatalog.UnlitChannel);
+            string other = FaceAssetPath(outputFolder, rock, aspect, batter,
+                                         px ? CliffCatalog.UnlitChannel : CliffCatalog.IndexChannel);
+            bool haveWant = OnDisk(want), haveOther = OnDisk(other);
+
+            if (haveWant && haveOther)
+                throw new InvalidOperationException(
+                    $"[cliff-baker] both {want} and {other} exist — a face set holds exactly one colour-slot " +
+                    "file. Nothing more was baked.");
+            if (!haveOther) return;
+
+            string err = AssetDatabase.MoveAsset(other, want);
+            if (!string.IsNullOrEmpty(err))
+                throw new InvalidOperationException(
+                    $"[cliff-baker] could not move {other} → {want} (the move is what keeps the walls' " +
+                    $"GUID): {err}");
+        }
+
+        /// <summary>Whether an asset path is a FILE on disk — not whether the AssetDatabase has imported
+        /// it: a bake writes its files before it refreshes, and the pre-flight must see both.</summary>
+        public static bool OnDisk(string assetPath) =>
+            File.Exists(Path.Combine(RigCatalog.RepoRoot, assetPath));
+
+        /// <summary>
+        /// The px palette LUT, TOP row first: <see cref="CliffCatalog.PxPaletteWidth"/> ×
+        /// <see cref="CliffCatalog.PxPaletteHeight"/> RGBA from the rig's own <c>paletteLUT()</c> — rows
+        /// 0..24 its ramps with columns 5..7 repeating band 4, rows 25..31 transparent black.
+        /// <c>PxCliffRigBakeTests</c> holds it equal, pixel for pixel, to the kit's
+        /// <c>CliffPx_palette.png</c>.
+        /// </summary>
+        public static byte[] BakePaletteLut(IRigScriptHost host)
+        {
+            int w = CliffCatalog.PxPaletteWidth, h = CliffCatalog.PxPaletteHeight;
+            int rows = (int)host.EvaluateNumber($"{PG}.paletteLUT().length");
+            if (rows != CliffCatalog.PxPaletteRows)
+                throw new InvalidOperationException(
+                    $"[cliff-baker] {PG}.paletteLUT() has {rows} rows, expected {CliffCatalog.PxPaletteRows} " +
+                    "— the shader addresses the LUT by row, so a row added or lost shifts every rock.");
+
+            host.Execute(
+                $"globalThis.{ResultGlobal} = (function(){{" +
+                $"  var rows = {PG}.paletteLUT(), W = {w}, o = new Uint8Array(W * {h} * 4);" +
+                $"  for (var r = 0; r < rows.length; r++) {{" +
+                $"    var b = rows[r].bands;" +
+                $"    if (b.length !== {CliffCatalog.PxPaletteBands}) throw new Error('LUT row ' + r + ' has ' + b.length + ' bands');" +
+                $"    for (var c = 0; c < W; c++) {{" +
+                $"      var rgb = {PL}.h2r(b[Math.min(c, {CliffCatalog.PxPaletteBands - 1})]), i = (r * W + c) * 4;" +
+                $"      o[i] = rgb[0]; o[i+1] = rgb[1]; o[i+2] = rgb[2]; o[i+3] = 255;" +
+                $"    }}" +
+                $"  }} return o; }})();");
+            byte[] lut = host.EvaluateBytes(ResultGlobal);
+            AssertChannel("-", "palette", "-", "lut", w, h, lut);
+            return lut;
+        }
+
+        /// <summary>
+        /// Writes the LUT to <see cref="CliffCatalog.PxPalettePath"/> — the one TRACKED file a px bake
+        /// produces — only when its pixels differ from what is there, so a re-bake never dirties a
+        /// committed binary. Returns whether it wrote. The caller refreshes and imports it
+        /// (<see cref="ApplyImportSettings"/>, <see cref="CliffAssetKind.Palette"/>).
+        /// </summary>
+        public static bool WritePaletteLut()
+        {
+            int w = CliffCatalog.PxPaletteWidth, h = CliffCatalog.PxPaletteHeight;
+            byte[] lut;
+            using (IRigScriptHost host = RigScriptHostFactory.Create())
+            {
+                InstallPxRig(host);
+                lut = BakePaletteLut(host);
+            }
+
+            string abs = Path.Combine(RigCatalog.RepoRoot, CliffCatalog.PxPalettePath);
+            if (File.Exists(abs) && SamePixels(File.ReadAllBytes(abs), lut, w, h)) return false;
+
+            Directory.CreateDirectory(Path.GetDirectoryName(abs));
+            File.WriteAllBytes(abs, EncodePng(lut, w, h));
+            return true;
+        }
+
+        /// <summary>Whether a PNG decodes to exactly these top-row-first RGBA pixels.</summary>
+        static bool SamePixels(byte[] png, byte[] topFirstRgba, int w, int h)
+        {
+            var tex = new Texture2D(2, 2, TextureFormat.RGBA32, mipChain: false, linear: false);
+            try
+            {
+                if (!tex.LoadImage(png, markNonReadable: false) || tex.width != w || tex.height != h)
+                    return false;
+                Color32[] px = tex.GetPixels32();   // bottom row first
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        Color32 c = px[(h - 1 - y) * w + x];
+                        int i = (y * w + x) * 4;
+                        if (c.r != topFirstRgba[i] || c.g != topFirstRgba[i + 1] ||
+                            c.b != topFirstRgba[i + 2] || c.a != topFirstRgba[i + 3])
+                            return false;
+                    }
+                return true;
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(tex);
+            }
+        }
+
         /// <summary>The rig's field name for a channel: <c>_unlit</c> → <c>unlit</c>, and the pre-lit
         /// albedo (empty suffix) → <c>data</c>.</summary>
         static string ChannelField(string channelSuffix) =>
@@ -426,23 +672,30 @@ namespace HiddenHarbours.Tools.RigBaking
         // =====================================================================================
 
         static void Write(CliffBakeResult result, CliffAssetKind kind, string name,
-                          string outputFolder, byte[] rgba, int w, int h)
+                          string outputFolder, byte[] rgba, int w, int h, string channel = "")
         {
             string assetPath = $"{SubFolder(outputFolder, kind)}/{name}.png";
+            byte[] png = EncodePng(rgba, w, h);
+            File.WriteAllBytes(Path.Combine(RigCatalog.RepoRoot, assetPath), png);
+
+            result.TotalPngBytes += png.Length;
+            result.Assets.Add(new CliffAssetBake
+            {
+                Name = name, AssetPath = assetPath, Kind = kind, Channel = channel ?? "",
+                Width = w, Height = h, PngBytes = png.Length,
+            });
+        }
+
+        /// <summary>Top-row-first RGBA → PNG bytes, flipped once on the way in (see
+        /// <see cref="FlipRows"/>).</summary>
+        static byte[] EncodePng(byte[] rgba, int w, int h)
+        {
             var tex = new Texture2D(w, h, TextureFormat.RGBA32, mipChain: false, linear: false);
             try
             {
                 tex.LoadRawTextureData(FlipRows(rgba, w, h));
                 tex.Apply(false, false);
-                byte[] png = tex.EncodeToPNG();
-                File.WriteAllBytes(Path.Combine(RigCatalog.RepoRoot, assetPath), png);
-
-                result.TotalPngBytes += png.Length;
-                result.Assets.Add(new CliffAssetBake
-                {
-                    Name = name, AssetPath = assetPath, Kind = kind,
-                    Width = w, Height = h, PngBytes = png.Length,
-                });
+                return tex.EncodeToPNG();
             }
             finally
             {
@@ -540,6 +793,15 @@ namespace HiddenHarbours.Tools.RigBaking
             if (importer.textureCompression != TextureImporterCompression.Uncompressed)
             { importer.textureCompression = TextureImporterCompression.Uncompressed; changed = true; }
             if (importer.mipmapEnabled) { importer.mipmapEnabled = false; changed = true; }
+
+            // A face is 384 × 288: scaled to a power of two it is a different metre scale and a
+            // resampled _index, whose rows and bands are integers. And alpha comes from the file as it
+            // stands — the px _index's "no premultiply" law, and what every baked face already imports
+            // with.
+            if (importer.npotScale != TextureImporterNPOTScale.None)
+            { importer.npotScale = TextureImporterNPOTScale.None; changed = true; }
+            if (importer.alphaSource != TextureImporterAlphaSource.FromInput)
+            { importer.alphaSource = TextureImporterAlphaSource.FromInput; changed = true; }
 
             bool alpha = CliffCatalog.AlphaIsTransparency(kind);
             if (importer.alphaIsTransparency != alpha)

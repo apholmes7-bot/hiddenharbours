@@ -2847,6 +2847,14 @@ namespace HiddenHarbours.Core
     /// grounding, the pull-back at speed on open water. Amplitudes, durations, thresholds and the slew;
     /// the mode gate is the charter's, the deck's is a switch.</para>
     ///
+    /// <para><b>BoatLead*</b> / <see cref="SpeedPullBackWhenCarriedAboard"/> (boat feel PR 1, owner
+    /// ruling 2026-09-19 "lead yes, zoom-out yes, intro gets it too, no shake"): how far the camera
+    /// looks ahead of a moving BOAT, how much of the follow's lag it pays back, its cap as a fraction
+    /// of the view, and whether a passenger's deck (the intro) gets the helm's pull-back. Every one
+    /// is 0/off in code, which hands back the scene's own look-ahead; the ruled numbers are the
+    /// asset's. They live here and not on the scenes because the scenes serialize their own
+    /// look-ahead, and St Peters cannot be rebuilt.</para>
+    ///
     /// <para><b>Moments (PR 3, charter §4) — the three moments and the silent dig (#803).</b> Four
     /// published beats (<c>JuiceMomentCue</c>: Landing, Sale, DigStrike, CastEntry) dressed by pooled
     /// presenters: the landing frame's hit-stop (<see cref="LandingHitStopScale"/> for
@@ -2915,8 +2923,8 @@ namespace HiddenHarbours.Core
                  "back exactly as it was before the layer existed.")]
         public bool FeelEnabled;
 
-        [Tooltip("Whether the layer is live ON DECK (the push-in and the shake; the pull-back is the helm's " +
-                 "alone). The juice charter left the deck untouched, so this DEFAULTED off — but the intro " +
+        [Tooltip("Whether the layer is live ON DECK (the push-in and the shake; the pull-back is the helm's, " +
+                 "and a passenger's only by SpeedPullBackWhenCarriedAboard). The juice charter left the deck untouched, so this DEFAULTED off — but the intro " +
                  "fishes from the deck, and on 2026-09-09 the owner played it and ruled 'accept the deck " +
                  "feel', so the shipped GameConfig asset now carries 1. It stays a number and not a rule.")]
         public bool FeelOnDeckEnabled;
@@ -2948,8 +2956,8 @@ namespace HiddenHarbours.Core
         [Tooltip("Shake frequency, cycles per second.")]
         [Min(0f)] public float ImpactShakeHz;
 
-        [Tooltip("Pull-back at speed on open water (the helm), as a fraction of the framing height at full " +
-                 "speed. 0 = no pull-back, and the PixelPerfectCamera is never paused for it.")]
+        [Tooltip("Pull-back at speed on open water (the helm, and a passenger's deck by " +
+                 "SpeedPullBackWhenCarriedAboard), as a fraction of the framing height at full speed. 0 = no pull-back, and the PixelPerfectCamera is never paused for it.")]
         [Range(0f, 0.5f)] public float SpeedPullBackFraction;
 
         [Tooltip("Boat speed (m/s) at or below which there is no pull-back.")]
@@ -2969,6 +2977,28 @@ namespace HiddenHarbours.Core
         [Tooltip("How often the pull-back re-samples the sea state, per second (unscaled time). A slow-tick " +
                  "budget knob (rule 7): the pull-back is slewed over seconds anyway.")]
         [Min(1f)] public float FeelSeaStateRefreshHz;
+
+        [Header("Boat camera (boat feel PR 1) — lead the boat, and the passenger's pull-back")]
+        [Tooltip("Seconds of her travel the camera leads a BOAT by: at the helm, and riding someone else's " +
+                 "deck as a passenger (the intro). 0 = the scene's own look-ahead seconds (CameraFollow, " +
+                 "0.35), as before. Walking, her own deck and a cabin never read it.")]
+        [Min(0f)] public float BoatLeadSeconds;
+
+        [Tooltip("How much of the follow's own lag the boat lead pays back, 0..1. The follow trails a moving " +
+                 "boat by ~0.16 s of her travel (Smooth 6 at 60 fps), and the lead you SEE is the lead minus " +
+                 "that. 1 = the lead on screen is the lead seconds times her speed; 0 = the lag eats it, as " +
+                 "before (under 1 m at every speed).")]
+        [Range(0f, 1f)] public float BoatLeadLagCompensation;
+
+        [Tooltip("Cap on the boat lead, as a fraction of HALF the view's height at the framing's rung, so a " +
+                 "fast boat is never led off the screen and a small rung is not led as far as a big one. " +
+                 "0 = the scene's metres cap (CameraFollow, 2.5 m) at every rung, as before.")]
+        [Range(0f, 1f)] public float BoatLeadMaxViewFraction;
+
+        [Tooltip("Whether the speed pull-back also runs while she RIDES someone else's deck as a passenger " +
+                 "(the intro). Off = open water is the helm's alone, as before. The deck gate still holds: " +
+                 "it needs FeelOnDeckEnabled as well.")]
+        public bool SpeedPullBackWhenCarriedAboard;
 
         [Header("Moments (PR 3) — the three moments and the silent dig")]
         [Tooltip("The one switch for every moment presenter (hit-stop, bursts, count-ups, coin flights). Off = the pre-charter picture; the audio hooks still publish.")]
@@ -3059,6 +3089,13 @@ namespace HiddenHarbours.Core
             SpeedPullBackSeaStateFraction = 0.05f,
             SpeedPullBackSlewSeconds = 2f,
             FeelSeaStateRefreshHz = 4f,
+
+            // Boat camera (boat feel PR 1): every dial OFF in code, so a config that never names them
+            // is the old picture. The owner's values (ruling 2026-09-19) live in the ASSET.
+            BoatLeadSeconds = 0f,
+            BoatLeadLagCompensation = 0f,
+            BoatLeadMaxViewFraction = 0f,
+            SpeedPullBackWhenCarriedAboard = false,
 
             // Moments (PR 3)
             MomentsEnabled = true,

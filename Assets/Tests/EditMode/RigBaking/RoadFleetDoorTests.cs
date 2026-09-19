@@ -36,6 +36,19 @@ namespace HiddenHarbours.Tests.RigBaking
         /// </summary>
         const double HingeEpsilon = 1e-4;
 
+        /// <summary>
+        /// The barn leaves' own bar, in METRES — <b>1e-6</b>, the bar the kit's
+        /// <c>check-barn-rigid.cjs</c> holds on node, written here as a literal and read from nowhere.
+        ///
+        /// <para>⚠️ Not <see cref="HingeEpsilon"/>, and never to be read from the baker: a guard that
+        /// asks the code under test for its bar is a mirror. The baker's 1e-4 is for a FITTING, posed
+        /// about a float32 pin that at |y| ≈ 8 m cannot sit closer than ~2e-7 m to the rig's (the
+        /// 53 ft leaf, swung 255° about it, measures 1.066e-6 m); this bar is for the ART, fitted about
+        /// the published pin in double. The re-cut measures ≤ 1e-15 m at every pose; the rig before
+        /// it, 8.125e-3 m. Nothing lives near it on either side.</para>
+        /// </summary>
+        const double BarnLeafBar = 1e-6;
+
         public sealed class Door
         {
             public string Vehicle, Slot, Probe;
@@ -93,14 +106,34 @@ namespace HiddenHarbours.Tests.RigBaking
             new Door { Vehicle = "classicSemi", Slot = "Hood", Probe = "{hood:1}", Faces = 902,
                        Axis = VehicleHingeAxis.Lateral, PinA = 4.42f, PinB = 0.55f, Sweep = -70f },
 
-            new Door { Vehicle = "trailerReefer28", Slot = "BarnL", Probe = "{barnL:1}", Faces = 27,
+            // The re-cut (rig 2822a7fa…) builds each barn leaf of 72 faces; the rig before it, 27.
+            new Door { Vehicle = "trailerReefer28", Slot = "BarnL", Probe = "{barnL:1}", Faces = 72,
                        Axis = VehicleHingeAxis.Vertical, PinA = -1.19f, PinB = -4.245f, Sweep = -255f },
-            new Door { Vehicle = "trailerReefer28", Slot = "BarnR", Probe = "{barnR:1}", Faces = 27,
+            new Door { Vehicle = "trailerReefer28", Slot = "BarnR", Probe = "{barnR:1}", Faces = 72,
                        Axis = VehicleHingeAxis.Vertical, PinA = 1.19f, PinB = -4.245f, Sweep = 255f },
-            new Door { Vehicle = "trailerReefer53", Slot = "BarnL", Probe = "{barnL:1}", Faces = 27,
+            new Door { Vehicle = "trailerReefer53", Slot = "BarnL", Probe = "{barnL:1}", Faces = 72,
                        Axis = VehicleHingeAxis.Vertical, PinA = -1.19f, PinB = -8.055f, Sweep = -255f },
-            new Door { Vehicle = "trailerReefer53", Slot = "BarnR", Probe = "{barnR:1}", Faces = 27,
+            new Door { Vehicle = "trailerReefer53", Slot = "BarnR", Probe = "{barnR:1}", Faces = 72,
                        Axis = VehicleHingeAxis.Vertical, PinA = 1.19f, PinB = -8.055f, Sweep = 255f },
+        };
+
+        /// <summary>One barn leaf on the pin her sidecar publishes, in DOUBLE — the rig's own
+        /// <c>-S.L/2 + 0.02</c> lands on −4.245 and −8.055 to the last bit, so the fit measures the
+        /// art and not a float32 rounding of the pin.</summary>
+        public sealed class Barn
+        {
+            public string Vehicle, Probe;
+            public int Side;              // −1 the left leaf (sweeps negative), +1 the right
+            public double PinX, PinY;
+            public override string ToString() => $"{Vehicle}.{Probe}";
+        }
+
+        static readonly Barn[] Barns =
+        {
+            new Barn { Vehicle = "trailerReefer28", Probe = "barnL", Side = -1, PinX = -1.19, PinY = -4.245 },
+            new Barn { Vehicle = "trailerReefer28", Probe = "barnR", Side = 1, PinX = 1.19, PinY = -4.245 },
+            new Barn { Vehicle = "trailerReefer53", Probe = "barnL", Side = -1, PinX = -1.19, PinY = -8.055 },
+            new Barn { Vehicle = "trailerReefer53", Probe = "barnR", Side = 1, PinX = 1.19, PinY = -8.055 },
         };
 
         static string Full(string repoRelative) => Path.Combine(RigCatalog.RepoRoot, repoRelative);
@@ -197,6 +230,84 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.That(Mathf.Abs(f.SweepDegrees), Is.GreaterThan(180f),
                     $"'{key}.{slot}' takes the SHORT way round. Both reach the same pose; only one " +
                     "passes through full outboard at 180° the way the art published it.");
+            }
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>A barn leaf is ONE rigid body at every pose it passes through, the still one
+        /// included — the fault #855 held the trailers for, re-measured on the rig.</b>
+        ///
+        /// <para>The leaf test above asks one question at one pose, t = 1, against the baker's
+        /// 1e-4 m: the right question for a fitting, the wrong one for the art. At <c>280f0538</c>
+        /// the rig's <c>artFinish</c> ran over the POSED leaf in world space and lifted 12 of its
+        /// vertices in pure z — 2.19e-3 m at t = 0.25, 8.125e-3 m from t = 0.5 on — so the baker
+        /// refused both reefers, and because one rig draws all four trailers, #855 landed the
+        /// powered trucks and held every trailer back. The re-cut (<c>2822a7fa…</c>) rolls a posed
+        /// part in its build frame and <c>artFinish</c> skips it.</para>
+        ///
+        /// <para>So this walks t through 0, ¼, ½, ¾ and 1, and at each fits EVERY vertex of the
+        /// faces the FULL probe claims — the ones that did not move as well, and at t = 0 all of
+        /// them. A deviation taken over only the vertices that moved can never see a part that
+        /// stays behind (the landing gear's law), and one that never visits the still pose never
+        /// proves its claim is the whole leaf and nothing else. The bar is
+        /// <see cref="BarnLeafBar"/>, the node checker's, owned here.</para>
+        /// </summary>
+        [Test]
+        public void EveryBarnLeafIsRigidAtEveryPoseItPassesThrough_StillPoseIncluded(
+            [ValueSource(nameof(Barns))] Barn b)
+        {
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            double[] ts = { 0, 0.25, 0.5, 0.75, 1 };
+            var rows = new double[ts.Length][];
+
+            using (IRigScriptHost host = Host(b.Vehicle))
+                for (int i = 0; i < ts.Length; i++)
+                    rows[i] = host.EvaluateString(
+                            $"__hingeAt({{{b.Probe}:1}},{{{b.Probe}:{ts[i].ToString("R", inv)}}},'z'," +
+                            $"{b.PinX.ToString("R", inv)},{b.PinY.ToString("R", inv)})")
+                        .Split(',').Select(x => double.Parse(x, inv)).ToArray();
+
+            string walk = string.Join(" · ", ts.Select((t, i) =>
+                $"t {t.ToString(inv)}: {rows[i][1].ToString("0.###e+0", inv)} m"));
+
+            for (int i = 0; i < ts.Length; i++)
+            {
+                double t = ts[i], deg = rows[i][0], worst = rows[i][1];
+                int claimed = (int)rows[i][2], movedClaimed = (int)rows[i][3],
+                    movedOutside = (int)rows[i][4], verts = (int)rows[i][5], still = (int)rows[i][6];
+                string at = $"'{b}' at t = {t.ToString(inv)}";
+
+                Assert.That(claimed, Is.EqualTo(72),
+                    $"{at}: the full probe claims {claimed} faces; the re-cut leaf is 72.");
+                Assert.That(verts, Is.EqualTo(312),
+                    $"{at}: {verts} vertices were fitted; the leaf's 72 faces carry 312 and every one " +
+                    "is fitted, moved or not.");
+                Assert.That(movedOutside, Is.EqualTo(0),
+                    $"{at}: {movedOutside} faces OUTSIDE the leaf moved — the pose reaches past its door.");
+
+                Assert.That(worst, Is.LessThanOrEqualTo(BarnLeafBar),
+                    $"{at}: NOT one rigid leaf about ({b.PinX.ToString(inv)}, {b.PinY.ToString(inv)}) — " +
+                    $"its worst vertex lands {worst.ToString("0.###e+0", inv)} m from where one rotation " +
+                    $"puts it. The walk: {walk}. ⚠️ Do NOT loosen the bar: 8.125e-3 m is the fault that " +
+                    "held the trailers, and it is a quarter of a pixel.");
+
+                Assert.That(Math.Abs(Math.IEEERemainder(deg - b.Side * 255.0 * t, 360.0)),
+                    Is.LessThanOrEqualTo(1e-6),
+                    $"{at}: the leaf stands at {deg.ToString("0.####", inv)}°, not {(b.Side * 255.0 * t).ToString(inv)}° " +
+                    "(mod 360) — the rig turns a barn leaf 255° linearly in t.");
+
+                if (t == 0)
+                {
+                    Assert.That(movedClaimed, Is.EqualTo(0),
+                        $"{at}: the closed leaf is not closed — {movedClaimed} of its faces moved.");
+                    Assert.That(still, Is.EqualTo(verts),
+                        $"{at}: the still pose fitted {still} still vertices of {verts}; every one is " +
+                        "still, and every one must be in the fit.");
+                }
+                else
+                    Assert.That(movedClaimed, Is.EqualTo(claimed),
+                        $"{at}: only {movedClaimed} of the leaf's {claimed} faces moved — part of it " +
+                        "stays behind.");
             }
         }
 
@@ -595,6 +706,47 @@ namespace HiddenHarbours.Tests.RigBaking
                   while (deg < -180) deg += 360;
                   return deg + ',' + worst + ',' + s.length;
                 }}");
+
+            // The same fit over a CLAIM instead of over what this pose moved: the faces the FULL
+            // probe moves, every vertex of them, at any pose — t = 0 included, where all are still.
+            // Returns angleDeg, maxResidualMetres, claimedFaces, claimedMoved, outsideMoved,
+            // vertices, stillVertices.
+            host.Execute(@"
+                function __hingeAt(claim, pose, kind, a, b){
+                  var A = __faces({}), B = __faces(pose), C = __set(claim, null);
+                  var iu = kind === 'z' ? 0 : 1, iv = kind === 'z' ? 1 : 2, iw = kind === 'z' ? 2 : 0;
+                  var inC = {}, movedClaimed = 0, movedOutside = 0;
+                  for (var i = 0; i < C.length; i++) inC[C[i]] = 1;
+                  for (var f = 0; f < A.length; f++) {
+                    var p0 = A[f].v, q0 = B[f].v, d = false;
+                    for (var k0 = 0; k0 < p0.length && !d; k0++)
+                      for (var c0 = 0; c0 < 3; c0++) if (p0[k0][c0] !== q0[k0][c0]) { d = true; break; }
+                    if (d) { if (inC[f]) movedClaimed++; else movedOutside++; }
+                  }
+                  var sn = 0, cs = 0, verts = 0, still = 0;
+                  for (var g = 0; g < C.length; g++) {
+                    var p = A[C[g]].v, q = B[C[g]].v;
+                    for (var k = 0; k < p.length; k++) {
+                      var pu = p[k][iu]-a, pv = p[k][iv]-b, qu = q[k][iu]-a, qv = q[k][iv]-b;
+                      sn += pu*qv - pv*qu; cs += pu*qu + pv*qv; verts++;
+                      if (Math.abs(q[k][0]-p[k][0]) < 1e-12 && Math.abs(q[k][1]-p[k][1]) < 1e-12 &&
+                          Math.abs(q[k][2]-p[k][2]) < 1e-12) still++;
+                    }
+                  }
+                  var ang = Math.atan2(sn, cs), co = Math.cos(ang), si = Math.sin(ang), worst = 0;
+                  for (var g2 = 0; g2 < C.length; g2++) {
+                    var p2 = A[C[g2]].v, q2 = B[C[g2]].v;
+                    for (var k2 = 0; k2 < p2.length; k2++) {
+                      var du = p2[k2][iu]-a, dv = p2[k2][iv]-b;
+                      var eu = (a + du*co - dv*si) - q2[k2][iu];
+                      var ev = (b + du*si + dv*co) - q2[k2][iv];
+                      var ew = p2[k2][iw] - q2[k2][iw];
+                      worst = Math.max(worst, Math.sqrt(eu*eu + ev*ev + ew*ew));
+                    }
+                  }
+                  return [ang * 180 / Math.PI, worst, C.length, movedClaimed, movedOutside,
+                          verts, still].join(',');
+                }");
             return host;
         }
     }

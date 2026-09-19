@@ -52,3 +52,9 @@ Flatbed*_gear_W.png        landing-gear cue    Reefer*_doors_N.png   255° door 
 - **Trailers bring their own tail lights and ICC bar** — exactly what both tractor sidecars promise
   for bobtail frames.
 - Single axle on the pups, tandem on the 53s; duals everywhere; suspension formula in the sidecar.
+- **The barn leaves are rigid.** The roof roll that tucks wall tops under the rolled roof edge is
+  applied where the geometry is BUILT — `part()` rolls a transformed part in its own frame, before
+  the hinge, and `artFinish` skips it — so each leaf is ONE rotation about its pin (±1.19, −L/2+0.02)
+  to 1.2e-15 m at every pose. A leaf keeps the header profile it is trimmed to (top edge 3.920 m at
+  the inner stile, 3.915 m at the hinge stile) shut and open alike. Anything built without a
+  transform still rolls in world space, as before.

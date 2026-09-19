@@ -375,6 +375,11 @@ namespace HiddenHarbours.Boats
             double totalSeconds = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : Time.timeAsDouble;
             float time = (float)totalSeconds;
 
+            // THE TIDE, read once per tick for every rig: the same level the hull's picture is lifted by
+            // (HullTideRide.WaterLevelNow, the level its own ScreenRiseNow reads). Each rig turns it into its
+            // hull's drawn rise; see WakeRig._tideRise.
+            float waterLevel = HullTideRide.WaterLevelNow();
+
             // THE DISPLACED-SEA RIDE (ADR 0023): while the displaced surface is active, every wake element
             // lifts by ShoreFadeMath.DisplacedHeight of the shared swell under ITS OWN world position — the
             // exaggeration + shore band read LIVE from the Core DisplacedSea seam each tick, never a config
@@ -406,7 +411,7 @@ namespace HiddenHarbours.Boats
             for (int r = 0; r < _rigs.Count; r++)
                 _rigs[r].Tick(current, wind, roughness, time, dt, _config, _foamColor, _lineConfig, _lineColor,
                               _grade, _spray, _sprayColor, _trail, _bowWave, _wave, _waveColor, in lift,
-                              in ramp, in palette, in _bubbles, in _bowImpact);
+                              in ramp, in palette, in _bubbles, in _bowImpact, waterLevel);
         }
 
         /// <summary>
@@ -474,6 +479,11 @@ namespace HiddenHarbours.Boats
                 {
                     _rigs[i].Dispose();
                     _rigs.RemoveAt(i);
+                }
+                else
+                {
+                    // A rider added after the rig was built (the skinner wires one on its hull apply).
+                    _rigs[i].ResolveTideRide();
                 }
             }
 
@@ -920,6 +930,15 @@ namespace HiddenHarbours.Boats
             // Resolved lazily (a boat can be skinned after its wake rig was built); the HOST is preferred
             // live each tick because a hull swap (the dev picker, the A/B toggle) replaces the presenter.
             private IBoatHullPresenter _hullFallback;
+            // THE TIDE FRAME (owner ruling 09-18, "tide fix YES"). Her PICTURE rides the tide: BoatWaveMotion
+            // lifts her visual child by her HullTideRide's screen rise, and on a mesh hull the FoamInjector
+            // (the A sheet and the #837 lift) sits on that child and rides with it. Every stream here is laid
+            // from Boat.transform, the DATUM frame, so before this term the whole wake drew the tide's rise
+            // away from her picture (21-30 px screen-up at the intro's ebb). The rider is resolved when the
+            // rig is built and on every rescan (rule 7: never a per-frame GetComponent). A hull with no rider
+            // draws no tide under her picture, so her wake gets none either.
+            private HullTideRide _tideRide;
+            private float _tideRise;            // this tick's drawn rise of the water under her (m, screen-up)
 
             /// <summary>The elevation that means "a plan view": no foreshortening, today's placement. What a
             /// boat with no directional skin reads.</summary>
@@ -1012,6 +1031,17 @@ namespace HiddenHarbours.Boats
                     _bubbleRenderers = BuildBubbleRenderers(_bubbleSys.Capacity, bubbleFilms, sortingLayer,
                                                             bubbleSortingOrder);
                 }
+
+                ResolveTideRide();
+            }
+
+            /// <summary>
+            /// Find this boat's <see cref="HullTideRide"/>, the component whose rise lifts her picture.
+            /// Called when the rig is built and on every rescan, never per frame (rule 7).
+            /// </summary>
+            public void ResolveTideRide()
+            {
+                if (_tideRide == null && Boat != null) _tideRide = Boat.GetComponent<HullTideRide>();
             }
 
             /// <summary>
@@ -1126,7 +1156,7 @@ namespace HiddenHarbours.Boats
                              in WakeTrailConfig trail, in BowWaveConfig bowWave,
                              in WakeWaveConfig wave, Color waveColor, in SeaLift lift,
                              in WakeAgeRamp ramp, in SeaPaletteState palette, in WakeBubbleConfig bubbles,
-                             in BowImpactConfig impact)
+                             in BowImpactConfig impact, float waterLevel)
             {
                 if (Boat == null) return;
 
@@ -1135,6 +1165,14 @@ namespace HiddenHarbours.Boats
                 float speed = Boat.Velocity.magnitude;
                 bool aground = Boat.IsAground;
                 float bakeElev = BakeElevationDegrees();
+
+                // The water's drawn rise under her picture this tick: the WATER's level, not her grounded
+                // waterline, because the foam floats on the water (the two agree whenever she is afloat).
+                // It is added where each stream is DRAWN, never where it is laid: every deposit is born,
+                // advected, drifted and aged in the plan frame exactly as before; only the picture moves.
+                _tideRise = _tideRide != null
+                    ? TidalRide.ScreenRise(waterLevel, _tideRide.BakedWaterlineElevation)
+                    : 0f;
 
                 // --- GRADE the wake by hull SIZE + WEIGHT + SPEED (the owner's brief). Static hull stats come
                 // through the boat's public seam (rule 4); speed is live. The magnitude drives BOTH the plume
@@ -1739,7 +1777,7 @@ namespace HiddenHarbours.Boats
                 float ride = lift.LiftAt(apex);
 
                 var t = _plume.transform;
-                t.position = new Vector3(apex.x, apex.y + ride, 0f);
+                t.position = new Vector3(apex.x, apex.y + ride + _tideRise, 0f);
                 t.localRotation = Quaternion.Euler(0f, 0f, angleDeg);
                 t.localScale = new Vector3(scale, scale, 1f);
                 // The plume IS the moment of churn, continuously — so it draws at the ramp's fresh end:
@@ -1792,7 +1830,7 @@ namespace HiddenHarbours.Boats
                 float ride = lift.LiftAt(impact);
 
                 var t = _sprayRenderer.transform;
-                t.position = new Vector3(impact.x, impact.y + ride, 0f);
+                t.position = new Vector3(impact.x, impact.y + ride + _tideRise, 0f);
                 t.localRotation = Quaternion.Euler(0f, 0f, angleDeg);
                 t.localScale = new Vector3(scale, scale, 1f);
                 // Like the plume, the spray sheet is continuously fresh — the water working against the
@@ -1880,7 +1918,7 @@ namespace HiddenHarbours.Boats
                     float ride = lift.LiftAt(p.Pos);
 
                     var t = sr.transform;
-                    t.position = new Vector3(renderPos.x, renderPos.y + ride, 0f);
+                    t.position = new Vector3(renderPos.x, renderPos.y + ride + _tideRise, 0f);
                     t.localScale = new Vector3(sizeM, sizeM, 1f);
                     // THE AGE RAMP (owner ask 2026-08-27): white only at the churn, then down the sea's own
                     // palette. This is the line the old defect lived on — the tint used to be the same
@@ -1931,7 +1969,7 @@ namespace HiddenHarbours.Boats
                     float ride = lift.LiftAt(p.Pos);
 
                     var t = sr.transform;
-                    t.position = new Vector3(p.Pos.x, p.Pos.y + ride, 0f);
+                    t.position = new Vector3(p.Pos.x, p.Pos.y + ride + _tideRise, 0f);
                     t.localScale = new Vector3(sizeM, sizeM, 1f);
                     // A thrown droplet ages too: bright at the stem, then the sea's blues as it falls back.
                     var col = WakeFoamAgeing.Shade(sprayColor, life, p.Seed, in ramp, in palette);
@@ -1976,7 +2014,7 @@ namespace HiddenHarbours.Boats
                     float ride = lift.LiftAt(b.Pos);
 
                     var t = sr.transform;
-                    t.position = new Vector3(b.Pos.x, b.Pos.y + ride, 0f);
+                    t.position = new Vector3(b.Pos.x, b.Pos.y + ride + _tideRise, 0f);
                     // The film's native diameter is the divisor, so a bubble is always drawn at its own
                     // metres and never magnified past its texels.
                     float s = sizeM / BubbleNativeSize;
@@ -2076,7 +2114,7 @@ namespace HiddenHarbours.Boats
 
                     var t = sr.transform;
                     // ride = the swell passing under the crest; standM = the crest's OWN displaced water.
-                    t.position = new Vector3(renderPos.x, renderPos.y + ride + standM, 0f);
+                    t.position = new Vector3(renderPos.x, renderPos.y + ride + _tideRise + standM, 0f);
                     t.localRotation = Quaternion.Euler(0f, 0f, orientDeg);
                     t.localScale = new Vector3(lengthM / (asWave ? WaveNativeLength : LineNativeLength),
                                                crossM / nativeCross, 1f);
