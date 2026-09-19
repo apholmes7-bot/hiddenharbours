@@ -395,8 +395,10 @@ namespace HiddenHarbours.App
         //  3. CONTROL MODE GATES THE LAYER (charter §3). Ashore and at the helm it is live; on deck only
         //     by the owner's FeelOnDeckEnabled (the intro fishes from the deck — owner ruling
         //     2026-09-06 — so that one is a number, not a rule); in a cabin and at a road wheel never.
-        //     The pull-back is the helm's alone: walking fast is not open water. A gate that closes on
-        //     a live effect lets it decay out rather than cutting it — no pop.
+        //     The pull-back is the helm's, and a PASSENGER's (the intro) only by the owner's
+        //     SpeedPullBackWhenCarriedAboard (boat feel PR 1, ruling 2026-09-19 "intro gets it too"):
+        //     walking fast is not open water, and neither is her own deck. A gate that closes on a
+        //     live effect lets it decay out rather than cutting it — no pop.
 
         private readonly CameraFeel _feel = new CameraFeel();
         private float _framingOrtho;             // the ortho the FRAMING wants this frame (the feel multiplies it)
@@ -441,8 +443,14 @@ namespace HiddenHarbours.App
             }
         }
 
-        /// <summary>Open water = the helm. The deck is gated separately and never pulls back.</summary>
-        private bool OpenWater => FeelIsLive && FeelMode == ControlMode.Aboard;
+        /// <summary>Open water = the helm, or a passenger's deck when the owner's
+        /// <see cref="JuiceSettings.SpeedPullBackWhenCarriedAboard"/> says so (the intro — boat feel PR 1).
+        /// Her own deck never pulls back, and the deck gate (<see cref="FeelIsLive"/>) still holds.</summary>
+        private bool OpenWater
+            => FeelIsLive
+               && (FeelMode == ControlMode.Aboard
+                   || (FeelMode == ControlMode.OnDeck && _carriedAboard
+                       && FeelSettings.SpeedPullBackWhenCarriedAboard));
 
         /// <summary>A catch has landed in her hands: the push-in, by weight class. Public for EditMode tests.</summary>
         public void OnCatchLanded(CatchLanded e)
@@ -646,7 +654,7 @@ namespace HiddenHarbours.App
 
         private void LateUpdate()
         {
-            FollowTarget();
+            FollowTarget(Time.deltaTime);
             TickFrame(Time.timeAsDouble, Time.unscaledDeltaTime, _targetSpeedMps);
         }
 
@@ -1043,24 +1051,80 @@ namespace HiddenHarbours.App
         private int FarthestStep => CameraZoomPolicy.StepForWorldHeight(
             ZoomSettings.FarthestWorldHeightMeters, CurrentPpu(), DesignScreenHeightPx);
 
-        private void FollowTarget()
+        /// <summary>One frame of the follow alone, on an explicit (scaled) delta — what
+        /// <c>LateUpdate</c> runs on <c>Time.deltaTime</c> before <see cref="TickFrame"/>. Public so an
+        /// EditMode fixture can own the clock and measure the lead a moving boat really gets.</summary>
+        public void TickFollow(float dt) => FollowTarget(dt);
+
+        /// <summary>Whether the camera is following a BOAT's way (boat feel PR 1): at the helm, or riding
+        /// someone else's deck as a passenger (the intro). Only then does the boat lead read the owner's
+        /// dials; walking, her own deck and a cabin keep the scene's look-ahead.</summary>
+        public bool BoatLeadIsLive
+            => _modeKnown && !_inCabin
+               && (_mode == ControlMode.Aboard || (_mode == ControlMode.OnDeck && _carriedAboard));
+
+        /// <summary>Half the view's height (m) at the rung the framing sits on — the boat lead's cap is a
+        /// fraction of it. The rung, not the live ortho: the PixelPerfectCamera re-imposes the rung, and a
+        /// cap read off a pull-back or a tween would breathe with it.</summary>
+        private float HalfViewAtRungMeters => 0.5f * WorldUnitsPerRenderedPixel * DesignScreenHeightPx;
+
+        /// <summary>
+        /// Seconds of her travel the follow filter trails a target moving at a steady speed, at a frame
+        /// of <paramref name="dt"/>. <c>Lerp(smooth, goal, α)</c> with α = 1 − e^(−S·dt) settles
+        /// (1 − α)/α frames behind: 0.1585 s at 60 fps and Smooth 6, 0.163 s at 144, 1/6 in the limit.
+        /// Zero for no time or no stiffness. Pure (boat feel PR 1).
+        /// </summary>
+        public static float FollowLagSeconds(float smooth, float dt)
+        {
+            if (smooth <= 0f || dt <= 0f) return 0f;
+            float keep = Mathf.Exp(-smooth * dt);
+            return keep / (1f - keep) * dt;
+        }
+
+        /// <summary>
+        /// The look-ahead the follow aims for this frame (boat feel PR 1). The NET lead — what the view
+        /// shows ahead of her once the follow has caught up — is <c>velocity × seconds</c>, capped at
+        /// <paramref name="capMeters"/> along her heading; <paramref name="lagCompensation"/> of the
+        /// follow's own lag (<see cref="FollowLagSeconds"/>) then goes on top so the lag cannot eat it.
+        /// With no compensation this is exactly the old
+        /// <c>ClampMagnitude(velocity × _lookaheadSeconds, _lookaheadMaxMeters)</c>. Pure, no allocation.
+        /// </summary>
+        public static Vector2 LeadOffset(Vector2 velocity, float seconds, float capMeters,
+                                         float lagCompensation, float smooth, float dt)
+        {
+            Vector2 net = Vector2.ClampMagnitude(velocity * seconds, capMeters);
+            if (lagCompensation <= 0f) return net;
+            return net + velocity * (Mathf.Clamp01(lagCompensation) * FollowLagSeconds(smooth, dt));
+        }
+
+        private void FollowTarget(float dt)
         {
             if (Target == null) return;
 
             Vector3 tp = Target.position;
 
             // Estimate target velocity from frame-to-frame motion (no coupling to the boat's body).
-            Vector2 velocity = (_hasLast && Time.deltaTime > 0f)
-                ? (Vector2)(tp - _lastTargetPos) / Time.deltaTime
+            Vector2 velocity = (_hasLast && dt > 0f)
+                ? (Vector2)(tp - _lastTargetPos) / dt
                 : Vector2.zero;
             _lastTargetPos = tp;
             _hasLast = true;
             _targetSpeedMps = velocity.magnitude;   // the pull-back's speed term (juice PR 2): one length, no allocation
 
-            // Lead slightly in the direction of travel, capped so it never throws the boat off-screen.
-            Vector2 desiredLookahead = Vector2.ClampMagnitude(velocity * _lookaheadSeconds, _lookaheadMaxMeters);
+            // Lead in the direction of travel, capped so it never throws the boat off-screen. Following a
+            // boat, the owner's dials (boat feel PR 1) stand in for the scene's look-ahead; each one at 0
+            // hands the scene's own number back, so a zero config is the old follow exactly.
+            float leadSeconds = _lookaheadSeconds, leadCap = _lookaheadMaxMeters, lagPayBack = 0f;
+            if (BoatLeadIsLive)
+            {
+                JuiceSettings s = FeelSettings;
+                if (s.BoatLeadSeconds > 0f) leadSeconds = s.BoatLeadSeconds;
+                if (s.BoatLeadMaxViewFraction > 0f) leadCap = s.BoatLeadMaxViewFraction * HalfViewAtRungMeters;
+                lagPayBack = s.BoatLeadLagCompensation;
+            }
+            Vector2 desiredLookahead = LeadOffset(velocity, leadSeconds, leadCap, lagPayBack, Smooth, dt);
             _lookahead = Vector2.Lerp(_lookahead, desiredLookahead,
-                                      1f - Mathf.Exp(-_lookaheadSmooth * Time.deltaTime));
+                                      1f - Mathf.Exp(-_lookaheadSmooth * dt));
 
             Vector3 goal = tp + (Vector3)_lookahead;
             goal.z = transform.position.z; // keep the camera's depth
@@ -1073,7 +1137,7 @@ namespace HiddenHarbours.App
             }
             _smoothPos.z = goal.z;
             _smoothPos = Vector3.Lerp(_smoothPos, goal,
-                                      1f - Mathf.Exp(-Smooth * Time.deltaTime));
+                                      1f - Mathf.Exp(-Smooth * dt));
             transform.position = _smoothPos;
             _shakeInTransform = Vector3.zero;   // the follow's write holds no shake (juice PR 2)
         }
