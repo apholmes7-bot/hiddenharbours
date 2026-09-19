@@ -381,9 +381,35 @@ namespace HiddenHarbours.Player
         /// <summary>The sprite whose stance, gait, facing and frame ARE the figure's inputs.</summary>
         public IsoCharacterSprite Character => _character;
 
-        /// <summary>True while a figure override is drawing and the sprite is therefore held
-        /// disabled. False on every frame of the shipped path.</summary>
+        /// <summary>True while the ABOARD figure is drawing and the rider's sprite is therefore held
+        /// disabled. Aboard only: ashore the player's mesh hides her body by
+        /// <see cref="Renderer.forceRenderingOff"/> instead, publishes that itself, and this reads
+        /// false. False on every frame of the sprite path.</summary>
         public bool SpriteSuppressed { get; private set; }
+
+        /// <summary>The root's own sprite: the body she is drawn with whenever the rider is not.
+        /// Published for the ashore mesh, which hides it by <see cref="Renderer.forceRenderingOff"/>
+        /// while it draws and never touches <c>enabled</c>; that stays <see cref="StandDown"/>'s
+        /// alone.</summary>
+        public SpriteRenderer BodyRenderer => _bodyRenderer;
+
+        /// <summary>
+        /// Is her body drawn on the root while the rider is not drawing her? False INSIDE something:
+        /// at a helm (the pilot-hiding rule) and in a cab. The ONE statement of that rule.
+        /// <see cref="StandDown"/> writes the body's <c>enabled</c> from it, and the ashore mesh reads
+        /// it BEFORE StandDown runs in the same <see cref="Apply"/>. That is why it is a rule and not
+        /// a read of <c>enabled</c>: the read would be last frame's answer.
+        /// </summary>
+        public bool BodyShownOnRoot => _mode != ControlMode.Aboard && _mode != ControlMode.Driving;
+
+        /// <summary>
+        /// How many times she has been RE-SEATED: every <see cref="SetMode"/>, every
+        /// <see cref="Carry"/> that boards her and every <see cref="Release"/> that sets her down.
+        /// Each is a change of place the switcher or a carrier states (a landing, a region's arrival,
+        /// the end of a passage), and the ashore mesh counts one as an ARRIVAL: a figure the id pool
+        /// refused asks again there, never per frame. It draws nothing.
+        /// </summary>
+        public int ReseatCount { get; private set; }
 
         /// <summary>
         /// The hull presenter under her RIGHT NOW — the same answer <see cref="LiveHull"/> gives the
@@ -474,6 +500,7 @@ namespace HiddenHarbours.Player
             // deck-frame step measured across one is a TELEPORT, not a stride. Drop the track and let the
             // next tick re-seed both it and the bearing.
             _deckTracked = false;
+            ReseatCount++;
             StateContext();   // the presenter must not pick one cell from the OLD mode
             Apply();
         }
@@ -522,6 +549,7 @@ namespace HiddenHarbours.Player
             // frame too many.
             Rebind(hullRoot);
             _deckTracked = false;
+            ReseatCount++;
             StateContext();
             Apply();
         }
@@ -548,6 +576,7 @@ namespace HiddenHarbours.Player
 
             Rebind(_switcherRoot);
             _deckTracked = false;
+            ReseatCount++;
             StateContext();
             Apply();
         }
@@ -1145,7 +1174,7 @@ namespace HiddenHarbours.Player
             // Nothing else writes this flag while a rider is wired, so the two can never disagree.
             if (_bodyRenderer != null)
             {
-                bool bodyVisible = _mode != ControlMode.Aboard && _mode != ControlMode.Driving;
+                bool bodyVisible = BodyShownOnRoot;
                 if (_bodyRenderer.enabled != bodyVisible) _bodyRenderer.enabled = bodyVisible;
             }
         }

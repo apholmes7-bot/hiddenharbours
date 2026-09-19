@@ -619,8 +619,9 @@ namespace HiddenHarbours.Core
         /// <summary>
         /// Ship default — <b>ON</b>, by the owner's 2026-09-12 ruling ("ship it on"), taken with
         /// the look debt below written down and accepted: he wants her in play before the shader
-        /// pass lands. ON draws her as ONE skinned mesh while she is ABOARD a mesh hull. OFF is
-        /// still exactly the sprite, down to the byte — this stayed a switch, not a fork.
+        /// pass lands. ON draws her as ONE skinned mesh while she is ABOARD a mesh hull; ashore she
+        /// needs <see cref="MeshCharacterAshore"/> as well. OFF is still exactly the sprite, down
+        /// to the byte — this stayed a switch, not a fork.
         ///
         /// <para>The debt the ruling accepts: the mesh is measured 43–57% off the inked art
         /// (per-material gain alone is 53.61% of that gap) and she carries no face at all,
@@ -645,10 +646,45 @@ namespace HiddenHarbours.Core
                  "brows or mouth, because the face is a raster stamp that lives on the sprite and " +
                  "not in the geometry. Rig 7 baked no helm and no oars clip either, so at the " +
                  "wheel and at the oars she stands in a plain idle where the sprite sat and " +
-                 "rowed. ASHORE she cannot draw at all however this is set — the facet pass is " +
-                 "only recorded while a mesh hull is on screen — so this switch does nothing on " +
-                 "land. Turn it OFF and the sprite is back exactly, down to the byte.")]
+                 "rowed. ASHORE this switch alone does nothing: she draws as a mesh on land only " +
+                 "while Mesh Character Ashore is ON as well, and that one ships OFF. Turn this " +
+                 "OFF and the sprite is back exactly, down to the byte, aboard and ashore.")]
         public bool MeshCharacter = DefaultMeshCharacter;
+
+        /// <summary>
+        /// Shipped default for <see cref="MeshCharacterAshore"/>: <b>OFF</b>, by the owner's ruling
+        /// of 2026-09-19 ("ashore go", decision 1). The ashore half of the player's mesh is built
+        /// and guarded, but no plate has judged it on screen yet; the plate slot does that before
+        /// anyone turns it on.
+        ///
+        /// <para>ON, and only while <see cref="MeshCharacter"/> is ON too, draws her ASHORE as the
+        /// same skinned mesh, through the facet pass under a figure id of her own (ADR 0044
+        /// amendment 2026-09-17; the figure's ashore frame is #861's). She is the mesh ashore only
+        /// while she stands or walks on her own feet, dry, with no clip playing. Any clip (the
+        /// boarding vault, the ladders, the haul, the chop, lift, place and toss, the bench, sleep,
+        /// swim and tread, the open machines' Drive) and wading hand the draw back to the sprite
+        /// for their whole length. In a cab, and at a helm that hides its pilot, she draws
+        /// neither, exactly as before. The held item stays at the sprite's hand.</para>
+        ///
+        /// <para>When the region has used every facet id she is refused one: she keeps her WHOLE
+        /// sprite and the id registry logs its one warning for that ask. She asks again only at her
+        /// next arrival ashore (a landing, a clip's end, a region's arrival), never per frame. Once
+        /// granted, she keeps her id for as long as the switch stays on.</para>
+        ///
+        /// <para>OFF: main's frame, byte for byte — no ashore figure, no id taken, the sprite
+        /// untouched.</para>
+        /// </summary>
+        public const bool DefaultMeshCharacterAshore = false;
+
+        [Tooltip("Draw the player as her skinned mesh ASHORE as well? Needs Mesh Character ON too. " +
+                 "OFF by default until a plate has judged it on screen. Ashore she is the mesh only " +
+                 "while she stands or walks dry on her own feet: any clip (the boarding vault, the " +
+                 "ladders, the haul, chop, lift, bench, sleep, swim, the open machines) and wading " +
+                 "hand her back to the sprite for their length, and the held item stays at the " +
+                 "sprite's hand. When the region has run out of facet ids she keeps her whole " +
+                 "sprite and asks again at her next landing, never every frame. Read live. Turn it " +
+                 "OFF and the sprite is back exactly, down to the byte.")]
+        public bool MeshCharacterAshore = DefaultMeshCharacterAshore;
 
         /// <summary>
         /// Shipped default for <see cref="MeshCast"/>. <b>ON — the owner's ruling of 2026-09-17,

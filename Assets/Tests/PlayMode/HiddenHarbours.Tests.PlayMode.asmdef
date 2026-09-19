@@ -17,7 +17,9 @@
         "HiddenHarbours.World",
         "HiddenHarbours.Environment",
         "HiddenHarbours.Art",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.RenderPipelines.Core.Runtime",
+        "Unity.RenderPipelines.Universal.Runtime"
     ],
     "includePlatforms": [],
     "precompiledReferences": [
