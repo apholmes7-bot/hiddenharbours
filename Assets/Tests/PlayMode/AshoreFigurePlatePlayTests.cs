@@ -54,8 +54,9 @@ namespace HiddenHarbours.Tests.PlayMode
     ///
     /// <para><b>Frames 1–5 call <see cref="IsoCharacterFigureRenderer.EnterAshore"/> themselves</b>, on a
     /// plate figure built beside the skinned player inside the test, and
-    /// <see cref="IsoCharacterFigureRenderer.LeaveAshore"/> in the teardown, with the switch OFF (the
-    /// shipped asset), so the plate's figure is the only one ashore.</para>
+    /// <see cref="IsoCharacterFigureRenderer.LeaveAshore"/> in the teardown, with the switch held OFF from
+    /// arrival (a runtime copy of the config; the asset ships it ON since the owner's ruling of
+    /// 2026-09-19), so the plate's figure is the only one ashore.</para>
     ///
     /// <para><b>⚠️ These SKIP on CI and prove nothing there</b> — a plate needs a GPU and CI runs the
     /// Null device. <b>⚠️ The plate directory is shared by every worktree</b>: a floor file is written
@@ -67,9 +68,9 @@ namespace HiddenHarbours.Tests.PlayMode
     /// camera's position and size, the plate's pixels, the sea and the lamps.</para>
     ///
     /// <para><b>The switch frames (S1–S5)</b> build no figure of their own and never touch her body. Each
-    /// shoots one place three times: OFF (the shipped <c>GameConfig.asset</c>), ON (a runtime copy with
-    /// <see cref="GameConfig.MeshCharacterAshore"/> set, published through
-    /// <see cref="GameServices.Config"/>; the asset is never written), and OFF again. What draws her is
+    /// shoots one place three times: OFF, ON and OFF again, each a runtime copy of the loaded config with
+    /// <see cref="GameConfig.MeshCharacterAshore"/> off or on, published through
+    /// <see cref="GameServices.Config"/>; the asset is never written. What draws her is
     /// <see cref="DeckRiderMeshPresenter"/>'s decision alone: the plate reads that decision, counts
     /// what draws her, and reads her id inside the frame. S1 is the flip plate; S4 lands on the re-seat
     /// call with no frame between; S5 is Nine Mile Creek, where the facet-id pool may refuse her, and
@@ -114,7 +115,8 @@ namespace HiddenHarbours.Tests.PlayMode
         const string Unknown = "unknown from this plate";
         const string Info = "INFO";
 
-        /// <summary>The asset the build ships: the switch frames read its OFF and never write it.</summary>
+        /// <summary>The asset the build ships, the switch ON since the owner's ruling of 2026-09-19: the
+        /// plates compare the loaded config to it and never write it.</summary>
         const string ShippedConfigPath = "Assets/_Project/Data/Config/GameConfig.asset";
         /// <summary>The name the presenter gives her ashore figure's GameObject.</summary>
         const string AshoreFigureName = "MeshCharacterAshore";
@@ -174,10 +176,12 @@ namespace HiddenHarbours.Tests.PlayMode
         SpriteRenderer _skipperSprite;
         string _beamNote;
 
-        // --- the switch (the S frames) -----------------------------------------------------------------
-        GameConfig _shippedConfig;
+        // --- the switch (held OFF from arrival; the S frames throw it) ---------------------------------
+        GameConfig _loadedConfig;
+        GameConfig _switchOff;
         GameConfig _switchOn;
         string _configNote;
+        string _holdNote;
         string _switchNote;
         string _switchBodyNote;
         DeckRiderVisual _rider;
@@ -236,7 +240,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _lampsNote = "none placed by the plate";
             _seaNote = "as the scene loaded it";
             _beamNote = null;
-            _switchNote = null; _lampUnlitWhy = null; _configNote = null; _switchBodyNote = null;
+            _switchNote = null; _lampUnlitWhy = null; _configNote = null; _switchBodyNote = null; _holdNote = null;
             yield return null;
         }
 
@@ -267,9 +271,11 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_iso != null) _iso.ReleaseHeading();
             if (_body != null && _bodyTaken) _body.simulated = _bodyWasSimulated;
             if (_seaTurnedOn != null) _seaTurnedOn.SetDisplaced(false);
-            // The switch frames: the shipped config back BEFORE the stage goes (GameRoot.OnDestroy nulls
-            // GameServices.Config only while it holds its own asset), her lamp off, the fence shown.
-            if (_shippedConfig != null) GameServices.Config = _shippedConfig;
+            // The switch: the loaded config back BEFORE the stage goes (GameRoot.OnDestroy nulls
+            // GameServices.Config only while it holds its own asset), both copies gone, her lamp off, the
+            // fence shown.
+            if (_loadedConfig != null) GameServices.Config = _loadedConfig;
+            if (_switchOff != null) Object.Destroy(_switchOff);
             if (_switchOn != null) Object.Destroy(_switchOn);
             if (_headlampTurnedOn != null) _headlampTurnedOn.SetOn(false);
             if (_plateWalkerLights != null)
@@ -283,7 +289,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             _figure = null; _sprite = null; _iso = null; _body = null; _bodyTaken = false; _player = null;
             _skin = null; _fid = 0; _seaTurnedOn = null; _boat = null; _skipper = null; _skipperSprite = null;
-            _shippedConfig = null; _switchOn = null; _rider = null; _presenter = null; _headlampTurnedOn = null; _plateWalkerLights = null;
+            _loadedConfig = null; _switchOff = null; _switchOn = null; _rider = null; _presenter = null; _headlampTurnedOn = null; _plateWalkerLights = null;
 
             _readback?.Dispose();       // off beginCameraRendering, and its copies released
             _readback = null;
@@ -474,8 +480,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
         /// <summary>
         /// ⭐⭐ <b>S1 — THE FLIP PLATE: St Peters at noon, beside the UtilityQuad, the Trike200 and the
-        /// Enduro250</b>, frame 1's stand. The owner flips the switch on <c>b-on</c> against <c>a-off</c>:
-        /// the same place, seed and clock, the shipped asset against a runtime copy with the switch on.
+        /// Enduro250</b>, frame 1's stand. The owner flipped the switch on <c>b-on</c> against <c>a-off</c>
+        /// (his ruling of 2026-09-19, "switch on"): the same place, seed and clock, a runtime copy with the
+        /// switch off against one with it on.
         /// </summary>
         [UnityTest]
         public IEnumerator Switch_BesideTheMachineRow_OffThenOn_StPetersNoon()
@@ -935,8 +942,8 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// ⭐⭐ <b>THE SWITCH, shot three times in one place</b>: OFF (the shipped asset), ON (a runtime copy
-        /// through <see cref="GameServices.Config"/>; the asset is never written), OFF again. The presenter
+        /// ⭐⭐ <b>THE SWITCH, shot three times in one place</b>: OFF, ON, OFF again, each a runtime copy
+        /// through <see cref="GameServices.Config"/> (the asset is never written). The presenter
         /// alone decides what draws her; this reads what it decided and what reached the picture. Her figure
         /// is hidden for one CONTROL shutter only (and every fence piece for another, when a fence is named).
         /// </summary>
@@ -952,7 +959,7 @@ namespace HiddenHarbours.Tests.PlayMode
             ArmTheReadback(cam);
             SpriteRenderer body = _rider.BodyRenderer;
 
-            // ---- OFF: the shipped frame ----
+            // ---- OFF: her sprite, the frame before the flip ----
             SetTheSwitch(false);
             yield return Settle();
             cam.orthographicSize = _plateOrtho;
@@ -1059,14 +1066,14 @@ namespace HiddenHarbours.Tests.PlayMode
                                $"frames {Count(aaLater)} px; her box {boxRect} px; id reads: OFF {idHowOff}; ON {idHowOn}; " +
                                $"OFF again {idHowOff2}; mapping {orient}";
 
-            // ---- S-a: OFF is main's frame ----
+            // ---- S-a: OFF is her sprite ----
             int spriteInBox = shotOnBare != null ? Count(And(And(Changed(shotOnBare, shotOff), box), Not(noisy))) : -1;
             string na = $"{stOff}; her sprite in her box " +
                         (spriteInBox >= 0 ? $"{spriteInBox} px (OFF vs ON with her figure hidden)" : "not priced");
             if (!offRight || spriteInBox == 0) Verdict("S-a off: the sprite draws", arm, Fail, na);
             else if (spriteInBox < 0)
                 Verdict("S-a off: the sprite draws", arm, Unknown,
-                        na + " — the state is main's but there is no bare frame to price her sprite against");
+                        na + " — the state is the sprite's but there is no bare frame to price her sprite against");
             else Verdict("S-a off: the sprite draws", arm, Pass, na);
             if (_fid == 0 || idsOff == null)
                 Verdict("S-a off: no id of hers", arm, Unknown, _fid == 0 ? "she held no figure id on ON" : idHowOff);
@@ -1127,7 +1134,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Verdict("S-c one drawer", arm, drawersOff == 1 && drawersOn == 1 && drawersOff2 == 1 ? Pass : Fail,
                     $"OFF {drawersOff} ({whichOff}); ON {drawersOn} ({whichOn}); OFF again {drawersOff2} ({whichOff2})");
 
-            // ---- S-d: OFF again is main's frame again ----
+            // ---- S-d: OFF again is her sprite again ----
             bool stateBack = !_presenter.DrawsAshore && fig2 == null && !child2 && figuresAfter == figuresBefore &&
                              Shown(body) && (_presenter.NotDrawingReason ?? "").Contains(OffReasonMark);
             int herIdOff2 = _fid != 0 && idsOff2 != null ? Count(Where(idsOff2, _fid)) : 0;
@@ -1162,11 +1169,12 @@ namespace HiddenHarbours.Tests.PlayMode
             }
 
             // ---- the plates ----
-            _switchNote = $"{_configNote}; ON = a runtime copy '{(_switchOn != null ? _switchOn.name : "?")}' published " +
-                          "through GameServices.Config (the asset is never written); " +
+            _switchNote = $"{_configNote}; OFF = '{(_switchOff != null ? _switchOff.name : "?")}', ON = " +
+                          $"'{(_switchOn != null ? _switchOn.name : "?")}', each published through GameServices.Config " +
+                          "(the asset is never written); " +
                           $"{_switchBodyNote}; {stOff} | {stOn} | {stOff2}" +
                           (landing ? $" | landing: ReseatCount {reseatWas} -> {reseatAfterCall}, DrawsAshore on the call {drawsOnCall}" : "");
-            SavePlate(arm, "a-off", shotOff, "OFF — the shipped asset (MeshCharacterAshore off): her sprite, main's frame");
+            SavePlate(arm, "a-off", shotOff, "OFF — a runtime copy with MeshCharacterAshore off: her sprite, the frame before the flip");
             SavePlate(arm, "b-on", shotOn, refused
                 ? "ON — the pool refused her an id: she keeps her whole sprite, and the frame says so"
                 : $"ON — the presenter's ashore mesh, id {_fid}, her sprite body hidden by the presenter");
@@ -1340,6 +1348,10 @@ namespace HiddenHarbours.Tests.PlayMode
             InteractionGate.Reset();
 
             yield return _stage.SetNight(hour);
+
+            // The asset ships the ashore switch ON, so her presenter draws her ashore as the region
+            // arrives: every frame holds it OFF from here, as the asset held it before the flip.
+            yield return HoldTheSwitchOff();
         }
 
         /// <summary>Her: the region's own on-foot player with a skin — found, never built.</summary>
@@ -1659,40 +1671,79 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// ⭐ <b>The owner's switch, thrown at runtime.</b> OFF is the config the region loaded (the shipped
-        /// asset); ON is a runtime COPY of it with <see cref="GameConfig.MeshCharacterAshore"/> set,
-        /// published through <see cref="GameServices.Config"/>, which the presenter reads on every apply.
-        /// The asset is never written. A loaded config that is not main's (the mesh off, or the switch
-        /// already on) is NO PLATE: the OFF frame would not be main's frame.
+        /// ⭐ <b>The owner's switch, thrown at runtime.</b> OFF and ON are runtime COPIES of the config the
+        /// region loaded (the shipped asset, which turns <see cref="GameConfig.MeshCharacterAshore"/> ON
+        /// since the owner's ruling of 2026-09-19, taken on S1), one with the switch off and one with it
+        /// on, published through <see cref="GameServices.Config"/>, which the presenter reads on every
+        /// apply. The asset is never written. A loaded config with <see cref="GameConfig.MeshCharacter"/>
+        /// off is NO PLATE: the ashore switch is live only with it on, so ON could not draw her.
         /// </summary>
         void SetTheSwitch(bool ashoreOn)
         {
             if (_switchOn == null)
             {
-                _shippedConfig = GameServices.Config;
-                if (_shippedConfig == null)
+                _loadedConfig = GameServices.Config;
+                if (_loadedConfig == null)
                     Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — {_scene} published no GameServices.Config, so " +
-                                "there is no shipped switch to read OFF.");
-                if (!_shippedConfig.MeshCharacter || _shippedConfig.MeshCharacterAshore)
-                    Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — the loaded config '{_shippedConfig.name}' is not " +
-                                $"main's: MeshCharacter {_shippedConfig.MeshCharacter}, MeshCharacterAshore " +
-                                $"{_shippedConfig.MeshCharacterAshore} (main ships true / false).");
+                                "there is no config to copy the switch from.");
+                if (!_loadedConfig.MeshCharacter)
+                    Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — the loaded config '{_loadedConfig.name}' has " +
+                                "MeshCharacter off, and the ashore switch is live only with it on (the asset ships it on).");
 #if UNITY_EDITOR
                 GameConfig asset = AssetDatabase.LoadAssetAtPath<GameConfig>(ShippedConfigPath);
                 _configNote = asset == null
-                    ? $"OFF = the loaded config '{_shippedConfig.name}' ({ShippedConfigPath} did not load to compare)"
-                    : ReferenceEquals(asset, _shippedConfig)
-                        ? $"OFF = the shipped asset {ShippedConfigPath} itself (MeshCharacterAshore {asset.MeshCharacterAshore})"
-                        : $"OFF = the loaded config '{_shippedConfig.name}', NOT the asset object at {ShippedConfigPath} " +
+                    ? $"the loaded config '{_loadedConfig.name}' ({ShippedConfigPath} did not load to compare)"
+                    : ReferenceEquals(asset, _loadedConfig)
+                        ? $"the loaded config is the shipped asset {ShippedConfigPath} itself"
+                        : $"the loaded config '{_loadedConfig.name}', NOT the asset object at {ShippedConfigPath} " +
                           $"(the asset reads MeshCharacterAshore {asset.MeshCharacterAshore})";
 #else
-                _configNote = $"OFF = the loaded config '{_shippedConfig.name}'";
+                _configNote = $"the loaded config '{_loadedConfig.name}'";
 #endif
-                _switchOn = Object.Instantiate(_shippedConfig);
+                _configNote += $" (MeshCharacterAshore {_loadedConfig.MeshCharacterAshore}); OFF and ON are runtime copies of it";
+                _switchOff = Object.Instantiate(_loadedConfig);
+                _switchOff.name = "(plate: MeshCharacterAshore OFF)";
+                _switchOff.MeshCharacterAshore = false;
+                _switchOn = Object.Instantiate(_loadedConfig);
                 _switchOn.name = "(plate: MeshCharacterAshore ON)";
                 _switchOn.MeshCharacterAshore = true;
             }
-            GameServices.Config = ashoreOn ? _switchOn : _shippedConfig;
+            GameServices.Config = ashoreOn ? _switchOn : _switchOff;
+        }
+
+        /// <summary>
+        /// ⭐ <b>The switch held OFF from arrival.</b> The asset ships it ON (the owner's ruling of
+        /// 2026-09-19, taken on S1), so her presenter draws her ashore as the region arrives. Frames 1–5
+        /// build a plate figure of their own, which must be the only one of hers ashore, and S1–S5 throw
+        /// the switch from OFF themselves: every frame holds it OFF from here, as the asset held it before
+        /// the flip. Where no rider is loaded (Nine Mile Creek loaded SINGLE, debt (m)) no presenter can
+        /// draw her and nothing is held. Two frames on, a presenter still drawing her ashore is NO PLATE.
+        /// </summary>
+        IEnumerator HoldTheSwitchOff()
+        {
+            DeckRiderVisual[] riders = Object.FindObjectsByType<DeckRiderVisual>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            if (riders.Length == 0)
+            {
+                _holdNote = "not held: no DeckRiderVisual in the loaded scenes, so no presenter can draw her ashore";
+                yield break;
+            }
+
+            SetTheSwitch(false);
+            yield return Settle();
+            var still = new List<string>();
+            foreach (DeckRiderVisual r in riders)
+            {
+                if (r == null) continue;
+                DeckRiderMeshPresenter p = r.GetComponent<DeckRiderMeshPresenter>();
+                Transform bodyAt = r.BodyRenderer != null ? r.BodyRenderer.transform : r.transform;
+                if ((p != null && (p.DrawsAshore || p.AshoreFigure != null)) || HasChildNamed(bodyAt, AshoreFigureName))
+                    still.Add($"'{r.name}'");
+            }
+            if (still.Count > 0)
+                Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — the switch is held OFF, but two frames later the presenter " +
+                            $"on {string.Join(", ", still)} still draws her ashore, so a plate figure would not be the " +
+                            "only one of hers and an OFF frame would not be her sprite.");
+            _holdNote = $"held OFF from arrival by the runtime copy '{_switchOff.name}': {_configNote}";
         }
 
         /// <summary>
@@ -1847,8 +1898,10 @@ namespace HiddenHarbours.Tests.PlayMode
             IsoCharacterFigureRenderer fig = _presenter.AshoreFigure;
             int drawers = Drawers(out string which);
             GameConfig cfg = GameServices.Config;
-            string sw = cfg == null ? "no config" : cfg == _switchOn ? "ON (the runtime copy)"
-                      : cfg == _shippedConfig ? "OFF (the shipped config)" : $"'{cfg.name}'";
+            string sw = cfg == null ? "no config" : cfg == _switchOn ? "ON (a runtime copy)"
+                      : cfg == _switchOff ? "OFF (a runtime copy)"
+                      : cfg == _loadedConfig ? $"the loaded config (MeshCharacterAshore {cfg.MeshCharacterAshore})"
+                      : $"'{cfg.name}'";
             return $"{when}: switch {sw}; DrawsAshore {_presenter.DrawsAshore}, AshoreRefused {_presenter.AshoreRefused}; " +
                    $"body {(body == null ? "none" : $"enabled {body.enabled}, forceRenderingOff {body.forceRenderingOff}")}; " +
                    $"ashore figure {(fig == null ? "none" : $"id {fig.FigureId}, visible {fig.Visible}")}, child " +
@@ -1912,6 +1965,7 @@ namespace HiddenHarbours.Tests.PlayMode
                   "mesh); enabled stays TRUE (Q3); this class never touches it");
             sb.AppendLine($"lamps        {_lampsNote}");
             if (_switchNote != null) sb.AppendLine($"switch       {_switchNote}");
+            else if (_holdNote != null) sb.AppendLine($"switch       {_holdNote}");
             if (_boat != null) sb.AppendLine($"hull         {_boat.name} at {Fmt(_boat.transform.position)}, {_beamNote}");
             foreach (string n in _neighbours) sb.AppendLine($"beside       {n}");
             return sb.ToString();

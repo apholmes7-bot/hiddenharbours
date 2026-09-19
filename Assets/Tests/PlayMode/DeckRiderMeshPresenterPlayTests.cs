@@ -28,9 +28,9 @@ namespace HiddenHarbours.Tests.PlayMode
     /// (code default OFF, live only with <c>MeshCharacter</c> on too — the owner's ruling of
     /// 2026-09-19), and a facet id of her OWN from the pool the hulls draw on, which is what records the
     /// facet pass where no hull is (<c>IsoFacetHullRegistry.FigureCount &gt; 0</c> opens gate 1 exactly
-    /// as a hull does). With the switch off she is main's sprite, byte for byte — no ashore figure, no
+    /// as a hull does). With the switch off she is her sprite, byte for byte — no ashore figure, no
     /// id, her body untouched — and <see cref="Ashore_SheCannotDrawAsAMesh_AndTheReasonNamesTheFence"/>
-    /// with <see cref="WithTheAshoreSwitchOff_AshoreIsMainsFrame_NoFigureNoIdAndTheBodyUntouched"/> is
+    /// with <see cref="WithTheAshoreSwitchOff_AshoreIsHerSprite_NoFigureNoIdAndTheBodyUntouched"/> is
     /// that claim, run. With it on, the ashore section at the foot holds the hand-over to one bar:
     /// <b>at no frame of boarding or landing are the sprite and the mesh both drawn, or neither.</b></para>
     ///
@@ -435,7 +435,8 @@ namespace HiddenHarbours.Tests.PlayMode
         /// A mesh boat with a fisher on her deck. <paramref name="meshOn"/> is
         /// <c>GameConfig.MeshCharacter</c> — the one switch of rule 6, default off — and
         /// <paramref name="meshStates"/> is the ADR 0041 per-state list. The ashore switch is left at
-        /// its shipped OFF, so every guard written before it existed runs main's frame.
+        /// its code default, OFF (the shipped asset turns it ON; this rig builds its own config), so
+        /// every guard written before it existed runs the frame it was written for: her sprite ashore.
         /// </summary>
         private Rig NewRig(bool meshOn, params string[] meshStates) => NewRig(meshOn, false, meshStates);
 
@@ -584,9 +585,9 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(baseline + 1, IsoFacetHullRegistry.FigureCount, when + ": …and no second one");
         }
 
-        /// <summary>Main's shore: the body sprite alone, no ashore figure held or left in her hierarchy,
+        /// <summary>The sprite's shore: the body sprite alone, no ashore figure held or left in her hierarchy,
         /// no id taken, her body not forced off, and the reason naming the switch.</summary>
-        private static void AssertMainsShore(Rig rig, int baseline, string when)
+        private static void AssertSpriteShore(Rig rig, int baseline, string when)
         {
             AssertDrawnBy(rig, BodySprite, when);
             Assert.IsNull(rig.Presenter.AshoreFigure, when + ": no ashore figure is held");
@@ -664,12 +665,12 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator Ashore_SheCannotDrawAsAMesh_AndTheReasonNamesTheFence()
         {
-            // THE FENCE, as it ships. Ashore the mesh figure draws only behind two gates: the switch
-            // (GameConfig.MeshCharacterAshore, code default OFF and silent in the asset) and a facet id
-            // of her own from the pool. This rig leaves the switch as it ships. The presenter still
-            // exists (MeshCharacter is on and she has a skin), which is exactly what makes the assertion
-            // worth making: it is the DRAW that is refused, not the component that is absent — and the
-            // refusal takes nothing from the pool and leaves her body as main leaves it.
+            // THE FENCE, shut. Ashore the mesh figure draws only behind two gates: the switch
+            // (GameConfig.MeshCharacterAshore, code default OFF; the shipped asset turns it ON) and a
+            // facet id of her own from the pool. This rig leaves the switch at its code default. The
+            // presenter still exists (MeshCharacter is on and she has a skin), which is exactly what
+            // makes the assertion worth making: it is the DRAW that is refused, not the component that
+            // is absent — and the refusal takes nothing from the pool and leaves her body untouched.
             yield return null;   // the last fixture's deferred destroys hand their ids back first
             int baseline = IsoFacetHullRegistry.FigureCount;
 
@@ -687,7 +688,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNull(presenter.Figure, "nothing is built for a draw that cannot happen");
             Assert.IsNull(presenter.AshoreFigure, "…aboard or ashore");
             Assert.AreEqual(baseline, IsoFacetHullRegistry.FigureCount, "and no facet id is taken");
-            Assert.IsFalse(rig.Body.forceRenderingOff, "her body is main's: nothing has forced it off");
+            Assert.IsFalse(rig.Body.forceRenderingOff, "her body is the sprite's own: nothing has forced it off");
             Assert.IsFalse(rig.Rider.SpriteSuppressed, "the sprite keeps the draw it always had ashore");
         }
 
@@ -948,10 +949,11 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator WithTheAshoreSwitchOff_AshoreIsMainsFrame_NoFigureNoIdAndTheBodyUntouched()
+        public IEnumerator WithTheAshoreSwitchOff_AshoreIsHerSprite_NoFigureNoIdAndTheBodyUntouched()
         {
-            // Decision 1, as it ships: MeshCharacter on, MeshCharacterAshore OFF. Ashore she is main's
-            // frame at every step — built ashore, on the call that lands her, at each frame after it —
+            // Decision 1 with the switch OFF, its code default (the shipped asset turns it ON):
+            // MeshCharacter on, MeshCharacterAshore off. Ashore she is her sprite, byte for byte as before
+            // the switch, at every step — built ashore, on the call that lands her, at each frame after it —
             // and a switch turned off at run time gives her id back and takes her figure away.
             yield return null;
             int baseline = IsoFacetHullRegistry.FigureCount;
@@ -960,17 +962,17 @@ namespace HiddenHarbours.Tests.PlayMode
                              CharacterSkinStateMap.Idle, CharacterSkinStateMap.Walk, CharacterSkinStateMap.Balance);
             yield return null;
             yield return null;
-            AssertMainsShore(rig, baseline, "built ashore, the ashore switch off");
+            AssertSpriteShore(rig, baseline, "built ashore, the ashore switch off");
 
             yield return Board(rig);
             AssertDrawnBy(rig, AboardMesh, "aboard with the ashore switch off: the aboard mesh, as on main");
 
             rig.Rider.SetMode(ControlMode.OnFoot, null);
-            AssertMainsShore(rig, baseline, "on the call that lands her, the ashore switch off");
+            AssertSpriteShore(rig, baseline, "on the call that lands her, the ashore switch off");
             yield return null;
-            AssertMainsShore(rig, baseline, "the frame after landing, the ashore switch off");
+            AssertSpriteShore(rig, baseline, "the frame after landing, the ashore switch off");
             yield return null;
-            AssertMainsShore(rig, baseline, "two frames after landing, the ashore switch off");
+            AssertSpriteShore(rig, baseline, "two frames after landing, the ashore switch off");
 
             // Control: the same rig with the switch turned on DOES draw her mesh ashore, so the guard
             // above measured the switch and not a rig that could never draw ashore at all.
@@ -981,7 +983,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             rig.Config.MeshCharacterAshore = false;
             yield return null;
-            AssertMainsShore(rig, baseline, "the ashore switch turned off again: her id back, her figure gone");
+            AssertSpriteShore(rig, baseline, "the ashore switch turned off again: her id back, her figure gone");
 
             rig.Config.MeshCharacterAshore = true;
             yield return null;

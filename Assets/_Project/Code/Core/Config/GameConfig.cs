@@ -647,15 +647,16 @@ namespace HiddenHarbours.Core
                  "not in the geometry. Rig 7 baked no helm and no oars clip either, so at the " +
                  "wheel and at the oars she stands in a plain idle where the sprite sat and " +
                  "rowed. ASHORE this switch alone does nothing: she draws as a mesh on land only " +
-                 "while Mesh Character Ashore is ON as well, and that one ships OFF. Turn this " +
-                 "OFF and the sprite is back exactly, down to the byte, aboard and ashore.")]
+                 "while Mesh Character Ashore is ON as well, which the shipped config turns ON. " +
+                 "Turn this OFF and the sprite is back exactly, down to the byte, aboard and ashore.")]
         public bool MeshCharacter = DefaultMeshCharacter;
 
         /// <summary>
-        /// Shipped default for <see cref="MeshCharacterAshore"/>: <b>OFF</b>, by the owner's ruling
-        /// of 2026-09-19 ("ashore go", decision 1). The ashore half of the player's mesh is built
-        /// and guarded, but no plate has judged it on screen yet; the plate slot does that before
-        /// anyone turns it on.
+        /// Code default for <see cref="MeshCharacterAshore"/>: <b>OFF</b>, by the owner's ruling
+        /// of 2026-09-19 ("ashore go", decision 1). The shipped <c>GameConfig.asset</c> turns it
+        /// <b>ON</b>, by his ruling of the same day ("switch on"), taken on the plate S1 (OFF
+        /// against ON, St Peters at noon beside the machine row). A config built fresh in code
+        /// still starts OFF.
         ///
         /// <para>ON, and only while <see cref="MeshCharacter"/> is ON too, draws her ASHORE as the
         /// same skinned mesh, through the facet pass under a figure id of her own (ADR 0044
@@ -671,13 +672,14 @@ namespace HiddenHarbours.Core
         /// next arrival ashore (a landing, a clip's end, a region's arrival), never per frame. Once
         /// granted, she keeps her id for as long as the switch stays on.</para>
         ///
-        /// <para>OFF: main's frame, byte for byte — no ashore figure, no id taken, the sprite
-        /// untouched.</para>
+        /// <para>OFF: her sprite ashore, byte for byte as before this switch existed — no ashore
+        /// figure, no id taken, the sprite untouched.</para>
         /// </summary>
         public const bool DefaultMeshCharacterAshore = false;
 
         [Tooltip("Draw the player as her skinned mesh ASHORE as well? Needs Mesh Character ON too. " +
-                 "OFF by default until a plate has judged it on screen. Ashore she is the mesh only " +
+                 "ON in the shipped config (owner ruling 2026-09-19, taken on a plate), OFF in a " +
+                 "fresh one. Ashore she is the mesh only " +
                  "while she stands or walks dry on her own feet: any clip (the boarding vault, the " +
                  "ladders, the haul, chop, lift, bench, sleep, swim, the open machines) and wading " +
                  "hand her back to the sprite for their length, and the held item stays at the " +

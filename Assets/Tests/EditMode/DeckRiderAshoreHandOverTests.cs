@@ -8,15 +8,24 @@ namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
     /// The ashore hand-over's pure rules, held without a frame: the switch (the owner's ruling of
-    /// 2026-09-19, decision 1), the reasons she is not shown ashore (decision 4 and the NEITHER rule),
-    /// and when a refused figure may ask the facet-id pool again (decision 3, option (i)). Each bar is
-    /// written out here as a literal and is never read back from the code, so a guard that passes cannot
-    /// be passing because the code moved its own bar. The frames themselves (one drawer at every
-    /// hand-over) are PlayMode's: <c>DeckRiderMeshPresenterPlayTests</c>.
+    /// 2026-09-19, decision 1, turned ON in the asset by his "switch on" the same day), that a player
+    /// build can find her figure's shaders, the reasons she is not shown ashore (decision 4 and the
+    /// NEITHER rule), and when a refused figure may ask the facet-id pool again (decision 3, option
+    /// (i)). Each bar is written out here as a literal and is never read back from the code, so a guard
+    /// that passes cannot be passing because the code moved its own bar. The frames themselves (one
+    /// drawer at every hand-over) are PlayMode's: <c>DeckRiderMeshPresenterPlayTests</c>.
     /// </summary>
     public class DeckRiderAshoreHandOverTests
     {
         private const string ShippedConfigPath = "Assets/_Project/Data/Config/GameConfig.asset";
+        private const string GraphicsSettingsPath = "ProjectSettings/GraphicsSettings.asset";
+
+        /// <summary>The two shaders her figure finds by name, and the names it asks for.</summary>
+        private static readonly (string Path, string Name)[] FigureShaders =
+        {
+            ("Assets/_Project/Art/Shaders/HiddenHarboursIsoFacet.shader", "HiddenHarbours/IsoFacet"),
+            ("Assets/_Project/Art/Shaders/HiddenHarboursIsoFacetOverlay.shader", "HiddenHarbours/IsoFacetOverlay"),
+        };
 
         /// <summary>Shown poses stepped past a refusal: far more than any hand-over takes, so a latch that
         /// leaked after a few frames would be seen.</summary>
@@ -67,8 +76,10 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        /// <summary>The code's default stays OFF and the asset turns it ON: the owner's ruling of
+        /// 2026-09-19 ("switch on"), taken on plate S1 (OFF against ON).</summary>
         [Test]
-        public void TheAshoreSwitch_IsOffInTheCode_AndOffInTheShippedAsset()
+        public void TheAshoreSwitch_IsOffInTheCode_AndOnInTheShippedAsset()
         {
             Assert.IsFalse(GameConfig.DefaultMeshCharacterAshore, "the code's default is OFF");
 
@@ -84,8 +95,41 @@ namespace HiddenHarbours.Tests.EditMode
 
             GameConfig shipped = AssetDatabase.LoadAssetAtPath<GameConfig>(ShippedConfigPath);
             Assert.IsNotNull(shipped, "the shipped config loads from " + ShippedConfigPath);
-            Assert.IsFalse(shipped.MeshCharacterAshore,
-                           "the shipped asset ships the switch OFF: turning it on is the owner's playtest");
+            Assert.IsTrue(shipped.MeshCharacterAshore,
+                          "the shipped asset ships the switch ON: the owner's ruling of 2026-09-19, taken on plate S1");
+            Assert.IsTrue(shipped.MeshCharacter,
+                          "the shipped asset ships MeshCharacter ON as well, without which the ashore switch does nothing");
+        }
+
+        // ---- her figure's shaders in a player build (debt (h)) --------------------------------------
+
+        /// <summary>Her figure asks for both of its shaders by NAME (<c>Shader.Find</c>), aboard and ashore.
+        /// A shader reached only by name is stripped from a player build unless Always Included Shaders
+        /// lists it; without either one, a build throws in her figure and she falls back to her sprite.
+        /// The editor always finds them, so only this line of the settings file stands between the
+        /// switch and a build.</summary>
+        [Test]
+        public void HerFigureShaders_AreAlwaysIncluded_SoABuildCanFindThem()
+        {
+            string[] settings = System.IO.File.ReadAllLines(GraphicsSettingsPath);
+            int list = System.Array.FindIndex(settings, l => l.Trim() == "m_AlwaysIncludedShaders:");
+            Assert.GreaterOrEqual(list, 0, GraphicsSettingsPath + " has no m_AlwaysIncludedShaders list");
+
+            string missing = "";
+            foreach ((string path, string name) in FigureShaders)
+            {
+                var shader = AssetDatabase.LoadAssetAtPath<Shader>(path);
+                Assert.IsNotNull(shader, "no shader at " + path);
+                Assert.AreEqual(name, shader.name, path + " is not the shader her figure asks for by name");
+
+                string guid = AssetDatabase.AssetPathToGUID(path);
+                bool listed = false;
+                for (int i = list + 1; i < settings.Length && settings[i].TrimStart().StartsWith("- "); i++)
+                    listed |= settings[i].Contains("guid: " + guid + ",");
+                if (!listed) missing += $"\n  '{name}' ({path}, guid {guid})";
+            }
+            Assert.IsEmpty(missing, "not in Always Included Shaders (Project Settings > Graphics), so a player " +
+                                    "build strips them and her figure cannot find them:" + missing);
         }
 
         // ---- why she is not shown ashore ----------------------------------------------------------

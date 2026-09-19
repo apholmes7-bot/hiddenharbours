@@ -305,7 +305,7 @@ MonoBehaviour:
   BoatLegacyCabinGlow: 0
   PixelGridSnap: 1
   MeshCharacter: 1
-  MeshCharacterAshore: 0
+  MeshCharacterAshore: 1
   MeshCast: 1
   FoliageSilhouette: 1
   FoliageSilhouetteTint: {r: 0.94, g: 0.9, b: 0.82, a: 1}
