@@ -431,12 +431,16 @@ MonoBehaviour:
     ImpactShakeMeters: 0.18
     ImpactShakeSeconds: 0.3
     ImpactShakeHz: 18
-    SpeedPullBackFraction: 0.1
-    SpeedPullBackStartMps: 2.5
-    SpeedPullBackFullMps: 7
+    SpeedPullBackFraction: 0.15
+    SpeedPullBackStartMps: 1
+    SpeedPullBackFullMps: 4.5
     SpeedPullBackSeaStateFraction: 0.05
     SpeedPullBackSlewSeconds: 2
     FeelSeaStateRefreshHz: 4
+    BoatLeadSeconds: 0.6
+    BoatLeadLagCompensation: 1
+    BoatLeadMaxViewFraction: 0.35
+    SpeedPullBackWhenCarriedAboard: 1
     MomentsEnabled: 1
     LandingHitStopScale: 0.05
     LandingHitStopSeconds: 0.09
