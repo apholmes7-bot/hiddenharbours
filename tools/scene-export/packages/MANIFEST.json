@@ -4,11 +4,11 @@
     {
       "region": "region.nine_mile_creek",
       "file": "NineMileCreek.scene.json",
-      "sha256": "da6b74f6c1725429e9c4c38fa7b9cad550de9488bed146abad4317a67ee1fc0c",
+      "sha256": "380a8ccc624c47c6e67cef23367db73fd8cd3ec8be60973e61e8af9dbbc270d1",
       "entities": 2757,
       "paths": 0,
       "rigsPinned": 12,
-      "sceneLastBuiltCommit": "c57a40024f68b04de340bccc077c350e0407ed28"
+      "sceneLastBuiltCommit": "cf76ac09c2e14ef3075de15c2abc2092dfe28209"
     },
     {
       "region": "region.st_peters",
