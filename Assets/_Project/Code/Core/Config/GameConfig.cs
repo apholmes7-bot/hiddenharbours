@@ -650,6 +650,30 @@ namespace HiddenHarbours.Core
                  "land. Turn it OFF and the sprite is back exactly, down to the byte.")]
         public bool MeshCharacter = DefaultMeshCharacter;
 
+        /// <summary>
+        /// Shipped default for <see cref="MeshCast"/>. <b>ON — the owner's ruling of 2026-09-17,
+        /// "yes make everyone a mesh now"</b> (ADR 0044, amendment 2026-09-17): the cast follows the
+        /// player onto skinned meshes, with the sprite as the fallback for anything that cannot draw.
+        ///
+        /// <para>⚠ What ON reaches TODAY is narrower than the ruling, and on purpose (option (b) of the
+        /// same amendment): a cast member draws as a mesh only while standing on a FACET hull — a
+        /// moored boat's skipper — because the facet pass is only recorded while a mesh hull is on
+        /// screen. Villagers ashore are not wired at all and draw their sprites exactly as before.
+        /// A character whose art def names no <see cref="CharacterSkinDef"/>, or whose def lists the
+        /// state it is in nowhere in <see cref="CharacterSkinDef.MeshStates"/>, keeps its sprite
+        /// whatever this says.</para>
+        /// </summary>
+        public const bool DefaultMeshCast = true;
+
+        [Tooltip("Draw the CAST (everyone but the player) as skinned meshes through the iso facet " +
+                 "pass where they can be drawn that way? ON is the shipped look (owner ruling " +
+                 "2026-09-17). Today that is a moored boat's skipper standing on a mesh hull; " +
+                 "villagers ashore stay sprites, because the facet pass is only recorded while a " +
+                 "mesh hull is on screen. The same debts as the player's switch apply: about half " +
+                 "a fidelity step off the inked art and no eyes, brows or mouth. Read live — flip " +
+                 "it with the game running. Turn it OFF and every cast sprite is back exactly.")]
+        public bool MeshCast = DefaultMeshCast;
+
         [Header("Foliage silhouette (the fisher read through dense woods)")]
         [Tooltip("Let the player read through foliage that draws in front of her? ON is the shipped " +
                  "look: trees and shrubs stay opaque and correctly sorted, and her shape shows through " +

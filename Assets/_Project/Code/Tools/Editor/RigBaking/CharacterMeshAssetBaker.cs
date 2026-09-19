@@ -352,23 +352,54 @@ namespace HiddenHarbours.Tools.RigBaking
         /// question about WHERE the figure is; the facet model's own 45–57% shading delta drowns
         /// that question out of any colour statistic. The measurement is at the comparison below.</para>
         ///
+        /// <para><b>It reads MORE THAN ONE FRAME, and the 4x bar is unchanged.</b> The sign used to
+        /// be read from <c>idle 0</c> alone, and a pose whose mirror happens to move few outline
+        /// pixels then stopped the whole bake: 09-18 the cast bake threw at <c>girl</c> on 9 vs 35
+        /// px — 3.89x, one pixel under the bar — while the other nine presets cleared at 6.0x to
+        /// 244x and every one of the ten read the SAME sign. That was the guard doing its job: from
+        /// that one pose it could not tell which way she turns. The answer is to ask more poses, not
+        /// to lower the bar, so <see cref="FacetSignFrames"/> fixes a list spanning the gait cycles —
+        /// a mid-stride frame moves its outline, a near-symmetric rest frame does not. Each frame is
+        /// judged at the same 4x; a frame that cannot read the sign is reported and skipped, because
+        /// a mushy margin is not evidence in either direction; every frame that CAN read it must
+        /// agree; and at least one must. Two clearing frames that disagree still throw.</para>
+        ///
         /// <para>Public so the EditMode guard pins the SAME adjudication the bake stored, rather
         /// than a second implementation that could agree by luck.</para>
         /// </summary>
         public static bool MeasureFacetSign(IRigScriptHost host, string preset, out string report)
         {
-            RigMeshData pose = CharacterPoseMeshExtractor.ExtractPose(host, preset, "idle", 0);
-            byte[] truthEast = CharacterPoseMeshExtractor.RenderTruth(host, dir: 2, preset, "idle", 0);
+            var readings = new List<FacetSignReading>();
+            foreach ((string state, int frame) in FacetSignFrames(host))
+                readings.Add(ReadFacetSign(host, preset, state, frame));
+            if (readings.Count == 0)
+                throw new InvalidOperationException(
+                    "FACET SIGN ADJUDICATION INCONCLUSIVE — the rig carries no frame to read the " +
+                    "sign from. Do not bake until this is understood.");
 
-            var negView = new RigViewOptions(-2, pose.DefaultElev);
-            var posView = new RigViewOptions(+2, pose.DefaultElev);
-            byte[] neg = RigMeshReferenceRasterizer.RenderFromFaces(
-                pose, negView, RigTrigBasis.FromScriptHost(host, negView));
-            byte[] pos = RigMeshReferenceRasterizer.RenderFromFaces(
-                pose, posView, RigTrigBasis.FromScriptHost(host, posView));
+            // The DECIDING frame is the first one in the fixed order that clears the bar, so the
+            // frame this has always been read from — idle 0 — keeps deciding wherever it still can,
+            // and a preset only falls through to a gait frame when its rest pose cannot answer.
+            int deciding = -1;
+            bool disagreement = false;
+            for (int i = 0; i < readings.Count; i++)
+            {
+                if (!readings[i].Clears) continue;
+                if (deciding < 0) deciding = i;
+                else if (readings[i].NegWins != readings[deciding].NegWins) disagreement = true;
+            }
 
-            RigPixelDiff dNeg = RigMeshReferenceRasterizer.Compare(truthEast, neg, pose.W, pose.H);
-            RigPixelDiff dPos = RigMeshReferenceRasterizer.Compare(truthEast, pos, pose.W, pose.H);
+            FacetSignReading d = readings[deciding < 0 ? 0 : deciding];
+            var table = new StringBuilder();
+            for (int i = 0; i < readings.Count; i++)
+            {
+                FacetSignReading r = readings[i];
+                table.Append("\n   ").Append(r.State).Append(' ').Append(r.Frame).Append(": ")
+                     .Append(r.NegOut).Append(" vs ").Append(r.PosOut).Append(" px, ")
+                     .Append(r.Ratio).Append(", ")
+                     .Append(r.Clears ? (r.NegWins ? "NEGATED" : "direct") : "under 4x — no reading")
+                     .Append(i == deciding ? "  <- deciding" : string.Empty);
+            }
 
             // ⚠️ Adjudicate on the SILHOUETTE (opaque-vs-transparent), never on inked COLOUR.
             // The sign question is "is she facing the other way", and that is a question about
@@ -380,28 +411,128 @@ namespace HiddenHarbours.Tools.RigBaking
             // — measured here, 77.95% wrong against 90.76% wrong, a 1.16x margin carrying no signal
             // at all. The same two renders read as coverage: 7 against 78, an 11.1x margin. A
             // mirrored pose moves the outline everywhere; nothing else in this pipeline can.
-            int negOut = dNeg.CoverageOnlyDifferences;
-            int posOut = dPos.CoverageOnlyDifferences;
-
-            bool negWins = negOut < posOut;
-            int winner = negWins ? negOut : posOut;
-            int loser = negWins ? posOut : negOut;
-
+            //
+            // The first four lines below are the DECIDING frame's, in the shape they have always
+            // had: CharacterSkinBakeGuardTests.TheTurntableSignCarriesItsSabotageMargin_AndTheDefStoredIt
+            // reads the two counts back out of the "SILHOUETTE (opaque-vs-transparent):" line and
+            // asserts the ratio itself, rather than trusting that this did not throw.
             report =
-                $"rig East (dir 2) vs oracle dir -2: {dNeg}\n" +
-                $"rig East (dir 2) vs oracle dir +2: {dPos}\n" +
-                $"=> adjudicated on SILHOUETTE (opaque-vs-transparent): {negOut} vs {posOut} px\n" +
-                $"=> facet sign: {(negWins ? "NEGATED (azimuthCounterClockwise = true)" : "direct (false)")}";
+                $"rig East (dir 2) vs oracle dir -2: {d.DNeg}\n" +
+                $"rig East (dir 2) vs oracle dir +2: {d.DPos}\n" +
+                $"=> adjudicated on SILHOUETTE (opaque-vs-transparent): {d.NegOut} vs {d.PosOut} px\n" +
+                $"=> facet sign: {(d.NegWins ? "NEGATED (azimuthCounterClockwise = true)" : "direct (false)")}\n" +
+                $"=> deciding frame: {d.State} {d.Frame}" +
+                (deciding < 0 ? " (NOTHING cleared the bar — the block above is the first frame read)"
+                              : $", first of {readings.Count} frames read to clear 4x") +
+                $"\n=> frames read (oracle dir -2 vs dir +2, silhouette px):" + table;
 
-            // The loser must be unambiguously wrong — a mirrored character differs across most of
-            // the silhouette. A mushy margin means the adjudication is reading noise: stop. Both at
-            // zero is that same failure wearing a different face: two silhouettes that agree
-            // perfectly have not told us which way she turns.
-            if (loser == 0 || loser < winner * 4)
+            // A frame that cannot read the sign is not a failure — but a bake with NO frame that can
+            // read it is exactly the old refusal, and so are two frames that read it differently.
+            if (deciding < 0)
                 throw new InvalidOperationException(
                     "FACET SIGN ADJUDICATION INCONCLUSIVE — the wrong sign is not wrong enough:\n" +
-                    report + "\nDo not bake until this is understood.");
-            return negWins;
+                    report + "\nNot one of the frames read cleared the 4x bar, so nothing here says " +
+                    "which way she turns. Do not bake until this is understood.");
+            if (disagreement)
+                throw new InvalidOperationException(
+                    "FACET SIGN ADJUDICATION INCONCLUSIVE — two frames that BOTH cleared the 4x bar " +
+                    "disagree about which way she turns:\n" + report +
+                    "\nOne of them is lying about a fact the other proves, and a bake cannot pick. " +
+                    "Do not bake until this is understood.");
+            return d.NegWins;
+        }
+
+        /// <summary>
+        /// The FIXED list of frames <see cref="MeasureFacetSign"/> reads, in order: the rest pose it
+        /// has always used, then frame 0, the quarter and the half of each gait cycle the recipe
+        /// carries. Fixed, and not chosen from the readings, because a guard that picks its own
+        /// frames after seeing the numbers is a guard that asks the code for its own bar.
+        ///
+        /// <para>Why the gaits: a walk or run separates the limbs along the view axis for most of
+        /// its cycle, so a mirror moves the outline; a rest pose can be very nearly symmetric, which
+        /// is what <c>girl</c>'s idle 0 turned out to be. Quarter and half phases are taken rather
+        /// than one guessed "mid-stride" index, because which frame of the cycle is the contact pose
+        /// is the rig's business and not this baker's.</para>
+        /// </summary>
+        static List<(string state, int frame)> FacetSignFrames(IRigScriptHost host)
+        {
+            var plan = new List<(string state, int frame)>();
+            var seen = new HashSet<string>();
+            void Add(string state, int frame)
+            {
+                if (frame < 0) return;
+                if (seen.Add(state + "#" + frame.ToString(CultureInfo.InvariantCulture)))
+                    plan.Add((state, frame));
+            }
+
+            Add("idle", 0);
+
+            string[] anims = CharacterPoseMeshExtractor.Anims(host);
+            foreach (string gait in GaitStatesForSign)
+            {
+                bool carried = false;
+                foreach (string a in anims) if (a == gait) { carried = true; break; }
+                if (!carried) continue;
+
+                int n = CharacterPoseMeshExtractor.FrameCount(host, gait);
+                if (n <= 0) continue;
+                Add(gait, 0);
+                Add(gait, Math.Min(n / 4, n - 1));
+                Add(gait, Math.Min(n / 2, n - 1));
+            }
+            return plan;
+        }
+
+        /// <summary>The gait cycles the sign is read across, beyond the rest pose.</summary>
+        static readonly string[] GaitStatesForSign = { "walk", "run" };
+
+        /// <summary>One frame's reading of the sign: the two oracle renders against the rig's own
+        /// East view, and whether the margin between them clears the 4x bar.</summary>
+        readonly struct FacetSignReading
+        {
+            public readonly string State;
+            public readonly int Frame;
+            public readonly RigPixelDiff DNeg, DPos;
+            public readonly int NegOut, PosOut, Winner, Loser;
+            public readonly bool NegWins, Clears;
+
+            public FacetSignReading(string state, int frame, RigPixelDiff dNeg, RigPixelDiff dPos)
+            {
+                State = state; Frame = frame; DNeg = dNeg; DPos = dPos;
+                NegOut = dNeg.CoverageOnlyDifferences;
+                PosOut = dPos.CoverageOnlyDifferences;
+                NegWins = NegOut < PosOut;
+                Winner = NegWins ? NegOut : PosOut;
+                Loser = NegWins ? PosOut : NegOut;
+
+                // The bar, unchanged and applied per frame: the loser must be unambiguously wrong.
+                // Both at zero is the same failure wearing a different face — two silhouettes that
+                // agree perfectly have not told us which way she turns.
+                Clears = Loser != 0 && Loser >= Winner * 4;
+            }
+
+            public string Ratio =>
+                Winner == 0
+                    ? (Loser == 0 ? "both at 0" : "winner exact")
+                    : ((double)Loser / Winner).ToString("0.00", CultureInfo.InvariantCulture) + "x";
+        }
+
+        /// <summary>Read one frame: the rig's East view against the oracle posed at -2 and at +2.</summary>
+        static FacetSignReading ReadFacetSign(IRigScriptHost host, string preset, string state, int frame)
+        {
+            RigMeshData pose = CharacterPoseMeshExtractor.ExtractPose(host, preset, state, frame);
+            byte[] truthEast = CharacterPoseMeshExtractor.RenderTruth(host, dir: 2, preset, state, frame);
+
+            var negView = new RigViewOptions(-2, pose.DefaultElev);
+            var posView = new RigViewOptions(+2, pose.DefaultElev);
+            byte[] neg = RigMeshReferenceRasterizer.RenderFromFaces(
+                pose, negView, RigTrigBasis.FromScriptHost(host, negView));
+            byte[] pos = RigMeshReferenceRasterizer.RenderFromFaces(
+                pose, posView, RigTrigBasis.FromScriptHost(host, posView));
+
+            return new FacetSignReading(state, frame,
+                RigMeshReferenceRasterizer.Compare(truthEast, neg, pose.W, pose.H),
+                RigMeshReferenceRasterizer.Compare(truthEast, pos, pose.W, pose.H));
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using HiddenHarbours.Tools.RigBaking;
 
@@ -63,35 +64,43 @@ namespace HiddenHarbours.Tests.RigBaking
             public override string ToString() => Pick;
         }
 
+        /// <summary>
+        /// Re-measured 2026-09-18 on the re-cut rig (<c>280f0538</c>'s trailer set under the drop's
+        /// barn-door fix), through this fixture's own helpers on V8. The cells and axle stations did
+        /// not move; the geometry did — the re-cut more than doubles every body (643/1119/656/1067
+        /// faces before), each wheel set went from 127 faces to 177, each barn leaf from 27 to 72,
+        /// and the ramp counts rose from 8/8/11/11 to 9/9/15/15, with the reefers' night pass
+        /// reaching 16.
+        /// </summary>
         static readonly Body[] Bodies =
         {
             new Body
             {
-                Pick = "flatbed28", Label = "Flatbed Trailer 28 ft", Faces = 643,
+                Pick = "flatbed28", Label = "Flatbed Trailer 28 ft", Faces = 1633,
                 CellW = 384, CellH = 320, PivotX = 192, PivotY = 214,
-                RollPerSide = 127, Stations = new[] { -2.90 }, DoorFaces = 0,
-                UsedRamps = 8, UsedRampsAllBuilds = 8,
+                RollPerSide = 177, Stations = new[] { -2.90 }, DoorFaces = 0,
+                UsedRamps = 9, UsedRampsAllBuilds = 9,
             },
             new Body
             {
-                Pick = "flatbed53", Label = "Flatbed Trailer 53 ft", Faces = 1119,
+                Pick = "flatbed53", Label = "Flatbed Trailer 53 ft", Faces = 2950,
                 CellW = 640, CellH = 480, PivotX = 320, PivotY = 300,
-                RollPerSide = 254, Stations = new[] { -6.70, -5.50 }, DoorFaces = 0,
-                UsedRamps = 8, UsedRampsAllBuilds = 8,
+                RollPerSide = 354, Stations = new[] { -6.70, -5.50 }, DoorFaces = 0,
+                UsedRamps = 9, UsedRampsAllBuilds = 9,
             },
             new Body
             {
-                Pick = "reefer28", Label = "Reefer Trailer 28 ft", Faces = 656,
+                Pick = "reefer28", Label = "Reefer Trailer 28 ft", Faces = 1610,
                 CellW = 384, CellH = 320, PivotX = 192, PivotY = 214,
-                RollPerSide = 127, Stations = new[] { -2.90 }, DoorFaces = 54,
-                UsedRamps = 11, UsedRampsAllBuilds = 12,
+                RollPerSide = 177, Stations = new[] { -2.90 }, DoorFaces = 144,
+                UsedRamps = 15, UsedRampsAllBuilds = 16,
             },
             new Body
             {
-                Pick = "reefer53", Label = "Reefer Trailer 53 ft", Faces = 1067,
+                Pick = "reefer53", Label = "Reefer Trailer 53 ft", Faces = 2433,
                 CellW = 640, CellH = 480, PivotX = 320, PivotY = 300,
-                RollPerSide = 254, Stations = new[] { -6.70, -5.50 }, DoorFaces = 54,
-                UsedRamps = 11, UsedRampsAllBuilds = 12,
+                RollPerSide = 354, Stations = new[] { -6.70, -5.50 }, DoorFaces = 144,
+                UsedRamps = 15, UsedRampsAllBuilds = 16,
             },
         };
 
@@ -244,7 +253,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
             Assert.That(host.EvaluateNumber($"__faces({Pose(b)}).length"), Is.EqualTo((double)b.Faces),
                 $"{b.Pick} built a different number of faces. ⚠️ Face count is NOT an identity " +
-                "oracle here — the pups differ by only 13 faces — but a change means the art was " +
+                "oracle here — the pups differ by only 23 faces — but a change means the art was " +
                 "revised and every measured number for this body needs re-measuring.");
 
             Assert.That(host.EvaluateNumber($"{Global}.cellFor('{b.Pick}').W"),
@@ -279,6 +288,150 @@ namespace HiddenHarbours.Tests.RigBaking
                     "and both calls fell back to the default body.");
                 seen[hash] = b.Pick;
             }
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>ALL FOUR ARE BAKE-ELIGIBLE — and each fleet row names ITS OWN body in every place a
+        /// pick has to reach.</b>
+        ///
+        /// <para>#855 landed the powered trucks and HELD the trailer re-cut out of that intake, so the
+        /// four trailer meshes it shipped were baked from the OLD rig. Lifting the hold is this
+        /// assertion: each body has exactly one row, nothing excuses it — checked in the baker's own
+        /// refusal order, <see cref="VehicleRigFleet.SidecarHashRefused"/> then
+        /// <see cref="VehicleRigFleet.NotBaked"/> — it is in <see cref="VehicleRigFleet.Baked"/>, and
+        /// its sidecar still pins the rig on disk.</para>
+        ///
+        /// <para>⚠️ <b>The (file, pick) trap is why the rest is EVALUATED, not only spelled.</b> An
+        /// unknown body id falls back to <c>reefer53</c>, so a row that lost its pick in any one
+        /// place bakes a plausible reefer53 under another body's name. The face expression is run
+        /// exactly as the baker runs it and must hash equal to this body's own build; the rest pose
+        /// and the view options must resolve to this body through the rig; the hull scope and the
+        /// sidecar scope must name it (the hull scope is evaluated by
+        /// <see cref="TheBakeReadsEachBodysOwnCell_ThroughCellOf"/>).
+        /// <c>VehicleRigFleetTests.EveryRegisteredBody_IsUniqueByFileAndPick</c> checks only that
+        /// the face expression's TEXT contains the pick.</para>
+        /// </summary>
+        [Test]
+        public void EveryBodyIsBakeEligible_AndItsRowNamesItsBodyInEveryPlace(
+            [ValueSource(nameof(Bodies))] Body b)
+        {
+            VehicleRigFleet.Vehicle[] rows = VehicleRigFleet.Vehicles
+                .Where(x => x.ScriptPath == RigPath && x.Pick == b.Pick).ToArray();
+            Assert.That(rows.Length, Is.EqualTo(1),
+                $"{rows.Length} VehicleRigFleet rows register ({RigPath}, {b.Pick}). Exactly one " +
+                "must — none leaves the body unbaked, two bake it twice under two names.");
+            VehicleRigFleet.Vehicle v = rows[0];
+
+            Assert.That(v.GlobalName, Is.EqualTo(Global));
+            Assert.That(v.SidecarPath, Is.EqualTo(SidecarPath));
+            Assert.That(v.Label, Is.EqualTo(b.Label));
+
+            // --- bake-eligible, in the baker's own refusal order ------------------------------------
+            Assert.That(VehicleRigFleet.SidecarHashRefused.ContainsKey(v.Key), Is.False,
+                $"'{v.Key}' is in SidecarHashRefused, so BakeAll skips her before anything else.");
+            Assert.That(VehicleRigFleet.NotBaked.ContainsKey(v.Key), Is.False,
+                $"'{v.Key}' is excused in NotBaked, so BakeAll skips her by declaration.");
+            Assert.That(VehicleRigFleet.Baked, Does.Contain(v.Key),
+                $"'{v.Key}' is not in Baked, so her mesh is not expected and nothing notices it " +
+                "missing.");
+
+            string expected = RoadFleetKitProbeTests.ReadJsonString(
+                File.ReadAllText(Full(v.SidecarPath)), "derivedFromRigSha256");
+            Assert.That(DeckSidecarReader.MatchRigHash(File.ReadAllBytes(Full(v.ScriptPath)), expected,
+                    out string actual),
+                Is.Not.EqualTo(RigHashMatch.None),
+                $"'{v.Key}': the sidecar pins {expected} but the rig on disk hashes to {actual}.");
+
+            // --- every place the pick has to reach, by text ----------------------------------------
+            string quoted = "'" + b.Pick + "'";
+            Assert.That(v.Extraction, Is.Not.Null, $"'{v.Key}' has no hull extraction.");
+            Assert.That(v.Extraction.FaceExpression, Does.Contain(quoted),
+                $"'{v.Key}''s FaceExpression does not name {quoted} — the bake takes the default body.");
+            Assert.That(v.Extraction.HullScope, Does.Contain(quoted),
+                $"'{v.Key}''s HullScope does not name {quoted} — the bake reads the default body's cell.");
+            Assert.That(v.Extraction.ViewOptions, Does.Contain(quoted),
+                $"'{v.Key}''s ViewOptions does not name {quoted} — the azimuth anchors are the " +
+                "default body's.");
+            Assert.That(v.RestPose, Does.Contain(quoted),
+                $"'{v.Key}''s RestPose does not name {quoted} — the articulation probes measure the " +
+                "default body.");
+            Assert.That(v.SidecarBodyScope, Is.EqualTo(b.Pick),
+                $"'{v.Key}''s SidecarBodyScope is not '{b.Pick}' — her collider, saddle and " +
+                "interactions are read for another body.");
+
+            // --- and by evaluation, because the fallback makes a lost pick look right ---------------
+            using IRigScriptHost host = BuilderHost();
+
+            Assert.That(host.EvaluateString($"{Global}.resolve({v.RestPose}).body"), Is.EqualTo(b.Pick),
+                $"'{v.Key}''s RestPose resolves to another body.");
+            Assert.That(host.EvaluateString($"{Global}.resolve({v.Extraction.ViewOptions}).body"),
+                Is.EqualTo(b.Pick), $"'{v.Key}''s ViewOptions resolve to another body.");
+            Assert.That(host.EvaluateString($"__hashFaces({Global}.{v.Extraction.FaceExpression})"),
+                Is.EqualTo(host.EvaluateString($"__geometryHash({Pose(b)})")),
+                $"'{v.Key}''s face expression, run as the baker runs it, builds different geometry " +
+                $"from {b.Pick}'s own build.");
+        }
+
+        /// <summary>
+        /// ⭐ <b>THE CELL THE BAKE READS — through the bake's own entry point, per body.</b>
+        ///
+        /// <para>The four bodies do not share a cell: the pups take the 384×320 road cell at
+        /// (192, 214), the 53-footers 640×480 at (320, 300). The rig publishes each as two calls
+        /// (<c>cellFor</c>/<c>pivotFor</c>) and the extractor reads one object through
+        /// <c>HullScope</c>, so <c>cellOf</c> is RECONSTRUCTED (<see cref="RigMeshSymbols"/>).
+        /// <see cref="EveryBodyBuildsItsOwnGeometryAndItsOwnCell"/> asks the rig; this asks
+        /// <see cref="RigMeshExtractor.ExtractFrom"/> with the fleet row's own extraction, exactly
+        /// as <c>VehicleMeshAssetBaker.Bake</c> does, and repeats the baker's face-count refusal.</para>
+        ///
+        /// <para>⚠️ The global carries the LONG cell (640×480 @ 320,300), and so does an unknown
+        /// body id. A pup that read either would bake with her pivot 86 px low in a cell two and a
+        /// half times her area — plausible, silent and wrong. So both fallbacks are pinned here,
+        /// which is what gives the pups' rows their teeth: their cell must differ from them.</para>
+        /// </summary>
+        [Test]
+        public void TheBakeReadsEachBodysOwnCell_ThroughCellOf([ValueSource(nameof(Bodies))] Body b)
+        {
+            Assert.That(RigMeshSymbols.IsReconstructed(RigPath, "cellOf"), Is.True,
+                "trailerIsoRig.js has no cellOf reconstruction, so HullScope names a symbol the rig " +
+                "does not define and the bake cannot read a per-body cell at all.");
+
+            VehicleRigFleet.Vehicle v = VehicleRigFleet.Vehicles
+                .Single(x => x.ScriptPath == RigPath && x.Pick == b.Pick);
+
+            using IRigScriptHost host = RigScriptHostFactory.Create();
+            RigMeshData data = RigMeshExtractor.ExtractFrom(host, v.ScriptPath, v.GlobalName,
+                                                            hull: v.Extraction);
+
+            Assert.That(data.W, Is.EqualTo(b.CellW), $"{b.Pick} bakes into a cell {data.W} wide.");
+            Assert.That(data.H, Is.EqualTo(b.CellH), $"{b.Pick} bakes into a cell {data.H} high.");
+            Assert.That(data.PivotX, Is.EqualTo((double)b.PivotX), $"{b.Pick}'s baked pivot x moved.");
+            Assert.That(data.PivotY, Is.EqualTo((double)b.PivotY), $"{b.Pick}'s baked pivot y moved.");
+            Assert.That(data.DefaultElev, Is.EqualTo(40d),
+                $"{b.Pick}'s bake elevation is not the rig's DEFAULT_ELEV of 40°. cellOf carries it " +
+                "because HullScope redirects the elevation with the cell; undefined here poses the " +
+                "whole bake at NaN.");
+
+            Assert.That(data.Faces.Count, Is.EqualTo(b.Faces),
+                $"the extractor produced {data.Faces.Count} faces for {b.Pick}.");
+            Assert.That(host.EvaluateNumber($"{v.GlobalName}.{v.Extraction.FaceExpression}.length"),
+                Is.EqualTo((double)data.Faces.Count),
+                "the baker's own refusal: the extracted face count differs from what the row's face " +
+                "expression yields, and the articulation split assigns faces BY INDEX.");
+
+            Assert.That(data.Materials.Count, Is.EqualTo(16),
+                $"{b.Pick} bakes with {data.Materials.Count} ramps; the reconstructed union was 16.");
+            Assert.That(data.Materials.Count, Is.LessThanOrEqualTo(ShaderRampCap),
+                "the baked ramp table no longer fits the facet shader's float4[16].");
+
+            // Both fallbacks read the LONG cell. Pinned, so a pup's cell above is a measurement that
+            // could have come out wrong rather than one that could not.
+            Assert.That(host.EvaluateString(
+                    $"JSON.stringify([{Global}.W,{Global}.H,{Global}.pivot.x,{Global}.pivot.y])"),
+                Is.EqualTo("[640,480,320,300]"), "the global's own cell moved.");
+            Assert.That(host.EvaluateString(
+                    $"(function(c){{return JSON.stringify([c.W,c.H,c.pivot.x,c.pivot.y]);}})" +
+                    $"({Global}.cellOf('NOT_A_TRAILER'))"),
+                Is.EqualTo("[640,480,320,300]"), "an unknown body's cell is no longer the long one.");
         }
 
         // =============================================================================================
@@ -350,9 +503,11 @@ namespace HiddenHarbours.Tests.RigBaking
         /// the rig publishes only ONE wheel anchor per side, so the second station has no anchor to
         /// be named after.
         ///
-        /// <para>Measured: the two stations sit 1.20 m apart and each moves 127 faces, so a window
-        /// anywhere from ±0.32 to ±0.88 takes one axle and clears its neighbour. The pups assert
-        /// ONE station, so a tandem appearing on a single-axle pup cannot pass unnoticed.</para>
+        /// <para>Measured: the two stations sit 1.20 m apart and each moves 177 faces (127 before the
+        /// 2026-09-18 re-cut), so a window anywhere from ±0.32 to ±0.88 takes one axle and clears its
+        /// neighbour — re-measured on the re-cut, the stations still span −7.02…−6.38 and
+        /// −5.82…−5.18. The pups assert ONE station, so a tandem appearing on a single-axle pup
+        /// cannot pass unnoticed.</para>
         /// </summary>
         [Test]
         public void EachSidesRollTouchesExactlyTheAxleStationsSheHas(
@@ -536,9 +691,14 @@ namespace HiddenHarbours.Tests.RigBaking
         // =============================================================================================
 
         /// <summary>
-        /// ⭐ Every body fits the facet shader with room to spare — the four are 8, 8, 11 and 11
-        /// used ramps against a <c>float4[16]</c> cap. Measured before a bake is attempted, never
-        /// discovered during one.
+        /// ⭐ Every body fits the facet shader — the four are 9, 9, 15 and 15 used ramps against a
+        /// <c>float4[16]</c> cap. Measured before a bake is attempted, never discovered during one.
+        ///
+        /// <para>⚠️ <b>Re-measured 2026-09-18 on the re-cut: the headroom is nearly gone.</b> Before
+        /// it the four were 8, 8, 11 and 11. The reefers' baked build now leaves ONE ramp free, and
+        /// their all-builds union — the night pass adds <c>glow</c> — is 16, exactly AT the cap. So
+        /// the all-builds number is now asserted against the cap as well as pinned: one more
+        /// material on a reefer and a one-mesh day-and-night trailer no longer fits.</para>
         /// </summary>
         [Test]
         public void EveryBodyFitsTheFacetShaderWithHeadroom([ValueSource(nameof(Bodies))] Body b)
@@ -559,15 +719,24 @@ namespace HiddenHarbours.Tests.RigBaking
                     $"{Pose(b, "mudflaps:false")},{Pose(b, "headboard:true,mudflaps:true")}]).length"),
                 Is.EqualTo((double)b.UsedRampsAllBuilds),
                 $"{b.Pick}'s all-builds ramp union changed. This is the number a ONE-MESH " +
-                "day-and-night trailer would need, and all four are comfortably inside the cap — " +
-                "unlike three of the five road vehicles.");
+                "day-and-night trailer would need; the flatbeds sit well inside the cap and the " +
+                "reefers sit exactly AT it.");
+
+            Assert.That(host.EvaluateNumber(
+                    $"__unionUsed([{Pose(b)},{Pose(b, "night:true")},{Pose(b, "gear:0")}," +
+                    $"{Pose(b, "barnL:1,barnR:1")},{Pose(b, "headboard:false")}," +
+                    $"{Pose(b, "mudflaps:false")},{Pose(b, "headboard:true,mudflaps:true")}]).length"),
+                Is.LessThanOrEqualTo((double)ShaderRampCap),
+                $"{b.Pick}'s all-builds ramp union no longer fits the facet shader's float4[16]. " +
+                "The reefers had zero headroom after the 2026-09-18 re-cut, so this is the first " +
+                "number a new reefer material moves.");
         }
 
         /// <summary>
         /// ⭐⭐ <b>THE (file, pick) TRAP, MADE CONCRETE.</b> All four bodies share ONE
-        /// <c>makeMats</c> table — byte-identical, 14 keys, same order — but they do not paint the
-        /// same subset of it, and a <c>Reconstructions</c> entry is keyed by FILE and can produce
-        /// only one table.
+        /// <c>makeMats</c> table — byte-identical, 22 keys, same order (14 before the 2026-09-18
+        /// re-cut) — but they do not paint the same subset of it, and a <c>Reconstructions</c> entry
+        /// is keyed by FILE and can produce only one table.
         ///
         /// <para><b>Measured, 2026-08-27:</b> filtering at <c>resolve({})</c> — which is
         /// <c>reefer53</c> — drops <c>wood</c>, and <c>wood</c> is named by nothing except the
@@ -578,6 +747,15 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <para>So the committed entry unions the used set over EVERY body — the zodiac's pattern,
         /// for the zodiac's reason. Twelve ramps, <c>paint</c> first and used, and the two dropped
         /// (<c>glass</c>, <c>glow</c>) belong to a night pass this mesh does not carry.</para>
+        ///
+        /// <para><b>Re-measured, 2026-09-18, on the re-cut:</b> the table grew to 22 keys and the
+        /// union of what the four bodies' baked builds name is <b>SIXTEEN</b> — exactly the facet
+        /// shader's <c>float4[16]</c>, zero headroom. <c>paint</c> is still first and used,
+        /// <c>wood</c> is still named by the flatbeds alone (so the trap above is still live), and
+        /// the six dropped are <c>glass</c>, <c>glow</c>, <c>p2Pressed</c>, <c>p2Hood</c>,
+        /// <c>p2Lens</c> and <c>p2Liner</c>. Of those only <c>glow</c> is painted by any build
+        /// measured (the reefers' night pass); a union over every body AND every build would be
+        /// 17 and would not fit, which is why the table is unioned over the baked builds only.</para>
         /// </summary>
         [Test]
         public void OneRampTableServesAllFourBodies_AndFilteringAtOneOfThemLosesTheFlatbedDeck()
@@ -615,10 +793,16 @@ namespace HiddenHarbours.Tests.RigBaking
             using IRigScriptHost bakeHost = RigScriptHostFactory.Create();
             bakeHost.Execute(widened);
 
-            Assert.That(bakeHost.EvaluateNumber($"Object.keys({Global}.MATS).length"), Is.EqualTo(12d),
-                "the reconstructed table is no longer twelve ramps. It is the union of what all " +
+            Assert.That(bakeHost.EvaluateNumber($"Object.keys({Global}.MATS).length"), Is.EqualTo(16d),
+                "the reconstructed table is no longer sixteen ramps. It is the union of what all " +
                 "four bodies paint; a smaller number means a body's ramps are being dropped, and " +
                 "dropped ramps resolve to index 0.");
+
+            Assert.That(bakeHost.EvaluateNumber($"Object.keys({Global}.MATS).length"),
+                Is.LessThanOrEqualTo((double)ShaderRampCap),
+                "the reconstructed table no longer fits the facet shader's float4[16] _RampMeta. " +
+                "After the 2026-09-18 re-cut it sat exactly AT the cap, so a new material on any " +
+                "body lands here first.");
 
             Assert.That(bakeHost.EvaluateString($"Object.keys({Global}.MATS)[0]"), Is.EqualTo("paint"),
                 "'paint' is no longer index 0 of the reconstructed table — which is where the face " +
@@ -723,8 +907,11 @@ namespace HiddenHarbours.Tests.RigBaking
 
                 // A stable digest over {mat, b, db, vertices@1e-6} in face order. Count is what a
                 // silent fallback reproduces perfectly, so identity is hashed, not counted.
-                function __geometryHash(o){
-                  var F = __faces(o), s = [];
+                // `__hashFaces` takes a face LIST, so a fleet row's own face expression can be
+                // hashed exactly as the baker evaluates it.
+                function __geometryHash(o){ return __hashFaces(__faces(o)); }
+                function __hashFaces(F){
+                  var s = [];
                   for (var i=0;i<F.length;i++){
                     var f = F[i];
                     s.push(f.mat, f.b, f.db);

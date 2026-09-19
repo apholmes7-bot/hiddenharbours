@@ -34,7 +34,7 @@ namespace HiddenHarbours.Boats
     /// draughts rather than at a shared guess.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class MooredBoat : MonoBehaviour, IVesselWay
+    public sealed class MooredBoat : MonoBehaviour, IVesselWay, ICharacterFigureStand
     {
         /// <summary>
         /// <b>How she is lying, for her lamps</b> (ADR 0016, the lamp regime) — <see cref="VesselWay.
@@ -316,6 +316,14 @@ namespace HiddenHarbours.Boats
 
             GiveTheOccludedMaterial();
             ClaimTheDeckSlot();
+
+            // ⭐ AND DRAW THEM AS THEIR MESH WHEN THEY HAVE ONE (ADR 0044, amendment 2026-09-17: the cast
+            // follows the player onto skinned meshes). Through Core only — Boats never learns what draws
+            // the figure (rule 4). Attached LAST, after the sprite is sorted and the slot claimed, because
+            // the figure remembers the sprite's staging as it is now and stands where the slot was told.
+            // No service, or no skin on the skipper's art def, and NOTHING is added: the sprite above is
+            // the whole of it, exactly as before.
+            CharacterFigurePresentation.Service?.Attach(child, this);
         }
 
         /// <summary>
@@ -381,6 +389,46 @@ namespace HiddenHarbours.Boats
         /// occluder is discarding against. For fixtures and for anyone diagnosing a figure that is
         /// drawn in one place and cut in another.</summary>
         public Vector3 OccupantStandRigMeters => _standRigMeters;
+
+        // ---- ICharacterFigureStand: what a mesh figure of the skipper is posed from (ADR 0044, amendment
+        // 2026-09-17). Everything is read live, and nothing here exists for the figure alone: the stand point
+        // is the slot's, the bearing is the sprite's held heading against the hull's drawn one.
+
+        IsoCharacterSprite ICharacterFigureStand.FigureCharacter => _skipper;
+
+        /// <summary>The hull the skipper stands on — but only while that hull holds their deck slot, because
+        /// the stand point is only published, and only kept current by <see cref="StandTheSkipperAt"/>,
+        /// while it does. A sprite hull never grants one, so there the answer is null and the sprite stands,
+        /// as it always has.</summary>
+        Transform ICharacterFigureStand.FigureHull => _slot >= 0 ? LiveHullPresenter()?.Visual : null;
+
+        /// <summary>Where the skipper's feet are: the point the deck-occupant slot was given, so the mesh and
+        /// the occluder agree by construction. ⚠ NOT where the SPRITE child sits — that stays at the hull's
+        /// pivot (<see cref="StandTheSkipper"/>), the one place a sprite can be put without re-deriving the
+        /// hull's projection. A mesh is drawn in the hull's own rig frame, so it can stand on her deck at the
+        /// deck's height.</summary>
+        Vector3 ICharacterFigureStand.FigureStandRigMetres => _standRigMeters;
+
+        /// <summary>The skipper's facing against the deck: their held compass heading less the heading the
+        /// hull is DRAWN at — so a figure turned with the hull's rig looks the way the sprite looks.</summary>
+        float ICharacterFigureStand.FigureDeckBearingDegrees
+        {
+            get
+            {
+                IBoatHullPresenter hull = LiveHullPresenter();
+                return _skipper != null && hull != null
+                    ? DeckRiderFacingMath.DeckBearingFor(_skipper.HeadingDegrees, hull.DrawnHeadingDegrees())
+                    : 0f;
+            }
+        }
+
+        /// <summary>The rig's hull presenter, or null once it is gone — a destroyed renderer still answers
+        /// the interface, so it is Unity-null-checked here, once, for every reader above.</summary>
+        private IBoatHullPresenter LiveHullPresenter()
+        {
+            IBoatHullPresenter presenter = _rig.Presenter;
+            return presenter is Object o && o == null ? null : presenter;
+        }
 
         private void ClaimTheDeckSlot()
         {

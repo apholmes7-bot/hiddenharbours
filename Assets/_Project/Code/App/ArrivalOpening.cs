@@ -281,7 +281,7 @@ namespace HiddenHarbours.App
         private Transform _boatRoot;
         private Transform _player;
         private PlayerWalkController _walk;
-        private IsoCharacterSprite _skin;
+        private ICarriedFigure _passengerFigure;
         private BoatHullPresenterHost _presenterHost;
         private ArrivalDeck _deck;
         private Rigidbody2D _playerBody;
@@ -672,10 +672,13 @@ namespace HiddenHarbours.App
             }
             _walk = _player.GetComponentInParent<PlayerWalkController>();
 
-            // Her DRAWER — the one authority for which cell the fisher is shown in. Resolved the same
-            // way and in the same place as her walking, because for the length of this passage the two
-            // are the same problem: she is neither steering herself nor drawing herself.
-            _skin = _player.GetComponentInParent<IsoCharacterSprite>();
+            // Her FIGURE, through ONE seam (ICarriedFigure), and never by drawer. Resolved the same way
+            // and in the same place as her walking, because for the length of this passage the two are
+            // the same problem: she is neither steering herself nor drawing herself. This component
+            // says where she stands and how; the live figure decides whether that is a skinned mesh or
+            // the sheets. Naming the sheets here is how she came in as a sprite after the player had
+            // become a mesh aboard (owner playtest 2026-09-18: "character was not mesh on intro boat").
+            _passengerFigure = CarriedFigure.Of(_player);
 
             // Her root, built the way every other hull in a region is: the builder PLACES, the runtime
             // DRAWS. MooredBoat is the drawer — it skins her, stands her skipper on the deck through the
@@ -1250,11 +1253,11 @@ namespace HiddenHarbours.App
             FollowTheCabin();
 
             // ⭐ THE POSE IS STATED HERE, in Update, and NOT beside the seating in LateUpdate. The split
-            // is not tidiness: IsoCharacterSprite consumes the holds in its own LateUpdate at execution
-            // order 0 — the order this component also runs at — so which of the two LateUpdates runs
-            // first is undefined, and a hold written there would be read a frame late about half the
-            // time. DeckRiderVisual learned this on a turning hull and wrote the rule down: inputs
-            // early, picture late.
+            // is not tidiness: her figure consumes what it is told in a LateUpdate (the seam's own
+            // contract), the sheets at execution order 0 — the order this component also runs at — so
+            // which of the two LateUpdates runs first is undefined, and a hold written there would be
+            // read a frame late about half the time. DeckRiderVisual learned this on a turning hull and
+            // wrote the rule down: inputs early, picture late.
             PoseThePassenger();
 
             if (_stepping) { TickStepAshore(); return; }
@@ -1583,6 +1586,11 @@ namespace HiddenHarbours.App
             if (!CanStepAshore) return false;
             WithdrawTheStepAshore();
             _stepping = true;
+            // Set her down at the PRESS, not the landing: the own-boat vault's precedent, where the rider
+            // is handed OnFoot and her own drawer plays the step. So the arc is drawn by the figure that
+            // lands, with no mesh left posed on the rail while the body is in the air, and no snap at the
+            // planks. PoseThePassenger stands down while she is stepping, so nothing re-carries her.
+            if (_passengerFigure != null) _passengerFigure.Release();
             _stepElapsed = 0f;
             _stepFrom = _player.position;
             return true;
@@ -1773,14 +1781,11 @@ namespace HiddenHarbours.App
             _playerBody = null;
 
             // Her own motion is honest again the moment she is standing on ground that does not move,
-            // so the drawer takes both reads back. ReleaseHeading KEEPS the direction she was last
-            // facing rather than snapping her north — she steps off looking where the boat was looking.
-            if (_skin != null)
-            {
-                _skin.Stance = CharacterStance.Free;
-                _skin.ReleaseHeading();
-                _skin.ReleaseSpeed();
-            }
+            // so her figure takes both reads back and keeps the direction she was last facing rather
+            // than snapping her north: she steps off looking where the boat was looking. Idempotent. A
+            // step ashore has already set her down at the press, so this is the path for every other
+            // end of the passage (an unload mid-arrival, a torn-down opening).
+            if (_passengerFigure != null) _passengerFigure.Release();
 
             EventBus.Publish(new CarriedAboardChanged(false));
             EventBus.Publish(new ControlModeChanged(ControlMode.OnFoot));
@@ -1835,7 +1840,7 @@ namespace HiddenHarbours.App
         /// 🔴 <b>SHE IS BEING CARRIED, SO SHE IS NOT WALKING.</b> The defect the owner watched on his
         /// first sail in: the passenger played a walk cycle, on the spot, for the whole passage.
         ///
-        /// <para>Nothing was lying. <see cref="IsoCharacterSprite"/> picks the fisher's cell by
+        /// <para>Nothing was lying. Her drawer picks the fisher's cell by
         /// MEASURING her own step — which is the right reading in both frames she normally lives in,
         /// ashore and parented to a deck — and <see cref="SeatThePlayer"/> moves her by writing world
         /// position every LateUpdate. So a passenger standing perfectly still on a hull doing five
@@ -1861,16 +1866,27 @@ namespace HiddenHarbours.App
         /// walking, so the frame's owner supplies her own walking facing and her own gait, in metres of
         /// SOLE per second (<see cref="ArrivalCabinWalk"/>). A stated zero would be the walk-in-place
         /// defect with the sign flipped: a fisher crossing a cabin, drawn standing still.</para>
+        ///
+        /// <para>⭐ <b>ALL OF IT GOES THROUGH ONE SEAM</b> (<see cref="ICarriedFigure"/>, owner playtest
+        /// 2026-09-18: <i>"character was not mesh on intro boat"</i>). Each branch states the hull, the
+        /// point she stands on in its rig metres, the brace, the heading and the speed, and names no
+        /// drawer. Her live figure draws her from that: the skinned mesh the player is aboard, or the
+        /// sheets on a rig that has nothing else. The point is the floor the heading and speed are
+        /// about: the cabin sole below, the deck walk's planking on deck.</para>
+        ///
+        /// <para>Silent while she is <see cref="StepAshore">stepping ashore</see>: she was set down at
+        /// the press, and a carry here would take her back aboard mid-air.</para>
         /// </summary>
         private void PoseThePassenger()
         {
-            if (!_holding || _skin == null || _boatRoot == null) return;
-            _skin.Stance = CharacterStance.Balance;
+            if (!_holding || _stepping || _passengerFigure == null || _boatRoot == null) return;
 
             if (IsBelowDecks)
             {
-                _skin.HoldHeading(_cabin.HeadingDegrees);
-                _skin.HoldSpeed(_cabin.SpeedMetresPerSecond);
+                Vector2 sole = _cabin.LocalPosition;
+                _passengerFigure.Carry(_boatRoot, new Vector3(sole.x, sole.y, _cabin.SoleHeightMetres),
+                                       CharacterStance.Balance, _cabin.HeadingDegrees,
+                                       _cabin.SpeedMetresPerSecond);
                 return;
             }
 
@@ -1882,13 +1898,17 @@ namespace HiddenHarbours.App
             // Her gait is metres of DECK per second, so the hull's own five knots still contribute nothing.
             if (_deckWalk != null && _deckWalk.CanWalk && _deckWalk.IsSeated)
             {
-                _skin.HoldHeading(_deckWalk.HeadingDegrees(DrawnHeadingDegrees()));
-                _skin.HoldSpeed(_deckWalk.SpeedMetresPerSecond);
+                Vector2 deck = _deckWalk.LocalPosition;
+                _passengerFigure.Carry(_boatRoot, new Vector3(deck.x, deck.y, _deckWalk.HeightMetres),
+                                       CharacterStance.Balance, _deckWalk.HeadingDegrees(DrawnHeadingDegrees()),
+                                       _deckWalk.SpeedMetresPerSecond);
                 return;
             }
 
-            _skin.HoldHeading(DrawnHeadingDegrees());
-            _skin.HoldSpeed(0f);
+            // A deck nobody has measured: she stands where the deck walk would seed her, at the offset
+            // she is seated by, on the keel's own zero. Still carried, so still drawn aboard.
+            _passengerFigure.Carry(_boatRoot, new Vector3(_passengerDeckOffset.x, _passengerDeckOffset.y, 0f),
+                                   CharacterStance.Balance, DrawnHeadingDegrees(), 0f);
         }
 
         /// <summary>
