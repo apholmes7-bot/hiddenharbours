@@ -2681,19 +2681,23 @@ namespace HiddenHarbours.Player
         /// heading but one, and off the boat entirely on a hull lying athwart. The clamp onto the
         /// walkable deck then hid how far off it was.
         ///
-        /// <para>⭐ <b>A measured station is stood on in three dimensions</b> (Phase B, 2026-09-19):
-        /// <see cref="DeckWalkController.StandOnTheFloorNearest"/> picks the deck area or cabin room
-        /// nearest the station's HEIGHT as well as its plan, where the screen offset's snap took the first
-        /// area under it — the Convertible's flybridge helm, and the Skybridge's in the skylounge (R3). A
-        /// hull with no station, or with no deck and no room to stand her on, takes the snap it always
-        /// took, through the same call, bit for bit.</para></summary>
+        /// <para>⭐ <b>A measured station is stood on in three dimensions where the snap misses its
+        /// floor</b> (Phase B, 2026-09-19): the screen offset's snap took the first area under the helm in
+        /// plan, which is not the floor the helm stands on for the Convertible's flybridge helm, or the
+        /// Skybridge's in the skylounge (R3). Wherever the snap leaves her on a different floor from the one
+        /// nearest the station's HEIGHT as well as its plan, a cabin room or another deck area,
+        /// <see cref="DeckWalkController.StandOnTheFloorNearest"/> stands her on that floor. Where the snap
+        /// already has her on it, the snap stands (<see cref="DeckWalkController.StandsOnTheDeckAreaNearest"/>),
+        /// because only the snap draws her ON the spot: the dory's station is her thwart, 0.2164 m above her
+        /// sole, and stood on it her pilot was drawn 0.166 m below his seat (<c>DoryAboardPlayTests</c>,
+        /// Phase C run). A hull with no station takes the snap it always took, bit for bit.</para></summary>
         private void SnapPlayerToTheHelm()
         {
+            SnapPlayerToDeck(HelmBoatRelativeOffset());
             var deck = DeckWalk;
             if (Player != null && Boat != null && deck != null && TryHullHelmStation(out Vector3 station)
-                && deck.StandOnTheFloorNearest(station))
-                return;
-            SnapPlayerToDeck(HelmBoatRelativeOffset());
+                && !deck.StandsOnTheDeckAreaNearest(station))
+                deck.StandOnTheFloorNearest(station);
         }
 
         /// <summary>Wire the switcher in one call (tests / editor) and start on foot.</summary>

@@ -569,6 +569,31 @@ namespace HiddenHarbours.Player
             return true;
         }
 
+        /// <summary>
+        /// Does the walk ALREADY stand her on the deck area nearest a hull-frame point? True when her deck,
+        /// not a room, is the floor nearest it (<see cref="ChooseTheFloorNearest"/>, the choice
+        /// <see cref="StandOnTheFloorNearest"/> makes), she is held to no room, and she stands on that very
+        /// area — so the stand would move her nowhere but along it. Reads; never moves her.
+        ///
+        /// <para><b>Why the helm asks it before standing her</b> (2026-09-19, found by
+        /// <c>DoryAboardPlayTests</c> in the Phase C run). The screen snap reads the helm spot back onto the
+        /// deck at the floor's own height, so the figure is DRAWN on the spot; the stand seats her at the
+        /// station's plan position, so she is drawn the station's height above that floor lower on the
+        /// screen. The dory's station is her thwart, 0.2164 m above her sole: stood on, her pilot was drawn
+        /// 0.166 m below his seat at the bake's 40°. Where the snap already has her on the area the stand
+        /// would choose, the snap stands.</para>
+        /// </summary>
+        public bool StandsOnTheDeckAreaNearest(Vector3 hullLocal)
+        {
+            if (_boatRoot == null || _walkedInside) return false;
+            BoatDeckDef deck = LiveDeck();
+            ICabinFloors floors = LiveCabinFloors();
+            if (floors != null && floors.IsInside && WalkableLevel(floors, deck) != null) return false;
+            int room = ChooseTheFloorNearest(deck, floors, hullLocal, _onWashboard, out _, out bool measured,
+                                             out _, out int deckArea, out _);
+            return room < 0 && measured && deckArea >= 0 && _deckArea == deckArea;
+        }
+
         /// <summary>Have her cabin put her on <paramref name="level"/>: she stays if she is on it, changes
         /// level if she is inside, goes in (its picture brought in first) if she is out. False when the
         /// cabin refuses.</summary>
