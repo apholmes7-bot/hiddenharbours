@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -8,6 +10,7 @@ using HiddenHarbours.Art;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
 using HiddenHarbours.Player;
+using HiddenHarbours.Tests.Support;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -42,6 +45,31 @@ namespace HiddenHarbours.Tests.PlayMode
         private readonly List<UnityEngine.Object> _spawned = new();
         private readonly List<CabinEntered> _entered = new();
         private readonly List<CabinLeft> _left = new();
+
+        // ---- the walk from her helm (Phase B, 2026-09-19, C6) ------------------------------------------
+        /// <summary>The one frame every walk is pinned to, so a run takes the same steps on any machine.</summary>
+        private const float FrameSeconds = 1f / 60f;
+        /// <summary>Her walking pace: the shipped value of <c>DeckWalkController._moveSpeed</c>, a private
+        /// field. Only the steering's last step is scaled by it, so a drift here costs a frame, never a
+        /// verdict.</summary>
+        private const float HerWalkSpeed = 2.5f;
+        /// <summary>A route end re-arms once she is clear of it by this many reaches: the shipped
+        /// <c>DeckWalkController.RouteRearmReachMultiple</c>, a private constant.</summary>
+        private const float RouteRearmMultiple = 2f;
+        private const float Lookahead = 0.12f;
+        private const float ArriveWithin = 0.03f;
+        private const int MaxHops = 40;
+        private const int HopFrameCap = 2400;
+        private const int CrossingFrames = 30;
+        private const int OfferFrames = 3;
+        private const int StuckWindowFrames = 30;
+        private const float StuckMetres = 0.02f;
+        private const int StuckStrikes = 3;
+        private const string OpenTheDoor = "Open the door";
+
+        private bool _pinned;
+        private float _timeScaleBefore;
+        private float _captureBefore;
 
         [SetUp]
         public void SetUp()
@@ -79,6 +107,13 @@ namespace HiddenHarbours.Tests.PlayMode
             InteractOffer.Reset();
             InteractionGate.Reset();
             GameServices.Config = null;
+
+            if (_pinned)
+            {
+                Time.timeScale = _timeScaleBefore;
+                Time.captureDeltaTime = _captureBefore;
+                _pinned = false;
+            }
 
             for (int i = 0; i < _spawned.Count; i++)
                 if (_spawned[i] != null) UnityEngine.Object.Destroy(_spawned[i]);
@@ -249,6 +284,138 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // =====================================================================================
+        //  THE REST OF THE FLEET: from her helm, through her door, on her own feet (Phase B, C6)
+        // =====================================================================================
+
+        /// <summary>
+        /// ⭐ <b>Phase B, 2026-09-19, C6 — she walks from her helm through her door, on every hull the
+        /// fleet report named.</b> The 2026-09-18 charter: "the cabin works on the cape and the lobster
+        /// boat and on nothing else". The report's twelve hulls, F#12–F#18 and F#20–F#24, the cape and
+        /// the lobster boat as the controls. Each arrives by a swap onto a dory root she stands on —
+        /// never from <c>.Default</c> — and she takes her helm and leaves it. From wherever leaving it
+        /// stands her she WALKS: held intents read by the shipped deck walk, one pinned frame at a time,
+        /// with no teleport and no latch pre-armed. Each hop is planned from the live cabin over the floors
+        /// the art measured (<see cref="CabinWalkGraph"/>) and steered over them (<see cref="CabinLegs"/>):
+        /// across a deck's contacts and steps, onto a ladder or a stair where the plan takes one, E where
+        /// the offer names her door, and through it, IN or OUT, with the bus hearing exactly one crossing.
+        /// The owner's rulings of 2026-09-19 are what the plan finds: R2, the Convertible comes down her
+        /// companionway into the house; R3, the Skybridge stands in her skylounge and takes the stairs.
+        ///
+        /// <para>🔴 A hull blocked on art (<see cref="CabinFleet.BlockedOnArt"/>, the list the EditMode
+        /// guard reads too) runs every time, is Ignored in the fleet report's words while the block
+        /// holds, and FAILS the day she walks through her door, so the entry is retired rather than
+        /// left standing.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator SwappedOnUnderHer_SheWalksFromTheHelmThroughHerDoor(
+            [Values("CapeIslander", "LobsterBoat", "LobsterInshoreOpenNorthumberland",
+                    "LobsterStandardHardtopNorthumberland", "LobsterOffshoreOpenNorthumberland",
+                    "SportFisherConvertible", "SideDragger", "SportFisherSkybridge", "SternTrawler",
+                    "SternTrawlerMk2", "CoastalPacket", "Tanker")] string subjectName)
+        {
+            Rig rig = NewDoryRig();
+            BoatHullDef subject = LoadHull(subjectName);
+            if (rig.Boat == null || subject == null) yield break;   // editor-only; LoadCommitted Ignored
+            PinTime();
+            yield return null;
+
+            yield return Board(rig);
+            var deckWalk = rig.Player.GetComponent<DeckWalkController>();
+            var held = new HeldDeckIntents();
+            deckWalk.ConfigureDeckInput(held);   // her feet from here on: nothing else moves her
+
+            rig.Picker.Show(subject);
+            yield return null;
+            SwappedCabinDoor(rig, subject);
+            Assert.AreEqual(ControlMode.OnDeck, rig.Switcher.Mode, "precondition: the swap leaves her standing on deck");
+
+            var w = new HelmWalk
+            {
+                Rig = rig, Hull = subject, Cabin = rig.Installer.Interior, Deck = deckWalk, Held = held,
+            };
+            yield return FromTheHelm(w);
+            if (!w.Failed) yield return ToHerDoor(w);
+            held.Release();
+
+            if (CabinFleet.BlockedOnArt.TryGetValue(subjectName, out string why))
+            {
+                if (w.Failed) Assert.Ignore($"{subjectName}: {why}\nthe walk: {w.Failure}");
+                Assert.Fail($"{subjectName} WALKED from her helm through her door, and CabinFleet.BlockedOnArt " +
+                            $"still names her blocked on art — retire the entry (one list, both runners):\n{w.Report}");
+            }
+            if (w.Failed) Assert.Fail($"{w.Failure}\nthe walk so far:\n{w.Report}");
+            Assert.Greater(held.Reads, 0,
+                           "the shipped deck walk read her held intents: she walked, and nothing carried her");
+
+            Debug.Log($"[cabin walk] {subjectName}: from her helm through her door\n{w.Report}");
+        }
+
+        /// <summary>
+        /// ⭐ <b>Phase B, 2026-09-19, C6 — every door her def names is built, where she can work it.</b>
+        /// The Skybridge's skylounge slider was in her def and nothing built it (Phase A, C5). Swapped on
+        /// under her, each hull's root carries one <see cref="BoatCabinDoor"/> per door the def names, in
+        /// the def's order, each on that def entry, each under its own fixture id (the registry keys by
+        /// it, and two doors of one cabin must never share one), and each reaching the whole of its band:
+        /// half the DEF's clear width, read off the def here.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator SwappedOnUnderHer_EveryDoorHerDefNamesIsBuilt(
+            [Values("CapeIslander", "LobsterBoat", "LobsterInshoreOpenNorthumberland",
+                    "LobsterStandardHardtopNorthumberland", "LobsterOffshoreOpenNorthumberland",
+                    "SportFisherConvertible", "SideDragger", "SportFisherSkybridge", "SternTrawler",
+                    "SternTrawlerMk2", "CoastalPacket", "Tanker")] string subjectName)
+        {
+            Rig rig = NewDoryRig();
+            BoatHullDef subject = LoadHull(subjectName);
+            if (rig.Boat == null || subject == null) yield break;   // editor-only; LoadCommitted Ignored
+            yield return null;
+
+            yield return Board(rig);
+            rig.Picker.Show(subject);
+            yield return null;
+            SwappedCabinDoor(rig, subject);
+
+            BoatInteriorDef def = subject.Visual.Interior;
+            var named = new List<BoatInteriorDoor>();
+            if (def.Door != null) named.Add(def.Door);
+            if (def.AdditionalDoors != null)
+                foreach (BoatInteriorDoor extra in def.AdditionalDoors)
+                    if (extra != null) named.Add(extra);
+
+            var built = new List<BoatCabinDoor>();
+            if (rig.Installer.Door != null) built.Add(rig.Installer.Door);
+            built.AddRange(rig.Installer.AdditionalDoors);
+
+            Assert.AreEqual(named.Count, built.Count,
+                            $"{subjectName}: her def names {named.Count} doors and the swap built {built.Count}");
+            string prefix = $"fixture.boat.{def.Id}.";
+            var ids = new HashSet<string>();
+            var report = new StringBuilder();
+            for (int k = 0; k < named.Count; k++)
+            {
+                BoatInteriorDoor d = named[k];
+                BoatCabinDoor b = built[k];
+                string which = $"{subjectName} door {k} ('{d.Id}')";
+                Assert.AreSame(d, b.Door, $"{which}: the built door works the def entry in the def's order");
+                Assert.IsTrue(b.Id.StartsWith(prefix), $"{which}: its fixture id '{b.Id}' is not under '{prefix}'");
+                if (!string.IsNullOrEmpty(d.Id))
+                    Assert.AreEqual(prefix + d.Id, b.Id, $"{which}: a door the def names is keyed by that name");
+                Assert.IsTrue(ids.Add(b.Id), $"{which}: its fixture id '{b.Id}' is already another door's");
+
+                float band = d.ClearWidthMeters * 0.5f;
+                Assert.GreaterOrEqual(b.ReachMeters, band,
+                                      $"{which}: E reaches {b.ReachMeters:0.00} m, short of the {band:0.00} m band " +
+                                      $"her clear width of {d.ClearWidthMeters:0.00} m opens");
+                report.AppendLine($"  {b.Id}: sill {d.ThresholdPoint.ToString("F2")}, band {band:0.00} m, " +
+                                  $"reach {b.ReachMeters:0.00} m");
+            }
+            Assert.AreEqual(named.Count, rig.Boat.GetComponentsInChildren<BoatCabinDoor>(true).Length,
+                            $"{subjectName}: doors standing on the root, and no other");
+
+            Debug.Log($"[cabin doors] {subjectName}: every door her def names is built\n{report}");
+        }
+
+        // =====================================================================================
         //  RIG + HELPERS
         // =====================================================================================
 
@@ -410,6 +577,380 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.Ignore("Needs the AssetDatabase: these journeys swap onto the REAL committed hulls.");
             return null;
 #endif
+        }
+
+        // =====================================================================================
+        //  THE WALKER: her own steps, planned hop by hop over the floors the art measured
+        // =====================================================================================
+
+        /// <summary>One walk from the helm: the rig, her cabin and deck walk, the planner, and what happened.
+        /// The first failure is kept; everything after it is skipped, so the verdict names the first
+        /// thing that went wrong.</summary>
+        private sealed class HelmWalk
+        {
+            public Rig Rig;
+            public BoatHullDef Hull;
+            public BoatInterior Cabin;
+            public DeckWalkController Deck;
+            public HeldDeckIntents Held;
+            public CabinWalkGraph Graph;
+            public readonly StringBuilder Report = new StringBuilder();
+            public string Failure;
+
+            public bool Failed => Failure != null;
+            public Vector2 At => Deck.DeckLocalPosition;
+            public string Where => $"({At.x:0.00}, {At.y:0.00}) at {Deck.DeckHeightMeters:0.00} m";
+
+            public void Fail(string why)
+            {
+                if (Failure == null) Failure = $"{Hull.Id}: {why}";
+            }
+        }
+
+        /// <summary>Every frame of the walk is one 60th of a second, so a run takes the same steps on any
+        /// machine; TearDown gives the clock back.</summary>
+        private void PinTime()
+        {
+            _timeScaleBefore = Time.timeScale;
+            _captureBefore = Time.captureDeltaTime;
+            Time.timeScale = 1f;
+            Time.captureDeltaTime = FrameSeconds;
+            _pinned = true;
+        }
+
+        private static string ProjectRoot => Directory.GetParent(Application.dataPath).FullName;
+
+        /// <summary>
+        /// She takes her helm and leaves it: the stand every walk starts from. The one placement here is
+        /// the setup, a skipper standing at her own wheel; from LeaveHelm on, only her steps move her.
+        /// </summary>
+        private static IEnumerator FromTheHelm(HelmWalk w)
+        {
+            ControlSwitcher sw = w.Rig.Switcher;
+            // Set and pressed in ONE frame, before the deck walk's next frame writes her back.
+            w.Rig.Player.transform.position = sw.HelmWorldPosition;
+            if (!sw.TakesTheHelmOnThisPress())
+            {
+                w.Fail($"standing on her helm at {sw.HelmWorldPosition}, E would not take it");
+                yield break;
+            }
+            if (!sw.BeginInteract() || sw.Mode != ControlMode.Aboard)
+            {
+                w.Fail($"E at her helm left her {sw.Mode}, not at the helm");
+                yield break;
+            }
+            yield return null;
+
+            if (!sw.BeginInteract() || sw.Mode != ControlMode.OnDeck)
+            {
+                w.Fail($"E at the helm left her {sw.Mode}, not standing on her deck");
+                yield break;
+            }
+            yield return null;
+
+            w.Graph = new CabinWalkGraph(w.Cabin.Def, w.Hull.Visual.Deck, ProjectRoot);
+            w.Report.AppendLine($"  left her helm onto {w.Graph.Name(LiveNode(w))}, {w.Where}" +
+                                (w.Cabin.IsInside ? $", inside on level {w.Cabin.Level}" : ", outside"));
+        }
+
+        /// <summary>Where the GAME stands her now, as the planner counts places: a component of the level
+        /// she walks when she walks one, else the deck area she stands on, inside or out.</summary>
+        private static CabinNode LiveNode(HelmWalk w)
+        {
+            Vector2 at = w.At;
+            FrozenFloors floors = FrozenFloors.Snapshot(w.Cabin);
+            if (w.Cabin.IsInside && w.Graph.Walkable(w.Cabin.Level, floors))
+            {
+                CabinLevelGrid grid = w.Graph.Grid(w.Cabin.Level);
+                return CabinNode.OnLevel(w.Cabin.Level, grid != null ? grid.ComponentAt(at) : -1);
+            }
+            int area = w.Graph.SeatNearestArea(new Vector3(at.x, at.y, w.Deck.DeckHeightMeters));
+            // A live snapshot is the planner's before AND after, so whether her cells have loaded is moot.
+            return w.Cabin.IsInside ? CabinNode.Inside(area) : CabinNode.Deck(area, true);
+        }
+
+        /// <summary>
+        /// Hop by hop to her main door and through it. Each hop is re-planned from where the game stands
+        /// her, on the cabin as it is now, so a hop that lands her somewhere the plan did not expect is
+        /// walked on from there rather than trusted.
+        /// </summary>
+        private IEnumerator ToHerDoor(HelmWalk w)
+        {
+            for (int hops = 0; hops < MaxHops; hops++)
+            {
+                CabinNode live = LiveNode(w);
+                if (!live.IsSomewhere)
+                {
+                    w.Fail($"at {w.Where} the game stands her on no floor the art measured");
+                    yield break;
+                }
+
+                FrozenFloors floors = FrozenFloors.Snapshot(w.Cabin);
+                CabinWalk plan = w.Graph.Walk(live, floors, floors);
+                if (!plan.TryGetReacher(0, out CabinNode reacher))
+                {
+                    w.Fail($"from {w.Graph.Name(live)}, {w.Where}, she can never reach {w.Graph.Doors[0].Name}: " +
+                           $"she can walk to {plan.DescribeNodes()}\ngraph: {w.Graph.Describe()}");
+                    yield break;
+                }
+
+                List<CabinHop> path = plan.PathTo(reacher);
+                if (path.Count == 0)
+                {
+                    yield return TheLastCrossing(w, live);
+                    yield break;
+                }
+
+                CabinHop hop = path[0];
+                w.Report.AppendLine($"  {w.Graph.Name(live)}: {hop.Label} -> {w.Graph.Name(hop.To)}   " +
+                                    $"(plan: {plan.Describe(reacher)})");
+                switch (hop.Kind)
+                {
+                    case CabinHopKind.DeckEdge:
+                        yield return OverTheLink(w, live, hop);
+                        break;
+                    case CabinHopKind.DoorIn:
+                    case CabinHopKind.DoorOut:
+                        yield return ThroughADoor(w, live, hop.Index);
+                        break;
+                    case CabinHopKind.Route:
+                        yield return TakeTheRoute(w, live, hop);
+                        break;
+                    default:
+                        w.Fail($"the plan needs '{hop.Label}' from {w.Graph.Name(live)} — a hop this walk does not play");
+                        yield break;
+                }
+                if (w.Failed) yield break;
+            }
+            w.Fail($"{MaxHops} hops and she never came to her door");
+        }
+
+        /// <summary>
+        /// Walk <paramref name="leg"/> on held intents until <paramref name="done"/> or she arrives,
+        /// failing with where she stuck if she stops making way (three half-seconds under 2 cm) or runs
+        /// out of frames. The intents are released on every way out.
+        /// </summary>
+        private static IEnumerator Steer(HelmWalk w, CabinLeg leg, Func<bool> done)
+        {
+            if (!leg.IsWalkable)
+            {
+                w.Fail($"no path {leg.Name} from {w.Where} to ({leg.Target.x:0.00}, {leg.Target.y:0.00}) " +
+                       "over the floor she stands on");
+                yield break;
+            }
+
+            Transform boat = w.Rig.Boat.transform;
+            float step = HerWalkSpeed * FrameSeconds;
+            Vector2 windowFrom = w.At;
+            int strikes = 0;
+            for (int frame = 0; !done() && !leg.Arrived(w.At, ArriveWithin); frame++)
+            {
+                if (frame >= HopFrameCap)
+                {
+                    w.Fail($"{frame} frames {leg.Name} and she never arrived: {w.Where}, aiming for " +
+                           $"({leg.Target.x:0.00}, {leg.Target.y:0.00})");
+                    break;
+                }
+                w.Held.Walk(leg.Steer(w.At, Lookahead, step, DeckWalkController.DrawnHeadingDegreesOf(boat),
+                                      DeckWalkController.BakeElevationDegreesOf(boat)));
+                yield return null;
+
+                if ((frame + 1) % StuckWindowFrames != 0) continue;
+                if ((w.At - windowFrom).magnitude >= StuckMetres) strikes = 0;
+                else if (++strikes >= StuckStrikes)
+                {
+                    w.Fail($"STUCK {leg.Name}: under {StuckMetres * 100f:0} cm in each of {StuckStrikes} half-seconds, " +
+                           $"{w.Where}, aiming for ({leg.Target.x:0.00}, {leg.Target.y:0.00})");
+                    break;
+                }
+                windowFrom = w.At;
+            }
+            w.Held.Release();
+        }
+
+        /// <summary>A point she can stand on inside the disk about <paramref name="centre"/>, on the floor
+        /// <paramref name="node"/> is (at the centre's height, on a deck).</summary>
+        private static bool TryTarget(HelmWalk w, CabinNode node, Vector3 centre, float radius, out Vector2 target)
+            => node.Kind == CabinNodeKind.Level
+                   ? CabinLegs.TryLevelTarget(w.Graph, node.Index, node.Component, centre, radius, out target)
+                   : CabinLegs.TryDeckTarget(w.Graph, node.Index, centre, radius, centre.z, out target);
+
+        private static CabinLeg LegTo(HelmWalk w, CabinNode node, string name, Vector2 target)
+            => node.Kind == CabinNodeKind.Level
+                   ? CabinLegs.OnLevel(w.Graph, name, node.Index, node.Component, w.At, target)
+                   : CabinLegs.OnDeck(w.Graph, name, node.Index, w.At, target);
+
+        /// <summary>Across a flush contact or a measured step onto the next deck area.</summary>
+        private static IEnumerator OverTheLink(HelmWalk w, CabinNode live, CabinHop hop)
+        {
+            CabinDeckLink link = w.Graph.Links[hop.Index];
+            CabinLeg leg = CabinLegs.OverLink(w.Graph, link, live.Index, w.At);
+            yield return Steer(w, leg, () => !LiveNode(w).SamePlace(live));
+            if (!w.Failed && LiveNode(w).SamePlace(live))
+                w.Fail($"arrived {leg.Name}, {w.Where}, and the game still stands her on {w.Graph.Name(live)}: " +
+                       $"the {link.Why} between {w.Graph.AreaId(link.A)} and {w.Graph.AreaId(link.B)} does not carry her");
+        }
+
+        /// <summary>
+        /// Into the band of door <paramref name="k"/> (the planner's index: 0 is the main door), E if it
+        /// is shut, and the frames the crossing takes. A latch seeded or spent in its band arms again on
+        /// her first step clear of it (R1), so where she does not cross she steps clear ONCE and walks
+        /// back in, as a player would.
+        /// </summary>
+        private static IEnumerator ThroughADoor(HelmWalk w, CabinNode live, int k)
+        {
+            CabinWalkGraph g = w.Graph;
+            CabinDoorSpec spec = g.Doors[k];
+            BoatCabinDoor door = BuiltDoor(w.Rig.Installer, spec.Door);
+            if (door == null)
+            {
+                w.Fail($"{spec.Name} is in her def and nothing built it");
+                yield break;
+            }
+            Vector3 sill = spec.Threshold;
+            if (!TryTarget(w, live, sill, spec.BandRadius, out Vector2 target))
+            {
+                w.Fail($"no point of {g.Name(live)} she can stand on lies in the band of {spec.Name} " +
+                       $"({spec.BandRadius:0.00} m about ({sill.x:0.00}, {sill.y:0.00}) at {sill.z:0.00} m)");
+                yield break;
+            }
+
+            bool wasInside = w.Cabin.IsInside;
+            Func<bool> crossed = () => w.Cabin.IsInside != wasInside;
+
+            yield return Steer(w, LegTo(w, live, $"into the band of {spec.Name}", target), crossed);
+            if (w.Failed || crossed()) yield break;
+            yield return OpenAndCross(w, door, crossed);
+            if (w.Failed || crossed()) yield break;
+
+            float beyond = BoatCabinThreshold.ReleaseRadiusMetres(door.Door) + CabinLegs.TargetMargin;
+            if (CabinLegs.TryBackOff(g, live, w.At, sill, beyond, out Vector2 back))
+            {
+                w.Report.AppendLine($"    stepped clear of {spec.Name} to ({back.x:0.00}, {back.y:0.00}) and back, " +
+                                    "to arm its latch");
+                yield return Steer(w, LegTo(w, live, $"clear of {spec.Name}", back), crossed);
+                if (w.Failed || crossed()) yield break;
+                yield return Steer(w, LegTo(w, live, $"back into the band of {spec.Name}", target), crossed);
+                if (w.Failed || crossed()) yield break;
+                yield return OpenAndCross(w, door, crossed);
+                if (w.Failed || crossed()) yield break;
+            }
+
+            w.Fail($"in the band of {spec.Name}, {w.Where}, she never went through: open {door.IsOpen}, " +
+                   $"cueing {door.IsCueing}, latch armed {door.PassageIsArmed}, in its band " +
+                   $"{BoatCabinThreshold.IsInBand(door.Door, w.At)}, on its sill " +
+                   $"{BoatCabinThreshold.IsOnTheSill(door.Door, w.Deck.DeckHeightMeters, g.Tolerance)} " +
+                   $"(sill at {sill.z:0.00} m)");
+        }
+
+        /// <summary>E where the offer names the door, if it is shut — what she sees is what the press
+        /// does — then the frames the crossing takes.</summary>
+        private static IEnumerator OpenAndCross(HelmWalk w, BoatCabinDoor door, Func<bool> crossed)
+        {
+            if (!door.IsOpen && !door.IsCueing)
+            {
+                InteractOfferChanged offer = default;
+                for (int f = 0; f < OfferFrames; f++)
+                {
+                    yield return null;
+                    if (crossed()) yield break;
+                    offer = InteractOffer.Current;
+                    if (offer.Has && offer.Id == door.Id) break;
+                }
+                if (!offer.Has || offer.Id != door.Id || offer.Label != OpenTheDoor)
+                {
+                    w.Fail($"in the band of {door.Id}, {w.Where}, she is offered " +
+                           (offer.Has ? $"'{offer.Label}' on {offer.Id} ({offer.Source})" : "nothing") +
+                           $", not '{OpenTheDoor}' on her door");
+                    yield break;
+                }
+                if (!w.Rig.Switcher.BeginInteract() || !door.IsCueing)
+                {
+                    w.Fail($"E under the offer '{offer.Label}' did not move the leaf of {door.Id} " +
+                           $"(she is {w.Rig.Switcher.Mode})");
+                    yield break;
+                }
+                w.Report.AppendLine($"    E: '{offer.Label}' on {door.Id}");
+
+                float deadline = Time.time + door.CueSeconds + 1f;
+                while (door.IsCueing && !crossed() && Time.time < deadline) yield return null;
+                if (door.IsCueing && !crossed())
+                {
+                    w.Fail($"the leaf of {door.Id} was still moving {door.CueSeconds + 1f:0.0} s after E");
+                    yield break;
+                }
+            }
+            for (int f = 0; f < CrossingFrames && !crossed(); f++) yield return null;
+        }
+
+        /// <summary>
+        /// To within reach of the route's near end, where the deck walk takes it. A route end re-arms once
+        /// she is clear of it by <see cref="RouteRearmMultiple"/> reaches, so where it does not take her
+        /// she steps clear ONCE and walks back.
+        /// </summary>
+        private static IEnumerator TakeTheRoute(HelmWalk w, CabinNode live, CabinHop hop)
+        {
+            CabinWalkGraph g = w.Graph;
+            BoatInteriorRoute route = g.Def.Routes[hop.Index];
+            Vector3 near = hop.NearEnd == 0 ? route.FromPoint : route.ToPoint;
+            string end = $"{route.Id}'s end ({near.x:0.00}, {near.y:0.00}) at {near.z:0.00} m";
+            if (!TryTarget(w, live, near, g.Reach, out Vector2 target))
+            {
+                w.Fail($"no point of {g.Name(live)} she can stand on lies within {g.Reach:0.00} m of {end}");
+                yield break;
+            }
+            Func<bool> taken = () => !LiveNode(w).SamePlace(live);
+
+            yield return Steer(w, LegTo(w, live, $"onto {route.Id}", target), taken);
+            if (w.Failed || taken()) yield break;
+            for (int f = 0; f < CrossingFrames && !taken(); f++) yield return null;
+            if (taken()) yield break;
+
+            float beyond = RouteRearmMultiple * g.Reach + CabinLegs.TargetMargin;
+            if (CabinLegs.TryBackOff(g, live, w.At, near, beyond, out Vector2 back))
+            {
+                w.Report.AppendLine($"    stepped clear of {route.Id} to ({back.x:0.00}, {back.y:0.00}) and back, " +
+                                    "to arm it");
+                yield return Steer(w, LegTo(w, live, $"clear of {route.Id}", back), taken);
+                if (w.Failed || taken()) yield break;
+                yield return Steer(w, LegTo(w, live, $"back onto {route.Id}", target), taken);
+                if (w.Failed || taken()) yield break;
+                for (int f = 0; f < CrossingFrames && !taken(); f++) yield return null;
+                if (taken()) yield break;
+            }
+
+            w.Fail($"at {end} she stands, {w.Where}, and the route never takes her");
+        }
+
+        /// <summary>Through her main door, IN from her deck or OUT from her cabin, and the bus hears
+        /// exactly that one crossing.</summary>
+        private IEnumerator TheLastCrossing(HelmWalk w, CabinNode live)
+        {
+            CabinDoorSpec main = w.Graph.Doors[0];
+            bool wasInside = w.Cabin.IsInside;
+            int entered = _entered.Count, left = _left.Count;
+            w.Report.AppendLine($"  {w.Graph.Name(live)}: through {main.Name} {(wasInside ? "OUT" : "IN")}");
+
+            yield return ThroughADoor(w, live, 0);
+            if (w.Failed) yield break;
+
+            int wentIn = _entered.Count - entered, cameOut = _left.Count - left;
+            bool once = wasInside ? cameOut == 1 && wentIn == 0 : wentIn == 1 && cameOut == 0;
+            if (w.Cabin.IsInside == wasInside || !once)
+                w.Fail($"through {main.Name} she is {(w.Cabin.IsInside ? "inside" : "outside")}, and the bus heard " +
+                       $"{wentIn} CabinEntered and {cameOut} CabinLeft: one crossing is one " +
+                       (wasInside ? "CabinLeft" : "CabinEntered"));
+            else
+                w.Report.AppendLine($"    {(wasInside ? "out" : "in")}: {w.Graph.Name(LiveNode(w))}, {w.Where}");
+        }
+
+        /// <summary>The built door that works <paramref name="door"/>, the def's own entry.</summary>
+        private static BoatCabinDoor BuiltDoor(BoatInteriorInstaller installer, BoatInteriorDoor door)
+        {
+            if (installer.Door != null && ReferenceEquals(installer.Door.Door, door)) return installer.Door;
+            foreach (BoatCabinDoor built in installer.AdditionalDoors)
+                if (built != null && ReferenceEquals(built.Door, door)) return built;
+            return null;
         }
     }
 }

@@ -241,12 +241,17 @@ namespace HiddenHarbours.Tools.RigBaking
 
         // ---- writing -------------------------------------------------------------------------------
 
-        static BoatDeckDef WriteDeckAsset(string sidecarStem, SidecarRead read, out string assetPath)
-        {
+        /// <summary>Where the deck def for a hull sidecar lives — the one path the importer writes and
+        /// the interior builder reads when it lands a route on an exterior deck.</summary>
+        public static string DeckAssetPath(string sidecarStem)
             // lobsterBoatIsoRig → lobsterBoatIso; lobsterStandardHardtopFundyIso → itself (a
             // hull-named sidecar has no rig suffix to strip).
+            => $"{DeckFolder}/{Capitalise(StripRigSuffix(sidecarStem))}.asset";
+
+        static BoatDeckDef WriteDeckAsset(string sidecarStem, SidecarRead read, out string assetPath)
+        {
             string stem = StripRigSuffix(sidecarStem);
-            assetPath = $"{DeckFolder}/{Capitalise(stem)}.asset";
+            assetPath = DeckAssetPath(sidecarStem);
 
             var def = AssetDatabase.LoadAssetAtPath<BoatDeckDef>(assetPath);
             bool fresh = def == null;
