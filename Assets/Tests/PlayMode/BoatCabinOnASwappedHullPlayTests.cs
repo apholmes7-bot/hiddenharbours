@@ -45,6 +45,7 @@ namespace HiddenHarbours.Tests.PlayMode
         private readonly List<UnityEngine.Object> _spawned = new();
         private readonly List<CabinEntered> _entered = new();
         private readonly List<CabinLeft> _left = new();
+        private ISaveService _saveBefore;
 
         // ---- the walk from her helm (Phase B, 2026-09-19, C6) ------------------------------------------
         /// <summary>The one frame every walk is pinned to, so a run takes the same steps on any machine.</summary>
@@ -93,6 +94,12 @@ namespace HiddenHarbours.Tests.PlayMode
             _spawned.Add(config);
             GameServices.Config = config;
 
+            // No save, whatever this machine holds: SaveService wires the live one before the first scene
+            // loads, and a save that owns boat.dory unrepaired refuses the dory root's boarding
+            // (ControlSwitcher.BoardableNow). The previous value goes back in TearDown.
+            _saveBefore = GameServices.Save;
+            GameServices.Save = null;
+
             // A listener-less play scene logs a warning every frame.
             Spawn("Listener").AddComponent<AudioListener>();
         }
@@ -107,6 +114,7 @@ namespace HiddenHarbours.Tests.PlayMode
             InteractOffer.Reset();
             InteractionGate.Reset();
             GameServices.Config = null;
+            GameServices.Save = _saveBefore;
 
             if (_pinned)
             {
