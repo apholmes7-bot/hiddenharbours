@@ -6,34 +6,6 @@ using UnityEngine;
 namespace HiddenHarbours.Player
 {
     /// <summary>
-    /// <b>The seam a mesh figure takes the draw through.</b> <see cref="DeckRiderVisual"/> knows that
-    /// something ELSE may be drawing the player this frame; it does not know what, and it must not —
-    /// the sprite path is the one that has to stay byte-identical, so it learns exactly one fact
-    /// (<see cref="DrawsInsteadOfSprite"/>) and is handed exactly one call
-    /// (<see cref="PoseForRider"/>) at the point where its own inputs are already published.
-    ///
-    /// <para>With no figure installed every expression that mentions this interface collapses to the
-    /// code that was there before it existed. That is the toggle-0 contract, and it is the reason the
-    /// interface is this small.</para>
-    /// </summary>
-    public interface IDeckRiderFigure
-    {
-        /// <summary>True on the frames this figure is really on screen, so the sprite must not be.
-        /// False the moment anything is missing — a skin, a hull, a clip — because two figures is a
-        /// worse failure than the old one.</summary>
-        bool DrawsInsteadOfSprite { get; }
-
-        /// <summary>
-        /// Pose from the rider's already-decided inputs. Called ONCE per frame from
-        /// <see cref="DeckRiderVisual"/>'s own <c>LateUpdate</c>, BEFORE it decides whether to enable
-        /// the sprite — never from the figure's own <c>Update</c>, because the answer depends on
-        /// values <c>DeckRiderVisual</c> publishes and a second opinion about execution order is
-        /// exactly the kind of second authority this lane was told not to invent.
-        /// </summary>
-        void PoseForRider(DeckRiderVisual rider, bool aboard);
-    }
-
-    /// <summary>
     /// <b>The player, drawn as one skinned mesh through the iso facet pass, while she is ABOARD</b>
     /// (ADR 0044 option d, behind <see cref="GameConfig.MeshCharacter"/>).
     ///
@@ -48,8 +20,8 @@ namespace HiddenHarbours.Player
     /// all. This component does not fake one: it asks the rider for the hull she is standing on and
     /// gives up if that hull is not an <see cref="IsoFacetHullRenderer"/> — which is also, for free,
     /// the right answer aboard a SPRITE hull, where the same pass does not exist either. It never
-    /// touches <c>IsoFacetHullFeature</c> or <c>IsoFacetHullRegistry</c>; those are the water lane's
-    /// files.</para>
+    /// touches <c>IsoFacetHullFeature</c> or <c>IsoFacetHullRegistry</c>; opening the ashore gate
+    /// means changing those, and that gate is ADR 0044 §7.3, not this component.</para>
     ///
     /// <para><b>Occlusion is per pixel and costs nothing.</b> The figure wears the hull's own
     /// <c>HHHullFacet</c> pass and shares her private depth buffer with <c>ZWrite On / ZTest
@@ -76,7 +48,7 @@ namespace HiddenHarbours.Player
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(DeckRiderVisual))]
-    public sealed class DeckRiderMeshPresenter : MonoBehaviour, IDeckRiderFigure
+    public sealed class DeckRiderMeshPresenter : MonoBehaviour, ICharacterFigure
     {
         [Tooltip("The baked CharacterSkinDef to draw. Left empty, the presenter asks the character's " +
                  "own CharacterVisualDef for its Skin — one art def, one answer, so the mesh and the " +
@@ -194,25 +166,31 @@ namespace HiddenHarbours.Player
         // ---------------------------------------------------------------- the one path
 
         /// <inheritdoc/>
-        public void PoseForRider(DeckRiderVisual rider, bool aboard)
+        /// <remarks>Called ONCE per frame from <see cref="DeckRiderVisual"/>'s own <c>LateUpdate</c>,
+        /// BEFORE it decides whether to enable the sprite — never from this component's own
+        /// <c>Update</c>, because the answer depends on values <c>DeckRiderVisual</c> publishes and a
+        /// second opinion about execution order is exactly the kind of second authority this lane was
+        /// told not to invent. The stand IS the rider (<see cref="ICharacterFigureStand"/>, moved into
+        /// Core by ADR 0044's 2026-09-17 amendment so the cast can take the same seam).</remarks>
+        public void PoseFigure(ICharacterFigureStand stand, bool aboard)
         {
             DrawsInsteadOfSprite = false;
 
-            if (rider == null) { Stop("no rider"); return; }
+            if (stand == null || (stand is Object standObject && standObject == null)) { Stop("no rider"); return; }
             if (!aboard) { Stop("ashore — the facet pass is not recorded there"); return; }
 
             GameConfig config = GameServices.Config;
             if (config == null) { Stop("no GameConfig"); return; }
             if (!config.MeshCharacter) { Stop("GameConfig.MeshCharacter is off"); return; }
 
-            CharacterSkinDef skin = ResolveSkin(rider);
+            CharacterSkinDef skin = ResolveSkin(stand);
             if (skin == null) { Stop("no CharacterSkinDef — none set here and none on the art def"); return; }
             if (!skin.IsUsable()) { Stop($"CharacterSkinDef '{skin.Id}' is not usable — re-bake it"); return; }
 
-            IsoFacetHullRenderer hull = ResolveHull(rider);
+            IsoFacetHullRenderer hull = ResolveHull(stand);
             if (hull == null) { Stop("the hull under her is not a facet mesh hull"); return; }
 
-            IsoCharacterSprite character = rider.Character;
+            IsoCharacterSprite character = stand.FigureCharacter;
             if (character == null) { Stop("no IsoCharacterSprite to read stance and gait from"); return; }
 
             // ⚠ Stance is read as REQUESTED, not as DRAWN. DrawnStance is whatever survived the SHEET
@@ -260,7 +238,7 @@ namespace HiddenHarbours.Player
 
             if (!_figure.SetPose(stateKey, frame)) { Stop($"could not pose '{stateKey}' frame {frame}"); return; }
 
-            Place(rider, skin);
+            Place(stand, skin);
             _figure.Visible = true;
             DrawsInsteadOfSprite = true;
             NotDrawingReason = null;
@@ -287,27 +265,27 @@ namespace HiddenHarbours.Player
         /// reference means the sheets and the mesh cannot describe two different people, and it is the
         /// same place every other fact about how this character looks already lives (ADR 0003).
         /// </summary>
-        private CharacterSkinDef ResolveSkin(DeckRiderVisual rider)
+        private CharacterSkinDef ResolveSkin(ICharacterFigureStand stand)
         {
             if (_skin != null) return _skin;
-            IsoCharacterSprite character = rider.Character;
+            IsoCharacterSprite character = stand.FigureCharacter;
             CharacterVisualDef visual = character != null ? character.Visual : null;
             return visual != null ? visual.Skin : null;
         }
 
         /// <summary>
-        /// The facet hull she is standing on — through the rider's OWN hull resolution
-        /// (<see cref="DeckRiderVisual.LiveHullPresenter"/>), never a second search of the scene. The
+        /// The facet hull she is standing on — through the rider's OWN hull resolution (the stand's
+        /// <see cref="ICharacterFigureStand.FigureHull"/>, which <see cref="DeckRiderVisual"/> answers
+        /// from <see cref="DeckRiderVisual.LiveHullPresenter"/>), never a second search of the scene. The
         /// presenter seam answers with the visual transform the skinner installed the renderer on, so
         /// a boat re-skinned under her feet answers with the new one on the very next frame.
         ///
         /// <para>A sprite hull answers null here, and that is correct rather than unfortunate: a
         /// sprite hull records no facet block, so there is no pass to draw a mesh figure through.</para>
         /// </summary>
-        private IsoFacetHullRenderer ResolveHull(DeckRiderVisual rider)
+        private IsoFacetHullRenderer ResolveHull(ICharacterFigureStand stand)
         {
-            IBoatHullPresenter presenter = rider.LiveHullPresenter;
-            Transform visual = presenter != null ? presenter.Visual : null;
+            Transform visual = stand.FigureHull;
             if (visual == null) return null;
             IsoFacetHullRenderer hull = visual.GetComponent<IsoFacetHullRenderer>();
             return hull != null && hull.PosedMesh != null ? hull : null;
@@ -355,10 +333,11 @@ namespace HiddenHarbours.Player
         /// figure at deck bearing 0 faces the bow. This lane has been CCW-mislabelled twice; the sign
         /// is read off the bake, not declared here.</para>
         /// </summary>
-        private void Place(DeckRiderVisual rider, CharacterSkinDef skin)
+        private void Place(ICharacterFigureStand stand, CharacterSkinDef skin)
         {
-            Vector3 local = rider.DeckStandRigLocal + SabotageStandOffsetMetres;
-            float yaw = skin.AzimuthCounterClockwise ? -rider.DeckBearingDegrees : rider.DeckBearingDegrees;
+            Vector3 local = stand.FigureStandRigMetres + SabotageStandOffsetMetres;
+            float bearing = stand.FigureDeckBearingDegrees;
+            float yaw = skin.AzimuthCounterClockwise ? -bearing : bearing;
             FigureLocalMetres = local;
             FigureYawDegrees = yaw;
             _figureRoot.SetLocalPositionAndRotation(local, Quaternion.AngleAxis(yaw, Vector3.forward));

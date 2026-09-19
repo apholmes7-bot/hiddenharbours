@@ -115,7 +115,7 @@ namespace HiddenHarbours.Player
     // (DirectionalBoatSprite −110), the character's own cell and the player's Y-sort order (both at the
     // default 0). Running last is what makes the mirror a mirror rather than a frame-late copy.
     [DefaultExecutionOrder(100)]
-    public sealed class DeckRiderVisual : MonoBehaviour, ICarriedFigure
+    public sealed class DeckRiderVisual : MonoBehaviour, ICarriedFigure, ICharacterFigureStand
     {
         [Header("Wiring (the builder sets these)")]
         [Tooltip("The CHILD renderer the on-deck / pilot figure is drawn into — the one thing here that " +
@@ -403,9 +403,27 @@ namespace HiddenHarbours.Player
         /// that was there before — which is what makes the toggle-0 plate byte-identical rather
         /// than merely similar.</para>
         /// </summary>
-        public void SetFigureOverride(IDeckRiderFigure figure) => _figure = figure;
+        public void SetFigureOverride(ICharacterFigure figure) => _figure = figure;
 
-        private IDeckRiderFigure _figure;
+        private ICharacterFigure _figure;
+
+        // The stand the figure is posed from — every member a READ of what is published above, so the
+        // interface adds a spelling, not an authority (ADR 0044's 2026-09-17 amendment moved the seam
+        // into Core so the cast can stand on it too). Explicit, so this class's own surface is unchanged.
+        IsoCharacterSprite ICharacterFigureStand.FigureCharacter => _character;
+
+        Transform ICharacterFigureStand.FigureHull
+        {
+            get
+            {
+                IBoatHullPresenter hull = LiveHull();
+                return hull != null ? hull.Visual : null;
+            }
+        }
+
+        Vector3 ICharacterFigureStand.FigureStandRigMetres => DeckStandRigLocal;
+
+        float ICharacterFigureStand.FigureDeckBearingDegrees => _deckBearingDegrees;
 
         // ---- wiring -------------------------------------------------------------------------------
 
@@ -668,7 +686,7 @@ namespace HiddenHarbours.Player
             // this component's word and a second opinion about it is a second bug.
             EnsureMeshFigure();
             bool aboard = Aboard() && _riderRenderer != null && isActiveAndEnabled;
-            if (_figure != null) _figure.PoseForRider(this, aboard);
+            if (_figure != null) _figure.PoseFigure(this, aboard);
 
             if (!aboard)
             {
