@@ -89,6 +89,10 @@ namespace HiddenHarbours.App
         /// <summary>Where she is standing, in the sole's own hull-local metres.</summary>
         public Vector2 LocalPosition => _local;
 
+        /// <summary>The height of that sole in the hull's rig metres (up from the keel): the third
+        /// coordinate of where she is standing, for a figure placed in the hull's own frame.</summary>
+        public float SoleHeightMetres => _soleZMetres;
+
         /// <summary>Which way she was last walking, as a compass heading — held rather than measured for
         /// the reason <c>ArrivalOpening.PoseThePassenger</c> states: the transform she is drawn from
         /// carries the BOAT's motion as well as her own, so a drawer measuring it reads a fisher at five
