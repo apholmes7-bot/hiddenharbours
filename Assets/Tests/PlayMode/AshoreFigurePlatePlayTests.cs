@@ -52,9 +52,10 @@ namespace HiddenHarbours.Tests.PlayMode
     /// <c>_HHHullGuardTex</c> out of the stage camera's graph while they are live, and each read below
     /// takes the copy that the capture just before it made.</para>
     ///
-    /// <para><b>The class calls <see cref="IsoCharacterFigureRenderer.EnterAshore"/> itself</b>, on the
-    /// skinned player, inside the test, and <see cref="IsoCharacterFigureRenderer.LeaveAshore"/> in the
-    /// teardown. Nothing on main calls it; no production file is touched.</para>
+    /// <para><b>Frames 1–5 call <see cref="IsoCharacterFigureRenderer.EnterAshore"/> themselves</b>, on a
+    /// plate figure built beside the skinned player inside the test, and
+    /// <see cref="IsoCharacterFigureRenderer.LeaveAshore"/> in the teardown, with the switch OFF (the
+    /// shipped asset), so the plate's figure is the only one ashore.</para>
     ///
     /// <para><b>⚠️ These SKIP on CI and prove nothing there</b> — a plate needs a GPU and CI runs the
     /// Null device. <b>⚠️ The plate directory is shared by every worktree</b>: a floor file is written
@@ -64,6 +65,15 @@ namespace HiddenHarbours.Tests.PlayMode
     ///
     /// <para><b>Every plate names its frame</b> in a caption beside it: scene, clock, her position, the
     /// camera's position and size, the plate's pixels, the sea and the lamps.</para>
+    ///
+    /// <para><b>The switch frames (S1–S5)</b> build no figure of their own and never touch her body. Each
+    /// shoots one place three times: OFF (the shipped <c>GameConfig.asset</c>), ON (a runtime copy with
+    /// <see cref="GameConfig.MeshCharacterAshore"/> set, published through
+    /// <see cref="GameServices.Config"/>; the asset is never written), and OFF again. What draws her is
+    /// <see cref="DeckRiderMeshPresenter"/>'s decision alone: the plate reads that decision, counts
+    /// what draws her, and reads her id inside the frame. S1 is the flip plate; S4 lands on the re-seat
+    /// call with no frame between; S5 is Nine Mile Creek, where the facet-id pool may refuse her, and
+    /// then the refusal is the frame. A claim a plate cannot decide is written "unknown", never passed.</para>
     /// </summary>
     public class AshoreFigurePlatePlayTests
     {
@@ -104,6 +114,27 @@ namespace HiddenHarbours.Tests.PlayMode
         const string Unknown = "unknown from this plate";
         const string Info = "INFO";
 
+        /// <summary>The asset the build ships: the switch frames read its OFF and never write it.</summary>
+        const string ShippedConfigPath = "Assets/_Project/Data/Config/GameConfig.asset";
+        /// <summary>The name the presenter gives her ashore figure's GameObject.</summary>
+        const string AshoreFigureName = "MeshCharacterAshore";
+        /// <summary>Words of the presenter's own reasons (private there), matched as substrings.</summary>
+        const string OffReasonMark = "MeshCharacterAshore is off";
+        const string RefusedReasonMark = "facet-id pool is used up";
+        /// <summary>How long the switch frames wait for the presenter, and for her headlamp, to appear.</summary>
+        const int PresenterWaitFrames = 60;
+        const int LampWaitFrames = 30;
+        /// <summary>Her box on the plate, metres about her feet.</summary>
+        const float HerBoxHalfWidthMetres = 0.7f;
+        const float HerBoxBelowMetres = 0.4f;
+        const float HerBoxHeightMetres = 2.2f;
+        /// <summary>How far north of a fence rail she stands, so the rail is in front of her on screen.</summary>
+        const float BehindTheFenceMetres = 0.4f;
+        /// <summary>Where she lands on the wharf, in from the south lip, at the ladder.</summary>
+        const float LadderHeadInFromLipMetres = 0.6f;
+        /// <summary>The yards' fence pieces, by the dressing's own style keys (private there, so literals here).</summary>
+        static readonly string[] FencePieceKeys = { "picketPanel", "fenceCorner", "picketGate", "postRail" };
+
         WharfNightStage _stage;
         InFrameChannelReadback _readback;
 
@@ -142,6 +173,19 @@ namespace HiddenHarbours.Tests.PlayMode
         Transform _skipper;
         SpriteRenderer _skipperSprite;
         string _beamNote;
+
+        // --- the switch (the S frames) -----------------------------------------------------------------
+        GameConfig _shippedConfig;
+        GameConfig _switchOn;
+        string _configNote;
+        string _switchNote;
+        string _switchBodyNote;
+        DeckRiderVisual _rider;
+        DeckRiderMeshPresenter _presenter;
+        Headlamp _headlampTurnedOn;
+        WalkerLights _plateWalkerLights;
+        string _lampUnlitWhy;
+        readonly List<Renderer> _hiddenFence = new List<Renderer>();
 
         // --- the reading ------------------------------------------------------------------------------
         readonly List<string> _verdicts = new List<string>();
@@ -192,6 +236,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _lampsNote = "none placed by the plate";
             _seaNote = "as the scene loaded it";
             _beamNote = null;
+            _switchNote = null; _lampUnlitWhy = null; _configNote = null; _switchBodyNote = null;
             yield return null;
         }
 
@@ -222,9 +267,23 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_iso != null) _iso.ReleaseHeading();
             if (_body != null && _bodyTaken) _body.simulated = _bodyWasSimulated;
             if (_seaTurnedOn != null) _seaTurnedOn.SetDisplaced(false);
+            // The switch frames: the shipped config back BEFORE the stage goes (GameRoot.OnDestroy nulls
+            // GameServices.Config only while it holds its own asset), her lamp off, the fence shown.
+            if (_shippedConfig != null) GameServices.Config = _shippedConfig;
+            if (_switchOn != null) Object.Destroy(_switchOn);
+            if (_headlampTurnedOn != null) _headlampTurnedOn.SetOn(false);
+            if (_plateWalkerLights != null)
+            {
+                if (_plateWalkerLights.Beam != null) Object.Destroy(_plateWalkerLights.Beam.gameObject);
+                if (_plateWalkerLights.Lantern != null) Object.Destroy(_plateWalkerLights.Lantern.gameObject);
+                Object.Destroy(_plateWalkerLights.gameObject);
+            }
+            foreach (Renderer r in _hiddenFence) if (r != null) r.forceRenderingOff = false;
+            _hiddenFence.Clear();
 
             _figure = null; _sprite = null; _iso = null; _body = null; _bodyTaken = false; _player = null;
             _skin = null; _fid = 0; _seaTurnedOn = null; _boat = null; _skipper = null; _skipperSprite = null;
+            _shippedConfig = null; _switchOn = null; _rider = null; _presenter = null; _headlampTurnedOn = null; _plateWalkerLights = null;
 
             _readback?.Dispose();       // off beginCameraRendering, and its copies released
             _readback = null;
@@ -263,28 +322,7 @@ namespace HiddenHarbours.Tests.PlayMode
             WharfNightStage.RequireAGraphicsDevice();
             yield return Arrive(StPetersScene, Noon);
 
-            var row = new List<GameObject>();
-            GameObject quad = null;
-            foreach (string name in new[] { StPetersMachines.QuadName, StPetersMachines.TrikeName,
-                                            StPetersMachines.EnduroName })
-            {
-                GameObject go = GameObject.Find(name);
-                if (go == null) { _neighbours.Add($"{name} NOT FOUND in {StPetersScene}"); continue; }
-                row.Add(go);
-                if (name == StPetersMachines.QuadName) quad = go;
-            }
-            if (quad == null)
-                Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — {StPetersScene} carries no " +
-                            $"'{StPetersMachines.QuadName}', so there is no machine row to stand her beside.");
-
-            Bounds rowBounds = BoundsOf(row[0]);
-            foreach (GameObject go in row.Skip(1)) rowBounds.Encapsulate(BoundsOf(go));
-            bool quadAtWest = BoundsOf(quad).center.x <= rowBounds.center.x;
-            var at = new Vector2(quadAtWest ? rowBounds.min.x - SideStepMetres : rowBounds.max.x + SideStepMetres,
-                                 quad.transform.position.y);
-            foreach (GameObject go in row)
-                _neighbours.Add($"{go.name} at {Fmt(go.transform.position)}, bounds x {rowBounds.min.x:0.00}.." +
-                                $"{rowBounds.max.x:0.00} (row), {Vector2.Distance(go.transform.position, at):0.0} m from her");
+            List<GameObject> row = TheMachineRow(out Vector2 at, out Bounds rowBounds, out bool quadAtWest);
 
             yield return StandHer(at, new Vector2(rowBounds.center.x, at.y + FrameLiftMetres),
                                   rowBounds.size.x + 6f, "the whole machine row and 3 m either side");
@@ -308,13 +346,7 @@ namespace HiddenHarbours.Tests.PlayMode
             WharfNightStage.RequireAGraphicsDevice();
             yield return Arrive(NineMileCreekScene, Noon);
 
-            GameObject truck = GameObject.Find(NineMileCreekTruckPark.TruckName);
-            if (truck == null)
-                Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — {NineMileCreekScene} carries no " +
-                            $"'{NineMileCreekTruckPark.TruckName}', so there is no truck to stand her beside.");
-
-            Bounds tb = BoundsOf(truck);
-            var at = new Vector2(tb.max.x + SideStepMetres, truck.transform.position.y);
+            GameObject truck = TheDually(out Bounds tb, out Vector2 at);
             NoteNeighbours(at, 30f);
 
             yield return StandHer(at, new Vector2(tb.center.x + 1f, at.y + FrameLiftMetres), tb.size.x + 8f,
@@ -434,6 +466,182 @@ namespace HiddenHarbours.Tests.PlayMode
                         $"moored at the north face at {Fmt(boatAt)} heading {StPetersBuilder.DoryMooredHeadingDegrees:0}; " +
                         $"her on the deck at {Fmt(at)}, IN FRONT of the hull on screen; sea: {_seaNote}",
             });
+        }
+
+        // =============================================================================================
+        //  The switch frames: OFF, ON, OFF again — the presenter decides, the plate reads
+        // =============================================================================================
+
+        /// <summary>
+        /// ⭐⭐ <b>S1 — THE FLIP PLATE: St Peters at noon, beside the UtilityQuad, the Trike200 and the
+        /// Enduro250</b>, frame 1's stand. The owner flips the switch on <c>b-on</c> against <c>a-off</c>:
+        /// the same place, seed and clock, the shipped asset against a runtime copy with the switch on.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator Switch_BesideTheMachineRow_OffThenOn_StPetersNoon()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+            yield return Arrive(StPetersScene, Noon);
+
+            List<GameObject> row = TheMachineRow(out Vector2 at, out Bounds rowBounds, out bool quadAtWest);
+
+            yield return StandHer(at, new Vector2(rowBounds.center.x, at.y + FrameLiftMetres),
+                                  rowBounds.size.x + 6f, "the whole machine row and 3 m either side", plateFigure: false);
+            foreach (GameObject go in row) AssertTheSubjectIsInFrame(go.transform, $"S1: the {go.name}");
+            yield return FindHerPresenter();
+
+            yield return ShootTheSwitch(new Arm
+            {
+                Key = "s1-switch-machines-stpeters-noon",
+                Frame = $"{StPetersScene} 12:00, her {SideStepMetres:0.0} m off the {(quadAtWest ? "west" : "east")} " +
+                        $"(UtilityQuad) end of the machine row at {Fmt(at)}; frame centred on the row; switch OFF / ON / OFF",
+            });
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>S2 — St Peters at 02:00, under HER OWN headlamp.</b> No pier lamp is placed: the light is
+        /// the walker's headlamp, switched on by the plate. She stands at the ladder, a metre inside the
+        /// lamp row. A lamp that will not light fails the frame by name AFTER its plates are written.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator Switch_UnderHerHeadlamp_OffThenOn_StPetersNight()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+            yield return Arrive(StPetersScene, Night);
+
+            Vector2 ladder = StPetersWharf.LadderPosition();
+            var at = new Vector2(ladder.x, StPetersWharf.LampRowY - 1f);
+            NoteNeighbours(at, 12f);
+
+            yield return StandHer(at, at + new Vector2(0f, FrameLiftMetres), 10f, "her and her headlamp's pool",
+                                  plateFigure: false);
+            yield return FindHerPresenter();
+            yield return TurnOnHerHeadlamp();
+
+            yield return ShootTheSwitch(new Arm
+            {
+                Key = "s2-switch-headlamp-stpeters-night",
+                Frame = $"{StPetersScene} {Night:00}:00, her at the ladder {Fmt(at)}, a metre inside the lamp row, under " +
+                        "HER OWN headlamp; no pier lamp placed; switch OFF / ON / OFF",
+            });
+            if (_lampUnlitWhy != null)
+                Assert.Fail($"[{PlateDir}] s2: plates written but the frame is not the charter's — {_lampUnlitWhy}.");
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>S3 — St Peters at noon, behind a yard fence.</b> The nearest horizontal rail of the yards'
+        /// dressing to her spawn (a picket panel, else a post-and-rail); she stands just north of it, so
+        /// the rail is in front of her on screen. Every fence piece is hidden for one CONTROL shutter in
+        /// each state, so the plate can say where her sprite and her mesh differ BEHIND the fence.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator Switch_BehindAYardFence_OffThenOn_StPetersNoon()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+            yield return Arrive(StPetersScene, Noon);
+            yield return FindHer();
+            Vector2 spawn = _player.transform.position;
+
+            GameObject yards = GameObject.Find(YardDressing.RootName);
+            if (yards == null)
+                Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — {StPetersScene} carries no '{YardDressing.RootName}' " +
+                            "root, so there is no fence to stand her behind.");
+            SpriteRenderer rail = PickTheRail(yards, "picketPanel", spawn);
+            if (rail == null) rail = PickTheRail(yards, "postRail", spawn);
+            if (rail == null)
+                Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — '{YardDressing.RootName}' holds no enabled horizontal " +
+                            "picketPanel or postRail piece, so there is no rail to stand her behind.");
+            foreach (SpriteRenderer r in yards.GetComponentsInChildren<SpriteRenderer>())
+                if (r.enabled && IsFencePiece(r.name)) _hiddenFence.Add(r);
+
+            var at = new Vector2(rail.bounds.center.x, rail.transform.position.y + BehindTheFenceMetres);
+            _neighbours.Add($"rail {(rail.transform.parent != null ? rail.transform.parent.name + "/" : "")}{rail.name} at " +
+                            $"{Fmt(rail.transform.position)}, bounds {Fmt(rail.bounds.min)}..{Fmt(rail.bounds.max)}, " +
+                            $"{Vector2.Distance(rail.transform.position, spawn):0.0} m from her spawn; " +
+                            $"{_hiddenFence.Count} fence piece(s) in the control shutter");
+            NoteNeighbours(at, 12f);
+
+            yield return StandHer(at, at + new Vector2(0f, FrameLiftMetres), 8f, "her and the rail she stands behind",
+                                  plateFigure: false);
+            AssertTheSubjectIsInFrame(rail.transform, "S3: the fence rail");
+            yield return FindHerPresenter();
+
+            yield return ShootTheSwitch(new Arm
+            {
+                Key = "s3-switch-behind-fence-stpeters-noon",
+                Frame = $"{StPetersScene} 12:00, her {BehindTheFenceMetres:0.0} m north of the rail '{rail.name}' at " +
+                        $"{Fmt(at)} (the rail in front of her on screen); switch OFF / ON / OFF, each with a " +
+                        "fence-hidden control shutter",
+            }, fence: _hiddenFence);
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>S4 — St Peters at noon, stepping off a moored hull.</b> The mesh owner is moored alongside
+        /// under the ladder; she stands at the ladder head. ON is thrown by a RE-SEAT — the
+        /// <see cref="DeckRiderVisual.SetMode"/> call <c>ControlSwitcher.ApplyPlayerFor</c> makes when she
+        /// steps ashore — and captured with no frame between, so the plate shows what the call decided.
+        /// Not a real boarding: her control mode is the one she arrived in.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator Switch_SteppingOffAMooredHull_LandsOnTheCall_StPetersNoon()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+            BoatOwnerDef owner = PickMeshOwner();   // before the first yield: its skip must stay a skip
+
+            yield return Arrive(StPetersScene, Noon);
+
+            float halfBeam = HalfBeamOf(owner);
+            Vector2 ladder = StPetersWharf.LadderPosition();
+            var boatAt = new Vector2(ladder.x,
+                                     StPetersWharf.MooringFaceY - StPetersBuilder.AlongsideFenderGapMetres - halfBeam);
+            yield return Moor(owner, boatAt, StPetersBuilder.DoryMooredHeadingDegrees);
+
+            var at = new Vector2(ladder.x, StPetersWharf.MooringFaceY + LadderHeadInFromLipMetres);
+            NoteNeighbours(at, 12f);
+
+            yield return StandHer(at, new Vector2(boatAt.x, 0.5f * (at.y + boatAt.y) + FrameLiftMetres),
+                                  owner.Boat.LengthMeters + 6f, $"{owner.Id}'s hull and 3 m either side", plateFigure: false);
+            AssertTheSubjectIsInFrame(_boat.transform, "S4: the moored hull");
+            yield return FindHerPresenter();
+
+            yield return ShootTheSwitch(new Arm
+            {
+                Key = "s4-switch-stepping-off-hull-stpeters-noon",
+                Frame = $"{StPetersScene} 12:00, {owner.Id} ({owner.Boat.name}, {owner.Boat.LengthMeters:0.0} m) moored " +
+                        $"alongside at {Fmt(boatAt)} heading {StPetersBuilder.DoryMooredHeadingDegrees:0}; her at the ladder " +
+                        $"head {Fmt(at)}; ON by a RE-SEAT (DeckRiderVisual.SetMode(OnFoot, null), the call " +
+                        "ControlSwitcher.ApplyPlayerFor makes when she steps ashore), captured with no frame between; " +
+                        "not a real boarding",
+            }, landing: true);
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>S5 — Nine Mile Creek at noon, beside the dually: the refusal, shown honestly.</b> Frame 2's
+        /// stand. Nine Mile Creek can use up the facet-id pool; when the pool refuses her, the frame must
+        /// show her whole sprite and the presenter must SAY why. When it has room, the mesh claims apply.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator Switch_BesideTheDually_RefusalShownHonestly_NineMileCreekNoon()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+            yield return Arrive(NineMileCreekScene, Noon);
+            int hullsAtArrival = IsoFacetHullRegistry.Count, figuresAtArrival = IsoFacetHullRegistry.FigureCount;
+
+            GameObject truck = TheDually(out Bounds tb, out Vector2 at);
+            NoteNeighbours(at, 30f);
+
+            yield return StandHer(at, new Vector2(tb.center.x + 1f, at.y + FrameLiftMetres), tb.size.x + 8f,
+                                  "the dually and 4 m either side", plateFigure: false);
+            AssertTheSubjectIsInFrame(truck.transform, "S5: the dually");
+            yield return FindHerPresenter();
+
+            yield return ShootTheSwitch(new Arm
+            {
+                Key = "s5-switch-dually-ninemile-noon",
+                Frame = $"{NineMileCreekScene} 12:00, her {SideStepMetres:0.0} m off the east end of " +
+                        $"{NineMileCreekTruckPark.TruckName} at {Fmt(at)}; facet registry at arrival: {hullsAtArrival} " +
+                        $"hull(s), {figuresAtArrival} figure id(s); switch OFF / ON / OFF",
+            }, refusalIsTheFrame: true);
         }
 
         // =============================================================================================
@@ -726,6 +934,255 @@ namespace HiddenHarbours.Tests.PlayMode
                             string.Join("\n", _verdicts.Where(v => v.Contains("| " + Fail + " |"))));
         }
 
+        /// <summary>
+        /// ⭐⭐ <b>THE SWITCH, shot three times in one place</b>: OFF (the shipped asset), ON (a runtime copy
+        /// through <see cref="GameServices.Config"/>; the asset is never written), OFF again. The presenter
+        /// alone decides what draws her; this reads what it decided and what reached the picture. Her figure
+        /// is hidden for one CONTROL shutter only (and every fence piece for another, when a fence is named).
+        /// </summary>
+        IEnumerator ShootTheSwitch(Arm arm, bool refusalIsTheFrame = false, List<Renderer> fence = null,
+                                   bool landing = false)
+        {
+            Camera cam = _stage.Camera;
+            int w = _stage.Width, h = _stage.Height;
+            AssertTheSubjectIsInFrame(_player.transform, arm.Key + ": her");
+            ArmTheReadback(cam);
+            SpriteRenderer body = _rider.BodyRenderer;
+
+            // ---- OFF: the shipped frame ----
+            SetTheSwitch(false);
+            yield return Settle();
+            cam.orthographicSize = _plateOrtho;
+            string stOff = SwitchState("OFF");
+            IsoCharacterFigureRenderer figOff = _presenter.AshoreFigure;
+            bool offRight = !_presenter.DrawsAshore && Shown(body) && (figOff == null || !figOff.Visible);
+            int drawersOff = Drawers(out string whichOff);
+            int figuresBefore = IsoFacetHullRegistry.FigureCount;
+            byte[] shotOff = _stage.Capture();
+            Raw rawIdsOff = ReadGlobalChannel(IsoFacetShaderIds.HullScreenTex, "_HHHullScreenTex", 3, out string idHowOff);
+            byte[] shotOffB = _stage.Capture();
+            byte[] shotOffNoFence = null;
+            if (fence != null)
+            {
+                foreach (Renderer r in fence) r.forceRenderingOff = true;   // CONTROL, one shutter: the fence out
+                shotOffNoFence = _stage.Capture();
+                foreach (Renderer r in fence) r.forceRenderingOff = false;
+            }
+            yield return Settle();
+            cam.orthographicSize = _plateOrtho;
+            byte[] shotOffLater = _stage.Capture();
+
+            // ---- ON: the owner's flip ----
+            SetTheSwitch(true);
+            int reseatWas = _rider.ReseatCount;
+            bool drawsOnCall = false;
+            int reseatAfterCall = reseatWas;
+            if (landing)
+            {
+                // The call ControlSwitcher.ApplyPlayerFor makes when she steps ashore (:2543): SetMode runs
+                // Apply() synchronously, so the NEXT capture shows what it decided. No yield between.
+                _rider.SetMode(ControlMode.OnFoot, null);
+                drawsOnCall = _presenter.DrawsAshore;
+                reseatAfterCall = _rider.ReseatCount;
+            }
+            else
+            {
+                yield return Settle();
+            }
+            cam.orthographicSize = _plateOrtho;
+            string stOn = SwitchState("ON");
+            IsoCharacterFigureRenderer fig = _presenter.AshoreFigure;
+            bool refused = _presenter.AshoreRefused;
+            int drawersOn = Drawers(out string whichOn);
+            bool onRight = _presenter.DrawsAshore && fig != null && fig.Visible && body != null && body.enabled &&
+                           body.forceRenderingOff;
+            byte[] shotOn = _stage.Capture();
+            Raw rawIdsOn = ReadGlobalChannel(IsoFacetShaderIds.HullScreenTex, "_HHHullScreenTex", 3, out string idHowOn);
+            byte[] shotOnB = _stage.Capture();
+            byte[] shotOnBare = null;
+            if (fig != null && fig.Visible)
+            {
+                fig.Visible = false;     // CONTROL, one shutter: her figure out; the body the presenter hid stays hidden
+                shotOnBare = _stage.Capture();
+                fig.Visible = true;
+            }
+            byte[] shotOnNoFence = null;
+            if (fence != null)
+            {
+                foreach (Renderer r in fence) r.forceRenderingOff = true;
+                shotOnNoFence = _stage.Capture();
+                foreach (Renderer r in fence) r.forceRenderingOff = false;
+            }
+            _fid = fig != null ? fig.FigureId : 0;
+            _yaw = _presenter.AshoreYawDegrees;
+            _pose = fig != null && fig.Visible ? $"'{fig.DrawnStateKey}' frame {fig.DrawnFrame}"
+                                               : "none drawn (no visible ashore figure)";
+            int figuresOn = IsoFacetHullRegistry.FigureCount;
+            string stNext = null;
+            byte[] shotOnNext = null;
+            if (landing)
+            {
+                yield return Settle();
+                cam.orthographicSize = _plateOrtho;
+                stNext = SwitchState("ON, two frames after the call");
+                shotOnNext = _stage.Capture();
+            }
+
+            // ---- OFF again ----
+            SetTheSwitch(false);
+            yield return Settle();
+            cam.orthographicSize = _plateOrtho;
+            string stOff2 = SwitchState("OFF again");
+            int drawersOff2 = Drawers(out string whichOff2);
+            int figuresAfter = IsoFacetHullRegistry.FigureCount;
+            IsoCharacterFigureRenderer fig2 = _presenter.AshoreFigure;
+            bool child2 = HasChildNamed(_player.transform, AshoreFigureName);
+            byte[] shotOff2 = _stage.Capture();
+            Raw rawIdsOff2 = ReadGlobalChannel(IsoFacetShaderIds.HullScreenTex, "_HHHullScreenTex", 3, out string idHowOff2);
+
+            // ---- the noise, her box and the id mapping ----
+            bool[] aaOff = Changed(shotOff, shotOffB), aaOn = Changed(shotOn, shotOnB);
+            bool[] aaLater = Changed(shotOff, shotOffLater);
+            bool[] noisy = Dilate(Or(Or(aaOff, aaOn), aaLater), w, h, 1);
+            RectInt boxRect = HerBox(0f);
+            bool[] box = RectMask(boxRect, w, h);
+            bool[] boxWide = RectMask(HerBox(0.5f), w, h);
+            bool[] changedMesh = shotOnBare != null ? Changed(shotOnBare, shotOn) : Changed(shotOff, shotOn);
+            Mapping map = Mapping.Scaled;
+            string orient = "not calibrated (she holds no figure id)";
+            if (_fid != 0) map = Calibrate(rawIdsOn, changedMesh, out orient);
+            byte[] idsOff = ToPlate(rawIdsOff, map), idsOn = ToPlate(rawIdsOn, map), idsOff2 = ToPlate(rawIdsOff2, map);
+            string noiseLine = $"A/A noise (same state twice): OFF {Count(aaOff)}, ON {Count(aaOn)} px; OFF across two " +
+                               $"frames {Count(aaLater)} px; her box {boxRect} px; id reads: OFF {idHowOff}; ON {idHowOn}; " +
+                               $"OFF again {idHowOff2}; mapping {orient}";
+
+            // ---- S-a: OFF is main's frame ----
+            int spriteInBox = shotOnBare != null ? Count(And(And(Changed(shotOnBare, shotOff), box), Not(noisy))) : -1;
+            string na = $"{stOff}; her sprite in her box " +
+                        (spriteInBox >= 0 ? $"{spriteInBox} px (OFF vs ON with her figure hidden)" : "not priced");
+            if (!offRight || spriteInBox == 0) Verdict("S-a off: the sprite draws", arm, Fail, na);
+            else if (spriteInBox < 0)
+                Verdict("S-a off: the sprite draws", arm, Unknown,
+                        na + " — the state is main's but there is no bare frame to price her sprite against");
+            else Verdict("S-a off: the sprite draws", arm, Pass, na);
+            if (_fid == 0 || idsOff == null)
+                Verdict("S-a off: no id of hers", arm, Unknown, _fid == 0 ? "she held no figure id on ON" : idHowOff);
+            else
+            {
+                int herIdOff = Count(Where(idsOff, _fid));
+                Verdict("S-a off: no id of hers", arm, herIdOff > 0 ? Fail : Pass, $"id {_fid} on {herIdOff} px of the OFF frame");
+            }
+
+            // ---- S-b: ON ----
+            int meshIn = Count(And(And(changedMesh, box), Not(noisy)));
+            int meshOut = Count(And(And(changedMesh, Not(boxWide)), Not(noisy)));
+            string nb = $"{stOn}; mesh px in her box {meshIn}, outside her wide box {meshOut}; " +
+                        $"figure ids {figuresBefore} -> {figuresOn}";
+            bool meshClaims = true;
+            if (refusalIsTheFrame && refused)
+            {
+                meshClaims = false;
+                bool stateRight = !_presenter.DrawsAshore && Shown(body) && (fig == null || !fig.Visible) &&
+                                  (_presenter.NotDrawingReason ?? "").Contains(RefusedReasonMark);
+                int moved = Count(And(And(Changed(shotOff, shotOn), box), Not(noisy)));
+                string nr = $"{stOn}; her box moved {moved} px OFF -> ON";
+                if (!stateRight) Verdict("S-b on: refused honestly", arm, Fail, nr);
+                else if (moved > 0) Verdict("S-b on: refused honestly", arm, Unknown, nr + " — the state is honest but her box moved");
+                else Verdict("S-b on: refused honestly", arm, Pass, nr);
+            }
+            else if (refusalIsTheFrame)
+                Verdict("S-b on: refused honestly", arm, Info,
+                        "not refused on this run: the pool had room, so the mesh claims below apply");
+            if (meshClaims)
+            {
+                if (!onRight)
+                    Verdict("S-b on: the mesh draws", arm, Fail, nb + $" — the presenter did not draw her: '{_presenter.NotDrawingReason}'");
+                else if (meshIn == 0)
+                    Verdict("S-b on: the mesh draws", arm, Fail, nb + " — the state says drawn but no pixel of her box changed");
+                else Verdict("S-b on: the mesh draws", arm, Pass, nb);
+                if (meshOut > 0) Verdict("S-b on: mesh outside her box", arm, Info, nb);
+
+                if (_fid == 0 || idsOn == null)
+                    Verdict("S-b on: by her own id", arm, Unknown, _fid == 0 ? "she holds no figure id" : idHowOn);
+                else
+                {
+                    bool[] her = Where(idsOn, _fid);
+                    int herPx = Count(her);
+                    int herChanged = Count(And(her, changedMesh));
+                    bool idSane = herPx > 0 && 2 * herChanged >= herPx;
+                    bool anyOtherId = idsOn.Any(b => b != 0 && b != _fid);
+                    string ni = $"id {_fid} on {herPx} px, {herChanged} of them on her changed pixels; mapping {orient}";
+                    if (herPx == 0)
+                        Verdict("S-b on: by her own id", arm, anyOtherId ? Fail : Unknown,
+                                ni + (anyOtherId ? " — other ids read, hers absent" : " — the id texture read empty"));
+                    else if (!idSane) Verdict("S-b on: by her own id", arm, Unknown, ni + " — misregistered read");
+                    else Verdict("S-b on: by her own id", arm, Pass, ni);
+                }
+            }
+
+            // ---- S-c: one drawer in every state ----
+            Verdict("S-c one drawer", arm, drawersOff == 1 && drawersOn == 1 && drawersOff2 == 1 ? Pass : Fail,
+                    $"OFF {drawersOff} ({whichOff}); ON {drawersOn} ({whichOn}); OFF again {drawersOff2} ({whichOff2})");
+
+            // ---- S-d: OFF again is main's frame again ----
+            bool stateBack = !_presenter.DrawsAshore && fig2 == null && !child2 && figuresAfter == figuresBefore &&
+                             Shown(body) && (_presenter.NotDrawingReason ?? "").Contains(OffReasonMark);
+            int herIdOff2 = _fid != 0 && idsOff2 != null ? Count(Where(idsOff2, _fid)) : 0;
+            int moved2 = Count(And(And(Changed(shotOff, shotOff2), box), Not(noisy)));
+            string nd = $"{stOff2}; figure ids {figuresBefore} -> {figuresOn} -> {figuresAfter}; id {_fid} on " +
+                        $"{herIdOff2} px; her box moved {moved2} px vs OFF";
+            if (!stateBack || herIdOff2 > 0) Verdict("S-d off again: nothing", arm, Fail, nd);
+            else if (moved2 > 0) Verdict("S-d off again: nothing", arm, Unknown, nd + " — the state is back but her box moved");
+            else Verdict("S-d off again: nothing", arm, Pass, nd);
+
+            // ---- S-e: the fence stays in front ----
+            if (fence != null)
+            {
+                bool[] fenceOff = Erode(Changed(shotOffNoFence, shotOff), w, h, 1);
+                int decidable = Count(And(And(And(fenceOff, Changed(shotOffNoFence, shotOnNoFence)), box), Not(noisy)));
+                int leak = Count(And(And(And(fenceOff, Changed(shotOff, shotOn)), box), Not(noisy)));
+                string ne = $"{fence.Count} fence piece(s); fence px where her sprite and mesh differ behind it " +
+                            $"{decidable}; fence px that changed OFF -> ON {leak}";
+                if (decidable == 0) Verdict("S-e fence stays in front", arm, Unknown, ne + " — nothing of her differs behind the fence");
+                else Verdict("S-e fence stays in front", arm, leak > 0 ? Fail : Pass, ne);
+            }
+
+            // ---- S-f, S-g: the landing ----
+            if (landing)
+            {
+                Verdict("S-f lands on the call", arm, drawsOnCall && meshIn > 0 && reseatAfterCall > reseatWas ? Pass : Fail,
+                        $"ReseatCount {reseatWas} -> {reseatAfterCall}; DrawsAshore on the call {drawsOnCall}; " +
+                        $"mesh px in her box on the call {meshIn}");
+                int pop = Count(And(And(Changed(shotOn, shotOnNext), box), Not(noisy)));
+                Verdict("S-g no pop after the call", arm, pop == 0 ? Pass : Info,
+                        $"{stNext}; her box changed {pop} px from the call's frame to two frames later");
+            }
+
+            // ---- the plates ----
+            _switchNote = $"{_configNote}; ON = a runtime copy '{(_switchOn != null ? _switchOn.name : "?")}' published " +
+                          "through GameServices.Config (the asset is never written); " +
+                          $"{_switchBodyNote}; {stOff} | {stOn} | {stOff2}" +
+                          (landing ? $" | landing: ReseatCount {reseatWas} -> {reseatAfterCall}, DrawsAshore on the call {drawsOnCall}" : "");
+            SavePlate(arm, "a-off", shotOff, "OFF — the shipped asset (MeshCharacterAshore off): her sprite, main's frame");
+            SavePlate(arm, "b-on", shotOn, refused
+                ? "ON — the pool refused her an id: she keeps her whole sprite, and the frame says so"
+                : $"ON — the presenter's ashore mesh, id {_fid}, her sprite body hidden by the presenter");
+            SavePlate(arm, "c-off-again", shotOff2, "OFF again — her sprite; the ashore figure and its id gone");
+            if (idsOn != null && _fid != 0)
+                SavePlate(arm, "d-her-id-mask", Tint(shotOn, Where(idsOn, _fid)), $"b-on with every pixel holding id {_fid} tinted magenta");
+            if (shotOffNoFence != null) SavePlate(arm, "e-off-fence-hidden", shotOffNoFence, "CONTROL: OFF with every fence piece hidden");
+            if (shotOnNoFence != null) SavePlate(arm, "e-on-fence-hidden", shotOnNoFence, "CONTROL: ON with every fence piece hidden");
+            if (shotOnNext != null) SavePlate(arm, "e-on-next", shotOnNext, "ON, two frames after the re-seat call");
+            if (shotOnBare != null)
+                SavePlate(arm, "f-on-bare", shotOnBare, "CONTROL: ON with her figure hidden (the body stays hidden by the presenter)");
+            WriteVerdicts(arm, noiseLine);
+
+            Assert.Greater(_platesWritten, 0, $"[{PlateDir}] {arm.Key}: no plate was written.");
+            if (_fails > 0)
+                Assert.Fail($"[{PlateDir}] {arm.Key}: {_fails} claim(s) FAILED on the plate's own pixels —\n" +
+                            string.Join("\n", _verdicts.Where(v => v.Contains("| " + Fail + " |"))));
+        }
+
         void Verdict(string claim, Arm arm, string outcome, string numbers)
         {
             _verdicts.Add($"{claim,-26} | {arm.Key} | {outcome} | {numbers}");
@@ -882,12 +1339,8 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return _stage.SetNight(hour);
         }
 
-        /// <summary>
-        /// Her: the region's own on-foot player with a skin, stood at <paramref name="at"/> facing the
-        /// camera, her mesh figure built beside her sprite (hidden), then the game's camera parked on
-        /// <paramref name="centre"/> and the world frozen.
-        /// </summary>
-        IEnumerator StandHer(Vector2 at, Vector2 centre, float worldWidth, string why)
+        /// <summary>Her: the region's own on-foot player with a skin — found, never built.</summary>
+        IEnumerator FindHer()
         {
             for (int f = 0; f < 240 && _player == null; f++)
             {
@@ -908,10 +1361,21 @@ namespace HiddenHarbours.Tests.PlayMode
             _sprite = _player.GetComponent<SpriteRenderer>();
             _body = _player.GetComponent<Rigidbody2D>();
             _skin = _iso.Visual.Skin;
+        }
+
+        /// <summary>
+        /// Her, stood at <paramref name="at"/> facing the camera, her plate figure built beside her sprite
+        /// (hidden) unless <paramref name="plateFigure"/> is false — the switch frames, where the game's own
+        /// presenter is her figure — then the game's camera parked on <paramref name="centre"/> and the
+        /// world frozen.
+        /// </summary>
+        IEnumerator StandHer(Vector2 at, Vector2 centre, float worldWidth, string why, bool plateFigure = true)
+        {
+            yield return FindHer();
 
             _standAt = at;
             PutHerAt(at, withBody: true);
-            BuildHerFigure();
+            if (plateFigure) BuildHerFigure();
 
             yield return _stage.FrameOn(centre);
             FitTheFrame(worldWidth, why);
@@ -1144,6 +1608,250 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // =============================================================================================
+        //  The switch: the config, her presenter, her lamp, the fence, the stands
+        // =============================================================================================
+
+        /// <summary>
+        /// Frame 1's and S1's stand: the machine row at the store (UtilityQuad, Trike200, Enduro250), her
+        /// a step off the quad's end. Every member is named beside the plate; a missing quad is NO PLATE.
+        /// </summary>
+        List<GameObject> TheMachineRow(out Vector2 at, out Bounds rowBounds, out bool quadAtWest)
+        {
+            var row = new List<GameObject>();
+            GameObject quad = null;
+            foreach (string name in new[] { StPetersMachines.QuadName, StPetersMachines.TrikeName,
+                                            StPetersMachines.EnduroName })
+            {
+                GameObject go = GameObject.Find(name);
+                if (go == null) { _neighbours.Add($"{name} NOT FOUND in {StPetersScene}"); continue; }
+                row.Add(go);
+                if (name == StPetersMachines.QuadName) quad = go;
+            }
+            if (quad == null)
+                Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — {StPetersScene} carries no " +
+                            $"'{StPetersMachines.QuadName}', so there is no machine row to stand her beside.");
+
+            rowBounds = BoundsOf(row[0]);
+            foreach (GameObject go in row.Skip(1)) rowBounds.Encapsulate(BoundsOf(go));
+            quadAtWest = BoundsOf(quad).center.x <= rowBounds.center.x;
+            at = new Vector2(quadAtWest ? rowBounds.min.x - SideStepMetres : rowBounds.max.x + SideStepMetres,
+                             quad.transform.position.y);
+            foreach (GameObject go in row)
+                _neighbours.Add($"{go.name} at {Fmt(go.transform.position)}, bounds x {rowBounds.min.x:0.00}.." +
+                                $"{rowBounds.max.x:0.00} (row), {Vector2.Distance(go.transform.position, at):0.0} m from her");
+            return row;
+        }
+
+        /// <summary>Frame 2's and S5's stand: a step off the east end of Nine Mile Creek's dually.</summary>
+        GameObject TheDually(out Bounds tb, out Vector2 at)
+        {
+            GameObject truck = GameObject.Find(NineMileCreekTruckPark.TruckName);
+            if (truck == null)
+                Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — {NineMileCreekScene} carries no " +
+                            $"'{NineMileCreekTruckPark.TruckName}', so there is no truck to stand her beside.");
+
+            tb = BoundsOf(truck);
+            at = new Vector2(tb.max.x + SideStepMetres, truck.transform.position.y);
+            return truck;
+        }
+
+        /// <summary>
+        /// ⭐ <b>The owner's switch, thrown at runtime.</b> OFF is the config the region loaded (the shipped
+        /// asset); ON is a runtime COPY of it with <see cref="GameConfig.MeshCharacterAshore"/> set,
+        /// published through <see cref="GameServices.Config"/>, which the presenter reads on every apply.
+        /// The asset is never written. A loaded config that is not main's (the mesh off, or the switch
+        /// already on) is NO PLATE: the OFF frame would not be main's frame.
+        /// </summary>
+        void SetTheSwitch(bool ashoreOn)
+        {
+            if (_switchOn == null)
+            {
+                _shippedConfig = GameServices.Config;
+                if (_shippedConfig == null)
+                    Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — {_scene} published no GameServices.Config, so " +
+                                "there is no shipped switch to read OFF.");
+                if (!_shippedConfig.MeshCharacter || _shippedConfig.MeshCharacterAshore)
+                    Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — the loaded config '{_shippedConfig.name}' is not " +
+                                $"main's: MeshCharacter {_shippedConfig.MeshCharacter}, MeshCharacterAshore " +
+                                $"{_shippedConfig.MeshCharacterAshore} (main ships true / false).");
+#if UNITY_EDITOR
+                GameConfig asset = AssetDatabase.LoadAssetAtPath<GameConfig>(ShippedConfigPath);
+                _configNote = asset == null
+                    ? $"OFF = the loaded config '{_shippedConfig.name}' ({ShippedConfigPath} did not load to compare)"
+                    : ReferenceEquals(asset, _shippedConfig)
+                        ? $"OFF = the shipped asset {ShippedConfigPath} itself (MeshCharacterAshore {asset.MeshCharacterAshore})"
+                        : $"OFF = the loaded config '{_shippedConfig.name}', NOT the asset object at {ShippedConfigPath} " +
+                          $"(the asset reads MeshCharacterAshore {asset.MeshCharacterAshore})";
+#else
+                _configNote = $"OFF = the loaded config '{_shippedConfig.name}'";
+#endif
+                _switchOn = Object.Instantiate(_shippedConfig);
+                _switchOn.name = "(plate: MeshCharacterAshore ON)";
+                _switchOn.MeshCharacterAshore = true;
+            }
+            GameServices.Config = ashoreOn ? _switchOn : _shippedConfig;
+        }
+
+        /// <summary>
+        /// Her rider and the presenter the game gave it. The presenter is installed by the rider only
+        /// while <see cref="GameConfig.MeshCharacter"/> is on; its body is her sprite, so the teardown's
+        /// restore of <see cref="_sprite"/> covers whatever the presenter left.
+        /// </summary>
+        IEnumerator FindHerPresenter()
+        {
+            _rider = _player.GetComponentInChildren<DeckRiderVisual>(true);
+            if (_rider == null)
+                Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — the player in {_scene} carries no DeckRiderVisual, so " +
+                            "no presenter decides what draws her.");
+            for (int f = 0; f < PresenterWaitFrames && _presenter == null; f++)
+            {
+                _presenter = _rider.GetComponent<DeckRiderMeshPresenter>();
+                if (_presenter == null) yield return null;
+            }
+            if (_presenter == null)
+                Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — no DeckRiderMeshPresenter on her rider after " +
+                            $"{PresenterWaitFrames} frames (GameConfig.MeshCharacter " +
+                            $"{(GameServices.Config != null && GameServices.Config.MeshCharacter)}, skin " +
+                            $"'{(_skin != null ? _skin.name : "none")}').");
+
+            SpriteRenderer body = _rider.BodyRenderer;
+            _switchBodyNote = body == null ? "the rider names NO body renderer"
+                            : body == _player.GetComponent<SpriteRenderer>()
+                                ? $"the presenter's body is her own SpriteRenderer '{body.name}'"
+                                : $"the presenter's body is '{body.name}', NOT her root SpriteRenderer";
+            if (body != null) _sprite = body;
+        }
+
+        Headlamp FindHerHeadlamp()
+        {
+            Headlamp lamp = _player.GetComponentInChildren<Headlamp>(true);
+            if (lamp != null) return lamp;
+            Transform her = GameServices.PlayerTransform;
+            return her != null ? her.GetComponentInChildren<Headlamp>(true) : null;
+        }
+
+        /// <summary>
+        /// ⭐ <b>HER OWN headlamp, on</b> — the one <see cref="WalkerLights"/> hangs under her; no pier lamp is
+        /// placed. If the runtime host is absent (an earlier fixture may have reset it), the plate hosts one
+        /// and names it. A lamp that will not light is written down and fails the frame by name after its
+        /// plates, so the picture is kept either way.
+        /// </summary>
+        IEnumerator TurnOnHerHeadlamp()
+        {
+            string source = "the runtime WalkerLights host";
+            Headlamp lamp = FindHerHeadlamp();
+            for (int f = 0; f < LampWaitFrames && lamp == null; f++)
+            {
+                yield return null;
+                lamp = FindHerHeadlamp();
+            }
+            if (lamp == null)
+            {
+                _plateWalkerLights = new GameObject("AshorePlateWalkerLights").AddComponent<WalkerLights>();
+                source = $"a WalkerLights hosted by the plate ('{_plateWalkerLights.name}': no runtime host hung one " +
+                         $"on her in {LampWaitFrames} frames)";
+                for (int f = 0; f < LampWaitFrames && lamp == null; f++)
+                {
+                    yield return null;
+                    lamp = FindHerHeadlamp();
+                }
+            }
+            if (lamp == null)
+                Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — no Headlamp under her after {2 * LampWaitFrames} frames, " +
+                            "even with a plate-hosted WalkerLights: there is no headlamp to stand her under.");
+
+            lamp.SetOn(true);
+            _headlampTurnedOn = lamp;
+            yield return null;
+            yield return null;
+
+            bool lit = lamp.IsOn && lamp.Light != null && lamp.Light.enabled;
+            if (!lit)
+                _lampUnlitWhy = $"her headlamp is ON but not LIVE: WalkerLights.WalksHerOwnBeam " +
+                                $"{WalkerLights.WalksHerOwnBeam} (InteractActorProbe.Has {InteractActorProbe.Has}" +
+                                (InteractActorProbe.Has ? $", context {InteractActorProbe.Current.Context}" : "") +
+                                $"), SceneLight {(lamp.Light == null ? "missing" : lamp.Light.enabled ? "enabled" : "disabled")}";
+
+            Transform lanternT = lamp.transform.parent != null ? lamp.transform.parent.Find("WalkerLantern") : null;
+            SceneLight lantern = lanternT != null ? lanternT.GetComponent<SceneLight>() : null;
+            string lanternNote = lantern == null ? "not found" : lantern.enabled ? "enabled" : "off";
+            _lampsNote = $"HER headlamp '{lamp.name}' under '{(lamp.transform.parent != null ? lamp.transform.parent.name : "?")}' " +
+                         $"from {source}: {(lit ? "LIT" : "NOT LIT")}, beam axis {Fmt(lamp.transform.up)}, lift " +
+                         $"{WalkerLights.HeadlampLiftMetres:0.00} m; her lantern {lanternNote}; NO pier lamp placed; " +
+                         $"flicker zeroed on {QuietTheFlicker()} lamp(s)";
+        }
+
+        static bool IsFencePiece(string name) =>
+            FencePieceKeys.Any(k => name.StartsWith(k + "_", System.StringComparison.Ordinal));
+
+        /// <summary>The nearest enabled horizontal rail of one fence style, ties by name.</summary>
+        static SpriteRenderer PickTheRail(GameObject yards, string key, Vector2 near) =>
+            yards.GetComponentsInChildren<SpriteRenderer>()
+                 .Where(r => r.enabled && r.name.StartsWith(key + "_", System.StringComparison.Ordinal) &&
+                             r.bounds.size.x >= r.bounds.size.y)
+                 .OrderBy(r => Vector2.Distance(r.transform.position, near))
+                 .ThenBy(r => r.name, System.StringComparer.Ordinal)
+                 .FirstOrDefault();
+
+        /// <summary>Two engine frames: the rider's LateUpdate applies, the lamps publish.</summary>
+        static IEnumerator Settle()
+        {
+            yield return null;
+            yield return null;
+        }
+
+        /// <summary>Her box on the plate: her feet ± <see cref="HerBoxHalfWidthMetres"/>, grown by <paramref name="grow"/> m.</summary>
+        RectInt HerBox(float grow)
+        {
+            Vector2 feet = _player.transform.position;
+            return ScreenRect(feet + new Vector2(-HerBoxHalfWidthMetres - grow, -HerBoxBelowMetres - grow),
+                              feet + new Vector2(HerBoxHalfWidthMetres + grow, HerBoxHeightMetres + grow), 1);
+        }
+
+        static bool Shown(Renderer r) => r != null && r.gameObject.activeInHierarchy && r.enabled && !r.forceRenderingOff;
+
+        static bool HasChildNamed(Transform root, string name) =>
+            root.GetComponentsInChildren<Transform>(true).Any(t => t != root && t.name == name);
+
+        /// <summary>
+        /// Everything that could be drawing HER right now: her sprite body, the rider's aboard sprite, and
+        /// every visible figure under her (the presenter's aboard and ashore figures included).
+        /// </summary>
+        int Drawers(out string which)
+        {
+            var seen = new HashSet<Object>();
+            var names = new List<string>();
+            SpriteRenderer body = _rider.BodyRenderer;
+            if (Shown(body) && seen.Add(body)) names.Add($"sprite body '{body.name}'");
+            SpriteRenderer riderSprite = _rider.RiderTransform != null ? _rider.RiderTransform.GetComponent<SpriteRenderer>() : null;
+            if (Shown(riderSprite) && seen.Add(riderSprite)) names.Add($"rider sprite '{riderSprite.name}'");
+            var figures = new List<IsoCharacterFigureRenderer>(_player.GetComponentsInChildren<IsoCharacterFigureRenderer>(true));
+            if (_presenter.Figure != null) figures.Add(_presenter.Figure);
+            if (_presenter.AshoreFigure != null) figures.Add(_presenter.AshoreFigure);
+            foreach (IsoCharacterFigureRenderer f in figures)
+                if (f != null && f.isActiveAndEnabled && f.Visible && seen.Add(f))
+                    names.Add($"figure '{f.name}' (id {f.FigureId}, {(f.IsAshore ? "ashore" : "aboard")})");
+            which = names.Count == 0 ? "nothing" : string.Join(", ", names);
+            return names.Count;
+        }
+
+        string SwitchState(string when)
+        {
+            SpriteRenderer body = _rider.BodyRenderer;
+            IsoCharacterFigureRenderer fig = _presenter.AshoreFigure;
+            int drawers = Drawers(out string which);
+            GameConfig cfg = GameServices.Config;
+            string sw = cfg == null ? "no config" : cfg == _switchOn ? "ON (the runtime copy)"
+                      : cfg == _shippedConfig ? "OFF (the shipped config)" : $"'{cfg.name}'";
+            return $"{when}: switch {sw}; DrawsAshore {_presenter.DrawsAshore}, AshoreRefused {_presenter.AshoreRefused}; " +
+                   $"body {(body == null ? "none" : $"enabled {body.enabled}, forceRenderingOff {body.forceRenderingOff}")}; " +
+                   $"ashore figure {(fig == null ? "none" : $"id {fig.FigureId}, visible {fig.Visible}")}, child " +
+                   $"'{AshoreFigureName}' {(HasChildNamed(_player.transform, AshoreFigureName) ? "present" : "absent")}; " +
+                   $"drawers {drawers} ({which}); registry {IsoFacetHullRegistry.Count} hull(s), " +
+                   $"{IsoFacetHullRegistry.FigureCount} figure id(s); reason '{_presenter.NotDrawingReason ?? "none"}'";
+        }
+
+        // =============================================================================================
         //  Naming the frame, and the guards every plate passes
         // =============================================================================================
 
@@ -1182,16 +1890,22 @@ namespace HiddenHarbours.Tests.PlayMode
             sb.AppendLine($"her          at {Fmt(_player.transform.position)} (asked {Fmt(_standAt)}), heading held " +
                           $"{SouthDegrees:0} (compass; facing the camera), sprite heading {_iso.HeadingDegrees:0.0}");
             sb.AppendLine($"figure       id {_fid}, ashore yaw {_yaw:0.0} (skin azimuth ccw {_skin.AzimuthCounterClockwise}), " +
-                          $"elevation {_skin.ElevationDeg:0.0}, pose '{_pose}' frame 0, skin '{_skin.name}'");
+                          $"elevation {_skin.ElevationDeg:0.0}, " +
+                          (_switchNote == null ? $"pose '{_pose}' frame 0" : $"pose {_pose} (posed by the presenter)") +
+                          $", skin '{_skin.name}'");
             sb.AppendLine($"camera       {cam.transform.position} ortho {cam.orthographicSize:0.00} " +
                           $"(≈{2f * cam.orthographicSize * cam.aspect:0.0} × {2f * cam.orthographicSize:0.0} m), " +
                           $"aspect {cam.aspect:0.000}");
             sb.AppendLine($"plate        {_stage.Width} × {_stage.Height} px, timeScale {Time.timeScale:0.0}");
             sb.AppendLine($"sea          DisplacedWaterRegistry.Count {DisplacedWaterRegistry.Count} ({_seaNote}); " +
                           $"IsoFacetHullFeature.InteriorMaskEnabled {IsoFacetHullFeature.InteriorMaskEnabled}");
-            sb.AppendLine("sprite       her sprite BODY hidden with SpriteRenderer.forceRenderingOff; enabled stays TRUE so " +
-                          "SpriteShadow keeps casting her sprite-sheet silhouette (Q3)");
+            sb.AppendLine(_switchNote == null
+                ? "sprite       her sprite BODY hidden with SpriteRenderer.forceRenderingOff; enabled stays TRUE so " +
+                  "SpriteShadow keeps casting her sprite-sheet silhouette (Q3)"
+                : "sprite       her body is hidden by the PRESENTER alone (forceRenderingOff, only while it draws her " +
+                  "mesh); enabled stays TRUE (Q3); this class never touches it");
             sb.AppendLine($"lamps        {_lampsNote}");
+            if (_switchNote != null) sb.AppendLine($"switch       {_switchNote}");
             if (_boat != null) sb.AppendLine($"hull         {_boat.name} at {Fmt(_boat.transform.position)}, {_beamNote}");
             foreach (string n in _neighbours) sb.AppendLine($"beside       {n}");
             return sb.ToString();
