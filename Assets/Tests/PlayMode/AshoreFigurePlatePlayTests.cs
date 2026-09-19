@@ -945,6 +945,9 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             Camera cam = _stage.Camera;
             int w = _stage.Width, h = _stage.Height;
+            // The frames spent waiting for her presenter let the game's camera put its own zoom back (S1's
+            // 18 m row was read at the game's 4.5, not the plate's fit): the plate's zoom BEFORE the guard.
+            cam.orthographicSize = _plateOrtho;
             AssertTheSubjectIsInFrame(_player.transform, arm.Key + ": her");
             ArmTheReadback(cam);
             SpriteRenderer body = _rider.BodyRenderer;
@@ -1701,8 +1704,11 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             _rider = _player.GetComponentInChildren<DeckRiderVisual>(true);
             if (_rider == null)
-                Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — the player in {_scene} carries no DeckRiderVisual, so " +
-                            "no presenter decides what draws her.");
+                Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — the player in {_scene} ('{_player.name}') carries no " +
+                            "DeckRiderVisual, so no presenter decides what draws her. The rider is built by " +
+                            "PersistentCoreBuilder onto St Peters' Player; this fixture loads a region SINGLE, where the " +
+                            "game's RegionSceneLoader loads it ADDITIVELY. Riders in the loaded scenes: " +
+                            $"{Object.FindObjectsByType<DeckRiderVisual>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length}.");
             for (int f = 0; f < PresenterWaitFrames && _presenter == null; f++)
             {
                 _presenter = _rider.GetComponent<DeckRiderMeshPresenter>();

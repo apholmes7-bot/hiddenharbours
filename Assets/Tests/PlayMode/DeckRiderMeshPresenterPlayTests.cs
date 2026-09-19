@@ -104,6 +104,16 @@ namespace HiddenHarbours.Tests.PlayMode
         private const string ClipReason = "ashore — a clip is playing, and the sprite draws every clip";
         /// <summary>The registry's warning for a figure the pool refuses, once per ask.</summary>
         private const string NoFacetIdWarning = "this figure gets NO facet id";
+        /// <summary>
+        /// ⚠️ A debt of #861's figure, not of this presenter: <c>IsoCharacterFigureRenderer.LeaveAshore</c> puts
+        /// its facet child back under the figure, and Unity refuses a SetParent while the parent it leaves
+        /// (AshoreFrame) is being deactivated. Deactivate the hierarchy she stands in while she is drawn ashore
+        /// and Unity logs this error ONCE (the second LeaveAshore of that deactivation is a no-op). Her id and
+        /// her body still come back on the call, and that is what these guards read. Expected BY NAME, so a
+        /// fixed figure turns the expectation red and it comes out.
+        /// </summary>
+        private const string LeaveAshoreReparentRefused =
+            "Cannot set the parent of the GameObject 'FacetFigure' while activating or deactivating the parent GameObject 'AshoreFrame'.";
 
         /// <summary>The id no figure may take: a pool that has lent 1..254 is a pool at its end — the
         /// state NMC's cold start reaches with 255 ids in use.</summary>
@@ -1272,6 +1282,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 // Deactivate FIRST, so her figure hands its id back to the DRAINED pool it came from, and
                 // only then restore the live one: freed into the live pool, that id could be lent twice.
+                LogAssert.Expect(LogType.Error, LeaveAshoreReparentRefused);
                 rig.Body.gameObject.SetActive(false);
                 IsoFacetHullRegistry.SwapIdPoolForTests(live);
                 Application.logMessageReceived -= count;
@@ -1368,6 +1379,7 @@ namespace HiddenHarbours.Tests.PlayMode
             AssertDrawnBy(rig, AshoreMesh, "standing ashore");
             Assert.AreEqual(baseline + 1, IsoFacetHullRegistry.FigureCount, "one id, lent to her");
 
+            LogAssert.Expect(LogType.Error, LeaveAshoreReparentRefused);
             rig.Body.gameObject.SetActive(false);
             Assert.AreEqual(baseline, IsoFacetHullRegistry.FigureCount, "on the call: her id is back in the pool");
             Assert.IsFalse(rig.Body.forceRenderingOff, "on the call: her body is not left forced off");
