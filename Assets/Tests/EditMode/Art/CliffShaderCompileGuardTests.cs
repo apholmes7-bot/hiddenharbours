@@ -4,14 +4,16 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEditor;
 using UnityEditor.Rendering;
+using HiddenHarbours.Art.Editor;
 
 namespace HiddenHarbours.Tests.Art.EditMode
 {
     /// <summary>
     /// MAGENTA GUARD for the cliff face shader — the cliff twin of
     /// <see cref="GrassShaderCompileGuardTests"/>. It force-reimports
-    /// <c>HiddenHarboursCliffFace.shader</c> from its on-disk source AND force-compiles the shipped
-    /// <c>CliffFace.mat</c> keyword variant, then FAILS RED on ANY shader compiler error.
+    /// <c>HiddenHarboursCliffFace.shader</c> from its on-disk source AND force-compiles
+    /// <c>CliffFace.mat</c> in BOTH of its looks — v10, and the px palette relight behind
+    /// <c>_HH_CLIFF_PX</c> — then FAILS RED on ANY shader compiler error.
     ///
     /// <para>The two traps this catches have each cost this project hours: a <c>+</c> (or other
     /// operator character) inside a <c>[Header(...)]</c> label or a property display string is a
@@ -61,19 +63,38 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "CliffFace.mat is not using HiddenHarbours/CliffFace — the guard would be compiling " +
                 "the wrong shader.");
 
-            int passes = cliffMat.passCount > 0 ? cliffMat.passCount : 1;
-            for (int pass = 0; pass < passes; pass++)
-                ShaderUtil.CompilePass(cliffMat, pass, true);
-            CollectMessages(errors, warnings, CliffMaterialPath, DescribeKeywords(cliffMat),
-                            ShaderUtil.GetShaderMessages(cliffMat.shader));
+            // BOTH looks the bake switch can leave the shipped material in (owner, 09-18: "bake
+            // switch"): v10, the shipped default, and px behind CliffCatalog.PxKeyword. Each is compiled
+            // on a clone, so the guard holds whichever look the material ships in and never touches the
+            // asset. A keyword the shader does not declare would compile v10 twice and call it px.
+            Assert.IsTrue(shader.keywordSpace.FindKeyword(CliffCatalog.PxKeyword).isValid,
+                $"The cliff shader declares no '{CliffCatalog.PxKeyword}' keyword — the px branch would never " +
+                "compile here, and the menu's px bake would switch the material to a keyword nothing reads.");
+            foreach (bool px in new[] { false, true })
+            {
+                var look = new Material(cliffMat);
+                try
+                {
+                    if (px) look.EnableKeyword(CliffCatalog.PxKeyword);
+                    else look.DisableKeyword(CliffCatalog.PxKeyword);
+                    Assert.AreEqual(px, look.IsKeywordEnabled(CliffCatalog.PxKeyword),
+                        $"Could not put the clone in the {(px ? "px" : "v10")} look.");
+                    int passes = look.passCount > 0 ? look.passCount : 1;
+                    for (int pass = 0; pass < passes; pass++)
+                        ShaderUtil.CompilePass(look, pass, true);
+                    CollectMessages(errors, warnings, $"{CliffMaterialPath}, {(px ? "px" : "v10")} look",
+                                    DescribeKeywords(look), ShaderUtil.GetShaderMessages(look.shader));
+                }
+                finally { Object.DestroyImmediate(look); }
+            }
 
             if (warnings.Length > 0)
                 Debug.Log("[CliffShaderCompileGuard] Non-fatal shader warnings:\n" + warnings);
 
             Assert.IsEmpty(
                 errors.ToString(),
-                "The cliff shader reported a COMPILER ERROR (import and/or the shipped CliffFace.mat " +
-                "variant). This is the MAGENTA class — fix the shader until it imports and every " +
+                "The cliff shader reported a COMPILER ERROR (import and/or CliffFace.mat in its v10 or " +
+                "px look). This is the MAGENTA class — fix the shader until it imports and every " +
                 "shipped variant compiles cleanly; do NOT silence this guard:\n" + errors);
         }
 
