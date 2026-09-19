@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: d8b091ffc71264a35efc4fef4f7a1418
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 90351396488225471
+    second: tallPierStart_0
+  - first:
+      213: 879681192908584212
+    second: tallPierStart_1
+  - first:
+      213: 213729970124335877
+    second: tallPierStart_2
+  - first:
+      213: 442631439220568013
+    second: tallPierStart_3
+  - first:
+      213: 369066925453940583
+    second: tallPierStart_4
+  - first:
+      213: 308962915991318921
+    second: tallPierStart_5
+  - first:
+      213: 923065221366282087
+    second: tallPierStart_6
+  - first:
+      213: 778517705729806329
+    second: tallPierStart_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: tallPierStart_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 411
+        width: 472
+        height: 411
+      alignment: 9
+      pivot: {x: 0.4978813559322034, y: 0.45255474452554745}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf6cfa070e635b27088369a5a5390171
+      internalID: 90351396488225471
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tallPierStart_1
+      rect:
+        serializedVersion: 2
+        x: 472
+        y: 411
+        width: 472
+        height: 411
+      alignment: 9
+      pivot: {x: 0.4978813559322034, y: 0.45255474452554745}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55001c8b91d6d544705f6a878a58c253
+      internalID: 879681192908584212
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tallPierStart_2
+      rect:
+        serializedVersion: 2
+        x: 944
+        y: 411
+        width: 472
+        height: 411
+      alignment: 9
+      pivot: {x: 0.4978813559322034, y: 0.45255474452554745}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 265621211811bb43f43f3f01d1614729
+      internalID: 213729970124335877
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tallPierStart_3
+      rect:
+        serializedVersion: 2
+        x: 1416
+        y: 411
+        width: 472
+        height: 411
+      alignment: 9
+      pivot: {x: 0.4978813559322034, y: 0.45255474452554745}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57ad186e28c1295eb47c1e99696e7e49
+      internalID: 442631439220568013
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tallPierStart_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 472
+        height: 411
+      alignment: 9
+      pivot: {x: 0.4978813559322034, y: 0.45255474452554745}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2953744d9254566085de941d14b3818
+      internalID: 369066925453940583
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tallPierStart_5
+      rect:
+        serializedVersion: 2
+        x: 472
+        y: 0
+        width: 472
+        height: 411
+      alignment: 9
+      pivot: {x: 0.4978813559322034, y: 0.45255474452554745}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73b2d45250676e7bd2f12608d37a192f
+      internalID: 308962915991318921
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tallPierStart_6
+      rect:
+        serializedVersion: 2
+        x: 944
+        y: 0
+        width: 472
+        height: 411
+      alignment: 9
+      pivot: {x: 0.4978813559322034, y: 0.45255474452554745}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73ea6bc6ecac36dbc3f6f8add8fe0e46
+      internalID: 923065221366282087
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tallPierStart_7
+      rect:
+        serializedVersion: 2
+        x: 1416
+        y: 0
+        width: 472
+        height: 411
+      alignment: 9
+      pivot: {x: 0.4978813559322034, y: 0.45255474452554745}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f7d9f357e3a0efa0d5a5177fcb04f45
+      internalID: 778517705729806329
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID: 477d6ec82f8f0dcba0e432aee221ee92
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      tallPierStart_0: 90351396488225471
+      tallPierStart_1: 879681192908584212
+      tallPierStart_2: 213729970124335877
+      tallPierStart_3: 442631439220568013
+      tallPierStart_4: 369066925453940583
+      tallPierStart_5: 308962915991318921
+      tallPierStart_6: 923065221366282087
+      tallPierStart_7: 778517705729806329
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

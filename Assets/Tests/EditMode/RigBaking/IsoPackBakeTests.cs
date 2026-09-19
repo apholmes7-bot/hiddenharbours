@@ -262,8 +262,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 Compare(failures, "shoreFinds", cell, w, h, px, py, null);
             }
 
-            Assert.AreEqual(158, checkedCells,
-                "the pack is 19 + 61 + 42 + 36 = 158 cells; a different total means a family gained or " +
+            Assert.AreEqual(176, checkedCells,
+                "the pack is 37 + 61 + 42 + 36 = 176 keys; a different total means a family gained or " +
                 "lost keys without its contract being regenerated. It was 17 + … = 156 until the wharf " +
                 "gained `gangway` and `floatPiles`.");
 
@@ -438,7 +438,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
             }
 
-            Assert.AreEqual(13, diverged,
+            Assert.AreEqual(27, diverged,
                 $"{diverged} of {total} committed plans differ from ChooseGrid's choice. This test " +
                 "exists to keep that number visible; if it moved, the packing rule or a cell did.\n\n" +
                 "It was 12 until wharfIso gained `gangway`, whose plan diverges for a reason the other " +

@@ -926,16 +926,8 @@ namespace HiddenHarbours.App.Editor
         /// north–south runs by the PLAN length left 3.43 units of bare wall at every seam, and what
         /// stood in it was the next piece's own end return — the owner's bands across the apron.</para>
         ///
-        /// <para><b>⚠️ The pieces are emitted from the run's <paramref name="from"/> end onward, and on a
-        /// north–south run that end must be the SOUTH one</b> — the end nearest the camera. Every piece
-        /// of a run shares ONE sorting order (<see cref="FaceSortingOrder"/> is a rung per WALL, and the
-        /// band has no orders to spare), so where two of them overlap the renderer resolves them by
-        /// placement order, and near-over-far is what the shipped picture already does: measured on the
-        /// committed plate, a seam shows 74 px of crib — the bare wall between two pieces — and not the
-        /// 154 px a far-over-near order would show. That dependency is not new, but it becomes
-        /// load-bearing here: closing the gap leaves each piece's return standing INSIDE its southern
-        /// neighbour's deck, hidden only because the neighbour draws over it. Authored north-to-south,
-        /// the same run would draw every return back on top of the deck it is meant to hide behind.</para>
+        /// <para>Internal joins use open-ended modules. Only the two outside sections carry end
+        /// returns; facing determines which end is Start, independently of authoring order.</para>
         /// </summary>
         public static List<FacePiece> FaceRun(string wall, Vector2 from, Vector2 to, float seawardHeading,
                                               string reason)
@@ -949,12 +941,14 @@ namespace HiddenHarbours.App.Editor
             Vector2 along = span / run;
             Vector2 seaward = PlanDirectionOf(seawardHeading);
             NineMileCreekQuayFace.CoverRun(run, along, out int count, out float pitch);
+            int facing = IsoPackSprites.FacingForHeading(WharfFamily, seawardHeading);
+            bool forward = Vector2.Dot(along, WharfModules.Step(1f, facing)) >= 0f;
 
             for (int i = 0; i < count; i++)
             {
                 Vector2 lip = from + along * (pitch * (i + 0.5f));
                 list.Add(new FacePiece(
-                    NineMileCreekQuayFace.FaceCourseKey,
+                    WharfModules.Key(NineMileCreekQuayFace.FaceCourseKey, i, count, forward),
                     NineMileCreekQuayFace.PivotForLip(lip, seaward),
                     lip, seawardHeading, wall, reason));
             }
