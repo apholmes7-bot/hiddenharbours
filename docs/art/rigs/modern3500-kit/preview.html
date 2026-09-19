@@ -829,7 +829,6 @@
     for(let x=-.58;x<.6;x+=.115)wallY(out,3.249,x,x+.018,1.07,1.36,'galv',-.9,1);
     for(const z of [1.08,1.32])boxAt(out,-.655,.655,3.263,3.275,z,z+.032,'bright',.1);
     boxAt(out,-.34,.34,3.278,3.284,1.15,1.29,'shade',-.6);
-    lettering(out,'RAM',-.30,3.291,1.17,.025,'badge',true);
     // Slim LED signature around separated projector pockets.
     for(const sx of [-1,1]){
       pairedBox(out,sx,.80,1.065,3.208,3.255,1.17,1.42,'shade',-.45);
@@ -1000,7 +999,6 @@
     boxAt(T,-.20,.20,-3.36,-3.349,1.44,1.53,'rubber',-.4);
     wallY(T,-3.365,-.12,.12,1.475,1.505,'bright',.2,-1);
     boxAt(T,-.022,.022,-3.369,-3.364,1.44,1.475,'glass',-.5);
-    lettering(T,'RAM',-.195,-3.361,1.205,.033,'badge',false);
     wallY(T,-3.279,-.92,.92,1.09,1.575,'bedliner',-.2,1);
   },p=>hingeX(p,-3.285,1.055,s.gate*92*DEG),'gate');}
   function wheel(out,xc,yc,sx,roll,hub,steerAngle,group){part(out,T=>{

@@ -30,6 +30,9 @@ fold departs from the route the art brief proposed: `reflect` → `glass` was ta
 → `chrome`, because `bright` is the only consumer of `trim`, and folding it would have made
 `trim:'black'` (and the `blackout` preset) a no-op. The owner kept that departure on 2026-09-16 and
 ruled that she bakes as **a mesh only — no VehicleDef and no vehicle id until her gameplay exists**.
+That ruling was replaced on 2026-09-18, once her gameplay existed: she parks, drivable, at Nine Mile
+Creek beside the Dually. She now wears her own def, `Assets/_Project/Data/Vehicles/Modern3500.asset`,
+which the fleet bake makes and no hand writes, and her own id, `vehicle.modern_3500`.
 
 **One line of the rig is the repo's, not the return's: the exported literal gained
 `KEY, GAIN, BIAS, LN, build`.** The baker reads `ModernTruck3500.KEY` off her global and parses it as
@@ -40,18 +43,34 @@ four. Every name added is one the rig already declared, so nothing she draws mov
 moved the pin below. On `node`, only `MATS` is left for the baker's in-memory widening (it is
 reconstructed); the editor has not baked her since.
 
+**Cut on 2026-09-18, by the owner's ruling D1: no badge lettering.** The rig's two
+`lettering(…,'RAM',…)` draws were deleted, the grille badge and the tailgate badge, and nothing was
+put in their place. No other line of the rig changed, and `preview.html` lost the same two lines. On
+`node` she went from 2802 faces to 2738 and from 6856 triangles to 6728. The 64 faces removed are the
+grille lettering's 32 (`frontClip`) and the tailgate lettering's 32 (`gate`). The same 64 went in each
+of 69 poses checked, and every other face is identical and in the same order. Every door, the hood and
+the gate is still one rigid leaf about its declared pin to 1e-6 m, and the per-facing `painted_bbox`
+did not move. She still paints 16 ramps by day and 15 by night, because twelve faces of her body still
+paint with the badge ramp. The sidecar was then re-derived from the cut rig (see *Known limits*), and
+the contract's `rigSha256`, `faces` and `triangles` were re-stamped from it. **The ten sheets were not
+re-rendered.** They still show the lettering, 899 px across the ten against the cut rig. That is debt.
+
 ### The pin
 
 `modern3500.rig.js` LF-normalised sha256:
 
 ```
-3eb1640029e51e28f8597e393418ab5492ad77e3bd33bd8ce0040cff53eddc86
+0601bc98435533aa024804532725c491d3cdc31b86b506706cd4cff79d3ced27
 ```
 
 The same 64 characters appear as `rigSha256` in `modern3500.contract.json` and as
 `derivedFromRigSha256` in `../gameplay/vehicles/modern3500.rig.gameplay.json`. All three were verified
 equal against the file's own bytes after the copy into the repo. **Compare the full digest, never a
 prefix** — the hightop van's bad stamp shared its rig's first sixteen hex digits.
+
+Until the cut of 2026-09-18 the pin was
+`3eb1640029e51e28f8597e393418ab5492ad77e3bd33bd8ce0040cff53eddc86`. All three places moved together,
+and each was re-derived from the cut rig rather than re-typed.
 
 `.gitattributes` pins this kit's text files `text eol=lf` **by name**. That is load-bearing rather
 than tidy: `core.autocrlf` is true on a Windows checkout, and `DeckSidecarReader.MatchRigHash` accepts
@@ -124,6 +143,24 @@ front wheels; no Ackermann solver"* — and it is why the fleet row carries `Max
 
 ## What was verified where
 
+Verified **at the 2026-09-18 cut and re-key**, on `node`, against the edited bytes:
+
+- The rig's LF sha256 equals the pin, the contract's `rigSha256` and the sidecar's
+  `derivedFromRigSha256`.
+- The face census in the cut paragraph above, every hinge rigid to 1e-6 m, `painted_bbox` unchanged,
+  and 16 / 15 ramps.
+- The sidecar's `BODY.collider_bbox` was measured off the cut rig at rest. It is x ±1.326 m, the
+  flares (the mirrors reach ±1.418 and are not solid). It is y −3.545 to 3.456 m, rear plate to front
+  plate (the receiver and ball reach −3.63 and are not solid). It is z 0 to 2.19 m, tyres to marker
+  lamps.
+- The `drive` and `ride` reach points stand 0.51 m outside the flare line, at the latch seam
+  (y 0.35). Over each door's full swing, sampled in 69 steps, they clear the front door by 0.284 m
+  and the rear door by 0.320 m, on both sides.
+- `sha256sum -c reference/SHA256SUMS.txt` verifies all fifteen listed files.
+
+The bullets below are the re-issue's and stay as history. Their face and triangle counts are the uncut
+rig's.
+
 Verified **at the 2026-09-16 re-issue**, against these bytes:
 
 - The rig's sha256 equals the pin and equals both stamps.
@@ -158,16 +195,20 @@ measurements of the rig. They are not the engine's.
 
 ## Known limits
 
-- **The rig renders literal `RAM` badge lettering** — `lettering(…,'RAM',…)` twice, on the grille and
-  on the tailgate — and the delivery note describes the truck as drawn from a Ram 3500 reference.
-  That is a real-world trademark on a shipped art asset in a public repo. It is cheap to change in
-  the rig now and expensive once sheets and meshes are baked from it. **Owner's call; flagged, not
-  taken** — editing the rig would break the byte-for-byte pin this kit exists to carry.
-- **The sidecar is written to its own schema**, not the fleet's. It has no `BODY.collider_bbox`, no
-  top-level `SEATS[]` carrying `seat_ref` (its seats are under `CAB.seats`), and its `INTERACT` ids
-  are `door_fl`…`tow` rather than `drive`/`ride`. `VehicleSidecarFacts` throws on none of these —
-  they land as named `Absences` — so she registers and bakes, but arrives with **no collider and no
-  declared way in**. The re-key belongs upstream in the art lane; nothing here invents the geometry.
+- **The `RAM` badge lettering is gone from the rig and `preview.html`** (owner's ruling D1,
+  2026-09-18; see the cut paragraph above). Three debts remain. The ten reference sheets still show
+  it, because they were not re-rendered. The words "Ram 3500 reference" / "Ram-inspired" survive as
+  provenance in the contract's `source` and in the rig's and the preview's header comments. And the
+  Codex drop upstream still draws the lettering, so a re-issue from there has to be cut again.
+- **The sidecar was re-keyed on 2026-09-18** onto the fleet's schema, modelled on the Dually's. It now
+  has a fitted `BODY.collider_bbox`, plus an `INTERACT` `drive` at `door_fl` and `ride` at `door_fr`,
+  each with a `reach_point` and `visible_facings`. Her own door, hood, cargo, fuel and tow entries
+  stay. Like the Dually, she lists no top-level `SEATS[]` (her seats stay under `CAB.seats`), so her
+  driver is hidden inside the cab. `VehicleSidecarFacts` reads her with no error and four absences:
+  the seat inside the cab, no FLOAT, no fifth wheel and no kingpin. Every number carries its
+  provenance, and what could not be measured sits under `_confirm`.
+- **No towing** (owner's ruling D4, 2026-09-18). Her `TOW` block is art only, and nothing reads a
+  fifth wheel or a hitch from her. That is debt, and it needs its own ruling.
 - **Steering is a visual angle.** No solver, and no coupling to heading: a game that locks the wheels
   over without turning the machine will look wrong, and the rig will not stop it.
 - **Dimensions are stylised art measurements**, not manufacturer figures.

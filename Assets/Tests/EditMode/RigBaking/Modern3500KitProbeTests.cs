@@ -16,7 +16,8 @@ namespace HiddenHarbours.Tests.RigBaking
     /// is where that is proved rather than asserted.</b> She arrived painting 27 ramps against the
     /// shader's 16 and her bake sat excused in <c>VehicleRigFleet.NotBaked</c>. The re-issue folds
     /// eleven material names onto their neighbours inside her own <c>build()</c>, so the baker reads
-    /// 16; the excuse was deleted and she is baked as a mesh only. The three tests that proved the
+    /// 16; the excuse was deleted and she was baked as a mesh (her own def and id followed on
+    /// 2026-09-18, by the owner's ruling). The three tests that proved the
     /// blocker (<c>HerPaletteDoesNotFitTheFacetShader</c>,
     /// <c>EveryRampSheDeclaresIsPainted_SoTheFilterCannotSaveHer</c>,
     /// <c>TheLosslessFoldsDoNotReachTheCap</c>) were retired with it; the two below measure the
@@ -80,7 +81,17 @@ namespace HiddenHarbours.Tests.RigBaking
                   for (var k in M) if (!used[k]) out.push(k);
                   return out.sort().join(',');
                 }
-                function __faceCount(){ return __faces({}).length; }");
+                function __faceCount(){ return __faces({}).length; }
+                // The least (hi false) or greatest (hi true) coordinate c over every vertex at rest.
+                function __restBound(c, hi){
+                  var f = __faces({}), b = hi ? -Infinity : Infinity;
+                  for (var i = 0; i < f.length; i++)
+                    for (var j = 0; j < f[i].v.length; j++) {
+                      var n = f[i].v[j][c];
+                      if (hi ? n > b : n < b) b = n;
+                    }
+                  return b;
+                }");
             return host;
         }
 
@@ -136,6 +147,11 @@ namespace HiddenHarbours.Tests.RigBaking
         /// swaps it for <c>led</c>, which the day build already paints. The face count is pinned
         /// alongside because the fold touched no geometry — 2802 before and after — and a different
         /// face list would be a different truck, not a recolour.</para>
+        ///
+        /// <para><b>2738 since 2026-09-18.</b> The owner's ruling D1 cut her two badge lettering
+        /// draws, 32 faces on the grille and 32 on the tailgate, and nothing else. On node, every
+        /// door, the hood and the gate stayed one rigid leaf about its pin to 1e-6 m, and the ramp
+        /// counts below did not move: twelve faces of her body still paint with the badge ramp.</para>
         /// </summary>
         [Test]
         public void HerFoldedPaletteFitsTheFacetShader()
@@ -146,8 +162,9 @@ namespace HiddenHarbours.Tests.RigBaking
 
             using IRigScriptHost host = BuilderHost();
 
-            Assert.That(host.EvaluateNumber("__faceCount()"), Is.EqualTo(2802d),
-                "her face count changed, so this is not the rig these numbers were measured on.");
+            Assert.That(host.EvaluateNumber("__faceCount()"), Is.EqualTo(2738d),
+                "her face count changed, so this is not the rig these numbers were measured on " +
+                "(2802 until the owner's ruling D1 of 2026-09-18 cut her badge lettering).");
 
             double used = host.EvaluateNumber("__usedMaterialCount({})");
             Assert.That(used, Is.EqualTo(16d),
@@ -195,6 +212,56 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.That(host.EvaluateString("__firstKeptMaterial()"), Is.EqualTo("paint"),
                 "`paint` is no longer index 0 of the kept table, and index 0 is where an unknown " +
                 "material name lands.");
+        }
+
+        // =========================================================================================
+        //  3. HER COLLIDER — inside the truck the rig draws
+        // =========================================================================================
+
+        const string SidecarPath = "docs/art/rigs/gameplay/vehicles/modern3500.rig.gameplay.json";
+
+        /// <summary>The sidecar writes its numbers to the millimetre, so a collider face measured
+        /// flush with the mesh can read up to half a millimetre proud of it. This is that rounding,
+        /// stated here, and not a number read from the code under test.</summary>
+        const double SidecarRoundingMetres = 0.0005;
+
+        /// <summary>
+        /// ⭐ <b>What she declares solid lies inside what she draws.</b> Her
+        /// <c>BODY.collider_bbox</c>, re-keyed on 2026-09-18, was measured off the cut rig on node.
+        /// It runs across her flares, not her mirrors; from front bumper to rear bumper; and from
+        /// the ground to the roof. A collider that pokes outside the mesh is a wall the player walks
+        /// into in thin air.
+        ///
+        /// <para>Measured against her REST pose, the pose the bake draws (mirrors out, steps on,
+        /// hitch on), over every vertex, in the repo's own V8 through the baker's own widening. The
+        /// collider's front, floor and roof are flush with the mesh by design, which is why the bar
+        /// carries the sidecar's rounding. Her mirrors and her hitch lie outside the box on purpose:
+        /// it is fitted to her body.</para>
+        /// </summary>
+        [Test]
+        public void HerColliderSitsInsideHerMeshBounds()
+        {
+            VehicleSidecarFacts facts =
+                VehicleSidecarFacts.Read(File.ReadAllText(Full(SidecarPath)), SidecarPath);
+            Assert.That(facts.HasCollider, Is.True, "her sidecar declares no collider to measure.");
+
+            using IRigScriptHost host = BuilderHost();
+
+            string[] axis = { "x", "y", "z" };
+            double[] min = { facts.ColliderMin.x, facts.ColliderMin.y, facts.ColliderMin.z };
+            double[] max = { facts.ColliderMax.x, facts.ColliderMax.y, facts.ColliderMax.z };
+            for (int c = 0; c < 3; c++)
+            {
+                double lo = host.EvaluateNumber($"__restBound({c}, false)");
+                double hi = host.EvaluateNumber($"__restBound({c}, true)");
+
+                Assert.That(min[c], Is.GreaterThanOrEqualTo(lo - SidecarRoundingMetres),
+                    $"her collider's {axis[c]} min {min[c]:0.####} lies OUTSIDE her mesh, whose " +
+                    $"{axis[c]} runs [{lo:0.####}, {hi:0.####}] at rest.");
+                Assert.That(max[c], Is.LessThanOrEqualTo(hi + SidecarRoundingMetres),
+                    $"her collider's {axis[c]} max {max[c]:0.####} lies OUTSIDE her mesh, whose " +
+                    $"{axis[c]} runs [{lo:0.####}, {hi:0.####}] at rest.");
+            }
         }
     }
 }

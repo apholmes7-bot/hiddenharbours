@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: vehicleprop.modern3500_hood
   SourceRigPath: docs/art/rigs/modern3500-kit/modern3500.rig.js
   SourceFaceBuilder: build(ModernTruck3500.resolve({}))
-  Mesh: {fileID: 4153985207849385962}
+  Mesh: {fileID: 8831995393174314703}
   FixedMesh: {fileID: 0}
   Ramps:
   - Colors:
@@ -268,7 +268,7 @@ MonoBehaviour:
   MaxSteerDegrees: 0
   MaxTiltDegrees: 0
   LateralMountsMeters: []
---- !u!43 &4153985207849385962
+--- !u!43 &8831995393174314703
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

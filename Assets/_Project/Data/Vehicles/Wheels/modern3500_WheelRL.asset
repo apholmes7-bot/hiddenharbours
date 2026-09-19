@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!43 &-4751042649109828119
+--- !u!43 &-2001982346411926554
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -193,7 +193,7 @@ MonoBehaviour:
   Id: vehicleprop.modern3500_wheel_rl
   SourceRigPath: docs/art/rigs/modern3500-kit/modern3500.rig.js
   SourceFaceBuilder: build(ModernTruck3500.resolve({}))
-  Mesh: {fileID: -4751042649109828119}
+  Mesh: {fileID: -2001982346411926554}
   FixedMesh: {fileID: 0}
   Ramps:
   - Colors:

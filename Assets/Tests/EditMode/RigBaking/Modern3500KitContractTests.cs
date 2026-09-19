@@ -36,16 +36,28 @@ namespace HiddenHarbours.Tests.RigBaking
         const string SidecarPath = "docs/art/rigs/gameplay/vehicles/modern3500.rig.gameplay.json";
 
         /// <summary>
-        /// The LF-normalised sha256 the coordinator verified on the delivered bytes (2026-09-13),
-        /// and the ONE number this kit is built around: it is also <c>rigSha256</c> inside the
-        /// contract and <c>derivedFromRigSha256</c> inside the sidecar.
+        /// The LF-normalised sha256 of her rig, and the ONE number this kit is built around: it is
+        /// also <c>rigSha256</c> inside the contract and <c>derivedFromRigSha256</c> inside the
+        /// sidecar.
         ///
-        /// <para>⚠️ If a bake ever refuses her sidecar hash, the repair is upstream in the kit — a
-        /// re-cut sidecar from the rig that is actually on disk. It is NEVER to re-stamp the number
-        /// on the repo side, which converts a real disagreement into a silent one. Same law as
+        /// <para><b>Re-pinned 2026-09-18, by ruling.</b> The coordinator verified <c>3eb16400…</c>
+        /// on the delivered bytes (2026-09-13; re-issued 2026-09-16). The owner's ruling D1 of
+        /// 2026-09-18 then cut her two <c>lettering(…'RAM'…)</c> draws, the grille badge and the
+        /// tailgate badge, and nothing else: 2802 faces to 2738, every door, the hood and the gate
+        /// still one rigid leaf about its pin to 1e-6 m on node. The contract and the sidecar were
+        /// re-derived from THAT rig rather than re-typed, so all three moved together.</para>
+        ///
+        /// <para>⚠️ If a bake ever refuses her sidecar hash, the repair is a sidecar re-cut from the
+        /// rig that is actually on disk. It is NEVER to re-stamp the number on the repo side, which
+        /// converts a real disagreement into a silent one. Same law as
         /// <c>VehicleRigFleet.SidecarHashRefused</c>.</para>
         /// </summary>
-        const string RigSha = "3eb1640029e51e28f8597e393418ab5492ad77e3bd33bd8ce0040cff53eddc86";
+        const string RigSha = "0601bc98435533aa024804532725c491d3cdc31b86b506706cd4cff79d3ced27";
+
+        /// <summary>Her def and her id, by the owner's ruling of 2026-09-18. The def is the baker's
+        /// to create at this path; the id is append-only from the day it ships.</summary>
+        const string HerDefPath = "Assets/_Project/Data/Vehicles/Modern3500.asset";
+        const string HerVehicleId = "vehicle.modern_3500";
 
         /// <summary>The sprite sheets the kit carries, exactly. A census, not a floor: a sheet that
         /// arrives without a line here is as much a defect as one that goes missing.</summary>
@@ -133,9 +145,10 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             FileAssert.Exists(Full(RigPath));
             Assert.That(Sha256(File.ReadAllBytes(Full(RigPath))), Is.EqualTo(RigSha),
-                $"{RigPath} is not the file the drop shipped. The rig is the authority for every " +
-                "number in this suite and for every axis on her fleet row; a rig that has moved " +
-                "invalidates all of them at once.");
+                $"{RigPath} is not the rig this suite pins: the drop's, with its two badge draws cut " +
+                "by the owner's ruling of 2026-09-18. The rig is the authority for every number in " +
+                "this suite and for every axis on her fleet row; a rig that has moved invalidates " +
+                "all of them at once.");
         }
 
         /// <summary>
@@ -348,6 +361,8 @@ namespace HiddenHarbours.Tests.RigBaking
                          (her.GlobalName,     dually.GlobalName,     "global name"),
                          (her.MeshAssetPath,  dually.MeshAssetPath,  "mesh asset"),
                          (her.MeshId,         dually.MeshId,         "mesh id"),
+                         (her.VehicleDefPath, dually.VehicleDefPath, "def"),
+                         (her.VehicleId,      dually.VehicleId,      "vehicle id"),
                      })
                 Assert.That(mine, Is.Not.EqualTo(hers),
                     $"The Modern 3500 shares the older Dually's {what}. She is a SECOND truck — the " +
@@ -420,7 +435,7 @@ namespace HiddenHarbours.Tests.RigBaking
             }
         }
         // =========================================================================================
-        //  HER LEDGER — registered art, baked as a mesh and nothing more
+        //  HER LEDGER — registered, baked, and wearing her own def and id since 2026-09-18
         // =========================================================================================
 
         /// <summary>
@@ -454,34 +469,160 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// <b>She wears no <c>VehicleDef</c>, and that is deliberate rather than forgotten.</b> By the
-        /// owner's ruling of 2026-09-16 she is baked as a MESH ONLY: no def and no vehicle id until
-        /// her gameplay exists. A def is a Data asset, and hand-authoring one to fill the argument
-        /// would be inventing gameplay nobody has asked for — a row in a table and nothing the world
-        /// can place.
+        /// ⭐ <b>She wears her own <c>VehicleDef</c> and her own id — by ruling, now that her gameplay
+        /// exists.</b> This REPLACES <c>SheWearsNoDefUntilSomethingCanBakeHerOne</c>, which asserted
+        /// the opposite under the owner's ruling of 2026-09-16 ("a mesh only: no def and no vehicle
+        /// id until her gameplay exists"). The owner's ruling of 2026-09-18 discharged that premise:
+        /// she parks, drivable, at Nine Mile Creek beside the Dually, and her sidecar now carries the
+        /// fleet's collider and way in
+        /// (<see cref="HerSidecarReadsAsAHardCabTruck_WithExactlyTheFourAbsencesAHardCabReads"/>).
         ///
-        /// <para>The Otter took the other road (a def from #558 with a null mesh) because her
-        /// mechanics were already authored and under test. Nothing of the Modern 3500's gameplay
-        /// exists yet — placement, purchasability and trips are all a later PR — so there is nothing
-        /// for a def to carry.</para>
+        /// <para>This pins the two strings against constants written HERE, never read back from
+        /// the row. That the asset exists, wears her baked mesh and names a kind this repo
+        /// recognises is <c>VehicleRigFleetTests.EveryRegisteredVehiclesDef_HasAMeshExactlyWhenHerBakeIsNotExcused</c>
+        /// and <c>EveryRegisteredVehiclesDef_DeclaresAKindThisRepoRecognises</c>, which sweep every
+        /// row, so neither is repeated here. The def is the BAKER's to create; a hand-written asset
+        /// at this path would be a Data file that no tool produced.</para>
         /// </summary>
         [Test]
-        public void SheWearsNoDefUntilSomethingCanBakeHerOne()
+        public void SheWearsHerOwnDefAndIdNowThatHerGameplayExists()
         {
             VehicleRigFleet.Vehicle her = Her();
 
-            Assert.That(string.IsNullOrEmpty(her.VehicleDefPath), Is.True,
-                $"her row now names def '{her.VehicleDefPath}'. The owner's ruling of 2026-09-16 " +
-                "bakes her as a mesh only, with no def until her gameplay exists — and a def added " +
-                "now must point at her baked mesh, which EveryRegisteredVehiclesDef_HasAMeshExactly" +
-                "WhenHerBakeIsNotExcused checks. If it was hand-authored, it is a Data asset that no " +
-                "tool produced.");
+            Assert.That(her.VehicleDefPath, Is.EqualTo(HerDefPath),
+                "her row names another def. By the owner's ruling of 2026-09-18 her def is " +
+                HerDefPath + ", created by the fleet bake — Nine Mile Creek's truck park loads her " +
+                "from there, and a def anywhere else is one nothing places.");
 
-            Assert.That(string.IsNullOrEmpty(her.VehicleId), Is.True,
-                "her row now claims a vehicle id. Ids are append-only and stable, so one is spent " +
-                "the moment it ships — do not burn `vehicle.modern_3500` on a row that cannot be " +
-                "placed.");
+            Assert.That(her.VehicleId, Is.EqualTo(HerVehicleId),
+                "her vehicle id changed. Ids are append-only and stable: once " + HerVehicleId +
+                " ships it is spent, and a different id is a different truck, not an edit.");
         }
 
+        // =========================================================================================
+        //  5. HER FACTS — READ THE WAY THE BAKER READS THEM
+        // =========================================================================================
+
+        /// <summary>Her sidecar through <see cref="VehicleSidecarFacts.Read"/>, the reader the fleet
+        /// bake writes her def's collider and door from — not a second parse written for the
+        /// test.</summary>
+        static VehicleSidecarFacts HerFacts() =>
+            VehicleSidecarFacts.Read(File.ReadAllText(Full(SidecarPath)), SidecarPath);
+
+        /// <summary>
+        /// ⭐⭐ <b>Her sidecar reads as a hard-cab truck: no error, a solid body, a published way in,
+        /// and exactly the four absences a hard cab reads.</b> She was re-keyed on 2026-09-18 to the
+        /// fleet schema, on the Dually's model: a fitted <c>BODY.collider_bbox</c>, and an
+        /// <c>INTERACT</c> <c>drive</c> at <c>door_fl</c> and <c>ride</c> at <c>door_fr</c>.
+        ///
+        /// <para><b>Why four, and why these four.</b> Each one is a TRUE statement about her, in
+        /// the reader's own words for a measured zero, not a field nobody filled in:
+        /// <list type="bullet">
+        /// <item><b>her driver's seat is inside a cab.</b> She lists no top-level <c>SEATS</c>, and
+        /// neither does the Dually. A hard cab keeps its driver hidden;</item>
+        /// <item><b>no FLOAT.</b> She does not swim;</item>
+        /// <item><b>no TOW.fifth_wheel.</b> The owner's ruling D4 of 2026-09-18 says no towing in
+        /// this PR. Her <c>TOW</c> block stays in the art, inert, and is recorded as debt;</item>
+        /// <item><b>no KINGPIN.</b> Nobody tows her.</item>
+        /// </list>
+        /// The Dually reads the same four. Clearing any of them would mean INVENTING a flotation
+        /// block, a kingpin or an open seat she does not have. The re-key discharged three
+        /// absences: no collider, no INTERACT block, and no drive or ride. Because the count is
+        /// exact, any of those coming back reds this test.</para>
+        ///
+        /// <para>Each absence is matched by the start of its sentence, not by all of it, so a
+        /// reworded explanation in the reader stays green. A NEW absence does not, because the count
+        /// is exact.</para>
+        /// </summary>
+        [Test]
+        public void HerSidecarReadsAsAHardCabTruck_WithExactlyTheFourAbsencesAHardCabReads()
+        {
+            VehicleSidecarFacts facts = HerFacts();
+
+            Assert.That(facts.Errors, Is.Empty,
+                "her sidecar reads with ERRORS, so the bake would refuse it: " +
+                string.Join(" | ", facts.Errors));
+
+            Assert.That(facts.HasCollider, Is.True,
+                "she declares nothing solid. BODY.collider_bbox is gone, or it no longer reads as " +
+                "two three-number corners; she would park as a ghost the player walks through.");
+            Assert.That(facts.HasDriveDoor, Is.True,
+                "she publishes no numeric drive reach point, so nobody can get in to drive her.");
+            Assert.That(facts.WayInId, Is.EqualTo("drive"),
+                "her way in was not read from the cab arm. She is a hard-cab truck, driven from " +
+                "door_fl.");
+            Assert.That(facts.InteractIds, Does.Contain("drive").And.Contain("ride"),
+                "her INTERACT list lost its drive (door_fl) or its ride (door_fr).");
+
+            Assert.That(facts.HasDriverSeat, Is.False,
+                "she now publishes an OPEN seat the drive interaction resolves to. That draws a " +
+                "visible driver inside a hard cab, which no hard-cab truck in the fleet does.");
+            Assert.That(facts.HasAltDriveDoor, Is.False,
+                "she reads a second drive door. That is the saddle arm's field, and her way in is " +
+                "a cab.");
+            Assert.That(facts.HasFlotation, Is.False,
+                "she reads as a machine that floats. She is a road truck.");
+            Assert.That(facts.HasFifthWheel, Is.False,
+                "she reads a fifth wheel. The owner's ruling D4 of 2026-09-18 says no towing in " +
+                "this PR; towing is recorded debt, and when it lands it gets its own ruling and " +
+                "its own guard.");
+            Assert.That(facts.HasKingpin, Is.False,
+                "she reads a kingpin. She is not something anybody tows.");
+
+            string[] expected =
+            {
+                "the drive interaction happens at 'door_fl'",
+                "no FLOAT block",
+                "no TOW.fifth_wheel",
+                "no KINGPIN",
+            };
+            string all = string.Join(" | ", facts.Absences);
+            foreach (string start in expected)
+                Assert.That(facts.Absences.Count(a => a.StartsWith(start, StringComparison.Ordinal)),
+                            Is.EqualTo(1),
+                            $"expected exactly one absence starting '{start}'. She read: {all}");
+            Assert.That(facts.Absences.Count, Is.EqualTo(expected.Length),
+                $"she reads {facts.Absences.Count} absences; a hard-cab truck reads exactly these " +
+                $"{expected.Length}. She read: {all}");
+        }
+
+        /// <summary>
+        /// ⭐ <b>Where you stand to get in is OUTSIDE what is solid.</b> Her <c>drive</c> reach point
+        /// is where the player stands to open <c>door_fl</c>; her <c>ride</c> reach point is the
+        /// same for <c>door_fr</c>. If either one lands inside her collider, the player is asked to
+        /// stand inside the truck, and the physics pushes them out first.
+        ///
+        /// <para>The bar is zero, the plan-view gap from each point to the collider's rectangle,
+        /// written here. Both are read through the same reader the bake uses. The sidecar says the
+        /// points stand 0.51 m outside the flare line; that margin is the art's, and this test does
+        /// not copy it.</para>
+        /// </summary>
+        [Test]
+        public void HerDriveReachPointStandsOutsideHerCollider()
+        {
+            VehicleSidecarFacts facts = HerFacts();
+            Assert.That(facts.HasCollider && facts.HasDriveDoor, Is.True,
+                "she has no collider or no drive door to compare. See " +
+                "HerSidecarReadsAsAHardCabTruck_WithExactlyTheFourAbsencesAHardCabReads.");
+            Assert.That(facts.ReachPoints.ContainsKey("ride"), Is.True,
+                "her ride entry has no numeric reach point.");
+
+            foreach ((string name, UnityEngine.Vector2 at) in new[]
+                     {
+                         ("drive", facts.DriveDoorLocal),
+                         ("ride", facts.ReachPoints["ride"]),
+                     })
+            {
+                float dx = Math.Max(Math.Max(facts.ColliderMin.x - at.x, 0f), at.x - facts.ColliderMax.x);
+                float dy = Math.Max(Math.Max(facts.ColliderMin.y - at.y, 0f), at.y - facts.ColliderMax.y);
+                double gap = Math.Sqrt(dx * dx + dy * dy);
+
+                Assert.That(gap, Is.GreaterThan(0d),
+                    $"her {name} reach point ({at.x:0.###}, {at.y:0.###}) is INSIDE her collider " +
+                    $"x [{facts.ColliderMin.x:0.###}, {facts.ColliderMax.x:0.###}] " +
+                    $"y [{facts.ColliderMin.y:0.###}, {facts.ColliderMax.y:0.###}]. The player would " +
+                    "be asked to stand inside the truck.");
+            }
+        }
     }
 }

@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-09-10T02:51:25Z",
+  "generatedAt": "2026-09-19T12:57:29Z",
   "region": {
     "id": "region.nine_mile_creek",
     "sceneName": "NineMileCreek",
@@ -195162,6 +195162,25 @@
       "x-active": true
     },
     {
+      "x-name": "Modern3500AtThePark",
+      "x-path": "Modern3500AtThePark",
+      "pos": [-126.7, 106],
+      "components": ["ParkedVehicle", "VehicleController", "VehicleDoor"],
+      "defs": [
+        {
+          "field": "ParkedVehicle._vehicle",
+          "id": "vehicle.modern_3500",
+          "asset": "Assets/_Project/Data/Vehicles/Modern3500.asset"
+        },
+        {
+          "field": "VehicleController._vehicle",
+          "id": "vehicle.modern_3500",
+          "asset": "Assets/_Project/Data/Vehicles/Modern3500.asset"
+        }
+      ],
+      "x-active": true
+    },
+    {
       "x-name": "fitting_hose_a_gas",
       "x-path": "/fitting_hose_a_gas",
       "pos": [0, 0],
@@ -195385,23 +195404,20 @@
   "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum) — the repo's own convention, the same one docs/art/rigs sidecars publish. A SIBLING of the table rather than a key inside it: the table's keys are family names and nothing else, so iterating it cannot pick up a note.",
   "x-cliffLinesNote": "the region's cliffs, as the format's own key. Each is one CliffWallSurface — the builder pushes one CHUNK per stretch, so a coastline arrives as many short lines and not one long one; joining them would be a derivation this exporter invents. `nodes` is the chunk's brow plan and its stations are SAMPLED at ~0.25 m rather than hand-placed (see each line's x-nodesAre). No `tiles` count: this exporter paints no cliff layer at all, so a 0 would read as a fact about the line instead of about the export.",
   "x-provenance": {
-    "generatedAt": "2026-09-10T02:51:25Z",
+    "generatedAt": "2026-09-19T12:57:29Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/NineMileCreek.unity",
-    "sceneFileSha256": "65faf9223f63268bcc046b0b4bf913d9213b827aa204c2ff5a71eb38afee0d7c",
-    "sceneLastBuiltCommit": "31f0d08a07597e074224ed3d25cbe9811b6e7853",
-    "sceneLastBuiltDate": "2026-09-06",
-    "sceneLastBuiltSubject": "feat(fishing): the sea shows what is in it — a third reader of the one school model draws the fish that are already there, and depth decides what you can see (visible fish PR 1) (#752)",
+    "sceneFileSha256": "a3a125418a8043a745f0cc73cf34727388bf12bbe8d6af4a5667160c7d8c3908",
+    "sceneLastBuiltCommit": "c57a40024f68b04de340bccc077c350e0407ed28",
+    "sceneLastBuiltDate": "2026-09-19",
+    "sceneLastBuiltSubject": "feat(world): place the Modern 3500 in Nine Mile Creek's west bay as a text splice (owner ruling d)",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
-      "builderCommitsSinceScene": 2,
-      "measuredTo": "e66fce003774747650be366831d9e548842fc1ce",
-      "measuredToDate": "2026-09-09T23:51:25-03:00",
+      "builderCommitsSinceScene": 0,
+      "measuredTo": "c57a40024f68b04de340bccc077c350e0407ed28",
+      "measuredToDate": null,
       "exact": true,
-      "builderCommits": [
-        "e66fce00 feat(tools): bake every building in one command, and stand every interior with one recipe (#824)",
-        "117174fe feat(world): the sea climbs the quay — a wall stops being drawn where the water is over it, so a boat alongside is IN it (owner playtest 2026-09-06) (#765)"
-      ]
+      "builderCommits": []
     },
     "heightMap": {
       "asset": "Assets/_Project/Data/Terrain/NineMileCreekSeabed.asset",
@@ -195576,18 +195592,18 @@
         "entitiesRidingWithAHull": 0
       },
       "declaredObjects": {
-        "objects": 42,
+        "objects": 43,
         "byComponent": {
           "FloatCleat": 8,
           "FuelPump": 6,
           "GangwayPlatform": 1,
-          "ParkedVehicle": 2,
+          "ParkedVehicle": 3,
           "PropertyBoundary": 6,
           "Shipwright": 1,
           "ShoreCleat": 15,
           "StandablePlatform": 2,
-          "VehicleController": 2,
-          "VehicleDoor": 2,
+          "VehicleController": 3,
+          "VehicleDoor": 3,
           "WharfLadder": 1
         },
         "ruledOut": {
