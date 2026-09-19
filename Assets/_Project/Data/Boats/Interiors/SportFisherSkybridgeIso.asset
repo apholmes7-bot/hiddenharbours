@@ -372,22 +372,44 @@ MonoBehaviour:
     Mechanism: InteriorStair
     Exterior: 0
     TotalRiseMeters: 4.47
+    Placed: 1
+    FromPoint: {x: 0.95000005, y: -5.09, z: 2.83}
+    ToPoint: {x: 0.95000005, y: -8.45, z: 7.3}
+    NotPlacedBecause: 
   - Id: house_to_below
     FromLevel: house_sole
     ToLevel: below_sole
     Mechanism: InteriorStair
     Exterior: 0
     TotalRiseMeters: 2.23
+    Placed: 1
+    FromPoint: {x: -0.92499995, y: 0.3, z: 2.83}
+    ToPoint: {x: -0.92499995, y: 1.98, z: 0.6}
+    NotPlacedBecause: 
   - Id: aft_deck_ladder
-    FromLevel: 
-    ToLevel: 
+    FromLevel: mezzanine
+    ToLevel: aft_deck
     Mechanism: vertical_ladder
     Exterior: 1
     TotalRiseMeters: 4.4500003
+    Placed: 0
+    FromPoint: {x: 2.05, y: -11, z: 2.83}
+    ToPoint: {x: 2.05, y: -11, z: 7.28}
+    NotPlacedBecause: "its from end (2.05, -11.00, 2.83) misses 'mezzanine' by 0.34
+      m in plan and 0.00 m in height (that floor is at 2.83 m there; tolerance 0.10
+      m) \u2014 the floor under that spot is 'cockpit' at 2.05 m"
   - Id: bridge_ladder
-    FromLevel: 
-    ToLevel: 
+    FromLevel: aft_deck
+    ToLevel: helm_coaming
     Mechanism: vertical_ladder
     Exterior: 1
     TotalRiseMeters: 2.23
+    Placed: 0
+    FromPoint: {x: 0, y: -9.4, z: 7.32}
+    ToPoint: {x: 0, y: -9.4, z: 9.55}
+    NotPlacedBecause: "its to end (0.00, -9.40, 9.55) misses 'helm_coaming' by 0.92
+      m in plan and -0.19 m in height (that floor is at 9.74 m there; tolerance 0.10
+      m) \u2014 the floor under that spot is 'bridge_sole' at 7.30 m"
+  FloorToleranceMetres: 0.1
+  RouteEndReachMetres: 0.3
   RidesHullRock: 1
