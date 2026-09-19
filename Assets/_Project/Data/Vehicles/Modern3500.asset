@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11110650f1338a5448a18175f8b903a0, type: 3}
+  m_Name: Modern3500
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleDef
+  Id: vehicle.modern_3500
+  DisplayName: Modern 3500
+  KindToken: road_vehicle
+  Mesh: {fileID: 11400000, guid: ae7a0226f1905ba41823b8b6ab7259fb, type: 2}
+  MassKg: 3500
+  MaxSpeedMetersPerSecond: 11
+  MaxReverseSpeedMetersPerSecond: 4
+  AccelerationMetersPerSecondSquared: 4.5
+  BrakingMetersPerSecondSquared: 8
+  CoastDecelerationMetersPerSecondSquared: 2.2
+  SteerRateFullLocksPerSecond: 2
+  SteerReturnFullLocksPerSecond: 3
+  SteerFalloffHalfSpeedMetersPerSecond: 9
+  TowingSpeedFraction: 0.72
+  TowingAccelerationFraction: 0.45
+  TowingBrakingFraction: 0.65
+  TowingCoastFraction: 0.6
+  SpinRateDegreesPerSecond: 75
+  AfloatSpinRateDegreesPerSecond: 30
+  AfloatMaxSpeedMetersPerSecond: 1.6
+  AfloatMaxReverseSpeedMetersPerSecond: 0.9
+  AfloatAccelerationMetersPerSecondSquared: 0.8
+  AfloatDragDecelerationMetersPerSecondSquared: 1.2
+  SwimHysteresisMeters: 0.06
+  RouteWaypointReachMeters: 3
+  RouteLookaheadMeters: 12
+  RouteCruiseThrottle: 0.6
+  RouteTurnThrottle: 0.15
+  RouteSlowForTurnDegrees: 12
+  RouteSteerGainDegrees: 20
+  CameraWorldHeightMeters: 18
