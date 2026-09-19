@@ -1029,6 +1029,14 @@ namespace HiddenHarbours.Tools.RigBaking
                 // order), the union of what their faces name is TWELVE, `paint` is first and used,
                 // and the two dropped are `glass` and `glow` — the night pass, which this mesh does
                 // not carry. Twelve is comfortably inside the float4[16] `_RampMeta`.
+                //
+                // ⚠️ RE-MEASURED 2026-09-18 on the re-cut rig (2822a7fa…): the tables are still byte-
+                // identical but carry 22 keys, and the union is SIXTEEN — the cap itself, zero headroom
+                // (`paint` still first). Six are dropped: `glass`, `glow`, `p2Pressed`, `p2Hood`, `p2Lens`,
+                // `p2Liner`. `glow` is the one a trailer can still paint — the reefers' night pass — so
+                // a union over every build of every body would be SEVENTEEN, one over the cap. This is
+                // the DEFAULT builds' union, which is what the mesh carries; take a ramp out before
+                // anything widens it to the night builds.
                 ["trailerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["MATS"] =
@@ -1049,7 +1057,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     // ⚠️ IT MATTERS BECAUSE THE FOUR BODIES DO NOT SHARE A CELL. The global carries
                     // the LONG one (640×480 @ 320,300) because a 16.15 m trailer needs it; the two
                     // pups take the 384×320 road cell. Reading the global's for all four would put
-                    // the pups' pivot 86 px low and hand them a cell nearly three times the area
+                    // the pups' pivot 86 px low and hand them a cell two and a half times the area
                     // their art occupies — a silent, entirely plausible wrong bake, and the fourth
                     // place in this drop where a missing pick does not throw.
                     //
