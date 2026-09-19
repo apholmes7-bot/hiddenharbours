@@ -83,7 +83,7 @@ namespace HiddenHarbours.Boats
     /// </summary>
     [DisallowMultipleComponent]
     [DefaultExecutionOrder(-100)]   // the overlay-reader band: after BoatWaveMotion (−120) and the hull (−110)
-    public sealed class BoatInterior : MonoBehaviour
+    public sealed class BoatInterior : MonoBehaviour, ICabinFloors
     {
         [Header("The room, as data (ADR 0003 rule 2 — nothing per-hull in C#)")]
         [Tooltip("This hull's imported interior. Null, or a def with no usable level, means she has no " +
@@ -149,8 +149,10 @@ namespace HiddenHarbours.Boats
         [SerializeField] private float _deckPitchLiftMeters = 0.02f;
 
         /// <summary>Whether the occupant is inside this hull right now. Read-only to everyone else — the
-        /// only ways in and out are <see cref="TryEnter"/> and <see cref="TryExit"/>, and the only caller
-        /// that should be using them is her door.</summary>
+        /// only ways in and out are <see cref="TryEnter"/> and <see cref="TryExit"/>, and the only callers
+        /// that should be using them are her doors and the walker taking one of her routes, through
+        /// <see cref="ICabinFloors"/> (2026-09-19: a companionway down from a flybridge is a way in that
+        /// is not a door).</summary>
         public bool IsInside { get; private set; }
 
         /// <summary>
@@ -249,6 +251,19 @@ namespace HiddenHarbours.Boats
         [SerializeField] private HullMeshDef _meshRoom;
 
         /// <summary>
+        /// <b>The hull mesh's level table, for a SPRITE cabin that has one</b> (Phase B, 2026-09-19) —
+        /// the Convertible, the Skybridge and the tanker draw their rooms from sheets but still wear a
+        /// hull mesh, and its <see cref="HullMeshDef.LevelTags"/> already say which of the def's levels
+        /// are enclosed rooms. Measured in Phase A: on all three the tags name exactly the levels the
+        /// cells' row map does. So "which levels are rooms" is answerable BEFORE the megabytes of sheets
+        /// are loaded (38.5 MB, 144.6 MB and 281 MB) — which the walker taking a companionway needs, and
+        /// which the tanker's door needed all along: asked before its cells, the sill at 11.6 m tied her
+        /// open poop deck with her house sole and the first in the def's order won.
+        /// Null for a geometry room (<see cref="_meshRoom"/> answers) and for a hull with no mesh.
+        /// </summary>
+        [SerializeField] private HullMeshDef _levelTable;
+
+        /// <summary>
         /// <b>Her picture is the hull's own geometry (ADR 0041)</b> — the room's faces live in the hull
         /// mesh and the cutaway reveals them, so this cabin owns NO interior renderer, NO cells, and must
         /// never go to <c>Resources</c> for a sheet: there is none, and a converted hull whose sheets
@@ -277,10 +292,12 @@ namespace HiddenHarbours.Boats
                               Sprite[] cells, int facings, bool cellsAreCounterClockwise,
                               float zeroHeadingDegrees,
                               float deckRollDegrees, float deckHeavePixels, float deckPitchLiftMeters,
-                              int[] cellRowForLevel = null, HullMeshDef meshRoom = null)
+                              int[] cellRowForLevel = null, HullMeshDef meshRoom = null,
+                              HullMeshDef levelTable = null)
         {
             _def = def;
             _meshRoom = meshRoom;
+            _levelTable = levelTable;
             _exterior = exterior;
             _interior = interior;
             _fittings = fittings;
@@ -464,20 +481,31 @@ namespace HiddenHarbours.Boats
         /// <b>Does anything DRAW def level <paramref name="level"/> — is it a room, or an open working
         /// deck the def declares so the walker can measure it?</b>
         ///
-        /// <para>Asked of whichever picture this cabin actually has. A hull whose sheets are not yet
-        /// loaded (or a hand-built test rig with one level and no map) answers yes to everything, which
-        /// is the same honest fallback <see cref="CellRowFor"/> has always made.</para>
+        /// <para>Asked of whichever picture this cabin actually has. A sprite cabin answers from the
+        /// cells' row map once it is loaded, and before that from the hull mesh's level table when she
+        /// wears one (<see cref="_levelTable"/>, 2026-09-19). A hull with neither (a hand-built test rig
+        /// with one level and no map) answers yes to everything, which is the same honest fallback
+        /// <see cref="CellRowFor"/> has always made.</para>
         /// </summary>
         private bool LevelIsDrawn(int level)
         {
-            if (RoomIsGeometry)
-            {
-                if (_def == null || level < 0 || level >= _def.Levels.Length) return false;
-                BoatInteriorLevel l = _def.Levels[level];
-                return l != null && _meshRoom.CutawayForDeck(l.Id).Opens;
-            }
-            return _cellRowForLevel.Length == 0 || CellRowFor(level) >= 0;
+            if (_def == null || _def.Levels == null || level < 0 || level >= _def.Levels.Length) return false;
+            BoatInteriorLevel l = _def.Levels[level];
+            if (RoomIsGeometry) return l != null && _meshRoom.CutawayForDeck(l.Id).Opens;
+
+            if (_cellRowForLevel.Length > 0) return CellRowFor(level) >= 0;
+            if (_levelTable != null && _levelTable.LevelTags is { Length: > 0 })
+                return l != null && _levelTable.CutawayForDeck(l.Id).Opens;
+            return true;
         }
+
+        /// <summary>
+        /// ⭐ <b>Is <paramref name="level"/> a room she can be shown standing in?</b> Usable, and drawn —
+        /// <see cref="ICabinFloors.IsDrawnLevel"/>, for the walker deciding whether a route's end is a
+        /// way INSIDE or a place on the deck. The same two gates <see cref="LevelIndexAtHeight"/> takes,
+        /// so the door and the stair can never disagree about which levels are rooms.
+        /// </summary>
+        public bool IsDrawnLevel(int level) => IsUsableLevel(level) && LevelIsDrawn(level);
 
         // ---- lifetime -------------------------------------------------------------------------
 

@@ -137,6 +137,15 @@ namespace HiddenHarbours.Core
     /// That is legal and deliberate — an interior stair reaching an outdoor deck is how the flybridge
     /// becomes reachable without a teleport — so the builder resolves route ends against the union of
     /// this def's levels and the hull's DECK ids, never against this def alone.</para>
+    ///
+    /// <para><b>A route is walkable only when <see cref="Placed"/>.</b> The reader places a companionway
+    /// from its opening, its direction and its treads, and a ladder leg from its base and its
+    /// <c>connects</c>; the builder then lands each end on the level or deck it names, within
+    /// <see cref="BoatInteriorDef.FloorToleranceMetres"/>. Anything short of that — an opening
+    /// that names a bulkhead line rather than a hole, a ladder with no base, an end that floats in the
+    /// air — leaves the route UNPLACED with its reason in <see cref="NotPlacedBecause"/>. That is honest
+    /// absence, not a fault the walk papers over: a hull whose rig was never measured for a way up
+    /// offers none, and the reason names what the art must supply.</para>
     /// </summary>
     [Serializable]
     public sealed class BoatInteriorRoute
@@ -158,6 +167,20 @@ namespace HiddenHarbours.Core
 
         [Tooltip("Total climb (m), as the sidecar states it.")]
         public float TotalRiseMeters;
+
+        [Tooltip("True when both ends below were placed from the sidecar AND the builder landed each on " +
+                 "the level or deck it names. False (the default) is honest absence: the walk offers " +
+                 "no way here, and NotPlacedBecause says why.")]
+        public bool Placed;
+
+        [Tooltip("Where she stands to take it on FromLevel — hull-local metres, z = that floor's height.")]
+        public Vector3 FromPoint = Vector3.zero;
+
+        [Tooltip("Where she stands on ToLevel at the other end — hull-local metres.")]
+        public Vector3 ToPoint = Vector3.zero;
+
+        [Tooltip("Why this route is not placed, naming the end and the metres. Empty when Placed.")]
+        public string NotPlacedBecause = "";
     }
 
     /// <summary>
@@ -169,7 +192,10 @@ namespace HiddenHarbours.Core
     /// <para><b>Do not author this asset by hand.</b> Same rule and same reason as
     /// <c>BoatDeckDef</c>: the extractor carries the numbers straight through with no human copy step,
     /// because a hand-transcribed constant drifting from the rig is exactly how the baked-anchors JSON
-    /// became dead code. The builder overwrites every field below on each run.</para>
+    /// became dead code. The builder overwrites every field below on each run — except the two WALK
+    /// TUNABLES (<see cref="FloorToleranceMetres"/>, <see cref="RouteEndReachMetres"/>), which are the
+    /// owner's (rule 6): the builder writes their defaults only where they are unset (≤ 0) and keeps
+    /// any value above zero.</para>
     ///
     /// <para><b>Two pixel grids live in this kit, and conflating them is the trap.</b> The tanker bakes
     /// at 16 px/m; the rest of the fleet is 32. <see cref="PixelsPerMetre"/> is therefore stated per def,
@@ -240,6 +266,31 @@ namespace HiddenHarbours.Core
 
         [Tooltip("Companionways and ladder legs, interior and exterior alike.")]
         public BoatInteriorRoute[] Routes = Array.Empty<BoatInteriorRoute>();
+
+        /// <summary>The floor tolerance a def carries until the owner tunes it.</summary>
+        public const float DefaultFloorToleranceMetres = 0.1f;
+        /// <summary>The route-end reach a def carries until the owner tunes it.</summary>
+        public const float DefaultRouteEndReachMetres = 0.3f;
+
+        [Header("Walk (tunable — the builder keeps an owner value above zero)")]
+        [Tooltip("How far apart (m) two heights may be and still be ONE floor. The builder refuses to " +
+                 "place a route whose end sits further than this from the level or deck it names (in " +
+                 "plan, or in height), and the walk crosses a doorway or takes a route end only from a " +
+                 "floor within this of its height — so a cockpit half a metre under the door never walks " +
+                 "her into the saloon above it. ≤ 0 means unset: the default is used.")]
+        public float FloorToleranceMetres = DefaultFloorToleranceMetres;
+
+        [Tooltip("How close (m) she must stand to a placed route's end, in plan, to take it. ≤ 0 means " +
+                 "unset: the walk uses the default.")]
+        public float RouteEndReachMetres = DefaultRouteEndReachMetres;
+
+        /// <summary>The floor tolerance in force: the owner's value, or the default where unset.</summary>
+        public float FloorTolerance =>
+            FloorToleranceMetres > 0f ? FloorToleranceMetres : DefaultFloorToleranceMetres;
+
+        /// <summary>The route-end reach in force: the owner's value, or the default where unset.</summary>
+        public float RouteEndReach =>
+            RouteEndReachMetres > 0f ? RouteEndReachMetres : DefaultRouteEndReachMetres;
 
         [Header("Motion (imported — ADR 0038 proposal 1)")]
         [Tooltip("Whether these sheets ride the hull's rock(i) on the same camera basis. True across " +

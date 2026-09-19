@@ -84,5 +84,16 @@ namespace HiddenHarbours.Boats
             if (radius <= 0f) return false;
             return (hullLocal - PointOf(door)).sqrMagnitude > radius * radius;
         }
+
+        /// <summary>
+        /// <b>Is the floor she is standing on this doorway's floor?</b> Her floor height against the sill's
+        /// (<see cref="BoatInteriorDoor.ThresholdPoint"/>'s z), within <paramref name="toleranceMetres"/>
+        /// — the def's <see cref="BoatInteriorDef.FloorTolerance"/>, the same bar the importer placed her
+        /// routes by. The band is a place in PLAN and this is the other half of "standing in the
+        /// doorway": on the sport fishers a deck 2.9 m above the sill and a cockpit 0.5 m below it both
+        /// lie inside the band (see <see cref="ICabinThresholdAtHeight"/>). False for no door.
+        /// </summary>
+        public static bool IsOnTheSill(BoatInteriorDoor door, float floorZMetres, float toleranceMetres)
+            => door != null && Mathf.Abs(floorZMetres - door.ThresholdPoint.z) <= Mathf.Max(0f, toleranceMetres);
     }
 }

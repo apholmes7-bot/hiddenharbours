@@ -206,4 +206,11 @@ MonoBehaviour:
     Mechanism: InteriorStair
     Exterior: 0
     TotalRiseMeters: 0.37
+    Placed: 0
+    FromPoint: {x: 0, y: 0, z: 0}
+    ToPoint: {x: 0, y: 0, z: 0}
+    NotPlacedBecause: its opening names a bulkhead line (at_y), not a hole with a
+      run to walk
+  FloorToleranceMetres: 0.1
+  RouteEndReachMetres: 0.3
   RidesHullRock: 1

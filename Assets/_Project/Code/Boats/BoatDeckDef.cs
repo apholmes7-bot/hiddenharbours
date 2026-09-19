@@ -220,6 +220,77 @@ namespace HiddenHarbours.Boats
         /// half. The parameter exists so the climb can turn it on without re-deriving anything.</param>
         public Vector2 ClampToWalkable(Vector2 deckPoint, ref int areaHint, out float heightMeters,
                                        bool includeWashboards = false)
+            => Clamp(deckPoint, ref areaHint, out heightMeters, includeWashboards,
+                     false, Vector2.zero, 0f, 0f);
+
+        /// <summary>
+        /// ⭐ <b><see cref="ClampToWalkable"/>, held to ONE FLOOR</b> (Phase B, 2026-09-19): the same three
+        /// steps in the same order, over only the deck areas that stand at
+        /// <paramref name="floorHeightMeters"/> to within <paramref name="toleranceMetres"/>, each measured
+        /// at its point nearest <paramref name="floorPoint"/>. Washboards stay out, as they do for the walk.
+        ///
+        /// <para><b>Why a floor and not an area.</b> A working deck is often several areas at one height —
+        /// the trawlers' trawl deck and house alleys at 3.5 m, the packet's seven areas at 5.0 m — and the
+        /// plain clamp moves her between them freely. Holding the seat to ONE of them would change where
+        /// she lands on every one of those hulls for no reason; holding it to their FLOOR changes only
+        /// the hulls whose plan stacks a second floor over the spot. Measured over the fleet at 360
+        /// headings (<c>c4_band.py</c>): the two sport fishers, whose plan-first seat was the flybridge or
+        /// the foredeck, and the tanker, whose seat stops reaching the 13.875 m catwalk. Every other hull
+        /// lands exactly where it did.</para>
+        ///
+        /// <para>Allocation-free, like its twin. The board seat asks it every tick of the vault.</para>
+        /// </summary>
+        /// <param name="floorPoint">Where the floor is measured from, deck frame (m) — the spot the caller
+        /// named, not the point being clamped.</param>
+        /// <param name="floorHeightMeters">The floor's height above the keel (m), from
+        /// <see cref="TryFloorNearestHeight"/>.</param>
+        /// <param name="toleranceMetres">How far an area may stand from that height and still be the same
+        /// floor (m) — the cabin def's own <c>FloorTolerance</c>, never a number of this file's.</param>
+        public Vector2 ClampToWalkableOnFloor(Vector2 deckPoint, ref int areaHint, out float heightMeters,
+                                              Vector2 floorPoint, float floorHeightMeters, float toleranceMetres)
+            => Clamp(deckPoint, ref areaHint, out heightMeters, false,
+                     true, floorPoint, floorHeightMeters, Mathf.Max(0f, toleranceMetres));
+
+        /// <summary>
+        /// <b>Which deck floor does a spot named at <paramref name="heightMeters"/> mean?</b> The height,
+        /// at its point nearest <paramref name="deckPoint"/>, of the DECK area standing nearest that height
+        /// — the nearer in plan on a tie, then the first in the def's order. False, with 0, on a hull with
+        /// no walkable deck.
+        ///
+        /// <para>The question a snap asks when its spot was authored in the SCREEN frame at a known height:
+        /// the boarding seat is drawn at deck height 0, so the floor it means is the lowest deck under her —
+        /// the one she steps down onto from the wharf — however many floors the hull stacks over it.</para>
+        /// </summary>
+        public bool TryFloorNearestHeight(Vector2 deckPoint, float heightMeters, out float floorHeightMeters)
+        {
+            floorHeightMeters = 0f;
+            if (Areas == null) return false;
+
+            bool found = false;
+            float bestGap = float.PositiveInfinity;
+            float bestPlanSqr = float.PositiveInfinity;
+            for (int i = 0; i < Areas.Length; i++)
+            {
+                DeckArea a = Areas[i];
+                if (!Accepts(a, false)) continue;
+
+                Vector2 q = NearestPointOn(a, deckPoint, out float planSqr);
+                float h = DeckAreaMath.HeightAt(a.HeightPlane, q);
+                float gap = Mathf.Abs(h - heightMeters);
+                if (found && (gap > bestGap || (gap == bestGap && planSqr >= bestPlanSqr))) continue;
+                bestGap = gap;
+                bestPlanSqr = planSqr;
+                floorHeightMeters = h;
+                found = true;
+            }
+            return found;
+        }
+
+        /// <summary>The one clamp both public forms are: <paramref name="oneFloor"/> false is
+        /// <see cref="ClampToWalkable"/> exactly, operation for operation; true skips every area off the
+        /// floor (<see cref="IsOnTheFloor"/>) at each of the three steps, and nothing else.</summary>
+        private Vector2 Clamp(Vector2 deckPoint, ref int areaHint, out float heightMeters, bool includeWashboards,
+                              bool oneFloor, Vector2 floorPoint, float floorHeightMeters, float toleranceMetres)
         {
             heightMeters = 0f;
             if (Areas == null || Areas.Length == 0) return deckPoint;
@@ -228,7 +299,9 @@ namespace HiddenHarbours.Boats
             if (areaHint >= 0 && areaHint < Areas.Length)
             {
                 DeckArea hinted = Areas[areaHint];
-                if (Accepts(hinted, includeWashboards) && DeckAreaMath.Contains(hinted.Outline, hinted.Bounds, deckPoint))
+                if (Accepts(hinted, includeWashboards)
+                    && (!oneFloor || IsOnTheFloor(hinted, floorPoint, floorHeightMeters, toleranceMetres))
+                    && DeckAreaMath.Contains(hinted.Outline, hinted.Bounds, deckPoint))
                 {
                     heightMeters = DeckAreaMath.HeightAt(hinted.HeightPlane, deckPoint);
                     return deckPoint;
@@ -240,7 +313,9 @@ namespace HiddenHarbours.Boats
             {
                 if (i == areaHint) continue;
                 DeckArea a = Areas[i];
-                if (!Accepts(a, includeWashboards) || !DeckAreaMath.Contains(a.Outline, a.Bounds, deckPoint)) continue;
+                if (!Accepts(a, includeWashboards)) continue;
+                if (oneFloor && !IsOnTheFloor(a, floorPoint, floorHeightMeters, toleranceMetres)) continue;
+                if (!DeckAreaMath.Contains(a.Outline, a.Bounds, deckPoint)) continue;
                 areaHint = i;
                 heightMeters = DeckAreaMath.HeightAt(a.HeightPlane, deckPoint);
                 return deckPoint;
@@ -256,6 +331,7 @@ namespace HiddenHarbours.Boats
             {
                 DeckArea a = Areas[i];
                 if (!Accepts(a, includeWashboards)) continue;
+                if (oneFloor && !IsOnTheFloor(a, floorPoint, floorHeightMeters, toleranceMetres)) continue;
                 Vector2 p = DeckAreaMath.ClosestPointOnOutline(a.Outline, deckPoint, out float sqr);
                 if (sqr >= bestSqr) continue;
                 bestSqr = sqr;
@@ -342,6 +418,96 @@ namespace HiddenHarbours.Boats
 
         /// <summary>The float-noise skin <see cref="OnTheOutline"/> allows (m). See its remarks.</summary>
         private const float OutlineSkinMetres = 0.001f;
+
+        /// <summary>
+        /// ⭐ <b>Seat her on the deck NEAREST where she is — in three dimensions, not in plan</b>
+        /// (Phase B, 2026-09-19): the walkable point, over every DECK area, closest to
+        /// <paramref name="hullLocal"/> by plan distance and height gap together.
+        ///
+        /// <para><b>Why <see cref="ClampToWalkable"/> cannot answer this.</b> With no hint it takes the
+        /// FIRST area in the import's order that contains the point in plan, which is right on a hull
+        /// whose decks never stack and wrong on the sport fishers, where the plan under a doorway is
+        /// three floors deep (a deck 2.88 m over the Convertible's sill, a cockpit 0.53 m under it). A
+        /// walker coming out of a door, off a ladder or away from a helm KNOWS which floor she was on —
+        /// its height — and this is the question that uses it: a floor above her is as far away as its
+        /// height gap, so it wins only when there is genuinely nothing nearer.</para>
+        ///
+        /// <para>Ties keep the first area in the def's order (strictly-less), so the answer is a function
+        /// of the data, not of iteration luck. Allocation-free; asked on a seat, never per tick.</para>
+        /// </summary>
+        /// <param name="hullLocal">Where she is: hull-local metres, z her floor's height above the keel.</param>
+        /// <param name="areaHint">Out: the area she was seated on (unchanged when there is none).</param>
+        /// <param name="heightMeters">That area's height under the seat (m); 0 when there is none.</param>
+        public Vector2 SeatNearest(Vector3 hullLocal, ref int areaHint, out float heightMeters)
+        {
+            heightMeters = 0f;
+            Vector2 p = new Vector2(hullLocal.x, hullLocal.y);
+            if (Areas == null) return p;
+
+            float bestScore = float.PositiveInfinity;
+            Vector2 best = p;
+            int bestArea = -1;
+            float bestHeight = 0f;
+            for (int i = 0; i < Areas.Length; i++)
+            {
+                DeckArea a = Areas[i];
+                if (!Accepts(a, false)) continue;
+
+                Vector2 q = NearestPointOn(a, p, out float planSqr);
+                float h = DeckAreaMath.HeightAt(a.HeightPlane, q);
+                float gap = h - hullLocal.z;
+                float score = planSqr + gap * gap;
+                if (score >= bestScore) continue;
+                bestScore = score;
+                best = q;
+                bestArea = i;
+                bestHeight = h;
+            }
+
+            if (bestArea < 0) return p;
+            areaHint = bestArea;
+            heightMeters = bestHeight;
+            return best;
+        }
+
+        /// <summary>
+        /// <b>Is there walkable DECK under <paramref name="hullLocal"/>, to within
+        /// <paramref name="toleranceMetres"/> in plan and in height?</b> The deck half of the importer's
+        /// landing test (<c>BoatInteriorRouteLanding</c>), asked at run time of the deck the hull actually
+        /// wears — so a route end that names a level no picture draws (the tanker's <c>main_deck</c>) is
+        /// a place on the deck exactly when there IS deck there, and a stair that lands on nothing is
+        /// never taken.
+        /// </summary>
+        public bool HasFloorAt(Vector3 hullLocal, float toleranceMetres)
+        {
+            if (Areas == null) return false;
+            Vector2 p = new Vector2(hullLocal.x, hullLocal.y);
+            float tol = Mathf.Max(0f, toleranceMetres);
+            for (int i = 0; i < Areas.Length; i++)
+            {
+                DeckArea a = Areas[i];
+                if (!Accepts(a, false)) continue;
+                Vector2 q = NearestPointOn(a, p, out float planSqr);
+                if (planSqr > tol * tol) continue;
+                if (Mathf.Abs(DeckAreaMath.HeightAt(a.HeightPlane, q) - hullLocal.z) <= tol) return true;
+            }
+            return false;
+        }
+
+        /// <summary>Does <paramref name="a"/> stand at <paramref name="floorHeightMeters"/>, to within
+        /// <paramref name="toleranceMetres"/>, at its point nearest <paramref name="floorPoint"/>? The
+        /// membership test of <see cref="ClampToWalkableOnFloor"/>.</summary>
+        private static bool IsOnTheFloor(DeckArea a, Vector2 floorPoint, float floorHeightMeters, float toleranceMetres)
+            => Mathf.Abs(DeckAreaMath.HeightAt(a.HeightPlane, NearestPointOn(a, floorPoint, out _)) - floorHeightMeters)
+               <= toleranceMetres;
+
+        /// <summary><paramref name="p"/> itself when the area contains it, else the nearest point of its
+        /// outline; <paramref name="planSqr"/> is the squared plan distance between the two.</summary>
+        private static Vector2 NearestPointOn(DeckArea a, Vector2 p, out float planSqr)
+        {
+            if (DeckAreaMath.Contains(a.Outline, a.Bounds, p)) { planSqr = 0f; return p; }
+            return DeckAreaMath.ClosestPointOnOutline(a.Outline, p, out planSqr);
+        }
 
         /// <summary>The height (m above the keel) of the area at <paramref name="areaIndex"/> under
         /// <paramref name="deckPoint"/>; 0 for an index that is not an area.</summary>

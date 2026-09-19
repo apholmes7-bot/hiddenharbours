@@ -612,6 +612,19 @@ namespace HiddenHarbours.Tools.RigBaking
             return false;
         }
 
+        /// <summary>
+        /// <c>STAIRS.companionways</c>. Each one is PLACED when its sidecar says enough to stand her at
+        /// both ends: an opening that is a hole (<c>x0, x1, y0, y1</c>), a direction that says which way
+        /// is up and which way along the hull the flight runs, and treads whose goings sum to its run.
+        /// The top of the flight is the opening's edge in the direction she climbs; the foot is one run
+        /// back from it, on the opening's centre line. Heights are this interior's own levels; an end
+        /// that is not one of them (the 53's <c>bridge_sole</c> is an exterior deck) sits the stated
+        /// rise from the end that is.
+        ///
+        /// <para>What cannot be placed stays a route, unplaced, with its reason — the cape's and the
+        /// lobster boat's cuddy companionways give their opening AT a bulkhead line (<c>at_y</c>), not a
+        /// hole, so there is no run to walk. The builder lands the placed ends afterwards.</para>
+        /// </summary>
         static void ReadStairs(object root, BoatInteriorRead read)
         {
             object stairs = DeckSidecarJson.Member(root, "STAIRS");
@@ -622,7 +635,7 @@ namespace HiddenHarbours.Tools.RigBaking
             for (int i = 0; i < ways.Count; i++)
             {
                 object w = ways[i];
-                read.Routes.Add(new BoatInteriorRoute
+                var route = new BoatInteriorRoute
                 {
                     Id = DeckSidecarJson.String(DeckSidecarJson.Member(w, "id")) ?? $"companionway_{i}",
                     FromLevel = DeckSidecarJson.String(DeckSidecarJson.Member(w, "from")) ?? "",
@@ -630,12 +643,102 @@ namespace HiddenHarbours.Tools.RigBaking
                     Mechanism = DeckSidecarJson.String(DeckSidecarJson.Member(w, "mechanism")) ?? "InteriorStair",
                     Exterior = false,
                     TotalRiseMeters = DeckSidecarJson.Float(DeckSidecarJson.Member(w, "total_rise_m"), 0f),
-                });
+                };
+                PlaceCompanionway(w, route, read);
+                read.Routes.Add(route);
             }
         }
 
-        /// <summary><c>LADDER</c> legs. Absent on every hull whose only route up is her washboards —
-        /// absence is data.</summary>
+        static void PlaceCompanionway(object way, BoatInteriorRoute route, BoatInteriorRead read)
+        {
+            object opening = DeckSidecarJson.Member(way, "opening");
+            if (!TryNumber(opening, "x0", out float x0) || !TryNumber(opening, "x1", out float x1) ||
+                !TryNumber(opening, "y0", out float y0) || !TryNumber(opening, "y1", out float y1))
+            {
+                Unplaced(route, read, DeckSidecarJson.Member(opening, "at_y") != null
+                    ? "its opening names a bulkhead line (at_y), not a hole with a run to walk"
+                    : "it gives no opening as a hole (x0, x1, y0, y1)");
+                return;
+            }
+
+            string direction = DeckSidecarJson.String(DeckSidecarJson.Member(way, "direction")) ?? "";
+            if (!TryReadDirection(direction, out bool up, out float along))
+            {
+                Unplaced(route, read, $"its direction '{direction}' does not say both which way is up and " +
+                                      "which way along the hull the flight runs");
+                return;
+            }
+
+            float run = 0f;
+            var treads = DeckSidecarJson.AsArray(DeckSidecarJson.Member(way, "treads"));
+            if (treads != null)
+                for (int t = 0; t < treads.Count; t++)
+                    run += Mathf.Max(0f, DeckSidecarJson.Float(DeckSidecarJson.Member(treads[t], "going_m"), 0f));
+            if (run <= 0f)
+            {
+                Unplaced(route, read, "its treads give no run (no going_m above zero)");
+                return;
+            }
+
+            BoatInteriorLevel from = LevelOf(read, route.FromLevel);
+            BoatInteriorLevel to = LevelOf(read, route.ToLevel);
+            float riseFromTo = (up ? 1f : -1f) * route.TotalRiseMeters;
+            float fromZ, toZ;
+            if (from != null && to != null) { fromZ = from.SoleZMeters; toZ = to.SoleZMeters; }
+            else if ((from != null || to != null) && route.TotalRiseMeters <= 0f)
+            {
+                Unplaced(route, read, "one end is not a level of this interior and total_rise_m does not " +
+                                      "say how far above or below the other it sits");
+                return;
+            }
+            else if (from != null) { fromZ = from.SoleZMeters; toZ = fromZ + riseFromTo; }
+            else if (to != null) { toZ = to.SoleZMeters; fromZ = toZ - riseFromTo; }
+            else
+            {
+                Unplaced(route, read, $"neither '{route.FromLevel}' nor '{route.ToLevel}' is a level of this " +
+                                      "interior, so neither end has a height to stand at");
+                return;
+            }
+
+            // The y-direction she moves while climbing, then the flight's top and foot along it.
+            float climb = up ? along : -along;
+            float top = climb > 0f ? Mathf.Max(y0, y1) : Mathf.Min(y0, y1);
+            float foot = top - run * climb;
+            float x = (x0 + x1) * 0.5f;
+
+            route.FromPoint = new Vector3(x, up ? foot : top, fromZ);
+            route.ToPoint = new Vector3(x, up ? top : foot, toZ);
+            route.Placed = true;
+            route.NotPlacedBecause = "";
+        }
+
+        /// <summary>
+        /// A companionway's <c>direction</c> — "up going aft (-y)", "down going forward (+y)" — as which
+        /// way is up from its <c>from</c> end (<paramref name="up"/>) and which way along the hull it
+        /// runs while going that way (<paramref name="along"/>, ±1 in y). The explicit axis wins over the
+        /// word; the two disagreeing is a sidecar that contradicts itself, and nothing is placed from it.
+        /// </summary>
+        internal static bool TryReadDirection(string direction, out bool up, out float along)
+        {
+            up = false;
+            along = 0f;
+            string d = (direction ?? "").Trim().ToLowerInvariant();
+            if (d.StartsWith("up", StringComparison.Ordinal)) up = true;
+            else if (!d.StartsWith("down", StringComparison.Ordinal)) return false;
+
+            float byAxis = d.Contains("(+y)") ? 1f : (d.Contains("(-y)") || d.Contains("(−y)")) ? -1f : 0f;
+            float byWord = d.Contains("forward") ? 1f : d.Contains("aft") ? -1f : 0f;
+            if (byAxis != 0f && byWord != 0f && byAxis != byWord) return false;
+            along = byAxis != 0f ? byAxis : byWord;
+            return along != 0f;
+        }
+
+        /// <summary>
+        /// <c>LADDER</c> legs. Absent on every hull whose only route up is her washboards — absence is
+        /// data. A leg is PLACED from its <c>base</c> [x, y] and its <c>z0</c>/<c>z1</c>, and it joins
+        /// the two floors its <c>connects</c> names, foot first. A leg without a base, or without the
+        /// two floors, stays unplaced with its reason: four of the kit's legs say neither.
+        /// </summary>
         static void ReadLadders(object root, BoatInteriorRead read)
         {
             var arr = DeckSidecarJson.AsArray(DeckSidecarJson.Member(root, "LADDER"));
@@ -646,16 +749,59 @@ namespace HiddenHarbours.Tools.RigBaking
                 object l = arr[i];
                 float z0 = DeckSidecarJson.Float(DeckSidecarJson.Member(l, "z0"), 0f);
                 float z1 = DeckSidecarJson.Float(DeckSidecarJson.Member(l, "z1"), 0f);
-                read.Routes.Add(new BoatInteriorRoute
+                string[] connects = ReadStrings(DeckSidecarJson.Member(l, "connects"));
+                bool joined = connects.Length >= 2;
+                var route = new BoatInteriorRoute
                 {
                     Id = DeckSidecarJson.String(DeckSidecarJson.Member(l, "id")) ?? $"ladder_{i}",
-                    FromLevel = DeckSidecarJson.String(DeckSidecarJson.Member(l, "from")) ?? "",
-                    ToLevel = DeckSidecarJson.String(DeckSidecarJson.Member(l, "to")) ?? "",
+                    FromLevel = joined ? connects[0] : DeckSidecarJson.String(DeckSidecarJson.Member(l, "from")) ?? "",
+                    ToLevel = joined ? connects[1] : DeckSidecarJson.String(DeckSidecarJson.Member(l, "to")) ?? "",
                     Mechanism = DeckSidecarJson.String(DeckSidecarJson.Member(l, "kind")) ?? "vertical_ladder",
                     Exterior = DeckSidecarJson.Member(l, "exterior") as bool? ?? false,
                     TotalRiseMeters = Mathf.Abs(z1 - z0),
-                });
+                };
+
+                var foot = DeckSidecarJson.AsArray(DeckSidecarJson.Member(l, "base"));
+                if (foot == null || foot.Count < 2 ||
+                    !DeckSidecarJson.TryDouble(foot[0], out double bx) || !DeckSidecarJson.TryDouble(foot[1], out double by))
+                    Unplaced(route, read, "it gives no base [x, y] to stand at");
+                else if (string.IsNullOrEmpty(route.FromLevel) || string.IsNullOrEmpty(route.ToLevel))
+                    Unplaced(route, read, "it does not name the two floors it joins (connects: [foot, head])");
+                else if (!TryNumber(l, "z0", out _) || !TryNumber(l, "z1", out _))
+                    Unplaced(route, read, "it gives no z0 and z1 for its foot and head");
+                else
+                {
+                    route.FromPoint = new Vector3((float)bx, (float)by, z0);
+                    route.ToPoint = new Vector3((float)bx, (float)by, z1);
+                    route.Placed = true;
+                    route.NotPlacedBecause = "";
+                }
+                read.Routes.Add(route);
             }
+        }
+
+        static void Unplaced(BoatInteriorRoute route, BoatInteriorRead read, string because)
+        {
+            route.Placed = false;
+            route.NotPlacedBecause = because;
+            read.Notes.Add($"route '{route.Id}' is not placed: {because}. The walk offers no way there " +
+                           "until the sidecar says more.");
+        }
+
+        static BoatInteriorLevel LevelOf(BoatInteriorRead read, string id)
+        {
+            if (string.IsNullOrEmpty(id)) return null;
+            for (int i = 0; i < read.Levels.Count; i++)
+                if (string.Equals(read.Levels[i].Id, id, StringComparison.Ordinal)) return read.Levels[i];
+            return null;
+        }
+
+        static bool TryNumber(object owner, string key, out float value)
+        {
+            value = 0f;
+            if (!DeckSidecarJson.TryDouble(DeckSidecarJson.Member(owner, key), out double d)) return false;
+            value = (float)d;
+            return true;
         }
 
         static void ReadInteract(object root, BoatInteriorRead read)
