@@ -135,6 +135,10 @@ namespace HiddenHarbours.Tests.PlayMode
         [SetUp]
         public void SetUp()
         {
+            // Keep a listener alive outside any hierarchy a test deactivates, including the first
+            // frame before a UnityTest's nested coroutine starts. Strict log checks stay enabled.
+            var listener = new GameObject("FigureLifecycleListener"); _spawned.Add(listener);
+            listener.AddComponent<AudioListener>();
             _previousService = HullMeshPresentation.Service;
             GameServices.Reset();
             _clock = new SteppedClock { TotalSeconds = ClockOrigin };
