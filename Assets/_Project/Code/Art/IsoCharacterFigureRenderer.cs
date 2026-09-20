@@ -391,6 +391,9 @@ namespace HiddenHarbours.Art
 
         private void LateUpdate()
         {
+            // OnDisable releases the id without touching a hierarchy Unity is still deactivating.
+            // If the figure survives, finish the hand-over once callbacks have unwound.
+            if (!IsAshore) LeaveAshore();
             if (IsAshore) WriteAshoreProperties();
             else WriteHullProperties();
         }
@@ -415,7 +418,7 @@ namespace HiddenHarbours.Art
         public bool EnterAshore(Renderer sortSource)
         {
             if (sortSource == null) throw new ArgumentNullException(nameof(sortSource));
-            if (!IsConfigured) return false;
+            if (!IsConfigured || !gameObject.activeInHierarchy) return false;
             if (IsAshore)
             {
                 _sortSource = sortSource;
@@ -423,6 +426,8 @@ namespace HiddenHarbours.Art
                 return true;
             }
             if (GetComponentInParent<IsoFacetHullRenderer>() != null) return false;
+
+            LeaveAshore(); // finish any deferred cleanup before building another frame
 
             // Find the shader BEFORE taking an id, so a missing import cannot leak one.
             var overlayShader = Shader.Find("HiddenHarbours/IsoFacetOverlay");
@@ -444,16 +449,16 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// Give the figure id back, put the facet child back where <see cref="Configure"/> built it
-        /// and destroy the frame and the overlay. A no-op when not ashore, so it never clears an
-        /// aboard figure's hull properties.
+        /// and destroy the frame and the overlay. An inactive hierarchy keeps its frame until the
+        /// next pose or re-entry, so Unity can finish deactivation without a parenting change.
+        /// A no-op when not ashore, so it never clears an aboard figure's hull properties.
         /// </summary>
         public void LeaveAshore()
         {
             if (!IsAshore && _ashoreFrame == null && _overlayChild == null) return;
 
-            if (_figureId != 0) IsoFacetHullRegistry.UnregisterFigure(_figureId);
-            _figureId = 0;
-            _sortSource = null;
+            ReleaseAshoreId();
+            if (!gameObject.activeInHierarchy) return;
 
             if (_meshChild != null && _meshChild.parent != transform)
             {
@@ -462,9 +467,22 @@ namespace HiddenHarbours.Art
                 _meshChild.localRotation = Quaternion.identity;
                 _meshChild.localScale = Vector3.one;
             }
+            DestroyAshoreObjects();
+        }
+
+        private void ReleaseAshoreId()
+        {
+            if (!IsAshore && _ashoreFrame == null && _overlayChild == null) return;
+            if (_figureId != 0) IsoFacetHullRegistry.UnregisterFigure(_figureId);
+            _figureId = 0;
+            _sortSource = null;
             if (_meshRenderer != null) _meshRenderer.SetPropertyBlock(null);
             _props?.Clear();
+            if (_overlayRenderer != null) _overlayRenderer.enabled = false;
+        }
 
+        private void DestroyAshoreObjects()
+        {
             if (_overlayChild != null) DestroySafely(_overlayChild.gameObject);
             if (_ashoreFrame != null) DestroySafely(_ashoreFrame.gameObject);
             if (_overlayQuad != null) DestroySafely(_overlayQuad);
@@ -610,16 +628,17 @@ namespace HiddenHarbours.Art
             _meshRenderer.SetPropertyBlock(_props);
         }
 
-        // Disabling her must not leave an id holding the facet gate open: leave ashore. The caller
-        // re-enters. (Neither callback runs in EditMode for this component — tests call LeaveAshore.)
-        private void OnDisable() => LeaveAshore();
+        // Unity forbids SetParent during hierarchy deactivation. Return the id now, but keep the
+        // frame (and its posed mesh) until a safe hand-over or teardown. The caller re-enters.
+        private void OnDisable() => ReleaseAshoreId();
 
         private void OnDestroy() => Teardown(keepDef: false);
 
         private void Teardown(bool keepDef)
         {
-            LeaveAshore();
+            ReleaseAshoreId();
             if (_meshChild != null) DestroySafely(_meshChild.gameObject);
+            DestroyAshoreObjects();
             if (_posedMesh != null) DestroySafely(_posedMesh);
             if (_facetMaterial != null) DestroySafely(_facetMaterial);
             if (_rampTex != null) DestroySafely(_rampTex);

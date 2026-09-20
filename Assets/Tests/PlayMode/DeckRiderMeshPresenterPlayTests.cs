@@ -104,17 +104,6 @@ namespace HiddenHarbours.Tests.PlayMode
         private const string ClipReason = "ashore — a clip is playing, and the sprite draws every clip";
         /// <summary>The registry's warning for a figure the pool refuses, once per ask.</summary>
         private const string NoFacetIdWarning = "this figure gets NO facet id";
-        /// <summary>
-        /// ⚠️ A debt of #861's figure, not of this presenter: <c>IsoCharacterFigureRenderer.LeaveAshore</c> puts
-        /// its facet child back under the figure, and Unity refuses a SetParent while the parent it leaves
-        /// (AshoreFrame) is being deactivated. Deactivate the hierarchy she stands in while she is drawn ashore
-        /// and Unity logs this error ONCE (the second LeaveAshore of that deactivation is a no-op). Her id and
-        /// her body still come back on the call, and that is what these guards read. Expected BY NAME, so a
-        /// fixed figure turns the expectation red and it comes out.
-        /// </summary>
-        private const string LeaveAshoreReparentRefused =
-            "Cannot set the parent of the GameObject 'FacetFigure' while activating or deactivating the parent GameObject 'AshoreFrame'.";
-
         /// <summary>The id no figure may take: a pool that has lent 1..254 is a pool at its end — the
         /// state NMC's cold start reaches with 255 ids in use.</summary>
         private const int FacetIdCeiling = 255;
@@ -1284,7 +1273,6 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 // Deactivate FIRST, so her figure hands its id back to the DRAINED pool it came from, and
                 // only then restore the live one: freed into the live pool, that id could be lent twice.
-                LogAssert.Expect(LogType.Error, LeaveAshoreReparentRefused);
                 rig.Body.gameObject.SetActive(false);
                 IsoFacetHullRegistry.SwapIdPoolForTests(live);
                 Application.logMessageReceived -= count;
@@ -1367,6 +1355,76 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator AshoreFigure_AncestorDeactivation_PreservesMeshAcrossReentry()
+        {
+            yield return DisableAndReenterAshoreFigure(disableAncestor: true);
+        }
+
+        [UnityTest]
+        public IEnumerator AshoreFigure_ComponentDisable_PreservesMeshAcrossReentry()
+        {
+            yield return DisableAndReenterAshoreFigure(disableAncestor: false);
+        }
+
+        private IEnumerator DisableAndReenterAshoreFigure(bool disableAncestor)
+        {
+            int baseline = IsoFacetHullRegistry.FigureCount;
+            var root = new GameObject("FigureLifecycleRoot"); _spawned.Add(root);
+            var sort = root.AddComponent<SpriteRenderer>();
+            var child = new GameObject("FigureLifecycleChild");
+            child.transform.SetParent(root.transform, false);
+            var figure = child.AddComponent<IsoCharacterFigureRenderer>();
+            figure.Configure(NewSkin(CharacterSkinStateMap.Idle));
+            Assert.IsTrue(figure.SetPose(CharacterSkinStateMap.Idle, 0));
+            MeshFilter facet = child.GetComponentInChildren<MeshFilter>();
+            Mesh posed = facet.sharedMesh;
+
+            for (int cycle = 0; cycle < 3; cycle++)
+            {
+                Assert.IsTrue(figure.EnterAshore(sort));
+                Assert.AreEqual(baseline + 1, IsoFacetHullRegistry.FigureCount);
+                figure.SetAshoreYaw(90f);
+                if (disableAncestor) root.SetActive(false);
+                else figure.enabled = false;
+
+                Assert.IsFalse(figure.IsAshore, "disable returns the id synchronously");
+                Assert.AreEqual(baseline, IsoFacetHullRegistry.FigureCount);
+                Assert.IsFalse(figure.AshoreOverlay.enabled, "no stale ashore overlay after disable");
+                // The presenter's own OnDisable may also call this, in either callback order.
+                figure.LeaveAshore();
+                figure.LeaveAshore();
+                yield return null; // catch deferred destruction of a mesh left inside a destroyed frame
+                Assert.IsTrue(facet != null, "disabling must preserve the facet child");
+                Assert.AreSame(posed, facet.sharedMesh, "disabling must preserve the posed mesh");
+
+                if (disableAncestor) root.SetActive(true);
+                else figure.enabled = true;
+                if (cycle == 0)
+                {
+                    yield return null; // LateUpdate finishes cleanup if the caller has not re-entered
+                    Assert.AreSame(child.transform, facet.transform.parent);
+                    Assert.AreEqual(Vector3.zero, facet.transform.localPosition);
+                    Assert.Less(Quaternion.Angle(Quaternion.identity, facet.transform.localRotation), Tol);
+                    Assert.AreEqual(Vector3.one, facet.transform.localScale);
+                }
+                Assert.IsTrue(figure.EnterAshore(sort), "re-entry can also finish cleanup on the call");
+                yield return null;
+                Assert.AreSame(posed, facet.sharedMesh);
+                Assert.IsTrue(figure.SetPose(CharacterSkinStateMap.Idle, 1));
+                Assert.AreEqual(1, figure.DrawnFrame);
+                Assert.IsTrue(figure.AshoreOverlay.enabled);
+                Assert.AreEqual(baseline + 1, IsoFacetHullRegistry.FigureCount, "exactly one id after re-entry");
+                LogAssert.NoUnexpectedReceived();
+            }
+
+            Object.Destroy(root);
+            yield return null;
+            Assert.AreEqual(baseline, IsoFacetHullRegistry.FigureCount, "destruction returns the last id");
+            Assert.IsTrue(posed == null, "destruction releases the preserved mesh");
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator WhenSheGoesAway_HerIdGoesBackAndHerBodyIsGivenBack_OnTheCall()
         {
             // Decision 2's other end: she keeps her id for the session — until she goes. Deactivated (a
@@ -1380,8 +1438,6 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             AssertDrawnBy(rig, AshoreMesh, "standing ashore");
             Assert.AreEqual(baseline + 1, IsoFacetHullRegistry.FigureCount, "one id, lent to her");
-
-            LogAssert.Expect(LogType.Error, LeaveAshoreReparentRefused);
             rig.Body.gameObject.SetActive(false);
             Assert.AreEqual(baseline, IsoFacetHullRegistry.FigureCount, "on the call: her id is back in the pool");
             Assert.IsFalse(rig.Body.forceRenderingOff, "on the call: her body is not left forced off");
