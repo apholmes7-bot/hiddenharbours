@@ -45,8 +45,16 @@ namespace HiddenHarbours.Art
     /// </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("Hidden Harbours/Art/Foam Injector (advected foam buffer)")]
+    [DefaultExecutionOrder(30)]
     public sealed class FoamInjector : MonoBehaviour
     {
+        private IHullWakePoseSource _wakePoseSource;
+        private Rigidbody2D _hullBody;
+        private Vector2 _wakeHeading = Vector2.up;
+
+        /// <summary>Water-frame point used for this frame's newly deposited foam.</summary>
+        public Vector2 EmissionStern => SternWorld();
+        public Vector2 EmissionHeading => _wakeHeading;
         [Header("Master")]
         [Tooltip("This hull's contribution scale. 0 = it churns nothing (but still costs its slot — " +
                  "disable the component instead to give the slot back).")]
@@ -174,6 +182,8 @@ namespace HiddenHarbours.Art
         {
             _sternOffsetMeters = Mathf.Max(0f, sternOffsetMeters);
             _bakeElevationDegrees = Mathf.Clamp(bakeElevationDegrees, 1f, 90f);
+            _wakePoseSource = null;
+            _primed = false;
         }
 
         /// <summary>
@@ -189,8 +199,35 @@ namespace HiddenHarbours.Art
         /// the shipped behaviour for any hull whose stern has not been measured.</para>
         /// </summary>
         private Vector2 SternWorld()
-            => FoamBuffer.SternWorld((Vector2)transform.position, (Vector2)transform.up,
-                                     _sternOffsetMeters, _bakeElevationDegrees);
+        {
+            if (_wakePoseSource == null) _wakePoseSource = GetComponentInParent<IHullWakePoseSource>();
+            if (_hullBody == null) _hullBody = GetComponentInParent<Rigidbody2D>();
+            if (_wakePoseSource != null && _wakePoseSource.TryGetWakePose(out HullWakePose pose))
+            {
+                _wakeHeading = pose.Heading;
+                Vector2 datum = pose.DrawnStern - Vector2.up * pose.TideRise;
+                Vector2 at = datum;
+                // Invert the surface's drawing lift at birth, so it is not added twice.
+                // History is never reprojected when the hull turns or rocks.
+                for (int i = 0; i < 3; i++) at = datum - Vector2.up * SurfaceLift(at);
+                return at;
+            }
+            _wakeHeading = transform.up;
+            return FoamBuffer.SternWorld(transform.position, _wakeHeading,
+                                         _sternOffsetMeters, _bakeElevationDegrees);
+        }
+
+        private static float SurfaceLift(Vector2 at)
+        {
+            if (!DisplacedSea.TryGet(out DisplacedSeaState sea)) return 0f;
+            var field = WaveFieldBridge.ReadPublishedField();
+            float height = WaveFieldBridge.ShaderTwinSample(at, in field, sea.FreqScale,
+                GameServices.FetchEnvelopeAt(at)).Height;
+            float level = GameServices.Environment != null && GameServices.Clock != null
+                ? GameServices.Environment.WaterLevelAt(GameServices.Clock.TotalSeconds) : 0f;
+            float bed = GameServices.TidalTerrain != null ? GameServices.TidalTerrain.ElevationAt(at) : float.NegativeInfinity;
+            return ShoreFadeMath.DisplacedHeight(height, level - bed, sea.ShoreFadeBandMeters, sea.Exaggeration);
+        }
 
         private void OnEnable()
         {
@@ -310,7 +347,9 @@ namespace HiddenHarbours.Art
             // ---- the two motion channels ----------------------------------------------------------
             // Speed THROUGH THE WATER, not over the ground: a boat carried along by the stream is
             // stationary relative to the water she floats on and leaves no wake in it.
-            Vector2 groundVelocity = (position - _previousPosition) / dt;
+            // Rendered heave/pitch move the anchor but are not forward drive through water.
+            Vector2 groundVelocity = _hullBody != null
+                ? _hullBody.linearVelocity : (position - _previousPosition) / dt;
             float horizontalSpeed = (groundVelocity - sample.CurrentVector).magnitude;
             float verticalRate = FoamBuffer.RelativeHeaveRate(_surfaceY, _hullY,
                                                               _previousSurfaceY, _previousHullY, dt);
@@ -561,7 +600,7 @@ namespace HiddenHarbours.Art
         {
             // The same forward direction the stern offset is measured along, so the train's axis and
             // its root can never disagree about which way she is pointing.
-            Vector2 heading = (Vector2)transform.up;
+            Vector2 heading = _wakeHeading;
             float mag = heading.magnitude;
             heading = mag > 1e-6f ? heading / mag : Vector2.up;
             FoamInjectionRegistry.PublishWakeLift(root, heading, wavelengthMetres, RadiusMeters, gate01);

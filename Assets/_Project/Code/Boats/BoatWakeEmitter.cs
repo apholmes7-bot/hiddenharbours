@@ -64,6 +64,7 @@ namespace HiddenHarbours.Boats
     /// tick. Mobile-portable.</para>
     /// </summary>
     [DisallowMultipleComponent]
+    [DefaultExecutionOrder(20)]
     public sealed class BoatWakeEmitter : MonoBehaviour
     {
         [Header("Wake feel (all tunable — no magic numbers, rule 6)")]
@@ -331,9 +332,10 @@ namespace HiddenHarbours.Boats
             _rigs.Clear();
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             float dt = Time.deltaTime;
+            if (dt <= 0f) return;
 
             _rescanTimer -= dt;
             if (_rescanTimer <= 0f)
@@ -939,6 +941,11 @@ namespace HiddenHarbours.Boats
             // draws no tide under her picture, so her wake gets none either.
             private HullTideRide _tideRide;
             private float _tideRise;            // this tick's drawn rise of the water under her (m, screen-up)
+            private IHullWakePoseSource _wakePoseSource;
+            private Vector2 _posedStern;
+            private bool _hasPosedStern;
+            private BoatHullDef _lastHull;
+            private float _driveStrength;
 
             /// <summary>The elevation that means "a plan view": no foreshortening, today's placement. What a
             /// boat with no directional skin reads.</summary>
@@ -1162,7 +1169,7 @@ namespace HiddenHarbours.Boats
 
                 Vector2 pos = Boat.transform.position;
                 Vector2 bow = Boat.transform.up;
-                float speed = Boat.Velocity.magnitude;
+                float speed = (Boat.Velocity - current).magnitude;
                 bool aground = Boat.IsAground;
                 float bakeElev = BakeElevationDegrees();
 
@@ -1174,12 +1181,30 @@ namespace HiddenHarbours.Boats
                     ? TidalRide.ScreenRise(waterLevel, _tideRide.BakedWaterlineElevation)
                     : 0f;
 
+                if (_lastHull != Boat.Hull)
+                {
+                    _lastHull = Boat.Hull;
+                    _hasPrevStern = false;
+                    _hasPrevBow = false;
+                    _depositCarry = 0f;
+                    _wakePoseSource = null;
+                }
+                if (_wakePoseSource == null) _wakePoseSource = Boat.GetComponent<IHullWakePoseSource>();
+                _hasPosedStern = _wakePoseSource != null && _wakePoseSource.TryGetWakePose(out _);
+                if (_hasPosedStern && _wakePoseSource.TryGetWakePose(out HullWakePose pose))
+                {
+                    Vector2 datum = pose.DrawnStern - Vector2.up * _tideRise;
+                    _posedStern = datum;
+                    for (int i = 0; i < 3; i++) _posedStern = datum - Vector2.up * lift.LiftAt(_posedStern);
+                }
+
                 // --- GRADE the wake by hull SIZE + WEIGHT + SPEED (the owner's brief). Static hull stats come
                 // through the boat's public seam (rule 4); speed is live. The magnitude drives BOTH the plume
                 // tier/scale AND a coherent growth of the foam footprint so the whole wake scales with the boat. ---
                 float length = Boat.Hull != null ? Boat.Hull.LengthMeters : grade.LengthRefMin;
                 float mass = Boat.Hull != null ? Boat.Hull.MassKg : grade.MassRefMin;
                 float magnitude = WakeGrading.Magnitude01(length, mass, speed, grade);
+                _driveStrength = WakeGrading.DriveStrength(speed, in grade);
                 int tier = WakeGrading.TierIndex(magnitude, grade);
                 float foamFactor = WakeGrading.FoamExtentFactor(magnitude, grade);
 
@@ -1323,7 +1348,7 @@ namespace HiddenHarbours.Boats
 
                 // The stern cluster forms just ABAFT the transom — in the water the hull has already left,
                 // not on the transom itself. The stem cluster forms right at the cutwater.
-                Vector2 sternPoint = WakeGrading.SternAnchorFromRoot(pos, bow, SternOffsetMeters(), sternScatter * 0.5f,
+                Vector2 sternPoint = SternAnchor(pos, bow, sternScatter * 0.5f,
                                                              bakeElevationDegrees);
                 Vector2 stemPoint = BowSprayGrading.BowAnchor(pos, bow, hull, 0f, bakeElevationDegrees);
 
@@ -1377,7 +1402,7 @@ namespace HiddenHarbours.Boats
             {
                 // The trail is laid at the drawn transom: the same projected stern anchor the plume pins to
                 // (hull half-length + nudge, foreshortened per artwork) — never the boat's centre.
-                Vector2 stern = WakeGrading.SternAnchorFromRoot(pos, bow, SternOffsetMeters(), trail.DepositAsternOffset,
+                Vector2 stern = SternAnchor(pos, bow, trail.DepositAsternOffset,
                                                         bakeElevationDegrees);
 
                 if (!_hasPrevStern)
@@ -1435,19 +1460,24 @@ namespace HiddenHarbours.Boats
                 // Row 29: ONE width, from the hull's own beam through the presenter seam.
                 float wakeHalf = WakeHalfWidthMeters(hullLength, trail.ShoulderHalfWidthFraction);
                 float halfWidth = WakeTrailMath.ShoulderHalfWidthFrom(wakeHalf, magnitude, in trail);
+                halfWidth *= Mathf.Sqrt(_driveStrength);
                 float lifeScale = WakeTrailMath.Graded(trail.LifetimeScaleAtMagnitude0,
                                                        trail.LifetimeScaleAtMagnitude1, magnitude);
                 float sizeScale = WakeTrailMath.Graded(trail.SizeScaleAtMagnitude0,
                                                        trail.SizeScaleAtMagnitude1, magnitude);
+                sizeScale *= Mathf.Sqrt(_driveStrength);
                 // Birth strength: the crest lines' own speed-onset ramp, baked at emit — a trail laid at
                 // speed keeps reading at the strength it was laid with after the boat slows (the persistence
                 // the owner asked for), while a barely-moving boat lays a faint trail.
                 float lineBirth = WakeLineGeometry.SpeedOnset(speed, in lineCfg);
+                lineBirth *= _driveStrength;
                 float foamBirth = Mathf.Clamp01(WakeGrading.Ramp01(speed, fcfg.SpeedThreshold,
                                                                    Mathf.Max(0.2f, fcfg.SpeedThreshold)));
+                foamBirth *= _driveStrength;
 
                 int churnPuffs = WakeTrailMath.ChurnPuffCount(in trail);
                 float churnHalf = WakeTrailMath.ChurnHalfWidthFrom(wakeHalf, in trail);
+                churnHalf *= Mathf.Sqrt(_driveStrength);
 
                 // The WAKE WAVE's birth amplitude, in METRES of displaced water — baked into each crest at
                 // emit for the same reason the birth strength is: a wave laid at speed must keep the height
@@ -1685,6 +1715,11 @@ namespace HiddenHarbours.Boats
                 return HiddenHarbours.Core.WakeRootMath.SternOffsetMeters(rigged, length);
             }
 
+            private Vector2 SternAnchor(Vector2 pos, Vector2 bow, float asternOffset, float elevation)
+                => _hasPosedStern
+                    ? WakeRootMath.ProjectAlongHeading(_posedStern, bow, -asternOffset, elevation)
+                    : WakeGrading.SternAnchorFromRoot(pos, bow, SternOffsetMeters(), asternOffset, elevation);
+
             /// <summary>Row 29 — the ONE width, from the same seam. A hull with no rig reports 0 and the
             /// legacy length fraction answers for her.</summary>
             private float WakeHalfWidthMeters(float hullLengthMeters, float lengthFraction)
@@ -1764,7 +1799,7 @@ namespace HiddenHarbours.Boats
 
                 _plume.sprite = sprite;
 
-                Vector2 apex = WakeGrading.SternAnchorFromRoot(pos, bow, SternOffsetMeters(),
+                Vector2 apex = SternAnchor(pos, bow,
                                                                grade.PlumeAsternOffset, bakeElevationDegrees);
                 // The churn pulse: the transom wash BOILS (bounded, deterministic) instead of sitting glued.
                 float scalePulse = WakeTrailMath.ChurnPulse(time, _pulseSeed, trail.PlumePulseHz,
@@ -1772,6 +1807,7 @@ namespace HiddenHarbours.Boats
                 float alphaPulse = WakeTrailMath.ChurnPulse(time, _pulseSeed + 0.37f, trail.PlumePulseHz,
                                                             trail.PlumePulseAlphaAmount);
                 float scale = WakeGrading.PlumeScale(magnitude, in grade) * scalePulse;
+                scale *= Mathf.Sqrt(_driveStrength);
                 float angleDeg = WakeGrading.OrientAngleDeg(bow, grade.PlumeFlip);
                 // Ride the displaced sea at the transom (0 when the displaced sea is off — the flat plane).
                 float ride = lift.LiftAt(apex);
@@ -1783,7 +1819,7 @@ namespace HiddenHarbours.Boats
                 // The plume IS the moment of churn, continuously — so it draws at the ramp's fresh end:
                 // the sea's own foam anchor rather than a component constant that happened to be white.
                 var col = WakeFoamAgeing.ShadeFresh(tint, in ramp, in palette);
-                col.a = Mathf.Clamp01(Mathf.Clamp01(grade.PlumeStartAlpha) * onset * turnFade * alphaPulse);
+                col.a = Mathf.Clamp01(Mathf.Clamp01(grade.PlumeStartAlpha) * _driveStrength * turnFade * alphaPulse);
                 _plume.color = col;
                 if (!_plume.gameObject.activeSelf) _plume.gameObject.SetActive(true);
             }
@@ -2084,6 +2120,8 @@ namespace HiddenHarbours.Boats
                     float lengthM = trail.Enabled
                         ? lengthMeters
                         : WakeLineGeometry.StreakLength(p.BirthStrength, life, in lineCfg);
+                    if (trail.Enabled)
+                        lengthM *= Mathf.Sqrt(p.BirthStrength) * Mathf.Lerp(1f, arm.SpreadFactor, life);
                     // PER-CREST VARIANCE (owner eyeball 2026-08-27): the crests were the one wake stream
                     // with no per-thing variation at all — same sprite, same angle, same length, every
                     // deposit. Off each crest's own birth seed, so a run of them reads as water standing
