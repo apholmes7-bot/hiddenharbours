@@ -1,8 +1,25 @@
 # Wake stern, heading and speed response — v24
 
+**Acceptance correction (2026-09-22): the owner's broad filled foam issue remains open.**
+The original plates below validate stern-pose and sprite response work; they do not validate
+the three broad filled sheets in the owner's screenshots. Same-state isolation attributes those
+sheets to `FoamInjector -> FoamInjectionRegistry -> IsoFacetHullFeature -> FoamBufferAdvect ->
+Water.WakeFoamCoverage`. The original production graph currently fails to retain visible sheet
+history in the controlled intro reproduction. Empty diagnostic Unsafe passes restore it, but
+are not a production repair. See [the boundary comparison](boundary-comparison.md) for the
+matched B/E/EB/EA results, evidence paths and outstanding acceptance. Keep this PR draft and
+trim queued until a real repair and broad-band visual acceptance are complete.
+
 This change attaches new wake to the mesh's authored transom through turns, including the intro Cape. The visual child intentionally stays at identity rotation; it is not the boat's heading. `FoamInjector` previously read that child's `up`, placing its root northward regardless of the boat's yaw. Restoring the old injector makes the independent pose guard fail. The mesh projection invariant remains intact.
 
-The three conspicuous bands come from `BoatWakeEmitter`'s two **crest** streams and central **sternRoll** stream. They are pooled sprite renderers drawing the wake-wave crest/trough artwork through **Universal Render Pipeline/2D/Sprite-Lit-Default**, confirmed from the live renderers. Per-family GPU captures distinguish them from deposited foam, sheet foam and bubbles. The retired `plume` and `bowSpray` paths contribute zero changed pixels with the shipped switches. In particular, the old photograph fixture's “ALL drawn” measured only sheet/deposits/crests; the new `complete.png` also includes stern roll and every other enabled family.
+The original investigation identified `BoatWakeEmitter`'s two **crest** streams and central
+**sternRoll** stream, but incorrectly identified them as the owner's three broad bands. These
+pooled sprite renderers draw wake-wave crest/trough artwork through
+**Universal Render Pipeline/2D/Sprite-Lit-Default**. Their per-family captures and response
+measurements remain useful evidence for those sprite effects only. The retired `plume` and
+`bowSpray` paths contribute zero changed pixels with the shipped switches. The old photograph
+fixture's “ALL drawn” measured only sheet/deposits/crests; `complete.png` also included stern
+roll and every other enabled family. Neither label proves visible advected broad-sheet history.
 
 Birth opacity and width now use a continuous drive factor: onset × speed / (speed + configured `SpeedRefMax`). The existing reference speed is the half-response knee once onset is complete, rather than an early saturation ceiling. Hull size/mass grading remains. Crest extent uses birth strength and age spread; existing lifetime/fade still removes history. Speed is relative to the sampled current. Wind drift remains **0.30**, and turning never rotates historical deposits.
 
