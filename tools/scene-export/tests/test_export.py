@@ -7,12 +7,15 @@ coverage and row order, the region table coming from the RegionDef, the LF-sha25
 the cell-box fallback — plus the determinism claim the PR makes.
 """
 
+import contextlib
 import datetime
 import copy
+import io
 import json
 import math
 import os
 import re
+import shutil
 import tempfile
 import types
 import subprocess
@@ -2773,3 +2776,146 @@ class ShallowProvenanceTests(unittest.TestCase):
                     handle.write(package.dumps(doc))
                 self.assertIsNone(hh_scene_export._shallow_history_differs(
                     [("Region.scene.json", package.dumps(doc))], out), f"state={state}")
+
+
+class ManifestCarryForwardTests(unittest.TestCase):
+    """A ``--region`` run writes the ONE manifest, so it must keep every region it did not export.
+
+    Logged 09-19: ``--region NineMileCreek`` wrote a MANIFEST.json holding NineMileCreek alone and
+    St Peters' entry was gone. The expectations here come from the COMMITTED packages and from
+    trees the tests build themselves, never from the carry code: every assertion is about which
+    bytes are on disk after a run.
+    """
+
+    COMMITTED = os.path.join(TOOL, "packages")
+
+    def _bank(self, out):
+        """Copy the committed packages and MANIFEST into a scratch output dir."""
+        for filename in os.listdir(self.COMMITTED):
+            if filename == "MANIFEST.json" or filename.endswith(".scene.json"):
+                shutil.copyfile(os.path.join(self.COMMITTED, filename),
+                                os.path.join(out, filename))
+
+    @staticmethod
+    def _main(*argv):
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+            code = hh_scene_export.main(list(argv))
+        return code, stdout.getvalue(), stderr.getvalue()
+
+    @staticmethod
+    def _text(path):
+        with open(path, "r", encoding="utf-8") as handle:   # universal newlines, as --check reads
+            return handle.read()
+
+    @staticmethod
+    def _snapshot(out):
+        snapshot = {}
+        for filename in sorted(os.listdir(out)):
+            with open(os.path.join(out, filename), "rb") as handle:
+                snapshot[filename] = handle.read()
+        return snapshot
+
+    @staticmethod
+    def _entry_block(manifest_text, region_id):
+        """The raw rendered text of one MANIFEST entry, so "identical" means byte for byte."""
+        found = re.findall(r'\{[^{}]*"region": "' + re.escape(region_id) + r'"[^{}]*\}',
+                           manifest_text)
+        return found[0] if len(found) == 1 else found
+
+    def test_a_region_subset_export_keeps_the_other_entry_byte_for_byte(self):
+        """The 09-19 case exactly: export Nine Mile Creek alone, and St Peters is still there."""
+        with tempfile.TemporaryDirectory() as out:
+            self._bank(out)
+            committed = self._text(os.path.join(out, "MANIFEST.json"))
+            code, _, err = self._main("--region", "NineMileCreek", "--out", out)
+            written = self._text(os.path.join(out, "MANIFEST.json"))
+        self.assertEqual(code, 0, err)
+        self.assertEqual(
+            [p["region"] for p in json.loads(written)["packages"]],
+            [p["region"] for p in json.loads(committed)["packages"]],
+            "a --region run dropped a region from MANIFEST.json")
+        st_peters = self._entry_block(committed, "region.st_peters")
+        self.assertIsInstance(st_peters, str, "the committed MANIFEST has no single St Peters entry")
+        self.assertEqual(self._entry_block(written, "region.st_peters"), st_peters,
+                         "St Peters' entry was not carried across byte for byte")
+
+    def test_a_tampered_other_package_refuses_and_writes_nothing(self):
+        """The carried entry vouches for bytes on disk; when they are not those bytes, refuse."""
+        with tempfile.TemporaryDirectory() as out:
+            self._bank(out)
+            with open(os.path.join(out, "StPeters.scene.json"), "a", encoding="utf-8",
+                      newline="\n") as handle:
+                handle.write(" ")
+            before = self._snapshot(out)
+            code, _, err = self._main("--region", "NineMileCreek", "--out", out)
+            after = self._snapshot(out)
+        self.assertEqual(code, 2, "a subset run carried a sha256 its package no longer has")
+        self.assertEqual(after, before, "a refused run wrote to the output dir")
+        self.assertIn("StPeters", err)
+        self.assertIn("run all regions", err.lower())
+
+    def test_a_missing_other_entry_refuses_and_writes_nothing(self):
+        """No committed entry to carry is the same refusal: exit 2, nothing written, named."""
+        with tempfile.TemporaryDirectory() as out:
+            self._bank(out)
+            manifest_path = os.path.join(out, "MANIFEST.json")
+            manifest = json.loads(self._text(manifest_path))
+            manifest["packages"] = [p for p in manifest["packages"]
+                                    if p["region"] != "region.st_peters"]
+            with open(manifest_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(package.dumps(manifest))
+            before = self._snapshot(out)
+            code, _, err = self._main("--region", "NineMileCreek", "--out", out)
+            after = self._snapshot(out)
+        self.assertEqual(code, 2, "a subset run wrote a MANIFEST with a region missing")
+        self.assertEqual(after, before, "a refused run wrote to the output dir")
+        self.assertIn("StPeters", err)
+        self.assertIn("run all regions", err.lower())
+
+    def test_a_subset_check_on_a_clean_tree_passes(self):
+        """A tree this commit just wrote is clean by construction, whatever this checkout's LFS
+        state — so the subset --check has no excuse to fail on it."""
+        with tempfile.TemporaryDirectory() as out:
+            self.assertEqual(self._main("--out", out)[0], 0)
+            code, _, err = self._main("--check", "--region", "StPeters", "--out", out)
+        self.assertEqual(code, 0, f"--check --region StPeters failed on a clean tree:\n{err}")
+
+    def test_a_subset_check_never_calls_an_untouched_region_stale(self):
+        """Nine Mile Creek is made stale (its bytes and its MANIFEST sha agree, but they are not
+        what this commit produces). The full --check must see it; a --region StPeters check must
+        not, because it was not asked about Nine Mile Creek."""
+        with tempfile.TemporaryDirectory() as out:
+            self.assertEqual(self._main("--out", out)[0], 0)
+            nmc = os.path.join(out, "NineMileCreek.scene.json")
+            with open(nmc, "a", encoding="utf-8", newline="\n") as handle:
+                handle.write(" ")
+            manifest_path = os.path.join(out, "MANIFEST.json")
+            manifest = json.loads(self._text(manifest_path))
+            for entry in manifest["packages"]:
+                if entry["file"] == "NineMileCreek.scene.json":
+                    entry["sha256"] = sha256_lf(nmc)
+            with open(manifest_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(package.dumps(manifest))
+            full_code, _, _ = self._main("--check", "--out", out)
+            code, _, err = self._main("--check", "--region", "StPeters", "--out", out)
+        self.assertEqual(full_code, 1, "the fixture did not make Nine Mile Creek stale")
+        self.assertEqual(code, 0, f"--check --region StPeters failed:\n{err}")
+        self.assertNotIn("NineMileCreek", err)
+
+    def test_a_full_run_writes_the_committed_manifest_and_never_reads_the_old_one(self):
+        """No --region: byte-identical to before. Seeded with an unreadable MANIFEST and a
+        tampered package, because a full run regenerates everything and must not consult either.
+        Compared with the committed MANIFEST, which the pre-change code produced (the CI
+        `--check` gate holds that), so it needs the seabed LFS bytes like that gate does."""
+        with tempfile.TemporaryDirectory() as out:
+            self._bank(out)
+            with open(os.path.join(out, "MANIFEST.json"), "w", encoding="utf-8") as handle:
+                handle.write("not json")
+            with open(os.path.join(out, "StPeters.scene.json"), "a", encoding="utf-8") as handle:
+                handle.write(" ")
+            code, _, err = self._main("--out", out)
+            written = self._text(os.path.join(out, "MANIFEST.json"))
+        self.assertEqual(code, 0, err)
+        self.assertEqual(written, self._text(os.path.join(self.COMMITTED, "MANIFEST.json")),
+                         "a full run's MANIFEST.json is not the committed one")

@@ -64,7 +64,9 @@ def main(argv=None):
     parser.add_argument("--out", default="tools/scene-export/packages",
                         help="output directory, relative to the repo root")
     parser.add_argument("--region", action="append", default=None,
-                        help="export only this region (repeatable)")
+                        help="export only this region (repeatable); every other region's "
+                             "MANIFEST entry is carried forward from the committed one once its "
+                             "sha256 matches its package on disk, or the run refuses")
     parser.add_argument("--allow-downgrade", action="store_true",
                         help="permit overwriting a package that was generated WITH height-map "
                              "bytes from a checkout that has none. Refused by default: the "
@@ -81,6 +83,26 @@ def main(argv=None):
 
     manifest = {"schema": package.SCHEMA, "packages": []}
     written, refusals, carried_forward = [], [], []
+
+    # A region-subset run still writes the ONE manifest, so every region it did not export is
+    # carried across from the committed one — or the run refuses. Writing only the named regions
+    # silently dropped the others from MANIFEST.json (09-19: `--region NineMileCreek` lost
+    # St Peters).
+    if wanted:
+        carried_entries, manifest_refusals = _carry_forward_manifest_entries(repo, out_dir, wanted)
+        if manifest_refusals:
+            # The same all-or-nothing rule as the height refusals below, checked before any
+            # export runs: a MANIFEST that drops a region, or vouches for bytes that are not on
+            # disk, is the third state again.
+            for region_name, refusal in manifest_refusals:
+                print(f"REFUSED: MANIFEST.json — {region_name}: {refusal}", file=sys.stderr)
+            names = ", ".join(name for name, _ in manifest_refusals)
+            print(f"refused to carry {names} forward into MANIFEST.json; nothing was written. "
+                  f"Run all regions (no --region) to regenerate every package and the manifest "
+                  f"together.", file=sys.stderr)
+            return 2
+        manifest["packages"].extend(carried_entries)
+
     for region_name, scene_rel, height_name in REGIONS:
         if wanted and region_name not in wanted:
             continue
@@ -157,6 +179,56 @@ def main(argv=None):
             return 1
         print(f"up to date ({len(written)} files)")
     return 0
+
+
+def _carry_forward_manifest_entries(repo, out_dir, wanted):
+    """The committed MANIFEST entries for every region a ``--region`` run did not export.
+
+    Returns ``(entries, refusals)``. Each entry is the committed one as parsed, so re-rendering
+    the manifest reproduces it byte for byte. An entry is carried only when its ``sha256`` still
+    matches its package file on disk, read with universal newlines — the rule ``--check`` uses —
+    because a manifest vouching for bytes that are not there is worse than no manifest. Anything
+    else is a ``(region_name, reason)`` refusal, and the caller writes nothing.
+    """
+    skipped = [name for name, _scene, _height in REGIONS if name not in wanted]
+    if not skipped:
+        return [], []
+    manifest_path = os.path.join(out_dir, "MANIFEST.json")
+    try:
+        with open(manifest_path, "r", encoding="utf-8") as fh:
+            committed = json.load(fh)
+        by_region = {p.get("region"): p for p in committed.get("packages") or []}
+    except (ValueError, OSError, AttributeError) as exc:
+        reason = f"there is no readable committed MANIFEST.json to carry it from ({exc})"
+        return [], [(name, reason) for name in skipped]
+
+    entries, refusals = [], []
+    for region_name in skipped:
+        region = repo.region_def(region_name)
+        entry = by_region.get(region.get("id"))
+        filename = f"{region.get('sceneName')}.scene.json"
+        if entry is None:
+            refusals.append((region_name, f"the committed MANIFEST.json has no entry for "
+                                          f"{region.get('id')!r}"))
+            continue
+        if entry.get("file") != filename:
+            refusals.append((region_name, f"its committed entry names {entry.get('file')!r}, "
+                                          f"not {filename!r}"))
+            continue
+        target = os.path.join(out_dir, filename)
+        try:
+            with open(target, "r", encoding="utf-8") as fh:
+                on_disk = hashlib.sha256(fh.read().encode("utf-8")).hexdigest()
+        except OSError:
+            refusals.append((region_name, f"{filename} is not on disk"))
+            continue
+        if on_disk != entry.get("sha256"):
+            refusals.append((region_name, f"{filename} on disk ({on_disk[:12]}…) does not match "
+                                          f"its committed MANIFEST sha256 "
+                                          f"({str(entry.get('sha256'))[:12]}…)"))
+            continue
+        entries.append(entry)
+    return entries, refusals
 
 
 def _carry_forward_height(target, doc):

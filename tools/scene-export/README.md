@@ -67,7 +67,7 @@ hhexport/scene.py           hierarchy, world transforms, the scene's own orderin
 hhexport/package.py         the hiddenharbours.scene/1 emitter
 hhexport/provenance.py      what vintage of the world a package is a picture of
 packages/                   the committed output (regenerate with the command above)
-tests/                      142 tests: parser, rig pinning, the contract compared block-for-block
+tests/                      148 tests: parser, rig pinning, the contract compared block-for-block
                             against docs/tools/reference/sample-scene.json, the rasterised
                             layers, the tide applied from the package alone, portability,
                             determinism

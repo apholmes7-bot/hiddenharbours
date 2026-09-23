@@ -188,6 +188,16 @@ judged it no richer, and emptied the coast.)
 Refusal is all-or-nothing. A `MANIFEST.json` naming sha256s of packages we declined to write
 would be a third state, worse than either honest one.
 
+**A `--region` run keeps every region in `MANIFEST.json`.** It exports only the regions it
+names, but there is one manifest, so each region it did not export is copied across from the
+committed `MANIFEST.json` byte for byte — after its `sha256` is checked against the package file
+on disk, read with universal newlines (the rule `--check` uses). A missing manifest, a missing
+entry or package, or a sha256 that no longer matches is refused the same all-or-nothing way:
+exit 2, nothing written, and the region named with "run all regions". `--check --region`
+compares the named packages and that merged manifest, so it never calls an untouched region
+STALE. (Before this, `--region NineMileCreek` wrote a manifest holding NineMileCreek alone and
+St Peters' entry was dropped — ledger, 09-19.)
+
 ⚠ **The third row had no test, and its absence cost three.** Two rows of that table were pinned;
 *"anything | can read the bytes | recomputed normally"* was not. The three carry-forward tests
 each banked a committed package and asked `_carry_forward_height` to carry it, without ever
