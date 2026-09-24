@@ -50,7 +50,18 @@ namespace HiddenHarbours.Tests.PlayMode
         private sealed class TestClock : IGameClock
         {
             public double LiveOrigin;
-            public double TotalSeconds => Time.timeAsDouble - LiveOrigin;
+            /// <summary>The first sea time this clock handed out INSIDE a physics step — what a hull's first
+            /// FixedUpdate actually read. NaN until then. RunArm reports it; nothing asserts on it.</summary>
+            public double FirstStepRead = double.NaN;
+            public double TotalSeconds
+            {
+                get
+                {
+                    double t = Time.timeAsDouble - LiveOrigin;
+                    if (double.IsNaN(FirstStepRead) && Time.inFixedTimeStep) FirstStepRead = t;
+                    return t;
+                }
+            }
             public GameTime Now => new GameTime(TotalSeconds);
             public Season Season => Season.EarlySpring;
             public int Year => 1;
@@ -247,21 +258,28 @@ namespace HiddenHarbours.Tests.PlayMode
             //
             // So the arms are now SEQUENTIAL over the same game time: the clock's origin is reset between
             // them (see RunArm), which is a stricter test than the old one — same place, same instant of
-            // the same sea, same seed — rather than a weaker one.
+            // the same sea, same seed — rather than a weaker one. ⚠️ "The same instant" holds only if the
+            // reset lands ON THE PHYSICS GRID. Reset to the frame's own time, the first arm could start up to
+            // one step off the second, and that — not hidden state — is what reddened this test on main and
+            // on PRs from 09-06 on. RunArm locks it; the measurements are in its comment.
             float period = BorePeriodSeconds();
             var first = new List<float>();
             var second = new List<float>();
             float firstDrift = 0f, secondDrift = 0f;
+            double firstRead = double.NaN, secondRead = double.NaN;
 
-            yield return RunArm(1f, period, 2, 4, first, d => firstDrift = d);
-            yield return RunArm(1f, period, 2, 4, second, d => secondDrift = d);
+            yield return RunArm(1f, period, 2, 4, first, d => firstDrift = d, s => firstRead = s);
+            yield return RunArm(1f, period, 2, 4, second, d => secondDrift = d, s => secondRead = s);
 
-            Debug.Log($"[surf-drift] the same water twice: {firstDrift:F4} m and {secondDrift:F4} m.");
+            Debug.Log($"[surf-drift] the same water twice: {firstDrift:F6} m and {secondDrift:F6} m " +
+                      $"({Mathf.Abs(firstDrift - secondDrift):F6} m apart; first steps read {firstRead:F6} s " +
+                      $"and {secondRead:F6} s of sea time).");
 
             Assert.Greater(firstDrift, 0.05f, "she must actually have been carried for this to mean anything");
             Assert.AreEqual(firstDrift, secondDrift, 0.02f,
-                $"the same sea at the same moment must carry the same hull identically ({firstDrift:F4} vs " +
-                $"{secondDrift:F4}) — a difference here is hidden state, not physics");
+                $"the same sea at the same moment must carry the same hull identically ({firstDrift:F6} vs " +
+                $"{secondDrift:F6}, first steps at {firstRead:F6} s and {secondRead:F6} s of sea time) — with " +
+                $"both starts on the same instant, a difference here is hidden state, not physics");
         }
 
         [UnityTest]
@@ -423,16 +441,34 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>One arm of the A/B: the SAME sea, the same shoal, the same hull, at the same GAME
-        /// TIME (the clock origin is reset, so arm B sails the water arm A sailed — the sea genuinely is
-        /// different a minute later, and comparing across that would be measuring the wrong thing), with
-        /// one dial moved.</summary>
+        /// TIME (the clock origin is reset on the physics grid — see the lock below — so arm B sails the
+        /// water arm A sailed; the sea genuinely is different a minute later, and comparing across that
+        /// would be measuring the wrong thing), with one dial moved.</summary>
         private IEnumerator RunArm(float borePulse01, float period, int periods, int bins,
-                                   List<float> increments, System.Action<float> totalDrift)
+                                   List<float> increments, System.Action<float> totalDrift,
+                                   System.Action<double> firstStepRead = null)
         {
             var tuned = SeakeepingSettings.Default;
             tuned.SurfBorePulse01 = borePulse01;
             _config.Seakeeping = tuned;                       // read at the boat's Awake, below
-            GameServices.Clock = new TestClock { LiveOrigin = Time.timeAsDouble };
+
+            // ⭐ THE LOCK: the origin is the last PHYSICS STEP, never this frame. The hull reads the sea only
+            // inside FixedUpdate, where Time.timeAsDouble IS the fixed time, so with the origin on the fixed
+            // grid her first step reads exactly one fixedDeltaTime of sea time, and every step after it a
+            // whole number of them — in every arm, on any machine, however the frames fell.
+            //
+            // The origin used to be Time.timeAsDouble read HERE: the frame's own time, which sits anywhere
+            // from 0 to one step past the last physics step, so her first step read anywhere in (0, Δ].
+            // The second arm of a test always arrives one sub-millisecond headless frame after a physics
+            // step (Δ − ε, steady). The first arrives after a test boundary, where clamped hitch frames
+            // (maximumDeltaTime 1/3 s = 16⅔ steps) move the frame in thirds of a step: three instants of the
+            // bore, three drifts. 27 CI runs (09-19 → 09-24 UTC) logged TheSameSea's first arm at
+            // 0.8960–0.8964 ×7, 0.8812–0.8835 ×18 and 0.8685–0.8686 ×2 (both of those red at ±0.02), against
+            // a second arm of 0.8961–0.8962 in all 27. BEATS's pulsed arm, first in its test too, wandered
+            // 3.069–3.094 m over the same runs while its steady arm read 10.106 m every time.
+            double frameAheadOfGrid = Time.timeAsDouble - Time.fixedTimeAsDouble;   // what the old origin added
+            var clock = new TestClock { LiveOrigin = Time.fixedTimeAsDouble };
+            GameServices.Clock = clock;
 
             float x = StrongestSurfX();
             BoatController boat = NewBoat(Hull(400f, $"boat.beat_{borePulse01:F0}"),
@@ -443,7 +479,14 @@ namespace HiddenHarbours.Tests.PlayMode
 
             float start = rb.position.x;
             yield return SampleVelocities(rb, period, periods, bins, increments);
-            totalDrift(rb.position.x - start);
+            float drift = rb.position.x - start;
+            long steps = (long)System.Math.Round((Time.fixedTimeAsDouble - clock.LiveOrigin) / Time.fixedDeltaTime);
+            Debug.Log($"[surf-arm] pulse {borePulse01:F0}: drift {drift:F6} m over {steps} physics steps; her " +
+                      $"first step read {clock.FirstStepRead:F6} s of sea time (one step is " +
+                      $"{Time.fixedDeltaTime:F6} s; the old per-frame origin would have read " +
+                      $"{Time.fixedDeltaTime - frameAheadOfGrid:F6} s).");
+            totalDrift(drift);
+            firstStepRead?.Invoke(clock.FirstStepRead);
 
             Object.Destroy(boat.gameObject);
             yield return null;
