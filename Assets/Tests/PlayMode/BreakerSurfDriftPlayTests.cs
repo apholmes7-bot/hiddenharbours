@@ -278,16 +278,17 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.Greater(firstDrift, 0.05f, "she must actually have been carried for this to mean anything");
 
             // ⭐ THE BAR is 0.002 m, a tenth of the old ±0.02, set from what CI measured:
-            //  - on the grid the arms read 0.895882 and 0.895882 m, 0.000000 apart (PR #879, run
-            //    35939850149): the same water, step for step;
+            //  - on the grid the arms read 0.895882 and 0.895882 m (PR #879, run 35939850149), then 0.895878
+            //    and 0.895889 m (run 35950774885): the same water, to 0.000011 m;
             //  - off it, 27 mined runs (09-19 → 09-24 UTC) put them at most 0.0002 m apart when they happened
             //    to start within a millisecond of each other (7 runs), 0.0126–0.0150 m apart (18 runs, every
             //    one PASSING the old bar) and 0.0275–0.0277 m apart (the 2 reds).
-            // 0.002 m sits ten times above that near-miss jitter and six times below the smallest slip, so it
-            // passes the same water and reds every slip the old origin made. The teeth (PR #879 push 2, run
-            // 35945095475, since reverted): the second arm started one whole step LATER stood 0.012932 m off
-            // and turned this red (the old bar would have passed it); one step EARLIER stood only 0.000458 m
-            // off, inside this bar too, and that is the guard's resolution on its blind side.
+            // 0.002 m sits two orders of magnitude above the grid's residual, ten times above that near-miss
+            // jitter and six times below the smallest slip, so it passes the same water and reds every slip
+            // the old origin made. The teeth (PR #879 push 2, run 35945095475, since reverted): the second
+            // arm started one whole step LATER stood 0.012932 m off and turned this red (the old bar would
+            // have passed it); one step EARLIER stood only 0.000458 m off, inside this bar too, and that is
+            // the guard's resolution on its blind side.
             const float sameWaterBar = 0.002f;
             Assert.AreEqual(firstDrift, secondDrift, sameWaterBar,
                 $"the same sea at the same moment must carry the same hull identically ({firstDrift:F6} vs " +
@@ -472,9 +473,9 @@ namespace HiddenHarbours.Tests.PlayMode
             //
             // The origin used to be Time.timeAsDouble read HERE: the frame's own time, which sits anywhere
             // from 0 to one step past the last physics step, so her first step read anywhere in (0, Δ]. A
-            // test's later arms arrived 1–2 ms after a physics step (on PR #879's runs their first steps
-            // would have read 0.0183–0.0190 s); the first arm arrives after a test boundary, anywhere inside
-            // the step (0.0010 s and 0.0035 s on those runs). And the push she feels STEPS at every bore
+            // test's later arms arrived about a millisecond after a physics step (their first steps would
+            // have read 0.0183–0.0191 s on PR #879's first three runs); its first arm arrives after a test
+            // boundary, anywhere inside the step (0.0010–0.0196 s). And the push she feels STEPS at every bore
             // front: the shove's beat is SurfState.Bore01, the pulse × the birth energy of the crest that
             // owns the bore, and at the front (the pulse's peak) ownership passes to the next crest; the
             // default sea is a spectrum of trains, so the next crest's energy differs. Where inside a step
