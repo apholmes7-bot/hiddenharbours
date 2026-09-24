@@ -520,8 +520,8 @@ first compiler this has met. Treat a red CI as mine, not as the environment's.
 
 ### 8.3 What the owner clicks
 
-`RegionBuildGuard` blocks headless scene rebuilds (batchmode auto-cancels the wipe dialog, exit 0,
-silently), so the recreated region's **first build must run in the owner's editor**. When Phase A-2
+`RegionBuildGuard` blocks headless scene rebuilds (in batchmode it refuses, logs an error and exits
+non-zero), so the recreated region's **first build must run in the owner's editor**. When Phase A-2
 lands:
 
 1. **Delete the scene file only**, keeping the `.meta`:
