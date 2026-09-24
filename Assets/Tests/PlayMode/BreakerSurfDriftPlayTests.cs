@@ -268,18 +268,8 @@ namespace HiddenHarbours.Tests.PlayMode
             float firstDrift = 0f, secondDrift = 0f;
             double firstRead = double.NaN, secondRead = double.NaN;
 
-            // ⚠️ SABOTAGE — PR #879 push 2 ONLY, reverted by the next push (the charter's teeth): the second
-            // arm sails ONE FIXED STEP LATER on the bore, and a third, logged arm one step EARLIER. Either
-            // standing off the first by more than the bar must turn this test red.
             yield return RunArm(1f, period, 2, 4, first, d => firstDrift = d, s => firstRead = s);
-            yield return RunArm(1f, period, 2, 4, second, d => secondDrift = d, s => secondRead = s, 1);
-            float earlyDrift = 0f;
-            double earlyRead = double.NaN;
-            yield return RunArm(1f, period, 2, 4, new List<float>(), d => earlyDrift = d, s => earlyRead = s, -1);
-            Debug.Log($"[surf-teeth] on the grid {firstDrift:F6} m; one step later {secondDrift:F6} m " +
-                      $"({Mathf.Abs(firstDrift - secondDrift):F6} m off, first step {secondRead:F6} s); one step " +
-                      $"earlier {earlyDrift:F6} m ({Mathf.Abs(firstDrift - earlyDrift):F6} m off, first step " +
-                      $"{earlyRead:F6} s).");
+            yield return RunArm(1f, period, 2, 4, second, d => secondDrift = d, s => secondRead = s);
 
             Debug.Log($"[surf-drift] the same water twice: {firstDrift:F6} m and {secondDrift:F6} m " +
                       $"({Mathf.Abs(firstDrift - secondDrift):F6} m apart; first steps read {firstRead:F6} s " +
@@ -287,22 +277,22 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.Greater(firstDrift, 0.05f, "she must actually have been carried for this to mean anything");
 
-            // ⭐ THE BAR is 0.002 m, a tenth of the old ±0.02, and it comes from what CI measured:
-            //  - on the grid, the arms read 0.895882 and 0.895882 m — 0.000000 apart (PR #879, run
+            // ⭐ THE BAR is 0.002 m, a tenth of the old ±0.02, set from what CI measured:
+            //  - on the grid the arms read 0.895882 and 0.895882 m, 0.000000 apart (PR #879, run
             //    35939850149): the same water, step for step;
-            //  - off it, 27 mined runs (09-19 → 09-24 UTC) put the arms at most 0.0002 m apart when they
-            //    happened to start within a millisecond of each other (7 runs), 0.0126–0.0150 m apart when
-            //    the first started a fraction of a step off (18 runs, every one PASSING the old bar) and
-            //    0.0275–0.0277 m apart in the 2 reds.
-            // 0.002 m sits ten times above the jitter of a near-miss start and six times below the smallest
-            // slip the old bar let through, so it passes the same water and reds every slip it has seen.
+            //  - off it, 27 mined runs (09-19 → 09-24 UTC) put them at most 0.0002 m apart when they happened
+            //    to start within a millisecond of each other (7 runs), 0.0126–0.0150 m apart (18 runs, every
+            //    one PASSING the old bar) and 0.0275–0.0277 m apart (the 2 reds).
+            // 0.002 m sits ten times above that near-miss jitter and six times below the smallest slip, so it
+            // passes the same water and reds every slip the old origin made. The teeth (PR #879 push 2, run
+            // 35945095475, since reverted): the second arm started one whole step LATER stood 0.012932 m off
+            // and turned this red (the old bar would have passed it); one step EARLIER stood only 0.000458 m
+            // off, inside this bar too, and that is the guard's resolution on its blind side.
             const float sameWaterBar = 0.002f;
             Assert.AreEqual(firstDrift, secondDrift, sameWaterBar,
                 $"the same sea at the same moment must carry the same hull identically ({firstDrift:F6} vs " +
                 $"{secondDrift:F6}, first steps at {firstRead:F6} s and {secondRead:F6} s of sea time) — with " +
                 $"both starts on the same instant, a difference here is hidden state, not physics");
-            Assert.AreEqual(firstDrift, earlyDrift, sameWaterBar,              // ⚠️ SABOTAGE, push 2 only
-                $"SABOTAGE: one step earlier on the bore ({firstDrift:F6} vs {earlyDrift:F6})");
         }
 
         [UnityTest]
@@ -469,8 +459,7 @@ namespace HiddenHarbours.Tests.PlayMode
         /// would be measuring the wrong thing), with one dial moved.</summary>
         private IEnumerator RunArm(float borePulse01, float period, int periods, int bins,
                                    List<float> increments, System.Action<float> totalDrift,
-                                   System.Action<double> firstStepRead = null,
-                                   int sabotageStepsLater = 0)                  // ⚠️ SABOTAGE, push 2 only
+                                   System.Action<double> firstStepRead = null)
         {
             var tuned = SeakeepingSettings.Default;
             tuned.SurfBorePulse01 = borePulse01;
@@ -482,17 +471,21 @@ namespace HiddenHarbours.Tests.PlayMode
             // whole number of them — in every arm, on any machine, however the frames fell.
             //
             // The origin used to be Time.timeAsDouble read HERE: the frame's own time, which sits anywhere
-            // from 0 to one step past the last physics step, so her first step read anywhere in (0, Δ].
-            // The second arm of a test always arrives one sub-millisecond headless frame after a physics
-            // step (Δ − ε, steady). The first arrives after a test boundary, where clamped hitch frames
-            // (maximumDeltaTime 1/3 s = 16⅔ steps) move the frame in thirds of a step: three instants of the
-            // bore, three drifts. 27 CI runs (09-19 → 09-24 UTC) logged TheSameSea's first arm at
+            // from 0 to one step past the last physics step, so her first step read anywhere in (0, Δ]. A
+            // test's later arms arrived 1–2 ms after a physics step (on PR #879's runs their first steps
+            // would have read 0.0183–0.0190 s); the first arm arrives after a test boundary, anywhere inside
+            // the step (0.0010 s and 0.0035 s on those runs). And the push she feels STEPS at every bore
+            // front: the shove's beat is SurfState.Bore01, the pulse × the birth energy of the crest that
+            // owns the bore, and at the front (the pulse's peak) ownership passes to the next crest; the
+            // default sea is a spectrum of trains, so the next crest's energy differs. Where inside a step
+            // her clock falls decides which physics step catches each jump, so the drift fell in clusters
+            // 0.013–0.015 m apart: 27 CI runs (09-19 → 09-24 UTC) logged TheSameSea's first arm at
             // 0.8960–0.8964 ×7, 0.8812–0.8835 ×18 and 0.8685–0.8686 ×2 (both of those red at ±0.02), against
             // a second arm of 0.8961–0.8962 in all 27. BEATS's pulsed arm, first in its test too, wandered
-            // 3.069–3.094 m over the same runs while its steady arm read 10.106 m every time.
+            // 3.069–3.094 m over the same runs while its steady arm, whose beat is a constant 1, read
+            // 10.106 m every time.
             double frameAheadOfGrid = Time.timeAsDouble - Time.fixedTimeAsDouble;   // what the old origin added
-            double grid = Time.fixedTimeAsDouble;                               // ⚠️ SABOTAGE, push 2 only
-            var clock = new TestClock { LiveOrigin = grid - sabotageStepsLater * (double)Time.fixedDeltaTime };
+            var clock = new TestClock { LiveOrigin = Time.fixedTimeAsDouble };
             GameServices.Clock = clock;
 
             float x = StrongestSurfX();
@@ -505,8 +498,7 @@ namespace HiddenHarbours.Tests.PlayMode
             float start = rb.position.x;
             yield return SampleVelocities(rb, period, periods, bins, increments);
             float drift = rb.position.x - start;
-            // ⚠️ SABOTAGE, push 2 only: count from the grid, not from the moved origin.
-            long steps = (long)System.Math.Round((Time.fixedTimeAsDouble - grid) / Time.fixedDeltaTime);
+            long steps = (long)System.Math.Round((Time.fixedTimeAsDouble - clock.LiveOrigin) / Time.fixedDeltaTime);
             Debug.Log($"[surf-arm] pulse {borePulse01:F0}: drift {drift:F6} m over {steps} physics steps; her " +
                       $"first step read {clock.FirstStepRead:F6} s of sea time (one step is " +
                       $"{Time.fixedDeltaTime:F6} s; the old per-frame origin would have read " +
