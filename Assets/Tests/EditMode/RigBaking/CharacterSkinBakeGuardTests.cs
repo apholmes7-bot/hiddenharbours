@@ -40,7 +40,7 @@ namespace HiddenHarbours.Tests.RigBaking
     /// face chain no hash covers — because a composed def is current by construction, and the def
     /// the game LOADS is the one that can go stale.</para>
     /// </summary>
-    public class CharacterSkinBakeGuardTests
+    public partial class CharacterSkinBakeGuardTests
     {
         const string Player = CharacterRigBakeMenu.PlayerPreset;
 

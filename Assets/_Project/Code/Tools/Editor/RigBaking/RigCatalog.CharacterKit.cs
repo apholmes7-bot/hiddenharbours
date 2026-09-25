@@ -170,6 +170,19 @@ namespace HiddenHarbours.Tools.RigBaking
                     AzimuthConvention.Clockwise,
                     prerequisites: new[] { "characterSkin", "characterFaceStudy",
                                            "characterFinish", "characterArtStudy" }),
+
+                // Added by the character rig intake, PR 1 (2026-09-25): Claude Design's character-rig
+                // kit v9.2, landed as delivered under character/rig9/ (rig 7's folder is untouched).
+                // The body IS the skinned export (skeleton, bind mesh, clips and its own shading
+                // contract), so it names no prerequisite. Its poses (characterIsoRig9.poses.js) and
+                // checks (characterIsoRig9.checks.js) patch THIS global and define none of their own,
+                // so they cannot be entries: InstallModule asserts the global an entry names.
+                // CharacterSkinExtractor.Load9 runs them. Nothing bakes from it until
+                // CharacterSkinAssetBaker.LiveRig names it.
+                ["characterRig9"] = new RigEntry(
+                    $"{RigFolder}/character/rig9/Art/characterIsoRig9.js",
+                    "CharacterIso9",
+                    AzimuthConvention.Clockwise),
             };
     }
 }

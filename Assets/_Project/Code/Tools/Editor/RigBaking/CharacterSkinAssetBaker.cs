@@ -39,7 +39,7 @@ namespace HiddenHarbours.Tools.RigBaking
     /// anyone looks at. Every clip carries its per-frame <c>face</c> track for exactly this, but
     /// consuming it is the presenter's PR.</para>
     /// </summary>
-    public static class CharacterSkinAssetBaker
+    public static partial class CharacterSkinAssetBaker
     {
         /// <summary>
         /// <c>Assets/_Project/Data/Characters/Skin</c> — deliberately NOT the flipbook's folder.
@@ -263,7 +263,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     string link = LinkSkin(stem, preset);
                     string[] states = def.MeshStates ?? Array.Empty<string>();
                     Debug.Log(
-                        $"[char-skin] {preset} OK — {def.Id}, {def.Materials.Length}/{CharacterSkinDef.RampSlots} " +
+                        $"[char-skin] {preset} OK — {def.Id}, {def.Materials.Length}/{CharacterSkinDef.MaxMaterials(def.ToneRule)} " +
                         $"ramps, {def.Clips.Length} clips, MeshStates [{string.Join(", ", states)}]" +
                         (states.Length == 0 ? " EMPTY on the committed asset, draws nothing, left as found" : "") +
                         $", {link}");
@@ -530,6 +530,12 @@ namespace HiddenHarbours.Tools.RigBaking
             def.Gain = (float)bind.Gain;
             def.Bias = (float)bind.Bias;
             def.Keyline = bind.Keyline;
+            // A def refreshed in place may hold a rig 9 bake's tone rule and shading. Rig 7 draws by
+            // its own rule, so a re-bake from rig 7 must put all four back rather than inherit them.
+            def.ToneRule = ToneRule.Rig7;
+            def.Form = 0f;
+            def.FormMid = 0f;
+            def.KeyScreen = default;
             def.AzimuthCounterClockwise = azimuthCcw;
 
             bool anyDither = false;
@@ -628,7 +634,8 @@ namespace HiddenHarbours.Tools.RigBaking
 
             SkinBake bake;
             using (IRigScriptHost host = RigScriptHostFactory.Create())
-                bake = Compose(host, preset, existing, progress);
+                bake = LiveRigIsV9 ? ComposeV9(host, preset, existing, progress)
+                                   : Compose(host, preset, existing, progress);
 
             CharacterSkinDef def = bake.Def;
             Debug.Log($"[char-skin] {preset} turntable sign:\n{bake.SignReport}");
@@ -671,7 +678,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 $"  TOTAL {bake.TotalBytes / 1024.0:N1} KB ({bake.TotalBytes / 1048576.0:F2} MB) against " +
                 $"the flipbook's {FlipbookKilobytes / 1024.0:F1} MB — " +
                 $"{FlipbookKilobytes * 1024.0 / Math.Max(1, bake.TotalBytes):F1}× smaller\n" +
-                $"  {def.Materials.Length} materials of {CharacterSkinDef.RampSlots} ramp slots: " +
+                $"  {def.Materials.Length} materials of {CharacterSkinDef.MaxMaterials(def.ToneRule)} ramp slots: " +
                 string.Join(", ", NamesOfDef(def.Materials)) + "\n" +
                 $"  rig {def.SourceRigPath} rev {def.SourceRigRevision} sha {def.SourceRigSha256[..12]}…, " +
                 $"base {def.BaseRigPath} rev {def.BaseRigRevision} sha {def.BaseRigSha256[..12]}…\n" +

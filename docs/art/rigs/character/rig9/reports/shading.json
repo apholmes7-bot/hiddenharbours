@@ -1,0 +1,190 @@
+{
+  "tool": "check-shading",
+  "rig": "02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144",
+  "poses": "42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07",
+  "ok": true,
+  "problems": [],
+  "identity": {
+    "renders": 800,
+    "differ": 0,
+    "px": 0
+  },
+  "mirrorPx": 0,
+  "ablations": {
+    "form": {
+      "what": "no form term (s = n.key)",
+      "renders": 240,
+      "changed": 240,
+      "px": 23442,
+      "silhouette": 0,
+      "worstPct": 41.43,
+      "worstAt": "hand dig f3 N",
+      "mirrorPx": 0,
+      "pct": 18.94,
+      "optional": false
+    },
+    "loHi": {
+      "what": "no lo..hi limit (clamped to the ramp only)",
+      "renders": 240,
+      "changed": 214,
+      "px": 1478,
+      "silhouette": 0,
+      "worstPct": 5.56,
+      "worstAt": "skipper dig f3 S",
+      "mirrorPx": 0,
+      "pct": 1.19,
+      "optional": false
+    },
+    "band": {
+      "what": "no per-face band offset b",
+      "renders": 240,
+      "changed": 240,
+      "px": 6132,
+      "silhouette": 0,
+      "worstPct": 8.56,
+      "worstAt": "deckboss idle f0 N",
+      "mirrorPx": 0,
+      "pct": 4.96,
+      "optional": false
+    },
+    "off": {
+      "what": "no material offset off (every shade variant on its base tone)",
+      "renders": 240,
+      "changed": 240,
+      "px": 12681,
+      "silhouette": 0,
+      "worstPct": 20.92,
+      "worstAt": "nan walk f2 SE",
+      "mirrorPx": 0,
+      "pct": 10.25,
+      "optional": false
+    },
+    "edges": {
+      "what": "no inner contour",
+      "renders": 240,
+      "changed": 240,
+      "px": 7036,
+      "silhouette": 0,
+      "worstPct": 13.62,
+      "worstAt": "deckboss walk f2 W",
+      "mirrorPx": 0,
+      "pct": 5.69,
+      "optional": false
+    },
+    "keyline": {
+      "what": "no keyline",
+      "renders": 240,
+      "changed": 240,
+      "px": 25980,
+      "silhouette": 25980,
+      "worstPct": 25.93,
+      "worstAt": "cutter idle f0 W",
+      "mirrorPx": 0,
+      "pct": 20.99,
+      "optional": false
+    },
+    "snap": {
+      "what": "no head snap",
+      "renders": 240,
+      "changed": 240,
+      "px": 12288,
+      "silhouette": 2541,
+      "worstPct": 20.93,
+      "worstAt": "boy walk f2 E",
+      "mirrorPx": 0,
+      "pct": 9.82,
+      "optional": false
+    },
+    "minT": {
+      "what": "face marks without their minT (only the back-face cull)",
+      "renders": 240,
+      "changed": 188,
+      "px": 1381,
+      "silhouette": 209,
+      "worstPct": 5.75,
+      "worstAt": "girl dig f3 S",
+      "mirrorPx": 0,
+      "pct": 1.11,
+      "optional": false
+    },
+    "db": {
+      "what": "no depth bias db",
+      "renders": 240,
+      "changed": 174,
+      "px": 631,
+      "silhouette": 0,
+      "worstPct": 2.86,
+      "worstAt": "ginny dig f3 N",
+      "mirrorPx": 0,
+      "pct": 0.51,
+      "optional": false
+    },
+    "roundS": {
+      "what": "s not rounded to 1e-9 before the step",
+      "renders": 240,
+      "changed": 0,
+      "px": 0,
+      "silhouette": 0,
+      "worstPct": 0,
+      "worstAt": null,
+      "mirrorPx": 0,
+      "pct": 0,
+      "optional": true
+    },
+    "roundD": {
+      "what": "depth not quantised to 1e-7 before the test",
+      "renders": 240,
+      "changed": 1,
+      "px": 1,
+      "silhouette": 0,
+      "worstPct": 0.2,
+      "worstAt": "skipper idle f0 E",
+      "mirrorPx": 0,
+      "pct": 0,
+      "optional": false
+    },
+    "f32": {
+      "what": "float64 depth buffers instead of float32",
+      "renders": 240,
+      "changed": 0,
+      "px": 0,
+      "silhouette": 0,
+      "worstPct": 0,
+      "worstAt": null,
+      "mirrorPx": 0,
+      "pct": 0,
+      "optional": true
+    },
+    "bankers": {
+      "what": "round half to even (C# Math.Round, Unity Mathf.Round) instead of Math.round (half up)",
+      "renders": 240,
+      "changed": 0,
+      "px": 0,
+      "silhouette": 0,
+      "worstPct": 0,
+      "worstAt": null,
+      "mirrorPx": 0,
+      "pct": 0,
+      "optional": true
+    },
+    "fleetKey": {
+      "what": "rig 6/7's fleet key, with its left component, instead of v9's",
+      "renders": 240,
+      "changed": 240,
+      "px": 47869,
+      "silhouette": 0,
+      "worstPct": 59.69,
+      "worstAt": "fisher idle f0 SE",
+      "mirrorPx": 2371,
+      "pct": 38.68,
+      "optional": false
+    }
+  },
+  "optional": [
+    "roundS",
+    "f32",
+    "bankers"
+  ],
+  "dataFile": "data/shading.v9.json",
+  "dataIdentical": true
+}

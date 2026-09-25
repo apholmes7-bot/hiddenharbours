@@ -1,0 +1,21 @@
+check-hair — skull skin where the hair is
+rig 02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144  poses 42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07
+
+1 mesh: 4200 head geometries x styles: 0 skull faces painted skin inside the hair region.
+2 idle f0 at 16 facings: the 168 bodies x 8 styles, no hat; 28 bodies x 8 styles x 12 hats: 64512 renders, most skull skin in the hair region 0 px.
+3 two bodies x 8 styles x 13 hats x 16 facings, walk f0-f7, every clip that tips the head (its most-tipped frame) and the look-at limits: 186368 renders, most 0 px.
+
+Skull skin in the hair region, all 250880 renders: 0 px.
+The skin meant to show, most in one render: face and forehead 123 px, temples 26, ears 18, nape 83. Painted scalp (the hair-coloured skull under the shell) showing: at most 123 px.
+
+Hair lines (canonical head z) on the Fisher's head: F front, C corners, T temples, E top of the ear, N nape:
+  crop      F 1.427  C 1.36  T 1.425  E 1.333  N 1.245  (hair)
+  mop       F 1.427  C 1.36  T 1.425  E 1.333  N 1.225  (hair)
+  bob       F 1.427  C 1.34  T 1.425  E 1.333  N 1.2  (hair)
+  long      F 1.427  C 1.34  T 1.425  E 1.333  N 1.2  (hair)
+  bun       F 1.427  C 1.36  T 1.425  E 1.333  N 1.26  (hair)
+  ponytail  F 1.427  C 1.36  T 1.425  E 1.333  N 1.26  (hair)
+  buzz      F 1.425  C 1.425  T 1.425  E 1.333  N 1.3  (buzz)
+  bald      bald: the horseshoe at the back, 1.3-1.425
+
+OK — no problems.
