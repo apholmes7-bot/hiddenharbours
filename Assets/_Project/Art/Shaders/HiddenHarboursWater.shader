@@ -1146,6 +1146,14 @@ Shader "HiddenHarbours/Water"
             // CLAMP state — a bilinear read would blend across cells and undo the crisp world grid.
             TEXTURE2D(_HHFoamBufferTex); SAMPLER(sampler_HHFoamBufferTex);
 
+            // ADR 0046: STILL WATER above the tide (ponds, a brook's fresh reach) — the globals
+            // _HHStillTex/_HHStillRect/_HHStillRange and StillLevelAt(), shared with the tidal faces so
+            // both read one level, published by StillWaterGlobals from the Core seam's own map (the
+            // texture the sim decodes). Unset reads "no still water": every region today, unchanged.
+            // Its own sampler, so the read keeps the map's import filter: codes are filtered, THEN
+            // decoded, as PaintedStillWater does on the CPU.
+            #include "Assets/_Project/Art/Shaders/Include/StillWater.hlsl"
+
             // GLOBAL sun direction from the day/night cycle (Shader.SetGlobalVector by DayNightController,
             // ADR 0013). NOT per-material, so it lives OUTSIDE the per-material CBUFFER (like the grass
             // shader's _WindWorld). _SunDir.xy = the ground-plane direction TOWARD the sun; (0,0,0,0) when
@@ -4507,6 +4515,11 @@ Shader "HiddenHarbours/Water"
                 // ---- layer 1 depth gradient -------------------------------------------------------------------
                 float elevation = SeabedElevation(worldXY + warp);
                 float depth = _WaterLevel - elevation;             // metres; <= 0 means dry/exposed
+                // ADR 0046: the water here is max(tide, still), so the REAL depth — the one the sim wades —
+                // is the deeper of the two. With no still water StillLevelAt is -1e30 and depth keeps the
+                // line above bit for bit. Only THIS depth composes: the swell's shore fade, the shoal read
+                // above and the fetch/surf marches stay on the tide (a pond has no swell).
+                depth = max(depth, StillLevelAt(worldXY + warp) - elevation);
 
                 // Dry ground: the shader hands off to the terrain tiles below (draw nothing).
                 //

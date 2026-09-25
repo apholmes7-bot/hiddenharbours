@@ -218,6 +218,7 @@ namespace HiddenHarbours.Tests.EditMode
             public Color Tint; public Vector2 SunDir; public float SunElevation;
             public bool Breaks; public float BreakDepth, OuterDepth;
             public float Chop, Roughness, Flow, PushedLevel;    // read back from the property block
+            public float StillBound;                            // _HHStillRange.z read back: 1 = a still map is drawn
             public float WaveCount;                             // _WaveFieldParams.x read back
             public float LightCount;                            // _WaterLightCount read back
             public float WetFraction, MeanLumaWet, StdLumaWet;
@@ -233,6 +234,7 @@ namespace HiddenHarbours.Tests.EditMode
         readonly List<GameObject> _built = new List<GameObject>();
         ITidalTerrain _previousTerrain;
         IEnvironmentService _previousEnvironment;
+        IStillWater _previousStill;
         GameConfig _previousConfig;
         PlateEnvironment _env;
         FakeLamp _lamp;
@@ -248,6 +250,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             _previousTerrain = GameServices.TidalTerrain;
             _previousEnvironment = GameServices.Environment;
+            _previousStill = GameServices.StillWater;
             _previousConfig = GameServices.Config;
         }
 
@@ -268,6 +271,7 @@ namespace HiddenHarbours.Tests.EditMode
             GameServices.TidalTerrain = _previousTerrain;
             GameServices.Environment = _previousEnvironment;
             GameServices.Config = _previousConfig;
+            GameServices.StillWater = _previousStill;
 
             // Globals are STICKY: hand the next fixture a silent, calm, daylit sea with no lamp in it.
             WaveFieldBridge.PublishGlobals(PackedWaveField.Empty);
@@ -2343,6 +2347,12 @@ namespace HiddenHarbours.Tests.EditMode
             // The push. The shipped component reads the fake environment and writes every sim-driven
             // uniform, the mood blend and the palette seam onto its own property block — a zero-dt push
             // snaps every eased value to its target, so the plate is the settled sea for this weather.
+            // The still water above the tide (ADR 0046): none. No committed region has a still map, so every
+            // viewpoint plays at the tide's waterline alone. The live sea HOLDS the still-water globals, which
+            // follow whatever the seam has registered — a pond an earlier fixture left registered would be
+            // drawn into the evidence — so it is pinned per plate like the tide, and read back below.
+            GameServices.StillWater = null;
+
             var surface = stage.SeaGo.GetComponent<WaterSurface>();
             Assert.IsNotNull(surface, "the stage's Sea must carry the shipped WaterSurface");
             PushUniformsSnap.Invoke(surface, null);
@@ -2408,6 +2418,7 @@ namespace HiddenHarbours.Tests.EditMode
             Vector4 outer = Shader.GetGlobalVector(Shader.PropertyToID("_BreakerOuter"));
             Vector4 depths = Shader.GetGlobalVector(Shader.PropertyToID("_BreakerDepths"));
             Vector4 fieldParams = Shader.GetGlobalVector(Shader.PropertyToID("_WaveFieldParams"));
+            Vector4 stillRange = Shader.GetGlobalVector(Shader.PropertyToID("_HHStillRange"));
             WetStatistics(stage, _env.WaterLevel, ldr, out float wet, out float meanLumaWet,
                           out float stdLumaWet);
 
@@ -2419,7 +2430,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Breaks = outer.w > 0.5f, BreakDepth = depths.x, OuterDepth = outer.x,
                 Chop = block.GetFloat("_Chop"), Roughness = block.GetFloat("_Roughness"),
                 Flow = block.GetFloat("_Flow"), PushedLevel = block.GetFloat("_WaterLevel"),
-                WaveCount = fieldParams.x,
+                WaveCount = fieldParams.x, StillBound = stillRange.z,
                 LightCount = Shader.GetGlobalFloat(Shader.PropertyToID("_WaterLightCount")),
                 WetFraction = wet, MeanLumaWet = meanLumaWet, StdLumaWet = stdLumaWet,
             };
@@ -3338,8 +3349,10 @@ namespace HiddenHarbours.Tests.EditMode
                           "reflector in a fixture); wind heading " +
                           $"({WindHeading.x:F3}, {WindHeading.y:F3}); lamp = BoatSpotlight defaults x water strength " +
                           $"{Searchlight.WaterStrength} at aim + ({Searchlight.Offset.x}, {Searchlight.Offset.y}) throwing +x");
+            sb.AppendLine("# still water above the tide: none registered (ADR 0046: no committed region has a still " +
+                          "map); the 'still' column is _HHStillRange read back per plate");
             sb.AppendLine("file | weather sea01 wind_mps | tide level_m pushed_level | hour tint sunDir sunElev | " +
-                          "breaks breakDepth outerDepth | _Chop _Roughness _Flow | trains lights | wet% lumaWet stdWet");
+                          "breaks breakDepth outerDepth | _Chop _Roughness _Flow | trains lights | wet% lumaWet stdWet | still");
             foreach (PlateRecord r in records)
             {
                 sb.AppendLine(
@@ -3349,7 +3362,8 @@ namespace HiddenHarbours.Tests.EditMode
                     $"({r.SunDir.x:F2},{r.SunDir.y:F2}) {r.SunElevation:F2} | " +
                     $"{(r.Breaks ? "yes" : "no")} {r.BreakDepth:F2} {r.OuterDepth:F2} | " +
                     $"{r.Chop:F3} {r.Roughness:F3} {r.Flow:F3} | {r.WaveCount:F0} {r.LightCount:F0} | " +
-                    $"{r.WetFraction:P1} {r.MeanLumaWet:F3} {r.StdLumaWet:F3}");
+                    $"{r.WetFraction:P1} {r.MeanLumaWet:F3} {r.StdLumaWet:F3} | " +
+                    $"{(r.StillBound > 0.5f ? "bound" : "none")}");
             }
             File.WriteAllText(Path.Combine(dir, "MANIFEST.txt"), sb.ToString());
         }
@@ -3379,6 +3393,9 @@ namespace HiddenHarbours.Tests.EditMode
                     $"{r.File}: the searchlight must be in the array at night and only at night");
                 Assert.AreEqual(r.Weather != Weather.Glass, r.Breaks,
                     $"{r.File}: a working sea must publish a breaking contour and glass must not");
+                Assert.AreEqual(0f, r.StillBound, 1e-4f,
+                    $"{r.File}: a still map is drawn into this plate, and no region it photographs has one " +
+                    "(ADR 0046) — the plate is not of the sea it claims");
             }
 
             // 2. The frame is of what it claims: a coast plate holds coast AND water; the control holds

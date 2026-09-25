@@ -1,6 +1,8 @@
 using System.IO;
 using System.Text;
+using HiddenHarbours.App.Editor;
 using HiddenHarbours.Core;
+using HiddenHarbours.World;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -14,8 +16,10 @@ namespace HiddenHarbours.Tests.EditMode
     /// shoreline: at Nine Mile Creek's spring low the drawn waterline missed the sim's contour by
     /// <b>28.7 cm RMS</b>, and the value quantum was 96 % of it (§41). The PAINTED path — ADR 0014's
     /// hand-authored map, whose bytes <c>PaintedTidalTerrain</c> also decodes so render == sim by
-    /// construction — is still <b>eight bits</b>, and `TerrainPaintTool` writes it as
-    /// <c>TextureFormat.R8</c> at two sites.</para>
+    /// construction — was <b>eight bits</b> until ADR 0046 (terrain pass 9 PR 4): <c>TerrainPaintTool</c>'s
+    /// two writers now write <c>R16</c> through one encoder, <c>PaintedHeightPng</c>, which also names
+    /// <c>R16</c> in the importer's Standalone override. The two committed maps stay 8-bit files until
+    /// someone paints or re-exports them.</para>
     ///
     /// <para><b>Why this guard reads the IMPORTER and not the tool.</b> The tool's write is only half the
     /// chain. A texture importer can silently hand Unity something narrower than the file contains —
@@ -26,9 +30,11 @@ namespace HiddenHarbours.Tests.EditMode
     ///
     /// <para><b>So this asserts the LOADED object</b> — <see cref="Texture2D.format"/>,
     /// <see cref="Texture2D.isReadable"/>, mip count, wrap and filter — and reports the elevation quantum
-    /// those bits actually buy at each map's own range. It is written to <b>pass today at eight bits</b>
-    /// and to keep passing when row 32 widens them; what it will not allow is the widening being
-    /// silently undone by the importer.</para>
+    /// those bits actually buy at each map's own range. Each map must load at <b>no fewer bits than its
+    /// own file holds</b> (the PNG's IHDR bit depth): eight for the committed maps today, sixteen for any
+    /// map the tool has written since ADR 0046. What it will not allow is the widening being silently
+    /// undone by the importer. <see cref="AMapTheToolWrites_IsLoadedAtSixteenBits"/> proves the tool's
+    /// side: what it writes is a sixteen-bit file that Unity loads as <c>R16</c>.</para>
     /// </summary>
     public class SeabedHeightImportTests
     {
@@ -126,24 +132,130 @@ namespace HiddenHarbours.Tests.EditMode
                     "elevation to a handful of levels per block and no other test would notice.");
 
                 // ---- ⭐ THE ROW'S OWN CLAIM: the importer must not narrow what the tool wrote ------
-                Assert.GreaterOrEqual(bits, 8,
-                    $"⭐ ROW 32: {Path.GetFileName(path)} is LOADED at {tex.format} ({bits} bits in R). " +
-                    "TerrainPaintTool writes these as R8, so anything under eight bits means the " +
-                    "IMPORTER threw precision away that the file contained — the widening undone one " +
-                    "layer further out than anyone would look.");
+                int fileBits = PngBitDepth(path);
+                Assert.GreaterOrEqual(bits, fileBits,
+                    $"⭐ ROW 32: {Path.GetFileName(path)} is a {fileBits}-bit file LOADED at {tex.format} " +
+                    $"({bits} bits in R) with the editor on {EditorUserBuildSettings.activeBuildTarget}. " +
+                    "The IMPORTER threw away precision the file contained — the widening undone one layer " +
+                    "further out than anyone would look.");
             }
 
             report.AppendLine();
-            report.AppendLine("  Eight bits is the state row 32 exists to change: over a 12 m range that is");
+            report.AppendLine("  Eight bits is what the committed maps still hold: over a 12 m range that is");
             report.AppendLine("  4.7 cm of elevation, which §41 measured as 67 cm of DRAWN EDGE on the 0.035");
-            report.AppendLine("  shelf that spring low bares. This guard does not widen anything — it makes");
-            report.AppendLine("  sure a widening cannot be quietly reversed by the import settings.");
+            report.AppendLine("  shelf that spring low bares. The tool writes sixteen since ADR 0046, and a");
+            report.AppendLine("  map widens on its first stroke; this guard makes sure the import settings");
+            report.AppendLine("  cannot quietly reverse that.");
             TestContext.WriteLine(report.ToString());
 
             Assert.Greater(checkedMaps, 0,
                 "⭐ NO HEIGHT MAP WAS CHECKED. Both paths are missing, so this test passed over nothing — " +
                 "which is the false green that let 'no painted asset is committed' into the register. If " +
                 "the maps moved, fix the paths; do not let this go quietly green.");
+        }
+
+        /// <summary>
+        /// ⭐ ADR 0046 §8: what the tool WRITES is a sixteen-bit file, and Unity LOADS it at sixteen bits. A map
+        /// baked by the tool's export (<see cref="TerrainPaintTool.BakeAnalyticCoast"/>, whose write a stroke's
+        /// commit shares) into a temp asset: the PNG's own header must say 16-bit greyscale, the importer must
+        /// NAME <c>R16</c> for Standalone, uncompressed, and the loaded texture must carry sixteen bits in R —
+        /// with every data-texture setting the committed maps are held to above. <b>On the base</b> the tool
+        /// wrote an 8-bit file (IHDR bit depth 8) with no Standalone override, and this fails on its first
+        /// assertion.
+        /// </summary>
+        [Test]
+        public void AMapTheToolWrites_IsLoadedAtSixteenBits()
+        {
+            const string mapPath = "Assets/TempSeabedImportMap.asset";
+            const string pngPath = "Assets/TempSeabedImportMap_HeightTex.png";
+            try
+            {
+                var map = ScriptableObject.CreateInstance<PaintedHeightMap>();
+                AssetDatabase.CreateAsset(map, mapPath);
+                map = AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(mapPath);
+                PaintedHeightMap baked = TerrainPaintTool.BakeAnalyticCoast(
+                    map, new ITidalTerrain[] { new Slope() }, Vector2.zero, new Vector2(64f, 48f),
+                    new Vector2Int(32, 24));
+                Assert.IsNotNull(baked, "the tool's bake returned no map.");
+                Assert.IsNotNull(baked.HeightTexture, "the baked map binds no height texture.");
+                Assert.AreEqual(pngPath, AssetDatabase.GetAssetPath(baked.HeightTexture),
+                    "the tool wrote its PNG somewhere other than the map's _HeightTex sibling.");
+
+                // The file.
+                int fileBits = PngBitDepth(pngPath);
+                Assert.AreEqual(16, fileBits, $"the tool wrote a {fileBits}-bit height PNG.");
+                Assert.AreEqual(0, PngColourType(pngPath), "the tool's height PNG is not greyscale.");
+
+                // The importer names sixteen bits, rather than leaving the format to Automatic.
+                var importer = AssetImporter.GetAtPath(pngPath) as TextureImporter;
+                Assert.IsNotNull(importer, $"{pngPath} has no TextureImporter.");
+                TextureImporterPlatformSettings standalone = importer.GetPlatformTextureSettings("Standalone");
+                Assert.IsTrue(standalone.overridden, "the height PNG carries no Standalone override.");
+                Assert.AreEqual(TextureImporterFormat.R16, standalone.format,
+                    "the height PNG's Standalone override does not name R16.");
+                Assert.AreEqual(TextureImporterCompression.Uncompressed, standalone.textureCompression,
+                    "the height PNG's Standalone override compresses it.");
+                Assert.GreaterOrEqual(standalone.maxTextureSize, 32,
+                    "the Standalone override's size cap would rescale the map.");
+
+                // The object Unity loads.
+                var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(pngPath);
+                Assert.IsNotNull(tex, $"{pngPath} does not load as a Texture2D.");
+                Assert.AreEqual(16, RedBits(tex.format),
+                    $"the tool's 16-bit height PNG LOADS as {tex.format} with the editor on " +
+                    $"{EditorUserBuildSettings.activeBuildTarget}: the sim and the shader would read it at " +
+                    $"{RedBits(tex.format)} bits.");
+                Assert.AreEqual(32, tex.width, "the importer rescaled the map's width.");
+                Assert.AreEqual(24, tex.height, "the importer rescaled the map's height.");
+                Assert.IsTrue(tex.isReadable, "the tool's height PNG imported unreadable.");
+                Assert.IsFalse(importer.sRGBTexture, "the tool's height PNG imported as sRGB.");
+                Assert.AreEqual(1, tex.mipmapCount, "the tool's height PNG imported with mips.");
+                Assert.AreEqual(TextureWrapMode.Clamp, tex.wrapMode, "the tool's height PNG does not clamp.");
+                Assert.AreEqual(TextureImporterCompression.Uncompressed, importer.textureCompression,
+                    "the tool's height PNG imports compressed on the Default platform.");
+                Debug.Log($"[SeabedHeightImport] a map the tool writes: a {fileBits}-bit greyscale PNG, " +
+                          $"Standalone override {standalone.format}/{standalone.textureCompression}, loaded as " +
+                          $"{tex.format} on {EditorUserBuildSettings.activeBuildTarget}.");
+            }
+            finally
+            {
+                AssetDatabase.DeleteAsset(mapPath);
+                AssetDatabase.DeleteAsset(pngPath);
+                GameServices.Reset();
+            }
+        }
+
+        /// <summary>A gentle slope inside the default map range (−4 … +6 m), asymmetric in both axes.</summary>
+        private sealed class Slope : ITidalTerrain
+        {
+            public float ElevationAt(Vector2 p) => -1f + 0.05f * p.x + 0.02f * p.y;
+        }
+
+        /// <summary>The PNG's own bit depth per channel, from its IHDR chunk (byte 24).</summary>
+        static int PngBitDepth(string path) => PngHeader(path)[24];
+
+        /// <summary>The PNG's colour type, from its IHDR chunk (byte 25; 0 = greyscale).</summary>
+        static int PngColourType(string path) => PngHeader(path)[25];
+
+        /// <summary>The first 29 bytes of a PNG: the signature and the IHDR chunk. A file that is not a PNG
+        /// (an LFS pointer that was never checked out, say) fails here by name, not as some bit depth.</summary>
+        static byte[] PngHeader(string path)
+        {
+            var head = new byte[29];
+            int n = 0;
+            using (FileStream fs = File.OpenRead(path))
+            {
+                while (n < head.Length)
+                {
+                    int read = fs.Read(head, n, head.Length - n);
+                    if (read <= 0) break;
+                    n += read;
+                }
+            }
+            Assert.AreEqual(head.Length, n, $"{path} is too short to be a PNG.");
+            Assert.IsTrue(head[0] == 0x89 && head[1] == (byte)'P' && head[2] == (byte)'N' && head[3] == (byte)'G',
+                $"{path} is not a PNG — an LFS pointer that was never checked out?");
+            return head;
         }
 
         /// <summary>
@@ -166,8 +278,8 @@ namespace HiddenHarbours.Tests.EditMode
                     "drift, the boat grounds where the water looks deep.");
             }
 
-            // And the same statement at SIXTEEN bits, which is where row 32 is going: the decoders take a
-            // float, so neither side needs touching — only the write and the import.
+            // And the same statement at SIXTEEN bits, which is what the tool writes since ADR 0046: the
+            // decoders take a float, so neither side needed touching — only the write and the import.
             for (int code = 0; code <= 65535; code += 4369)
             {
                 float r01 = code / 65535f;

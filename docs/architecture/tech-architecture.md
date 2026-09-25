@@ -170,6 +170,21 @@ Two additive Core pieces, both deterministic (recomputed from `(worldSeed, gameT
   boat-cross/grounding depth, the clam-baring or the seabed bake — a pier does not shoal the berth
   beneath it. Added because the St Peters wharf stands over a dredged −1.0 m slip in a tide-gated region,
   so the sim called the ratified disembark point 4.5 m of open sea at high water.
+- **`Core.IStillWater` + `Core.StillWaterLevels` + `GameServices.StillWater`** — the **still-water** seam
+  (ADR 0046): fresh water that stands ABOVE the tide, where the region-wide tide cannot reach — a pond, a
+  brook's fresh reach. `StillLevelAt(worldPos)` answers the still surface in metres above chart datum, or
+  `StillWaterLevels.None` (−∞) where there is none; `Map` hands the render the same R16 texture, rectangle
+  and range the sim decodes (code 0 = none, on the height map's own scale). The ONE rule is
+  `StillWaterLevels.Compose`: **water = max(tide, still)**, written as a comparison so "none" returns the
+  tide bit for bit; depth stays `water − standing`, so the wade and swim bands apply to a pond unchanged
+  and a built deck over a brook is still dry. `PaintedTidalTerrain` registers its map's still water beside
+  the terrain and clears only its own; the accessor is **never null** (`EmptyStillWater.Instance`, the
+  `IFishSchools` precedent), and **with no still map every answer is bit-identical to the tide-only
+  read** — every region until PR 5 binds St Peters' map. DERIVED from the terrain plan, never painted by
+  hand, never saved (rule 5). Readers: the on-foot composition (`StandableSurfaces.OnFootDepth` /
+  `OnFootDepthNow`, `TidalWalkability`), and the water shader's fragment depth and the tidal faces
+  (through `Art.StillWaterGlobals` and `Include/StillWater.hlsl`). ⚠ **Boats, clams, traps, fishing,
+  vehicles and the sea's presenters stay on the tide** — ADR 0046 §6.2 gives the reason for each.
 
 ### 4.2 Region display-name seam (UI reads names without referencing World) — ADR 0009
 
