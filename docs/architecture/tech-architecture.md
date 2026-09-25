@@ -183,7 +183,7 @@ Two additive Core pieces, both deterministic (recomputed from `(worldSeed, gameT
   read** — every region until PR 5 binds St Peters' map. DERIVED from the terrain plan, never painted by
   hand, never saved (rule 5). Readers: the on-foot composition (`StandableSurfaces.OnFootDepth` /
   `OnFootDepthNow`, `TidalWalkability`), and the water shader's fragment depth and the tidal faces
-  (through `Art.StillWaterGlobals` and `Include/StillWater.hlsl`). ⚠ **Boats, clams, traps, fishing,
+  (through `Art.StillWaterGlobals` and `Art/Shaders/Include/StillWater.hlsl`). ⚠ **Boats, clams, traps, fishing,
   vehicles and the sea's presenters stay on the tide** — ADR 0046 §6.2 gives the reason for each.
 
 ### 4.2 Region display-name seam (UI reads names without referencing World) — ADR 0009

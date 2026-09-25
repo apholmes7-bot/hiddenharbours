@@ -295,7 +295,7 @@ builder or `BakeAnalyticCoast`, now writes 16 bits of the analytic heights. That
 up to half an 8-bit step, toward the analytic value. PR 4 re-bakes nothing: St Peters' scene cannot
 be rebuilt, and a batchmode rebuild over an existing scene now refuses to run (#876).
 
-**The scene exporter reads 8 bits only.** `decode_r8` in `Tools/scene-export/hhexport/heightmap.py`
+**The scene exporter reads 8 bits only.** `decode_r8` in `tools/scene-export/hhexport/heightmap.py`
 decodes a greyscale-8 PNG and refuses anything else. It does not misread a 16-bit map: every ground
 layer built from the height map returns "the height texture did not decode as an 8-bit greyscale
 PNG" and is left out of the export. PR 4 commits no 16-bit map, so the export is unchanged. But the
