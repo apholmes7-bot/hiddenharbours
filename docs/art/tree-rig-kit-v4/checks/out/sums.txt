@@ -1,0 +1,5 @@
+# sums — passed
+
+63 files listed, 63 match their hash · 0 kit files not listed
+(this file and SHA256SUMS.txt itself are the two files the list cannot contain)
+

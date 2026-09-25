@@ -120,6 +120,15 @@ namespace HiddenHarbours.Tools.RigBaking
                                           Action<string, float> progress = null)
         {
             outputFolder ??= DefaultOutputFolder;
+
+            // ⚠️ Once the kit is pass 4 this bake would write a pass-3 contract over it and leave
+            // three-channel sheets beside six-channel ones. The Rig Studio adapter calls it too.
+            if (TreeKitCatalog.IsPass4Live && TreePass4Baker.IsInsideTheLiveKit(outputFolder))
+                throw new InvalidOperationException(
+                    $"The kit is pass 4 ({TreeKitCatalog.RigScriptPath}); the pass-3 baker will not " +
+                    $"write under {TreeKitCatalog.TreesRoot}. Bake pass 4 (TreePass4Baker), or name " +
+                    "a folder outside the kit.");
+
             var total = Stopwatch.StartNew();
 
             using IRigScriptHost host = RigScriptHostFactory.Create();

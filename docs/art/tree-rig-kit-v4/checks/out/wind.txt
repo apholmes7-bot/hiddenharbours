@@ -1,0 +1,76 @@
+# wind — passed
+
+mature · summer · variant 1 · gust 0.5 · frames 0 4 8 12, lit under the 14:00 reference sky
+silhouette = IoU of the two silhouettes · geometry = same material and same leaf stamp · lit = same colour (over the union)
+rest = the rest pose, unmoved, against the same rig frames: what a sprite with no wind would score
+
+RedSpruce       calm west    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry 100.0% · lit 100.0%
+RedSpruce       calm east    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry 100.0% · lit 100.0%
+RedSpruce       breeze west  silhouette  99.5% · geometry  92.6% · lit  92.5%   rest: geometry  66.6% · lit  72.3%
+RedSpruce       breeze east  silhouette  99.6% · geometry  92.4% · lit  92.7%   rest: geometry  66.4% · lit  72.7%
+RedSpruce       gale west    silhouette  99.0% · geometry  86.7% · lit  84.8%   rest: geometry  15.8% · lit  35.9%
+RedSpruce       gale east    silhouette  99.0% · geometry  86.3% · lit  85.4%   rest: geometry  16.0% · lit  35.9%
+BlackSpruce     calm west    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry 100.0% · lit 100.0%
+BlackSpruce     calm east    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry 100.0% · lit 100.0%
+BlackSpruce     breeze west  silhouette  99.3% · geometry  94.2% · lit  93.4%   rest: geometry  76.1% · lit  77.6%
+BlackSpruce     breeze east  silhouette  99.3% · geometry  94.6% · lit  93.7%   rest: geometry  74.8% · lit  75.9%
+BlackSpruce     gale west    silhouette  98.0% · geometry  89.3% · lit  84.5%   rest: geometry  21.1% · lit  29.0%
+BlackSpruce     gale east    silhouette  98.0% · geometry  89.2% · lit  85.3%   rest: geometry  21.2% · lit  28.9%
+BalsamFir       calm west    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry 100.0% · lit 100.0%
+BalsamFir       calm east    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry 100.0% · lit 100.0%
+BalsamFir       breeze west  silhouette  99.7% · geometry  95.5% · lit  94.7%   rest: geometry  80.5% · lit  83.3%
+BalsamFir       breeze east  silhouette  99.6% · geometry  95.2% · lit  94.7%   rest: geometry  79.1% · lit  82.4%
+BalsamFir       gale west    silhouette  99.1% · geometry  90.1% · lit  86.5%   rest: geometry  30.2% · lit  42.9%
+BalsamFir       gale east    silhouette  99.1% · geometry  90.0% · lit  88.0%   rest: geometry  30.6% · lit  43.2%
+WhitePine       calm west    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry 100.0% · lit 100.0%
+WhitePine       calm east    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry 100.0% · lit 100.0%
+WhitePine       breeze west  silhouette  99.1% · geometry  90.1% · lit  89.6%   rest: geometry  44.4% · lit  61.3%
+WhitePine       breeze east  silhouette  99.2% · geometry  90.0% · lit  89.5%   rest: geometry  43.0% · lit  60.4%
+WhitePine       gale west    silhouette  98.4% · geometry  86.3% · lit  78.5%   rest: geometry  11.6% · lit  26.1%
+WhitePine       gale east    silhouette  98.5% · geometry  85.6% · lit  80.7%   rest: geometry  11.8% · lit  25.8%
+WhiteCedar      calm west    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry 100.0% · lit 100.0%
+WhiteCedar      calm east    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry 100.0% · lit 100.0%
+WhiteCedar      breeze west  silhouette  99.8% · geometry  95.6% · lit  95.4%   rest: geometry  80.1% · lit  83.2%
+WhiteCedar      breeze east  silhouette  99.8% · geometry  95.7% · lit  95.5%   rest: geometry  78.9% · lit  82.0%
+WhiteCedar      gale west    silhouette  99.5% · geometry  91.3% · lit  89.6%   rest: geometry  23.5% · lit  38.4%
+WhiteCedar      gale east    silhouette  99.4% · geometry  91.0% · lit  89.8%   rest: geometry  23.2% · lit  37.8%
+Tamarack        calm west    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry 100.0% · lit 100.0%
+Tamarack        calm east    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry 100.0% · lit 100.0%
+Tamarack        breeze west  silhouette  99.3% · geometry  92.8% · lit  91.7%   rest: geometry  57.9% · lit  64.5%
+Tamarack        breeze east  silhouette  99.2% · geometry  92.8% · lit  91.7%   rest: geometry  56.6% · lit  63.7%
+Tamarack        gale west    silhouette  98.0% · geometry  84.1% · lit  79.3%   rest: geometry   9.2% · lit  23.1%
+Tamarack        gale east    silhouette  97.9% · geometry  84.9% · lit  80.1%   rest: geometry   9.0% · lit  23.3%
+WhiteBirch      calm west    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry  99.9% · lit  99.4%
+WhiteBirch      calm east    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry  99.9% · lit  99.4%
+WhiteBirch      breeze west  silhouette  99.0% · geometry  94.6% · lit  92.1%   rest: geometry  47.1% · lit  53.9%
+WhiteBirch      breeze east  silhouette  99.0% · geometry  94.3% · lit  92.2%   rest: geometry  46.7% · lit  53.9%
+WhiteBirch      gale west    silhouette  97.9% · geometry  88.9% · lit  79.3%   rest: geometry   8.3% · lit  18.5%
+WhiteBirch      gale east    silhouette  97.9% · geometry  88.5% · lit  80.3%   rest: geometry   8.2% · lit  18.5%
+RedMaple        calm west    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry  99.9% · lit  99.7%
+RedMaple        calm east    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry 100.0% · lit  99.8%
+RedMaple        breeze west  silhouette  99.3% · geometry  94.5% · lit  92.2%   rest: geometry  58.1% · lit  63.6%
+RedMaple        breeze east  silhouette  99.4% · geometry  94.8% · lit  92.4%   rest: geometry  58.2% · lit  63.5%
+RedMaple        gale west    silhouette  98.7% · geometry  90.0% · lit  82.7%   rest: geometry  12.9% · lit  29.0%
+RedMaple        gale east    silhouette  98.6% · geometry  89.9% · lit  83.2%   rest: geometry  12.8% · lit  28.7%
+RedOak          calm west    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry 100.0% · lit  99.8%
+RedOak          calm east    silhouette 100.0% · geometry 100.0% · lit 100.0%   rest: geometry 100.0% · lit  99.8%
+RedOak          breeze west  silhouette  99.6% · geometry  96.7% · lit  94.8%   rest: geometry  66.4% · lit  67.2%
+RedOak          breeze east  silhouette  99.6% · geometry  96.7% · lit  95.0%   rest: geometry  66.1% · lit  67.2%
+RedOak          gale west    silhouette  99.1% · geometry  93.0% · lit  87.0%   rest: geometry  15.6% · lit  33.1%
+RedOak          gale east    silhouette  99.3% · geometry  93.5% · lit  88.1%   rest: geometry  15.9% · lit  33.1%
+TremblingAspen  calm west    silhouette 100.0% · geometry  99.7% · lit  99.6%   rest: geometry  99.2% · lit  96.8%
+TremblingAspen  calm east    silhouette 100.0% · geometry  99.8% · lit  99.7%   rest: geometry  99.2% · lit  96.8%
+TremblingAspen  breeze west  silhouette  98.9% · geometry  94.0% · lit  90.6%   rest: geometry  45.4% · lit  50.5%
+TremblingAspen  breeze east  silhouette  99.1% · geometry  94.4% · lit  90.9%   rest: geometry  45.3% · lit  50.4%
+TremblingAspen  gale west    silhouette  97.6% · geometry  88.4% · lit  75.6%   rest: geometry   8.2% · lit  14.7%
+TremblingAspen  gale east    silhouette  97.5% · geometry  88.2% · lit  78.2%   rest: geometry   8.3% · lit  14.7%
+
+mean over the species       silhouette  geometry   lit     rest: geometry  lit
+  calm west                    100.0%    100.0%   99.9%          99.9%   99.6%
+  calm east                    100.0%    100.0%  100.0%          99.9%   99.6%
+  breeze west                   99.4%     94.1%   92.7%          62.3%   67.7%
+  breeze east                   99.4%     94.1%   92.8%          61.5%   67.2%
+  gale west                     98.5%     88.8%   82.8%          15.6%   29.1%
+  gale east                     98.5%     88.7%   83.9%          15.7%   29.0%
+
+pass: silhouette ≥ 95% and geometry ≥ 80% in every row.

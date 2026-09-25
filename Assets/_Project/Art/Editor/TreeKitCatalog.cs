@@ -80,6 +80,38 @@ namespace HiddenHarbours.Art.Editor
         public const string PreviousRigGlobalName = "TreeRig2";
 
         /// <summary>
+        /// <b>PASS 4.1 (tree-rig-kit v4.1, 2026-09-23) — committed BESIDE pass 3, not yet live.</b>
+        /// The rig bakes ONE rest pose per season and hands the wind to the shader: two weight maps
+        /// (<c>_wind</c>, <c>_phase</c>) that <c>treeMaps4.js</c> reads off the rig without changing
+        /// it, plus a per-pixel snow threshold (<c>_snow</c>) so any cover is one texture instead of a
+        /// sheet per cover. <c>HHTreePass4</c> (<c>TreePass4Glue</c>) is our glue over the two.
+        ///
+        /// <para>⚠️ <b>The switch is <see cref="RigScriptPath"/>, and it is a Phase B act.</b> Until
+        /// it moves, every consumer keeps reading pass 3: <see cref="IsPass4Live"/> is false, the
+        /// pass-4 baker refuses to overwrite the live kit, and the shader's <c>_TreeMaps</c> row
+        /// defaults to 0, which draws today's trees bit-identically.</para>
+        /// </summary>
+        public const string Pass4RigScriptPath = "docs/art/rigs/treeIsoRig4.js";
+
+        public const string Pass4RigGlobalName = "TreeRig4";
+
+        /// <summary>The maps half of the drop: <c>rest</c>, <c>snowMap</c>, <c>windMaps</c>,
+        /// <c>constants</c> and the reference <c>shade</c> the tree shader is ported from. Load it
+        /// AFTER the rig — it reads <c>globalThis.TreeRig4</c> at install.</summary>
+        public const string Pass4MapsScriptPath = "docs/art/rigs/treeMaps4.js";
+
+        public const string Pass4MapsGlobalName = "TreeMaps4";
+
+        /// <summary>Our glue's global (<c>TreePass4Glue.Js</c>): it survives, packs and refuses —
+        /// the rig and the maps stay the art-director's files, byte for byte.</summary>
+        public const string Pass4GlueGlobalName = "HHTreePass4";
+
+        /// <summary>Whether the kit the game draws is pass 4. A PROPERTY, not a constant expression,
+        /// so a branch on it never reads as unreachable code while the switch is off.</summary>
+        public static bool IsPass4Live =>
+            string.Equals(RigScriptPath, Pass4RigScriptPath, StringComparison.Ordinal);
+
+        /// <summary>
         /// ✅ <b>EMPTY SINCE PASS 3 (2026-09-02) — the tamarack came back.</b> The list stays, and so
         /// does every consumer of it, because the next drop can hold a species back for the same
         /// reason this one did.
@@ -141,9 +173,10 @@ namespace HiddenHarbours.Art.Editor
         /// The DEFAULT importer texture cap. Over this Unity imports SILENTLY DOWNSCALED and the
         /// sprite COUNT still matches, so only a cell-size/pivot assert catches it. The tree
         /// slicer deliberately does NOT lift the cap the way <c>SpriteSheetSlicer</c> does for the
-        /// 3648 px hull sheets: every tree sheet is comfortably inside it (the widest is Red Oak at
-        /// 660 px), so a sheet that needed a lift would mean the bake recipe grew — which is a
-        /// decision, not an import setting.
+        /// 3648 px hull sheets: every tree sheet is inside it (the widest is Red Oak's row, 1324 px
+        /// at pass 3 and 1628 px at pass 4, whose cells carry the wind's reach), so a sheet that
+        /// needed a lift would mean the bake recipe grew — which is a decision, not an import
+        /// setting.
         /// </summary>
         public const int ImportSizeCap = 2048;
 
@@ -152,24 +185,67 @@ namespace HiddenHarbours.Art.Editor
         public const string MaskSuffix = "_mask";
         public const string NormalSuffix = "_normal";
 
-        /// <summary>The three channels, in bake order.</summary>
-        public enum Channel { Albedo, Mask, Normal }
+        /// <summary>Pass 4's three data channels (see <see cref="Pass4Channels"/>).</summary>
+        public const string WindSuffix = "_wind";
+        public const string PhaseSuffix = "_phase";
+        public const string SnowSuffix = "_snow";
 
+        /// <summary>Every channel either pass bakes. Pass 3 bakes the first three
+        /// (<see cref="Channels"/>); pass 4 bakes all six (<see cref="Pass4Channels"/>).</summary>
+        public enum Channel { Albedo, Mask, Normal, Wind, Phase, Snow }
+
+        /// <summary>The three channels pass 3 bakes, in bake order. ⚠️ Unchanged by pass 4: the
+        /// sheet-count guards multiply by its length, and pass 3 is what the game draws until the
+        /// switch.</summary>
         public static readonly Channel[] Channels =
         {
             Channel.Albedo, Channel.Mask, Channel.Normal,
         };
+
+        /// <summary>
+        /// The six channels pass 4 bakes per season, in bake order. The mask keeps OUR order
+        /// (R key · G back rim · B depth · A coverage); the new data lives in new sheets:
+        /// <c>_wind</c> (R lean · G sway · B|A packed class/palette/stamp bits), <c>_phase</c>
+        /// (R wave · G play · B depth · A packed bits) and <c>_snow</c> (the cover byte at which a
+        /// pixel turns to snow; A = 0 outside the tree).
+        /// </summary>
+        public static readonly Channel[] Pass4Channels =
+        {
+            Channel.Albedo, Channel.Mask, Channel.Normal, Channel.Wind, Channel.Phase, Channel.Snow,
+        };
+
+        /// <summary>The channels one pass-4 season row writes: all six, or the albedo alone when
+        /// the season borrows another season's maps (a deciduous autumn draws on summer's
+        /// wood and weights and only recolours them).</summary>
+        public static readonly Channel[] AlbedoOnly = { Channel.Albedo };
+
+        /// <summary>
+        /// The one shared palette sheet pass 4 writes beside the species sheets: 8 px wide, row 0 the
+        /// snow row, then every distinct gap row ("the dark between leaves" a moved leaf uncovers).
+        /// Colour, so it imports sRGB, point-filtered and uncompressed; the slicer gives it that
+        /// import and never slices it (it has no cell and no pivot).
+        /// </summary>
+        public const string PaletteFileName = "TreePalette.png";
+
+        public static string PalettePath => TreesRoot + PaletteFileName;
+
+        /// <summary>A palette row is this many colours: the width of <see cref="PaletteFileName"/>
+        /// and the 3-bit index the packed bits carry.</summary>
+        public const int PaletteWidth = 8;
 
         public static string SuffixFor(Channel c) => c switch
         {
             Channel.Albedo => "",
             Channel.Mask => MaskSuffix,
             Channel.Normal => NormalSuffix,
+            Channel.Wind => WindSuffix,
+            Channel.Phase => PhaseSuffix,
+            Channel.Snow => SnowSuffix,
             _ => throw new ArgumentOutOfRangeException(nameof(c)),
         };
 
         /// <summary>
-        /// ⚠️ <b>THE TWO DATA CHANNELS MUST IMPORT WITH sRGB OFF.</b> The mask packs
+        /// ⚠️ <b>THE DATA CHANNELS MUST IMPORT WITH sRGB OFF.</b> The mask packs
         /// <c>R = key light · G = back rim · B = depth · A = coverage</c> and the normal packs a
         /// view-space vector: both are NUMBERS, not colour. Leave sRGB on and Unity applies a gamma
         /// curve to them — the sprite still LOOKS fine in the inspector, the lighting is simply
@@ -202,6 +278,105 @@ namespace HiddenHarbours.Art.Editor
             public SheetBlock sheet;
             public ChannelBlock channels;
             public Entry[] trees;
+
+            // ---- pass 4 only: empty on a pass-3 contract (see HasPass4) -----------------------
+
+            /// <summary>Where the wind and snow maps come from and how the packed bits are laid
+            /// out.</summary>
+            public MapsBlock maps;
+
+            /// <summary>The snow row every species shares: <see cref="PaletteWidth"/> colours as
+            /// <c>rrggbb</c>, sorted by packed RGB and padded by repeating the last. Palette row 0.
+            /// The glue refuses a snowed pixel whose colour is not in it.</summary>
+            public string[] snowRow;
+
+            public PaletteBlock palette;
+        }
+
+        [Serializable]
+        public sealed class MapsBlock
+        {
+            public string script;
+            public string global;
+            public string glue;
+            public int glueVersion;
+
+            /// <summary>The rig's wind loop in frames (16). The shader steps through it.</summary>
+            public int loop;
+
+            public string windNote;
+            public string snowNote;
+            public string packNote;
+        }
+
+        [Serializable]
+        public sealed class PaletteBlock
+        {
+            public string file;
+            public int width;
+            public int rows;
+            public string note;
+        }
+
+        /// <summary>
+        /// A species' wind response, as <c>TreeMaps4.constants()</c> reports it at the baked stage.
+        /// The shader reads these per renderer, the way it reads <c>_TrunkAnchor</c>.
+        /// </summary>
+        [Serializable]
+        public sealed class WindBlock
+        {
+            /// <summary>The rig's height term in px (<c>max(26, worldH · size)</c>).</summary>
+            public float H;
+
+            /// <summary>Trunk bend in px at a full gale.</summary>
+            public float bendPx;
+
+            /// <summary>Limb reach in px at a full gale.</summary>
+            public float limbPx;
+
+            /// <summary>How far a limb bobs vertically, as a share of its reach.</summary>
+            public float bob;
+
+            /// <summary>How often a leaf flutters: the rig's per-species flutter rate.</summary>
+            public float flutter;
+
+            /// <summary>The rig's <c>shimmer</c>: empty, or <c>[strength, calm share]</c> for the
+            /// four broadleaves that tremble in still air. Only the product reaches the shader.</summary>
+            public float[] shimmer;
+
+            /// <summary>Conifer flutter pushes a needle tuft sideways; broadleaf flutter also
+            /// lifts it.</summary>
+            public bool conifer;
+
+            /// <summary>The padding the cell carries on each side for the sway to move into.</summary>
+            public int windReach;
+        }
+
+        /// <summary>
+        /// What one season of one species draws from. A season can borrow another's sheets: an
+        /// evergreen autumn is summer outright, and a deciduous autumn keeps summer's maps and
+        /// bakes only its own albedo. The glue proves the borrowed maps match pixel for pixel.
+        /// </summary>
+        [Serializable]
+        public sealed class SeasonRow
+        {
+            public string season;
+
+            /// <summary>The season whose mask, normal, wind, phase and snow sheets this one
+            /// draws.</summary>
+            public string maps;
+
+            /// <summary>The season whose albedo this one draws.</summary>
+            public string albedo;
+
+            /// <summary>The dark between leaves a moved leaf uncovers: <see cref="PaletteWidth"/>
+            /// colours as <c>rrggbb</c>.</summary>
+            public string[] gapRow;
+
+            /// <summary>The texel row of <see cref="PaletteFileName"/> that holds
+            /// <see cref="gapRow"/>, as Unity numbers it: <c>Texture2D.GetPixel</c>'s y and the
+            /// shader's <c>Load</c> y, bottom up. Row 0 is the snow row.</summary>
+            public int paletteRow;
         }
 
         [Serializable]
@@ -307,6 +482,13 @@ namespace HiddenHarbours.Art.Editor
             public bool rigFitsUnity2048;
 
             public Audit audit;
+
+            // ---- pass 4 only ------------------------------------------------------------------
+
+            public WindBlock wind;
+
+            /// <summary>One row per season in <see cref="seasons"/>, in the same order.</summary>
+            public SeasonRow[] seasonRows;
         }
 
         [Serializable]
@@ -413,21 +595,21 @@ namespace HiddenHarbours.Art.Editor
         /// <summary>Every sheet path this contract claims, in bake order.</summary>
         public static string[] AllSheetPaths(Contract contract)
         {
-            int n = 0;
-            foreach (var e in contract.trees) n += e.seasons.Length * Channels.Length;
-            var paths = new string[n];
-            int i = 0;
+            var paths = new System.Collections.Generic.List<string>();
             foreach (var e in contract.trees)
             foreach (string season in e.seasons)
-            foreach (var c in Channels)
-                paths[i++] = SheetPath(e.species, e.stage, season, c);
-            return paths;
+            foreach (var c in ChannelsFor(e, season))
+                paths.Add(SheetPath(e.species, e.stage, season, c));
+            return paths.ToArray();
         }
 
         /// <summary>The <see cref="Channel"/> a stem belongs to, by its suffix.</summary>
         public static Channel ChannelOf(string stem) =>
             stem.EndsWith(MaskSuffix, StringComparison.Ordinal) ? Channel.Mask
             : stem.EndsWith(NormalSuffix, StringComparison.Ordinal) ? Channel.Normal
+            : stem.EndsWith(WindSuffix, StringComparison.Ordinal) ? Channel.Wind
+            : stem.EndsWith(PhaseSuffix, StringComparison.Ordinal) ? Channel.Phase
+            : stem.EndsWith(SnowSuffix, StringComparison.Ordinal) ? Channel.Snow
             : Channel.Albedo;
 
         /// <summary>The entry a sheet stem belongs to, or null for a stranger (which must fail,
@@ -436,11 +618,86 @@ namespace HiddenHarbours.Art.Editor
         {
             foreach (var e in contract.trees)
             foreach (string season in e.seasons)
-            foreach (var c in Channels)
+            foreach (var c in ChannelsFor(e, season))
                 if (string.Equals(stem, StemFor(e.species, e.stage, season, c), StringComparison.Ordinal))
                     return e;
             return null;
         }
+
+        // =================================================================================
+        // pass 4
+        // =================================================================================
+
+        /// <summary>Whether a contract carries pass 4's fields. A pass-3 contract parses with
+        /// them empty or default, so this is the one test anything downstream makes.</summary>
+        public static bool HasPass4(Contract contract) =>
+            contract?.snowRow != null && contract.snowRow.Length == PaletteWidth &&
+            contract.maps != null && !string.IsNullOrEmpty(contract.maps.script);
+
+        /// <summary>Whether one entry carries pass 4's wind response and season rows.</summary>
+        public static bool HasPass4(Entry e) =>
+            e?.wind != null && e.wind.H > 0f &&
+            e.seasonRows != null && e.seasons != null && e.seasonRows.Length == e.seasons.Length;
+
+        /// <summary>The pass-4 row for one season of an entry, or null.</summary>
+        public static SeasonRow SeasonRowFor(Entry e, string season)
+        {
+            if (e?.seasonRows == null) return null;
+            foreach (var row in e.seasonRows)
+                if (string.Equals(row.season, season, StringComparison.Ordinal))
+                    return row;
+            return null;
+        }
+
+        /// <summary>
+        /// The channels one season of one entry has sheets for: pass 3's three; or, for pass 4,
+        /// all six when the season draws its own maps, the albedo alone when it borrows the maps
+        /// but not the colour, and none when it borrows both.
+        /// </summary>
+        public static Channel[] ChannelsFor(Entry e, string season)
+        {
+            if (!HasPass4(e)) return Channels;
+            SeasonRow row = SeasonRowFor(e, season);
+            if (row == null) return Array.Empty<Channel>();
+            if (string.Equals(row.maps, season, StringComparison.Ordinal)) return Pass4Channels;
+            if (string.Equals(row.albedo, season, StringComparison.Ordinal)) return AlbedoOnly;
+            return Array.Empty<Channel>();
+        }
+
+        /// <summary>The one shimmer number the shader reads: strength × calm share, the still-air
+        /// flutter a broadleaf keeps. Zero for a species without shimmer.</summary>
+        public static float ShimmerCalm(WindBlock w) =>
+            w?.shimmer != null && w.shimmer.Length == 2 ? w.shimmer[0] * w.shimmer[1] : 0f;
+
+        /// <summary>
+        /// The sprite mesh one entry's sheets must import with. Pass 3 is
+        /// <see cref="SpriteMeshType.Tight"/>: its sway bends VERTICES, and the bend curve needs
+        /// the intermediate vertices a Tight mesh has (see <c>TreeSheetSlicer</c>). Pass 4 is
+        /// <see cref="SpriteMeshType.FullRect"/>: with <c>_TreeMaps</c> on, the vertex stage does not
+        /// bend, and the FRAGMENT gathers leaves from up to <c>windReach</c> px beyond the rest
+        /// outline. A Tight mesh traced round the rest pixels would clip every leaf the wind carries
+        /// past it. The price is overdraw across the empty margin of the cell, which the plate
+        /// measures.
+        /// </summary>
+        public static SpriteMeshType MeshTypeFor(Entry e) =>
+            HasPass4(e) ? SpriteMeshType.FullRect : SpriteMeshType.Tight;
+
+        /// <summary>
+        /// Whether a channel's sheet imports as ONE channel, R8. Only pass 4's snow sheet: every texel
+        /// is the cover byte at which that pixel turns to snow, and the shader reads its R alone. At
+        /// R8 it costs a quarter of an RGBA32 sheet — 3.15 MB instead of 12.6 MB for one season of
+        /// the mature set.
+        /// </summary>
+        public static bool IsSingleChannel(Channel c) => c == Channel.Snow;
+
+        /// <summary>
+        /// The platform override that carries the R8 format. The Default platform only picks an
+        /// AUTOMATIC format (from the compression setting); a named format is a per-platform
+        /// override. PC-first (ADR 0005), so Standalone. A later mobile port adds its own override;
+        /// until then, other platforms get the lossless RGBA32 default, which is correct, only
+        /// larger.
+        /// </summary>
+        public const string SingleChannelPlatform = "Standalone";
 
         /// <summary>Read the sprite mesh type an importer will use — it lives on
         /// <see cref="TextureImporterSettings"/>, not on the importer itself, which is an easy
