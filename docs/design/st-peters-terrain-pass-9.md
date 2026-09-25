@@ -51,7 +51,7 @@ St Peters has no refresh command. Its builder's only entry point is the full reb
   - three crossings flood: the bar walk (as today), the outer end of the reef walk, and the foot of Ginny's track.
 - **Plants:** the five example scenes grow where their ground is found, at each scene's own density, material by material.
   - That is 18,182 plants, stored in one field of 56,044 B (at most one plant per 0.5 m cell).
-  - The worst screen holds fewer ground-cover renderers than today's worst screen.
+  - The worst screen holds fewer ground-cover renderers than today's worst screen, but more batches. Both stay inside the budget test's limits (§6.4).
 - **Nothing that must not move moves.** This covers:
   - the buildings, roads, yards and wharf;
   - the berths, the dredged approach and the arrival route;
@@ -636,7 +636,10 @@ It assumes one texture per species, as PR 3's sheets would give. A species split
 | Upper bound: the plan's worst plus today's worst on one screen, nothing retired | 714 | 244 | — |
 
 **What this means:**
-- **The plan's worst screen is below today's worst screen.** It uses about a third of the renderer budget and half the batch budget. The old families stand only 6 more plants in that window today, so it stays below today's worst even if nothing retires.
+- **The plan's worst screen holds fewer renderers than today's, but more batches.**
+  - It has 319 renderers against today's 395: about a third of the budget.
+  - It has 130 batches against today's 114 at most: half the budget.
+  - The old families stand only 6 more plants in that window today. So even if nothing retires, that screen stays inside both budgets.
 - **The upper bound** assumes nothing retires and both worst screens fall on one spot. Even then it stays inside the budget, with 16 batches spare. That is the reason to retire the old families where the field covers (decision 3).
 
 ---
