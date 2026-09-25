@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-09-25T11:50:10Z",
+  "generatedAt": "2026-09-25T15:14:26Z",
   "region": {
     "id": "region.nine_mile_creek",
     "sceneName": "NineMileCreek",
@@ -195404,7 +195404,7 @@
   "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum) — the repo's own convention, the same one docs/art/rigs sidecars publish. A SIBLING of the table rather than a key inside it: the table's keys are family names and nothing else, so iterating it cannot pick up a note.",
   "x-cliffLinesNote": "the region's cliffs, as the format's own key. Each is one CliffWallSurface — the builder pushes one CHUNK per stretch, so a coastline arrives as many short lines and not one long one; joining them would be a derivation this exporter invents. `nodes` is the chunk's brow plan and its stations are SAMPLED at ~0.25 m rather than hand-placed (see each line's x-nodesAre). No `tiles` count: this exporter paints no cliff layer at all, so a 0 would read as a fact about the line instead of about the export.",
   "x-provenance": {
-    "generatedAt": "2026-09-25T11:50:10Z",
+    "generatedAt": "2026-09-25T15:14:26Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/NineMileCreek.unity",
     "sceneFileSha256": "a3a125418a8043a745f0cc73cf34727388bf12bbe8d6af4a5667160c7d8c3908",
@@ -195414,11 +195414,11 @@
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
       "builderCommitsSinceScene": 1,
-      "measuredTo": "eca21af1d64d1d3aa3e8aaf9babc69f16e83f44c",
-      "measuredToDate": "2026-09-25T08:50:10-03:00",
+      "measuredTo": "2d40afdfc16edb4642988c060403e4c720f419a5",
+      "measuredToDate": "2026-09-25T12:14:26-03:00",
       "exact": true,
       "builderCommits": [
-        "eca21af1 feat(art): bake the cliff faces in the material's look, and wire the px index through the catalog"
+        "2d40afdf feat(art): bake the cliff faces in the material's look, and wire the px index through the catalog (#884)"
       ]
     },
     "heightMap": {
