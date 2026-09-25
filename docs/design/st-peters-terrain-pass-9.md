@@ -1,6 +1,6 @@
 # St Peters, terrain pass 9: the plan
 
-> - **Status:** PLAN. Session 1 of the terrain pass 9 arc. Docs only: no code, no asset, no scene. Nothing here is built until the owner rules on §13.
+> - **Status:** PLAN, RULED. Session 1 of the terrain pass 9 arc. Docs only: no code, no asset, no scene. On 2026-09-25 the owner took every recommendation in §13.
 > - **Lane:** art-pipeline, wearing world-content's hat for the island plan. Charter: `seat/HANDOFF-2026-09-25-terrain-pass-9-st-peters.md`.
 > - **Pillars:**
 >   - **P1 Sea Has Moods:** the tide floods the marsh and cuts three paths off.
@@ -25,11 +25,11 @@ Seven St Peters layers stand on ground this plan moves, and each of them can cha
 - the clam holes;
 - the reef north mark's recorded depth.
 
-St Peters has no refresh command. Its builder's only entry point is the full rebuild, which wipes the hand-authored scene (`StPetersBuilder.cs:1745-1747`, `RegionBuildGuard`; ADR 0019), so `Build()` is never run on it. As chartered, **that stops PR 5.** This PR does not work around it: it runs no `Build()`, edits no scene and adds no refresh code. Two ways forward are in §10, and the owner chooses in decision 10:
-1. The recommended way:
+St Peters has no refresh command. Its builder's only entry point is the full rebuild, which wipes the hand-authored scene (`StPetersBuilder.cs:1745-1747`, `RegionBuildGuard`; ADR 0019), so `Build()` is never run on it. As chartered, **that stops PR 5.** This PR does not work around it: it runs no `Build()`, edits no scene and adds no refresh code. Two ways forward are in §10. **On 2026-09-25 the owner ruled for the first (decision 10):**
+1. The ruled way:
    - retire the four plant layers at St Peters in favour of the new plant field, which is computed when the scene loads and so never goes stale;
    - add a small **PR 4b** that refreshes the other three layers in place.
-2. Hand-write every moved object into PR 5's scene YAML.
+2. Not chosen: hand-write every moved object into PR 5's scene YAML.
 
 **A second finding the handoff did not list.** St Peters' simulation reads the *analytic* terrain, not the painted height map. The scene has one enabled `TidalTerrain` and no `PaintedTidalTerrain`.
 - So a new coast in the painted map changes only the picture. Walking, sailing, fishing, the fleet and the shore plants' tide response do not see it until the scene adopts the painted map.
@@ -300,6 +300,7 @@ Code paths are under `Assets/_Project/Code/`. `StPetersBuilder.cs` is `App/Edito
 
 ### 2.2 Two findings about today
 - **The ambient fleet's grounds lie on land.** 7,300 of the rectangle's 7,480 cells are dry at mean tide. Only 12 are deep water at spring low.
+  - The boats do not fish on land. The fleet fishes only spots with at least `MinDepthMeters` of water at spring low, and a boat that finds none is hidden for the day (`Boats/AmbientFleetPresenter.cs:419-440`). So the grounds give the fleet almost nowhere to fish.
   - This is already true today. The plan leaves the rectangle untouched.
   - It is for gameplay-systems (decision 12).
 - **Nothing to protect for anchorages.** St Peters has no anchorage or mooring field, and its fishing grounds are depth bands, not places.
@@ -822,13 +823,13 @@ The prototype (Appendix B) derives the maps from Appendix A's data and checks th
 - **The handoff's rule** is that a layer that can change only through `Build()` stops PR 5, so this is reported here.
 - **This PR does not work around it.**
 
-**Two ways through (decision 10):**
-- **(a) Recommended:**
+**Two ways through (decision 10, ruled (a) on 2026-09-25):**
+- **(a) Ruled:**
   - The four plant roots **retire** at St Peters (decision 3). The plant field replaces them; it is computed at load, so it needs no refresh.
   - **PR 4b** gives the other three layers an in-place refresh:
     - an editor step per layer recomputes that one root with the builder's own function on the new terrain (`ScatterClamHoles`, the shore painter's rock placement, `StPetersNavMarks`' records);
     - it writes the result as a YAML patch to that root alone, gated by named deletions, without ever opening and saving the scene.
-- **(b)** PR 5 hand-writes every moved object in YAML. This works, but it has to be redone each time the plan is tuned.
+- **(b) Not chosen:** PR 5 hand-writes every moved object in YAML. This works, but it has to be redone each time the plan is tuned.
 
 ---
 
@@ -847,7 +848,7 @@ The handoff's §4 is the starting point. This session corrects it in three ways:
 | **2: the ground** | art-pipeline | one editor slot (the bake and the plate) | +11 to +12 MB: 189 new 256² maps. The albedo re-bake is about the size of today's 3.9 MB, so about ±0. | — (can run beside PR 4) |
 | **3: the plants** | art-pipeline, with tools-editor | one (the bake) | +8 to +15 MB; the sheet spec decides it | the tree PR |
 | **4: still water, and one height source** | lead-architect, with gameplay-systems | CI, plus one slot for a plate | about 0.1 MB | — |
-| **4b: the layer refresh** | world-content, with tools-editor | CI only (the refresh runs in PR 5's slot) | about 0 | decision 10 |
+| **4b: the layer refresh** | world-content, with tools-editor | CI only (the refresh runs in PR 5's slot) | about 0 | — |
 | **5: St Peters** | world-content | one | +0.3 to +0.5 MB of maps; +0.08 MB of scene; about −2.2 MB when the four plant roots retire (decision 3; ShorePlants alone is 1.5 MB) | PRs 2, 3, 4 and 4b, and CLIFFS' Phase C |
 
 ### PR 2: the ground
@@ -921,7 +922,7 @@ The handoff's §4 is the starting point. This session corrects it in three ways:
 
 **Tests retired:** none.
 
-### PR 4b: the in-place refresh (only if decision 10 is (a))
+### PR 4b: the in-place refresh (decision 10)
 **Files:** `Code/App/Editor/StPetersLayerRefresh.cs`, with one step each for the shore rocks, the clam holes and the nav marks' records. Each writes a YAML patch to its own root, with named deletions. It adds nothing to the scene until PR 5 runs it.
 
 **Tests added:** `StPetersLayerRefreshTests` (ScatterClamHoles, StPetersShorePainter, StPetersNavMarks): each refresh equals the builder's own function on the same terrain.
@@ -983,12 +984,12 @@ The handoff's §4 is the starting point. This session corrects it in three ways:
 ---
 
 ## 12. Risks
-1. **The Build()-only layers** (§10). This stops PR 5 until decision 10.
+1. **The Build()-only layers** (§10). Decision 10 is ruled: the four plant layers retire, and PR 4b refreshes the other three before PR 5.
 2. **The analytic sim against the painted map.** The new coast reaches gameplay only when St Peters adopts the painted map.
    - In 8-bit, that moves the bar crest from +0.88 to +0.86 m, and with it the tide window that `TidePacingInvariantTests` pins.
    - The recommendation is to derive from the analytic model and store the height at R16, and to have a guard hold the frozen mask to one R16 step.
 3. **8-bit terraces.** On the flats, the waterline would jump up to 1.42 m per height step. R16 removes this.
-4. **The outcrops above +6.0 m** (285.5 m²). Widen the range to +7, or cap them (decision 11).
+4. **The outcrops above +6.0 m** (285.5 m²). Ruled: the range widens to +7 (decision 11).
 5. **The Lagoon Flats bare 65 m out at spring low.** Their flattest part, between −1.0 and −1.45 m, slopes at 1:72 to 1:80. There, the waterline of a spring flood advances at up to about 1 m per second of real time. That is the P5 teeth, and it should be felt in a playtest before it ships.
 6. **The ruts need a strip layer.** The splat cannot hold them. PR 2 makes the strip kind, and PR 5 places the ruts.
 7. **Batch headroom.** If nothing retires, and both worst screens fell on one spot, 16 batches would be spare.
@@ -1001,11 +1002,15 @@ The handoff's §4 is the starting point. This session corrects it in three ways:
 14. **48 species, not 47:** the handoff miscounted by one.
 15. **The StarterSplat Regenerate menu** would overwrite the plan's splat (§10).
 16. **St Peters cannot be rebuilt.** Every scene change is hand-written YAML.
-17. **SugarKelp has no successor placement** (decision 3).
+17. **SugarKelp has no successor placement** in the drop's scenes. Ruled: it joins the fringe recipe (decision 3).
 
 ---
 
 ## 13. Decisions for the owner
+
+🟢 **Ruled on 2026-09-25: the owner took every recommendation below.** Each *Recommendation* is now the ruling.
+- Decision 8 is the owner's to act on: sending the Claude Design paste.
+- Decision 12 goes to gameplay-systems.
 
 1. **The plan.** The sections, points and coves, the streams, the ponds, the paths and the biome zones, judged on `plan-north.png`, `plan-island.png`, `flood.png` and the previews.
    - *Recommendation:* approve. Every shape is data (Appendix A), so any of them can be moved, renamed or re-typed later without code.
