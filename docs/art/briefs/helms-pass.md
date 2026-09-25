@@ -9,6 +9,11 @@
 instruments), ADR 0031 (no keyline), ADR 0043 (the input table). The audit's tables and images named below ship in
 each job's `evidence/` folder.
 
+> **The order: the lighting pass on each hull comes first.** In it, Claude Design adds spotlights, deck lights,
+> navigation lights, underwater lights and cabin lights; when a cabin's lights are on, its windows glow. The helms
+> are reconfigured after it, to reflect each hull's latest design and features (the owner, 2026-09-25;
+> `helm-audit.md` §3.4).
+
 The helm is the card at the bottom of the screen while you pilot. It is a dash (Cape Islander, Novi lobster boat,
 console skiff, sport skiff), a tiller, or nothing (the dory, the sloops). The owner asked for a review of what the
 cards hide, how well they read, and which of their drawn switches should do something. The audit found three

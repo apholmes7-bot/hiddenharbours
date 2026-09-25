@@ -1,9 +1,12 @@
 # Hidden Harbours — The Helm Audit (helms you can read, switches that work, a helm for every hull)
 
-> **Status: RULED 2026-09-25 (D1–D6). Two questions are still open: D2 (a) and (b) (§3.4).** This doc is the
-> design of record for the helms pass. It holds what the 2026-09-24 audit found (ui-ux, arithmetic over the code
-> and Data at `3fa9b606`, no Unity) and the owner's rulings on it. **Every build it names is chartered separately,
-> later; this doc builds nothing.**
+> **Status: RULED 2026-09-25 (D1–D6). D2's (a) and (b) were answered the same day, at 13:30:33Z (§3.4).** This doc
+> is the design of record for the helms pass. It holds what the 2026-09-24 audit found (ui-ux, arithmetic over the
+> code and Data at `3fa9b606`, no Unity) and the owner's rulings on it. **Every build it names is chartered
+> separately, later; this doc builds nothing.**
+>
+> **The order:** Claude Design's lighting pass on each hull comes first. The helms are reconfigured after it, to
+> reflect each hull's latest design and features (§3.4).
 >
 > It is subordinate to [`../vision-and-pillars.md`](../vision-and-pillars.md) (CANON). Sibling docs:
 > [`diegetic-instruments-and-consoles.md`](diegetic-instruments-and-consoles.md) (the helm consoles: the first
@@ -37,7 +40,7 @@ switches should do something. The audit found four problems:
 | # | The owner's ruling | What it means here |
 |---|---|---|
 | **D1** | *"O4, the strip (360x72 on dashes, 320x72 on consoles, whole-number scale, bottom centre), plus O5 (U or a tap of pad View cycles the size, holding View hides all, the grip mark, the first-time hint, 24 px buttons). The size is not remembered. O7 stays in reserve."* | §2. The small card becomes a purpose-drawn strip, and the window controls become findable. There is no save data and no camera change. |
-| **D2** | *"P1 is the first build, as you proposed, with the L bug (spotlight plus every ice-box lid) fixed in it. Its Core interface needs lead-architect's approval. P2 and P3 come later. (a) Nav lights: ____. (b) The dory's searchlight: ____. Write this into the design doc; the build is its own charter later."* | §3. P1 wires what already exists and caps the decor. **(a) and (b) were left blank: they're open** (§3.4). |
+| **D2** | *"P1 is the first build, as you proposed, with the L bug (spotlight plus every ice-box lid) fixed in it. Its Core interface needs lead-architect's approval. P2 and P3 come later. (a) Nav lights: ____. (b) The dory's searchlight: ____. Write this into the design doc; the build is its own charter later."* The blanks, answered at 13:30:33Z: *"Claude design will add spotlights, decklights, navigation lights, underwater lights, cabin lights, with a cabin glow through windows if cabin lights are on. We will do a lighting pass on each hull and then will reconfigure helms to reflect the latest hull design and features"* | §3. P1 wires what already exists and caps the decor. **(a) Nav lights and (b) the dory's searchlight come from Claude Design, in a lighting pass on each hull. That pass comes first; the helms are reconfigured after it** (§3.4). |
 | **D3** | *"your milestone order: wheelhouse for the dragger and trawlers (M3), ship's bridge (M4), RIB console with a twin option, flybridge, the heavier punt tiller, Sloop 88. The dory stays bare."* | §4. Six new helms in that order. The Sloop 30 gets nothing in this pass. |
 | **D4** | *"revise, don't redesign. Finish the brief in the PR; I send it to Claude Design myself."* | §5. The brief is [`../art/briefs/helms-pass.md`](../art/briefs/helms-pass.md). The owner sends it. |
 | **D5** | *"the docs-only draft PR."* | §6. Three new docs. The evidence stays out of the repo. |
@@ -287,20 +290,19 @@ The rigs need new art for the caps and the new states (the brief §2.2). The P1 
   - On foot, L stays the headlamp (`WalkerLights.cs` :66, :176-179).
   - A guard test pins it: at the helm, one press of L changes the beam and no lid.
 
-### 3.4 Open: two questions the ruling left blank
+### 3.4 The lights: (a) and (b), ruled
 
-**(a) Nav lights with teeth.**
-- Today the lighting regime lights the lamps automatically, so a NAV switch that defaults on changes nothing for the player.
-- The P5 version: on the player's own hull the lamps obey the switch alone, and running dark costs something, such as NPC traffic not seeing you (M3-06), or a word from the harbour master.
-- That's a ruling, not wiring.
-- **Until it's ruled, P1 builds the plain switch:** default on, and while on, the lamps follow the regime.
-- It changes no art: NAV is drawn with its states either way.
+The ruling left (a) and (b) blank. The owner answered both on 2026-09-25, at 13:30:33Z:
 
-**(b) The dory's searchlight.**
-- By the code, L lights a beam on the rowing dory today (`BoatSpotlight.cs` :386-398; Phase C confirms it).
-- The owner's earlier "the rowboat should not have one currently" was answered by defaulting the beam off, not by removing it. Keep it, or take it off?
-- **Until it's ruled, P1 doesn't touch it:** L still lights her beam, default off.
-- The dory has no card, so this changes no art either.
+> *"Claude design will add spotlights, decklights, navigation lights, underwater lights, cabin lights, with a cabin glow through windows if cabin lights are on. We will do a lighting pass on each hull and then will reconfigure helms to reflect the latest hull design and features"*
+
+- **(a) Nav lights** and **(b) the dory's searchlight** come from Claude Design, in a lighting pass on each hull.
+- That pass adds spotlights, deck lights, navigation lights, underwater lights and cabin lights. When a cabin's lights are on, its windows glow.
+- **The order:** the lighting pass on each hull comes first. The helms are reconfigured after it, to reflect each hull's latest design and features.
+
+What the audit had found behind the two questions:
+- **Nav lights.** Today the lighting regime lights the lamps automatically, so a NAV switch that defaults on changes nothing for the player. The audit's P5 option: on the player's own hull the lamps obey the switch alone, and running dark costs something, such as NPC traffic not seeing you (M3-06), or a word from the harbour master.
+- **The dory's searchlight.** By the code, L lights a beam on the rowing dory today (`BoatSpotlight.cs` :386-398; Phase C confirms it). The owner's earlier "the rowboat should not have one currently" was answered by defaulting the beam off, not by removing it.
 
 ### 3.5 Rule 5 (what's saved)
 
@@ -348,7 +350,7 @@ The rigs need new art for the caps and the new states (the brief §2.2). The P1 
 | Item | Today | It should | Priority |
 |---|---|---|---|
 | Lantern | lit on foot, dark aboard (`WalkerLights.cs` :186) | stay lit aboard a hull with no lamps | P2 |
-| Searchlight | L lights a beam | D2 (b), open | — |
+| Searchlight | L lights a beam | come from her hull's lighting pass (D2 (b), §3.4) | the lighting pass |
 | Hand horn or bell | none | use the HORN event | P2 |
 | Bailer | none | come with M2-03 | P3 |
 | Hand compass | none | be a held item | P2 |
