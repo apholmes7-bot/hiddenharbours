@@ -871,6 +871,21 @@ namespace HiddenHarbours.Core
             Config != null ? Config.FoliageSilhouetteStrength
                            : GameConfig.DefaultFoliageSilhouetteStrength;
 
+        /// <summary>The calendar's season length in days, never below 1. Same contract as
+        /// <see cref="SecondsPerDay"/>, including the <c>Config != null</c> discipline (never
+        /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to
+        /// <see cref="GameConfig.DefaultDaysPerSeason"/>.</summary>
+        public static int DaysPerSeason =>
+            System.Math.Max(1, Config != null ? Config.DaysPerSeason : GameConfig.DefaultDaysPerSeason);
+
+        /// <summary>The tree-snow calendar (<see cref="FoliageSnowMath"/>): the day the first snow settles,
+        /// how long the cover builds, when the melt starts and how long it runs. Same contract as
+        /// <see cref="WaveField"/>, including the <c>Config != null</c> discipline. Falls back to
+        /// <see cref="FoliageSnowSettings.Default"/>, the proposed shape, so an unwired scene still
+        /// snows on the same days the shipped asset does.</summary>
+        public static FoliageSnowSettings FoliageSnow =>
+            Config != null ? Config.FoliageSnow : FoliageSnowSettings.Default;
+
         /// <summary>
         /// Rebuilds a <see cref="CatchItem"/> from a stable species id — the save-restore's species
         /// resolver (M1 §7.3: the save carries the reference, the Def's stats re-cache at load).

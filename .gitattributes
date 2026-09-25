@@ -252,3 +252,22 @@ docs/art/rigs/rock-px-kit/**                          text eol=lf
 Assets/_Project/Art/Sprites/Shore/RockPx/*.json       text eol=lf
 Assets/_Project/Art/Sprites/Shore/RockPx/sidecar/*.json text eol=lf
 Assets/_Project/Art/Sprites/Shore/RockPx/seat/*.json  text eol=lf
+
+# The tree rig, PASS 4 (drop tree-rig-kit-v4.1 of 2026-09-23). Its ten gameplay sidecars stamp
+# derivedFromRigSha256, skyDerivedFromRigSha256 and writerDerivedFromRigSha256 over treeIsoRig4.js,
+# weatherSky.js and _treeGameplay.js AS WRITTEN, which are LF (measured: 0 CR in all 31 text files of
+# the kit), and the kit's SHA256SUMS.txt lists the same LF digests. Pin the working-tree form so the
+# stamps and the checksum file are verifiable on any checkout, as for the kits above.
+# NAMED FILES and extension globs, not `docs/art/tree-rig-kit-v4/**`: a blanket `text eol=lf` would
+# override the `-text` inside [attr]lfs for any PNG that later lands there (see the truck kit above).
+# gameplay/trees/** is safe as a folder rule because it holds sidecar JSON only.
+docs/art/rigs/treeIsoRig4.js                          text eol=lf
+docs/art/rigs/treeMaps4.js                            text eol=lf
+docs/art/rigs/weatherSky.js                           text eol=lf
+docs/art/rigs/_treeGameplay.js                        text eol=lf
+docs/art/rigs/gameplay/trees/**                       text eol=lf
+docs/art/tree-rig-kit-v4/**/*.js                      text eol=lf
+docs/art/tree-rig-kit-v4/**/*.md                      text eol=lf
+docs/art/tree-rig-kit-v4/**/*.txt                     text eol=lf
+docs/art/tree-rig-kit-v4/**/*.json                    text eol=lf
+docs/art/tree-rig-kit-v4/**/*.html                    text eol=lf

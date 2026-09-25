@@ -1,0 +1,674 @@
+{
+  "schema": "hidden-harbours/tree-maps@1",
+  "generated": "2026-09-24",
+  "derivedFromRigSha256": "a25cfba1e79d1a2b46a4a92a56ff4877237f3f38f908eb3b02453efe3308e18b",
+  "mapsDerivedFromSha256": "ecf7b3498c85d580631b4ef8676202627bc1ed3033faaeddbb5fc17951e52e42",
+  "loop": 16,
+  "sheet": {
+    "cols": 4,
+    "rows": 1,
+    "order": "variant 1–4, rest pose",
+    "maps": [
+      "unlit",
+      "normal",
+      "light",
+      "detail",
+      "snow",
+      "wind",
+      "phase"
+    ]
+  },
+  "encodings": {
+    "snow": "byte = cover × 254 at which the pixel turns to snow; 1–254; 255 never; alpha 0 outside. snowed = round(cover × 254) >= byte",
+    "wind": "R lean = (height / H)^1.8 × 255 · G sway = r / 1.3 × 255 · B flutter 255 leaf / 0 · A 255 (filled outward)",
+    "phase": "R wave = (X / 4 + 0.5) × 255, X = (x − cx) / crownR · G play = (J / 0.5 + 0.5) × 255 · B depth 0 far – 255 near · A 255 (filled outward)",
+    "stampId": "_detail RG − 1 = the leaf stamp id the flutter slots hash (0 = not a leaf)"
+  },
+  "shader": "see treeMaps4.js header: field from lean/sway/wave/play; leaves add dither + flutter keyed on the stamp id; gather over 5 × 5 by depth",
+  "species": {
+    "RedSpruce": {
+      "name": "Red Spruce",
+      "conifer": true,
+      "bob": 1,
+      "flutter": 0.12,
+      "shimmer": null,
+      "stages": {
+        "sapling": {
+          "cell": [
+            76,
+            99
+          ],
+          "pivot": [
+            37,
+            82
+          ],
+          "H_px": 88.704,
+          "bendPx": 3.5482,
+          "limbPx": 0.7096
+        },
+        "young": {
+          "cell": [
+            113,
+            161
+          ],
+          "pivot": [
+            55,
+            152
+          ],
+          "H_px": 181.44,
+          "bendPx": 7.2576,
+          "limbPx": 1.4515
+        },
+        "pole": {
+          "cell": [
+            169,
+            236
+          ],
+          "pivot": [
+            83,
+            228
+          ],
+          "H_px": 282.24,
+          "bendPx": 11.2896,
+          "limbPx": 2.2579
+        },
+        "mature": {
+          "cell": [
+            244,
+            332
+          ],
+          "pivot": [
+            122,
+            321
+          ],
+          "H_px": 403.2,
+          "bendPx": 16.128,
+          "limbPx": 3.2256
+        }
+      }
+    },
+    "BlackSpruce": {
+      "name": "Black Spruce",
+      "conifer": true,
+      "bob": 0.8,
+      "flutter": 0.1,
+      "shimmer": null,
+      "stages": {
+        "sapling": {
+          "cell": [
+            67,
+            68
+          ],
+          "pivot": [
+            33,
+            50
+          ],
+          "H_px": 46.464,
+          "bendPx": 2.3232,
+          "limbPx": 0.3098
+        },
+        "young": {
+          "cell": [
+            82,
+            96
+          ],
+          "pivot": [
+            40,
+            87
+          ],
+          "H_px": 95.04,
+          "bendPx": 4.752,
+          "limbPx": 0.6336
+        },
+        "pole": {
+          "cell": [
+            102,
+            133
+          ],
+          "pivot": [
+            51,
+            126
+          ],
+          "H_px": 147.84,
+          "bendPx": 7.392,
+          "limbPx": 0.9856
+        },
+        "mature": {
+          "cell": [
+            129,
+            182
+          ],
+          "pivot": [
+            64,
+            174
+          ],
+          "H_px": 211.2,
+          "bendPx": 10.56,
+          "limbPx": 1.408
+        }
+      }
+    },
+    "BalsamFir": {
+      "name": "Balsam Fir",
+      "conifer": true,
+      "bob": 0.8,
+      "flutter": 0.1,
+      "shimmer": null,
+      "stages": {
+        "sapling": {
+          "cell": [
+            64,
+            78
+          ],
+          "pivot": [
+            31,
+            63
+          ],
+          "H_px": 67.584,
+          "bendPx": 2.2979,
+          "limbPx": 0.4506
+        },
+        "young": {
+          "cell": [
+            88,
+            129
+          ],
+          "pivot": [
+            43,
+            117
+          ],
+          "H_px": 138.24,
+          "bendPx": 4.7002,
+          "limbPx": 0.9216
+        },
+        "pole": {
+          "cell": [
+            128,
+            184
+          ],
+          "pivot": [
+            63,
+            176
+          ],
+          "H_px": 215.04,
+          "bendPx": 7.3114,
+          "limbPx": 1.4336
+        },
+        "mature": {
+          "cell": [
+            179,
+            255
+          ],
+          "pivot": [
+            90,
+            246
+          ],
+          "H_px": 307.2,
+          "bendPx": 10.4448,
+          "limbPx": 2.048
+        }
+      }
+    },
+    "WhitePine": {
+      "name": "E. White Pine",
+      "conifer": true,
+      "bob": 1.2,
+      "flutter": 0.2,
+      "shimmer": null,
+      "stages": {
+        "sapling": {
+          "cell": [
+            108,
+            114
+          ],
+          "pivot": [
+            52,
+            105
+          ],
+          "H_px": 114.048,
+          "bendPx": 5.7024,
+          "limbPx": 1.3686
+        },
+        "young": {
+          "cell": [
+            171,
+            209
+          ],
+          "pivot": [
+            85,
+            201
+          ],
+          "H_px": 233.28,
+          "bendPx": 11.664,
+          "limbPx": 2.7994
+        },
+        "pole": {
+          "cell": [
+            267,
+            313
+          ],
+          "pivot": [
+            128,
+            303
+          ],
+          "H_px": 362.88,
+          "bendPx": 18.144,
+          "limbPx": 4.3546
+        },
+        "mature": {
+          "cell": [
+            379,
+            441
+          ],
+          "pivot": [
+            190,
+            428
+          ],
+          "H_px": 518.4,
+          "bendPx": 25.92,
+          "limbPx": 6.2208
+        }
+      }
+    },
+    "WhiteCedar": {
+      "name": "E. White Cedar",
+      "conifer": true,
+      "bob": 0.5,
+      "flutter": 0.12,
+      "shimmer": null,
+      "stages": {
+        "sapling": {
+          "cell": [
+            57,
+            73
+          ],
+          "pivot": [
+            28,
+            56
+          ],
+          "H_px": 54.912,
+          "bendPx": 1.6474,
+          "limbPx": 0.2563
+        },
+        "young": {
+          "cell": [
+            74,
+            116
+          ],
+          "pivot": [
+            36,
+            100
+          ],
+          "H_px": 112.32,
+          "bendPx": 3.3696,
+          "limbPx": 0.5242
+        },
+        "pole": {
+          "cell": [
+            102,
+            166
+          ],
+          "pivot": [
+            49,
+            148
+          ],
+          "H_px": 174.72,
+          "bendPx": 5.2416,
+          "limbPx": 0.8154
+        },
+        "mature": {
+          "cell": [
+            140,
+            228
+          ],
+          "pivot": [
+            70,
+            205
+          ],
+          "H_px": 249.6,
+          "bendPx": 7.488,
+          "limbPx": 1.1648
+        }
+      }
+    },
+    "Tamarack": {
+      "name": "Tamarack",
+      "conifer": true,
+      "bob": 0.8,
+      "flutter": 0.3,
+      "shimmer": null,
+      "stages": {
+        "sapling": {
+          "cell": [
+            70,
+            76
+          ],
+          "pivot": [
+            34,
+            65
+          ],
+          "H_px": 71.808,
+          "bendPx": 4.0212,
+          "limbPx": 0.7181
+        },
+        "young": {
+          "cell": [
+            99,
+            130
+          ],
+          "pivot": [
+            48,
+            123
+          ],
+          "H_px": 146.88,
+          "bendPx": 8.2253,
+          "limbPx": 1.4688
+        },
+        "pole": {
+          "cell": [
+            148,
+            193
+          ],
+          "pivot": [
+            73,
+            185
+          ],
+          "H_px": 228.48,
+          "bendPx": 12.7949,
+          "limbPx": 2.2848
+        },
+        "mature": {
+          "cell": [
+            207,
+            269
+          ],
+          "pivot": [
+            103,
+            260
+          ],
+          "H_px": 326.4,
+          "bendPx": 18.2784,
+          "limbPx": 3.264
+        }
+      }
+    },
+    "WhiteBirch": {
+      "name": "White Birch",
+      "conifer": false,
+      "bob": 0.9,
+      "flutter": 0.6,
+      "shimmer": [
+        0.75,
+        0.1
+      ],
+      "stages": {
+        "sapling": {
+          "cell": [
+            83,
+            70
+          ],
+          "pivot": [
+            41,
+            63
+          ],
+          "H_px": 71.808,
+          "bendPx": 5.0266,
+          "limbPx": 0.8617
+        },
+        "young": {
+          "cell": [
+            134,
+            121
+          ],
+          "pivot": [
+            67,
+            114
+          ],
+          "H_px": 146.88,
+          "bendPx": 10.2816,
+          "limbPx": 1.7626
+        },
+        "pole": {
+          "cell": [
+            195,
+            179
+          ],
+          "pivot": [
+            96,
+            171
+          ],
+          "H_px": 228.48,
+          "bendPx": 15.9936,
+          "limbPx": 2.7418
+        },
+        "mature": {
+          "cell": [
+            283,
+            277
+          ],
+          "pivot": [
+            140,
+            268
+          ],
+          "H_px": 326.4,
+          "bendPx": 22.848,
+          "limbPx": 3.9168
+        }
+      }
+    },
+    "RedMaple": {
+      "name": "Red Maple",
+      "conifer": false,
+      "bob": 0.7,
+      "flutter": 0.4,
+      "shimmer": [
+        0.6,
+        0.06
+      ],
+      "stages": {
+        "sapling": {
+          "cell": [
+            90,
+            77
+          ],
+          "pivot": [
+            42,
+            70
+          ],
+          "H_px": 84.48,
+          "bendPx": 3.8016,
+          "limbPx": 0.8448
+        },
+        "young": {
+          "cell": [
+            145,
+            134
+          ],
+          "pivot": [
+            73,
+            127
+          ],
+          "H_px": 172.8,
+          "bendPx": 7.776,
+          "limbPx": 1.728
+        },
+        "pole": {
+          "cell": [
+            210,
+            198
+          ],
+          "pivot": [
+            105,
+            189
+          ],
+          "H_px": 268.8,
+          "bendPx": 12.096,
+          "limbPx": 2.688
+        },
+        "mature": {
+          "cell": [
+            301,
+            321
+          ],
+          "pivot": [
+            149,
+            310
+          ],
+          "H_px": 384,
+          "bendPx": 17.28,
+          "limbPx": 3.84
+        }
+      }
+    },
+    "RedOak": {
+      "name": "Red Oak",
+      "conifer": false,
+      "bob": 0.6,
+      "flutter": 0.3,
+      "shimmer": [
+        0.4,
+        0.04
+      ],
+      "stages": {
+        "sapling": {
+          "cell": [
+            103,
+            81
+          ],
+          "pivot": [
+            50,
+            74
+          ],
+          "H_px": 92.928,
+          "bendPx": 2.9737,
+          "limbPx": 0.7434
+        },
+        "young": {
+          "cell": [
+            191,
+            152
+          ],
+          "pivot": [
+            95,
+            144
+          ],
+          "H_px": 190.08,
+          "bendPx": 6.0826,
+          "limbPx": 1.5206
+        },
+        "pole": {
+          "cell": [
+            285,
+            235
+          ],
+          "pivot": [
+            137,
+            225
+          ],
+          "H_px": 295.68,
+          "bendPx": 9.4618,
+          "limbPx": 2.3654
+        },
+        "mature": {
+          "cell": [
+            407,
+            347
+          ],
+          "pivot": [
+            202,
+            334
+          ],
+          "H_px": 422.4,
+          "bendPx": 13.5168,
+          "limbPx": 3.3792
+        }
+      }
+    },
+    "TremblingAspen": {
+      "name": "Trembling Aspen",
+      "conifer": false,
+      "bob": 0.7,
+      "flutter": 1,
+      "shimmer": [
+        1,
+        0.35
+      ],
+      "stages": {
+        "sapling": {
+          "cell": [
+            77,
+            72
+          ],
+          "pivot": [
+            37,
+            65
+          ],
+          "H_px": 76.032,
+          "bendPx": 4.5619,
+          "limbPx": 0.7096
+        },
+        "young": {
+          "cell": [
+            113,
+            127
+          ],
+          "pivot": [
+            55,
+            120
+          ],
+          "H_px": 155.52,
+          "bendPx": 9.3312,
+          "limbPx": 1.4515
+        },
+        "pole": {
+          "cell": [
+            161,
+            183
+          ],
+          "pivot": [
+            78,
+            175
+          ],
+          "H_px": 241.92,
+          "bendPx": 14.5152,
+          "limbPx": 2.2579
+        },
+        "mature": {
+          "cell": [
+            226,
+            294
+          ],
+          "pivot": [
+            113,
+            285
+          ],
+          "H_px": 345.6,
+          "bendPx": 20.736,
+          "limbPx": 3.2256
+        }
+      }
+    }
+  },
+  "sample": {
+    "species": "RedMaple",
+    "stage": "mature",
+    "files": [
+      "maps/RedMaple_mature_summer_unlit.png",
+      "maps/RedMaple_mature_summer_normal.png",
+      "maps/RedMaple_mature_summer_light.png",
+      "maps/RedMaple_mature_summer_detail.png",
+      "maps/RedMaple_mature_summer_snow.png",
+      "maps/RedMaple_mature_summer_wind.png",
+      "maps/RedMaple_mature_summer_phase.png",
+      "maps/RedMaple_mature_autumn_unlit.png",
+      "maps/RedMaple_mature_winter_unlit.png",
+      "maps/RedMaple_mature_winter_normal.png",
+      "maps/RedMaple_mature_winter_light.png",
+      "maps/RedMaple_mature_winter_detail.png",
+      "maps/RedMaple_mature_winter_snow.png",
+      "maps/RedMaple_mature_winter_wind.png",
+      "maps/RedMaple_mature_winter_phase.png"
+    ],
+    "note": "One species × stage baked as the weights pipeline ships it: summer 7 maps, autumn _unlit only (every other map is summer's), winter 7 maps. TreeMaps4.sheet(key, stage, season, map) bakes any other."
+  }
+}

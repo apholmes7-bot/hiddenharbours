@@ -17,8 +17,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
     ///
     /// The classic traps this catches (both cost this project hours on the water shader): a '+' (or other operator)
     /// in a <c>[Header(...)]</c> label or property string = a ShaderLab PARSE error -> magenta; and an
-    /// <c>[unroll]</c> over a runtime loop bound = an HLSL variant compile error -> magenta. (TreeWind has no loops,
-    /// but the guard still proves it.) A shader error does NOT fail a normal test run, and nothing else
+    /// <c>[unroll]</c> over a runtime loop bound = an HLSL variant compile error -> magenta. (TreeWind's pass-4 path
+    /// loops only over CONSTANT bounds — two [unroll]s of 2 and a [loop] 5 × 5 in Include/TreeWindMaps.hlsl — and
+    /// the guard proves the variant still compiles.) A shader error does NOT fail a normal test run, and nothing else
     /// force-compiles the shipped variant, so without this a magenta tree material would sail past green CI.
     /// </summary>
     public class TreeWindShaderCompileGuardTests
