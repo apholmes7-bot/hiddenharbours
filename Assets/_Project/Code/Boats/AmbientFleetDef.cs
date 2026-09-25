@@ -49,10 +49,15 @@ namespace HiddenHarbours.Boats
         [Min(1f)] public float TurnRateDegreesPerSecond = 70f;
 
         [Header("Fishing grounds (the world-rect spots are drawn from; the depth gate carves the real shape)")]
-        [Tooltip("Centre of the grounds rectangle (world units). St Peters default: the deep harbour " +
-                 "south of the sandbar, clear of the island and the player's slip.")]
-        public Vector2 GroundsCenter = new Vector2(5f, -32f);
-        [Tooltip("Size of the grounds rectangle (world units).")]
+        [Tooltip("Centre of the grounds rectangle (world units). St Peters default: the bay under the " +
+                 "island's south cliffs, between the village and the wharf. The whole rectangle (grown by " +
+                 "DepthLookAheadMeters) is the -4 m floor at spring low, and it stands clear of the slip, the " +
+                 "approach, the wharf, the entrance fairway, the bar, the passages and the marks by " +
+                 "BoatAvoidRadius + PlayerAvoidRadius (AmbientFleetGroundsTests). The old default " +
+                 "(5, -32) lay on the island itself.")]
+        public Vector2 GroundsCenter = new Vector2(70f, -95f);
+        [Tooltip("Size of the grounds rectangle (world units). St Peters default: 85 x 22, all of it " +
+                 "water that holds MinDepthMeters at spring low, so every boat fills its spots unrelaxed.")]
         public Vector2 GroundsSize = new Vector2(85f, 22f);
         [Tooltip("Buoy spots each boat works per day. 2 keeps the loop readable (set one, go work the " +
                  "other, come back) and the buoy count modest (rule 7).")]

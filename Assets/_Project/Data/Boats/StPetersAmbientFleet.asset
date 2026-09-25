@@ -20,7 +20,7 @@ MonoBehaviour:
   MinSpeedMetersPerSecond: 1.6
   MaxSpeedMetersPerSecond: 2.4
   TurnRateDegreesPerSecond: 70
-  GroundsCenter: {x: 5, y: -32}
+  GroundsCenter: {x: 70, y: -95}
   GroundsSize: {x: 85, y: 22}
   SpotsPerBoat: 2
   MinDepthMeters: 0.4
