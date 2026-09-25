@@ -31,6 +31,19 @@
 // the 512 array retired: one array, one sampler, 8 m tiles everywhere. The kit's Mud took index 19,
 // E.a, the last channel of the five maps; the next material (the kit's Path) needs a _SplatF.
 //
+// TERRAIN PASS 9 (PR 2, the cliff & rock kit v6). The kit's tiles now carry baked MAPS beside their
+// albedo (the normal and pond depth, sky visibility and height, the marks and their tips) and a palette
+// ramp, and TerrainLight6 relights a tile per texel under the sky: Include/TerrainLight6.hlsl, statement
+// for statement from docs/art/rigs/terrain/pass9/terrainLight6.js, whose C# twin the tests hold to the
+// rig byte for byte. With the maps bound (_RelightLoaded, pushed by TerrainSplatSurface.ConfigureRelight)
+// a material whose tiles have maps renders the rig's bytes for each ladder step, lerped by the albedo's
+// own k: the ladder is kept, and a channel still picks the step. A tile without maps (the lawn's) and
+// every material while _RelightLoaded is 0 take the albedo path unchanged. Left out on purpose: ground
+// snow (the plan's decision 4) and the shoreline foam and tide (decision 5: the sea plane owns them). The
+// three inputs TerrainLight6 added default to unset: occ 0 and skyv 1 (_TLOccSkyv black), seaDir 1
+// (_TLSeaDir 0). _SplatF is declared and bound for the kit's Path, whose slot joins the tables below
+// when Path's tiles join the array.
+//
 // The kit's five EDGE STRIPS (the sod lip, scarp, wrack line, weed line, reef margin) are imported
 // under Terrain/Edges but not sampled here — they are decals laid along a spline by signed
 // distance, which is a different addressing scheme than this world-XZ tiling
@@ -63,12 +76,41 @@ Shader "HiddenHarbours/TerrainSplat"
         _DetailLoaded ("Detail arrays loaded", Float) = 0.0
         _DetailOffsetCellMetres ("Hashed offset cell in metres", Float) = 32.0
 
+        [Header(Terrain light 6. The kit relit from its baked maps. Built by TerrainTexArrayBuilder)]
+        [NoScaleOffset] _RelightNormal ("Relight normal and pond", 2DArray) = "" {}
+        [NoScaleOffset] _RelightLight  ("Relight sky visibility and height", 2DArray) = "" {}
+        [NoScaleOffset] _RelightDetail ("Relight marks and tips", 2DArray) = "" {}
+        [NoScaleOffset] _RelightRamp   ("Relight palettes and slice parameters", 2D) = "black" {}
+        _RelightLoaded ("Relight maps loaded", Float) = 0.0
+        [NoScaleOffset] _TLOccSkyv ("Occlusion R and hidden sky G in height uv. Black is unset", 2D) = "black" {}
+
+        [Header(Terrain light 6 sky. The rig afternoon until the engine feeds it)]
+        _TLSunF         ("Sun toward floor xyz with y south. Used while no cycle runs", Vector) = (-0.538986, -0.196175, 0.819152, 0)
+        _TLSunI         ("Sun intensity", Float) = 1.0
+        _TLSkyI         ("Sky intensity", Float) = 0.6
+        _TLExpo         ("Exposure", Float) = 1.0
+        _TLWet          ("Wet", Range(0, 1)) = 0.0
+        _TLRain         ("Rain", Range(0, 1)) = 0.0
+        _TLFog          ("Fog", Range(0, 1)) = 0.0
+        _TLWind         ("Wind", Range(0, 1)) = 0.22
+        _TLGrade        ("Grade on", Float) = 1.0
+        _TLKey          ("Key colour in sRGB bytes", Vector) = (255, 240, 207, 0)
+        _TLAmbient      ("Ambient colour in sRGB bytes", Vector) = (29, 59, 74, 0)
+        _TLWash         ("Wash colour in sRGB bytes", Vector) = (255, 244, 221, 0)
+        _TLFogColour    ("Fog colour in sRGB bytes", Vector) = (186, 203, 211, 0)
+        _TLSkyColour    ("Sky colour in sRGB bytes", Vector) = (176, 201, 216, 0)
+        _TLGradeWeights ("Grade weights aa amb ka wa", Vector) = (0.3, 0.62, 0.16, 0.03)
+        _TLSeaDir       ("Swell direction. Zero is unset and reads as one", Float) = 0.0
+        _TLFrameRate    ("Loop frames per second", Float) = 8.0
+        _TLOrigin       ("Pixel grid origin xy in world metres", Vector) = (0, 0, 0, 0)
+
         [Header(Painted splat maps. Twenty channels across five textures)]
         [NoScaleOffset] _SplatA ("Splat A. Grass Marram Sand Shingle", 2D) = "black" {}
         [NoScaleOffset] _SplatB ("Splat B. Ripple Shelf Silt Dirt", 2D) = "black" {}
         [NoScaleOffset] _SplatC ("Splat C. Marsh Sedge Foreshore Talus", 2D) = "black" {}
         [NoScaleOffset] _SplatD ("Splat D. Ledge Rockweed Musselbed Oysterreef", 2D) = "black" {}
         [NoScaleOffset] _SplatE ("Splat E. Eelgrass Irishmoss Lawn Mud", 2D) = "black" {}
+        [NoScaleOffset] _SplatF ("Splat F. Path", 2D) = "black" {}
 
         [Header(Band floors in metres. Builder pushes StPetersShoreMap)]
         _FloorPaint   ("Paint floor", Float) = -1.95
@@ -154,7 +196,9 @@ Shader "HiddenHarbours/TerrainSplat"
             TEXTURE2D(_SplatC); SAMPLER(sampler_SplatC);
             TEXTURE2D(_SplatD); SAMPLER(sampler_SplatD);
             TEXTURE2D(_SplatE); SAMPLER(sampler_SplatE);
+            TEXTURE2D(_SplatF); SAMPLER(sampler_SplatF);
             TEXTURE2D_ARRAY(_DetailArr256); SAMPLER(sampler_DetailArr256);
+            TEXTURE2D(_TLOccSkyv); SAMPLER(sampler_TLOccSkyv);
 
             CBUFFER_START(UnityPerMaterial)
                 float  _HeightMin, _HeightMax;
@@ -162,6 +206,13 @@ Shader "HiddenHarbours/TerrainSplat"
                 float  _WaterLevel;
 
                 float _DetailLoaded, _DetailOffsetCellMetres;
+
+                float  _RelightLoaded;
+                float4 _TLSunF;
+                float  _TLSunI, _TLSkyI, _TLExpo, _TLWet, _TLRain, _TLFog, _TLWind, _TLGrade;
+                float4 _TLKey, _TLAmbient, _TLWash, _TLFogColour, _TLSkyColour, _TLGradeWeights;
+                float  _TLSeaDir, _TLFrameRate;
+                float4 _TLOrigin;
 
                 float _FloorPaint, _FloorRipple, _FloorSand, _FloorMarram, _FloorGrass, _FloorShingle;
                 float _BandBlendMetres, _EdgeFadeMetres;
@@ -181,6 +232,17 @@ Shader "HiddenHarbours/TerrainSplat"
                 float4 _GrassColA, _GrassColB, _MarramColA, _MarramColB, _SandColA, _SandColB;
                 float4 _ShingleColA, _ShingleColB, _RippleColA, _RippleColB, _ShelfColA, _ShelfColB;
             CBUFFER_END
+
+            // The day/night cycle's sun, DayNightController's globals (set per frame, never material
+            // properties, so they live outside UnityPerMaterial, as in CliffFace and SpriteLitDecor):
+            // _SunDir.xy the unit ground direction TOWARD the sun, +y north, and (0, 0) while no cycle
+            // runs; _SunElevation 1 at noon, 0 at the horizon, negative at night; _ShadowStrength the
+            // elevation folded with the live weather (DayNightMath.ShadowStrength).
+            float4 _SunDir;
+            float  _SunElevation;
+            float  _ShadowStrength;
+
+            #include "Assets/_Project/Art/Shaders/Include/TerrainLight6.hlsl"
 
             // =========================================================================================
             //  THE MATERIAL TABLE — canonical order 0..19. Mirrored by TerrainTexArrayBuilder (C#) and
@@ -204,6 +266,8 @@ Shader "HiddenHarbours/TerrainSplat"
             //  take an offset — oyster clusters are near-isotropic and moss cushions scatter — which
             //  is why the four beds do not share one flag. Mud takes one too, like dirt: a cracked
             //  skin or a churned flood has no lie to slice.)
+            //  The relight's maps (terrain pass 9) are built in the albedo array's slice order, so
+            //  MAT_SLICE addresses them too, and MatUV's offset moves a material's maps with its albedo.
             // =========================================================================================
             static const float MAT_SLICE[20]  = { 0, 3, 6, 36, 39, 9, 42, 12, 15, 18, 45, 48, 21, 24, 51, 54, 27, 30, 33, 57 };
             static const float MAT_METRES[20] = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 };
@@ -282,10 +346,23 @@ Shader "HiddenHarbours/TerrainSplat"
                 return smoothstep(floorM - _BandBlendMetres, floorM + _BandBlendMetres, e);
             }
 
+            // A material's tile coordinates at a world position. The hashed whole-material offset
+            // applies per _DetailOffsetCellMetres cell, all steps together — offsetting steps apart
+            // would cross-fade misaligned images (README §4). The albedo and the relight share it, so a
+            // relit texel is the texel the albedo would have shown.
+            float2 MatUV(int i, float2 wp)
+            {
+                float2 uv = wp / MAT_METRES[i];
+                if (MAT_OFFSET[i] > 0.5)
+                {
+                    float2 cell = floor(wp / max(_DetailOffsetCellMetres, 1.0));
+                    uv += float2(Hash21(cell), Hash21(cell + 17.0));
+                }
+                return uv;
+            }
+
             // One material from the kit at a given intensity: bracket the ladder (README §2's HLSL,
-            // verbatim in spirit) and lerp two neighbouring steps of the SAME material. The hashed
-            // whole-material offset applies per _DetailOffsetCellMetres cell, all steps together —
-            // offsetting steps apart would cross-fade misaligned images (README §4).
+            // verbatim in spirit) and lerp two neighbouring steps of the SAME material.
             //
             // Takes the world-position screen derivatives EXPLICITLY (SampleGrad): this is called
             // inside a divergent [branch], where implicit-gradient sampling is illegal — the
@@ -293,12 +370,7 @@ Shader "HiddenHarbours/TerrainSplat"
             float3 SampleMat(int i, float2 wp, float intensity, float2 dwx, float2 dwy)
             {
                 float metres = MAT_METRES[i];
-                float2 uv = wp / metres;
-                if (MAT_OFFSET[i] > 0.5)
-                {
-                    float2 cell = floor(wp / max(_DetailOffsetCellMetres, 1.0));
-                    uv += float2(Hash21(cell), Hash21(cell + 17.0));
-                }
+                float2 uv = MatUV(i, wp);
                 float2 duvx = dwx / metres;
                 float2 duvy = dwy / metres;
 
@@ -312,6 +384,57 @@ Shader "HiddenHarbours/TerrainSplat"
                 float3 cA = SAMPLE_TEXTURE2D_ARRAY_GRAD(_DetailArr256, sampler_DetailArr256, uv, s0, duvx, duvy).rgb;
                 float3 cB = SAMPLE_TEXTURE2D_ARRAY_GRAD(_DetailArr256, sampler_DetailArr256, uv, s1, duvx, duvy).rgb;
                 return lerp(cA, cB, k);
+            }
+
+            // The same material RELIT (terrain pass 9): SampleMat's ladder bracket, each step's texel
+            // relit by TerrainLight6 from the kit's maps, and the two steps lerped by the same k. The
+            // rig returns sRGB bytes; the albedo array samples sRGB into linear, so the bytes are
+            // linearised to land where the albedo would. The maps are LOADed whole texels (data, never
+            // filtered), so no derivatives are needed inside the branch.
+            float3 RelightMat(int i, float2 wp, float intensity, TL6Sky sky, int2 W, float occ, float skyv)
+            {
+                float2 t = floor(frac(MatUV(i, wp)) * TL6_TILE);
+                int2 T = int2((int)t.x, (TL6_TILE - 1) - (int)t.y);   // the array's rows run up the tile, the rig's down
+
+                float f = saturate(intensity) * 2.0;
+                float a = floor(min(f, 1.999));
+                float k = f - a;
+                int s0 = (int)(MAT_SLICE[i] + a);
+                int s1 = (int)min(s0 + 1.0, MAT_SLICE[i] + 2.0);
+
+                // One relight body, run once or twice: the relight is large, and two inlined copies
+                // would double the program for a step most texels never blend.
+                int steps = k > 1e-3 ? 2 : 1;
+                float3 c = float3(0, 0, 0);
+                [loop]
+                for (int st = 0; st < steps; st++)
+                {
+                    float share = steps == 1 ? 1.0 : (st == 0 ? 1.0 - k : k);
+                    c += share * TL6SrgbToLinear(TL6Relight(st == 0 ? s0 : s1, T, W, sky, occ, skyv));
+                }
+                return c;
+            }
+
+            // The relight's sky, once per fragment. The sun is the day/night cycle's while it runs,
+            // turned into the rig's floor space (x east, y SOUTH, z up; the elevation as the sine), and
+            // the material's _TLSunF while it does not. The cycle's weather rides on the sun's strength:
+            // _ShadowStrength is the elevation times what the weather lets through, so over the
+            // elevation it is that share. The loop's frame follows the clock at the kit's rate.
+            TL6Sky TerrainSky()
+            {
+                float3 l = _TLSunF.xyz;
+                float sunI = _TLSunI;
+                if (length(_SunDir.xy) > 1e-4)
+                {
+                    float e = _SunElevation;
+                    float2 g = normalize(_SunDir.xy) * sqrt(saturate(1.0 - e * e));
+                    l = float3(g.x, -g.y, e);
+                    sunI *= e > 0.0 ? saturate(_ShadowStrength / e) : 1.0;
+                }
+                int fi = (int)floor(_Time.y * _TLFrameRate) & (TL6_LOOP - 1);
+                return TL6MakeSky(l, sunI, _TLSkyI, _TLExpo, _TLWet, _TLRain, _TLFog, _TLWind, _TLGrade > 0.5,
+                                  _TLKey.rgb, _TLAmbient.rgb, _TLWash.rgb, _TLFogColour.rgb, _TLSkyColour.rgb,
+                                  _TLGradeWeights, _TLSeaDir, fi);
             }
 
             half4 frag (Varyings i) : SV_Target
@@ -430,9 +553,10 @@ Shader "HiddenHarbours/TerrainSplat"
                 // material rendered without the surface's MPB push would read a full-weight oyster
                 // reef over the entire region. TerrainSplatSurface binds a transparent 1x1
                 // (ClearSplat) for every map precisely so the default is never what samples, and a
-                // test pins that it binds all FIVE. The committed StPetersSplatD.png was verified
-                // zero in .b/.a before these two slots were adopted — taking over a channel that
-                // already has bytes in it is how a kit upgrade repaints a region silently.
+                // test pins that it binds all SIX (_SplatF since terrain pass 9). The committed
+                // StPetersSplatD.png was verified zero in .b/.a before these two slots were adopted —
+                // taking over a channel that already has bytes in it is how a kit upgrade repaints a
+                // region silently.
                 // E.a joined it with Mud (2026-09-17): both committed SplatE PNGs (St Peters and Nine
                 // Mile Creek) were verified zero in .a before that slot was adopted too.
 
@@ -470,11 +594,47 @@ Shader "HiddenHarbours/TerrainSplat"
                     // Derivatives once, outside all flow control (see SampleMat).
                     float2 dwx = ddx(wp);
                     float2 dwy = ddy(wp);
-                    for (int si = 0; si < HH_MAT_COUNT; si++)
+                    [branch]
+                    if (_RelightLoaded > 0.5)
                     {
-                        [branch]
-                        if (w[si] > 0.004)
-                            col += w[si] * SampleMat(si, wp, intensity[si], dwx, dwy);
+                        // Terrain pass 9, the maps bound: the relight's sky, the texel on the world's
+                        // pixel grid (the rig's X east and Y SOUTH, where it anchors its noise and
+                        // hashes) and the two per-texel inputs, once per fragment. Then every material
+                        // present, relit when its tiles have maps and from the albedo when not (the
+                        // lawn's). A real loop: unrolled, the relight would be inlined twenty times.
+                        TL6Sky sky = TerrainSky();
+                        int2 W = int2((int)floor((wp.x - _TLOrigin.x) * ppm), (int)floor((_TLOrigin.y - wp.y) * ppm));
+                        float2 os = SAMPLE_TEXTURE2D_LOD(_TLOccSkyv, sampler_TLOccSkyv, uv, 0).rg;
+                        float occ = os.r, skyv = 1.0 - os.g;
+                        // The loop indexes its arrays at run time, which puts them in indexable memory:
+                        // copied HERE, so that cost stays inside this branch and the albedo path below
+                        // keeps w and intensity in registers, as before pass 9.
+                        float rw[HH_MAT_COUNT], ri[HH_MAT_COUNT];
+                        for (int ci = 0; ci < HH_MAT_COUNT; ci++) { rw[ci] = w[ci]; ri[ci] = intensity[ci]; }
+                        [loop]
+                        for (int mi = 0; mi < HH_MAT_COUNT; mi++)
+                        {
+                            [branch]
+                            if (rw[mi] > 0.004)
+                            {
+                                [branch]
+                                if (TL6Params((int)MAT_SLICE[mi]).w > 0.5)
+                                    col += rw[mi] * RelightMat(mi, wp, ri[mi], sky, W, occ, skyv);
+                                else
+                                    col += rw[mi] * SampleMat(mi, wp, ri[mi], dwx, dwy);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // The kit's albedo alone, as before pass 9 (and so no relight map is ever
+                        // loaded while _RelightLoaded is 0).
+                        for (int si = 0; si < HH_MAT_COUNT; si++)
+                        {
+                            [branch]
+                            if (w[si] > 0.004)
+                                col += w[si] * SampleMat(si, wp, intensity[si], dwx, dwy);
+                        }
                     }
                 }
                 else

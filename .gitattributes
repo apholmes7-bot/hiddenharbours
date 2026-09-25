@@ -252,3 +252,13 @@ docs/art/rigs/rock-px-kit/**                          text eol=lf
 Assets/_Project/Art/Sprites/Shore/RockPx/*.json       text eol=lf
 Assets/_Project/Art/Sprites/Shore/RockPx/sidecar/*.json text eol=lf
 Assets/_Project/Art/Sprites/Shore/RockPx/seat/*.json  text eol=lf
+
+# Terrain pass 9 (PR 2, the ground): two drops' JavaScript as bytes, with SHA256SUMS.txt and a README
+# table of each file's sha256 inside its zip, and TerrainRelight.json stamps the rig files' sha256 as
+# the bake loaded them. All of those are over the LF bytes as written. Pin the working-tree form so
+# `sha256sum -c SHA256SUMS.txt` holds on any checkout. By extension, not `**`: a binary dropped into
+# the folder later must keep [attr]lfs's -text, which a blanket `text` would override.
+docs/art/rigs/terrain/pass9/**/*.js                   text eol=lf
+docs/art/rigs/terrain/pass9/**/*.json                 text eol=lf
+docs/art/rigs/terrain/pass9/**/*.md                   text eol=lf
+docs/art/rigs/terrain/pass9/**/*.txt                  text eol=lf

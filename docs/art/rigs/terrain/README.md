@@ -143,6 +143,10 @@ Eelgrass
 Lawn takes an offset because its tile is isotropic: the mower STRIPES are not baked into it (see
 §7), so there is no stripe for an offset to slice apart at a chunk border.
 
+Mud (the px kit, 2026-09-17) and Path (terrain pass 9, 2026-09-25) take offsets too, like Dirt: a
+cracked skin or a gravel track has no lie to slice. `materials.json`'s `chunkOffset` is the word the
+splat shader's MAT_OFFSET table is pinned to.
+
 Those nine are directional. An offset slices a ripple train, a wind-combed stand, a bedding plane,
 a rill gully, a lie of fronds, a mussel lie or an eelgrass ribbon apart at the chunk border. All
 nine carry enough low-frequency variation of their own to hide the repeat without help.
@@ -332,6 +336,13 @@ the albedo has colour variation in it that is not relief.
 
 Anything you want changed — palette, coverage, a fourth ladder step, a different tile size, a sixth
 edge — change the rig and re-bake. **Do not hand-edit the PNGs**; they will be overwritten.
+
+### Terrain pass 9
+
+Terrain pass 9 adds a second bake, `pass9/bakePass9.js`. It bakes every `"px": true` material from the
+pass 9 kit through TerrainLight6: the albedo from the light's unlit view, and the relight's `_normal`,
+`_light` and `_detail` maps beside it. Its maps replace the live tiles when they land together with
+the arrays they pack into. How to run it, and where each file came from: `pass9/README.md`.
 
 ---
 

@@ -85,7 +85,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
         static Vector2 OnTheHalfMetre(Vector2 v) => new Vector2(Mathf.Round(v.x * 2f) * 0.5f, Mathf.Round(v.y * 2f) * 0.5f);
 
-        static readonly string[] SplatIds = { "_SplatA", "_SplatB", "_SplatC", "_SplatD", "_SplatE" };
+        // Terrain pass 9 added _SplatF (Path, in its r). A region whose builder wires five maps pushes it as
+        // the transparent 1x1, which is "nothing painted" and so is not the size of the others.
+        static readonly string[] SplatIds = { "_SplatA", "_SplatB", "_SplatC", "_SplatD", "_SplatE", "_SplatF" };
+        const int SplatF = 5;
 
         readonly HashSet<GameObject> _residentBefore = new HashSet<GameObject>();
         readonly List<Object> _spawned = new List<Object>();
@@ -248,6 +251,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 live[i] = mpb.GetTexture(SplatIds[i]) as Texture2D;
                 Assert.IsNotNull(live[i], $"the terrain pushed no {SplatIds[i]}, so there is nothing to paint the fixture on.");
                 Assert.IsTrue(live[i].isReadable, $"{SplatIds[i]} '{live[i].name}' is not readable, so it cannot be copied.");
+                if (i == SplatF && live[i].width == 1 && live[i].height == 1) continue;   // nothing painted with Path
                 Assert.AreEqual(live[0].width, live[i].width, $"{SplatIds[i]} is not the size of _SplatA.");
                 Assert.AreEqual(live[0].height, live[i].height, $"{SplatIds[i]} is not the size of _SplatA.");
             }
@@ -278,7 +282,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 fixture[i].Apply(fixture[i].mipmapCount > 1, false);
             }
 
-            _surface.ConfigureSplat(fixture[0], fixture[1], fixture[2], fixture[3], fixture[4]);
+            _surface.ConfigureSplat(fixture[0], fixture[1], fixture[2], fixture[3], fixture[4], fixture[5]);
             _surface.enabled = false;   // OnDisable hides the quad
             _surface.enabled = true;    // OnEnable rebuilds nothing and pushes every map, synchronously
             for (int i = 0; i < 2; i++) yield return null;
@@ -294,7 +298,7 @@ namespace HiddenHarbours.Tests.PlayMode
             double rightShare = ChangedShare(asDrawn, withFixture, Mathf.Min(_w, 2 * thirdPx + reachPx), _w);
 
             // --- put the ground back, and say whether it came back ---
-            _surface.ConfigureSplat(live[0], live[1], live[2], live[3], live[4]);
+            _surface.ConfigureSplat(live[0], live[1], live[2], live[3], live[4], live[5]);
             _surface.enabled = false;
             _surface.enabled = true;
             for (int i = 0; i < 2; i++) yield return null;
