@@ -310,6 +310,11 @@ MonoBehaviour:
   FoliageSilhouette: 1
   FoliageSilhouetteTint: {r: 0.94, g: 0.9, b: 0.82, a: 1}
   FoliageSilhouetteStrength: 0.55
+  FoliageSnow:
+    FirstSnowDayOfTheTurn: 19
+    SnowfallDays: 11
+    MeltStartDayOfEarlySpring: 1
+    MeltDays: 28
   DepthDrop:
     SinkSpeedPerKgMps: 2
     MinSinkSpeedMps: 0.5
