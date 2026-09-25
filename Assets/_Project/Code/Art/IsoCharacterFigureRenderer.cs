@@ -245,7 +245,7 @@ namespace HiddenHarbours.Art
 
         private void BuildRampTextures(CharacterSkinDef def)
         {
-            int count = Mathf.Min(def.Materials.Length, CharacterSkinDef.RampSlots);
+            int count = Mathf.Min(def.Materials.Length, CharacterSkinDef.MaxMaterials(def.ToneRule));
             int maxLen = 1;
             for (int m = 0; m < count; m++)
                 maxLen = Mathf.Max(maxLen, def.Materials[m].Colors != null ? def.Materials[m].Colors.Length : 1);
@@ -292,10 +292,12 @@ namespace HiddenHarbours.Art
         /// <c>TheFigureMaterialMatchesAHullConfiguredFromTheSameSetup</c> compares every property a
         /// facet material carries. Extract it when the hull is not also being plated.</para>
         ///
-        /// <para><b>⚠ The per-material gain and bias are NOT written, and cannot be.</b> The def
-        /// carries a <c>Gain</c>/<c>Bias</c> per material; the facet shader has one global pair. That
-        /// single mismatch is the largest term in the measured 43–57% fidelity gap (53.61% of it) and
-        /// it is the shader look pass's to close, not this one's.</para>
+        /// <para><b>⚠ Rig 7's per-material gain and bias are still NOT written.</b> A rig 7 def
+        /// carries a <c>Gain</c>/<c>Bias</c> per material; the facet shader's default variant has one
+        /// global pair. That single mismatch is the largest term in rig 7's measured 43–57% fidelity
+        /// gap (53.61% of it) and it is the shader look pass's to close, not this one's. A
+        /// <see cref="ToneRule.V9"/> def gets its own, per material, through the <c>HH_FIGURE</c>
+        /// variant (<see cref="ApplyToneRule"/>).</para>
         /// </summary>
         private void BuildMaterial(CharacterSkinDef def)
         {
@@ -307,7 +309,7 @@ namespace HiddenHarbours.Art
             _facetMaterial = new Material(facetShader) { hideFlags = HideFlags.HideAndDontSave };
             _facetMaterial.SetTexture(IsoFacetShaderIds.RampTex, _rampTex);
             _facetMaterial.SetTexture(IsoFacetShaderIds.DarkRampTex, _darkRampTex);
-            _facetMaterial.SetVector(IsoFacetShaderIds.LightN, IsoFacetMath.ShaderLightVector(def.LightN));
+            _facetMaterial.SetVector(IsoFacetShaderIds.LightN, IsoFacetMath.ShaderLightVector(LightOf(def)));
             _facetMaterial.SetFloat(IsoFacetShaderIds.Gain, def.Gain);
             _facetMaterial.SetFloat(IsoFacetShaderIds.Bias, def.Bias);
             _facetMaterial.SetColor(IsoFacetShaderIds.KeyColor, ((Color)def.Keyline).linear);
@@ -333,6 +335,60 @@ namespace HiddenHarbours.Art
                 rows[x] = new Vector4(def.Bayer16[x * 4 + 0], def.Bayer16[x * 4 + 1],
                                       def.Bayer16[x * 4 + 2], def.Bayer16[x * 4 + 3]);
             _facetMaterial.SetVectorArray(IsoFacetShaderIds.Bayer, rows);
+
+            ApplyToneRule(def);
+        }
+
+        /// <summary>What <c>_LN</c> carries before <see cref="IsoFacetMath.ShaderLightVector"/>: rig 7's
+        /// <c>LightN</c>, or v9's folded key (<see cref="IsoFacetFigureTone.FoldLight"/>). Both are in
+        /// the same screen basis and neither is turned by the elevation: the tilt is the transform's
+        /// <c>HullRotation(0, e)</c>.</summary>
+        private static Vector3 LightOf(CharacterSkinDef def) =>
+            def.ToneRule == ToneRule.V9 ? IsoFacetFigureTone.FoldLight(def.KeyScreen, def.Form) : def.LightN;
+
+        /// <summary>
+        /// <b>The tone rule, on this figure's OWN material.</b> V9 turns the <c>HH_FIGURE</c> variant on
+        /// and writes its two tables; rig 7 turns it off, which on a material built fresh by every
+        /// <see cref="Configure"/> is the state it already has, said out loud as the hull's
+        /// <c>ApplyCutawayKeyword</c> says its own. The keyword is <c>_local</c>, so it is set on the
+        /// instance and never through <c>Shader.EnableKeyword</c>, which does not reach it.
+        ///
+        /// <para>Both tables are written at their full <see cref="CharacterSkinDef.V9RampSlots"/> every
+        /// time, because Unity fixes an array's size at its first set. An unused slot is a one-colour
+        /// ramp with a zero gain and bias. The rig 7 uniforms written above stay on a v9 material and
+        /// its variant reads none of them but <c>_LN</c>, which <see cref="LightOf"/> already folded. So
+        /// a v9 figure is no longer a hull's twin, on purpose:
+        /// <c>TheFigureMaterialMatchesAHullConfiguredFromTheSameSetup</c> holds rig 7.</para>
+        /// </summary>
+        private void ApplyToneRule(CharacterSkinDef def)
+        {
+            if (def.ToneRule != ToneRule.V9)
+            {
+                _facetMaterial.DisableKeyword(IsoFacetFigureShaderIds.FigureKeyword);
+                return;
+            }
+            _facetMaterial.EnableKeyword(IsoFacetFigureShaderIds.FigureKeyword);
+
+            var meta = new Vector4[CharacterSkinDef.V9RampSlots];
+            var tone = new Vector4[CharacterSkinDef.V9RampSlots];
+            int count = Mathf.Min(def.Materials.Length, CharacterSkinDef.V9RampSlots);
+            for (int m = 0; m < meta.Length; m++)
+            {
+                if (m >= count)
+                {
+                    meta[m] = new Vector4(1f, 0f, 0f, 0f);
+                    tone[m] = Vector4.zero;
+                    continue;
+                }
+                CharacterSkinDef.Material mat = def.Materials[m];
+                Color32[] c = mat.Colors;
+                float gain = def.Gain * mat.Gain;
+                float bias = IsoFacetFigureTone.FoldBias(gain, mat.BiasOr(def.Bias), def.Form, def.FormMid);
+                meta[m] = new Vector4(c != null && c.Length > 0 ? c.Length : 1, mat.Offset, mat.ToneLo, mat.ToneHi);
+                tone[m] = new Vector4(gain, bias, 0f, 0f);
+            }
+            _facetMaterial.SetVectorArray(IsoFacetFigureShaderIds.RampMetaFigure, meta);
+            _facetMaterial.SetVectorArray(IsoFacetFigureShaderIds.RampToneFigure, tone);
         }
 
         private void BuildChild()
@@ -658,5 +714,25 @@ namespace HiddenHarbours.Art
             if (Application.isPlaying) Destroy(o);
             else DestroyImmediate(o);
         }
+    }
+
+    /// <summary>
+    /// <b>The figure's own facet-shader names</b>: the <c>HH_FIGURE</c> keyword and the two v9 tone
+    /// tables. They live beside the figure renderer rather than in <see cref="IsoFacetShaderIds"/>,
+    /// which every hull shares, so a v9 character adds names to the shader and moves nothing a hull
+    /// reads.
+    /// </summary>
+    public static class IsoFacetFigureShaderIds
+    {
+        /// <summary>The v9 variant of <c>HiddenHarbours/IsoFacet</c>. A <c>multi_compile_local</c>
+        /// keyword, set on the figure's own material instance.</summary>
+        public const string FigureKeyword = "HH_FIGURE";
+
+        /// <summary><c>float4[32]</c>, per material <c>(len, off, lo, hi)</c>.</summary>
+        public static readonly int RampMetaFigure = Shader.PropertyToID("_RampMetaFigure");
+
+        /// <summary><c>float4[32]</c>, per material <c>(gain, bias', 0, 0)</c>: the effective gain and
+        /// the folded bias (<see cref="IsoFacetFigureTone.FoldBias"/>).</summary>
+        public static readonly int RampToneFigure = Shader.PropertyToID("_RampToneFigure");
     }
 }
