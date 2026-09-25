@@ -21,7 +21,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// <c>TidalFaceShaderCompileGuardTests</c>' job; they force-compile both, include and all.</para>
     ///
     /// <para><b>On the base</b> the include does not exist, no shader samples <c>_HHStillTex</c>, and neither
-    /// shader calls <c>StillLevelAt</c>: every test here fails at its first assert.</para>
+    /// shader calls <c>StillLevelAt</c>. Three tests fail at their first assert; the precision test's
+    /// per-line checks pass on the base's float <c>_HeightTex</c> reads, and it fails at its count of
+    /// <c>_HHStillTex</c> declarations (none on the base).</para>
     /// </summary>
     public sealed class StillWaterShaderTests
     {
