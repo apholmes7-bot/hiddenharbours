@@ -67,6 +67,20 @@ namespace HiddenHarbours.Boats
             => 0.5f * (workStartFraction + Math.Max(workStartFraction, workEndFraction));
 
         /// <summary>
+        /// The game seconds a boat has under way between two spots: from bearing away when one slot's work
+        /// window closes to the next slot's window opening, <c>(1 − workEnd) + workStart</c> of a slot. A leg
+        /// no longer than her slowest cruise speed times this is sailed before the window opens; the half
+        /// window before the flip is left for getting way on, coming about and slowing to her mark.
+        /// </summary>
+        public static float TransitSeconds(float secondsPerDay, int slotsPerDay,
+                                           float workStartFraction, float workEndFraction)
+        {
+            float start = Math.Min(1f, Math.Max(0f, workStartFraction));
+            float end = Math.Min(1f, Math.Max(start, workEndFraction));
+            return ((1f - end) + start) * secondsPerDay / Math.Max(1, slotsPerDay);
+        }
+
+        /// <summary>
         /// Is a buoy out at spot <paramref name="spotIndex"/> at slot-position <paramref name="s"/>?
         /// Closed-form off the visit parity: work events at spot <c>j</c> complete at slot-positions
         /// <c>j + v·K + flip</c> (v = 0, 1, 2, …); the latest completed visit <c>v*</c> decides — even
