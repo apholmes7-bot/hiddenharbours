@@ -541,9 +541,11 @@ The C# port is a ui-ux PR after that.
 
 **D1–D6 are ruled** (`helm-audit.md` §0), and nothing below blocks drawing:
 
-1. **NAV's teeth (D2 (a), open).** NAV could follow the lighting regime, as the game does today and P1 builds, or
-   become a switch the player must remember (P5's teeth). It changes no art: NAV is drawn with its states either way.
-2. **The dory's searchlight (D2 (b), open).** The dory has no card, so this changes no art either.
+1. **Nav lights (D2 (a), answered in `helm-audit.md` §3.4).** They come with Claude Design's lighting pass on each
+   hull, which comes first, and the helms are reconfigured after it.
+2. **The dory's searchlight (D2 (b), answered in `helm-audit.md` §3.4).** It comes with Claude Design's lighting pass
+   on each hull, which comes first, and the helms are reconfigured after it. The dory has no card, so this changes no
+   art.
 3. **The 720p focus.** The full dash shows at ×0.883 there, because ×1 would cover the bottom 64 px of the HUD band.
    §1's s2 floor holds at either scale.
 4. **The console and sport DECK bats.** These hulls carry no deck lamp. Draw the `cap`, and keep the bat's states.

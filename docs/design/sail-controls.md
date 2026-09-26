@@ -52,7 +52,7 @@ Every re-ruling is the owner's.
 | (M′): the throttle runs only the engine | deferred to the mast charter, with its re-ruling of (M) | §5.2 |
 | Leaving the helm under sail | she rounds up into the wind (today she stops dead); with the mast charter | §3.3 |
 | Reefing's teeth | control teeth (weather helm, then a knockdown), not speed | §4.3, §10 step 7 |
-| The lights | automatic, no switch. The sloops first need nav-light mounts in `HullMeshDef.Lamps`. If D2 (a), still open, gives nav lights teeth, the sloops follow that ruling ([`helm-audit.md`](helm-audit.md) §3.4). | §5.6 |
+| The lights | automatic, no switch. The sloops first need nav-light mounts in `HullMeshDef.Lamps`. D2 (a) is answered ([`helm-audit.md`](helm-audit.md) §3.4): the sloops' nav lights come with the lighting pass on each hull, like every hull's. | §5.6 |
 | Save | nothing new. The sails are derived `stored` whenever she's anchored or moored, and PR 3 carries that. | §5.3, §9 |
 
 ---
