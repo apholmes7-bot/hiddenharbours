@@ -101,11 +101,20 @@ Shader "HiddenHarbours/IsoFacet"
         // `new Material(Shader.Find(...))`, so nothing in the project would carry the keyword and
         // the stripper would drop the gated variant. The cutaway would then work in the editor and
         // quietly never happen in the player: the exact shape of bug this project keeps paying for.
-        // multi_compile always compiles both. Cost: one extra variant of this shader; the OFF
-        // variant is unchanged, so no hull pays anything at run time. _local, so the keyword lives
-        // per MATERIAL — Shader.EnableKeyword does not reach it (measured on the spike fixture);
-        // the renderer writes its own instance material.
-        #pragma multi_compile_local _ HH_LEVEL_GATE
+        // multi_compile always compiles every variant. Cost: two extra variants of this shader; the
+        // OFF variant is unchanged, so no hull pays anything at run time. _local, so the keyword
+        // lives per MATERIAL — Shader.EnableKeyword does not reach it (measured on the spike
+        // fixture); each renderer writes its own instance material.
+        //
+        // THREE VARIANTS, AND ONE SET MAKES THE KEYWORDS MUTUALLY EXCLUSIVE:
+        //   none           every hull without a room, and every rig 7 figure: the shipped program;
+        //   HH_LEVEL_GATE  a hull whose mesh carries a room (the cutaway, above);
+        //   HH_FIGURE      a v9 character (CharacterSkinDef.ToneRule.V9). Her material is runtime-
+        //                  built as well (IsoCharacterFigureRenderer.BuildMaterial), so the same
+        //                  stripping argument holds. Everything it adds is inside #ifdef HH_FIGURE:
+        //                  two tables, one vertex line and one fragment block. A figure never carries
+        //                  a room and a hull never carries a v9 palette, so neither needs both.
+        #pragma multi_compile_local _ HH_LEVEL_GATE HH_FIGURE
 
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
@@ -207,6 +216,25 @@ Shader "HiddenHarbours/IsoFacet"
             Texture2D<float4> _DarkRampTexInterior;
 #endif
 
+#ifdef HH_FIGURE
+            // ⭐ THE V9 CHARACTER'S TONE (CharacterSkinDef.ToneRule.V9: the v9.1 character kit's rules
+            // 3, 5, 6, 7 and 11). Two tables behind a keyword rather than a wider _RampMeta, for the
+            // reason _RampMetaInterior gives above: the fleet's float4[16] never widens, and no hull
+            // pays for a figure's thirty-two.
+            //
+            // _RampMetaFigure[m] = (len, off, lo, hi): the ramp length, the index offset and the
+            //   material's four-tone window, all whole numbers.
+            // _RampToneFigure[m] = (gain, bias', 0, 0): the material's EFFECTIVE gain (def.Gain times
+            //   its own) and its FOLDED bias, bias − gain·form·formMid. _LN carries the folded key
+            //   LN' = (k0, k1, k2 + form), so sh·gain + bias' is the kit's s·gain + bias
+            //   (IsoFacetFigureTone's class doc works it).
+            //
+            // 32 = CharacterSkinDef.V9RampSlots, and IsoFacetFigureToneTests holds the two equal. The
+            // renderer writes both at full length every time: Unity fixes an array's size at its first set.
+            float4 _RampMetaFigure[32];     // (len, off, lo, hi)
+            float4 _RampToneFigure[32];     // (gain, bias', 0, 0)
+#endif
+
             struct Attributes
             {
                 float4 positionOS : POSITION;
@@ -267,10 +295,19 @@ Shader "HiddenHarbours/IsoFacet"
                 // The rig: sh = shadeOf(n, se, ce). In iso-rotated world space that is exactly a
                 // dot with LN — see the header comment.
                 float sh = dot(wn, _LN.xyz);
+#ifdef HH_FIGURE
+                // THE V9 SHADE INDEX: a gain and bias per MATERIAL, where rig 7 has one global pair.
+                // With _LN the folded key, sh = s + form·formMid, and bias' took gain·form·formMid out
+                // again, so this is the kit's s·gain + bias + b (kit rule 6; IsoFacetFigureTone.Tone).
+                // NO BACKFACE RESCUE: the rescue below #else is rig 7's, and the kit has none.
+                float4 figTone = _RampToneFigure[(int)round(v.attrs.x)];
+                o.fidx = sh * figTone.x + figTone.y + v.attrs.y;
+#else
                 // "if(sh<0 && f.b<=-1) sh = shadeOf(-n)*0.9" — the rig's interior/backface rescue.
                 if (sh < 0 && v.attrs.y <= -1) sh = -sh * 0.9;
 
                 o.fidx = sh * _Gain + _Bias + v.attrs.y;
+#endif
                 o.mat  = v.attrs.x;
 #ifdef HH_LEVEL_GATE
                 o.lvl  = float3(v.levelTag, dot(wn, UNITY_MATRIX_V[2].xyz) >= 0.0 ? 1.0 : 0.0);
@@ -417,6 +454,20 @@ Shader "HiddenHarbours/IsoFacet"
                 float bay = _Bayer[cell.x & 3][cell.y & 3];
 
                 int m    = (int)round(i.mat);
+#ifdef HH_FIGURE
+                // THE V9 TONE (kit rule 6): the shade index rounded half UP — JavaScript's Math.round,
+                // floor(x + 0.5), kit rule 7 — clamped into the material's four-tone window, offset,
+                // then clamped into its ramp. No Bayer compare: the kit has none, and `bay` above goes
+                // unread in this variant.
+                float fidx = i.fidx;
+                int len  = (int)_RampMetaFigure[m].x;
+                int off  = (int)_RampMetaFigure[m].y;
+                int lo   = (int)_RampMetaFigure[m].z;
+                int hi   = (int)_RampMetaFigure[m].w;
+                // ==== TWIN A (begin): the v9 tone (kit rule 6), VERBATIM in IsoFacetFigureTone.cs (Tone) ====
+                int idx = clamp(clamp((int)floor(fidx + 0.5), lo, hi) + off, 0, len - 1);
+                // ==== TWIN A (end) ====
+#else
 #ifdef HH_LEVEL_GATE
                 // Which table this face reads from. lvl.y is the bake's own per-face interior
                 // flag and the fragment has already used it once, in HHLevelDiscards — this is
@@ -438,6 +489,7 @@ Shader "HiddenHarbours/IsoFacet"
                 if (hhInterior) idx += (int)HHInteriorTex(i.texKp, i.texUv);
 #endif
                 idx = clamp(idx, 0, len - 1);
+#endif
 
                 // WHICH OF THIS HULL'S IDS THIS PIXEL CARRIES. Camera looks along +Z, so a SMALLER
                 // depth is nearer: hull geometry in front of a figure standing on the deck takes a

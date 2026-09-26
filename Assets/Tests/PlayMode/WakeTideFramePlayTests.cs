@@ -8,6 +8,15 @@ using HiddenHarbours.Boats;
 
 namespace HiddenHarbours.Tests.PlayMode
 {
+    // Coroutines resume before LateUpdate. Sample the completed pose AND wake together,
+    // after the presenter and emitter, rather than comparing last frame's foam to new physics.
+    [DefaultExecutionOrder(1000)]
+    public sealed class WakeCompletedFrameProbe : MonoBehaviour
+    {
+        public System.Action Read;
+        private void LateUpdate() => Read?.Invoke();
+    }
+
     /// <summary>
     /// The wake is DRAWN in the tide frame. The owner, 09-18: <i>"the white water discolouration in the 3 band
     /// wakes was still off cetnre on the intro boat"</i>.
@@ -316,14 +325,23 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             List<Transform> foam = FoamSlots(_rigRoot);
 
+            Vector2 completedStern = default;
+            FoamFrame completedFoam = default;
+            var probe = go.AddComponent<WakeCompletedFrameProbe>();
+            probe.Read = () =>
+            {
+                completedStern = PictureStern(go.transform, visual);
+                completedFoam = Snapshot(foam);
+            };
+
             // One held frame: the emitter's next tick takes this pose as her previous stern, and so does the guard.
             float z = leg.StartZ;
             Hold(go, rb, go.transform.position, z);
             yield return null;
             Pin();
 
-            Vector2 sternBefore = PictureStern(go.transform, visual);
-            FoamFrame before = Snapshot(foam);
+            Vector2 sternBefore = completedStern;
+            FoamFrame before = completedFoam;
             var abeam = new List<float>();
             int ticks = 0, newborns = 0, inSegment = 0, onStern = 0;
             float worstSlip = 0f;
@@ -344,9 +362,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 // Read what this frame's tick saw: the physics step has moved her since the pose, so her stern is
                 // read off her picture, never predicted.
                 worstSlip = Mathf.Max(worstSlip, Mathf.Abs(Mathf.DeltaAngle(go.transform.eulerAngles.z, z)));
-                Vector2 stern = PictureStern(go.transform, visual);
+                Vector2 stern = completedStern;
                 float speed = boat.Velocity.magnitude;
-                FoamFrame now = Snapshot(foam);
+                FoamFrame now = completedFoam;
                 if (!Ticked(before, now))
                 {
                     before = now;
