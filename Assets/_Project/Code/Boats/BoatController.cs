@@ -327,8 +327,10 @@ namespace HiddenHarbours.Boats
         /// <summary>Her drawn trim's lag, seconds — her hull's, else the policy default.</summary>
         public float TrimResponseSeconds => _trimResponseSeconds;
 
-        /// <summary>Bumped by <see cref="Stop"/> (a stop, a teleport) and <see cref="SetHull"/> (a
-        /// swap, a load): the drawer puts her level AT ONCE rather than easing there.</summary>
+        /// <summary>Bumped by <see cref="Stop()"/> (a stop, a teleport, an arrival, a mooring) and
+        /// <see cref="SetHull"/> (a swap, a load): the drawer puts her level AT ONCE rather than easing
+        /// there. The helm let go under way (<see cref="Stop(bool)"/>, <c>levelAtOnce: false</c>) leaves
+        /// it alone, so the bow she was carrying settles on her lag.</summary>
         public int TrimRestSerial => _trimRestSerial;
 
         /// <summary>
@@ -491,8 +493,19 @@ namespace HiddenHarbours.Boats
         /// doesn't coast on after the helm is dropped (the disembark-anywhere safety: an un-crewed boat is
         /// safe-moored, never strands itself). This is NOT the wind/tide mooring-drift mechanic (a separate
         /// follow-up); it is the deliberate "boat stays put" guarantee. Null-safe before <see cref="Awake"/>.
+        /// Her drawn trim goes level AT ONCE with her way (a teleport arrives level).
         /// </summary>
-        public void Stop()
+        public void Stop() => Stop(levelAtOnce: true);
+
+        /// <summary>
+        /// <see cref="Stop()"/>, saying how her drawn trim goes level. The physics is the same either way:
+        /// the way, the drive and the held controls go at once, and she asks for level.
+        /// </summary>
+        /// <param name="levelAtOnce">True for a stop that moves her or starts her fresh (a teleport, a
+        /// region arrival, a mooring, stepping ashore): the drawer puts her level at once. False when the
+        /// helm is let go under way (<c>ControlSwitcher.LeaveHelm</c>): the bow she was carrying settles
+        /// on her own lag instead of snapping level in one frame.</param>
+        public void Stop(bool levelAtOnce)
         {
             _throttle = 0f; _steer = 0f;
             _leftOar = 0f; _rightOar = 0f; _brace = false;
@@ -504,10 +517,11 @@ namespace HiddenHarbours.Boats
                 rb.linearVelocity = Vector2.zero;
                 rb.angularVelocity = 0f;
             }
-            // …and she sits level at once: the trim her way asked for goes with the way, so a teleport
-            // arrives level instead of nodding at the speed she left at.
+            // …and she asks for level: the trim her way asked for goes with the way. At once for a
+            // teleport, so she arrives level instead of nodding at the speed she left at; eased when
+            // the helm is let go, where she has not moved.
             _trimTargetDegrees = 0f;
-            _trimRestSerial++;
+            if (levelAtOnce) _trimRestSerial++;
         }
 
         /// <summary>
@@ -517,7 +531,7 @@ namespace HiddenHarbours.Boats
         /// shove around like a 400 kg dory. A small public setter so the swapper doesn't reach into the
         /// private serialized field.
         ///
-        /// <para>Resolves the body LAZILY, exactly as <see cref="Stop"/> does and for the same reason:
+        /// <para>Resolves the body LAZILY, exactly as <see cref="Stop(bool)"/> does and for the same reason:
         /// <see cref="Awake"/> may not have cached <c>_rb</c> yet (EditMode, or a swap wired up before the
         /// first tick). Going through the cache alone would silently drop the mass write in those cases —
         /// no throw, no warning, just a boat that weighs whatever the last one did.</para>
@@ -593,7 +607,7 @@ namespace HiddenHarbours.Boats
         /// instead. It runs the exact same force pass the manned helm runs — hull drag against the
         /// current (she SETS with the tide), wind shove, the seakeeping push + yaw (the weathervane the
         /// deck angler fights against), grounding/shallows — just with the controls at rest
-        /// (<see cref="Stop"/> zeroed them when the helm was left), so propulsion contributes nothing.
+        /// (<see cref="Stop(bool)"/> zeroed them when the helm was left), so propulsion contributes nothing.
         /// One force model, never a parallel drift copy. No-op while enabled (FixedUpdate already runs
         /// the pass — never double-integrate) and before a hull is wired.
         /// </summary>

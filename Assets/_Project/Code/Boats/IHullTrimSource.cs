@@ -22,7 +22,8 @@ namespace HiddenHarbours.Boats
 
         /// <summary>Bumped whenever she must be put back to level AT ONCE rather than eased there —
         /// a stop, a teleport, a hull swap or a load. The drawer snaps its trim to 0 when it sees a
-        /// new value.</summary>
+        /// new value. Not bumped when the helm is let go under way: that only asks for level, and the
+        /// drawer eases her there like any other target.</summary>
         int TrimRestSerial { get; }
     }
 }

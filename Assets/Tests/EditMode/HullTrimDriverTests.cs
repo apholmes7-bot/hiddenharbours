@@ -467,6 +467,72 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0f, driver.TrimDegrees, 0f, "a hull swap levels her at once");
         }
 
+        [Test]
+        public void TheHelmLetGoUnderWay_SheEasesLevel_OnHerOwnLag()
+        {
+            // The same boat as above, her controller and her drawer on one root: body mass 10, 12 of
+            // thrust, a squat of 1.5° per m/s² and her own 0.4 s lag (the policy's is 0.9).
+            var root = new GameObject("TrimHelmBoat");
+            _spawned.Add(root);
+            var boat = root.AddComponent<BoatController>();
+            boat.enabled = false;   // the helm is left, so TickUnmannedDrift runs her force pass
+            var rb = root.GetComponent<Rigidbody2D>();
+            rb.gravityScale = 0f;
+            rb.linearDamping = BoatController.HullLinearDamping;   // what Awake sets; EditMode runs none
+            var hullDef = ScriptableObject.CreateInstance<BoatHullDef>();
+            _spawned.Add(hullDef);
+            hullDef.Id = "boat.trim_test";
+            hullDef.Propulsion = PropulsionType.Engine;
+            hullDef.EnginePower = 1200f; hullDef.MassKg = 1000f;
+            hullDef.ForwardDrag = 100f; hullDef.LateralDrag = 240f;
+            hullDef.LengthMeters = 4.5f; hullDef.DraughtMeters = 0.3f;
+            hullDef.TrimHumpDegrees = 1f; hullDef.TrimPlaningDropDegrees = 0f;
+            hullDef.TrimAccelDegreesPerMps2 = 1.5f; hullDef.TrimDecelDegreesPerMps2 = 1.5f;
+            hullDef.TrimMaxBowUpDegrees = 0f; hullDef.TrimMaxBowDownDegrees = 0f;
+            hullDef.TrimResponseSeconds = 0.4f;
+            boat.SetHull(hullDef);
+            Assert.AreEqual(10f, rb.mass, Tol, "precondition: 1000 kg → body mass 10");
+
+            var visual = new GameObject("Visual").transform;
+            visual.SetParent(root.transform, false);
+            var renderer = new RecordingRenderer();
+            var driver = root.AddComponent<MeshHullDriver>();
+            driver.Configure(visual, renderer, Def(), zeroHeadingDegrees: 0f);
+
+            // Full ahead from rest asks for 1.8° (1.5 × 1.2 m/s²); half a second on her 0.4 s lag
+            // draws 1.8·(1 − e^(−1.25)) = 1.2842914°.
+            boat.SetControl(1f, 0f);
+            rb.linearVelocity = Vector2.zero;
+            boat.TickUnmannedDrift();
+            Assert.AreEqual(1.8f, boat.TrimTargetDegrees, Tol, "harness: her physics asks for 1.8°");
+            driver.Drive();   // the first drive is level
+            for (int n = 0; n < 5; n++) { _clock.Advance(0.1); driver.Drive(); }
+            Assert.AreEqual(1.2842914f, driver.TrimDegrees, Tol, "harness: she is carrying her bow");
+
+            boat.Stop(levelAtOnce: false);   // ControlSwitcher.LeaveHelm
+            boat.TickUnmannedDrift();        // the deck's drift tick runs on
+            Assert.AreEqual(0f, boat.TrimTargetDegrees, Tol, "harness: let go, she asks for level");
+            _clock.Advance(0.1);
+            driver.Drive();
+            // Eased, not snapped: a tenth of a second on her own lag leaves 1.2842914·e^(−0.25). The
+            // policy's 0.9 s would leave 1.1492343; a snap would leave 0.
+            Assert.AreEqual(1.0002071f, driver.TrimDegrees, Tol, "her bow settles on her own lag");
+            Assert.AreEqual(driver.TrimDegrees, renderer.PitchDegrees, 0f, "…and draws exactly that");
+
+            float last = driver.TrimDegrees;
+            for (int frame = 2; frame <= 40; frame++)
+            {
+                boat.TickUnmannedDrift();
+                _clock.Advance(0.1);
+                driver.Drive();
+                Assert.Less(driver.TrimDegrees, last, $"frame {frame}: she only ever settles toward level");
+                Assert.Greater(driver.TrimDegrees, 0f, $"frame {frame}: …from above, never through it");
+                Assert.AreEqual(driver.TrimDegrees, renderer.PitchDegrees, 0f, $"frame {frame}: drawn as eased");
+                last = driver.TrimDegrees;
+            }
+            Assert.Less(driver.TrimDegrees, 1e-3f, "ten of her lags on (4 s), she is level to the eye");
+        }
+
         // ------------------------------------------------------------------ rule 7
 
         [Test]

@@ -37,10 +37,10 @@ MonoBehaviour:
   SeakeepingMassFactor: 2
   SeakeepingLiveliness: 0.62
   SeakeepingDamping: 0.42
-  TrimHumpDegrees: 6
-  TrimPlaningDropDegrees: 3.5
-  TrimAccelDegreesPerMps2: 1.5
-  TrimDecelDegreesPerMps2: 1.5
+  TrimHumpDegrees: 6.6
+  TrimPlaningDropDegrees: 3.85
+  TrimAccelDegreesPerMps2: 1.65
+  TrimDecelDegreesPerMps2: 1.65
   TrimMaxBowUpDegrees: 0
   TrimMaxBowDownDegrees: 0
   TrimResponseSeconds: 0.5

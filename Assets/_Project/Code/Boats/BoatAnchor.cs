@@ -125,7 +125,7 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>Resolve the siblings lazily so the transitions work even before <see cref="Awake"/> has
-        /// run (EditMode, or a rig wired up before the first tick) — the <see cref="BoatController.Stop"/> /
+        /// run (EditMode, or a rig wired up before the first tick) — the <see cref="BoatController.Stop(bool)"/> /
         /// <see cref="BoatMooring"/> precedent. Unity does not call Awake on an AddComponent in edit mode.</summary>
         private void EnsureRefs()
         {

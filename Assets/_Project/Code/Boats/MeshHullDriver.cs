@@ -296,7 +296,8 @@ namespace HiddenHarbours.Boats
         /// <see cref="BoatWaveMotion"/> precedent: a paused clock is dt 0 and her bow holds with the
         /// sea; a clock stepped backwards is a negative dt, which holds for one drive). The first
         /// drive after <see cref="Configure"/>, and the first after the source's rest serial moves (a
-        /// stop, a teleport, a hull swap, a load), put her level AT ONCE and start the clock there.
+        /// stop, a teleport, a hull swap, a load), put her level AT ONCE and start the clock there. The
+        /// helm let go under way moves no serial: its level target is eased like any other.
         /// Allocation-free: floats and one interface read.
         /// </summary>
         private float StepTrim()

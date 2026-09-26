@@ -286,6 +286,28 @@ namespace HiddenHarbours.Tests.EditMode
                 "the squat goes with the hand on the throttle; the drift tick republishes her target");
         }
 
+        [Test]
+        public void LettingGoTheHelmUnderWay_AsksForLevel_WithoutPuttingHerThereAtOnce()
+        {
+            var boat = Boat(Hull(), out var rb);
+            Assert.AreEqual(1.8f, TickAt(boat, rb, 1f, Vector2.zero), Tol, "precondition: she squats");
+            rb.linearVelocity = new Vector2(0f, 3f);
+            Assert.AreEqual(new Vector2(0f, 3f), rb.linearVelocity, "precondition: she has way on");
+            int serial = boat.TrimRestSerial;
+
+            boat.Stop(levelAtOnce: false);   // what ControlSwitcher.LeaveHelm calls
+
+            Assert.AreEqual(0f, boat.TrimTargetDegrees, "the helm let go asks for level");
+            Assert.AreEqual(serial, boat.TrimRestSerial,
+                "…but does not tell the drawer to be there at once: the bow she carried settles on her lag");
+            Assert.AreEqual(Vector2.zero, rb.linearVelocity, "the physics is the same stop: her way goes");
+            Assert.AreEqual(0f, boat.Throttle, "…and the hand comes off the throttle");
+
+            boat.TickUnmannedDrift();
+            Assert.AreEqual(0f, boat.TrimTargetDegrees, Tol,
+                "her drift tick asks for level too: the squat went with the throttle");
+        }
+
         // ------------------------------------------------------------------ the shipped data
 
         [Test]

@@ -299,28 +299,80 @@ it dips for a moment when she slows and her stern wave catches her up.
   deck riders, lamps and occlusion that mirror her attitude) and `TryGetWakePose` (#875's stern: the
   wake stays under her transom as the bow lifts) all read that one number. There is no second transform
   writer, and her physics is identical with trim on or off.
-- **Resets.** `Stop()` (a dead stop, a teleport or region arrival, leaving the helm) and `SetHull` (a
-  hull swap, the fleet restore on load) move a rest serial, and the driver snaps her level on it; a
-  re-skin (`Configure`) starts level; disabling the controller without a stop clears the target, so she
-  eases level. Nothing of trim is saved (rule 5): a load recomputes it from her speed.
+- **Resets.** `Stop()` (a dead stop, a teleport or region arrival, tying up, stepping ashore with or
+  without her line in hand, going over the side) and `SetHull` (a hull swap, the fleet restore on load)
+  move a rest serial, and the driver snaps her level on it; a re-skin (`Configure`) starts level.
+  Letting go of the helm under way (`ControlSwitcher.LeaveHelm`, which calls `Stop(levelAtOnce: false)`)
+  parks her the same way but moves no serial: nothing has moved her or started her afresh, so the bow
+  she was carrying settles level on her own lag instead of in one frame. Disabling the controller
+  without a stop clears the target too, so she eases level. Nothing of trim is saved (rule 5): a load
+  recomputes it from her speed.
 - **Tunables.** `GameConfig.HullTrim` holds the switch, the hump and planing Froude numbers, and the
   limits and lag a hull inherits. Each `BoatHullDef` carries seven `Trim*` fields: the rise, the planing
   drop, the squat and dip gains, and her own limits and lag (a 0 limit or lag takes the policy's). The
   switch off, or a hull whose four shape values are 0, draws the pre-trim pitch bit for bit.
-- **Shipped tuning.** The lag is about `0.6·√(L/10)` s (0.5 s on the planing hulls). The figures are
-  each hull's own values replayed through her physics: full ahead from rest, then the throttle cut.
+- **Her feel follows her hull and her motor** (the owner on #893, 2026-09-26). Three things set her
+  numbers, and nothing else does:
+  - **Her form sets the curve.** A planing hull rises to her hump, then settles onto the plane. A
+    semi-displacement hull, a small open boat and a sailing hull rise and hold it: they never plane, so
+    they give none of it back. A ship stays level: she runs at Fn 0.08–0.22, far below her hump, where a
+    ship's running trim is a fraction of a degree and her attitude is her load's (§3.5).
 
-  | Class | Hulls | Rise / drop | Squat / dip, °/(m/s²) | Full ahead | Peak climbing | Dip on a cut | Within 0.25° after |
-  |---|---|---|---|---|---|---|---|
-  | Planing | SportSkiff, SportSkiffMk2, SportSkiffTwin, ZodiacFrc, ZodiacHurricane | 6° / 3.5° | 1.5 / 1.5 | +2.5° | +6.6° to +7.1° | −1.5° to −2.0° | 4–5 s |
-  | Semi-displacement | ConsoleSkiff, CapeIslander, LobsterBoat and her 18 variants, both SportFishers | 3.5° / 0 | 1.0 / 3.0 | +3.0° to +3.5° | +3.0° to +3.7° | −0.9° to −2.3° | 4½–6 s |
-  | Small displacement | Dory, DoryOutboard, Punt, PuntUpgraded | 1° / 0 | 0.5 / 1.5 | +0.9° to +1.0° | +0.9° to +1.0° | −0.6° to −0.9° | 1½–3 s |
-  | Sail | Sloop30, Sloop88 | 0.6° / 0 | 0 / 0.6 | +0.5° (under power) | +0.5° | −0.1° to −0.2° | under ½ s |
-  | Ships | SideDragger, SternTrawler, SternTrawlerMk2, CoastalPacket, Tanker | 0 | 0 | level | level | level | — |
+    | Form | Rise | Planing drop | Squat, °/(m/s²) | Dip, °/(m/s²) | Reference hull (mass/L³, kg/m³) |
+    |---|---|---|---|---|---|
+    | Planing | 6° | 3.5° | 1.5 | 1.5 | SportSkiff (2.770) |
+    | Semi-displacement | 3.5° | 0 | 1.0 | 3.0 | LobsterBoat (3.935) |
+    | Small open | 1° | 0 | 0.5 | 1.5 | Dory (4.390) |
+    | Sail | 0.6° | 0 | 0 | 0.6 | Sloop30 (5.869) |
+    | Ship | 0 | 0 | 0 | 0 | — |
 
-  Only the planing hulls author a drop, so no displacement hull planes. The ships are a deliberate 0:
-  they run at Fn 0.08–0.22, far below their hump, where a ship's running trim is a fraction of a degree
-  and her attitude is her load's (§3.5).
+  - **Her motor needs no number of its own.** The law already reads it: the rise follows the speed her
+    drive can hold, and the squat is her thrust over her mass. So the rowed Dory and the DoryOutboard
+    carry the same angles, and the outboard still trims more, because she holds more speed and pushes
+    harder.
+  - **Her build scales the angles.** How heavy she is for her length, `ρ = mass / L³`, against her
+    form's reference hull gives `f = √(ρ / ρref)`, clamped to 0.85–1.15. Each of her four angles is her
+    form's times `f`, rounded to 0.05°: a hull heavier for her length rises more, a lighter one less.
+  - **Her lag** is about `0.6·√(L/10)` s (0.5 s on the planing hulls), and every hull takes the
+    policy's limits, +8° and −4°.
+
+  As authored, one `BoatHullDef` per row (a lobster's hardtop and open are built alike, so they share
+  one):
+
+  | Form | Hull | L, m | Mass, kg | Mass/L³ | f | Rise / drop, ° | Squat / dip, °/(m/s²) | Lag, s |
+  |---|---|---|---|---|---|---|---|---|
+  | Planing | ZodiacFrc | 6.66 | 800 | 2.71 | 0.99 | 5.95 / 3.45 | 1.5 / 1.5 | 0.5 |
+  | Planing | SportSkiff | 7 | 950 | 2.77 | 1.00 | 6 / 3.5 | 1.5 / 1.5 | 0.5 |
+  | Planing | SportSkiffTwin | 7 | 1,000 | 2.92 | 1.03 | 6.15 / 3.6 | 1.55 / 1.55 | 0.5 |
+  | Planing | SportSkiffMk2 | 7 | 1,150 | 3.35 | 1.10 | 6.6 / 3.85 | 1.65 / 1.65 | 0.5 |
+  | Planing | ZodiacHurricane | 7.28 | 1,050 | 2.72 | 0.99 | 5.95 / 3.45 | 1.5 / 1.5 | 0.5 |
+  | Semi-displacement | ConsoleSkiff | 7 | 1,200 | 3.50 | 0.94 | 3.3 / 0 | 0.95 / 2.85 | 0.5 |
+  | Semi-displacement | Lobster inshore, Fundy | 8.6 | 2,460 | 3.87 | 0.99 | 3.45 / 0 | 1 / 2.95 | 0.55 |
+  | Semi-displacement | Lobster inshore, Northumberland | 8.6 | 2,500 | 3.93 | 1.00 | 3.5 / 0 | 1 / 3 | 0.55 |
+  | Semi-displacement | Lobster inshore, Newfoundland | 8.6 | 2,550 | 4.01 | 1.01 | 3.55 / 0 | 1 / 3.05 | 0.55 |
+  | Semi-displacement | Lobster standard, Fundy | 12 | 6,680 | 3.87 | 0.99 | 3.45 / 0 | 1 / 2.95 | 0.65 |
+  | Semi-displacement | LobsterBoat | 12 | 6,800 | 3.94 | 1.00 | 3.5 / 0 | 1 / 3 | 0.65 |
+  | Semi-displacement | Lobster standard, Northumberland | 12 | 6,800 | 3.94 | 1.00 | 3.5 / 0 | 1 / 3 | 0.65 |
+  | Semi-displacement | Lobster standard, Newfoundland | 12 | 6,920 | 4.00 | 1.01 | 3.55 / 0 | 1 / 3.05 | 0.65 |
+  | Semi-displacement | CapeIslander | 12.9 | 6,000 | 2.80 | 0.85 | 3 / 0 | 0.85 / 2.55 | 0.7 |
+  | Semi-displacement | Lobster offshore, Fundy | 14.6 | 12,000 | 3.86 | 0.99 | 3.45 / 0 | 1 / 2.95 | 0.7 |
+  | Semi-displacement | Lobster offshore, Northumberland | 14.6 | 12,250 | 3.94 | 1.00 | 3.5 / 0 | 1 / 3 | 0.7 |
+  | Semi-displacement | Lobster offshore, Newfoundland | 14.6 | 12,470 | 4.01 | 1.01 | 3.55 / 0 | 1 / 3.05 | 0.7 |
+  | Semi-displacement | SportFisherConvertible | 16.2 | 15,000 | 3.53 | 0.95 | 3.3 / 0 | 0.95 / 2.85 | 0.75 |
+  | Semi-displacement | SportFisherSkybridge | 27.4 | 72,000 | 3.50 | 0.94 | 3.3 / 0 | 0.95 / 2.85 | 1 |
+  | Small open | Dory | 4.5 | 400 | 4.39 | 1.00 | 1 / 0 | 0.5 / 1.5 | 0.4 |
+  | Small open | DoryOutboard | 4.5 | 400 | 4.39 | 1.00 | 1 / 0 | 0.5 / 1.5 | 0.4 |
+  | Small open | Punt | 5.2 | 700 | 4.98 | 1.06 | 1.05 / 0 | 0.55 / 1.6 | 0.45 |
+  | Small open | PuntUpgraded | 5.2 | 725 | 5.16 | 1.08 | 1.1 / 0 | 0.55 / 1.65 | 0.45 |
+  | Sail | Sloop30 | 9.4 | 4,875 | 5.87 | 1.00 | 0.6 / 0 | 0 / 0.6 | 0.6 |
+  | Sail | Sloop88 | 27 | 89,190 | 4.53 | 0.88 | 0.55 / 0 | 0 / 0.55 | 1 |
+  | Ship | SideDragger, SternTrawler, SternTrawlerMk2, CoastalPacket, Tanker | 25–110 | 90,000–7,668,000 | — | — | 0 / 0 | 0 / 0 | the policy's |
+
+  Only the planing hulls author a drop, so no displacement hull planes. The rule is **guarded by what
+  it promises, not by its formula** (`HullTrimRuleTests`): every shipped hull is named in one form;
+  within a form, a hull heavier for her length never rises less and a longer hull never answers faster;
+  no hull but a planing one has a drop; and the ships are level. So the owner can retune any number
+  after seeing her run, and the guards stay green while those promises hold.
 - **Where it does not show.** Every hull wears her mesh. The sprite path (the dev picker's variant
   toggle, and the fallback when a mesh refuses) draws baked frames and cannot pitch without moving the
   whole picture, so it draws her level. The cabin cutaway (`BoatInterior`) follows only her ride
