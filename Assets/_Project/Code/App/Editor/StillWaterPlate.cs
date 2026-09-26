@@ -510,6 +510,7 @@ namespace HiddenHarbours.App.Editor
             private readonly Vector4 _prevSunDir, _prevMoonDir, _prevMoonPhase;
             private readonly float _prevSunElevation;
             private readonly Texture _prevReflect;
+            private readonly bool _prevAsyncCompile;
 
             private string _dir;
             private PaintedHeightMap _map;
@@ -536,6 +537,7 @@ namespace HiddenHarbours.App.Editor
                 _prevMoonDir = Shader.GetGlobalVector(IdMoonDir);
                 _prevMoonPhase = Shader.GetGlobalVector(IdMoonPhaseState);
                 _prevReflect = Shader.GetGlobalTexture(IdReflectTex);
+                _prevAsyncCompile = ShaderUtil.allowAsyncCompilation;
             }
 
             public bool Photograph()
@@ -555,6 +557,12 @@ namespace HiddenHarbours.App.Editor
 
             private void Steps()
             {
+                // Every render in the plate compiles its shaders where it is called (the call site's flag, not
+                // the project setting; TearDown puts it back). On the first slot run (2026-09-26, a cold cache)
+                // the compiler processes finished the water's variants, yet ShaderUtil.anythingCompiling read true
+                // through all 20 waits of 120 s: a batch -executeMethod never hands the editor its loop back.
+                ShaderUtil.allowAsyncCompilation = false;
+
                 _dir = System.IO.Path.Combine(System.IO.Directory.GetParent(Application.dataPath).FullName,
                                               "Evidence~", "still-water-plate");
                 System.IO.Directory.CreateDirectory(_dir);
@@ -901,7 +909,9 @@ namespace HiddenHarbours.App.Editor
                 return ok;
             }
 
-            /// <summary>LampShadowRenderTests' wait: render to request the variants, then wait out the compiler.</summary>
+            /// <summary>LampShadowRenderTests' wait: render to request the variants, then wait out the compiler. With
+            /// async compilation off for the session (<see cref="Steps"/>) a render compiles in place, so this is the
+            /// check that nothing is still compiling when a shot is taken.</summary>
             private bool WaitOutCompilation()
             {
                 for (int attempt = 0; attempt < 10; attempt++)
@@ -1375,6 +1385,7 @@ namespace HiddenHarbours.App.Editor
                 WaveFieldBridge.PublishGlobals(PackedWaveField.Empty);
                 WaveFieldBridge.PublishFetchOff();
                 WaveFieldBridge.PublishBreakersOff();
+                ShaderUtil.allowAsyncCompilation = _prevAsyncCompile;
             }
         }
     }
