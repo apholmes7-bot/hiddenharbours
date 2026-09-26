@@ -1,11 +1,13 @@
 # ADR 0046 — Still water above the tide: water = max(tide, still), one map for the sim and the render, and a 16-bit height map
 
-- **Status: PROPOSED** — written by terrain pass 9's PR 4 lane (`feat/still-water-r16-height`).
-  PR 4 builds the machinery and binds **no still map anywhere**, so every region plays exactly as it
-  did before it. **The owner rules** on the contract (§3–§5) and on the recommendation in §8 that the
-  committed height maps stay 8-bit. The plate (§10) is judged on its pictures after an editor slot.
-  `lead-architect` records.
-- **Date:** 2026-09-25
+- **Status: ACCEPTED** (2026-09-26) — written by terrain pass 9's PR 4 lane
+  (`feat/still-water-r16-height`). The owner ruled on 2026-09-26 at 00:44:40Z: *"I accept
+  recommendations for pr4"*. That accepts the contract (§3–§5), and the committed height maps stay
+  8-bit (§8). On who teaches the scene exporter 16 bits, the owner said at 11:59:38Z: *"890 your
+  call"*, and §8 records the seat's call. PR 4 builds the machinery and binds **no still map
+  anywhere**, so every region plays exactly as it did before it. The plate (§10) is judged on its
+  pictures: that stays the owner's, after the Phase B report. `lead-architect` records.
+- **Date:** 2026-09-25; accepted 2026-09-26
 - **Decision owner:** the owner. Part 1's decisions 6, 7 and 11 were ruled as recommended on
   2026-09-25. `lead-architect` owns the Core seam and records this ADR. The other roles:
   - **`gameplay-systems`** owns the on-foot read.
@@ -283,8 +285,8 @@ still level. PR 5 must feed the painted map to St Peters' sea, or bake finer, be
 can be seen. The plate photographs the same density on a second sea (§10).
 
 **The committed maps stay 8-bit.** PR 4 converts neither `StPetersSeabed_HeightTex.png` (−4 … +6 m)
-nor `NineMileCreekSeabed_HeightTex.png` (−6 … +6 m). The owner decides this; the recommendation is
-to leave them.
+nor `NineMileCreekSeabed_HeightTex.png` (−6 … +6 m). The owner accepted the recommendation to leave
+them on 2026-09-26 (*"I accept recommendations for pr4"*).
 - Converting them would be lossless. 65535 = 255 × 257, so code k becomes 257·k, the same height.
 - But it gains nothing until someone paints them. It also doubles each file, and it is a binary
   change with no picture to judge it by.
@@ -301,8 +303,10 @@ layer built from the height map returns "the height texture did not decode as an
 PNG" and is left out of the export. PR 4 commits no 16-bit map, so the export is unchanged. But the
 first 16-bit map will hit it, and that is not only PR 5's new map: **the first stroke on a committed
 map rewrites it at 16 bits**, and the export then loses that region's ground layers until the
-exporter decodes 16 bits. This is flagged for PR 5 and for tools-editor, who own the exporter; the
-owner decides who carries it.
+exporter decodes 16 bits. **Who carries it:** the owner left it to the seat on 2026-09-26 (*"890 your
+call"*). The seat's call is a small tools-editor PR, before PR 5, that teaches the scene exporter
+16-bit height maps. tools-editor owns the exporter, and the seat writes that PR's charter. PR 4
+leaves the exporter as it is.
 
 **Mobile stays viable (ADR 0005).**
 - Not every mobile GPU samples R16; GLES 3.0 needs an extension. A mobile port adds its own platform
