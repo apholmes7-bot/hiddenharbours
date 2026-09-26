@@ -68,7 +68,7 @@ namespace HiddenHarbours.Tests.PlayMode
         // ON the centre, not near it: far inside the 1/128 m step of the grid the camera snaps to at zoom 4.
         const float OnTheCentreMetres = 0.001f;
 
-        const int FullArmDepth = 60;   // this branch: 20 materials x 3 steps in the 256 array
+        const int FullArmDepth = 63;   // since terrain pass 9 (2026-09-26): 21 materials x 3 steps, Path the 21st
         const int BaseArmDepth = 36;   // main at 40f4656f: 12 materials x 3 steps (the other 7 in a 512 array)
 
         // Scored at -2.087 m on the play frame: deck 10%, water 2%; Grass 47, Shingle 25, Rockweed 7, Talus 5, Shelf 4.
@@ -617,7 +617,8 @@ namespace HiddenHarbours.Tests.PlayMode
                 "the camera's frustum misses the terrain quad.");
         }
 
-        /// <summary>The arm is the detail array the ground actually samples: 60 slices here, 36 on main.</summary>
+        /// <summary>The arm is the detail array the ground actually samples: 63 slices here (60 when the flip
+        /// landed; terrain pass 9 appended Path), 36 on main before the flip.</summary>
         string ReadArm(out int depth)
         {
             var mpb = new MaterialPropertyBlock();

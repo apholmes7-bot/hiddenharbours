@@ -4,11 +4,11 @@
 // painted height data the water shader and the walk gate read (the _HeightTex vocabulary of
 // HiddenHarboursWater.shader, verbatim), classifies elevation into the StPetersShoreMap band
 // ladder with SOFT metre-scale edges, and shades each material from the terrain material kit
-// (docs/art/rigs/terrain — 20 plan-projection materials x 3 intensity steps, packed into ONE
+// (docs/art/rigs/terrain — 21 plan-projection materials x 3 intensity steps, packed into ONE
 // Texture2DArray by TerrainTexArrayBuilder). World-space sampling with per-cell hashed offsets
 // on the kit's offset-allowed materials means repetition cannot align by construction.
 //
-// PAINTED OVERRIDES (PR 2): five splat maps carry twenty 0..1 channels, one per material. A
+// PAINTED OVERRIDES (PR 2): six splat maps carry twenty-one 0..1 channels, one per material. A
 // channel's value is BOTH the blend weight against the height-derived bands AND the position on
 // that material's intensity ladder (_Lo -> base -> _Hi; the kit designs low intensity to READ
 // sparse — README §2 — so one number does both jobs honestly). Unpainted ground renders the
@@ -29,7 +29,7 @@
 // and that kit ships every plan material at 256 px / 8 m, so the seven that were 512 px / 16 m
 // (Shingle, Ripple, Silt, Foreshore, Talus, Musselbed, Oysterreef) moved into the one 256 array and
 // the 512 array retired: one array, one sampler, 8 m tiles everywhere. The kit's Mud took index 19,
-// E.a, the last channel of the five maps; the next material (the kit's Path) needs a _SplatF.
+// E.a, the last channel of the five maps.
 //
 // TERRAIN PASS 9 (PR 2, the cliff & rock kit v6). The kit's tiles now carry baked MAPS beside their
 // albedo (the normal and pond depth, sky visibility and height, the marks and their tips) and a palette
@@ -41,8 +41,8 @@
 // every material while _RelightLoaded is 0 take the albedo path unchanged. Left out on purpose: ground
 // snow (the plan's decision 4) and the shoreline foam and tide (decision 5: the sea plane owns them). The
 // three inputs TerrainLight6 added default to unset: occ 0 and skyv 1 (_TLOccSkyv black), seaDir 1
-// (_TLSeaDir 0). _SplatF is declared and bound for the kit's Path, whose slot joins the tables below
-// when Path's tiles join the array.
+// (_TLSeaDir 0). The pass 9 kit's Path took index 20, F.r, the first channel of a sixth map, _SplatF,
+// when Path's tiles joined the array (slice 60).
 //
 // The kit's five EDGE STRIPS (the sod lip, scarp, wrack line, weed line, reef margin) are imported
 // under Terrain/Edges but not sampled here — they are decals laid along a spline by signed
@@ -104,7 +104,7 @@ Shader "HiddenHarbours/TerrainSplat"
         _TLFrameRate    ("Loop frames per second", Float) = 8.0
         _TLOrigin       ("Pixel grid origin xy in world metres", Vector) = (0, 0, 0, 0)
 
-        [Header(Painted splat maps. Twenty channels across five textures)]
+        [Header(Painted splat maps. Twenty one channels across six textures)]
         [NoScaleOffset] _SplatA ("Splat A. Grass Marram Sand Shingle", 2D) = "black" {}
         [NoScaleOffset] _SplatB ("Splat B. Ripple Shelf Silt Dirt", 2D) = "black" {}
         [NoScaleOffset] _SplatC ("Splat C. Marsh Sedge Foreshore Talus", 2D) = "black" {}
@@ -254,30 +254,31 @@ Shader "HiddenHarbours/TerrainSplat"
             //   14 musselbed  15 oysterreef  16 eelgrass  17 irishmoss          (kit v3 reef beds)
             //   18 lawn                                                          (the mown dooryard)
             //   19 mud                                                           (the px kit, E.a)
+            //   20 path                                                          (terrain pass 9, F.r)
             //  ONE array since the px flip (2026-09-17, owner ruling A2): every material samples
             //  _DetailArr256 at 8 m, and the old MAT_ARRAY selector retired with the 512 array.
             //  MAT_SLICE: base slice (the _Lo step; +1 base, +2 _Hi — the kit ladder, README §2). The
-            //  seven that left the 512 array were appended after lawn (36..54); mud is 57.
+            //  seven that left the 512 array were appended after lawn (36..54); mud is 57 and path 60.
             //  MAT_OFFSET: hashed per-cell UV offset allowed (README §4: NEVER on a directional
             //  material — an offset slices a ripple train, a wind-combed stand, a bedding plane, a
             //  lie of fronds, a MUSSEL LIE or an EELGRASS RIBBON apart at the cell border. That list
             //  is ripple, marram, foreshore, ledge, rockweed, musselbed and eelgrass; all seven carry
             //  enough low-frequency variation to hide the repeat alone. Oysterreef and Irishmoss DO
             //  take an offset — oyster clusters are near-isotropic and moss cushions scatter — which
-            //  is why the four beds do not share one flag. Mud takes one too, like dirt: a cracked
-            //  skin or a churned flood has no lie to slice.)
+            //  is why the four beds do not share one flag. Mud and path take one too, like dirt: a
+            //  cracked skin, a churned flood or a gravel track has no lie to slice.)
             //  The relight's maps (terrain pass 9) are built in the albedo array's slice order, so
             //  MAT_SLICE addresses them too, and MatUV's offset moves a material's maps with its albedo.
             // =========================================================================================
-            static const float MAT_SLICE[20]  = { 0, 3, 6, 36, 39, 9, 42, 12, 15, 18, 45, 48, 21, 24, 51, 54, 27, 30, 33, 57 };
-            static const float MAT_METRES[20] = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 };
-            static const float MAT_OFFSET[20] = { 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1 };
+            static const float MAT_SLICE[21]  = { 0, 3, 6, 36, 39, 9, 42, 12, 15, 18, 45, 48, 21, 24, 51, 54, 27, 30, 33, 57, 60 };
+            static const float MAT_METRES[21] = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 };
+            static const float MAT_OFFSET[21] = { 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1 };
 
             // The one place the material count lives for the fragment's local arrays and loops. The
             // three tables above must stay LITERAL-sized (the pin test parses their declared length
             // out of this source), but an array declared 18 and walked to 14 renders nothing for the
             // beds and says nothing about it — so the loops read this instead of a repeated digit.
-            #define HH_MAT_COUNT 20
+            #define HH_MAT_COUNT 21
 
             struct Attributes
             {
@@ -529,24 +530,29 @@ Shader "HiddenHarbours/TerrainSplat"
                 // Mud (19, the px kit) is paint-only for the same reason: a cracked skin or a flooded
                 // churn is where carts turned and cattle stood, and no elevation knows that.
                 w[19] = 0.0;
+                // Path (20, terrain pass 9) is paint-only too: a track is where feet went, and no
+                // elevation knows that either.
+                w[20] = 0.0;
                 {
                     float keep = 1.0 - spineW;
                     for (int bi = 0; bi < HH_MAT_COUNT; bi++) w[bi] *= keep;
                     w[3] += spineW;
                 }
 
-                // --- PAINTED OVERRIDES: twenty channels, value = weight AND ladder intensity -------
+                // --- PAINTED OVERRIDES: twenty-one channels, value = weight AND ladder intensity ---
                 float4 pA = SAMPLE_TEXTURE2D(_SplatA, sampler_SplatA, uv);
                 float4 pB = SAMPLE_TEXTURE2D(_SplatB, sampler_SplatB, uv);
                 float4 pC = SAMPLE_TEXTURE2D(_SplatC, sampler_SplatC, uv);
                 float4 pD = SAMPLE_TEXTURE2D(_SplatD, sampler_SplatD, uv);
                 float4 pE = SAMPLE_TEXTURE2D(_SplatE, sampler_SplatE, uv);
+                float4 pF = SAMPLE_TEXTURE2D(_SplatF, sampler_SplatF, uv);
                 float p[HH_MAT_COUNT];
                 p[0]  = pA.r; p[1]  = pA.g; p[2]  = pA.b; p[3]  = pA.a;
                 p[4]  = pB.r; p[5]  = pB.g; p[6]  = pB.b; p[7]  = pB.a;
                 p[8]  = pC.r; p[9]  = pC.g; p[10] = pC.b; p[11] = pC.a;
                 p[12] = pD.r; p[13] = pD.g; p[14] = pD.b; p[15] = pD.a;
                 p[16] = pE.r; p[17] = pE.g; p[18] = pE.b; p[19] = pE.a;
+                p[20] = pF.r;
 
                 // ⚠ D.a IS NOW READ. It was a free slot until v3, which means the Properties default
                 // of "black" — opaque, ALPHA 1 — used to be harmless here and no longer is: a
@@ -559,10 +565,12 @@ Shader "HiddenHarbours/TerrainSplat"
                 // region silently.
                 // E.a joined it with Mud (2026-09-17): both committed SplatE PNGs (St Peters and Nine
                 // Mile Creek) were verified zero in .a before that slot was adopted too.
+                // F.r joined them with Path (terrain pass 9): the sixth map arrived blank in every
+                // region, so no committed byte changed meaning. F.g, F.b and F.a are not read.
 
                 float paintSum = p[0]  + p[1]  + p[2]  + p[3]  + p[4]  + p[5]  + p[6]
                                + p[7]  + p[8]  + p[9]  + p[10] + p[11] + p[12] + p[13]
-                               + p[14] + p[15] + p[16] + p[17] + p[18] + p[19];
+                               + p[14] + p[15] + p[16] + p[17] + p[18] + p[19] + p[20];
                 float paintTotal = saturate(paintSum);
                 // The painted share (paintTotal) is distributed by each channel's fraction of the
                 // whole (p / paintSum) — in BOTH regimes, so the weights below always sum to 1.
@@ -601,7 +609,7 @@ Shader "HiddenHarbours/TerrainSplat"
                         // pixel grid (the rig's X east and Y SOUTH, where it anchors its noise and
                         // hashes) and the two per-texel inputs, once per fragment. Then every material
                         // present, relit when its tiles have maps and from the albedo when not (the
-                        // lawn's). A real loop: unrolled, the relight would be inlined twenty times.
+                        // lawn's). A real loop: unrolled, the relight would be inlined twenty-one times.
                         TL6Sky sky = TerrainSky();
                         int2 W = int2((int)floor((wp.x - _TLOrigin.x) * ppm), (int)floor((_TLOrigin.y - wp.y) * ppm));
                         float2 os = SAMPLE_TEXTURE2D_LOD(_TLOccSkyv, sampler_TLOccSkyv, uv, 0).rg;
@@ -668,6 +676,7 @@ Shader "HiddenHarbours/TerrainSplat"
                     col += w[16] * lerp(_MarramColA.rgb,  _GrassColB.rgb,   grain);   // eelgrass
                     col += w[17] * lerp(_RippleColA.rgb,  _ShelfColB.rgb,   grain);   // irishmoss
                     col += w[19] * lerp(_ShelfColA.rgb,   _SandColB.rgb,    grain);   // mud, on dirt's pair
+                    col += w[20] * lerp(_ShingleColA.rgb, _SandColB.rgb,    grain);   // path, stones on sand
                 }
 
                 // Macro variation: tens-of-metres tint drift that kills any large-scale flatness.

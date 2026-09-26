@@ -18,8 +18,11 @@
                 input off and counting the texels that change: tips (o._tips emptied), marks (the tile's
                 marks zeroed: tips, seams and the per-mark sparkle), puddles (G.pond zeroed), water (the
                 water class made soil), snow, rain and fog (the sky's set to 0), the tide (o.tide unset),
-                occ (o.occ and o.skyv unset) and lv (o.lv unset). The test requires every one somewhere,
-                so a fixture that stopped exercising one cannot pass quietly.
+                occ, skyv and seaDir (each unset alone; seaDir then reads 1) and lv (o.lv unset). The
+                test requires every one somewhere, so a fixture that stopped exercising one cannot pass
+                quietly. Part 2's controls set occ, skyv and seaDir each alone: occ over half the frame,
+                skyv = 0.5, and seaDir = -1 at frame 7. A case whose label names none of the three
+                leaves all three unset.
 
      hypot      V8's Math.hypot where the plain square root of the sum of squares rounds differently:
                 pairs shaped like the rig's two-argument calls, and triples in -1..1 (the rig's own
@@ -111,6 +114,9 @@ function rigSky(f) {
 // ---- options ------------------------------------------------------------------------------------------------
 const occOf = () => { const o = new Uint8Array(S * S); for (let i = 0; i < o.length; i++) o[i] = (i % S) < 12 ? 1 : 0; return o; };
 const skyvOf = () => { const v = new Float32Array(S * S); for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) v[y * S + x] = 0.4 + 0.6 * (x + y) / (2 * S - 2); return v; };
+/* part 2's controls (docs/design/st-peters-terrain-pass-9-part-2.md §1.2): occ over half the frame, skyv = 0.5 */
+const occHalfOf = () => { const o = new Uint8Array(S * S); for (let i = 0; i < o.length; i++) o[i] = (i % S) < S / 2 ? 1 : 0; return o; };
+const skyvHalfOf = () => new Float32Array(S * S).fill(0.5);
 const lvOf = () => { const v = new Int32Array(S * S); for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) v[y * S + x] = ((x >> 3) + (y >> 3)) % 4; return v; };
 const onlyOf = (G) => { const a = []; for (let i = 0; i < G.N; i++) if (G.cls[i] === TL.CL.WATER || (i % 5) === 0) a.push(i); return Int32Array.from(a); };
 function rigOpt(f) {
@@ -126,6 +132,9 @@ const C = [];
 const add = (win, sky, opt) => C.push({ win: byName(win), sky, opt: Object.assign({ x0: 0, y0: 0, w: 0, h: 0, frame: 0, seaDir: 0, hasTide: false, tide: 0, hasTideHigh: false, tideHigh: 0 }, opt || {}) });
 for (const k of ['afternoon', 'golden', 'morning', 'overcast', 'night', 'fog', 'unlit', 'snow']) add('shingle_hi', skyOf(k));
 add('shingle_hi', skyOf('afternoon'), { occ: occOf(), skyv: skyvOf(), label: 'occ and skyv' });
+/* part 2's controls, each input set alone (part 2, "PR 2: the ground (amended)"); seaDir's is below */
+add('shingle_hi', skyOf('afternoon'), { occ: occHalfOf(), label: 'occ over half the frame' });
+add('shingle_hi', skyOf('afternoon'), { skyv: skyvHalfOf(), label: 'skyv 0.5' });
 add('shingle_hi', skyOf('afternoon'), { lv: lvOf(), label: 'canopy levels' });
 add('shingle_hi', skyOf('dawn'), { x0: 8, y0: 4, w: 20, h: 24, label: 'a region inside the window' });
 add('shingle_hi', skyOf('afternoon', { grade: false }), { label: 'grade off' });
@@ -136,9 +145,14 @@ add('mud_hi', skyOf('snow'));
 add('mud_hi', skyOf('squall'), { frame: 0 }); add('mud_hi', skyOf('squall'), { frame: 5 }); add('mud_hi', skyOf('afternoon', { wet: 0.8 }), { label: 'wet ground under sun' });
 for (const [k, fr] of [['afternoon', 0], ['afternoon', 9], ['gale', 3], ['squall', 12]]) add('sedge_hi', skyOf(k), { frame: fr });
 add('sedge_hi', skyOf('afternoon'), { seaDir: -1, frame: 4, label: 'seaDir -1' });
+/* part 2's seaDir control, set alone: seaDir = -1 at frame 7, on the marsh here and the coast below. It only shifts the
+   swell's phase, so it needs the gale's swell to move texels in a 32-texel window: 49 here and 73 on the coast, where
+   the afternoon's moves none in either. */
+add('sedge_hi', skyOf('gale'), { seaDir: -1, frame: 7, label: 'seaDir -1 at frame 7' });
 add('sedge_hi', skyOf('gale'), { only: onlyOf(W[byName('sedge_hi')].G), frame: 7, label: 'only the listed texels' });
 for (const [k, fr] of [['afternoon', 0], ['afternoon', 7], ['gale', 3], ['squall', 11], ['snow', 2]]) add('ripple_shore', skyOf(k), { hasTide: true, tide: 0.1, frame: fr });
 add('ripple_shore', skyOf('afternoon'), { hasTide: true, tide: 0.1, hasTideHigh: true, tideHigh: 0.3, seaDir: -1, frame: 1, label: 'tideHigh and seaDir' });
+add('ripple_shore', skyOf('gale'), { hasTide: true, tide: 0.1, seaDir: -1, frame: 7, label: 'seaDir -1 at frame 7' });
 
 // ---- nudges -------------------------------------------------------------------------------------------------
 const rot = (v, a) => [v[0] * Math.cos(a) - v[1] * Math.sin(a), v[0] * Math.sin(a) + v[1] * Math.cos(a), v[2]];
@@ -171,7 +185,9 @@ const TOGGLES = {
   rain: (G, s, o) => [G, Object.assign(s, { rain: 0 }), o],
   fog: (G, s, o) => [G, Object.assign(s, { fog: 0 }), o],
   tide: (G, s, o) => [G, s, Object.assign(o, { tide: undefined, tideHigh: undefined })],
-  occ: (G, s, o) => [G, s, Object.assign(o, { occ: undefined, skyv: undefined })],
+  occ: (G, s, o) => [G, s, Object.assign(o, { occ: undefined })],
+  skyv: (G, s, o) => [G, s, Object.assign(o, { skyv: undefined })],
+  seaDir: (G, s, o) => [G, s, Object.assign(o, { seaDir: undefined })],
   lv: (G, s, o) => [G, s, Object.assign(o, { lv: undefined })],
 };
 const diff = (a, b) => { let n = 0; for (let i = 0; i < a.length; i += 4) if (a[i] !== b[i] || a[i + 1] !== b[i + 1] || a[i + 2] !== b[i + 2] || a[i + 3] !== b[i + 3]) n++; return n; };

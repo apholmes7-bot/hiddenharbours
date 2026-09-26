@@ -85,6 +85,8 @@ each), its height range and its largest pond depth, and a sha256 over each map's
 The maps are not kept here. `Art/Editor/TerrainTexArrayBuilder.cs` packs them into the splat
 shader's arrays, and they are committed under `Assets/_Project/Art/Terrain/` together with those
 arrays: a map committed without its array would leave the two out of step.
+`TerrainKitPass9BytesTests` holds each array slice and each ramp row to the manifest, and
+`TerrainKitAlbedoBytesTests` holds the live albedo PNGs to it.
 
 ## The twin's fixture
 
@@ -96,3 +98,6 @@ writes `fixtures/terrainLight6.twin.json`: small G-buffers built by the kit's ow
 and options they are relit under, and the kit's relit bytes at sampled texels.
 `Assets/Tests/EditMode/TerrainLight6TwinTests.cs` relights the same texels through the C# twin and
 compares them. The expected bytes come only from the kit; the twin never computes them.
+Part 2's controls set each of TerrainLight6's inputs alone: `occ` over half the frame, `skyv` = 0.5,
+and `seaDir` = -1 at frame 7 under the gale, whose swell is what `seaDir` turns. A case whose label
+names none of the three leaves all three unset.

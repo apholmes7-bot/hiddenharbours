@@ -22,8 +22,14 @@ namespace HiddenHarbours.Tests.EditMode
     /// <para>Only the texels the fixture marks stable are compared. A stable texel kept its bytes while
     /// the kit re-ran the case with each sky input moved by 1e-7. A texel that moves under that sits on
     /// a threshold, where one last bit between V8's <c>pow</c> or <c>sin</c> and .NET's could flip it,
-    /// and so could JsonUtility's reading of a decimal. In the fixture as committed, 39,388 of the
-    /// 39,392 texels are stable.</para>
+    /// and so could JsonUtility's reading of a decimal. In the fixture as committed, 43,483 of the
+    /// 43,488 texels are stable.</para>
+    ///
+    /// <para>The light holds with TerrainLight6's three new inputs unset, and with each one set alone at
+    /// part 2's controls (<c>docs/design/st-peters-terrain-pass-9-part-2.md</c> §1.2 and "PR 2: the
+    /// ground (amended)"): <c>occ</c> over half the frame, <c>skyv</c> = 0.5, and <c>seaDir</c> = −1 at
+    /// frame 7. <see cref="Fixture_SetsEachNewInputAlone_AtPart2sControls"/> holds the fixture to
+    /// carrying those cases.</para>
     /// </summary>
     public class TerrainLight6TwinTests
     {
@@ -31,7 +37,7 @@ namespace HiddenHarbours.Tests.EditMode
         const string RigPath = "docs/art/rigs/terrain/pass9/terrainLight6.js";
 
         /// <summary>The inputs the fixture's coverage counts switch off, each measured on the kit.</summary>
-        static readonly string[] Inputs = { "tips", "marks", "puddles", "water", "snow", "rain", "fog", "tide", "occ", "lv" };
+        static readonly string[] Inputs = { "tips", "marks", "puddles", "water", "snow", "rain", "fog", "tide", "occ", "skyv", "seaDir", "lv" };
 
         [Serializable] public sealed class GBufferJson
         {
@@ -49,7 +55,7 @@ namespace HiddenHarbours.Tests.EditMode
             public int x0, y0, w, h, frame, seaDir; public string occ, skyv, lv, only;
             public bool hasTide, hasTideHigh; public double tide, tideHigh;
         }
-        [Serializable] public sealed class CoverageJson { public int tips, marks, puddles, water, snow, rain, fog, tide, occ, lv; }
+        [Serializable] public sealed class CoverageJson { public int tips, marks, puddles, water, snow, rain, fog, tide, occ, skyv, seaDir, lv; }
         [Serializable] public sealed class CaseJson
         {
             public string name; public int gbuffer; public SkyJson sky; public OptionsJson options;
@@ -142,7 +148,7 @@ namespace HiddenHarbours.Tests.EditMode
             Tide = o.hasTide ? o.tide : (double?)null, TideHigh = o.hasTideHigh ? o.tideHigh : (double?)null,
         };
 
-        static int[] Coverage(CoverageJson c) => new[] { c.tips, c.marks, c.puddles, c.water, c.snow, c.rain, c.fog, c.tide, c.occ, c.lv };
+        static int[] Coverage(CoverageJson c) => new[] { c.tips, c.marks, c.puddles, c.water, c.snow, c.rain, c.fog, c.tide, c.occ, c.skyv, c.seaDir, c.lv };
 
         // ---- the tests ------------------------------------------------------------------------------------------
 
@@ -244,6 +250,38 @@ namespace HiddenHarbours.Tests.EditMode
             for (int k = 0; k < Inputs.Length; k++)
                 if (sum[k] == 0) faults.Add($"no case exercises {Inputs[k]}");
             Assert.IsEmpty(faults, "The fixture does not test what it claims:\n  " + string.Join("\n  ", faults));
+        }
+
+        /// <summary>The fixture sets each of TerrainLight6's three new inputs alone, at part 2's controls, and in
+        /// each such case the input decides some texels (switched off on the kit, they change). So the twin's
+        /// agreement in <see cref="Twin_RelightsEveryCase_AsTheKitDid"/> covers each input set, not only unset.
+        /// An unset <c>seaDir</c> is 0 in the fixture, and the light then reads 1.</summary>
+        [Test]
+        public void Fixture_SetsEachNewInputAlone_AtPart2sControls()
+        {
+            var f = Load();
+            bool occHalf = false, skyvHalf = false, seaBack = false;
+            foreach (var c in f.cases)
+            {
+                var o = c.options;
+                byte[] occ = BOrNull(o.occ);
+                float[] skyv = F32(o.skyv);
+                if (occ != null && skyv == null && o.seaDir == 0 && c.coverage.occ > 0)
+                {
+                    int set = 0;
+                    foreach (byte b in occ) if (b != 0) set++;
+                    occHalf |= set * 2 == occ.Length;
+                }
+                if (skyv != null && occ == null && o.seaDir == 0 && c.coverage.skyv > 0)
+                    skyvHalf |= Array.TrueForAll(skyv, v => v == 0.5f);
+                if (o.seaDir == -1 && o.frame == 7 && occ == null && skyv == null && c.coverage.seaDir > 0)
+                    seaBack = true;
+            }
+            var missing = new List<string>();
+            if (!occHalf) missing.Add("occ over half the frame");
+            if (!skyvHalf) missing.Add("skyv = 0.5");
+            if (!seaBack) missing.Add("seaDir = -1 at frame 7");
+            Assert.IsEmpty(missing, "No case sets the input alone at part 2's control and moves texels with it:\n  " + string.Join("\n  ", missing));
         }
     }
 }

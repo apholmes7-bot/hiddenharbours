@@ -65,6 +65,8 @@ namespace HiddenHarbours.Art.Editor
             "Shingle", "Ripple", "Silt", "Foreshore", "Talus", "Musselbed", "Oysterreef",
             // Mud, new with the px kit (2026-09-17, owner ruling M1): splat index 19, _SplatE.a. Slice 57.
             "Mud",
+            // Path, new with terrain pass 9 (2026-09-25): splat index 20, _SplatF.r. Slice 60.
+            "Path",
         };
 
         /// <summary>The ladder suffixes, in slice order (README §2: _Lo = 0, base = 1, _Hi = 2).</summary>
