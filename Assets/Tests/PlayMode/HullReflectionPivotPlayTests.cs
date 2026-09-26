@@ -20,7 +20,8 @@ namespace HiddenHarbours.Tests.PlayMode
         public Vector4 Origin, HullOrigin;
         public float Lit;
         public int SampleFrame = -1;
-        readonly MaterialPropertyBlock _block = new MaterialPropertyBlock();
+        MaterialPropertyBlock _block;
+        void Awake() => _block = new MaterialPropertyBlock();
         void LateUpdate()
         {
             Target.GetPropertyBlock(_block);
