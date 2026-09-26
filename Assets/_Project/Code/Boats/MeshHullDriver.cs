@@ -23,6 +23,12 @@ namespace HiddenHarbours.Boats
     ///   frame (execution order: wave −120 → this −110 → the renderer applies at its default 0),
     ///   using the rig's own rock amplitudes (<see cref="HullMeshMath.RockPose"/>). −1 / calm =
     ///   the level pose, exactly like a sprite hull's RockFrame −1.</item>
+    ///   <item><b>Adds her TRIM</b> (owner 2026-09-21 — the bow answers her speed): the target the
+    ///   boat's physics publishes through <see cref="IHullTrimSource"/>, eased by the hull's own lag
+    ///   (<see cref="HullTrimMath.Step"/>) over the game clock, then added to the pitch channel. It
+    ///   is composed HERE and only here, so the renderer, <see cref="AppliedPitchDegrees"/> (her deck
+    ///   riders) and <see cref="TryGetWakePose"/> (her wake) all read the one drawn attitude. No
+    ///   source, the policy off, or a hull that authors none = exactly the pre-trim pose.</item>
     /// </list>
     ///
     /// <para><b>Wired by <see cref="BoatHullSkinner"/> only</b> — a scene-serialised instance with
@@ -60,6 +66,23 @@ namespace HiddenHarbours.Boats
         private float _stormAmplitudeScale = 1f;
         private float _stormExtraRollDegrees;
         private float _stormExtraPitchDegrees;
+
+        // Her trim (owner 2026-09-21): where the target comes from (the BoatController on this same
+        // root, found at Configure), the eased angle actually drawn, the rest serial last seen, and
+        // the game-clock time of the last ease. Visual state only — recomputed, never saved.
+        private IHullTrimSource _trimSource;
+        private float _trimDegrees;
+        private int _trimRestSerial;
+        private bool _trimHasLastTime;
+        private double _trimLastTimeSeconds;
+
+        /// <summary>
+        /// <b>The trim this driver added to her pitch on its last <see cref="Drive"/></b>, degrees
+        /// (+ = bow up) — already inside <see cref="AppliedPitchDegrees"/>, reported apart so a test or
+        /// a debug read can see the trim share alone. 0 with no <see cref="IHullTrimSource"/> on the
+        /// root, before the first drive after a <see cref="Configure"/>, and on the drive after a rest.
+        /// </summary>
+        public float TrimDegrees => _trimDegrees;
 
         /// <summary>The visual child the renderer draws under (kept screen-identity). Null = idle.</summary>
         public Transform Visual => _visual;
@@ -259,9 +282,42 @@ namespace HiddenHarbours.Boats
             _stormAmplitudeScale = 1f;
             _stormExtraRollDegrees = 0f;
             _stormExtraPitchDegrees = 0f;
+            // A re-skinned hull starts level and re-finds her trim source (the skinner's apply is a
+            // hull swap, never a per-frame call).
+            _trimSource = GetComponent<IHullTrimSource>();
+            _trimDegrees = 0f;
+            _trimHasLastTime = false;
         }
 
         private void LateUpdate() => Drive();
+
+        /// <summary>
+        /// Ease her drawn trim toward the target her physics published, over the game clock (the
+        /// <see cref="BoatWaveMotion"/> precedent: a paused clock is dt 0 and her bow holds with the
+        /// sea; a clock stepped backwards is a negative dt, which holds for one drive). The first
+        /// drive after <see cref="Configure"/>, and the first after the source's rest serial moves (a
+        /// stop, a teleport, a hull swap, a load), put her level AT ONCE and start the clock there.
+        /// Allocation-free: floats and one interface read.
+        /// </summary>
+        private float StepTrim()
+        {
+            if (_trimSource == null) return 0f;
+            int serial = _trimSource.TrimRestSerial;
+            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : Time.timeAsDouble;
+            if (!_trimHasLastTime || serial != _trimRestSerial)
+            {
+                _trimRestSerial = serial;
+                _trimHasLastTime = true;
+                _trimLastTimeSeconds = now;
+                _trimDegrees = 0f;
+                return 0f;
+            }
+            float dt = (float)(now - _trimLastTimeSeconds);
+            _trimLastTimeSeconds = now;
+            _trimDegrees = HullTrimMath.Step(_trimDegrees, _trimSource.TrimTargetDegrees, dt,
+                                             _trimSource.TrimResponseSeconds);
+            return _trimDegrees;
+        }
 
         /// <summary>One pose push — the LateUpdate body, callable directly so EditMode tests (where
         /// the player loop does not run) can drive the exact production path.</summary>
@@ -331,6 +387,10 @@ namespace HiddenHarbours.Boats
 
             _appliedRollDegrees = roll + VisualTiltDegrees + _stormExtraRollDegrees;
             _appliedPitchDegrees = pitch + _stormExtraPitchDegrees;
+            // (5) Her TRIM, on the same pitch channel (see the class doc). Added only when non-zero, so
+            // a boat that is not trimming draws the pre-trim float bit for bit.
+            float trim = StepTrim();
+            if (trim != 0f) _appliedPitchDegrees += trim;
             _appliedHeaveMeters = heave / Mathf.Max(1e-4f, _pxPerMetre);
 
             _renderer.RollDegrees = _appliedRollDegrees;

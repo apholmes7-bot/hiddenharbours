@@ -269,6 +269,73 @@ wave number flattens above mid-sea). B2.5 makes the response grow off the same d
 - **Boundaries:** all visual-only — B3's seakeeping *forces* keep their own pure sim path and
   their own `GameConfig.Seakeeping` policy; nothing here feeds physics or the save (rule 5).
 
+### 2.7.3 She trims to her speed (owner ask 2026-09-21 — visual-only)
+
+**Built** (the owner, 2026-09-21: *"Also i want trim added to the boats depending on speed and
+deacceleration"*). Until now her pitch was the sea's alone, so a skiff at full throttle sat as flat as
+a skiff on her mooring. Now the bow answers her own way through the water: it rises as she climbs her
+bow wave, a planing hull settles once she is over it, it squats a little more while she gathers way, and
+it dips for a moment when she slows and her stern wave catches her up.
+
+- **The law** (`HullTrimMath`, pure, EditMode-pinned). Her Froude number `Fn = u / √(g·L)` places her
+  on her hump. The steady angle is `hump · S(Fn / FnHump) − drop · S((Fn − FnHump) / (FnPlane − FnHump))`
+  with `S` the smoothstep: level at rest, the full rise at the hump (Fn 0.40, the textbook hull speed),
+  and a planing hull gives back her drop by Fn 0.55. The dynamic term is `squat · a` while she gathers
+  way and `dip · a · S(Fn / FnHump)` while she slows (a < 0), so the dip scales with the way she carried
+  and a boat creeping into her berth does not nod. The steady term reads her speed capped at the speed
+  her drive can HOLD: the rise is the bow wave her drive keeps her climbing, so cutting the throttle
+  takes the rise away at once and the dip shows. The sum is clamped to her limits.
+- **The signals** (`BoatController.PublishTrimTarget`). `u` is her speed along the keel THROUGH THE
+  WATER (her velocity less the current), so a tide under her does not trim her. `a` is computed from the
+  forces the step applied along the keel: her drive (engine, oar or sail thrust) and her own resistance
+  (hull drag, the oar brace, the grounded and shallows holds) over her mass, less the body's damping. It
+  is never differenced from her velocity, so the wind's shove and the seakeeping forces are not read as
+  drive or braking, and the wave pitch stays the rock channel's alone. Going astern she sits level (the
+  Froude number reads only headway); ahead thrust still squats her whichever way she is moving. Every
+  term passes through 0 continuously, so a crash stop or a reverse has no spike. Nothing is random.
+- **One drawer** (`MeshHullDriver`). The controller publishes a target through `IHullTrimSource`; the
+  driver eases the drawn trim toward it with one exact exponential over the game clock (a paused clock
+  holds) and adds it to the pitch channel it already composes. The renderer, `AppliedPitchDegrees` (the
+  deck riders, lamps and occlusion that mirror her attitude) and `TryGetWakePose` (#875's stern: the
+  wake stays under her transom as the bow lifts) all read that one number. There is no second transform
+  writer, and her physics is identical with trim on or off.
+- **Resets.** `Stop()` (a dead stop, a teleport or region arrival, leaving the helm) and `SetHull` (a
+  hull swap, the fleet restore on load) move a rest serial, and the driver snaps her level on it; a
+  re-skin (`Configure`) starts level; disabling the controller without a stop clears the target, so she
+  eases level. Nothing of trim is saved (rule 5): a load recomputes it from her speed.
+- **Tunables.** `GameConfig.HullTrim` holds the switch, the hump and planing Froude numbers, and the
+  limits and lag a hull inherits. Each `BoatHullDef` carries seven `Trim*` fields: the rise, the planing
+  drop, the squat and dip gains, and her own limits and lag (a 0 limit or lag takes the policy's). The
+  switch off, or a hull whose four shape values are 0, draws the pre-trim pitch bit for bit.
+- **Shipped tuning.** The lag is about `0.6·√(L/10)` s (0.5 s on the planing hulls). The figures are
+  each hull's own values replayed through her physics: full ahead from rest, then the throttle cut.
+
+  | Class | Hulls | Rise / drop | Squat / dip, °/(m/s²) | Full ahead | Peak climbing | Dip on a cut | Within 0.25° after |
+  |---|---|---|---|---|---|---|---|
+  | Planing | SportSkiff, SportSkiffMk2, SportSkiffTwin, ZodiacFrc, ZodiacHurricane | 6° / 3.5° | 1.5 / 1.5 | +2.5° | +6.6° to +7.1° | −1.5° to −2.0° | 4–5 s |
+  | Semi-displacement | ConsoleSkiff, CapeIslander, LobsterBoat and her 18 variants, both SportFishers | 3.5° / 0 | 1.0 / 3.0 | +3.0° to +3.5° | +3.0° to +3.7° | −0.9° to −2.3° | 4½–6 s |
+  | Small displacement | Dory, DoryOutboard, Punt, PuntUpgraded | 1° / 0 | 0.5 / 1.5 | +0.9° to +1.0° | +0.9° to +1.0° | −0.6° to −0.9° | 1½–3 s |
+  | Sail | Sloop30, Sloop88 | 0.6° / 0 | 0 / 0.6 | +0.5° (under power) | +0.5° | −0.1° to −0.2° | under ½ s |
+  | Ships | SideDragger, SternTrawler, SternTrawlerMk2, CoastalPacket, Tanker | 0 | 0 | level | level | level | — |
+
+  Only the planing hulls author a drop, so no displacement hull planes. The ships are a deliberate 0:
+  they run at Fn 0.08–0.22, far below their hump, where a ship's running trim is a fraction of a degree
+  and her attitude is her load's (§3.5).
+- **Where it does not show.** Every hull wears her mesh. The sprite path (the dev picker's variant
+  toggle, and the fallback when a mesh refuses) draws baked frames and cannot pitch without moving the
+  whole picture, so it draws her level. The cabin cutaway (`BoatInterior`) follows only her ride
+  (`DrawnRideMeters`), not her roll or pitch, so it stays level while the hull under it trims — a known
+  integration concern, recorded here rather than exempted. The stern deck gear
+  (`SternDeckGearPresenter`) is placed on her level plan too. Ambient and moored skins carry no
+  controller, so they sit on the sea's pitch alone, which is right for a boat lying still.
+- **Known small biases.** A force outside the sum (the wind, the sea, an anchor or mooring line, a quay
+  she is pressed against) reads as the difference it makes: a headwind holding her below her throttle's
+  speed is a slight steady squat, a line towing her or holding her against a stream reads her own drag
+  as a slight dip (faded by her low Froude number), and a hull pressed on a quay with the throttle open
+  squats as if gathering way. In a turn, her keel swinging across her way reads as a small squat (her
+  yaw rate times her sideways slip).
+- **Not the other trims.** This is running trim. Load trim and list are §3.5's; sail trim is the sheets.
+
 ---
 
 ## 3. Danger (P5) — "cozy, but with teeth"
