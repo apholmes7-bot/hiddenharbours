@@ -1,0 +1,5434 @@
+{
+ "schema": "hh-village-camera-first README-FIRST.md §6 (Job 5), extended by the St Peters village plan (charter §3.11): lots, commons, lights, fences, stations, tree, cycleLinks, frames",
+ "option": "B",
+ "optionNote": "B, a new layout: pads move and three homes are added (the owner's direction, 2026-09-25/26). Option A (today's pads, turned camera-first) is Claude Design's to draw; this plan does not.",
+ "units": "world units, as the package's sites.json: x east, y screen-north (ground north x 0.643)",
+ "facing": "facing8 is the rig's dir for render(dir, opts); cell is the game's BuildingFacing cell; dir = (8 - cell) % 8 (rigs.js dirForCell, BuildingFacing.cs:16-18). Every door is on its show face today (entry 'front'); the two west-facing homes carry jobOneAsk, the side entry that would turn their show face south.",
+ "fixedPoints": {
+  "hearth": [
+   0.0,
+   14.0
+  ],
+  "spawn": [
+   5.0,
+   0.0
+  ],
+  "green": [
+   2.5,
+   7.0
+  ],
+  "ginnyMark": [
+   4.0,
+   11.0
+  ],
+  "nedLetter": [
+   -2.0,
+   10.5
+  ]
+ },
+ "lines": {
+  "GR_Y": 28.3,
+  "CW_Y": 12.5,
+  "AXIS_X": 2.5,
+  "EAST_X": 13.25,
+  "BLUFF_X": -6.25,
+  "BLUFF_HEAD": 41.1,
+  "BW_X": -17.5,
+  "SW_Y": 34.5,
+  "GAP_X": 41.0,
+  "GR_W": -19.0,
+  "GR_E": 57.0,
+  "GINNY_W": 69.0,
+  "FARM_X": 34.0,
+  "FARM_Y": 18.9
+ },
+ "derived": {
+  "GR": [
+   27.015,
+   29.585
+  ],
+  "CW": [
+   12.02,
+   12.98
+  ],
+  "SW": [
+   34.02,
+   34.98
+  ],
+  "EAST": [
+   12.5,
+   14.0
+  ],
+  "RING_X": 2.598,
+  "RING_N": 15.658,
+  "SHORE_X": -37.409,
+  "square": [
+   -8.0,
+   9.0,
+   12.5,
+   27.015
+  ],
+  "west_garden": [
+   -24.0,
+   9.0,
+   -8.0,
+   27.015
+  ],
+  "flake_yard": [
+   34.0,
+   29.585,
+   48.0,
+   41.0
+  ]
+ },
+ "tunables": {
+  "FENCE_OFF": 0.4,
+  "WALK_GAP": 0.5,
+  "YARD_GAP": 1.0,
+  "YARD_HOLD": 0.6,
+  "RING_R": 3.0,
+  "CLASS_M": {
+   "street": 4.0,
+   "lane": 3.0,
+   "footpath": 1.5,
+   "walk": 1.5,
+   "alley": 1.0
+  },
+  "ART_HID_MAX": 0.2
+ },
+ "buildings": [
+  {
+   "id": "school",
+   "rig": "HouseIso",
+   "preset": "(bake: Buildings.json school)",
+   "opts": {
+    "era": "colonial",
+    "shape": "gable",
+    "siding": "clapboard",
+    "body": "white",
+    "roof": "asphaltGrey",
+    "size": 0.15,
+    "windows": "sixOverSix",
+    "winDensity": 0.85,
+    "attic": "gable",
+    "porch": "front",
+    "dormers": 0,
+    "chimneys": 1,
+    "bay": false,
+    "weather": 0.3
+   },
+   "optsJs": "{era:'colonial',shape:'gable',siding:'clapboard',body:'white',roof:'asphaltGrey',size:0.15,windows:'sixOverSix',winDensity:0.85,attic:'gable',porch:'front',dormers:0,chimneys:1,bay:false,weather:0.3}",
+   "at": [
+    -11.4,
+    35.423
+   ],
+   "facing8": 4,
+   "cell": 4,
+   "doorFaces": "S",
+   "entry": "front",
+   "door": [
+    -11.4,
+    32.97
+   ],
+   "approach": [
+    -11.4,
+    28.3
+   ],
+   "path": [
+    [
+     -11.4,
+     28.3
+    ],
+    [
+     -11.4,
+     29.985
+    ],
+    [
+     -11.4,
+     32.97
+    ]
+   ],
+   "moved": true,
+   "movedBy": 2.5,
+   "movedFrom": [
+    -12.0,
+    33.0
+   ],
+   "new": false,
+   "who": "Eileen teaches here (station.st_peters.school_desk)",
+   "why": "in its yard between the Bluff Walk and the Bluff Path, a woodpile strip on its west; set back 1.0 for a schoolyard in front",
+   "footprint": [
+    -14.58,
+    32.97,
+    -8.22,
+    37.875
+   ],
+   "footprintMetres": [
+    6.36,
+    7.63
+   ],
+   "footprintFrom": "Buildings.json",
+   "roofTop": 43.58,
+   "door_seen": "seen",
+   "artHidden": 0.0,
+   "lot": [
+    [
+     -16.35,
+     29.985
+    ],
+    [
+     -7.4,
+     29.985
+    ],
+    [
+     -7.4,
+     39.0
+    ],
+    [
+     -16.35,
+     39.0
+    ]
+   ]
+  },
+  {
+   "id": "general_store",
+   "rig": "Shopfront",
+   "preset": "harbourStore",
+   "opts": {},
+   "optsJs": "Object.assign({},Shopfront.PRESETS['harbourStore'])",
+   "at": [
+    2.5,
+    35.422
+   ],
+   "facing8": 4,
+   "cell": 4,
+   "doorFaces": "S",
+   "entry": "front",
+   "door": [
+    2.5,
+    32.209
+   ],
+   "approach": [
+    2.5,
+    28.3
+   ],
+   "path": [
+    [
+     2.5,
+     28.3
+    ],
+    [
+     2.5,
+     29.985
+    ],
+    [
+     2.5,
+     32.209
+    ]
+   ],
+   "moved": true,
+   "movedBy": 4.67,
+   "movedFrom": [
+    4.0,
+    31.0
+   ],
+   "new": false,
+   "who": "Marguerite, who lives over it",
+   "why": "its door closes the green's axis: seen from the slip, up the Green step and the Green Walk",
+   "footprint": [
+    -1.5,
+    32.209,
+    6.5,
+    38.636
+   ],
+   "footprintMetres": [
+    8.0,
+    10.0
+   ],
+   "footprintFrom": "shops.contract.json",
+   "roofTop": 45.64,
+   "door_seen": "seen",
+   "artHidden": 0.0,
+   "lot": [
+    [
+     -5.1,
+     29.585
+    ],
+    [
+     8.25,
+     29.585
+    ],
+    [
+     8.25,
+     39.5
+    ],
+    [
+     -5.1,
+     39.5
+    ]
+   ]
+  },
+  {
+   "id": "post_office",
+   "rig": "Shopfront",
+   "preset": "villagePost",
+   "opts": {},
+   "optsJs": "Object.assign({},Shopfront.PRESETS['villagePost'])",
+   "at": [
+    16.5,
+    35.766
+   ],
+   "facing8": 4,
+   "cell": 4,
+   "doorFaces": "S",
+   "entry": "front",
+   "door": [
+    18.18,
+    33.034
+   ],
+   "approach": [
+    18.18,
+    28.3
+   ],
+   "path": [
+    [
+     18.18,
+     28.3
+    ],
+    [
+     18.18,
+     29.985
+    ],
+    [
+     18.18,
+     33.034
+    ]
+   ],
+   "moved": true,
+   "movedBy": 7.39,
+   "movedFrom": [
+    15.0,
+    43.0
+   ],
+   "new": false,
+   "who": "Rose keeps its counter (station.st_peters.post_office_counter, RoseMacIsaacRoutine.asset:24)",
+   "why": "its art a metre clear of the store's; its door at the East Walk's head, across Green Row",
+   "footprint": [
+    13.0,
+    33.034,
+    20.0,
+    38.498
+   ],
+   "footprintMetres": [
+    7.0,
+    8.5
+   ],
+   "footprintFrom": "shops.contract.json",
+   "roofTop": 45.21,
+   "door_seen": "seen",
+   "artHidden": 0.0,
+   "lot": [
+    [
+     9.25,
+     29.585
+    ],
+    [
+     22.75,
+     29.585
+    ],
+    [
+     22.75,
+     40.0
+    ],
+    [
+     9.25,
+     40.0
+    ]
+   ]
+  },
+  {
+   "id": "cream_saltbox",
+   "rig": "HouseIso",
+   "preset": "new: cream_saltbox",
+   "opts": {
+    "era": "modern",
+    "shape": "saltbox",
+    "siding": "clapboard",
+    "body": "cream",
+    "roof": "asphaltBrown",
+    "size": 0.35,
+    "windows": "twoOverTwo",
+    "winDensity": 0.6,
+    "attic": "none",
+    "porch": "front",
+    "dormers": 0,
+    "chimneys": 1,
+    "bay": false,
+    "weather": 0.25
+   },
+   "optsJs": "{era:'modern',shape:'saltbox',siding:'clapboard',body:'cream',roof:'asphaltBrown',size:0.35,windows:'twoOverTwo',winDensity:0.6,attic:'none',porch:'front',dormers:0,chimneys:1,bay:false,weather:0.25}",
+   "at": [
+    28.5,
+    35.704
+   ],
+   "facing8": 4,
+   "cell": 4,
+   "doorFaces": "S",
+   "entry": "front",
+   "door": [
+    28.5,
+    32.982
+   ],
+   "approach": [
+    28.5,
+    28.3
+   ],
+   "path": [
+    [
+     28.5,
+     28.3
+    ],
+    [
+     28.5,
+     29.985
+    ],
+    [
+     28.5,
+     32.982
+    ]
+   ],
+   "moved": false,
+   "movedBy": null,
+   "movedFrom": null,
+   "new": true,
+   "who": "two of the cannery hands (Q8)",
+   "why": "close by the post office, its yard a metre from the forecourt's edge",
+   "footprint": [
+    25.08,
+    32.982,
+    31.92,
+    38.426
+   ],
+   "footprintMetres": [
+    6.84,
+    8.47
+   ],
+   "footprintFrom": "houseIsoRig (new_homes.js)",
+   "roofTop": 44.48,
+   "door_seen": "seen",
+   "artHidden": 0.0,
+   "lot": [
+    [
+     23.75,
+     29.985
+    ],
+    [
+     34.0,
+     29.985
+    ],
+    [
+     34.0,
+     41.0
+    ],
+    [
+     23.75,
+     41.0
+    ]
+   ]
+  },
+  {
+   "id": "white_gable",
+   "rig": "HouseIso",
+   "preset": "new: white_gable",
+   "opts": {
+    "era": "colonial",
+    "shape": "gable",
+    "siding": "clapboard",
+    "body": "white",
+    "roof": "asphaltBrown",
+    "size": 0.35,
+    "windows": "sixOverSix",
+    "winDensity": 0.7,
+    "attic": "gable",
+    "porch": "front",
+    "dormers": 0,
+    "chimneys": 1,
+    "bay": false,
+    "weather": 0.2
+   },
+   "optsJs": "{era:'colonial',shape:'gable',siding:'clapboard',body:'white',roof:'asphaltBrown',size:0.35,windows:'sixOverSix',winDensity:0.7,attic:'gable',porch:'front',dormers:0,chimneys:1,bay:false,weather:0.2}",
+   "at": [
+    53.0,
+    35.204
+   ],
+   "facing8": 4,
+   "cell": 4,
+   "doorFaces": "S",
+   "entry": "front",
+   "door": [
+    53.0,
+    32.482
+   ],
+   "approach": [
+    53.0,
+    28.3
+   ],
+   "path": [
+    [
+     53.0,
+     28.3
+    ],
+    [
+     53.0,
+     29.985
+    ],
+    [
+     53.0,
+     32.482
+    ]
+   ],
+   "moved": false,
+   "movedBy": null,
+   "movedFrom": null,
+   "new": true,
+   "who": "a family with two school-age children (the school gets its pupils)",
+   "why": "Green Row's east end, where pass 9's barren path climbs clear of its roof (check 24)",
+   "footprint": [
+    49.58,
+    32.482,
+    56.42,
+    37.926
+   ],
+   "footprintMetres": [
+    6.84,
+    8.47
+   ],
+   "footprintFrom": "houseIsoRig (new_homes.js)",
+   "roofTop": 44.11,
+   "door_seen": "seen",
+   "artHidden": 0.0,
+   "lot": [
+    [
+     48.0,
+     29.985
+    ],
+    [
+     58.5,
+     29.985
+    ],
+    [
+     58.5,
+     40.5
+    ],
+    [
+     48.0,
+     40.5
+    ]
+   ]
+  },
+  {
+   "id": "red_saltbox",
+   "rig": "HouseIso",
+   "preset": "(bake: Buildings.json redSaltbox)",
+   "opts": {
+    "era": "modern",
+    "shape": "saltbox",
+    "siding": "clapboard",
+    "body": "red",
+    "roof": "asphaltGrey",
+    "size": 0.4,
+    "windows": "twoOverTwo",
+    "winDensity": 0.6,
+    "attic": "none",
+    "porch": "front",
+    "dormers": 0,
+    "chimneys": 1,
+    "bay": false,
+    "weather": 0.2
+   },
+   "optsJs": "{era:'modern',shape:'saltbox',siding:'clapboard',body:'red',roof:'asphaltGrey',size:0.4,windows:'twoOverTwo',winDensity:0.6,attic:'none',porch:'front',dormers:0,chimneys:1,bay:false,weather:0.2}",
+   "at": [
+    22.556,
+    19.6
+   ],
+   "facing8": 2,
+   "cell": 6,
+   "doorFaces": "W",
+   "entry": "front",
+   "door": [
+    18.216,
+    19.6
+   ],
+   "approach": [
+    13.25,
+    20.3
+   ],
+   "path": [
+    [
+     13.25,
+     20.3
+    ],
+    [
+     14.4,
+     20.3
+    ],
+    [
+     18.216,
+     19.6
+    ]
+   ],
+   "moved": true,
+   "movedBy": 11.85,
+   "movedFrom": [
+    25.0,
+    8.0
+   ],
+   "new": false,
+   "who": "Rose",
+   "why": "faces the green across the East Walk, alone on the square's east side; its roof under Green Row (check 24), its kitchen garden south to the Cross Walk's end",
+   "footprint": [
+    18.216,
+    17.363,
+    26.896,
+    21.837
+   ],
+   "footprintMetres": [
+    6.96,
+    8.68
+   ],
+   "footprintFrom": "Buildings.json",
+   "roofTop": 26.85,
+   "door_seen": "edge-on",
+   "artHidden": 0.0,
+   "lot": [
+    [
+     14.4,
+     8.93
+    ],
+    [
+     32.0,
+     8.93
+    ],
+    [
+     32.0,
+     26.615
+    ],
+    [
+     14.4,
+     26.615
+    ]
+   ],
+   "jobOneAsk": {
+    "facing8": 4,
+    "cell": 4,
+    "entry": "left",
+    "doorFaces": "W",
+    "via": "signpost",
+    "at": [
+     21.696,
+     18.03
+    ],
+    "door": [
+     18.216,
+     18.03
+    ],
+    "footprint": [
+     18.216,
+     15.24,
+     25.176,
+     20.82
+    ],
+    "roofTop": 26.97,
+    "artBottom": 13.75,
+    "lotHoldsIt": true,
+    "roofUnderGreenRow": true
+   }
+  },
+  {
+   "id": "white_farmhouse",
+   "rig": "HouseIso",
+   "preset": "(bake: Buildings.json whiteFarmhouse)",
+   "opts": {
+    "era": "colonial",
+    "shape": "gable",
+    "siding": "clapboard",
+    "body": "white",
+    "roof": "metal",
+    "size": 0.7,
+    "windows": "sixOverSix",
+    "winDensity": 0.6,
+    "attic": "gable",
+    "porch": "wrap",
+    "dormers": 1,
+    "chimneys": 1,
+    "bay": false,
+    "weather": 0.1
+   },
+   "optsJs": "{era:'colonial',shape:'gable',siding:'clapboard',body:'white',roof:'metal',size:0.7,windows:'sixOverSix',winDensity:0.6,attic:'gable',porch:'wrap',dormers:1,chimneys:1,bay:false,weather:0.1}",
+   "at": [
+    43.431,
+    18.9
+   ],
+   "facing8": 2,
+   "cell": 6,
+   "doorFaces": "W",
+   "entry": "front",
+   "door": [
+    38.461,
+    18.9
+   ],
+   "approach": [
+    34.0,
+    18.9
+   ],
+   "path": [
+    [
+     34.0,
+     18.9
+    ],
+    [
+     35.15,
+     18.9
+    ],
+    [
+     38.461,
+     18.9
+    ]
+   ],
+   "moved": true,
+   "movedBy": 23.53,
+   "movedFrom": [
+    21.0,
+    26.0
+   ],
+   "new": false,
+   "who": "Eileen",
+   "why": "its own lot down the Farm Walk, east of Rose's: stacked 7.4 south of the red saltbox on the East Walk, its roof hid the saltbox's whole south wall (check 29); its roof under Green Row (check 24); the biggest lot",
+   "footprint": [
+    38.461,
+    16.432,
+    48.401,
+    21.368
+   ],
+   "footprintMetres": [
+    7.68,
+    9.94
+   ],
+   "footprintFrom": "Buildings.json",
+   "roofTop": 26.99,
+   "door_seen": "edge-on",
+   "artHidden": 0.0,
+   "lot": [
+    [
+     35.15,
+     11.5
+    ],
+    [
+     49.5,
+     11.5
+    ],
+    [
+     49.5,
+     26.615
+    ],
+    [
+     35.15,
+     26.615
+    ]
+   ],
+   "jobOneAsk": {
+    "facing8": 4,
+    "cell": 4,
+    "entry": "left",
+    "doorFaces": "W",
+    "via": "signpost",
+    "at": [
+     42.301,
+     16.78
+    ],
+    "door": [
+     38.461,
+     16.78
+    ],
+    "footprint": [
+     38.461,
+     13.585,
+     46.141,
+     19.975
+    ],
+    "roofTop": 26.97,
+    "artBottom": 12.09,
+    "lotHoldsIt": true,
+    "roofUnderGreenRow": true
+   }
+  },
+  {
+   "id": "sage_cottage",
+   "rig": "HouseIso",
+   "preset": "(bake: Buildings.json sageCottage)",
+   "opts": {
+    "era": "plain",
+    "shape": "gable",
+    "siding": "clapboard",
+    "body": "sage",
+    "roof": "asphaltBrown",
+    "size": 0.25,
+    "windows": "twoOverTwo",
+    "winDensity": 0.5,
+    "attic": "gable",
+    "porch": "front",
+    "dormers": 0,
+    "chimneys": 1,
+    "bay": false,
+    "weather": 0.55
+   },
+   "optsJs": "{era:'plain',shape:'gable',siding:'clapboard',body:'sage',roof:'asphaltBrown',size:0.25,windows:'twoOverTwo',winDensity:0.5,attic:'gable',porch:'front',dormers:0,chimneys:1,bay:false,weather:0.55}",
+   "at": [
+    -21.5,
+    41.643
+   ],
+   "facing8": 4,
+   "cell": 4,
+   "doorFaces": "S",
+   "entry": "front",
+   "door": [
+    -21.5,
+    39.055
+   ],
+   "approach": [
+    -21.5,
+    34.5
+   ],
+   "path": [
+    [
+     -21.5,
+     34.5
+    ],
+    [
+     -21.5,
+     35.38
+    ],
+    [
+     -21.5,
+     39.055
+    ]
+   ],
+   "moved": true,
+   "movedBy": 69.23,
+   "movedFrom": [
+    10.0,
+    -20.0
+   ],
+   "new": false,
+   "who": "Junior and Basil (housemates)",
+   "why": "on the bluff over the shore, its front garden on the Shore Walk; west of it the bar's sightline (check 1)",
+   "footprint": [
+    -24.8,
+    39.055,
+    -18.2,
+    44.23
+   ],
+   "footprintMetres": [
+    6.6,
+    8.05
+   ],
+   "footprintFrom": "Buildings.json",
+   "roofTop": 50.42,
+   "door_seen": "seen",
+   "artHidden": 0.0,
+   "lot": [
+    [
+     -25.5,
+     35.38
+    ],
+    [
+     -17.4,
+     35.38
+    ],
+    [
+     -17.4,
+     45.5
+    ],
+    [
+     -25.5,
+     45.5
+    ]
+   ]
+  },
+  {
+   "id": "harbour_gable",
+   "rig": "HouseIso",
+   "preset": "new: harbour_gable",
+   "opts": {
+    "era": "plain",
+    "shape": "gable",
+    "siding": "clapboard",
+    "body": "blue",
+    "roof": "asphaltGrey",
+    "size": 0.3,
+    "windows": "twoOverTwo",
+    "winDensity": 0.55,
+    "attic": "gable",
+    "porch": "front",
+    "dormers": 0,
+    "chimneys": 1,
+    "bay": false,
+    "weather": 0.3
+   },
+   "optsJs": "{era:'plain',shape:'gable',siding:'clapboard',body:'blue',roof:'asphaltGrey',size:0.3,windows:'twoOverTwo',winDensity:0.55,attic:'gable',porch:'front',dormers:0,chimneys:1,bay:false,weather:0.3}",
+   "at": [
+    -6.25,
+    46.125
+   ],
+   "facing8": 4,
+   "cell": 4,
+   "doorFaces": "S",
+   "entry": "front",
+   "door": [
+    -6.25,
+    43.47
+   ],
+   "approach": [
+    -6.25,
+    41.1
+   ],
+   "path": [
+    [
+     -6.25,
+     41.1
+    ],
+    [
+     -6.25,
+     41.5
+    ],
+    [
+     -6.25,
+     43.47
+    ]
+   ],
+   "moved": false,
+   "movedBy": null,
+   "movedFrom": null,
+   "new": true,
+   "who": "the other two cannery hands (Q8)",
+   "why": "closes the Bluff Path's view: from Green Row its door stands between the school's roof and the store's",
+   "footprint": [
+    -9.61,
+    43.47,
+    -2.89,
+    48.78
+   ],
+   "footprintMetres": [
+    6.72,
+    8.26
+   ],
+   "footprintFrom": "houseIsoRig (new_homes.js)",
+   "roofTop": 55.09,
+   "door_seen": "seen",
+   "artHidden": 0.001,
+   "lot": [
+    [
+     -13.0,
+     41.5
+    ],
+    [
+     0.5,
+     41.5
+    ],
+    [
+     0.5,
+     49.5
+    ],
+    [
+     -13.0,
+     49.5
+    ]
+   ]
+  }
+ ],
+ "lots": [
+  {
+   "id": "lot.st_peters.school",
+   "building": "school",
+   "outline": [
+    [
+     -16.35,
+     29.985
+    ],
+    [
+     -7.4,
+     29.985
+    ],
+    [
+     -7.4,
+     39.0
+    ],
+    [
+     -16.35,
+     39.0
+    ]
+   ],
+   "street": "route.stpeters.school_lane",
+   "frontageMetres": 8.95,
+   "depthMetres": 14.025,
+   "setbackMetres": 1.0,
+   "gate": [
+    -11.4,
+    29.985
+   ]
+  },
+  {
+   "id": "lot.st_peters.general_store",
+   "building": "general_store",
+   "outline": [
+    [
+     -5.1,
+     29.585
+    ],
+    [
+     8.25,
+     29.585
+    ],
+    [
+     8.25,
+     39.5
+    ],
+    [
+     -5.1,
+     39.5
+    ]
+   ],
+   "street": "route.stpeters.school_lane",
+   "frontageMetres": 13.35,
+   "depthMetres": 15.425,
+   "setbackMetres": 0.0,
+   "gate": [
+    2.5,
+    29.585
+   ]
+  },
+  {
+   "id": "lot.st_peters.post_office",
+   "building": "post_office",
+   "outline": [
+    [
+     9.25,
+     29.585
+    ],
+    [
+     22.75,
+     29.585
+    ],
+    [
+     22.75,
+     40.0
+    ],
+    [
+     9.25,
+     40.0
+    ]
+   ],
+   "street": "route.stpeters.school_lane",
+   "frontageMetres": 13.5,
+   "depthMetres": 16.203,
+   "setbackMetres": 1.0,
+   "gate": [
+    18.18,
+    29.585
+   ]
+  },
+  {
+   "id": "lot.st_peters.cream_saltbox",
+   "building": "cream_saltbox",
+   "outline": [
+    [
+     23.75,
+     29.985
+    ],
+    [
+     34.0,
+     29.985
+    ],
+    [
+     34.0,
+     41.0
+    ],
+    [
+     23.75,
+     41.0
+    ]
+   ],
+   "street": "route.stpeters.school_lane",
+   "frontageMetres": 10.25,
+   "depthMetres": 17.136,
+   "setbackMetres": 1.0,
+   "gate": [
+    28.5,
+    29.985
+   ]
+  },
+  {
+   "id": "lot.st_peters.white_gable",
+   "building": "white_gable",
+   "outline": [
+    [
+     48.0,
+     29.985
+    ],
+    [
+     58.5,
+     29.985
+    ],
+    [
+     58.5,
+     40.5
+    ],
+    [
+     48.0,
+     40.5
+    ]
+   ],
+   "street": "route.stpeters.school_lane",
+   "frontageMetres": 10.5,
+   "depthMetres": 16.358,
+   "setbackMetres": 0.5,
+   "gate": [
+    53.0,
+    29.985
+   ]
+  },
+  {
+   "id": "lot.st_peters.red_saltbox",
+   "building": "red_saltbox",
+   "outline": [
+    [
+     14.4,
+     8.93
+    ],
+    [
+     32.0,
+     8.93
+    ],
+    [
+     32.0,
+     26.615
+    ],
+    [
+     14.4,
+     26.615
+    ]
+   ],
+   "street": "route.stpeters.east_walk",
+   "frontageMetres": 27.513,
+   "depthMetres": 17.6,
+   "setbackMetres": 1.0,
+   "gate": [
+    14.4,
+    20.3
+   ]
+  },
+  {
+   "id": "lot.st_peters.white_farmhouse",
+   "building": "white_farmhouse",
+   "outline": [
+    [
+     35.15,
+     11.5
+    ],
+    [
+     49.5,
+     11.5
+    ],
+    [
+     49.5,
+     26.615
+    ],
+    [
+     35.15,
+     26.615
+    ]
+   ],
+   "street": "route.stpeters.farm_walk",
+   "frontageMetres": 23.515,
+   "depthMetres": 14.35,
+   "setbackMetres": 0.5,
+   "gate": [
+    35.15,
+    18.9
+   ]
+  },
+  {
+   "id": "lot.st_peters.sage_cottage",
+   "building": "sage_cottage",
+   "outline": [
+    [
+     -25.5,
+     35.38
+    ],
+    [
+     -17.4,
+     35.38
+    ],
+    [
+     -17.4,
+     45.5
+    ],
+    [
+     -25.5,
+     45.5
+    ]
+   ],
+   "street": "route.stpeters.shore_walk",
+   "frontageMetres": 8.1,
+   "depthMetres": 15.744,
+   "setbackMetres": 1.7,
+   "gate": [
+    -21.5,
+    35.38
+   ]
+  },
+  {
+   "id": "lot.st_peters.harbour_gable",
+   "building": "harbour_gable",
+   "outline": [
+    [
+     -13.0,
+     41.5
+    ],
+    [
+     0.5,
+     41.5
+    ],
+    [
+     0.5,
+     49.5
+    ],
+    [
+     -13.0,
+     49.5
+    ]
+   ],
+   "street": "route.stpeters.bluff_path",
+   "frontageMetres": 13.5,
+   "depthMetres": 12.446,
+   "setbackMetres": 0.0,
+   "gate": [
+    -6.25,
+    41.5
+   ]
+  }
+ ],
+ "lanes": [
+  {
+   "id": "route.stpeters.school_lane",
+   "name": "Green Row",
+   "class": "street",
+   "points": [
+    [
+     -19.0,
+     28.3
+    ],
+    [
+     57.0,
+     28.3
+    ]
+   ],
+   "shipped": true,
+   "axis": "ew",
+   "why": "the one street (municipal-infrastructure.md:236, :243: its id kept, now drawn): the school, the store, the post office and two homes on its north side; the square's top; the Farm Walk off its south side"
+  },
+  {
+   "id": "route.stpeters.green_step",
+   "name": "Green step",
+   "class": "footpath",
+   "points": [
+    [
+     2.5,
+     7.0
+    ],
+    [
+     2.5,
+     12.5
+    ]
+   ],
+   "shipped": false,
+   "axis": "ns",
+   "why": "the green (2.5, 7), where the two painted roads meet, steps north onto the ring and the Cross Walk (a new id: route.stpeters.the_green stays the root, municipal-infrastructure.md:242)"
+  },
+  {
+   "id": "route.stpeters.cross_walk",
+   "name": "Cross Walk",
+   "class": "footpath",
+   "points": [
+    [
+     -8.0,
+     12.5
+    ],
+    [
+     -2.598,
+     12.5
+    ]
+   ],
+   "shipped": false,
+   "axis": "ew",
+   "why": "the square's east-west walk, west half: the garden's gate to the hearth ring, whose gravel carries it on"
+  },
+  {
+   "id": "route.stpeters.cross_walk_east",
+   "name": "Cross Walk (east)",
+   "class": "footpath",
+   "points": [
+    [
+     2.598,
+     12.5
+    ],
+    [
+     13.25,
+     12.5
+    ]
+   ],
+   "shipped": false,
+   "axis": "ew",
+   "why": "the east half: from the ring to the East Walk, Rose's kitchen garden straight ahead"
+  },
+  {
+   "id": "route.stpeters.green_walk",
+   "name": "Green Walk",
+   "class": "footpath",
+   "points": [
+    [
+     2.5,
+     15.658
+    ],
+    [
+     2.5,
+     27.015
+    ]
+   ],
+   "shipped": false,
+   "axis": "ns",
+   "why": "up the middle of the green, from the ring to Green Row at the store's door: the square's axis"
+  },
+  {
+   "id": "route.stpeters.east_walk",
+   "name": "East Walk",
+   "class": "footpath",
+   "points": [
+    [
+     13.25,
+     12.02
+    ],
+    [
+     13.25,
+     27.015
+    ]
+   ],
+   "shipped": false,
+   "axis": "ns",
+   "why": "the square's east side: the red saltbox faces west across it to the green"
+  },
+  {
+   "id": "route.stpeters.farm_walk",
+   "name": "Farm Walk",
+   "class": "footpath",
+   "points": [
+    [
+     34.0,
+     27.015
+    ],
+    [
+     34.0,
+     17.9
+    ]
+   ],
+   "shipped": false,
+   "axis": "ns",
+   "why": "south off Green Row past Rose's back fence to the farmhouse's gate: a leaf, the farmhouse's own way in"
+  },
+  {
+   "id": "route.stpeters.bluff_path",
+   "name": "Bluff Path",
+   "class": "footpath",
+   "points": [
+    [
+     -6.25,
+     29.585
+    ],
+    [
+     -6.25,
+     41.1
+    ]
+   ],
+   "shipped": false,
+   "axis": "ns",
+   "why": "north from Green Row between the school and the store, up to the harbour gable at its head"
+  },
+  {
+   "id": "route.stpeters.bluff_walk",
+   "name": "Bluff Walk",
+   "class": "footpath",
+   "points": [
+    [
+     -17.5,
+     29.585
+    ],
+    [
+     -17.5,
+     34.98
+    ]
+   ],
+   "shipped": false,
+   "axis": "ns",
+   "why": "north from Green Row past the school's west fence to the Shore Walk"
+  },
+  {
+   "id": "route.stpeters.shore_walk",
+   "name": "Shore Walk",
+   "class": "footpath",
+   "points": [
+    [
+     -37.409,
+     34.5
+    ],
+    [
+     -17.5,
+     34.5
+    ]
+   ],
+   "shipped": false,
+   "axis": "ew",
+   "why": "west along the bluff's edge to pass 9's shore path: the sage cottage's gate is on it"
+  },
+  {
+   "id": "route.stpeters.garden_walk",
+   "name": "Garden Walk",
+   "class": "footpath",
+   "points": [
+    [
+     -17.5,
+     12.5
+    ],
+    [
+     -17.5,
+     27.015
+    ]
+   ],
+   "shipped": false,
+   "axis": "ns",
+   "why": "up the west garden from the Garden Path to Green Row, the Bluff Walk's line carried south"
+  },
+  {
+   "id": "route.stpeters.garden_path",
+   "name": "Garden Path",
+   "class": "footpath",
+   "points": [
+    [
+     -22.0,
+     12.5
+    ],
+    [
+     -8.0,
+     12.5
+    ]
+   ],
+   "shipped": false,
+   "axis": "ew",
+   "why": "the Cross Walk carried on into the west garden, between its beds, to the benches on its west edge"
+  },
+  {
+   "id": "route.stpeters.barren_gap",
+   "name": "Barren Gap",
+   "class": "footpath",
+   "points": [
+    [
+     41.0,
+     29.585
+    ],
+    [
+     41.0,
+     43.5
+    ]
+   ],
+   "shipped": false,
+   "axis": "ns",
+   "why": "Green Row up through the flake yard to pass 9's barren path (plan9_data.py:156) at its vertex (41, 43.5)"
+  },
+  {
+   "id": "route.stpeters.plot_path",
+   "name": "Ginny's path",
+   "class": "footpath",
+   "points": [
+    [
+     57.0,
+     28.3
+    ],
+    [
+     62.0,
+     27.0
+    ],
+    [
+     76.74,
+     26.13
+    ]
+   ],
+   "shipped": true,
+   "axis": "free",
+   "why": "Ginny's own way home, now leaving from Green Row's east end"
+  }
+ ],
+ "yards": [
+  {
+   "building": "school",
+   "outline": [
+    [
+     -16.35,
+     29.985
+    ],
+    [
+     -7.4,
+     29.985
+    ],
+    [
+     -7.4,
+     39.0
+    ],
+    [
+     -16.35,
+     39.0
+    ]
+   ],
+   "gate": [
+    -11.4,
+    29.985
+   ],
+   "fence": "PostRail",
+   "mown": "Striped",
+   "why": "post and rail, as today: the schoolyard is trodden rather than planted",
+   "dressing": [
+    {
+     "k": "flagpole",
+     "rig": "YardIso",
+     "at": [
+      -14.6,
+      30.885
+     ],
+     "cell": 4,
+     "why": "the flag over the schoolyard"
+    },
+    {
+     "k": "swingSet",
+     "rig": "YardIso",
+     "at": [
+      -9.0,
+      31.285
+     ],
+     "cell": 4,
+     "why": "two swings: the children are in this yard"
+    },
+    {
+     "k": "bench",
+     "rig": "YardIso",
+     "at": [
+      -13.7,
+      31.385
+     ],
+     "cell": 4,
+     "why": "the teacher's bench at recess"
+    }
+   ]
+  },
+  {
+   "building": "general_store",
+   "outline": [
+    [
+     -5.1,
+     29.585
+    ],
+    [
+     8.25,
+     29.585
+    ],
+    [
+     8.25,
+     39.5
+    ],
+    [
+     -5.1,
+     39.5
+    ]
+   ],
+   "gate": [
+    2.5,
+    29.585
+   ],
+   "fence": null,
+   "mown": "Striped",
+   "why": "an open forecourt, as today: you walk up to a counter, you do not open a gate to buy flour",
+   "dressing": [
+    {
+     "k": "barrelPlanter",
+     "rig": "YardIso",
+     "at": [
+      -0.5,
+      29.985
+     ],
+     "cell": 4,
+     "why": "planters at the forecourt's lane edge"
+    },
+    {
+     "k": "barrelPlanter",
+     "rig": "YardIso",
+     "at": [
+      5.5,
+      29.985
+     ],
+     "cell": 4,
+     "why": ""
+    },
+    {
+     "k": "chalkSign",
+     "rig": "WharfDecor",
+     "at": [
+      0.6,
+      29.985
+     ],
+     "cell": 4,
+     "why": "today's prices, chalked"
+    },
+    {
+     "k": "bench",
+     "rig": "WharfDecor",
+     "at": [
+      6.9,
+      30.285
+     ],
+     "cell": 4,
+     "why": "the bench by the door, for a yarn"
+    }
+   ]
+  },
+  {
+   "building": "post_office",
+   "outline": [
+    [
+     9.25,
+     29.585
+    ],
+    [
+     22.75,
+     29.585
+    ],
+    [
+     22.75,
+     40.0
+    ],
+    [
+     9.25,
+     40.0
+    ]
+   ],
+   "gate": [
+    18.18,
+    29.585
+   ],
+   "fence": null,
+   "mown": "Kept",
+   "why": "an open forecourt: a public door, like the store beside it",
+   "dressing": [
+    {
+     "k": "mailbox",
+     "rig": "YardIso",
+     "at": [
+      20.28,
+      29.985
+     ],
+     "cell": 4,
+     "why": "the mailbox post at the forecourt edge, flag up"
+    },
+    {
+     "k": "planterBox",
+     "rig": "WharfDecor",
+     "at": [
+      15.58,
+      29.985
+     ],
+     "cell": 4,
+     "why": "a planter box at the forecourt edge"
+    },
+    {
+     "k": "bench",
+     "rig": "WharfDecor",
+     "at": [
+      13.18,
+      31.085
+     ],
+     "cell": 4,
+     "why": "a bench under the window"
+    },
+    {
+     "k": "bicycle",
+     "rig": "WharfDecor",
+     "at": [
+      21.78,
+      33.785
+     ],
+     "cell": 4,
+     "why": "a bicycle against the east wall"
+    }
+   ]
+  },
+  {
+   "building": "cream_saltbox",
+   "outline": [
+    [
+     23.75,
+     29.985
+    ],
+    [
+     34.0,
+     29.985
+    ],
+    [
+     34.0,
+     41.0
+    ],
+    [
+     23.75,
+     41.0
+    ]
+   ],
+   "gate": [
+    28.5,
+    29.985
+   ],
+   "fence": "Wire",
+   "mown": "Kept",
+   "why": "page wire on posts: the cannery hands' working yard, neither kept nor let go",
+   "dressing": [
+    {
+     "k": "oilTank",
+     "rig": "YardIso",
+     "at": [
+      31.4,
+      30.985
+     ],
+     "cell": 4,
+     "why": "the oil tank on its legs"
+    },
+    {
+     "k": "rainBarrel",
+     "rig": "YardIso",
+     "at": [
+      24.4,
+      33.185
+     ],
+     "cell": 4,
+     "why": "a rain barrel at the corner"
+    },
+    {
+     "k": "clothesline",
+     "rig": "YardIso",
+     "at": [
+      33.25,
+      35.985
+     ],
+     "cell": 2,
+     "why": "a washing line, hung, down the east side"
+    },
+    {
+     "k": "trapStack",
+     "rig": "WharfDecor",
+     "at": [
+      24.4,
+      36.985
+     ],
+     "cell": 2,
+     "why": "a few traps: somebody's sideline"
+    }
+   ]
+  },
+  {
+   "building": "white_gable",
+   "outline": [
+    [
+     48.0,
+     29.985
+    ],
+    [
+     58.5,
+     29.985
+    ],
+    [
+     58.5,
+     40.5
+    ],
+    [
+     48.0,
+     40.5
+    ]
+   ],
+   "gate": [
+    53.0,
+    29.985
+   ],
+   "fence": "Picket",
+   "mown": "Kept",
+   "why": "pickets: a family's kept front, the children's things inside it",
+   "dressing": [
+    {
+     "k": "sandbox",
+     "rig": "YardIso",
+     "at": [
+      50.3,
+      30.785
+     ],
+     "cell": 4,
+     "why": "a sandbox by the gate"
+    },
+    {
+     "k": "doghouse",
+     "rig": "YardIso",
+     "at": [
+      48.8,
+      34.185
+     ],
+     "cell": 4,
+     "why": "the dog's house"
+    },
+    {
+     "k": "swingSet",
+     "rig": "YardIso",
+     "at": [
+      57.5,
+      35.185
+     ],
+     "cell": 2,
+     "why": "a tyre swing down the east side"
+    },
+    {
+     "k": "vegRows",
+     "rig": "YardIso",
+     "at": [
+      57.6,
+      38.785
+     ],
+     "cell": 2,
+     "why": "a vegetable plot"
+    }
+   ]
+  },
+  {
+   "building": "red_saltbox",
+   "outline": [
+    [
+     14.4,
+     8.93
+    ],
+    [
+     32.0,
+     8.93
+    ],
+    [
+     32.0,
+     26.615
+    ],
+    [
+     14.4,
+     26.615
+    ]
+   ],
+   "gate": [
+    14.4,
+    20.3
+   ],
+   "fence": "PostRail",
+   "mown": "Kept",
+   "why": "post and rail, as today: a working household with no time for painting pickets",
+   "dressing": [
+    {
+     "k": "borderBed",
+     "rig": "YardIso",
+     "at": [
+      15.05,
+      23.8
+     ],
+     "cell": 2,
+     "why": "Rose's flower border along the front fence"
+    },
+    {
+     "k": "birdbath",
+     "rig": "YardIso",
+     "at": [
+      15.1,
+      17.8
+     ],
+     "cell": 4,
+     "why": "a birdbath"
+    },
+    {
+     "k": "roseBush",
+     "rig": "YardIso",
+     "at": [
+      28.8,
+      23.2
+     ],
+     "cell": 4,
+     "why": "a rugosa rose"
+    },
+    {
+     "k": "rainBarrel",
+     "rig": "YardIso",
+     "at": [
+      27.9,
+      19.0
+     ],
+     "cell": 4,
+     "why": "a rain barrel at the back corner"
+    },
+    {
+     "k": "rhubarb",
+     "rig": "YardIso",
+     "at": [
+      28.6,
+      17.4
+     ],
+     "cell": 4,
+     "why": "a rhubarb patch"
+    },
+    {
+     "k": "woodpile",
+     "rig": "YardIso",
+     "at": [
+      30.7,
+      25.6
+     ],
+     "cell": 4,
+     "why": "the woodpile, tarped"
+    },
+    {
+     "k": "vegRows",
+     "rig": "YardIso",
+     "at": [
+      18.6,
+      14.9
+     ],
+     "cell": 4,
+     "why": "the kitchen garden in rows, bean poles: the big lot south of the house"
+    },
+    {
+     "k": "vegRows",
+     "rig": "YardIso",
+     "at": [
+      18.6,
+      13.2
+     ],
+     "cell": 4,
+     "why": ""
+    },
+    {
+     "k": "potatoDrills",
+     "rig": "YardIso",
+     "at": [
+      22.8,
+      13.9
+     ],
+     "cell": 4,
+     "why": "potato drills"
+    },
+    {
+     "k": "clothesline",
+     "rig": "YardIso",
+     "at": [
+      27.0,
+      13.7
+     ],
+     "cell": 4,
+     "why": "the washing line, where the house cannot shade it"
+    },
+    {
+     "k": "raspberryRow",
+     "rig": "YardIso",
+     "at": [
+      27.0,
+      10.5
+     ],
+     "cell": 4,
+     "why": "raspberry canes along the south fence"
+    },
+    {
+     "k": "compostBin",
+     "rig": "YardIso",
+     "at": [
+      30.7,
+      10.7
+     ],
+     "cell": 4,
+     "why": "the compost bin in the far corner"
+    }
+   ]
+  },
+  {
+   "building": "white_farmhouse",
+   "outline": [
+    [
+     35.15,
+     11.5
+    ],
+    [
+     49.5,
+     11.5
+    ],
+    [
+     49.5,
+     26.615
+    ],
+    [
+     35.15,
+     26.615
+    ]
+   ],
+   "gate": [
+    35.15,
+    18.9
+   ],
+   "fence": "Picket",
+   "mown": "Kept",
+   "why": "pickets, as today: the kept yard the others are read against, the biggest lot, down its own walk",
+   "dressing": [
+    {
+     "k": "lilac",
+     "rig": "YardIso",
+     "at": [
+      38.15,
+      15.6
+     ],
+     "cell": 4,
+     "why": "the lilac at the corner of the house"
+    },
+    {
+     "k": "vegRows",
+     "rig": "YardIso",
+     "at": [
+      42.15,
+      14.3
+     ],
+     "cell": 4,
+     "why": "the kitchen garden in rows, bean poles"
+    },
+    {
+     "k": "vegRows",
+     "rig": "YardIso",
+     "at": [
+      42.15,
+      12.7
+     ],
+     "cell": 4,
+     "why": ""
+    },
+    {
+     "k": "potatoDrills",
+     "rig": "YardIso",
+     "at": [
+      45.95,
+      13.3
+     ],
+     "cell": 4,
+     "why": "potato drills"
+    },
+    {
+     "k": "clothesline",
+     "rig": "YardIso",
+     "at": [
+      38.55,
+      12.8
+     ],
+     "cell": 4,
+     "why": "the washing line"
+    },
+    {
+     "k": "woodpile",
+     "rig": "YardIso",
+     "at": [
+      48.15,
+      15.5
+     ],
+     "cell": 4,
+     "why": "the woodpile, tarped"
+    }
+   ]
+  },
+  {
+   "building": "sage_cottage",
+   "outline": [
+    [
+     -25.5,
+     35.38
+    ],
+    [
+     -17.4,
+     35.38
+    ],
+    [
+     -17.4,
+     45.5
+    ],
+    [
+     -25.5,
+     45.5
+    ]
+   ],
+   "gate": [
+    -21.5,
+    35.38
+   ],
+   "fence": "Picket",
+   "mown": "Striped",
+   "why": "pickets, as today, and still the striped lawn the owner kept",
+   "dressing": [
+    {
+     "k": "buoyPost",
+     "rig": "YardIso",
+     "at": [
+      -20.1,
+      35.88
+     ],
+     "cell": 4,
+     "why": "a buoy post by the gate"
+    },
+    {
+     "k": "oilskinLine",
+     "rig": "WharfDecor",
+     "at": [
+      -18.9,
+      37.18
+     ],
+     "cell": 4,
+     "why": "the gear line of oilskins"
+    },
+    {
+     "k": "doryPlanter",
+     "rig": "YardIso",
+     "at": [
+      -24.3,
+      36.38
+     ],
+     "cell": 4,
+     "why": "a dory planter, flowers in an old dory"
+    },
+    {
+     "k": "sawhorses",
+     "rig": "YardIso",
+     "at": [
+      -24.3,
+      37.48
+     ],
+     "cell": 4,
+     "why": "sawhorses and a plank"
+    }
+   ]
+  },
+  {
+   "building": "harbour_gable",
+   "outline": [
+    [
+     -13.0,
+     41.5
+    ],
+    [
+     0.5,
+     41.5
+    ],
+    [
+     0.5,
+     49.5
+    ],
+    [
+     -13.0,
+     49.5
+    ]
+   ],
+   "gate": [
+    -6.25,
+    41.5
+   ],
+   "fence": "Stone",
+   "mown": "Kept",
+   "why": "a low fieldstone wall and capped pillars: what this coast stacked out of its fields, at the lane's head",
+   "dressing": [
+    {
+     "k": "anchorSet",
+     "rig": "YardIso",
+     "at": [
+      -11.3,
+      45.0
+     ],
+     "cell": 4,
+     "why": "an anchor and a coil of warp"
+    },
+    {
+     "k": "trapBench",
+     "rig": "YardIso",
+     "at": [
+      -1.3,
+      46.5
+     ],
+     "cell": 4,
+     "why": "a trap bench with buoys: fishing folk"
+    },
+    {
+     "k": "buoyPost",
+     "rig": "YardIso",
+     "at": [
+      -11.8,
+      47.5
+     ],
+     "cell": 4,
+     "why": "a buoy post"
+    },
+    {
+     "k": "woodpile",
+     "rig": "YardIso",
+     "at": [
+      -1.0,
+      48.4
+     ],
+     "cell": 4,
+     "why": "the woodpile"
+    }
+   ]
+  }
+ ],
+ "furniture": [
+  {
+   "k": "hearthRing",
+   "at": [
+    0.0,
+    14.0
+   ],
+   "r": 3.0,
+   "note": "gravel ring and fire pit: the gathering place, lit for a hall night"
+  },
+  {
+   "k": "logBench",
+   "at": [
+    -2.3,
+    15.9
+   ]
+  },
+  {
+   "k": "logBench",
+   "at": [
+    -0.3,
+    16.7
+   ]
+  },
+  {
+   "k": "noticeBoard",
+   "at": [
+    4.4,
+    18.5
+   ],
+   "note": "by the Green Walk: the ferry times, the dance, the tide table"
+  },
+  {
+   "k": "bench",
+   "at": [
+    0.0,
+    21.5
+   ]
+  },
+  {
+   "k": "bench",
+   "at": [
+    5.2,
+    21.5
+   ]
+  },
+  {
+   "k": "flowerBed",
+   "at": [
+    -1.8,
+    19.2
+   ]
+  },
+  {
+   "k": "flowerBed",
+   "at": [
+    7.2,
+    18.8
+   ]
+  },
+  {
+   "k": "flowerBed",
+   "at": [
+    -4.8,
+    24.6
+   ]
+  },
+  {
+   "k": "tree",
+   "at": [
+    -5.5,
+    21.5
+   ],
+   "stage": "pole",
+   "note": "the square's trees: red maples, the island's own species, at the kit's pole stage (0.7) - a mature crown stands 8.2-9.3 units tall on screen and would hide the store's forecourt from the green"
+  },
+  {
+   "k": "tree",
+   "at": [
+    8.6,
+    23.6
+   ],
+   "stage": "pole"
+  },
+  {
+   "k": "gardenBeds",
+   "at": [
+    -20.4,
+    16.0
+   ],
+   "note": "raised beds in rows, 1.2 m high at most: the sightline"
+  },
+  {
+   "k": "gardenBeds",
+   "at": [
+    -20.4,
+    21.5
+   ]
+  },
+  {
+   "k": "gardenBeds",
+   "at": [
+    -12.5,
+    16.0
+   ]
+  },
+  {
+   "k": "gardenBeds",
+   "at": [
+    -12.5,
+    21.5
+   ]
+  },
+  {
+   "k": "bench",
+   "at": [
+    -22.9,
+    14.2
+   ],
+   "note": "facing east, over the beds to the square"
+  },
+  {
+   "k": "bench",
+   "at": [
+    -22.9,
+    19.2
+   ],
+   "note": "facing east"
+  },
+  {
+   "k": "waterButt",
+   "at": [
+    -15.4,
+    25.6
+   ]
+  },
+  {
+   "k": "toolShedLow",
+   "at": [
+    -22.4,
+    25.6
+   ],
+   "note": "a low potting bench, not a shed: 1.2 m"
+  },
+  {
+   "k": "flake",
+   "at": [
+    36.6,
+    31.6
+   ],
+   "of": "flake_yard",
+   "note": "the village's flakes: salt fish drying on Green Row, as every outport had them"
+  },
+  {
+   "k": "flake",
+   "at": [
+    36.6,
+    34.2
+   ],
+   "of": "flake_yard"
+  },
+  {
+   "k": "flake",
+   "at": [
+    45.6,
+    31.6
+   ],
+   "of": "flake_yard"
+  },
+  {
+   "k": "flake",
+   "at": [
+    45.6,
+    34.2
+   ],
+   "of": "flake_yard"
+  },
+  {
+   "k": "trapStack",
+   "at": [
+    39.0,
+    31.2
+   ],
+   "of": "flake_yard",
+   "note": "traps stacked by the gap, waiting for the cart"
+  },
+  {
+   "k": "bench",
+   "at": [
+    43.6,
+    30.7
+   ],
+   "of": "flake_yard",
+   "note": "a bench by the flakes, looking down Green Row"
+  },
+  {
+   "k": "bench",
+   "at": [
+    -34.6,
+    35.7
+   ],
+   "of": "shore_walk",
+   "note": "a bench at the Shore Walk's end, over the harbour mouth"
+  },
+  {
+   "k": "buoyPost",
+   "at": [
+    -33.2,
+    36.3
+   ],
+   "of": "shore_walk",
+   "note": "a buoy post where the Shore Walk meets pass 9's shore path"
+  }
+ ],
+ "commons": {
+  "square": [
+   -8.0,
+   9.0,
+   12.5,
+   27.015
+  ],
+  "westGarden": [
+   -24.0,
+   9.0,
+   -8.0,
+   27.015
+  ],
+  "flakeYard": [
+   34.0,
+   29.585,
+   48.0,
+   41.0
+  ],
+  "hearthRing": {
+   "at": [
+    0.0,
+    14.0
+   ],
+   "r": 3.0
+  }
+ },
+ "roadside": [
+  {
+   "k": "chalkSign",
+   "rig": "WharfDecor",
+   "at": [
+    -38.0,
+    3.203
+   ],
+   "road": "bar_head_road",
+   "why": "a chalked board at the bar head: the tide times for the crossing"
+  },
+  {
+   "k": "trapStack",
+   "rig": "WharfDecor",
+   "at": [
+    -34.8,
+    -0.802
+   ],
+   "road": "bar_head_road",
+   "why": "traps at the bar head, waiting for low water"
+  },
+  {
+   "k": "codFlake",
+   "rig": "WharfDecor",
+   "at": [
+    -28.0,
+    4.516
+   ],
+   "road": "bar_head_road",
+   "why": "a salt-fish flake on the meadow above the bar-head road"
+  },
+  {
+   "k": "bench",
+   "rig": "WharfDecor",
+   "at": [
+    -22.5,
+    3.51
+   ],
+   "road": "bar_head_road",
+   "why": "a wayside bench looking south over the harbour mouth to the bar"
+  },
+  {
+   "k": "farmStand",
+   "rig": "YardIso",
+   "at": [
+    -11.0,
+    4.212
+   ],
+   "road": "bar_head_road",
+   "why": "the garden's roadside stand: an honesty box by the road"
+  },
+  {
+   "k": "barrelPlanter",
+   "rig": "YardIso",
+   "at": [
+    -12.8,
+    3.574
+   ],
+   "road": "bar_head_road",
+   "why": ""
+  },
+  {
+   "k": "harbourSign",
+   "rig": "WharfDecor",
+   "at": [
+    9.5,
+    7.372
+   ],
+   "road": "slip_road",
+   "why": "the harbour sign where the slip road leaves the green"
+  },
+  {
+   "k": "bench",
+   "rig": "WharfDecor",
+   "at": [
+    8.0,
+    3.613
+   ],
+   "road": "slip_road",
+   "why": "a bench below the road, looking at the harbour"
+  },
+  {
+   "k": "codFlake",
+   "rig": "WharfDecor",
+   "at": [
+    21.5,
+    7.537
+   ],
+   "road": "slip_road",
+   "why": "a flake on the meadow above the slip road"
+  },
+  {
+   "k": "trapStack",
+   "rig": "WharfDecor",
+   "at": [
+    27.5,
+    5.77
+   ],
+   "road": "slip_road",
+   "why": "a trap stack on the verge, waiting for the cart"
+  }
+ ],
+ "lights": [
+  {
+   "k": "doorstepLantern",
+   "at": [
+    -10.5,
+    33.27
+   ],
+   "of": "school",
+   "source": "oil (a house's light at dusk)",
+   "lit": "dusk to bedtime, by the household"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    3.4,
+    32.509
+   ],
+   "of": "general_store",
+   "source": "oil (a house's light at dusk)",
+   "lit": "dusk to bedtime, by the household"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    19.08,
+    33.334
+   ],
+   "of": "post_office",
+   "source": "oil (a house's light at dusk)",
+   "lit": "dusk to bedtime, by the household"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    29.4,
+    33.282
+   ],
+   "of": "cream_saltbox",
+   "source": "oil (a house's light at dusk)",
+   "lit": "dusk to bedtime, by the household"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    53.9,
+    32.782
+   ],
+   "of": "white_gable",
+   "source": "oil (a house's light at dusk)",
+   "lit": "dusk to bedtime, by the household"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    17.916,
+    19.0
+   ],
+   "of": "red_saltbox",
+   "source": "oil (a house's light at dusk)",
+   "lit": "dusk to bedtime, by the household"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    38.161,
+    18.3
+   ],
+   "of": "white_farmhouse",
+   "source": "oil (a house's light at dusk)",
+   "lit": "dusk to bedtime, by the household"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    -20.6,
+    39.355
+   ],
+   "of": "sage_cottage",
+   "source": "oil (a house's light at dusk)",
+   "lit": "dusk to bedtime, by the household"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    -5.35,
+    43.77
+   ],
+   "of": "harbour_gable",
+   "source": "oil (a house's light at dusk)",
+   "lit": "dusk to bedtime, by the household"
+  },
+  {
+   "k": "lanternPost",
+   "at": [
+    3.92,
+    26.515
+   ],
+   "of": "green_walk",
+   "source": "hurricane lantern (lanternPost)",
+   "lit": "lit at dusk by Marguerite, closing up (a routine block)"
+  },
+  {
+   "k": "lanternPost",
+   "at": [
+    3.92,
+    8.3
+   ],
+   "of": "green",
+   "source": "hurricane lantern (lanternPost)",
+   "lit": "lit at dusk by whoever is last up from the slip"
+  },
+  {
+   "k": "lanternPost",
+   "at": [
+    32.58,
+    26.515
+   ],
+   "of": "farm_walk",
+   "source": "hurricane lantern (lanternPost)",
+   "lit": "lit at dusk by Eileen, home from the school"
+  },
+  {
+   "k": "lanternPost",
+   "at": [
+    42.42,
+    30.085
+   ],
+   "of": "barren_gap",
+   "source": "hurricane lantern (lanternPost)",
+   "lit": "lit at dusk by the cannery hands at the cream saltbox"
+  },
+  {
+   "k": "lanternPost",
+   "at": [
+    -16.08,
+    26.515
+   ],
+   "of": "bluff_walk",
+   "source": "hurricane lantern (lanternPost)",
+   "lit": "lit at dusk by Junior or Basil, whoever is home first"
+  },
+  {
+   "k": "firePit",
+   "at": [
+    0.0,
+    14.0
+   ],
+   "of": "square",
+   "source": "wood (the hearth ring)",
+   "lit": "a hall night or a warm evening only"
+  },
+  {
+   "k": "batteryShedLight",
+   "at": [
+    -17.9,
+    44.9
+   ],
+   "of": "sage_cottage",
+   "source": "battery set (a shed light)",
+   "lit": "a gear night"
+  }
+ ],
+ "lamps": [
+  {
+   "k": "doorstepLantern",
+   "at": [
+    -10.5,
+    33.27
+   ],
+   "of": "school",
+   "kind": "WindowGlow",
+   "reach": 3.4,
+   "when": "doorsteps"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    3.4,
+    32.509
+   ],
+   "of": "general_store",
+   "kind": "WindowGlow",
+   "reach": 3.4,
+   "when": "doorsteps"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    19.08,
+    33.334
+   ],
+   "of": "post_office",
+   "kind": "WindowGlow",
+   "reach": 3.4,
+   "when": "doorsteps"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    29.4,
+    33.282
+   ],
+   "of": "cream_saltbox",
+   "kind": "WindowGlow",
+   "reach": 3.4,
+   "when": "doorsteps"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    53.9,
+    32.782
+   ],
+   "of": "white_gable",
+   "kind": "WindowGlow",
+   "reach": 3.4,
+   "when": "doorsteps"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    17.916,
+    19.0
+   ],
+   "of": "red_saltbox",
+   "kind": "WindowGlow",
+   "reach": 3.4,
+   "when": "doorsteps"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    38.161,
+    18.3
+   ],
+   "of": "white_farmhouse",
+   "kind": "WindowGlow",
+   "reach": 3.4,
+   "when": "doorsteps"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    -20.6,
+    39.355
+   ],
+   "of": "sage_cottage",
+   "kind": "WindowGlow",
+   "reach": 3.4,
+   "when": "doorsteps"
+  },
+  {
+   "k": "doorstepLantern",
+   "at": [
+    -5.35,
+    43.77
+   ],
+   "of": "harbour_gable",
+   "kind": "WindowGlow",
+   "reach": 3.4,
+   "when": "doorsteps"
+  },
+  {
+   "k": "lanternPost",
+   "at": [
+    3.92,
+    26.515
+   ],
+   "of": "green_walk",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "evening"
+  },
+  {
+   "k": "lanternPost",
+   "at": [
+    3.92,
+    8.3
+   ],
+   "of": "green",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "evening"
+  },
+  {
+   "k": "lanternPost",
+   "at": [
+    32.58,
+    26.515
+   ],
+   "of": "farm_walk",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "evening"
+  },
+  {
+   "k": "lanternPost",
+   "at": [
+    42.42,
+    30.085
+   ],
+   "of": "barren_gap",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "evening"
+  },
+  {
+   "k": "lanternPost",
+   "at": [
+    -16.08,
+    26.515
+   ],
+   "of": "bluff_walk",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "evening"
+  },
+  {
+   "k": "firePit",
+   "at": [
+    0.0,
+    14.0
+   ],
+   "of": "square",
+   "kind": "WindowGlow",
+   "reach": 3.4,
+   "when": "hall night"
+  },
+  {
+   "k": "batteryShedLight",
+   "at": [
+    -17.9,
+    44.9
+   ],
+   "of": "sage_cottage",
+   "kind": "Worklight",
+   "reach": 5.2,
+   "when": "gear night"
+  },
+  {
+   "k": "windowGlow (today)",
+   "at": [
+    84.0,
+    28.0
+   ],
+   "of": "GinnyPlot/sageCottage",
+   "kind": "WindowGlow",
+   "reach": 3.4,
+   "when": "evening"
+  },
+  {
+   "k": "streetLamp (line)",
+   "at": [
+    -19.0,
+    28.3
+   ],
+   "of": "Green Row",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "line"
+  },
+  {
+   "k": "streetLamp (line)",
+   "at": [
+    -7.0,
+    28.3
+   ],
+   "of": "Green Row",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "line"
+  },
+  {
+   "k": "streetLamp (line)",
+   "at": [
+    5.0,
+    28.3
+   ],
+   "of": "Green Row",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "line"
+  },
+  {
+   "k": "streetLamp (line)",
+   "at": [
+    17.0,
+    28.3
+   ],
+   "of": "Green Row",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "line"
+  },
+  {
+   "k": "streetLamp (line)",
+   "at": [
+    29.0,
+    28.3
+   ],
+   "of": "Green Row",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "line"
+  },
+  {
+   "k": "streetLamp (line)",
+   "at": [
+    41.0,
+    28.3
+   ],
+   "of": "Green Row",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "line"
+  },
+  {
+   "k": "streetLamp (line)",
+   "at": [
+    53.0,
+    28.3
+   ],
+   "of": "Green Row",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "line"
+  },
+  {
+   "k": "streetLamp (line)",
+   "at": [
+    -8.0,
+    12.5
+   ],
+   "of": "Cross Walk",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "line"
+  },
+  {
+   "k": "streetLamp (line)",
+   "at": [
+    2.598,
+    12.5
+   ],
+   "of": "Cross Walk (east)",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "line"
+  },
+  {
+   "k": "streetLamp (line)",
+   "at": [
+    2.5,
+    15.658
+   ],
+   "of": "Green Walk",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "line"
+  },
+  {
+   "k": "streetLamp (line)",
+   "at": [
+    13.25,
+    12.02
+   ],
+   "of": "East Walk",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "line"
+  },
+  {
+   "k": "streetLamp (line)",
+   "at": [
+    13.25,
+    24.02
+   ],
+   "of": "East Walk",
+   "kind": "Lightpost",
+   "reach": 3.6,
+   "when": "line"
+  }
+ ],
+ "fences": [
+  {
+   "building": "school",
+   "fence": "PostRail",
+   "panels": 16,
+   "posts": 0,
+   "gates": 0,
+   "offcuts": 0,
+   "offcut_m": 0.0,
+   "metres": 34.13
+  },
+  {
+   "building": "general_store",
+   "fence": null,
+   "panels": 0,
+   "posts": 0,
+   "gates": 0,
+   "offcuts": 0,
+   "offcut_m": 0.0,
+   "metres": 0.0
+  },
+  {
+   "building": "post_office",
+   "fence": null,
+   "panels": 0,
+   "posts": 0,
+   "gates": 0,
+   "offcuts": 0,
+   "offcut_m": 0.0,
+   "metres": 0.0
+  },
+  {
+   "building": "cream_saltbox",
+   "fence": "Wire",
+   "panels": 16,
+   "posts": 0,
+   "gates": 0,
+   "offcuts": 0,
+   "offcut_m": 0.0,
+   "metres": 40.73
+  },
+  {
+   "building": "white_gable",
+   "fence": "Picket",
+   "panels": 19,
+   "posts": 6,
+   "gates": 1,
+   "offcuts": 0,
+   "offcut_m": 0.0,
+   "metres": 40.23
+  },
+  {
+   "building": "red_saltbox",
+   "fence": "PostRail",
+   "panels": 27,
+   "posts": 0,
+   "gates": 0,
+   "offcuts": 0,
+   "offcut_m": 0.0,
+   "metres": 68.77
+  },
+  {
+   "building": "white_farmhouse",
+   "fence": "Picket",
+   "panels": 27,
+   "posts": 6,
+   "gates": 1,
+   "offcuts": 0,
+   "offcut_m": 0.0,
+   "metres": 57.13
+  },
+  {
+   "building": "sage_cottage",
+   "fence": "Picket",
+   "panels": 18,
+   "posts": 6,
+   "gates": 1,
+   "offcuts": 0,
+   "offcut_m": 0.0,
+   "metres": 34.64
+  },
+  {
+   "building": "harbour_gable",
+   "fence": "Stone",
+   "panels": 20,
+   "posts": 6,
+   "gates": 0,
+   "offcuts": 0,
+   "offcut_m": 0.0,
+   "metres": 41.2
+  }
+ ],
+ "stations": [
+  {
+   "id": "station.st_peters.hearth_bench_a",
+   "at": [
+    -2.3,
+    16.3
+   ],
+   "node": "cross_walk",
+   "who": "Rose's evening sit"
+  },
+  {
+   "id": "station.st_peters.hearth_bench_b",
+   "at": [
+    -0.3,
+    17.1
+   ],
+   "node": "cross_walk",
+   "who": "Junior and Basil, after the tide's in"
+  },
+  {
+   "id": "station.st_peters.notice_board",
+   "at": [
+    4.4,
+    17.8
+   ],
+   "node": "green_walk_foot",
+   "who": "everyone's morning look; Marguerite pins the notices"
+  },
+  {
+   "id": "station.st_peters.green_bench_a",
+   "at": [
+    0.0,
+    21.9
+   ],
+   "node": "green_walk_foot",
+   "who": "the cannery hands' lunch"
+  },
+  {
+   "id": "station.st_peters.green_bench_b",
+   "at": [
+    5.2,
+    21.9
+   ],
+   "node": "green_walk_foot",
+   "who": "Eileen, marking, after school"
+  },
+  {
+   "id": "station.st_peters.garden_bed_a",
+   "at": [
+    -20.4,
+    15.3
+   ],
+   "node": "garden_gate",
+   "who": "Eileen's rows (Saturday)"
+  },
+  {
+   "id": "station.st_peters.garden_bed_b",
+   "at": [
+    -12.5,
+    20.8
+   ],
+   "node": "garden_gate",
+   "who": "the family's rows (the white gable)"
+  },
+  {
+   "id": "station.st_peters.garden_bench",
+   "at": [
+    -22.5,
+    14.2
+   ],
+   "node": "garden_gate",
+   "who": "Ginny, some evenings, before the walk home"
+  },
+  {
+   "id": "station.st_peters.flake_yard",
+   "at": [
+    39.0,
+    30.6
+   ],
+   "node": "lane_cream_saltbox",
+   "who": "the cannery hands, turning the fish (fine days)"
+  }
+ ],
+ "tree": [
+  {
+   "node": "green",
+   "parent": null,
+   "at": [
+    2.5,
+    7.0
+   ],
+   "why": "the root (StPetersBuilder.VillageGreen)",
+   "via": []
+  },
+  {
+   "node": "cross_walk",
+   "parent": "green",
+   "at": [
+    2.5,
+    12.5
+   ],
+   "why": "the Green step meets the Cross Walk, on the ring's gravel",
+   "via": []
+  },
+  {
+   "node": "green_walk_foot",
+   "parent": "cross_walk",
+   "at": [
+    2.5,
+    15.658
+   ],
+   "why": "the ring's north edge, the foot of the Green Walk",
+   "via": []
+  },
+  {
+   "node": "lane_store",
+   "parent": "green_walk_foot",
+   "at": [
+    2.5,
+    28.3
+   ],
+   "why": "the store's approach on Green Row (kept name)",
+   "via": []
+  },
+  {
+   "node": "bluff_path_foot",
+   "parent": "lane_store",
+   "at": [
+    -6.25,
+    28.3
+   ],
+   "why": "the Bluff Path leaves Green Row",
+   "via": []
+  },
+  {
+   "node": "lane_harbour_gable",
+   "parent": "bluff_path_foot",
+   "at": [
+    -6.25,
+    41.1
+   ],
+   "why": "the harbour gable's approach, the Bluff Path's head",
+   "via": []
+  },
+  {
+   "node": "lane_school",
+   "parent": "bluff_path_foot",
+   "at": [
+    -11.4,
+    28.3
+   ],
+   "why": "the school's approach (kept name)",
+   "via": []
+  },
+  {
+   "node": "bluff_walk_foot",
+   "parent": "lane_school",
+   "at": [
+    -17.5,
+    28.3
+   ],
+   "why": "the Bluff Walk leaves Green Row",
+   "via": []
+  },
+  {
+   "node": "yard_sage_cottage",
+   "parent": "bluff_walk_foot",
+   "at": [
+    -21.5,
+    34.5
+   ],
+   "why": "the sage cottage's approach on the Shore Walk (kept name)",
+   "via": [
+    [
+     -17.5,
+     34.5
+    ]
+   ]
+  },
+  {
+   "node": "east_walk_head",
+   "parent": "lane_store",
+   "at": [
+    13.25,
+    28.3
+   ],
+   "why": "the East Walk meets Green Row",
+   "via": []
+  },
+  {
+   "node": "yard_saltbox",
+   "parent": "east_walk_head",
+   "at": [
+    13.25,
+    20.3
+   ],
+   "why": "the red saltbox's approach on the East Walk (kept name): Rose's way to the counter",
+   "via": []
+  },
+  {
+   "node": "lane_post_office",
+   "parent": "east_walk_head",
+   "at": [
+    18.18,
+    28.3
+   ],
+   "why": "the post office's approach (kept name)",
+   "via": []
+  },
+  {
+   "node": "lane_cream_saltbox",
+   "parent": "lane_post_office",
+   "at": [
+    28.5,
+    28.3
+   ],
+   "why": "the cream saltbox's approach",
+   "via": []
+  },
+  {
+   "node": "farm_walk_head",
+   "parent": "lane_cream_saltbox",
+   "at": [
+    34.0,
+    28.3
+   ],
+   "why": "the Farm Walk leaves Green Row",
+   "via": []
+  },
+  {
+   "node": "lane_farmhouse",
+   "parent": "farm_walk_head",
+   "at": [
+    34.0,
+    18.9
+   ],
+   "why": "the farmhouse's approach on the Farm Walk (kept name)",
+   "via": []
+  },
+  {
+   "node": "lane_white_gable",
+   "parent": "farm_walk_head",
+   "at": [
+    53.0,
+    28.3
+   ],
+   "why": "the white gable's approach",
+   "via": []
+  },
+  {
+   "node": "green_row_east",
+   "parent": "lane_white_gable",
+   "at": [
+    57.0,
+    28.3
+   ],
+   "why": "Green Row's east end",
+   "via": []
+  },
+  {
+   "node": "yard_ginny_plot",
+   "parent": "green_row_east",
+   "at": [
+    76.74,
+    26.13
+   ],
+   "why": "StPetersGinnyPlot.Dooryard (unchanged); via (62, 27)",
+   "via": [
+    [
+     62.0,
+     27.0
+    ]
+   ]
+  },
+  {
+   "node": "garden_gate",
+   "parent": "cross_walk",
+   "at": [
+    -17.5,
+    12.5
+   ],
+   "why": "the west garden's gate, where the Garden Path meets the Garden Walk",
+   "via": []
+  },
+  {
+   "node": "yard_cottage",
+   "parent": "green",
+   "at": [
+    4.0,
+    11.0
+   ],
+   "why": "Ginny's village mark (4, 11), unchanged",
+   "via": []
+  },
+  {
+   "node": "flats_head",
+   "parent": "green",
+   "at": [
+    -55.0,
+    2.5
+   ],
+   "why": "unchanged, with its bends (bar road)",
+   "via": [
+    [
+     -12.867,
+     1.55
+    ],
+    [
+     -29.139,
+     2.158
+    ]
+   ]
+  },
+  {
+   "node": "slip_head",
+   "parent": "green",
+   "at": [
+    190.0,
+    0.0
+   ],
+   "why": "unchanged, with its bends (slip road)",
+   "via": [
+    [
+     49.157,
+     -0.521
+    ],
+    [
+     95.99,
+     -3.406
+    ],
+    [
+     143.156,
+     2.812
+    ]
+   ]
+  },
+  {
+   "node": "wharf_head",
+   "parent": "slip_head",
+   "at": [
+    207.5,
+    1.5
+   ],
+   "why": "unchanged",
+   "via": []
+  }
+ ],
+ "cycleLinks": [
+  {
+   "link": "east_walk",
+   "between": [
+    "yard_saltbox",
+    "cross_walk"
+   ],
+   "via": "route.stpeters.east_walk south of the red saltbox, and route.stpeters.cross_walk_east",
+   "would_serve": "Rose down to the hearth bench of an evening; in the tree the walk goes by Green Row and the Green Walk"
+  },
+  {
+   "link": "garden_walk",
+   "between": [
+    "garden_gate",
+    "bluff_walk_foot"
+   ],
+   "via": "route.stpeters.garden_walk",
+   "would_serve": "the school and the sage cottage down to the garden beds; in the tree they go round by the ring"
+  },
+  {
+   "link": "ring",
+   "between": [
+    "cross_walk",
+    "green_walk_foot"
+   ],
+   "via": "the hearth ring (either side)",
+   "would_serve": "nobody: a villager crosses the ring on one side only"
+  },
+  {
+   "link": "barren_gap",
+   "between": [
+    "lane_cream_saltbox",
+    "barren path"
+   ],
+   "via": "route.stpeters.barren_gap",
+   "would_serve": "no routine today (pass 9's barren path is the player's)"
+  },
+  {
+   "link": "shore_walk",
+   "between": [
+    "yard_sage_cottage",
+    "shore path"
+   ],
+   "via": "route.stpeters.shore_walk, west of the cottage",
+   "would_serve": "no routine today (pass 9's shore path is the player's)"
+  }
+ ],
+ "frames": {
+  "window": {
+   "w": 16.0,
+   "h": 9.0,
+   "extent": [
+    -38.0,
+    0.0,
+    80.0,
+    57.0
+   ],
+   "method": "StPetersGroundCoverBudgetTests' tiling: 16 x 9 windows on the grid (16i, 9j), every one a route crosses"
+  },
+  "windows": [
+   {
+    "key": "B6",
+    "centre": [
+     -24.0,
+     58.5
+    ],
+    "rect": [
+     -32.0,
+     54.0,
+     -16.0,
+     63.0
+    ],
+    "verdict": "a scene",
+    "focal": "pass 9's harbour shore",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "C6",
+    "centre": [
+     -8.0,
+     58.5
+    ],
+    "rect": [
+     -16.0,
+     54.0,
+     0.0,
+     63.0
+    ],
+    "verdict": "a scene",
+    "focal": "pass 9's roadside meadow",
+    "why": "",
+    "buildings": [
+     {
+      "id": "harbour_gable",
+      "part": "its roof",
+      "frac": 0.08,
+      "door": false,
+      "facing8": 4,
+      "seen": "seen"
+     }
+    ],
+    "yards": [],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "H6",
+    "centre": [
+     72.0,
+     58.5
+    ],
+    "rect": [
+     64.0,
+     54.0,
+     80.0,
+     63.0
+    ],
+    "verdict": "a scene",
+    "focal": "pass 9's blueberry barren",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "B5",
+    "centre": [
+     -24.0,
+     49.5
+    ],
+    "rect": [
+     -32.0,
+     45.0,
+     -16.0,
+     54.0
+    ],
+    "verdict": "a scene",
+    "focal": "sage_cottage (its roof)",
+    "why": "",
+    "buildings": [
+     {
+      "id": "sage_cottage",
+      "part": "its roof",
+      "frac": 0.42,
+      "door": false,
+      "facing8": 4,
+      "seen": "seen"
+     }
+    ],
+    "yards": [
+     "sage_cottage"
+    ],
+    "lamps": [
+     "batteryShedLight sage_cottage"
+    ],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 10
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "E5",
+    "centre": [
+     24.0,
+     49.5
+    ],
+    "rect": [
+     16.0,
+     45.0,
+     32.0,
+     54.0
+    ],
+    "verdict": "a scene",
+    "focal": "pass 9's blueberry barren",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "G5",
+    "centre": [
+     56.0,
+     49.5
+    ],
+    "rect": [
+     48.0,
+     45.0,
+     64.0,
+     54.0
+    ],
+    "verdict": "a scene",
+    "focal": "pass 9's blueberry barren",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "H5",
+    "centre": [
+     72.0,
+     49.5
+    ],
+    "rect": [
+     64.0,
+     45.0,
+     80.0,
+     54.0
+    ],
+    "verdict": "a scene",
+    "focal": "pass 9's blueberry barren",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "A4",
+    "centre": [
+     -40.0,
+     40.5
+    ],
+    "rect": [
+     -48.0,
+     36.0,
+     -32.0,
+     45.0
+    ],
+    "verdict": "a scene",
+    "focal": "the woods (3 trees and shrubs)",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "B4",
+    "centre": [
+     -24.0,
+     40.5
+    ],
+    "rect": [
+     -32.0,
+     36.0,
+     -16.0,
+     45.0
+    ],
+    "verdict": "a scene",
+    "focal": "sage_cottage's door",
+    "why": "",
+    "buildings": [
+     {
+      "id": "sage_cottage",
+      "part": "its door and front",
+      "frac": 0.58,
+      "door": true,
+      "facing8": 4,
+      "seen": "seen"
+     }
+    ],
+    "yards": [
+     "school",
+     "sage_cottage"
+    ],
+    "lamps": [
+     "doorstepLantern sage_cottage",
+     "batteryShedLight sage_cottage"
+    ],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 4
+     },
+     "all": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 14
+     },
+     "line": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 4
+     }
+    }
+   },
+   {
+    "key": "C4",
+    "centre": [
+     -8.0,
+     40.5
+    ],
+    "rect": [
+     -16.0,
+     36.0,
+     0.0,
+     45.0
+    ],
+    "verdict": "a scene",
+    "focal": "harbour_gable's front",
+    "why": "",
+    "buildings": [
+     {
+      "id": "school",
+      "part": "its upper front and roof",
+      "frac": 0.63,
+      "door": false,
+      "facing8": 4,
+      "seen": "seen"
+     },
+     {
+      "id": "general_store",
+      "part": "its upper front and roof",
+      "frac": 0.22,
+      "door": false,
+      "facing8": 4,
+      "seen": "seen"
+     },
+     {
+      "id": "harbour_gable",
+      "part": "its front, the door out of frame",
+      "frac": 0.23,
+      "door": false,
+      "facing8": 4,
+      "seen": "seen"
+     }
+    ],
+    "yards": [
+     "school",
+     "general_store",
+     "harbour_gable"
+    ],
+    "lamps": [
+     "doorstepLantern school",
+     "doorstepLantern harbour_gable",
+     "batteryShedLight sage_cottage"
+    ],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 8
+     },
+     "all": {
+      "pools": 3,
+      "pairs": 0,
+      "pairs_if_all_cast": 18
+     },
+     "line": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 8
+     }
+    }
+   },
+   {
+    "key": "E4",
+    "centre": [
+     24.0,
+     40.5
+    ],
+    "rect": [
+     16.0,
+     36.0,
+     32.0,
+     45.0
+    ],
+    "verdict": "a scene",
+    "focal": "cream_saltbox (its upper front and roof)",
+    "why": "",
+    "buildings": [
+     {
+      "id": "post_office",
+      "part": "its upper front and roof",
+      "frac": 0.3,
+      "door": false,
+      "facing8": 4,
+      "seen": "seen"
+     },
+     {
+      "id": "cream_saltbox",
+      "part": "its upper front and roof",
+      "frac": 0.63,
+      "door": false,
+      "facing8": 4,
+      "seen": "seen"
+     }
+    ],
+    "yards": [
+     "post_office",
+     "cream_saltbox"
+    ],
+    "lamps": [
+     "doorstepLantern post_office",
+     "doorstepLantern cream_saltbox"
+    ],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 3
+     },
+     "all": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 3
+     },
+     "line": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 3
+     }
+    }
+   },
+   {
+    "key": "F4",
+    "centre": [
+     40.0,
+     40.5
+    ],
+    "rect": [
+     32.0,
+     36.0,
+     48.0,
+     45.0
+    ],
+    "verdict": "a scene",
+    "focal": "pass 9's roadside meadow",
+    "why": "",
+    "buildings": [
+     {
+      "id": "cream_saltbox",
+      "part": "its upper front and roof",
+      "frac": 0.02,
+      "door": false,
+      "facing8": 4,
+      "seen": "seen"
+     }
+    ],
+    "yards": [
+     "cream_saltbox"
+    ],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "G4",
+    "centre": [
+     56.0,
+     40.5
+    ],
+    "rect": [
+     48.0,
+     36.0,
+     64.0,
+     45.0
+    ],
+    "verdict": "a scene",
+    "focal": "white_gable (its upper front and roof)",
+    "why": "",
+    "buildings": [
+     {
+      "id": "white_gable",
+      "part": "its upper front and roof",
+      "frac": 0.62,
+      "door": false,
+      "facing8": 4,
+      "seen": "seen"
+     }
+    ],
+    "yards": [
+     "white_gable"
+    ],
+    "lamps": [
+     "doorstepLantern white_gable"
+    ],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 5
+     },
+     "all": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 5
+     },
+     "line": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 5
+     }
+    }
+   },
+   {
+    "key": "A3",
+    "centre": [
+     -40.0,
+     31.5
+    ],
+    "rect": [
+     -48.0,
+     27.0,
+     -32.0,
+     36.0
+    ],
+    "verdict": "a scene",
+    "focal": "the bench",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "B3",
+    "centre": [
+     -24.0,
+     31.5
+    ],
+    "rect": [
+     -32.0,
+     27.0,
+     -16.0,
+     36.0
+    ],
+    "verdict": "a scene",
+    "focal": "pass 9's roadside meadow",
+    "why": "",
+    "buildings": [],
+    "yards": [
+     "school",
+     "sage_cottage"
+    ],
+    "lamps": [
+     "doorstepLantern sage_cottage",
+     "lanternPost bluff_walk"
+    ],
+    "light": {
+     "posts": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 2
+     },
+     "doorsteps": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 6
+     },
+     "all": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 6
+     },
+     "line": {
+      "pools": 3,
+      "pairs": 0,
+      "pairs_if_all_cast": 6
+     }
+    }
+   },
+   {
+    "key": "C3",
+    "centre": [
+     -8.0,
+     31.5
+    ],
+    "rect": [
+     -16.0,
+     27.0,
+     0.0,
+     36.0
+    ],
+    "verdict": "a scene",
+    "focal": "school's door",
+    "why": "",
+    "buildings": [
+     {
+      "id": "school",
+      "part": "its door and front",
+      "frac": 0.37,
+      "door": true,
+      "facing8": 4,
+      "seen": "seen"
+     },
+     {
+      "id": "general_store",
+      "part": "its front, the door out of frame",
+      "frac": 0.13,
+      "door": false,
+      "facing8": 4,
+      "seen": "seen"
+     }
+    ],
+    "yards": [
+     "school",
+     "general_store"
+    ],
+    "lamps": [
+     "doorstepLantern school",
+     "doorstepLantern general_store",
+     "lanternPost bluff_walk"
+    ],
+    "light": {
+     "posts": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 2
+     },
+     "doorsteps": {
+      "pools": 3,
+      "pairs": 0,
+      "pairs_if_all_cast": 8
+     },
+     "all": {
+      "pools": 3,
+      "pairs": 0,
+      "pairs_if_all_cast": 8
+     },
+     "line": {
+      "pools": 5,
+      "pairs": 0,
+      "pairs_if_all_cast": 12
+     }
+    }
+   },
+   {
+    "key": "D3",
+    "centre": [
+     8.0,
+     31.5
+    ],
+    "rect": [
+     0.0,
+     27.0,
+     16.0,
+     36.0
+    ],
+    "verdict": "a scene",
+    "focal": "general_store's door",
+    "why": "",
+    "buildings": [
+     {
+      "id": "general_store",
+      "part": "its door and front",
+      "frac": 0.23,
+      "door": true,
+      "facing8": 4,
+      "seen": "seen"
+     },
+     {
+      "id": "post_office",
+      "part": "its front, the door out of frame",
+      "frac": 0.18,
+      "door": false,
+      "facing8": 4,
+      "seen": "seen"
+     }
+    ],
+    "yards": [
+     "general_store",
+     "post_office"
+    ],
+    "lamps": [
+     "doorstepLantern general_store",
+     "doorstepLantern post_office",
+     "lanternPost green_walk"
+    ],
+    "light": {
+     "posts": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 3,
+      "pairs": 0,
+      "pairs_if_all_cast": 3
+     },
+     "all": {
+      "pools": 3,
+      "pairs": 0,
+      "pairs_if_all_cast": 3
+     },
+     "line": {
+      "pools": 6,
+      "pairs": 0,
+      "pairs_if_all_cast": 12
+     }
+    }
+   },
+   {
+    "key": "E3",
+    "centre": [
+     24.0,
+     31.5
+    ],
+    "rect": [
+     16.0,
+     27.0,
+     32.0,
+     36.0
+    ],
+    "verdict": "a scene",
+    "focal": "cream_saltbox's door",
+    "why": "",
+    "buildings": [
+     {
+      "id": "post_office",
+      "part": "its door and front",
+      "frac": 0.15,
+      "door": true,
+      "facing8": 4,
+      "seen": "seen"
+     },
+     {
+      "id": "cream_saltbox",
+      "part": "its door and front",
+      "frac": 0.34,
+      "door": true,
+      "facing8": 4,
+      "seen": "seen"
+     }
+    ],
+    "yards": [
+     "post_office",
+     "cream_saltbox"
+    ],
+    "lamps": [
+     "doorstepLantern post_office",
+     "doorstepLantern cream_saltbox",
+     "lanternPost farm_walk"
+    ],
+    "light": {
+     "posts": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 7
+     },
+     "doorsteps": {
+      "pools": 3,
+      "pairs": 0,
+      "pairs_if_all_cast": 10
+     },
+     "all": {
+      "pools": 3,
+      "pairs": 0,
+      "pairs_if_all_cast": 10
+     },
+     "line": {
+      "pools": 5,
+      "pairs": 0,
+      "pairs_if_all_cast": 18
+     }
+    }
+   },
+   {
+    "key": "F3",
+    "centre": [
+     40.0,
+     31.5
+    ],
+    "rect": [
+     32.0,
+     27.0,
+     48.0,
+     36.0
+    ],
+    "verdict": "a scene",
+    "focal": "the fish flakes",
+    "why": "",
+    "buildings": [],
+    "yards": [
+     "cream_saltbox"
+    ],
+    "lamps": [
+     "doorstepLantern cream_saltbox",
+     "lanternPost farm_walk",
+     "lanternPost barren_gap"
+    ],
+    "light": {
+     "posts": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 11
+     },
+     "doorsteps": {
+      "pools": 3,
+      "pairs": 0,
+      "pairs_if_all_cast": 13
+     },
+     "all": {
+      "pools": 3,
+      "pairs": 0,
+      "pairs_if_all_cast": 13
+     },
+     "line": {
+      "pools": 5,
+      "pairs": 0,
+      "pairs_if_all_cast": 23
+     }
+    }
+   },
+   {
+    "key": "G3",
+    "centre": [
+     56.0,
+     31.5
+    ],
+    "rect": [
+     48.0,
+     27.0,
+     64.0,
+     36.0
+    ],
+    "verdict": "a scene",
+    "focal": "white_gable's door",
+    "why": "",
+    "buildings": [
+     {
+      "id": "white_gable",
+      "part": "its door and front",
+      "frac": 0.38,
+      "door": true,
+      "facing8": 4,
+      "seen": "seen"
+     }
+    ],
+    "yards": [
+     "white_gable"
+    ],
+    "lamps": [
+     "doorstepLantern white_gable"
+    ],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 5
+     },
+     "all": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 5
+     },
+     "line": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 10
+     }
+    }
+   },
+   {
+    "key": "B2",
+    "centre": [
+     -24.0,
+     22.5
+    ],
+    "rect": [
+     -32.0,
+     18.0,
+     -16.0,
+     27.0
+    ],
+    "verdict": "a scene",
+    "focal": "the vegRows",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [
+     "lanternPost bluff_walk"
+    ],
+    "light": {
+     "posts": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 2
+     },
+     "doorsteps": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 2
+     },
+     "all": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 2
+     },
+     "line": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 2
+     }
+    }
+   },
+   {
+    "key": "D2",
+    "centre": [
+     8.0,
+     22.5
+    ],
+    "rect": [
+     0.0,
+     18.0,
+     16.0,
+     27.0
+    ],
+    "verdict": "a scene",
+    "focal": "the notice board",
+    "why": "",
+    "buildings": [],
+    "yards": [
+     "red_saltbox"
+    ],
+    "lamps": [
+     "doorstepLantern red_saltbox",
+     "lanternPost green_walk"
+    ],
+    "light": {
+     "posts": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 1
+     },
+     "all": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 1
+     },
+     "line": {
+      "pools": 6,
+      "pairs": 0,
+      "pairs_if_all_cast": 13
+     }
+    }
+   },
+   {
+    "key": "E2",
+    "centre": [
+     24.0,
+     22.5
+    ],
+    "rect": [
+     16.0,
+     18.0,
+     32.0,
+     27.0
+    ],
+    "verdict": "a scene",
+    "focal": "red_saltbox's door",
+    "why": "",
+    "buildings": [
+     {
+      "id": "red_saltbox",
+      "part": "its door (side-on) and porch",
+      "frac": 0.92,
+      "door": true,
+      "facing8": 6,
+      "seen": "edge-on"
+     }
+    ],
+    "yards": [
+     "red_saltbox"
+    ],
+    "lamps": [
+     "doorstepLantern red_saltbox",
+     "lanternPost farm_walk"
+    ],
+    "light": {
+     "posts": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 7
+     },
+     "doorsteps": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 8
+     },
+     "all": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 8
+     },
+     "line": {
+      "pools": 5,
+      "pairs": 0,
+      "pairs_if_all_cast": 20
+     }
+    }
+   },
+   {
+    "key": "F2",
+    "centre": [
+     40.0,
+     22.5
+    ],
+    "rect": [
+     32.0,
+     18.0,
+     48.0,
+     27.0
+    ],
+    "verdict": "a scene",
+    "focal": "white_farmhouse's door",
+    "why": "",
+    "buildings": [
+     {
+      "id": "white_farmhouse",
+      "part": "its door (side-on) and porch",
+      "frac": 0.79,
+      "door": true,
+      "facing8": 6,
+      "seen": "edge-on"
+     }
+    ],
+    "yards": [
+     "white_farmhouse"
+    ],
+    "lamps": [
+     "doorstepLantern white_farmhouse",
+     "lanternPost farm_walk",
+     "lanternPost barren_gap"
+    ],
+    "light": {
+     "posts": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 11
+     },
+     "doorsteps": {
+      "pools": 3,
+      "pairs": 0,
+      "pairs_if_all_cast": 16
+     },
+     "all": {
+      "pools": 3,
+      "pairs": 0,
+      "pairs_if_all_cast": 16
+     },
+     "line": {
+      "pools": 5,
+      "pairs": 0,
+      "pairs_if_all_cast": 26
+     }
+    }
+   },
+   {
+    "key": "G2",
+    "centre": [
+     56.0,
+     22.5
+    ],
+    "rect": [
+     48.0,
+     18.0,
+     64.0,
+     27.0
+    ],
+    "verdict": "a scene",
+    "focal": "pass 9's roadside meadow",
+    "why": "",
+    "buildings": [
+     {
+      "id": "white_farmhouse",
+      "part": "its long south wall and roof, the door out of frame",
+      "frac": 0.05,
+      "door": false,
+      "facing8": 6,
+      "seen": "edge-on"
+     }
+    ],
+    "yards": [
+     "white_farmhouse"
+    ],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 5
+     }
+    }
+   },
+   {
+    "key": "H2",
+    "centre": [
+     72.0,
+     22.5
+    ],
+    "rect": [
+     64.0,
+     18.0,
+     80.0,
+     27.0
+    ],
+    "verdict": "a scene",
+    "focal": "the GinnyPlot",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "B1",
+    "centre": [
+     -24.0,
+     13.5
+    ],
+    "rect": [
+     -32.0,
+     9.0,
+     -16.0,
+     18.0
+    ],
+    "verdict": "a scene",
+    "focal": "the vegRows",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "C1",
+    "centre": [
+     -8.0,
+     13.5
+    ],
+    "rect": [
+     -16.0,
+     9.0,
+     0.0,
+     18.0
+    ],
+    "verdict": "a scene",
+    "focal": "the hearth and its fire pit",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [
+     "firePit square"
+    ],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 3
+     },
+     "line": {
+      "pools": 3,
+      "pairs": 0,
+      "pairs_if_all_cast": 4
+     }
+    }
+   },
+   {
+    "key": "D1",
+    "centre": [
+     8.0,
+     13.5
+    ],
+    "rect": [
+     0.0,
+     9.0,
+     16.0,
+     18.0
+    ],
+    "verdict": "a scene",
+    "focal": "the hearth and its fire pit",
+    "why": "",
+    "buildings": [],
+    "yards": [
+     "red_saltbox"
+    ],
+    "lamps": [
+     "doorstepLantern red_saltbox",
+     "lanternPost green",
+     "firePit square"
+    ],
+    "light": {
+     "posts": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 2,
+      "pairs": 0,
+      "pairs_if_all_cast": 1
+     },
+     "all": {
+      "pools": 3,
+      "pairs": 0,
+      "pairs_if_all_cast": 4
+     },
+     "line": {
+      "pools": 5,
+      "pairs": 0,
+      "pairs_if_all_cast": 7
+     }
+    }
+   },
+   {
+    "key": "F1",
+    "centre": [
+     40.0,
+     13.5
+    ],
+    "rect": [
+     32.0,
+     9.0,
+     48.0,
+     18.0
+    ],
+    "verdict": "a scene",
+    "focal": "white_farmhouse's yard dressing",
+    "why": "",
+    "buildings": [
+     {
+      "id": "white_farmhouse",
+      "part": "its door end, the door out of frame",
+      "frac": 0.14,
+      "door": false,
+      "facing8": 6,
+      "seen": "edge-on"
+     }
+    ],
+    "yards": [
+     "white_farmhouse"
+    ],
+    "lamps": [
+     "doorstepLantern white_farmhouse"
+    ],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 5
+     },
+     "all": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 5
+     },
+     "line": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 5
+     }
+    }
+   },
+   {
+    "key": "A0",
+    "centre": [
+     -40.0,
+     4.5
+    ],
+    "rect": [
+     -48.0,
+     0.0,
+     -32.0,
+     9.0
+    ],
+    "verdict": "a scene",
+    "focal": "the roadside: a chalked board at the bar head: the tide times for the crossing",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "B0",
+    "centre": [
+     -24.0,
+     4.5
+    ],
+    "rect": [
+     -32.0,
+     0.0,
+     -16.0,
+     9.0
+    ],
+    "verdict": "a scene",
+    "focal": "the roadside: a salt-fish flake on the meadow above the bar-head road",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "C0",
+    "centre": [
+     -8.0,
+     4.5
+    ],
+    "rect": [
+     -16.0,
+     0.0,
+     0.0,
+     9.0
+    ],
+    "verdict": "a scene",
+    "focal": "the roadside: the garden's roadside stand: an honesty box by the road",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "D0",
+    "centre": [
+     8.0,
+     4.5
+    ],
+    "rect": [
+     0.0,
+     0.0,
+     16.0,
+     9.0
+    ],
+    "verdict": "a scene",
+    "focal": "a lantern post",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [
+     "lanternPost green"
+    ],
+    "light": {
+     "posts": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 1,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 3,
+      "pairs": 0,
+      "pairs_if_all_cast": 3
+     }
+    }
+   },
+   {
+    "key": "E0",
+    "centre": [
+     24.0,
+     4.5
+    ],
+    "rect": [
+     16.0,
+     0.0,
+     32.0,
+     9.0
+    ],
+    "verdict": "a scene",
+    "focal": "the roadside: a flake on the meadow above the slip road",
+    "why": "",
+    "buildings": [],
+    "yards": [
+     "red_saltbox"
+    ],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   },
+   {
+    "key": "F0",
+    "centre": [
+     40.0,
+     4.5
+    ],
+    "rect": [
+     32.0,
+     0.0,
+     48.0,
+     9.0
+    ],
+    "verdict": "a scene",
+    "focal": "pass 9's woods floor",
+    "why": "",
+    "buildings": [],
+    "yards": [],
+    "lamps": [],
+    "light": {
+     "posts": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "doorsteps": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "all": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     },
+     "line": {
+      "pools": 0,
+      "pairs": 0,
+      "pairs_if_all_cast": 0
+     }
+    }
+   }
+  ],
+  "wide": [
+   {
+    "key": "wide_arrival",
+    "title": "Up from the slip: the green, the Green step and the square",
+    "centre": [
+     2.5,
+     9.0
+    ],
+    "w": 24.889,
+    "h": 14.0,
+    "focal": "the hearth and its fire pit",
+    "buildings": [],
+    "lamps": [
+     "lanternPost green",
+     "firePit square"
+    ]
+   },
+   {
+    "key": "wide_square",
+    "title": "The square: the hearth, the benches, the notice board, the maples, and Rose's door across the East Walk",
+    "centre": [
+     9.0,
+     18.5
+    ],
+    "w": 24.889,
+    "h": 14.0,
+    "focal": "red_saltbox's door",
+    "buildings": [
+     {
+      "id": "red_saltbox",
+      "part": "its door (side-on) and porch",
+      "frac": 0.42,
+      "door": true,
+      "facing8": 6,
+      "seen": "edge-on"
+     }
+    ],
+    "lamps": [
+     "doorstepLantern red_saltbox",
+     "lanternPost green_walk",
+     "lanternPost green",
+     "firePit square"
+    ]
+   },
+   {
+    "key": "wide_bluff",
+    "title": "The bluff: the harbour gable at the Bluff Path's head, the sage cottage on the Shore Walk, the school below",
+    "centre": [
+     -12.0,
+     41.0
+    ],
+    "w": 24.889,
+    "h": 14.0,
+    "focal": "harbour_gable's door",
+    "buildings": [
+     {
+      "id": "school",
+      "part": "its upper front and roof",
+      "frac": 0.79,
+      "door": false,
+      "facing8": 4,
+      "seen": "seen"
+     },
+     {
+      "id": "general_store",
+      "part": "its upper front and roof",
+      "frac": 0.31,
+      "door": false,
+      "facing8": 4,
+      "seen": "seen"
+     },
+     {
+      "id": "sage_cottage",
+      "part": "its door and front",
+      "frac": 0.73,
+      "door": true,
+      "facing8": 4,
+      "seen": "seen"
+     },
+     {
+      "id": "harbour_gable",
+      "part": "its door and front",
+      "frac": 0.46,
+      "door": true,
+      "facing8": 4,
+      "seen": "seen"
+     }
+    ],
+    "lamps": [
+     "doorstepLantern school",
+     "doorstepLantern general_store",
+     "doorstepLantern sage_cottage",
+     "doorstepLantern harbour_gable",
+     "batteryShedLight sage_cottage"
+    ]
+   },
+   {
+    "key": "wide_east",
+    "title": "Green Row east: the farmhouse down the Farm Walk, Rose's back garden, the cream saltbox and the flake yard",
+    "centre": [
+     38.0,
+     25.0
+    ],
+    "w": 24.889,
+    "h": 14.0,
+    "focal": "white_farmhouse's door",
+    "buildings": [
+     {
+      "id": "cream_saltbox",
+      "part": "only its porch and steps",
+      "frac": 0.04,
+      "door": false,
+      "facing8": 4,
+      "seen": "seen"
+     },
+     {
+      "id": "red_saltbox",
+      "part": "its long south wall and roof, the door out of frame",
+      "frac": 0.14,
+      "door": false,
+      "facing8": 6,
+      "seen": "edge-on"
+     },
+     {
+      "id": "white_farmhouse",
+      "part": "its door (side-on) and porch",
+      "frac": 0.85,
+      "door": true,
+      "facing8": 6,
+      "seen": "edge-on"
+     }
+    ],
+    "lamps": [
+     "doorstepLantern cream_saltbox",
+     "doorstepLantern white_farmhouse",
+     "lanternPost farm_walk",
+     "lanternPost barren_gap"
+    ]
+   }
+  ]
+ },
+ "checks": {
+  "total": 281,
+  "failing": []
+ }
+}
