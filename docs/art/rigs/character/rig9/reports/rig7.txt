@@ -1,0 +1,212 @@
+compare-rig7 — v9 (characterIsoRig9 9.1) against rig 7 (characterIsoRig7 7.1), the Fisher
+rig 02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144  poses 42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07
+
+rig 7 files (C:/hh-drops/2026-09-09-skinned-character-kit):
+  samples/fisher.skeleton.json   8bf3ea2a00b73a491ea93f850fcbb44bda07585e0e888675f020f303d8f06096
+  samples/fisher.skinned.json    afe00a2b82a4caa6c96eb83f57c5640ece6816571a524f9ce6288141906391db
+  samples/fisher.walk.clip.json  d304c2f6da6c4d860bacbb4f28f7637b4d3a4350908c2d243c0f1b6b6933259b
+  golden-report.json             18bdca38256805a8c2eadf9db65b5e58f298f3dce1e7632663bfcb908af72a6f
+v9 files:
+  builds/fisher.v9.json          1f01c4e5b24cdc784201c6a992a6787b619775a5fdf54632900bc428296401cf
+  golden-report.json             c90fab4238766a74d44151ce72975faed179b26694bd0d7995426a28775c91f6
+
+SKELETON  45 bones -> 28: 25 kept, 1 split in two, 9 tips folded, 10 removed, 1 new (bind delta = rig 7 skeletonWorld pos to v9 bind.pos, mm)
+  rig 7          v9           bind delta  how
+  root           root         0           same
+  pelvis         pelvis       13.1        same
+  torso          spine chest  192.1 / 2.1 split in two: spine (pelvis up to the waist ring) and chest (the waist ring up); the waist ring blends them 0.5 / 0.5
+  neck           neck         61.3        same
+  neck_tip       —                        folded into neck: head is its child at a constant length
+  head           head         173.1       same; rig 7's sits 0.10 m above neck_tip (the head centre), v9's at the top of the neck
+  inseam_top     —                        removed: v9 draws no inseam panel, so nothing is parked
+  inseam_bot     —                        removed (as inseam_top)
+  hip_L          hip_L        7.2         same
+  hip_L_tip      —                        folded into hip_L: knee_L is its child at a constant length
+  knee_L         knee_L       57.9        same
+  knee_L_tip     —                        folded into knee_L: foot_L is its child at a constant length
+  ankle_L        —                        removed: the boot shaft is rings on knee_L (part boot_L)
+  ankle_L_tip    —                        removed (as ankle_L)
+  ankle_L_cuff   —                        removed: the boot cuff is a ring on knee_L
+  foot_L         foot_L       20.5        same
+  hip_R          hip_R        7.2         same
+  hip_R_tip      —                        folded into hip_R: knee_R is its child at a constant length
+  knee_R         knee_R       70.2        same
+  knee_R_tip     —                        folded into knee_R: foot_R is its child at a constant length
+  ankle_R        —                        removed: the boot shaft is rings on knee_R (part boot_R)
+  ankle_R_tip    —                        removed (as ankle_R)
+  ankle_R_cuff   —                        removed: the boot cuff is a ring on knee_R
+  foot_R         foot_R       20.5        same
+  shoulder_L     shoulder_L   68.1        same; rig 7 put it at the drawn tube top (0.098 m under rig 6's joint), v9 at the joint
+  shoulder_L_tip —                        folded into shoulder_L: elbow_L is its child at a constant length
+  elbow_L        elbow_L      42.7        same
+  elbow_L_tip    —                        folded into elbow_L: hand_L is its child at a constant length
+  wrist_L        —                        removed: the cuff is a ring on elbow_L (part fore_L)
+  hand_L         hand_L       25.8        same
+  shoulder_R     shoulder_R   68.1        same; rig 7 put it at the drawn tube top (0.098 m under rig 6's joint), v9 at the joint
+  shoulder_R_tip —                        folded into shoulder_R: elbow_R is its child at a constant length
+  elbow_R        elbow_R      40.3        same
+  elbow_R_tip    —                        folded into elbow_R: hand_R is its child at a constant length
+  wrist_R        —                        removed: the cuff is a ring on elbow_R (part fore_R)
+  hand_R         hand_R       30          same
+  tool_R         tool_R       92.8        same socket: +y along the tool
+  tool_L         tool_L       91.4        same socket: +y along the tool
+  tool_R_1       tool_R_1     92.8        same socket (0.40 of the tool length)
+  tool_R_2       tool_R_2     92.8        same socket (0.70 of the tool length)
+  tool_L_1       tool_L_1     91.4        same socket (0.40 of the tool length)
+  tool_L_2       tool_L_2     91.4        same socket (0.70 of the tool length)
+  carry_L        carry_L      79.6        same socket
+  carry_R        carry_R      80.6        same socket
+  carry_mid      carry_mid    74.6        same socket; parent torso -> chest
+  —              back                     new socket on chest: the slung rod
+  on other rig 7 builds: apron_hem, skirt_hem (44–46 bones by garment). v9: 28 on every build (root + 17 deform + 10 sockets).
+  bind delta compares two different binds: rig 7's is idle f0 of rig 6's Fisher (limbs bent, tubes at drawn points); v9's is the figure standing straight, arms down.
+  rest rotations: rig 7 20 of 45 bones are not identity (bind = idle f0); v9 0 of 28 (every bind frame is identity).
+  skeletonWorld: rig 7 exports it (45 x { id, pos, rot, rotEuler }, the bindposes' inverses); v9 does not: bind.pos is the joint in the figure frame, rotation identity,
+    so bindpose = translate(-bind.pos). Checked: bind.pos = the sum of rest.pos along the parents to 1.39e-17 m on all 28 bones.
+
+BIND MESH  faces 711 -> 508 · tris 1570 -> 1060 · verts 2992 -> 2076 (unwelded) · bytes 241028 -> 149377
+  influences per vertex: rig 7 {"1":2920,"2":72} · v9 {"1":2042,"2":34}
+  blended: rig 7 upper_L: shoulder_L 0.38 + shoulder_L_tip 0.62 (36); upper_R: shoulder_R 0.38 + shoulder_R_tip 0.62 (36)
+           v9 torso: spine 0.5 + chest 0.5 (32); bib: spine 0.5 + chest 0.5 (2)
+  face fields: rig 7 v, mat, b, db, part, bone · v9 adds group, minT, side
+  b (band offset): rig 7 155 distinct values, -0.766 .. 0.6 (continuous) · v9 -1, 0
+  parts, materials (faces):
+    thigh_L     over 8                                      | over 6, overD 1
+    shin_L      over 8                                      | over 7
+    boot_L      boot 8                                      | boot 6, bootL 7
+    boot_cuff_L bootL 8                                     | —
+    foot_L      boot 12, sole 6                             | sole 6, boot 7
+    thigh_R     over 8                                      | over 6, overD 1
+    shin_R      over 8                                      | over 7
+    boot_R      boot 8                                      | boot 6, bootL 7
+    boot_cuff_R bootL 8                                     | —
+    foot_R      boot 12, sole 6                             | sole 6, boot 7
+    inseam      overD 6                                     | —
+    pelvis      over 18                                     | over 17, overD 1
+    torso       over 72, shirt 86, overD 42, brass 12, collar 10 | over 27, shirt 38
+    upper_L     sleeve 8, skin 8                            | shirtD 7, shirt 13, skin 7
+    fore_L      skin 8                                      | skin 8
+    hand_L      skin 26                                     | skin 10
+    upper_R     sleeve 8, skin 8                            | shirtD 7, shirt 13, skin 7
+    fore_R      skin 8                                      | skin 8
+    hand_R      skin 26                                     | skin 10
+    neck        skin 8                                      | skin 6
+    head        skin 116, hair 81, stub 60                  | stub 8, skin 20, hair 31, skinD 1
+    bib         —                                           | over 2, overD 2, brass 2
+    strap       —                                           | over 10
+    collar      —                                           | collar 8
+    nose        —                                           | skin 3, skinD 1
+    ear         —                                           | skinD 12
+    hair        —                                           | hair 50, hairD 5
+    face        —                                           | ink 26, iris 20, white 22, ink2 6, brow 14, lip 4, mouth 2
+
+FACE  rig 7: track.face = { lid, gaze, brow, mouth, eyesClosed }, a HeadIso raster stamp on the head. v9: 13 face groups (94 faces, bind-mesh faces 414..507), all on head at weight 1; track.face = { eyes, brows, mouth }.
+  eyes.open   faces 414 +16   ink iris white
+  eyes.half   faces 430 +10   ink white
+  eyes.shut   faces 440 +6    ink2
+  eyes.wide   faces 446 +18   white ink iris
+  eyes.left   faces 464 +12   white ink iris
+  eyes.right  faces 476 +12   ink iris white
+  brows.flat  faces 488 +4    brow
+  brows.up    faces 492 +4    brow
+  brows.knit  faces 496 +6    brow
+  mouth.flat  faces 502 +1    lip
+  mouth.open  faces 503 +1    mouth
+  mouth.grit  faces 504 +1    mouth
+  mouth.smile faces 505 +3    lip
+  rig 7 values on the 35 shared clips (308 frames): lid 0 1 0.26 0.45 0.28 · brow 0 1 -1 · mouth neutral grit oh grin · gaze 0,0 | 1,0 | -1,0 · eyesClosed on 14 frames
+  equivalents (rig 7 value -> v9 state):
+    eyes   eyesClosed, or lid 1 -> shut · 0 < lid < 1 -> half · lid 0 with brow -1 -> wide · otherwise open
+    brows  brow -1 -> up · 0 -> flat · +1 -> knit
+    mouth  neutral -> flat · oh -> open · grit -> grit · grin -> smile
+    gaze   no v9 group: the eye marks do not move (dropped)
+  v9 authors its own face per clip frame (the pose library). Frames where it equals the equivalent: eyes 253, brows 257, mouth 267, all three 223 of 308.
+  cross-tab (rig 7 face  ->  v9 eyes / brows / mouth: frames):
+    201 lid 0 · brow 0 · neutral  ->  open / flat / flat   e.g. idle f0, idle f1, idle f3
+    18  lid 0.26 · brow 1 · grit  ->  open / knit / grit   e.g. dig f1, dig f2, dig f3
+    14  lid 0.26 · brow 1 · grit  ->  open / flat / flat   e.g. run f0, run f1, run f2
+    12  lid 0 · brow 0 · neutral  ->  open / knit / flat   e.g. cast f2, cast f3, cast f4
+    10  lid 0 · brow -1 · oh  ->  wide / up / open   e.g. stagger f0, stagger f1, stagger f2
+    10  lid 0 · brow 0 · neutral  ->  open / knit / grit   e.g. haul f2, haul f6, hauler f3
+    6   lid 0.28 · brow 0 · grin  ->  open / flat / flat   e.g. land f0, land f1, land f2
+    6   lid 1 closed · brow 0 · neutral  ->  shut / flat / flat   e.g. sleep f0, sleep f1, sleep f2
+    3   lid 0 · brow 0 · neutral · gaze 1,0  ->  open / flat / flat   e.g. idle f2, hold f2, bite f2
+    3   lid 0 · brow 0 · neutral · gaze -1,0  ->  open / flat / flat   e.g. idle f5, hold f5, bite f5
+    3   lid 0.28 · brow 0 · grin  ->  open / knit / open   e.g. land f6, land f7, land f8
+    3   lid 0.28 · brow 0 · grin  ->  open / flat / smile   e.g. land f9, land f10, land f11
+    3   lid 0 · brow 0 · neutral  ->  open / up / open   e.g. toss f5, toss f6, toss f7
+    3   lid 0 closed · brow 0 · neutral  ->  open / flat / flat   e.g. tread f4, drive f4, astride f4
+    2   lid 1 closed · brow 0 · neutral · gaze -1,0  ->  open / flat / flat   e.g. idle f4, hold f4
+    2   lid 0 · brow 0 · neutral  ->  open / flat / open   e.g. cast f5, swim f4
+    2   lid 0.26 · brow 1 · grit  ->  open / flat / open   e.g. dig f5, dig f6
+    2   lid 0 · brow 0 · neutral · gaze 1,0  ->  open / knit / flat   e.g. balance f2, balance f3
+    1   lid 0.45 closed · brow 0 · neutral · gaze -1,0  ->  open / knit / flat   e.g. balance f5
+    1   lid 1 closed · brow 0 · neutral · gaze -1,0  ->  open / knit / flat   e.g. balance f6
+    1   lid 0 · brow 0 · neutral  ->  wide / up / flat   e.g. bite f1
+    1   lid 1 closed · brow 0 · neutral · gaze -1,0  ->  wide / up / flat   e.g. bite f4
+    1   lid 0 · brow 0 · neutral  ->  open / knit / open   e.g. castRelease f2
+  frames that differ from the equivalent, by clip:
+    idle         f4 eyes shut->open
+    run          f0 eyes half->open · f0 brows knit->flat · f0 mouth grit->flat · f1 eyes half->open · f1 brows knit->flat · f1 mouth grit->flat · f2 eyes half->open · f2 brows knit->flat · f2 mouth grit->flat · f3 eyes half->open · f3 brows knit->flat · f3 mouth grit->flat · f4 eyes half->open · f4 brows knit->flat · f4 mouth grit->flat · f5 eyes half->open · f5 brows knit->flat · f5 mouth grit->flat
+    hold         f4 eyes shut->open
+    cast         f2 brows flat->knit · f3 brows flat->knit · f4 brows flat->knit · f5 mouth flat->open
+    dig          f0 eyes half->open · f0 brows knit->flat · f0 mouth grit->flat · f1 eyes half->open · f2 eyes half->open · f3 eyes half->open · f4 eyes half->open · f4 brows knit->flat · f4 mouth grit->flat · f5 eyes half->open · f5 brows knit->flat · f5 mouth grit->open · f6 eyes half->open · f6 brows knit->flat · f6 mouth grit->open · f7 eyes half->open · f7 brows knit->flat · f7 mouth grit->flat · f8 eyes half->open · f8 brows knit->flat · f8 mouth grit->flat · f9 eyes half->open · f9 brows knit->flat · f9 mouth grit->flat
+    balance      f0 brows flat->knit · f1 brows flat->knit · f2 brows flat->knit · f3 brows flat->knit · f4 brows flat->knit · f5 eyes shut->open · f5 brows flat->knit · f6 eyes shut->open · f6 brows flat->knit · f7 brows flat->knit
+    bite         f1 eyes open->wide · f1 brows flat->up · f4 eyes shut->wide · f4 brows flat->up
+    strike       f0 eyes half->open · f0 brows knit->flat · f0 mouth grit->flat · f1 eyes half->open · f1 brows knit->flat · f1 mouth grit->flat · f2 eyes half->open · f2 brows knit->flat · f2 mouth grit->flat · f3 eyes half->open · f4 eyes half->open · f5 eyes half->open
+    reel         f0 eyes half->open · f1 eyes half->open · f2 eyes half->open · f3 eyes half->open · f4 eyes half->open · f5 eyes half->open · f6 eyes half->open · f7 eyes half->open · f8 eyes half->open · f9 eyes half->open · f10 eyes half->open · f11 eyes half->open
+    land         f0 eyes half->open · f0 mouth smile->flat · f1 eyes half->open · f1 mouth smile->flat · f2 eyes half->open · f2 mouth smile->flat · f3 eyes half->open · f3 mouth smile->flat · f4 eyes half->open · f4 mouth smile->flat · f5 eyes half->open · f5 mouth smile->flat · f6 eyes half->open · f6 brows flat->knit · f6 mouth smile->open · f7 eyes half->open · f7 brows flat->knit · f7 mouth smile->open · f8 eyes half->open · f8 brows flat->knit · f8 mouth smile->open · f9 eyes half->open · f10 eyes half->open · f11 eyes half->open
+    castBack     f4 brows flat->knit · f5 brows flat->knit
+    castRelease  f2 brows flat->knit · f2 mouth flat->open
+    board        f4 brows flat->knit · f5 brows flat->knit · f6 brows flat->knit
+    haul         f2 brows flat->knit · f2 mouth flat->grit · f6 brows flat->knit · f6 mouth flat->grit
+    hauler       f3 brows flat->knit · f3 mouth flat->grit · f4 brows flat->knit · f4 mouth flat->grit · f5 brows flat->knit · f5 mouth flat->grit
+    lift         f4 brows flat->knit · f4 mouth flat->grit · f5 brows flat->knit · f5 mouth flat->grit · f6 brows flat->knit · f6 mouth flat->grit
+    toss         f3 brows flat->knit · f3 mouth flat->grit · f4 brows flat->knit · f4 mouth flat->grit · f5 brows flat->up · f5 mouth flat->open · f6 brows flat->up · f6 mouth flat->open · f7 brows flat->up · f7 mouth flat->open
+    swim         f4 mouth flat->open
+    tread        f4 eyes shut->open
+    drive        f4 eyes shut->open
+    astride      f4 eyes shut->open
+
+CLIPS  rig 7 35 · v9 53 (35 shared, 18 new)
+  shared: frames, ms, loop, settle identical; u and ms per track identical on every frame; mount label: astride mount free -> saddle · astrideStand mount free -> saddle · mountUp mount free -> saddle · mountDown mount free -> saddle · mountCab mount free -> saddle · mountCabDown mount free -> saddle
+  new in v9: helm_idle helm_walk oars_idle oars_row idle+buckets walk+buckets run+buckets board+buckets boardDown+buckets idle+tray walk+tray run+tray board+tray boardDown+tray idle+pot walk+pot board+pot boardDown+pot
+  rig 7 made carries and the three long-rod casts through opts (clip(anim, build, null, { carry | power })); v9 names the carries as clips and has no long-rod cast.
+  clip  rig 7 { anim, name, build, frames, ms, duration, loop, settle, mount, carry, power, rock, bones, parked, tracks } -> v9 { name, anim, carry, stance, build, frames, ms, duration, loop, settle, mount, pin, bones, tracks }  (removed power, rock, parked; added stance, pin)
+  track rig 7 { frame, u, ms, bones, face, tool } -> v9 { frame, u, ms, bones, face, tool }
+  bone  rig 7 { pos, rot, rotEuler } -> v9 { pos, rot, rotEuler }
+  face  rig 7 { lid, gaze, brow, mouth, eyesClosed } -> v9 { eyes, brows, mouth }  (removed lid, gaze, brow, eyesClosed; added eyes, brows)
+  tool  rig 7 { held, pitch, yaw, bend, advisory } -> v9 { held, kind, pitch, yaw, bend, len, advisory }  (removed —; added kind, len)
+  walk: bones whose local pos moves off rest: rig 7 37 (pelvis torso neck_tip head inseam_top inseam_bot hip_L hip_L_tip knee_L knee_L_tip ankle_L ankle_L_tip foot_L hip_R hip_R_tip knee_R knee_R_tip ankle_R ankle_R_tip foot_R shoulder_L shoulder_L_tip elbow_L elbow_L_tip wrist_L hand_L shoulder_R shoulder_R_tip elbow_R elbow_R_tip wrist_R hand_R tool_R tool_L carry_L carry_R carry_mid) · v9 2 (pelvis carry_mid)
+  walk: largest frame-to-frame turn of one bone: rig 7 178.3 deg (knee_R f2-3, a tube roll seam) · v9 30.3 deg (knee_L f3-4)
+
+MATERIALS  rig 7 per face: mat (a rig 6 material name), b, db. No material table in the export: ramps, gains and biases are rig 6 code (makeMats, SPAN, GAIN 3.0, BIAS, LN, BAYER).
+           v9 per face: mat, b, db (+ group, minT, side). shading.materials[mat] = { ramp, gain, bias, lo, hi, off } or { color, fixed:true }; shading = the globals (key, fleetKey, form, formMid, edge, keyline, keylineMix, cull, step, headSnap).
+  Fisher: rig 7 paints 12 (boot bootL brass collar hair over overD shirt skin sleeve sole stub); v9 paints 21 (boot bootL brass brow collar hair hairD ink ink2 iris lip mouth over overD shirt shirtD skin skinD sole stub white)
+  v9 shading.materials lists every material the rig defines, painted or not: 32 (24 ramp, 8 fixed).
+
+GOLDEN REPORT  rig 7: the export against rig 6's own meshes, vertex by vertex: 10 builds x 56 rows, 4620 frames, tol 0.0001 m, worst 4.02e-13 m (fisher), all ok: true
+    keys: { rig, rig6, date, tol, builds } · builds[] { build, bones, faces, frames, worst, worstAt, ok, rows } · rows[] { label, frames, max, parked, ok, err }
+  v9: runChecks, 20 checks x 10 presets, 190 / 190 passed; no reference rig. The round trip (clip -> quaternion -> FK -> skin = the solver) is rig 7's rule on v9 itself:
+    fisher 8.92e-16 m · ginny 7.53e-16 m · skipper 7.04e-16 m · nan 8.95e-16 m · deckboss 8.96e-16 m · packer 8.95e-16 m · cutter 7.03e-16 m · hand 7.11e-16 m · boy 6.87e-16 m · girl 7.04e-16 m
+    checks: timing, skeleton, skin, roundtrip, continuity, rock, loops, handoffs, contacts, travel, cell, face, hair, gaze, look, tones, light, budget (report), sidecar, heights
+    keys: { schema, rig, revision, derivedFromRigSha256, posesDerivedFromRigSha256, run, summary, builds } · builds.<preset> { label, passed, of, reported, ms, checks } · checks[] { id, title, ms, pass, value, detail, gate }
+
+SIZES (JSON bytes)          rig 7        v9
+  bones                     45           28
+  faces                     711          508
+  tris                      1570         1060
+  verts                     2992         2076
+  clips                     35           53
+  frames                    308          438
+  skeletonBytes             7142         4833
+  skeletonWorldBytes        6424         0
+  bindMeshBytes             241028       149377
+  clipBytes                 2206905      1832167
+  fileBytes                 2463402      1996964
+
+SAMPLES  cut from builds/fisher.v9.json: samples/fisher.skeleton.v9.json byte-identical to the cut · samples/fisher.walk.clip.v9.json byte-identical to the cut
+  fresh skeleton from the rig against the committed file: 504 numbers, 0 differ, largest 0.00e+0, same structure
+  fresh walk     from the rig against the committed file: 2267 numbers, 0 differ, largest 0.00e+0, same structure
+
+OK — no problems.

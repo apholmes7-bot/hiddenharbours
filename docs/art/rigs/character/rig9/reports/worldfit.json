@@ -1,0 +1,529 @@
+{
+  "tool": "check-worldfit",
+  "rig": "02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144",
+  "poses": "42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07",
+  "fitModule": "b793707e8e42da8dbdeb45cb2a519d9bc3099e585909f1d59362aa4723251c6c",
+  "ok": true,
+  "problems": [],
+  "dataFile": "data/world-fit.v9.json",
+  "dataIdentical": true,
+  "bodies": 500,
+  "summary": {
+    "rail": {
+      "label": "boarding rail height",
+      "clips": [
+        "board",
+        "boardDown"
+      ],
+      "presetsShort": [
+        {
+          "preset": "boy",
+          "short_mm": 26,
+          "at": "board f3 footR"
+        },
+        {
+          "preset": "girl",
+          "short_mm": 35,
+          "at": "board f3 footR"
+        }
+      ],
+      "creatorShort": 0,
+      "childrenShort": 80,
+      "param": "railZ",
+      "default": 0.55,
+      "fitsAll_creator": [
+        [
+          0.549,
+          0.724
+        ]
+      ],
+      "fitsAll_children": [],
+      "fitsAll_presets": []
+    },
+    "ladder": {
+      "label": "ladder rung spacing",
+      "clips": [
+        "ladderDown"
+      ],
+      "presetsShort": [
+        {
+          "preset": "cutter",
+          "short_mm": 27,
+          "at": "ladderDown f0 handL"
+        },
+        {
+          "preset": "boy",
+          "short_mm": 221,
+          "at": "ladderDown f0 handL"
+        },
+        {
+          "preset": "girl",
+          "short_mm": 236,
+          "at": "ladderDown f0 handL"
+        }
+      ],
+      "creatorShort": 50,
+      "childrenShort": 125,
+      "param": "rung",
+      "default": 0.3,
+      "fitsAll_creator": [
+        [
+          0.211,
+          0.273
+        ]
+      ],
+      "fitsAll_children": [],
+      "fitsAll_presets": []
+    },
+    "warp": {
+      "label": "hauler (warp) height",
+      "clips": [
+        "hauler"
+      ],
+      "presetsShort": [
+        {
+          "preset": "nan",
+          "short_mm": 42,
+          "at": "hauler f4 handL"
+        },
+        {
+          "preset": "cutter",
+          "short_mm": 69,
+          "at": "hauler f4 handL"
+        },
+        {
+          "preset": "boy",
+          "short_mm": 210,
+          "at": "hauler f4 handL"
+        },
+        {
+          "preset": "girl",
+          "short_mm": 215,
+          "at": "hauler f4 handL"
+        }
+      ],
+      "creatorShort": 188,
+      "childrenShort": 125,
+      "param": "workZ",
+      "default": 1.05,
+      "fitsAll_creator": [],
+      "fitsAll_children": [],
+      "fitsAll_presets": [],
+      "sheaveScale_fitsAll_creator": [
+        [
+          0.4,
+          0.632
+        ]
+      ],
+      "sheaveScale_fitsAll_children": [],
+      "sheaveScale_fitsAll_presets": []
+    },
+    "bench": {
+      "label": "work bench height",
+      "clips": [
+        "bench"
+      ],
+      "presetsShort": [
+        {
+          "preset": "boy",
+          "short_mm": 114,
+          "at": "bench f2 handR"
+        },
+        {
+          "preset": "girl",
+          "short_mm": 122,
+          "at": "bench f2 handR"
+        }
+      ],
+      "creatorShort": 8,
+      "childrenShort": 125,
+      "param": "workZ",
+      "default": 0.885,
+      "fitsAll_creator": [
+        [
+          0.643,
+          0.853
+        ]
+      ],
+      "fitsAll_children": [],
+      "fitsAll_presets": [
+        [
+          0.643,
+          0.65
+        ]
+      ]
+    },
+    "knife": {
+      "label": "cutting surface height",
+      "clips": [
+        "chop"
+      ],
+      "presetsShort": [
+        {
+          "preset": "boy",
+          "short_mm": 127,
+          "at": "chop f5 handR"
+        },
+        {
+          "preset": "girl",
+          "short_mm": 139,
+          "at": "chop f5 handR"
+        }
+      ],
+      "creatorShort": 5,
+      "childrenShort": 125,
+      "param": "workZ",
+      "default": 0.775,
+      "fitsAll_creator": [
+        [
+          0.598,
+          0.76
+        ]
+      ],
+      "fitsAll_children": [],
+      "fitsAll_presets": [
+        [
+          0.598,
+          0.6
+        ]
+      ]
+    },
+    "load": {
+      "label": "lift, place and toss height",
+      "clips": [
+        "lift",
+        "place",
+        "toss"
+      ],
+      "presetsShort": [
+        {
+          "preset": "boy",
+          "short_mm": 59,
+          "at": "place f3 handR"
+        },
+        {
+          "preset": "girl",
+          "short_mm": 73,
+          "at": "place f3 handR"
+        }
+      ],
+      "creatorShort": 0,
+      "childrenShort": 110,
+      "param": "workZ",
+      "default": 0.93,
+      "fitsAll_creator": [
+        [
+          0.718,
+          0.978
+        ]
+      ],
+      "fitsAll_children": [],
+      "fitsAll_presets": []
+    },
+    "rest": {
+      "label": "tool rest height (hand-over)",
+      "clips": [
+        "reach"
+      ],
+      "presetsShort": [],
+      "creatorShort": 0,
+      "childrenShort": 22,
+      "param": "lift",
+      "default": 0,
+      "fitsAll_creator": [
+        [
+          0,
+          1.012
+        ]
+      ],
+      "fitsAll_children": [
+        [
+          0.013,
+          0.687
+        ]
+      ],
+      "fitsAll_presets": [
+        [
+          0,
+          0.854
+        ]
+      ]
+    },
+    "wheel": {
+      "label": "cab seat and wheel",
+      "clips": [
+        "drive"
+      ],
+      "presetsShort": [
+        {
+          "preset": "nan",
+          "short_mm": 36,
+          "at": "drive f4 footR"
+        },
+        {
+          "preset": "cutter",
+          "short_mm": 52,
+          "at": "drive f4 footR"
+        },
+        {
+          "preset": "boy",
+          "short_mm": 163,
+          "at": "drive f4 footR"
+        },
+        {
+          "preset": "girl",
+          "short_mm": 169,
+          "at": "drive f4 footR"
+        }
+      ],
+      "creatorShort": 170,
+      "childrenShort": 125,
+      "seatZ_fitsAll_creator": [
+        [
+          0.25,
+          0.291
+        ]
+      ],
+      "wheelMoved_creator": 0,
+      "seatZ_fitsAll_children": [],
+      "wheelMoved_children": 55,
+      "seatZ_fitsAll_presets": [],
+      "wheelMoved_presets": 0
+    },
+    "saddle": {
+      "label": "saddle: seat, grips and pegs",
+      "clips": [
+        "astride",
+        "astrideStand"
+      ],
+      "presetsShort": [
+        {
+          "preset": "fisher",
+          "short_mm": 59,
+          "at": "astrideStand f1 footL"
+        },
+        {
+          "preset": "ginny",
+          "short_mm": 76,
+          "at": "astrideStand f1 footL"
+        },
+        {
+          "preset": "skipper",
+          "short_mm": 63,
+          "at": "astrideStand f1 footL"
+        },
+        {
+          "preset": "nan",
+          "short_mm": 129,
+          "at": "astrideStand f1 footL"
+        },
+        {
+          "preset": "packer",
+          "short_mm": 80,
+          "at": "astrideStand f1 footL"
+        },
+        {
+          "preset": "cutter",
+          "short_mm": 148,
+          "at": "astrideStand f1 footL"
+        },
+        {
+          "preset": "hand",
+          "short_mm": 88,
+          "at": "astrideStand f1 footL"
+        },
+        {
+          "preset": "boy",
+          "short_mm": 261,
+          "at": "astrideStand f1 footL"
+        },
+        {
+          "preset": "girl",
+          "short_mm": 267,
+          "at": "astrideStand f1 footL"
+        }
+      ],
+      "creatorShort": 373,
+      "childrenShort": 125,
+      "pegZ_fitsAll_creator": [
+        [
+          0.612,
+          0.9
+        ]
+      ],
+      "gripY_fitsAll_creator": [
+        [
+          -0.084,
+          0.228
+        ]
+      ],
+      "scale_fitsAll_creator": [
+        [
+          0.34,
+          0.692
+        ]
+      ],
+      "pegZ_fitsAll_children": [
+        [
+          0.794,
+          0.9
+        ]
+      ],
+      "gripY_fitsAll_children": [],
+      "scale_fitsAll_children": [],
+      "pegZ_fitsAll_presets": [
+        [
+          0.715,
+          0.9
+        ]
+      ],
+      "gripY_fitsAll_presets": [
+        [
+          -0.017,
+          0.145
+        ]
+      ],
+      "scale_fitsAll_presets": [
+        [
+          0.384,
+          0.523
+        ]
+      ]
+    },
+    "mount": {
+      "label": "mount and dismount",
+      "clips": [
+        "mountUp",
+        "mountDown",
+        "mountCab",
+        "mountCabDown"
+      ],
+      "presetsShort": [
+        {
+          "preset": "fisher",
+          "short_mm": 125,
+          "at": "mountUp f8 footR"
+        },
+        {
+          "preset": "ginny",
+          "short_mm": 154,
+          "at": "mountUp f8 footR"
+        },
+        {
+          "preset": "skipper",
+          "short_mm": 132,
+          "at": "mountUp f8 footR"
+        },
+        {
+          "preset": "nan",
+          "short_mm": 254,
+          "at": "mountUp f8 footR"
+        },
+        {
+          "preset": "deckboss",
+          "short_mm": 43,
+          "at": "mountUp f14 footL"
+        },
+        {
+          "preset": "packer",
+          "short_mm": 164,
+          "at": "mountUp f8 footR"
+        },
+        {
+          "preset": "cutter",
+          "short_mm": 283,
+          "at": "mountUp f8 footR"
+        },
+        {
+          "preset": "hand",
+          "short_mm": 172,
+          "at": "mountUp f8 footR"
+        },
+        {
+          "preset": "boy",
+          "short_mm": 499,
+          "at": "mountUp f8 footR"
+        },
+        {
+          "preset": "girl",
+          "short_mm": 509,
+          "at": "mountUp f8 footR"
+        }
+      ],
+      "creatorShort": 375,
+      "childrenShort": 125,
+      "scale_fitsAll_creator": [
+        [
+          0.3,
+          0.493
+        ]
+      ],
+      "saddleFit_creator": "375 / 375",
+      "short_mm_creator": [
+        43,
+        341
+      ],
+      "scale_fitsAll_children": [],
+      "saddleFit_children": "50 / 125",
+      "short_mm_children": [
+        400,
+        620
+      ],
+      "scale_fitsAll_presets": [
+        [
+          0.309,
+          0.384
+        ]
+      ],
+      "saddleFit_presets": "8 / 10",
+      "short_mm_presets": [
+        43,
+        509
+      ]
+    },
+    "collider": {
+      "presets": {
+        "collision_radius_m": [
+          0.144,
+          0.229
+        ],
+        "footprint_x_m": [
+          0.288,
+          0.458
+        ],
+        "footprint_y_m": [
+          0.321,
+          0.37
+        ]
+      },
+      "creator": {
+        "collision_radius_m": [
+          0.141,
+          0.229
+        ],
+        "footprint_x_m": [
+          0.283,
+          0.458
+        ],
+        "footprint_y_m": [
+          0.338,
+          0.37
+        ]
+      },
+      "children": {
+        "collision_radius_m": [
+          0.123,
+          0.182
+        ],
+        "footprint_x_m": [
+          0.246,
+          0.363
+        ],
+        "footprint_y_m": [
+          0.31,
+          0.332
+        ]
+      }
+    }
+  }
+}

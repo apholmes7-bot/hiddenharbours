@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+<script src="Art/characterIsoRig9.js"></script>
+<script src="Art/characterIsoRig9.poses.js"></script>
+<script src="Art/characterIsoRig9.checks.js"></script>
+<script src="Art/_sidecarExport.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;background:#0b1216;}
+  a{color:#7fd6c9;} a:hover{color:#a8e6db;}
+  canvas{display:block;image-rendering:pixelated;}
+  select,button{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;background:#111d23;color:#c9d6d4;border:1px solid #22343c;padding:4px 7px;border-radius:0;cursor:pointer;}
+  select:hover,button:hover{border-color:#7fd6c9;}
+  button:disabled{opacity:0.45;cursor:default;border-color:#22343c;}
+  input[type=range]{accent-color:#7fd6c9;width:110px;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:34px 26px 80px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:1180px;display:flex;flex-direction:column;gap:9px;">
+    <div style="font-size:10px;letter-spacing:0.22em;color:#5d6c71;">CHARACTERISO9 · PASS 9.1 · PARAMETRIC · TEN PRESETS · THE WARDROBE</div>
+    <h1 style="font-family:'IM Fell English SC',Georgia,serif;font-size:34px;font-weight:400;color:#e4ece9;margin:0;letter-spacing:0.01em;">One rig, the whole cast</h1>
+    <p style="max-width:80ch;font-size:12px;line-height:1.65;color:#8d9a9d;margin:0;text-wrap:pretty;">Pass 9 builds any character from a build: body shape, age, height and weight steps, head shape, skin, hair, beard, eyes, garment, colours and hat. Every build is the same 28 bones and the same 53 clips, and the golden suite runs per build. Pick a preset below; the <a href="Character Creator.dc.html">character creator</a> writes builds in the same format.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">
+      <sc-for list="{{ castList }}" as="p" hint-placeholder-count="10">
+        <button onClick="{{ p.pick }}" style="{{ p.style }}">{{ p.label }}</button>
+      </sc-for>
+    </div>
+    <div style="font-size:11px;line-height:1.6;color:#6f7e83;">{{ buildNote }}</div>
+  </div>
+
+  <div style="width:100%;max-width:1180px;display:flex;flex-wrap:wrap;gap:9px;align-items:center;padding:11px 13px;background:#0f1a20;border:1px solid #1b2a32;">
+    <span style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;">CLIP</span>
+    <select value="{{ clip }}" onChange="{{ setClip }}" style="max-width:240px;">
+      <sc-for list="{{ clipList }}" as="c" hint-placeholder-count="12"><option value="{{ c.k }}">{{ c.label }}</option></sc-for>
+    </select>
+    <span style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;margin-left:6px;">DIR</span>
+    <div style="display:flex;align-items:center;gap:4px;">
+      <button onClick="{{ dirPrev }}" style="padding:4px 8px;">&#9664;</button>
+      <span style="font-size:11px;color:#c9d6d4;min-width:74px;text-align:center;">{{ dirLabel }}</span>
+      <button onClick="{{ dirNext }}" style="padding:4px 8px;">&#9654;</button>
+    </div>
+    <label style="display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:0.12em;color:#5d6c71;">FREE HEADING <input type="range" min="0" max="359" value="{{ yaw }}" onInput="{{ setYaw }}"></input></label>
+    <button onClick="{{ togglePlay }}">{{ playLabel }}</button>
+    <button onClick="{{ stepFrame }}">STEP</button>
+    <div style="flex:1;"></div>
+    <button onClick="{{ toggleWire }}" style="{{ wireStyle }}">WIRE</button>
+    <button onClick="{{ toggleBones }}" style="{{ bonesStyle }}">BONES</button>
+    <button onClick="{{ togglePins }}" style="{{ pinsStyle }}">PINS</button>
+    <button onClick="{{ toggleProps }}" style="{{ propsStyle }}">PROPS</button>
+  </div>
+
+  <div style="width:100%;max-width:1180px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:9px 13px;background:#0f1a20;border:1px solid #1b2a32;font-size:10px;letter-spacing:0.12em;color:#5d6c71;">
+    <span>DECK ROCK</span>
+    <label style="display:flex;align-items:center;gap:6px;">ROLL <input type="range" min="-15" max="15" step="1" value="{{ roll }}" onInput="{{ setRoll }}"></input><span style="color:#c9d6d4;min-width:30px;">{{ roll }}°</span></label>
+    <label style="display:flex;align-items:center;gap:6px;">PITCH <input type="range" min="-15" max="15" step="1" value="{{ pitch }}" onInput="{{ setPitch }}"></input><span style="color:#c9d6d4;min-width:30px;">{{ pitch }}°</span></label>
+    <label style="display:flex;align-items:center;gap:6px;">COUNTER <input type="range" min="0" max="1" step="0.05" value="{{ counter }}" onInput="{{ setCounter }}"></input><span style="color:#c9d6d4;min-width:30px;">{{ counter }}</span></label>
+    <span style="color:#6f7e83;letter-spacing:0.04em;text-transform:none;">{{ rockNote }}</span>
+  </div>
+
+  <div style="width:100%;max-width:1180px;display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:18px;align-items:start;">
+    <div style="background:#0f1a20;border:1px solid #1b2a32;padding:13px;display:flex;flex-direction:column;gap:9px;">
+      <div style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;">GAME SCALE ×6 · {{ heroLabel }}</div>
+      <canvas ref="{{ heroRef }}" width="384" height="552" style="width:100%;height:auto;"></canvas>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:11px;line-height:1.5;color:#8d9a9d;">
+        <div style="color:#5d6c71;">frame</div><div><span style="color:#c9d6d4;">{{ frame }}</span> / {{ frames }} · u {{ uStr }} · {{ ms }} ms</div>
+        <div style="color:#5d6c71;">mount</div><div style="color:#c9d6d4;">{{ mount }}</div>
+        <div style="color:#5d6c71;">face</div><div style="color:#c9d6d4;">{{ faceStr }}</div>
+        <div style="color:#5d6c71;">tool</div><div>{{ toolStr }}</div>
+        <div style="color:#5d6c71;">contract</div><div style="text-wrap:pretty;">{{ contractStr }}</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:18px;min-width:0;">
+      <div style="background:#0f1a20;border:1px solid #1b2a32;padding:13px;display:flex;flex-direction:column;gap:9px;">
+        <div style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;">THE EIGHT BAKED FACINGS · 64 × 92 CELL · ×2</div>
+        <canvas ref="{{ ringRef }}" width="1024" height="184" style="width:100%;height:auto;"></canvas>
+        <div style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));font-size:10px;letter-spacing:0.12em;text-align:center;">
+          <sc-for list="{{ ringLabels }}" as="d" hint-placeholder-count="8"><div style="color:{{ d.color }};">{{ d.name }}</div></sc-for>
+        </div>
+      </div>
+      <div style="background:#0f1a20;border:1px solid #1b2a32;padding:13px;display:flex;flex-direction:column;gap:9px;">
+        <div style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;">FACE GROUPS · S · 32 PX/M ×6 · one per slot is on in any frame</div>
+        <canvas ref="{{ faceRef }}" width="1056" height="108" style="width:100%;height:auto;"></canvas>
+        <div style="display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:2px;font-size:9.5px;line-height:1.3;text-align:center;color:#8d9a9d;">
+          <sc-for list="{{ faceLabels }}" as="g" hint-placeholder-count="11"><div style="overflow-wrap:anywhere;">{{ g.name }}</div></sc-for>
+        </div>
+        <div style="font-size:11px;line-height:1.6;color:#8d9a9d;text-wrap:pretty;">Eyes are 1 × 2 px marks placed on pixel centres once the head is snapped. A second mark on each side plane carries the eye in profile and only draws when that plane faces the camera. The game can switch any slot at runtime, for example to blink.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1180px;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:18px;align-items:start;">
+    <div style="background:#0f1a20;border:1px solid #1b2a32;padding:13px;display:flex;flex-direction:column;gap:11px;">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:9px;">
+        <div style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;">GOLDEN CHECKS · {{ buildLabel }} · every clip, every frame</div>
+        <div style="flex:1;"></div>
+        <button onClick="{{ runChecks }}" disabled="{{ checksBusy }}" style="border-color:#2f6079;background:#122530;color:#7fd6c9;">RUN ALL</button>
+        <button onClick="{{ runCast }}" disabled="{{ checksBusy }}">RUN CAST</button>
+      </div>
+      <div style="font-size:11px;line-height:1.6;color:{{ checkColor }};">{{ checkSummary }}</div>
+      <sc-if value="{{ hasCast }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;"><sc-for list="{{ castRows }}" as="c" hint-placeholder-count="10"><div style="padding:6px 8px;background:#0c161b;font-size:10.5px;line-height:1.4;color:{{ c.color }};">{{ c.label }}<br></br>{{ c.value }}</div></sc-for></div></sc-if>
+      <div style="display:flex;flex-direction:column;gap:1px;">
+        <sc-for list="{{ checkRows }}" as="r" hint-placeholder-count="17">
+          <div style="display:grid;grid-template-columns:44px minmax(0,1fr) 150px;gap:10px;padding:7px 8px;background:#0c161b;align-items:baseline;">
+            <div style="font-size:10px;letter-spacing:0.1em;color:{{ r.color }};">{{ r.mark }}</div>
+            <div style="display:flex;flex-direction:column;gap:3px;min-width:0;">
+              <div style="font-size:11px;color:#c9d6d4;">{{ r.title }}</div>
+              <div style="font-size:10.5px;line-height:1.55;color:#7d8b8f;text-wrap:pretty;">{{ r.detail }}</div>
+            </div>
+            <div style="font-size:11px;color:{{ r.color }};text-align:right;">{{ r.value }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:18px;">
+      <div style="background:#0f1a20;border:1px solid #1b2a32;padding:13px;display:flex;flex-direction:column;gap:11px;">
+        <div style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;">SIDECARS · {{ buildLabel }} · one JSON each</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;">
+          <button onClick="{{ dlSkeleton }}">&#8595; skeleton</button>
+          <button onClick="{{ dlBind }}">&#8595; bind mesh</button>
+          <button onClick="{{ dlClips }}">&#8595; clips (53)</button>
+          <button onClick="{{ dlGameplay }}">&#8595; gameplay</button>
+          <button onClick="{{ dlSockets }}">&#8595; sockets</button>
+          <button onClick="{{ dlRock }}">&#8595; rock table</button>
+          <button onClick="{{ dlShading }}">&#8595; shading</button>
+          <button onClick="{{ dlAll }}" style="border-color:#2f6079;background:#122530;color:#7fd6c9;">&#8595; everything</button>
+        </div>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:11px;line-height:1.55;color:#8d9a9d;">
+          <div>skeleton</div><div><span style="color:#c9d6d4;">{{ sz.bones }}</span> bones · {{ sz.deform }} deform · every bind frame identity</div>
+          <div>bind mesh</div><div><span style="color:#c9d6d4;">{{ sz.tris }}</span> tris · {{ sz.faces }} faces · {{ sz.bindKB }} KB (over 1,000 is allowed since 9.2; rig 7: 1,570)</div>
+          <div>clips</div><div><span style="color:#c9d6d4;">{{ sz.clipCount }}</span> clips · {{ sz.frames }} frames (35 anims, 4 stances, 14 carries)</div>
+          <div>gameplay</div><div>hidden-harbours/character-gameplay@1 · every pin, every frame, metres · stamped with the rig and pose-library hashes</div>
+          <div>rock</div><div>3 bones · 147 rows · keyed on the rock alone</div>
+        </div>
+        <div style="border-top:1px solid #1b2a32;padding-top:9px;display:flex;flex-wrap:wrap;gap:7px;">
+          <a href="Art/characterIsoRig9.js" download="characterIsoRig9.js" style="font-size:10.5px;letter-spacing:0.08em;padding:7px 10px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-decoration:none;">&#8595; characterIsoRig9.js</a>
+          <a href="Art/characterIsoRig9.poses.js" download="characterIsoRig9.poses.js" style="font-size:10.5px;letter-spacing:0.08em;padding:7px 10px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-decoration:none;">&#8595; poses.js</a>
+          <a href="Art/characterIsoRig9.checks.js" download="characterIsoRig9.checks.js" style="font-size:10.5px;letter-spacing:0.08em;padding:7px 10px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-decoration:none;">&#8595; checks.js</a>
+          <a href="README.md" style="font-size:10.5px;letter-spacing:0.08em;padding:7px 10px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-decoration:none;">kit README</a>
+        </div>
+      </div>
+
+      <div style="background:#0f1a20;border:1px solid #1b2a32;padding:15px 16px;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:10px;letter-spacing:0.16em;color:#7fd6c9;">WHAT PASS 9 CHANGES</div>
+        <p style="font-size:12px;line-height:1.65;color:#8d9a9d;margin:0;text-wrap:pretty;"><span style="color:#c9d6d4;">The body is parametric.</span> Lengths come from age, the height step (one step is one pixel of crown) and the body-shape slider; girth comes from the weight step. The pose library writes body-relative targets through the build, so a grip at the Fisher's belt lands at every build's belt, while world contracts (rail, rung, bench, saddle, wheel) stay in world metres. Walk and run stride with the legs and report their own speed; the engine plays them at moveSpeed / speed_mps.</p>
+        <p style="font-size:12px;line-height:1.65;color:#8d9a9d;margin:0;text-wrap:pretty;"><span style="color:#c9d6d4;">The look, second pass.</span> Hair styles have silhouettes and keep off the front of the side plane, so E and W show a cheek, an eye and an ear. At the diagonals the far eye is drawn on the near eye's row. Eyes carry a pupil, an iris colour and a white. The yoke slopes into the collar instead of forming a bright shelf.</p>
+      </div>
+      <div style="background:#0f1a20;border:1px solid #1b2a32;padding:15px 16px;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:10px;letter-spacing:0.16em;color:#e0a35c;">REPORTED, NOT GATED</div>
+        <p style="font-size:12px;line-height:1.65;color:#8d9a9d;margin:0;text-wrap:pretty;"><span style="color:#c9d6d4;">World contracts sized for the Fisher.</span> On a build shorter than the Fisher, the default rung, bench, wheel, rail and saddle can be out of reach; the limb clamps and the sidecar reports the shortfall. <span style="color:#c9d6d4;">Cloth.</span> A skirt or apron that meets the ground in a crouch is reported; it folds in the engine. <span style="color:#c9d6d4;">Lying clips</span> on builds taller than the Fisher can reach the cell edge.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;keyline&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Facet pass&quot;},&quot;innerEdges&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Facet pass&quot;},&quot;ground&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;workbench&quot;,&quot;deck&quot;,&quot;wharf&quot;,&quot;sea&quot;],&quot;default&quot;:&quot;workbench&quot;,&quot;tsType&quot;:&quot;'workbench'|'deck'|'wharf'|'sea'&quot;,&quot;section&quot;:&quot;Stage&quot;}}">
+class Component extends DCLogic {
+  state = { build:'fisher', cast:null, clip:'walk', dir:3, yaw:135, free:false, frame:0, playing:true, wire:false, bones:false, pins:false, props:true,
+            roll:0, pitch:0, counter:1, checks:{ busy:false, rows:null, summary:'Not run yet. RUN ALL steps all seventeen checks over every clip and every frame for the selected build (about ten seconds). RUN CAST does all ten presets.', color:'#8d9a9d' } };
+  /* the runtime can mount the helmet scripts twice, async: a rig that re-runs after its pose library replaces the API
+     unposed and without CHECKS. Re-attach both to whichever API object is live, in order, once per object. */
+  C(){ const A = window.CharacterIso9; if(!A) return null; if(!A.posesLoaded || !A.CHECKS){ this._heal(A); return null; } return A; }
+  _heal(A){ if(A.__hhHeal) return; A.__hhHeal = true;
+    const add = (src, next) => { const s = document.createElement('script'); s.src = src; s.onload = () => { if(next) next(); this._watch(); }; document.head.appendChild(s); };
+    const checks = () => { const L = window.CharacterIso9; if(L && !L.CHECKS) add('Art/characterIsoRig9.checks.js'); };
+    if(!A.posesLoaded) add('Art/characterIsoRig9.poses.js', checks); else checks(); }
+  _watch(){ if(this._dead) return; const A = window.CharacterIso9, ok = !!(A && A.posesLoaded && A.CHECKS), sig = ok ? A : null;
+    if(sig !== this._api){ this._api = sig; if(ok){ this._ready = true; this.forceUpdate(); this._draw(); } } else if(!ok) this.C(); }
+  componentDidMount(){
+    this._last = performance.now(); this._acc = 0;
+    const tick = () => {
+      const C = this.C();
+      if(C && !this._ready){ this._ready = true; this.forceUpdate(); this._draw(); }
+      if(C && this.state.playing){ const t = performance.now(); this._acc += t - this._last; this._last = t;
+        const A = C.ANIMS[C.clipDef(this.state.clip).anim];
+        if(this._acc >= A.ms){ this._acc = 0; this.setState({ frame:(this.state.frame+1) % A.frames }); } }
+      else this._last = performance.now();
+      this._raf = requestAnimationFrame(tick);
+    };
+    this._raf = requestAnimationFrame(tick);
+    /* rAF does not run in a background tab; poll so the menus and first frame still appear */
+    const poll = () => { if(this._dead || this._ready) return; if(this.C()){ this._ready = true; this.forceUpdate(); this._draw(); return; } this._poll = setTimeout(poll, 60); };
+    this._poll = setTimeout(poll, 60);
+    this._wd = setInterval(() => this._watch(), 150);
+  }
+  componentWillUnmount(){ cancelAnimationFrame(this._raf); clearTimeout(this._poll); clearInterval(this._wd); this._dead = true; }
+  componentDidUpdate(){ this._draw(); }
+  _ground(){ const g = this.props.ground || 'workbench'; return { workbench:'#101c22', deck:'#4d3d2b', wharf:'#3b4a53', sea:'#123034' }[g] || '#101c22'; }
+  _opts(extra){ const st = this.state; return Object.assign({ build:st.build, clip:st.clip, frame:st.frame, roll:st.roll, pitch:st.pitch, counter:st.counter,
+    keyline:this.props.keyline !== false, edges:this.props.innerEdges !== false }, extra||{}); }
+  _toCanvas(R, rod){ const c = document.createElement('canvas'); c.width = R.W; c.height = R.H; const g = c.getContext('2d'), id = g.createImageData(R.W, R.H);
+    id.data.set(R.rgba);
+    if(rod) for(const p of rod.px){ const i = (p[1]*R.W + p[0])*4; if(p[0]<0||p[1]<0||p[0]>=R.W||p[1]>=R.H) continue; if(rod.behind && R.rgba[i+3]) continue;
+      id.data[i]=p[2][0]; id.data[i+1]=p[2][1]; id.data[i+2]=p[2][2]; id.data[i+3]=255; }
+    g.putImageData(id, 0, 0); return c; }
+  /* a 1 px prop hint for held tools, so the fishing and digging clips read here; the real rod is RodIso's */
+  _rod(C, R, cam){ const S = R.S, I = S.I; if(!this.state.props || !I.tool || !I.tool.held) return null;
+    const ix = S.B.sk.ix, W = S.W, pt = (id) => C.proj(W[ix[id]].p, cam);
+    const tipOf = () => { const w = W[ix.tool_R_2], len = I.tool.len || 1.25, d = [w.R[3], w.R[4], w.R[5]]; return C.proj([w.p[0]+d[0]*0.30*len, w.p[1]+d[1]*0.30*len, w.p[2]+d[2]*0.30*len], cam); };
+    const kind = I.tool.kind, col = kind==='shovel' ? [164,138,96] : kind==='knife' ? [190,198,200] : [65,102,172];
+    let chain = kind==='shovel' ? [pt('hand_L'), pt('tool_R'), (()=>{ const w=W[ix.tool_R], d=[w.R[3],w.R[4],w.R[5]]; return C.proj([w.p[0]+d[0]*0.45,w.p[1]+d[1]*0.45,w.p[2]+d[2]*0.45], cam); })()]
+              : kind==='knife' ? [pt('tool_R'), (()=>{ const w=W[ix.tool_R], d=[w.R[3],w.R[4],w.R[5]]; return C.proj([w.p[0]+d[0]*0.22,w.p[1]+d[1]*0.22,w.p[2]+d[2]*0.22], cam); })()]
+              : [pt('tool_R'), pt('tool_R_1'), pt('tool_R_2'), tipOf()];
+    if(kind!=='shovel' && kind!=='knife'){ const w=W[ix.tool_R], d=[w.R[3],w.R[4],w.R[5]]; chain.unshift(C.proj([w.p[0]-d[0]*0.16,w.p[1]-d[1]*0.16,w.p[2]-d[2]*0.16], cam)); }
+    const px = [];
+    for(let i=0;i+1<chain.length;i++){ let x0=Math.floor(chain[i].sx), y0=Math.floor(chain[i].sy); const x1=Math.floor(chain[i+1].sx), y1=Math.floor(chain[i+1].sy);
+      const dx=Math.abs(x1-x0), dy=-Math.abs(y1-y0), sx=x0<x1?1:-1, sy=y0<y1?1:-1; let err=dx+dy, n=0;
+      while(n++<400){ px.push([x0,y0,col]); if(x0===x1&&y0===y1) break; const e2=2*err; if(e2>=dy){ err+=dy; x0+=sx; } if(e2<=dx){ err+=dx; y0+=sy; } } }
+    const yaw = ((cam.yawDeg % 360)+360)%360; return { px, behind: yaw>=292.5 || yaw<67.5 }; }
+  _draw(){
+    const C = this.C(); if(!C) return; const st = this.state;
+    const hero = this._hero, ring = this._ring, fc = this._faces; if(!hero) return;
+    const yaw = st.free ? st.yaw : st.dir*45;
+    const R = C.render(this._opts({ yaw })), cam = Object.assign(C.camOf({ yaw, roll:st.roll, pitch:st.pitch }), { yawDeg:yaw });
+    this._last_R = R;
+    const z = 6, g = hero.getContext('2d'); g.imageSmoothingEnabled = false;
+    g.fillStyle = this._ground(); g.fillRect(0,0,hero.width,hero.height);
+    g.fillStyle = 'rgba(0,0,0,0.18)'; g.fillRect(0, C.pivot.y*z, hero.width, 1);
+    g.drawImage(this._toCanvas(R, this._rod(C, R, cam)), 0, 0, R.W*z, R.H*z);
+    const P = (p) => { const q = C.proj(p, cam); return [q.sx*z, q.sy*z]; };
+    if(st.wire){ g.save(); g.strokeStyle = 'rgba(127,214,201,0.42)'; g.lineWidth = 1;
+      for(const f of R.faces){ const Q = f.v.map(p=>C.proj(p,cam)); let nx=0,ny=0,nz=0; for(let i=0;i<Q.length;i++){ const a=Q[i], c=Q[(i+1)%Q.length]; nx+=(a.yr-c.yr)*(a.zr+c.zr); ny+=(a.zr-c.zr)*(a.xr+c.xr); nz+=(a.xr-c.xr)*(a.yr+c.yr); }
+        if(-ny*cam.ce+nz*cam.se <= 0) continue; g.beginPath(); Q.forEach((q,i)=>{ const x=q.sx*z, y=q.sy*z; if(i) g.lineTo(x,y); else g.moveTo(x,y); }); g.closePath(); g.stroke(); }
+      g.restore(); }
+    if(st.bones){ const S = R.S, bn = S.B.sk.bones; g.save(); g.lineWidth = 1.5;
+      bn.forEach((b,i)=>{ if(b.parent<1) return; const a = P(S.W[b.parent].p), c = P(S.W[i].p);
+        g.setLineDash(b.kind==='socket' ? [3,3] : []); g.strokeStyle = b.kind==='socket' ? 'rgba(160,172,176,0.7)' : 'rgba(127,214,201,0.95)';
+        g.beginPath(); g.moveTo(a[0],a[1]); g.lineTo(c[0],c[1]); g.stroke(); });
+      g.setLineDash([]); bn.forEach((b,i)=>{ if(i===0) return; const c = P(S.W[i].p); g.fillStyle = b.kind==='socket' ? '#a0acb0' : '#7fd6c9'; g.fillRect(c[0]-2, c[1]-2, 4, 4); });
+      g.restore(); }
+    if(st.pins){ const pins = C.pinsOf(R.S); g.save(); g.lineWidth = 1.5; g.strokeStyle = '#e0a35c';
+      const cross = (p, big) => { const c = P(p), r = big ? 6 : 4; g.beginPath(); g.moveTo(c[0]-r,c[1]); g.lineTo(c[0]+r,c[1]); g.moveTo(c[0],c[1]-r); g.lineTo(c[0],c[1]+r); g.stroke(); };
+      for(const k of ['handL','handR','footL','footR','hip','head']) cross(pins[k]);
+      const extra = []; const sec = pins.board||pins.work||pins.wheel||pins.saddle||pins.rest||null;
+      if(pins.board && pins.board.rail) extra.push(pins.board.rail); if(pins.work && pins.work.sheave) extra.push(pins.work.sheave); if(pins.work && pins.work.item) extra.push(pins.work.item);
+      if(pins.work && pins.work.mid) extra.push(pins.work.mid); if(pins.wheel) extra.push(pins.wheel.wheelMid); if(pins.rest) extra.push(pins.rest.want);
+      if(pins.saddle) extra.push(pins.saddle.seat, pins.saddle.gripL, pins.saddle.gripR, pins.saddle.pegL, pins.saddle.pegR);
+      g.strokeStyle = '#f2cf6a'; extra.filter(Boolean).forEach(p=>cross(p, true)); g.restore(); }
+    if(ring){ const r = ring.getContext('2d'), zz = 2; r.imageSmoothingEnabled = false; r.fillStyle = '#0b1216'; r.fillRect(0,0,ring.width,ring.height);
+      for(let d=0; d<8; d++){ const Rd = C.render(this._opts({ dir:d })), camd = Object.assign(C.camOf({ dir:d, roll:st.roll, pitch:st.pitch }), { yawDeg:d*45 });
+        const x0 = d*128; r.fillStyle = this._ground(); r.fillRect(x0+1, 0, 126, 184);
+        r.drawImage(this._toCanvas(Rd, this._rod(C, Rd, camd)), x0, 0, Rd.W*zz, Rd.H*zz);
+        if(!st.free && d===st.dir){ r.fillStyle = '#7fd6c9'; r.fillRect(x0+1, 182, 126, 2); } } }
+    if(fc){ const f = fc.getContext('2d'); f.imageSmoothingEnabled = false; f.fillStyle = '#0b1216'; f.fillRect(0,0,fc.width,fc.height);
+      if(!this._faceTiles || this._faceKey !== st.build){ this._faceKey = st.build; const S = C.evalClip('idle', 0, st.build); S.B = C.buildOf(st.build); this._faceY = Math.round(C.pivot.y - (S.B.D.headZ + S.B.D.crown[2]) * Math.cos(C.ELEV*Math.PI/180) * C.PX) - 4;
+        this._faceTiles = C.GROUP_ORDER.map(gname => { const [slot,state] = gname.split('.'), face = { eyes:'open', brows:'flat', mouth:'flat' }; face[slot] = state;
+          const Rf = C.paintSolved(S, S.B, { dir:4, face, keyline:this.props.keyline !== false, edges:this.props.innerEdges !== false }); return { gname, c:this._toCanvas(Rf) }; }); }
+      this._faceTiles.forEach((t,i) => { const x0 = i*96; f.fillStyle = this._ground(); f.fillRect(x0+2, 0, 92, 108);
+        f.save(); f.beginPath(); f.rect(x0+2, 0, 92, 108); f.clip(); f.drawImage(t.c, 24, this._faceY, 16, 18, x0, 0, 96, 108); f.restore(); }); }
+  }
+  _runChecks(){ const C = this.C(); if(!C || this.state.checks.busy) return;
+    const B = C.buildOf(this.state.build), list = C.CHECKS.slice(), rows = list.map(c=>({ id:c.id, title:c.title, detail:'waiting…', value:'', mark:'·', color:'#5d6c71' }));
+    let i = 0, it = null, t0 = performance.now();
+    this.setState({ checks:{ busy:true, rows, summary:'running…', color:'#8d9a9d' } });
+    const step = () => { if(this._dead) return; const until = performance.now() + 14;
+      while(i < list.length && performance.now() < until){ if(!it){ it = list[i].run(B); rows[i] = Object.assign({}, rows[i], { detail:'running…', color:'#8d9a9d' }); }
+        let x; try { x = it.next(); } catch(e){ x = { done:true, value:{ pass:false, value:'error', detail:String(e && e.message || e) } }; }
+        if(x.done){ const v = x.value; rows[i] = { id:list[i].id, title:list[i].title, detail:v.detail, value:v.value, mark:v.pass ? 'PASS' : list[i].gate===false ? 'NOTE' : 'FAIL', color:v.pass ? '#7fd6c9' : list[i].gate===false ? '#8d9a9d' : '#e0a35c' }; i++; it = null; } }
+      const done = i >= list.length, passed = rows.filter(r=>r.mark==='PASS'||r.mark==='NOTE').length;
+      this.setState({ checks:{ busy:!done, rows:rows.slice(), color: done ? (passed===rows.length ? '#7fd6c9' : '#e0a35c') : '#8d9a9d',
+        summary: done ? (passed===rows.length ? 'PASS — ' : (rows.length-passed)+' FAILED — ')+passed+' of '+rows.length+' checks · '+((performance.now()-t0)/1000).toFixed(1)+' s' : 'running… '+i+' / '+list.length } });
+      if(!done) setTimeout(step, 0); };
+    setTimeout(step, 30); }
+  _runCast(){ const C = this.C(); if(!C || this.state.checks.busy) return;
+    const cast = C.CAST.slice(), rows = cast.map(k=>({ key:k, label:C.BUILDS[k].label, value:'waiting', color:'#5d6c71' })); let bi = 0, ci = 0, it = null, fails = 0, t0 = performance.now(), B = null;
+    this.setState({ cast:rows, checks:Object.assign({}, this.state.checks, { busy:true, summary:'running the cast…', color:'#8d9a9d' }) });
+    const step = () => { if(this._dead) return; const until = performance.now() + 14;
+      while(bi < cast.length && performance.now() < until){ if(!B){ B = C.buildOf(cast[bi]); ci = 0; fails = 0; rows[bi] = Object.assign({}, rows[bi], { value:'running…', color:'#8d9a9d' }); }
+        if(!it) it = C.CHECKS[ci].run(B); let x; try { x = it.next(); } catch(e){ x = { done:true, value:{ pass:false } }; }
+        if(x.done){ if(!x.value.pass && C.CHECKS[ci].gate!==false) fails++; it = null; ci++; if(ci >= C.CHECKS.length){ rows[bi] = Object.assign({}, rows[bi], { value: fails ? fails+' FAILED' : 'PASS '+C.CHECKS.filter(c=>c.gate!==false).length+' / '+C.CHECKS.filter(c=>c.gate!==false).length, color: fails ? '#e0a35c' : '#7fd6c9' }); bi++; B = null; } } }
+      const done = bi >= cast.length, bad = rows.filter(r=>r.color==='#e0a35c').length;
+      this.setState({ cast:rows.slice(), checks:Object.assign({}, this.state.checks, { busy:!done, color: done ? (bad ? '#e0a35c' : '#7fd6c9') : '#8d9a9d',
+        summary: done ? (bad ? bad+' of 10 presets have a failing check' : 'PASS — all ten presets, every gated check (budget is a report)')+' · '+((performance.now()-t0)/1000).toFixed(1)+' s' : 'running the cast… '+bi+' / 10' }) });
+      if(!done) setTimeout(step, 0); };
+    setTimeout(step, 30); }
+  _dl(name, obj){ const blob = new Blob([JSON.stringify(obj)], { type:'application/json' }), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 800); }
+  /* the committed sidecar (Art/gameplay/character/): hashed from the rig and pose library as served, never typed; refuses to write unstamped */
+  async _dlGameplay(build){ const C = this.C(), SE = window.SidecarExport;
+    try { if(!SE) throw new Error('Art/_sidecarExport.js did not load');
+      const [rig, poses] = await Promise.all([SE.rigSha256('Art/characterIsoRig9.js'), SE.rigSha256('Art/characterIsoRig9.poses.js')]);
+      const s = SE.stampRigSha(C.gameplay(build), rig), out = {};
+      for(const k of Object.keys(s)){ if(k==='posesDerivedFromRigSha256') continue; out[k] = s[k]; if(k==='derivedFromRigSha256') out.posesDerivedFromRigSha256 = poses; }
+      const blob = new Blob([JSON.stringify(out, null, 2)], { type:'application/json' }), a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = 'characterIsoRig9.'+build+'.gameplay.json'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 800); }
+    catch(e){ console.error(e); alert('Gameplay sidecar not written: the rig could not be hashed ('+e.message+'). Serve this folder over http.'); } }
+  _ref(n){ this['_r_'+n] = this['_r_'+n] || ((el) => { if(el && this['_'+n] !== el){ this['_'+n] = el; this._draw(); } }); return this['_r_'+n]; }
+  renderVals(){
+    const C = this.C(), st = this.state, on = { borderColor:'#7fd6c9', color:'#7fd6c9' }, off = {};
+    const cd = C ? C.clipDef(st.clip) : null, A = C && cd ? C.ANIMS[cd.anim] : { frames:1, ms:0 };
+    const f = st.frame % A.frames, u = C && cd ? C.uOf(cd.anim, f) : 0;
+    let faceStr='—', toolStr='—', contractStr='—', mount='—';
+    if(C && cd){ const rk = (st.roll||st.pitch) && st.counter ? { roll:st.roll, pitch:st.pitch, counter:st.counter } : null, R = C.evalClip(st.clip, u, st.build, null, rk);
+      mount = C.ANIM_MOUNT[cd.anim] + (cd.carry ? ' · carry '+cd.carry+' ('+C.CARRIES[cd.carry].pin+')' : '') + (C.SEGMENTS[cd.anim] ? ' · segment of '+C.SEGMENTS[cd.anim] : '') + (A.oneShot ? ' · one-shot' : ' · loop') + (A.settle ? ' · settle' : '');
+      if(R){ const I = R.I; faceStr = 'eyes.'+I.face.eyes+' · brows.'+I.face.brows+' · mouth.'+I.face.mouth;
+        toolStr = I.tool && I.tool.held ? I.tool.kind+' · pitch '+(+I.tool.pitch).toFixed(1)+'° · yaw '+(+I.tool.yaw).toFixed(1)+'° · bend '+(+I.tool.bend||0).toFixed(2) : 'none';
+        const p = I.pins, parts = [];
+        if(p.board) parts.push('railZ '+p.board.railZ+' · '+p.board.phase+' · hand on rail '+p.board.handOn);
+        if(p.ladder) parts.push('rung '+p.ladder.rung+' · descend '+p.ladder.descend+' · '+p.ladder.moving+' · root motion '+p.ladder.rate+' m/s down');
+        if(p.work) parts.push(p.work.layer+' · workZ '+p.work.workZ+(p.work.tension!=null?' · tension '+p.work.tension:'')+(p.work.phase?' · '+p.work.phase:'')+(p.work.fired!=null?' · fired '+p.work.fired:''));
+        if(p.wheel) parts.push('seatZ '+p.wheel.seatZ+' · wheel '+p.wheel.wheelZ+' / '+p.wheel.wheelY+' · steer '+p.wheel.steer+' rad');
+        if(p.bed) parts.push('bedZ '+p.bed.bedZ+' · breath '+p.bed.breath);
+        if(p.rest) parts.push('lift '+p.rest.lift+' · '+p.rest.phase+' · gripped '+p.rest.gripped);
+        if(p.saddle) parts.push(p.saddle.posture+' · lean '+p.saddle.lean.deg+'°');
+        if(p.carry) parts.push('carry '+p.carry.mode);
+        if(I.meta.water) parts.push('water '+(I.meta.water.waterZ!=null?'z '+I.meta.water.waterZ+' · ':'')+(I.meta.water.phase||'tread'));
+        if(I.meta.speed) parts.push('moves at '+I.meta.speed+' m/s');
+        contractStr = parts.length ? parts.join(' · ') : 'free'; } }
+    let sz = this._szKey===st.build ? this._sz : null; if(C && !sz){ const s = C.sizes(st.build); this._szKey = st.build; sz = this._sz = { bones:s.bones, deform:s.deform, tris:s.tris, faces:s.faces, bindKB:Math.round(s.bindBytes/1024), clipCount:s.clipCount, frames:s.frames }; }
+    const groupOf = {}; if(C){ for(const [g,list] of Object.entries(C.GROUPS)) for(const a of list) groupOf[a]=g; }
+    const clipList = C ? C.clipNames().map(n=>{ const d=C.clipDef(n); return { k:n, label:(d.stance ? 'stance' : d.carry ? 'carry' : groupOf[d.anim]||'') + ' · ' + n }; }) : [];
+    const rows = st.checks.rows || (C ? C.CHECKS.map(c=>({ id:c.id, title:c.title, detail:'', value:'', mark:'·', color:'#5d6c71' })) : []);
+    return {
+      clip:st.clip, clipList, yaw:st.yaw, frame:f, frames:A.frames, uStr:u.toFixed(3), ms:f*A.ms,
+      dirLabel: st.free ? 'free · '+st.yaw+'°' : (C ? C.order[st.dir] : '—')+' · '+st.dir*45+'°',
+      heroLabel: (st.free ? st.yaw+'°' : (C ? C.order[st.dir] : '')) + ' · ' + st.clip + ' f' + f,
+      playLabel: st.playing ? 'PAUSE' : 'PLAY', mount, faceStr, toolStr, contractStr,
+      roll:st.roll, pitch:st.pitch, counter:st.counter,
+      rockNote: (st.roll||st.pitch) ? 'the hull tips the figure; spine, chest and head take the counter-lean ('+C.ROCK_BONES.join(' · ')+'), nothing else moves' : 'set a roll or pitch to rock the deck',
+      wireStyle: st.wire ? on : off, bonesStyle: st.bones ? on : off, pinsStyle: st.pins ? on : off, propsStyle: st.props ? on : off,
+      heroRef:this._ref('hero'), ringRef:this._ref('ring'), faceRef:this._ref('faces'),
+      ringLabels: C ? C.order.map((d,i)=>({ name:d, color:(!st.free && i===st.dir) ? '#7fd6c9' : '#5d6c71' })) : [],
+      faceLabels: C ? C.GROUP_ORDER.map(g=>({ name:g })) : [],
+      checkRows:rows, checkSummary:st.checks.summary, checkColor:st.checks.color, checksBusy:st.checks.busy || !C,
+      sz: sz || { bones:'—', deform:'—', tris:'—', faces:'—', bindKB:'—', clipCount:'—', frames:'—' },
+      setClip:(e)=>this.setState({ clip:e.target.value, frame:0 }),
+      dirPrev:()=>this.setState({ dir:(st.dir+7)%8, free:false, yaw:((st.dir+7)%8)*45 }), dirNext:()=>this.setState({ dir:(st.dir+1)%8, free:false, yaw:((st.dir+1)%8)*45 }),
+      setYaw:(e)=>this.setState({ yaw:+e.target.value, free:true }),
+      togglePlay:()=>this.setState({ playing:!st.playing }), stepFrame:()=>this.setState({ playing:false, frame:(f+1)%A.frames }),
+      toggleWire:()=>this.setState({ wire:!st.wire }), toggleBones:()=>this.setState({ bones:!st.bones }), togglePins:()=>this.setState({ pins:!st.pins }), toggleProps:()=>this.setState({ props:!st.props }),
+      setRoll:(e)=>this.setState({ roll:+e.target.value }), setPitch:(e)=>this.setState({ pitch:+e.target.value }), setCounter:(e)=>this.setState({ counter:+e.target.value }),
+      runChecks:()=>this._runChecks(), runCast:()=>this._runCast(),
+      hasCast: !!st.cast, castRows: (st.cast||[]).map(r=>Object.assign({}, r, { label:r.label })),
+      castList: C ? C.CAST.map(k=>({ label:C.BUILDS[k].label, pick:()=>this.setState({ build:k, frame:0, checks:{ busy:false, rows:null, summary:'Not run yet for '+C.BUILDS[k].label+'.', color:'#8d9a9d' } }), style: k===st.build ? { borderColor:'#7fd6c9', color:'#7fd6c9' } : {} })) : [],
+      buildLabel: C ? C.BUILDS[st.build].label.toUpperCase() : '',
+      buildNote: C ? (()=>{ const B=C.buildOf(st.build), b=B.b, G=C.GARMENTS[b.garment], g=G.label.toLowerCase()+(G.top && b.bottom!=='trousers' ? ' and '+C.BOTTOMS[b.bottom].label.toLowerCase() : ''), k=C.kOf(B.D); return b.age+' · body shape '+b.shape+' · height '+(b.height>0?'+':'')+b.height+' · weight '+(b.weight>0?'+':'')+b.weight+' · '+b.head+' head · '+b.skin+' skin · '+b.hair+' '+b.hairStyle+(b.beard!=='none'?' · '+b.beard:'')+' · '+b.eyes+' '+b.eyeShape+' eyes · '+g+(b.hat!=='none'?' · '+b.hat:'')+' · crown '+(B.D.headZ+B.D.crown[2]).toFixed(3)+' m · walks at '+(0.727*k.l).toFixed(3)+' m/s'; })() : '',
+      dlSkeleton:()=>this._dl(st.build+'.v9.skeleton.json', { rig:'characterIsoRig9', humanoid:C.HUMANOID, frame:C.FRAME_DOC, skeleton:C.skeleton(st.build) }),
+      dlBind:()=>this._dl(st.build+'.v9.bindMesh.json', { rig:'characterIsoRig9', faces:C.bindMesh(st.build), faceGroups:C.buildOf(st.build).mesh.groups, faceSlots:C.FACE_SLOTS }),
+      dlClips:()=>this._dl(st.build+'.v9.clips.json', C.clips(st.build)),
+      dlGameplay:()=>this._dlGameplay(st.build),
+      dlSockets:()=>this._dl(st.build+'.v9.sockets.json', C.sockets(st.build)),
+      dlRock:()=>this._dl(st.build+'.v9.rock.json', C.rockTable()),
+      dlShading:()=>this._dl(st.build+'.v9.shading.json', C.shadingContract(st.build)),
+      dlAll:()=>this._dl(st.build+'.v9.json', Object.assign(C.exportBuild(st.build), { gameplay:C.gameplay(st.build), sockets:C.sockets(st.build), rock:C.rockTable() })),
+    };
+  }
+}
+</script>
+</body>
+</html>

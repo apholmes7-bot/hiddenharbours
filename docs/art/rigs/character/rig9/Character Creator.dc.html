@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600&family=Silkscreen&display=swap" rel="stylesheet">
+<script src="Art/characterIsoRig9.js"></script>
+<script src="Art/characterIsoRig9.poses.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;background:#15252b;}
+  a{color:#7a4f1c;} a:hover{color:#a8702a;}
+  canvas,img{image-rendering:pixelated;}
+  button{font-family:'Pixelify Sans',ui-monospace,monospace;cursor:pointer;}
+  input{font-family:'Pixelify Sans',ui-monospace,monospace;}
+  input:focus{outline:none;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#15252b;display:flex;justify-content:center;align-items:flex-start;padding:28px 18px 60px;font-family:'Pixelify Sans',ui-monospace,monospace;color:#2b2118;">
+  <div style="width:100%;max-width:1180px;background:#3d2b1f;border:4px solid #22170f;box-shadow:inset 0 0 0 2px #6b4a2e, inset 0 0 0 4px #22170f;padding:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:16px;align-items:start;">
+
+    <div style="display:flex;flex-direction:column;gap:12px;min-width:0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 4px;">
+        <div style="font-family:'Silkscreen',monospace;font-size:22px;letter-spacing:0.04em;color:#e3c46a;text-shadow:2px 2px 0 #22170f;">Your character</div>
+        <div style="font-size:13px;color:#c9b899;">{{ facingLabel }}</div>
+      </div>
+      <div style="background:#22170f;border:3px solid #22170f;box-shadow:0 0 0 2px #a68333;position:relative;">
+        <canvas ref="{{ heroRef }}" width="384" height="456" style="display:block;width:100%;height:auto;"></canvas>
+        <button onClick="{{ turnLeft }}" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:44px;height:44px;border:2px solid #22170f;background:#6b4a2e;color:#f1e7c8;font-size:20px;box-shadow:inset 0 -3px 0 #4a3222, inset 0 2px 0 #8a6340;" style-hover="background:#7d5836;">&#9664;</button>
+        <button onClick="{{ turnRight }}" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:44px;height:44px;border:2px solid #22170f;background:#6b4a2e;color:#f1e7c8;font-size:20px;box-shadow:inset 0 -3px 0 #4a3222, inset 0 2px 0 #8a6340;" style-hover="background:#7d5836;">&#9654;</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <sc-for list="{{ clipList }}" as="c" hint-placeholder-count="4">
+          <button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</button>
+        </sc-for>
+      </div>
+      <div style="background:#5a4030;border:3px solid #22170f;box-shadow:inset 0 0 0 2px #a68333;padding:10px 14px;display:flex;align-items:center;gap:12px;">
+        <div style="font-family:'Silkscreen',monospace;font-size:12px;color:#e3c46a;letter-spacing:0.06em;">NAME</div>
+        <input value="{{ name }}" onInput="{{ setName }}" maxlength="16" placeholder="Fisher" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:2px dashed #a68333;color:#f4e8c8;font-size:20px;padding:4px 2px;"></input>
+      </div>
+    </div>
+
+    <div style="background:#efe4c4;border:3px solid #22170f;box-shadow:inset 0 0 0 3px #d9c99d;padding:16px 16px 14px;display:flex;flex-direction:column;gap:14px;min-width:0;">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-family:'Silkscreen',monospace;font-size:12px;letter-spacing:0.06em;color:#6b4a2e;">START FROM</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:6px;">
+          <sc-for list="{{ presetList }}" as="p" hint-placeholder-count="0">
+            <button onClick="{{ p.pick }}" style="{{ p.style }}">
+              <div style="{{ p.img }}"></div>
+              <span style="display:block;font-size:12px;line-height:1.2;padding:3px 2px 1px;text-align:center;color:#2b2118;">{{ p.label }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:4px;border-bottom:3px solid #d9c99d;">
+        <sc-for list="{{ tabList }}" as="t" hint-placeholder-count="4">
+          <button onClick="{{ t.pick }}" style="{{ t.style }}">{{ t.label }}</button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ isBody }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">Body shape</span><span style="color:#6b5a44;">{{ shapeLabel }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;">
+              <sc-for list="{{ shapeOpts }}" as="o" hint-placeholder-count="0">
+                <button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div></button>
+              </sc-for>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:#6b5a44;"><span>Broad shoulders</span><span>Wide hips</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">Height</span><span style="color:#6b5a44;">{{ heightLabel }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;">
+              <sc-for list="{{ heightOpts }}" as="o" hint-placeholder-count="5"><button onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button></sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">Weight</span><span style="color:#6b5a44;">{{ weightLabel }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;">
+              <sc-for list="{{ weightOpts }}" as="o" hint-placeholder-count="5"><button onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button></sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">Skin</span><span style="color:#6b5a44;">{{ skinLabel }}</span></div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <sc-for list="{{ skinOpts }}" as="o" hint-placeholder-count="9"><button onClick="{{ o.pick }}" title="{{ o.label }}" style="{{ o.style }}"></button></sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isFace }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">Head shape</span><span style="color:#6b5a44;">{{ headLabel }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;">
+              <sc-for list="{{ headOpts }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:12px;padding:3px 0 1px;text-align:center;">{{ o.label }}</span></button></sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">Eyes</span><span style="color:#6b5a44;">{{ eyeShapeLabel }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;">
+              <sc-for list="{{ eyeShapeOpts }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:12px;padding:3px 0 1px;text-align:center;">{{ o.label }}</span></button></sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">Eye colour</span><span style="color:#6b5a44;">{{ eyesLabel }}</span></div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <sc-for list="{{ eyeOpts }}" as="o" hint-placeholder-count="7"><button onClick="{{ o.pick }}" title="{{ o.label }}" style="{{ o.style }}"></button></sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isHair }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">Hair</span><span style="color:#6b5a44;">{{ hairStyleLabel }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;">
+              <sc-for list="{{ hairStyleOpts }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:12px;padding:3px 0 1px;text-align:center;">{{ o.label }}</span></button></sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">Hair colour</span><span style="color:#6b5a44;">{{ hairLabel }}</span></div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <sc-for list="{{ hairOpts }}" as="o" hint-placeholder-count="9"><button onClick="{{ o.pick }}" title="{{ o.label }}" style="{{ o.style }}"></button></sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">Beard</span><span style="color:#6b5a44;">{{ beardLabel }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;">
+              <sc-for list="{{ beardOpts }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:12px;padding:3px 0 1px;text-align:center;">{{ o.label }}</span></button></sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isClothes }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">Tops</span><span style="color:#6b5a44;">{{ topLabel }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;">
+              <sc-for list="{{ topOpts }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:12px;padding:3px 0 1px;text-align:center;">{{ o.label }}</span></button></sc-for>
+            </div>
+          </div>
+          <sc-if value="{{ hasBottom }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">Bottoms</span><span style="color:#6b5a44;">{{ bottomLabel }}</span></div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;">
+                <sc-for list="{{ bottomOpts }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:12px;padding:3px 0 1px;text-align:center;">{{ o.label }}</span></button></sc-for>
+              </div>
+            </div>
+          </sc-if>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">Outfits</span><span style="color:#6b5a44;">{{ outfitPieceLabel }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;">
+              <sc-for list="{{ outfitPieceOpts }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:12px;padding:3px 0 1px;text-align:center;">{{ o.label }}</span></button></sc-for>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+            <sc-for list="{{ colourRows }}" as="row" hint-placeholder-count="2">
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">{{ row.title }}</span><span style="color:#6b5a44;">{{ row.label }}</span></div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ row.opts }}" as="o" hint-placeholder-count="6"><button onClick="{{ o.pick }}" title="{{ o.label }}" style="{{ o.style }}"></button></sc-for></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isHats }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">Hat</span><span style="color:#6b5a44;">{{ hatLabel }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;">
+              <sc-for list="{{ hatOpts }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:12px;padding:3px 0 1px;text-align:center;">{{ o.label }}</span></button></sc-for>
+            </div>
+          </div>
+          <sc-if value="{{ hasHat }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;"><span style="font-weight:600;">Hat colour</span><span style="color:#6b5a44;">{{ hatColLabel }}</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ hatColOpts }}" as="o" hint-placeholder-count="6"><button onClick="{{ o.pick }}" title="{{ o.label }}" style="{{ o.style }}"></button></sc-for></div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:3px solid #d9c99d;padding-top:12px;">
+        <button onClick="{{ randomise }}" style="padding:10px 16px;border:2px solid #22170f;background:#6b4a2e;color:#f1e7c8;font-size:15px;box-shadow:inset 0 -3px 0 #4a3222, inset 0 2px 0 #8a6340;" style-hover="background:#7d5836;">Randomise</button>
+        <button onClick="{{ reset }}" style="padding:10px 16px;border:2px solid #22170f;background:#6b4a2e;color:#f1e7c8;font-size:15px;box-shadow:inset 0 -3px 0 #4a3222, inset 0 2px 0 #8a6340;" style-hover="background:#7d5836;">Undo changes</button>
+        <div style="flex:1;"></div>
+        <span style="font-size:13px;color:#5a7a3a;">{{ savedNote }}</span>
+        <button onClick="{{ done }}" style="padding:10px 22px;border:2px solid #22170f;background:#c9a548;color:#2b2118;font-size:16px;font-weight:600;box-shadow:inset 0 -3px 0 #8a6d2a, inset 0 2px 0 #e3c46a;" style-hover="background:#d6b25a;">Set sail</button>
+      </div>
+      <sc-if value="{{ showCode }}" hint-placeholder-val="{{ false }}">
+        <div style="font-family:ui-monospace,monospace;font-size:11px;line-height:1.5;color:#6b5a44;background:#e6d8b2;padding:8px 10px;overflow-wrap:anywhere;">{{ buildCode }}</div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;ground&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;wharf&quot;,&quot;deck&quot;,&quot;shingle&quot;],&quot;default&quot;:&quot;wharf&quot;,&quot;tsType&quot;:&quot;'wharf'|'deck'|'shingle'&quot;,&quot;section&quot;:&quot;Preview&quot;},&quot;showBuildCode&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Developer&quot;}}">
+class Component extends DCLogic {
+  state = { b:null, start:null, tab:'body', clip:'idle', dir:4, saved:'', ready:false };
+  _thumbs = new Map(); _frame = 0; _acc = 0;
+  /* the runtime can mount the helmet scripts twice, async: a rig that re-runs after its pose library replaces the API
+     unposed. Re-attach the pose library to whichever API object is live, once per object. */
+  C(){ const A = window.CharacterIso9; if(!A) return null; if(!A.posesLoaded){ this._heal(A); return null; } return A; }
+  _heal(A){ if(A.__hhHeal) return; A.__hhHeal = true; const s = document.createElement('script'); s.src = 'Art/characterIsoRig9.poses.js'; s.onload = () => this._watch(); document.head.appendChild(s); }
+  _watch(){ if(this._dead) return; const A = window.CharacterIso9, ok = !!(A && A.posesLoaded), sig = ok ? A : null;
+    if(sig !== this._api){ this._api = sig; this._booted = false; this._retry = 0; if(ok){ this.forceUpdate(); this._draw(); } } else if(!ok) this.C(); }
+  componentDidMount(){
+    this._last = performance.now();
+    const boot = () => { if(this._dead) return; const C = this.C(); if(!C){ this._poll = setTimeout(boot, 60); return; }
+      let b = null; try { const raw = localStorage.getItem('hh.player.build.v9'); if(raw) b = C.normBuild(JSON.parse(raw)); } catch(e){}
+      if(!b){ b = C.normBuild('fisher'); b.preset = 'fisher'; }
+      setTimeout(() => { if(!this._dead){ this.setState({ b, start:b, ready:true }); this.forceUpdate(); } }, 0); };
+    boot();
+    const tick = (t) => { if(this._dead) return; const C = this.C();
+      if(C && !this._booted && document.querySelectorAll('button').length > 8) this._booted = true; else if(C && !this._booted && (this._retry = (this._retry||0) + 1) % 20 === 0) this.forceUpdate();
+      if(C && this._b(C)){ const A = C.ANIMS[this.state.clip], dt = t - this._last; this._last = t; this._acc += dt; this._t = (this._t||0) + dt;
+        if(this._acc >= A.ms){ this._acc = 0; this._frame = (this._frame + 1) % A.frames; this._draw(); } }
+      this._raf = requestAnimationFrame(tick); };
+    this._raf = requestAnimationFrame(tick);
+    this._wd = setInterval(() => this._watch(), 150);
+  }
+  componentWillUnmount(){ this._dead = true; cancelAnimationFrame(this._raf); clearTimeout(this._poll); clearInterval(this._wd); }
+  componentDidUpdate(){ this._draw(); }
+  _ground(){ return { wharf:['#5c4a35','#4d3d2b','#3f3223','#6a563e'], deck:['#6b5a44','#5a4a37','#473a2b','#7a684f'], shingle:['#4a5359','#3d454b','#30373c','#58626a'] }[this.props.ground || 'wharf'] || ['#5c4a35','#4d3d2b','#3f3223','#6a563e']; }
+  /* the preview: the game cell (64 x 92) with a plank ground that slides under a walking figure, then x6 */
+  _draw(){ const C = this.C(), cv = this._hero, b = this._b(C); if(!C || !cv || !b) return;
+    const st = this.state, A = C.ANIMS[st.clip], f = this._frame % A.frames, W = 64, H = 76, y0 = 16;
+    const R = C.render({ build:b, clip:st.clip, frame:f, dir:st.dir });
+    const G = this._ground(), img = new ImageData(W, H), d = img.data;
+    const speed = st.clip==='walk' ? C.evalClip('walk',0,b).I.meta.speed : st.clip==='run' ? C.evalClip('run',0,b).I.meta.speed : 0;
+    const dist = speed * (this._t||0) / 1000, p0 = C.project([0,0,0], { dir:st.dir }), p1 = C.project([0,-dist,0], { dir:st.dir });
+    const ox = p1.x - p0.x, oy = p1.y - p0.y;
+    for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const gx = x - ox, gy = (y + y0) - oy, band = Math.floor(gy/3), seam = ((gy%3)+3)%3 === 0, joint = ((Math.floor(gx + band*13) % 23) + 23) % 23 === 0;
+      const floor = (y + y0) >= 60; const c = !floor ? ((y + y0) >= 58 ? G[2] : '#1c3137') : (seam || joint ? G[2] : (band % 3 === 0 ? G[0] : band % 3 === 1 ? G[1] : G[3])); const i = (y*W+x)*4;
+      d[i] = parseInt(c.slice(1,3),16); d[i+1] = parseInt(c.slice(3,5),16); d[i+2] = parseInt(c.slice(5,7),16); d[i+3] = 255; }
+    /* a soft shadow under the feet */
+    for(let y=-2;y<=2;y++) for(let x=-9;x<=9;x++){ if((x*x)/81 + (y*y)/4.5 > 1) continue; const yy = C.pivot.y - y0 + y, xx = C.pivot.x + x, i = (yy*W+xx)*4; if(yy<0||yy>=H) continue; d[i] *= 0.72; d[i+1] *= 0.72; d[i+2] *= 0.72; }
+    for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const si = ((y+y0)*W+x)*4; if(!R.rgba[si+3]) continue; const i = (y*W+x)*4; d[i]=R.rgba[si]; d[i+1]=R.rgba[si+1]; d[i+2]=R.rgba[si+2]; }
+    const tmp = this._tmp || (this._tmp = document.createElement('canvas')); tmp.width = W; tmp.height = H; tmp.getContext('2d').putImageData(img, 0, 0);
+    const g = cv.getContext('2d'); g.imageSmoothingEnabled = false; g.drawImage(tmp, 0, 0, W*6, H*6); }
+  /* option thumbnails are the rig's own renders: a head crop or a body crop at 1:1, shown pixelated */
+  _thumb(C, b, kind, dir){ const key = C.buildKey(C.normBuild(b)) + kind + dir; if(this._thumbs.has(key)) return this._thumbs.get(key);
+    const B = C.buildOf(b), R = C.render({ build:B, clip:'idle', frame:0, dir }), top = Math.round(C.pivot.y - B.D.heightM*Math.cos(C.ELEV*Math.PI/180)*C.PX);
+    const crop = kind==='head' ? { x:22, y:top-3, w:20, h:20 } : kind==='hat' ? { x:20, y:top-9, w:24, h:24 } : kind==='face' ? { x:25, y:top+4, w:14, h:10 } : { x:18, y:20, w:28, h:66 };
+    const c = document.createElement('canvas'); c.width = crop.w; c.height = crop.h; const g = c.getContext('2d'), img = g.createImageData(crop.w, crop.h);
+    for(let y=0;y<crop.h;y++) for(let x=0;x<crop.w;x++){ const sx = crop.x+x, sy = crop.y+y; if(sx<0||sy<0||sx>=64||sy>=92) continue; const si = (sy*64+sx)*4, i = (y*crop.w+x)*4; for(let k=0;k<4;k++) img.data[i+k] = R.rgba[si+k]; }
+    g.putImageData(img, 0, 0); const s = kind==='face' ? 8 : kind==='head' ? 4 : 3, out = document.createElement('canvas'); out.width = crop.w*s; out.height = crop.h*s;
+    const o = out.getContext('2d'); o.imageSmoothingEnabled = false; o.fillStyle = '#d9c99d'; o.fillRect(0,0,out.width,out.height); o.drawImage(c, 0, 0, out.width, out.height);
+    const url = { display:'block', width:'100%', aspectRatio:crop.w+' / '+crop.h, backgroundImage:'url('+out.toDataURL()+')', backgroundSize:'100% 100%', imageRendering:'pixelated' }; if(this._thumbs.size > 400) this._thumbs.clear(); this._thumbs.set(key, url); return url; }
+  /* the build on screen: state once the user has touched anything, otherwise the saved player or the Fisher */
+  _b(C){ if(this.state.b) return this.state.b; if(!this._initB && C){ let b = null; try { const raw = localStorage.getItem('hh.player.build.v9'); if(raw) b = C.normBuild(JSON.parse(raw)); } catch(e){} if(!b){ b = C.normBuild('fisher'); b.preset = 'fisher'; } if(!b.name) b.name = b.preset && C.BUILDS[b.preset] ? C.BUILDS[b.preset].label : 'Fisher'; this._initB = b; } return this._initB || null; }
+  _set(patch){ const C = this.C(); this.setState(s => ({ b:Object.assign({}, s.b || this._b(C), patch, { preset:null }), start: s.start || this._b(C), saved:'' })); }
+  _ref(n){ this['_r_'+n] = this['_r_'+n] || ((el) => { if(el && this['_'+n] !== el){ this['_'+n] = el; this._draw(); } }); return this['_r_'+n]; }
+  renderVals(){
+    const C = this.C(), st = this.state, b = this._b(C);
+    const on = { border:'3px solid #2b2118', background:'#fff8e2', padding:'2px', color:'#2b2118', boxShadow:'0 0 0 2px #c9a548' }, off = { border:'3px solid #c8b78c', background:'#e6d8b2', padding:'2px', color:'#2b2118' };
+    const pill = (sel) => Object.assign({ padding:'8px 4px', fontSize:'15px', color:'#2b2118', minHeight:'44px' }, sel ? { border:'3px solid #2b2118', background:'#fff8e2', boxShadow:'0 0 0 2px #c9a548' } : { border:'3px solid #c8b78c', background:'#e6d8b2' });
+    const sw = (col, sel) => ({ width:'44px', height:'44px', background:col, border: sel ? '3px solid #2b2118' : '3px solid #c8b78c', boxShadow: sel ? '0 0 0 2px #c9a548, inset 0 0 0 2px #fff8e2' : 'inset 0 -4px 0 rgba(0,0,0,0.18)' });
+    const base = { name:'', facingLabel:'', clipList:[], presetList:[], tabList:[], isBody:true, isFace:false, isHair:false, isClothes:false, isHats:false, shapeOpts:[], heightOpts:[], weightOpts:[], skinOpts:[], headOpts:[], eyeShapeOpts:[], eyeOpts:[], hairStyleOpts:[], hairOpts:[], beardOpts:[], topOpts:[], bottomOpts:[], outfitPieceOpts:[], colourRows:[], hatOpts:[], hatColOpts:[], hasBottom:false, hasHat:false, heroRef:this._ref('hero'), shapeLabel:'', heightLabel:'', weightLabel:'', skinLabel:'', headLabel:'', eyeShapeLabel:'', eyesLabel:'', hairStyleLabel:'', hairLabel:'', beardLabel:'', topLabel:'', bottomLabel:'', outfitPieceLabel:'', hatLabel:'', hatColLabel:'', savedNote:'', buildCode:'', showCode:false };
+    if(!C || !b) return base;
+    const P = C.palettes, set = (k,v) => () => this._set({ [k]:v });
+    const NAMES = { shape:['Broadest','Broad','Between','Curved','Widest hips'], height:['Short','Shorter','Middling','Taller','Tall'], weight:['Slight','Lean','Middling','Sturdy','Heavy'],
+      head:{ round:'Round', oval:'Oval', square:'Square', long:'Long', heart:'Heart', wide:'Wide jaw', pear:'Pear' }, eyeShape:{ round:'Round', narrow:'Narrow', lidded:'Heavy-lidded' },
+      hairStyle:{ crop:'Crop', mop:'Mop', bob:'Bob', long:'Long', bun:'Bun', ponytail:'Ponytail', buzz:'Buzz', bald:'Bald' }, beard:{ none:'None', stubble:'Stubble', moustache:'Moustache', chinstrap:'Chinstrap', goatee:'Goatee', mutton:'Mutton chops', full:'Full', long:'Long' },
+      hat:{ none:'None', watchcap:'Watch cap', souwester:"Sou'wester", ballcap:'Ball cap', kerchief:'Kerchief', flatcap:'Flat cap', hood:'Hood', tophat:'Top hat', bowler:'Bowler', captain:"Captain's cap", sunhat:'Sun hat', bucket:'Bucket hat', beret:'Beret' },
+      hair:{ salt:'Salt and pepper' }, outfit:{ char:'Charcoal', oil:'Oilskin yellow' }, hatCol:{ char:'Charcoal', oil:'Oilskin yellow' } };
+    const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1), nm = (k,v) => (NAMES[k] && NAMES[k][v]) || cap(String(v));
+    const withB = (patch) => Object.assign({}, b, patch);
+    const thumbs = (k, kind, dir) => C.OPTIONS[k].map(v => ({ label:nm(k,v), img:this._thumb(C, withB({ [k]:v }), kind, dir), pick:set(k,v), style: b[k]===v ? on : off }));
+    const swatches = (k, ramp, idx) => C.OPTIONS[k].map(v => ({ label:nm(k,v), pick:set(k,v), style:sw(ramp[v][idx], b[k]===v) }));
+    const tabs = [['body','Body'],['face','Face'],['hair','Hair'],['clothes','Clothes'],['hats','Hats']];
+    const clips = [['idle','Stand'],['walk','Walk'],['run','Run'],['cast','Cast']];
+    const tab = st.tab, garm = C.GARMENTS[b.garment];
+    const vals = Object.assign(base, {
+      name: b.name || '',
+      facingLabel: ['Facing away','Away, right','Right','Toward, right','Toward you','Toward, left','Left','Away, left'][st.dir],
+      clipList: clips.map(([k,l]) => ({ label:l, pick:() => { this._frame = 0; this.setState({ clip:k }); }, style:Object.assign({ padding:'8px 14px', fontSize:'15px', minHeight:'40px', border:'2px solid #22170f' }, st.clip===k ? { background:'#c9a548', color:'#2b2118', boxShadow:'inset 0 -3px 0 #8a6d2a' } : { background:'#6b4a2e', color:'#f1e7c8', boxShadow:'inset 0 -3px 0 #4a3222' }) })),
+      presetList: C.CAST.filter(k => C.BUILDS[k].age!=='child').map(k => ({ label:C.BUILDS[k].label, img:this._thumb(C, k, 'head', 3), pick:() => { const n = C.normBuild(k); n.preset = k; n.name = C.BUILDS[k].label; this.setState({ b:n, start: st.start || b, saved:'' }); }, style: b.preset===k ? on : off })),
+      tabList: tabs.map(([k,l]) => ({ label:l, pick:() => this.setState({ tab:k }), style:Object.assign({ padding:'10px 12px', fontSize:'16px', borderWidth:'3px 3px 0 3px', borderStyle:'solid', marginBottom:'-3px', minHeight:'44px' }, tab===k ? { background:'#efe4c4', color:'#2b2118', borderColor:'#c8b78c', fontWeight:600 } : { background:'#e0d1a6', color:'#6b5a44', borderColor:'#d9c99d', fontWeight:400 }) })),
+      isBody: tab==='body', isFace: tab==='face', isHair: tab==='hair', isClothes: tab==='clothes', isHats: tab==='hats',
+      turnLeft: () => this.setState({ dir:(st.dir+7)%8 }), turnRight: () => this.setState({ dir:(st.dir+1)%8 }),
+      setName: (e) => this.setState({ b:Object.assign({}, b, { name:e.target.value.slice(0,16) }), start: st.start || b, saved:'' }),
+      randomise: () => { const O = C.OPTIONS, r = (a) => a[Math.floor(Math.random()*a.length)], w = (a, p0) => Math.random() < p0 ? a[0] : r(a.slice(1));
+        const n = { age:b.age, shape:r(O.shape), height:r(O.height), weight:r(O.weight), head:r(O.head), skin:r(O.skin), hair:r(O.hair), hairStyle:r(O.hairStyle), beard:w(O.beard, 0.45),
+          eyes:r(O.eyes), eyeShape:r(O.eyeShape), garment:r(O.garment), bottom:r(O.bottom), outfit:r(O.outfit), shirt:r(O.shirt), hat:w(O.hat, 0.4), hatCol:r(O.hatCol), apronCol:r(O.apronCol), name:b.name };
+        this.setState({ b:Object.assign(C.normBuild(n), { name:b.name }), start: st.start || b, saved:'' }); },
+      reset: () => this.setState({ b:st.start || this._initB, saved:'' }),
+      done: () => { const out = Object.assign({}, b); try { localStorage.setItem('hh.player.build.v9', JSON.stringify(out)); } catch(e){} this.setState({ start:out, saved:'Saved. ' + (b.name || 'Your character') + ' is ready.' }); },
+      savedNote: st.saved,
+      showCode: this.props.showBuildCode === true,
+      buildCode: C.buildKey(b) + (b.name ? ' · name ' + b.name : '')
+    });
+    if(tab==='body'){
+      vals.shapeLabel = NAMES.shape[C.OPTIONS.shape.indexOf(b.shape)];
+      vals.shapeOpts = C.OPTIONS.shape.map(v => ({ img:this._thumb(C, withB({ shape:v }), 'body', 4), pick:set('shape',v), style: b.shape===v ? on : off }));
+      vals.heightLabel = NAMES.height[b.height+2]; vals.weightLabel = NAMES.weight[b.weight+2];
+      vals.heightOpts = C.OPTIONS.height.map((v,i) => ({ label:['−2','−1','0','+1','+2'][i], pick:set('height',v), style:pill(b.height===v) }));
+      vals.weightOpts = C.OPTIONS.weight.map((v,i) => ({ label:['−2','−1','0','+1','+2'][i], pick:set('weight',v), style:pill(b.weight===v) }));
+      vals.skinLabel = nm('skin', b.skin); vals.skinOpts = swatches('skin', P.SKINS, 4); }
+    if(tab==='face'){
+      vals.headLabel = nm('head', b.head); vals.headOpts = thumbs('head', 'head', 4);
+      vals.eyeShapeLabel = nm('eyeShape', b.eyeShape); vals.eyeShapeOpts = thumbs('eyeShape', 'face', 4);
+      vals.eyesLabel = nm('eyes', b.eyes); vals.eyeOpts = C.OPTIONS.eyes.map(v => ({ label:nm('eyes',v), pick:set('eyes',v), style:sw(P.EYES[v], b.eyes===v) })); }
+    if(tab==='hair'){
+      vals.hairStyleLabel = nm('hairStyle', b.hairStyle); vals.hairStyleOpts = thumbs('hairStyle', 'head', 3);
+      vals.hairLabel = nm('hair', b.hair); vals.hairOpts = swatches('hair', P.HAIRS, 3);
+      vals.beardLabel = nm('beard', b.beard); vals.beardOpts = thumbs('beard', 'head', 4); }
+    if(tab==='clothes'){
+      /* switching into a suit or tuxedo brings its palette; thumbnails show each piece in the colours it would arrive in */
+      const Gs = C.GARMENTS, look = (v) => (v!==b.garment && Gs[v].look) || {}, short = (v) => Gs[v].short || Gs[v].label;
+      const wear = (v) => ({ label:short(v), img:this._thumb(C, withB(Object.assign({ garment:v }, look(v))), 'body', 3), pick:() => this._set(Object.assign({ garment:v }, look(v))), style: b.garment===v ? on : off });
+      const tops = C.OPTIONS.garment.filter(v => Gs[v].top), outfits = C.OPTIONS.garment.filter(v => !Gs[v].top), G = Gs[b.garment], bot = C.BOTTOMS[b.bottom].label;
+      vals.topOpts = tops.map(wear); vals.outfitPieceOpts = outfits.map(wear);
+      vals.topLabel = G.top ? G.label : 'Outfit on'; vals.outfitPieceLabel = G.top ? 'None' : G.label;
+      vals.hasBottom = !!G.top; vals.bottomLabel = bot;
+      vals.bottomOpts = C.OPTIONS.bottom.map(v => ({ label:C.BOTTOMS[v].label, img:this._thumb(C, withB({ bottom:v }), 'body', 3), pick:set('bottom',v), style: b.bottom===v ? on : off }));
+      const W = G.wear || {}, rows = [];
+      rows.push({ title: G.top ? (W.outfit ? W.outfit.replace('%', bot.toLowerCase()) : bot) : W.outfit, key:'outfit', ramp:P.OUTFITS, idx:3 });
+      if(W.shirt) rows.push({ title:W.shirt, key:'shirt', ramp:P.SHIRTS, idx:4 });
+      if(W.trim) rows.push({ title:W.trim, key:'apronCol', ramp:P.APRONS, idx:3 });
+      vals.colourRows = rows.map(r => ({ title:r.title, label:nm(r.key, b[r.key]), opts:swatches(r.key, r.ramp, r.idx) })); }
+    if(tab==='hats'){
+      const look = (v) => (v!==b.hat && C.HATS[v] && C.HATS[v].look) || {};
+      vals.hatLabel = nm('hat', b.hat); vals.hatOpts = C.OPTIONS.hat.map(v => ({ label:nm('hat',v), img:this._thumb(C, withB(Object.assign({ hat:v }, look(v))), 'hat', 3), pick:() => this._set(Object.assign({ hat:v }, look(v))), style: b.hat===v ? on : off }));
+      vals.hasHat = b.hat!=='none'; vals.hatColLabel = nm('hatCol', b.hatCol); vals.hatColOpts = swatches('hatCol', P.HATCOLS, 3); }
+    return vals;
+  }
+}
+</script>
+</body>
+</html>

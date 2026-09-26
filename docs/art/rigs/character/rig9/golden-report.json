@@ -1,0 +1,4001 @@
+{
+ "schema": "hidden-harbours/character-golden@1",
+ "rig": "characterIsoRig9.js",
+ "revision": "9.2",
+ "derivedFromRigSha256": "02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144",
+ "posesDerivedFromRigSha256": "42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07",
+ "run": "2026-09-24, CharacterIso9.runChecks(preset) over the bytes in Art/ of this kit",
+ "summary": "190 / 190 gated checks passed over 10 presets (20 checks each; budget is reported, not gated)",
+ "builds": {
+  "fisher": {
+   "label": "Fisher",
+   "passed": 19,
+   "of": 19,
+   "reported": 1,
+   "ms": 5437,
+   "checks": [
+    {
+     "id": "timing",
+     "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
+     "ms": 0,
+     "pass": true,
+     "value": "35 / 35",
+     "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)",
+     "gate": true
+    },
+    {
+     "id": "skeleton",
+     "title": "Skeleton: 28 bones, parents first, identity bind, every deform length constant in every frame",
+     "ms": 52,
+     "pass": true,
+     "value": "2.22e-16 m",
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 2.22e-16 m (boardDown f2 hand_L). No tip, cuff, hem or inseam bones.",
+     "gate": true
+    },
+    {
+     "id": "skin",
+     "title": "Skin weights: every vertex sums to 1; the only blended ring is the waist",
+     "ms": 1,
+     "pass": true,
+     "value": "10 blended",
+     "detail": "2076 vertices, 0 with weights that do not sum to 1. 10 distinct blended positions (spine 0.5 / chest 0.5), all on this build's waist ring at 0.840 m (and the bib or apron edge that rides it).",
+     "gate": true
+    },
+    {
+     "id": "roundtrip",
+     "title": "Export round trip: quaternions out → FK → skinned mesh equals the solver",
+     "ms": 219,
+     "pass": true,
+     "value": "8.92e-16 m",
+     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 8.92e-16 m at boardDown+buckets f1; gate 1e-6 m.",
+     "gate": true
+    },
+    {
+     "id": "continuity",
+     "title": "Quaternion tracks stay in one hemisphere frame to frame",
+     "ms": 29,
+     "pass": true,
+     "value": "0 flips",
+     "detail": "Sign continuity on every bone of every clip. Largest joint step between two frames: 141.3° (mountCab f6→7 hip_R) — a slerp between neighbours never takes the long way round.",
+     "gate": true
+    },
+    {
+     "id": "rock",
+     "title": "Deck rock is a three-bone additive, keyed on the rock alone",
+     "ms": 663,
+     "pass": true,
+     "value": "3 of 28 bones",
+     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0. Deltas equal the table (keyed on the rock alone) to 0; clip + table through quaternions skins to the rocked solve within 9.16e-16 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock.",
+     "gate": true
+    },
+    {
+     "id": "loops",
+     "title": "Loops close: u = 1 is u = 0, the ladder included (it is body-anchored)",
+     "ms": 13,
+     "pass": true,
+     "value": "4.44e-16 m",
+     "detail": "37 looping clips. Worst seam 4.44e-16 m (balance).",
+     "gate": true
+    },
+    {
+     "id": "handoffs",
+     "title": "One-shots meet the clips they hand to, to the micron",
+     "ms": 19,
+     "pass": true,
+     "value": "5.91e-16 m",
+     "detail": "board last = idle on the deck 5.91e-16 · boardDown f0 = idle on the deck 5.91e-16 · boardDown last = idle on the dock 0 · mountUp f0 = idle beside the machine 3.38e-16 · mountUp last = astride f0 2.54e-16 · mountDown f0 = astride f0 2.54e-16 · mountDown last = idle beside 3.38e-16 · mountCab last = astride(bench) f0 2.54e-16 · mountCabDown f0 = astride(bench) f0 2.54e-16 · reach last = idle 0",
+     "gate": true
+    },
+    {
+     "id": "contacts",
+     "title": "Contacts: no skate at the engine speed, no sole below the ground, limbs make their targets",
+     "ms": 118,
+     "pass": true,
+     "value": "0.00 mm skate",
+     "detail": "Planted-foot drift against a ground moving at the clip speed: 0.00 mm (walk R). Deepest vertex below z = 0 on grounded clips: 1.3 mm (mountCab f15). Limbs short of a target by > 5 mm on gated clips: none. Reported, not gated: astride 39 mm, astrideStand 59 mm, mountUp 125 mm, mountDown 122 mm, mountCab 60 mm, mountCabDown 57 mm — at the default saddle, whose seat and pegs these legs cannot reach. Saddle family at the fitted saddle (the default scaled to 0.4, the idle spot 0.6 m beside it): worst limb 0 mm, seat gap 0 mm, standing foot on the ground until the seat carries the body — gated.",
+     "rows": [
+      {
+       "label": "astride",
+       "value": "39 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "astrideStand",
+       "value": "59 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "mountUp",
+       "value": "125 mm",
+       "note": "footR f8 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountDown",
+       "value": "122 mm",
+       "note": "footR f6 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCab",
+       "value": "60 mm",
+       "note": "footL f16 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCabDown",
+       "value": "57 mm",
+       "note": "footL f1 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "saddle family at scale 0.4",
+       "value": "0 mm",
+       "note": "seat gap 0 mm · standing foot grounded",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "travel",
+     "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
+     "ms": 130,
+     "pass": true,
+     "value": "0.344 m",
+     "detail": "Largest single-frame vertex move 0.344 m (swim f2→3), gate 0.350 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.321 m (mountDown f5→6). Reported: the mounts at the default saddle, 0.590 m (mountCab f6→7). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.528 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.402 m (a 0.55 m drop in six frames, 570 ms).",
+     "gate": true
+    },
+    {
+     "id": "cell",
+     "title": "Every frame fits the 64 × 92 cell at every facing, keyline included, 1 px spare",
+     "ms": 2953,
+     "pass": true,
+     "value": "1 px spare",
+     "detail": "2992 renders. Tightest: 1 px (stagger f3 SE). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one.",
+     "gate": true
+    },
+    {
+     "id": "face",
+     "title": "The face resolves at 32 px/m: two eyes in front views, one in profile, none from behind",
+     "ms": 210,
+     "pass": true,
+     "value": "8 / 8 facings",
+     "detail": "Every face group draws at S: eyes.open 8 · eyes.half 4 · eyes.shut 4 · eyes.wide 12 · eyes.left 8 · eyes.right 8 · brows.flat 4 · brows.up 4 · brows.knit 4 · mouth.flat 3 · mouth.open 3 · mouth.grit 5 · mouth.smile 5 px. Every state changes its slot pixels at S against the default. At the diagonals these read the same as the default: mouth.smile SE, mouth.smile SW.",
+     "rows": [
+      {
+       "label": "N",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NE",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "E",
+       "value": "1 eye",
+       "note": "eyes 0+5 px · nose 1 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "SE",
+       "value": "2 eyes",
+       "note": "eyes 2+3 px · nose 1 px · mouth 2 px",
+       "ok": true
+      },
+      {
+       "label": "S",
+       "value": "2 eyes",
+       "note": "eyes 4+4 px · nose 1 px · mouth 3 px",
+       "ok": true
+      },
+      {
+       "label": "SW",
+       "value": "2 eyes",
+       "note": "eyes 4+2 px · nose 1 px · mouth 2 px",
+       "ok": true
+      },
+      {
+       "label": "W",
+       "value": "1 eye",
+       "note": "eyes 4+0 px · nose 1 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NW",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "hair",
+     "title": "Hair: no skull skin where the hair is — 16 facings, idle, walk and the head turned to its limits",
+     "ms": 115,
+     "pass": true,
+     "value": "0 px",
+     "detail": "128 renders (16 facings × idle f0, f3, walk f2, f6 and idle with the head turned to yaw ±60 and pitch −15 / +20). Skull skin inside the hair region: 0 px; skull faces painted skin inside it: 0. Hair region (mop): front hairline 1.427, corners 1.36, temples 1.425, over the ear 1.333, nape 1.225. The skin meant to show, most in one render: face and forehead 48 px, temples 8, over the ear line 2, nape 14. Painted scalp (hair-coloured skull) showing through the shell: at most 3 px.",
+     "gate": true
+    },
+    {
+     "id": "gaze",
+     "title": "Gaze: eyes.left and eyes.right move the pupils at every facing where the eyes show",
+     "ms": 67,
+     "pass": true,
+     "value": "11 facings",
+     "detail": "At 32 px/m, idle f0, 16 facings: the pupil (the ink and iris pixels) of eyes.left and of eyes.right against eyes.open, screen x of the pupils' centre (\"hidden\" where the only eye shown turns away in profile). Where two eyes show, eyes.left and eyes.right each move the pupils; where one eye shows in profile the two read apart (toward the camera the pupil stays, away it turns white).",
+     "rows": [
+      {
+       "label": "0°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "22.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "45°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "67.5°",
+       "value": "left hidden · right -0.5 px",
+       "note": "pupil px 2 / 0 / 4",
+       "ok": true
+      },
+      {
+       "label": "90°",
+       "value": "left hidden · right -0.8 px",
+       "note": "pupil px 2 / 0 / 5",
+       "ok": true
+      },
+      {
+       "label": "112.5°",
+       "value": "left +0.4 px · right -1.6 px",
+       "note": "pupil px 8 / 2 / 11",
+       "ok": true
+      },
+      {
+       "label": "135°",
+       "value": "left -1.0 px · right +1.0 px",
+       "note": "pupil px 4 / 2 / 2",
+       "ok": true
+      },
+      {
+       "label": "157.5°",
+       "value": "left +1.0 px · right +0.8 px",
+       "note": "pupil px 7 / 6 / 5",
+       "ok": true
+      },
+      {
+       "label": "180°",
+       "value": "left +0.5 px · right -0.5 px",
+       "note": "pupil px 4 / 4 / 4",
+       "ok": true
+      },
+      {
+       "label": "202.5°",
+       "value": "left -1.1 px · right -1.4 px",
+       "note": "pupil px 5 / 3 / 6",
+       "ok": true
+      },
+      {
+       "label": "225°",
+       "value": "left +0.5 px · right +1.0 px",
+       "note": "pupil px 4 / 4 / 2",
+       "ok": true
+      },
+      {
+       "label": "247.5°",
+       "value": "left +1.0 px · right -0.8 px",
+       "note": "pupil px 9 / 11 / 2",
+       "ok": true
+      },
+      {
+       "label": "270°",
+       "value": "left +0.5 px · right hidden",
+       "note": "pupil px 2 / 4 / 0",
+       "ok": true
+      },
+      {
+       "label": "292.5°",
+       "value": "left +0.5 px · right hidden",
+       "note": "pupil px 2 / 4 / 0",
+       "ok": true
+      },
+      {
+       "label": "315°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "337.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "look",
+     "title": "Look-at: the head turned to every limit opens no gap in the hair, hood or collar; the aim lands",
+     "ms": 396,
+     "pass": true,
+     "value": "0 px",
+     "detail": "256 renders: idle f0 and walk f2 at 16 facings, the head turned to each limit (yaw ±60, pitch -15 / 20 and the four corners; neck 0.4, head 0.6). Scalp inside the hair region: 0 px. See-through at the neck, collar or hood beyond the unturned pose: 0 px. Aim (share 1): for 21 targets 2 m away inside the limits, lookAt() then the turn points the head's +y within 1.70° of the target (worst at bearing 50°, -0.35 m).",
+     "gate": true
+    },
+    {
+     "id": "tones",
+     "title": "Tone discipline: each material lights at most four ramp steps in a frame (the contour step aside)",
+     "ms": 332,
+     "pass": true,
+     "value": "4 steps",
+     "detail": "392 renders. The most lit steps any one material spends in a frame: 4 (over · idle f0 N). The inner contour darkens one step past that — the outline doing its job, not a fifth tone.",
+     "gate": true
+    },
+    {
+     "id": "light",
+     "title": "Top-of-frame key: the rest pose at E is the mirror of W, to the pixel",
+     "ms": 8,
+     "pass": true,
+     "value": "0 px differ",
+     "detail": "E against W mirrored: 0 px differ. S against itself mirrored (head snap off — an odd-width head cannot sit on a pixel centre and be centred on the pivot seam at once): 0 px. An upper-left key cannot pass this; the key is 0.000, 0.811, 0.585 (right, up, toward camera) — the fleet key without its left component.",
+     "gate": true
+    },
+    {
+     "id": "budget",
+     "title": "Budget against rig 7 (reported: over 1,000 tris is allowed)",
+     "ms": 67,
+     "pass": false,
+     "value": "1060 tris",
+     "detail": "1060 tris (508 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1789 KB of clip JSON against 2,155 KB for 35 · bind mesh 146 KB against 235 KB.",
+     "gate": false
+    },
+    {
+     "id": "sidecar",
+     "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
+     "ms": 30,
+     "pass": true,
+     "value": "53 clips · 438 frames",
+     "detail": "Schema hidden-harbours/character-gameplay@1. Walk 0.727 m/s, run 2 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.000; ladder 0.545). No section missing.",
+     "gate": true
+    },
+    {
+     "id": "heights",
+     "title": "World heights: the crown in idle is the build's designed height",
+     "ms": 1,
+     "pass": true,
+     "value": "1.506 m",
+     "detail": "Crown in idle 1.506 m against the build's 1.522 m (adult, height step 0; the Fisher is 1.522, rig 7 1.523). Hip joint 0.580 (rig 7 0.587). Palms at rest 0.574 m. Legs 0.505 m hip to ankle (rig 7 0.541), arms 0.475 m shoulder to palm.",
+     "gate": true
+    }
+   ]
+  },
+  "ginny": {
+   "label": "Ginny",
+   "passed": 19,
+   "of": 19,
+   "reported": 1,
+   "ms": 5366,
+   "checks": [
+    {
+     "id": "timing",
+     "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
+     "ms": 0,
+     "pass": true,
+     "value": "35 / 35",
+     "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)",
+     "gate": true
+    },
+    {
+     "id": "skeleton",
+     "title": "Skeleton: 28 bones, parents first, identity bind, every deform length constant in every frame",
+     "ms": 53,
+     "pass": true,
+     "value": "2.22e-16 m",
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 2.22e-16 m (hold f0 hand_L). No tip, cuff, hem or inseam bones.",
+     "gate": true
+    },
+    {
+     "id": "skin",
+     "title": "Skin weights: every vertex sums to 1; the only blended ring is the waist",
+     "ms": 1,
+     "pass": true,
+     "value": "10 blended",
+     "detail": "2071 vertices, 0 with weights that do not sum to 1. 10 distinct blended positions (spine 0.5 / chest 0.5), all on this build's waist ring at 0.816 m (and the bib or apron edge that rides it).",
+     "gate": true
+    },
+    {
+     "id": "roundtrip",
+     "title": "Export round trip: quaternions out → FK → skinned mesh equals the solver",
+     "ms": 220,
+     "pass": true,
+     "value": "7.53e-16 m",
+     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 7.53e-16 m at astrideStand f5; gate 1e-6 m.",
+     "gate": true
+    },
+    {
+     "id": "continuity",
+     "title": "Quaternion tracks stay in one hemisphere frame to frame",
+     "ms": 28,
+     "pass": true,
+     "value": "0 flips",
+     "detail": "Sign continuity on every bone of every clip. Largest joint step between two frames: 146.7° (mountCabDown f9→10 hip_R) — a slerp between neighbours never takes the long way round.",
+     "gate": true
+    },
+    {
+     "id": "rock",
+     "title": "Deck rock is a three-bone additive, keyed on the rock alone",
+     "ms": 675,
+     "pass": true,
+     "value": "3 of 28 bones",
+     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0. Deltas equal the table (keyed on the rock alone) to 0; clip + table through quaternions skins to the rocked solve within 1.11e-15 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock.",
+     "gate": true
+    },
+    {
+     "id": "loops",
+     "title": "Loops close: u = 1 is u = 0, the ladder included (it is body-anchored)",
+     "ms": 14,
+     "pass": true,
+     "value": "4.44e-16 m",
+     "detail": "37 looping clips. Worst seam 4.44e-16 m (idle+pot).",
+     "gate": true
+    },
+    {
+     "id": "handoffs",
+     "title": "One-shots meet the clips they hand to, to the micron",
+     "ms": 21,
+     "pass": true,
+     "value": "4.66e-16 m",
+     "detail": "board last = idle on the deck 4.66e-16 · boardDown f0 = idle on the deck 4.66e-16 · boardDown last = idle on the dock 0 · mountUp f0 = idle beside the machine 4.59e-16 · mountUp last = astride f0 0 · mountDown f0 = astride f0 0 · mountDown last = idle beside 4.59e-16 · mountCab last = astride(bench) f0 0 · mountCabDown f0 = astride(bench) f0 0 · reach last = idle 0",
+     "gate": true
+    },
+    {
+     "id": "contacts",
+     "title": "Contacts: no skate at the engine speed, no sole below the ground, limbs make their targets",
+     "ms": 106,
+     "pass": true,
+     "value": "0.02 mm skate",
+     "detail": "Planted-foot drift against a ground moving at the clip speed: 0.02 mm (walk R). Deepest vertex below z = 0 on grounded clips: 1.3 mm (mountCab f15). Limbs short of a target by > 5 mm on gated clips: none. Reported, not gated: astride 55 mm, astrideStand 76 mm, mountUp 154 mm, mountDown 151 mm, mountCab 66 mm, mountCabDown 61 mm — at the default saddle, whose seat and pegs these legs cannot reach. Saddle family at the fitted saddle (the default scaled to 0.4, the idle spot 0.6 m beside it): worst limb 0 mm, seat gap 0 mm, standing foot on the ground until the seat carries the body — gated.",
+     "rows": [
+      {
+       "label": "astride",
+       "value": "55 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "astrideStand",
+       "value": "76 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "mountUp",
+       "value": "154 mm",
+       "note": "footR f8 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountDown",
+       "value": "151 mm",
+       "note": "footR f6 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCab",
+       "value": "66 mm",
+       "note": "footL f16 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCabDown",
+       "value": "61 mm",
+       "note": "footL f1 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "saddle family at scale 0.4",
+       "value": "0 mm",
+       "note": "seat gap 0 mm · standing foot grounded",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "travel",
+     "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
+     "ms": 128,
+     "pass": true,
+     "value": "0.332 m",
+     "detail": "Largest single-frame vertex move 0.332 m (swim f2→3), gate 0.350 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.322 m (mountDown f5→6). Reported: the mounts at the default saddle, 0.575 m (mountCab f6→7). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.521 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.401 m (a 0.55 m drop in six frames, 570 ms).",
+     "gate": true
+    },
+    {
+     "id": "cell",
+     "title": "Every frame fits the 64 × 92 cell at every facing, keyline included, 1 px spare",
+     "ms": 2895,
+     "pass": true,
+     "value": "1 px spare",
+     "detail": "2992 renders. Tightest: 1 px (stagger f3 SE). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one.",
+     "gate": true
+    },
+    {
+     "id": "face",
+     "title": "The face resolves at 32 px/m: two eyes in front views, one in profile, none from behind",
+     "ms": 202,
+     "pass": true,
+     "value": "8 / 8 facings",
+     "detail": "Every face group draws at S: eyes.open 8 · eyes.half 4 · eyes.shut 4 · eyes.wide 12 · eyes.left 8 · eyes.right 8 · brows.flat 4 · brows.up 4 · brows.knit 4 · mouth.flat 3 · mouth.open 3 · mouth.grit 5 · mouth.smile 5 px. Every state changes its slot pixels at S against the default. At the diagonals these read the same as the default: brows.knit SW, mouth.smile SE, mouth.smile SW.",
+     "rows": [
+      {
+       "label": "N",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NE",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "E",
+       "value": "1 eye",
+       "note": "eyes 0+6 px · nose 1 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "SE",
+       "value": "2 eyes",
+       "note": "eyes 2+4 px · nose 1 px · mouth 1 px",
+       "ok": true
+      },
+      {
+       "label": "S",
+       "value": "2 eyes",
+       "note": "eyes 4+4 px · nose 1 px · mouth 3 px",
+       "ok": true
+      },
+      {
+       "label": "SW",
+       "value": "2 eyes",
+       "note": "eyes 3+2 px · nose 1 px · mouth 1 px",
+       "ok": true
+      },
+      {
+       "label": "W",
+       "value": "1 eye",
+       "note": "eyes 4+0 px · nose 1 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NW",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "hair",
+     "title": "Hair: no skull skin where the hair is — 16 facings, idle, walk and the head turned to its limits",
+     "ms": 118,
+     "pass": true,
+     "value": "0 px",
+     "detail": "128 renders (16 facings × idle f0, f3, walk f2, f6 and idle with the head turned to yaw ±60 and pitch −15 / +20). Skull skin inside the hair region: 0 px; skull faces painted skin inside it: 0. Hair region (bob): front hairline 1.426, corners 1.34, temples 1.425, over the ear 1.333, nape 1.2. The skin meant to show, most in one render: face and forehead 31 px, temples 4, over the ear line 0, nape 0. Painted scalp (hair-coloured skull) showing through the shell: at most 9 px.",
+     "gate": true
+    },
+    {
+     "id": "gaze",
+     "title": "Gaze: eyes.left and eyes.right move the pupils at every facing where the eyes show",
+     "ms": 64,
+     "pass": true,
+     "value": "11 facings",
+     "detail": "At 32 px/m, idle f0, 16 facings: the pupil (the ink and iris pixels) of eyes.left and of eyes.right against eyes.open, screen x of the pupils' centre (\"hidden\" where the only eye shown turns away in profile). Where two eyes show, eyes.left and eyes.right each move the pupils; where one eye shows in profile the two read apart (toward the camera the pupil stays, away it turns white).",
+     "rows": [
+      {
+       "label": "0°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "22.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "45°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "67.5°",
+       "value": "left hidden · right -0.5 px",
+       "note": "pupil px 2 / 0 / 4",
+       "ok": true
+      },
+      {
+       "label": "90°",
+       "value": "left hidden · right -1.0 px",
+       "note": "pupil px 2 / 0 / 6",
+       "ok": true
+      },
+      {
+       "label": "112.5°",
+       "value": "left hidden · right -1.1 px",
+       "note": "pupil px 6 / 0 / 10",
+       "ok": true
+      },
+      {
+       "label": "135°",
+       "value": "left -0.9 px · right +1.4 px",
+       "note": "pupil px 5 / 3 / 2",
+       "ok": true
+      },
+      {
+       "label": "157.5°",
+       "value": "left +1.1 px · right +1.2 px",
+       "note": "pupil px 7 / 7 / 4",
+       "ok": true
+      },
+      {
+       "label": "180°",
+       "value": "left +0.5 px · right -0.5 px",
+       "note": "pupil px 4 / 4 / 4",
+       "ok": true
+      },
+      {
+       "label": "202.5°",
+       "value": "left -0.8 px · right -1.3 px",
+       "note": "pupil px 6 / 4 / 6",
+       "ok": true
+      },
+      {
+       "label": "225°",
+       "value": "left -1.0 px · right +1.0 px",
+       "note": "pupil px 4 / 2 / 2",
+       "ok": true
+      },
+      {
+       "label": "247.5°",
+       "value": "left +1.4 px · right +0.3 px",
+       "note": "pupil px 7 / 9 / 2",
+       "ok": true
+      },
+      {
+       "label": "270°",
+       "value": "left +0.8 px · right hidden",
+       "note": "pupil px 2 / 5 / 0",
+       "ok": true
+      },
+      {
+       "label": "292.5°",
+       "value": "left +0.5 px · right hidden",
+       "note": "pupil px 3 / 5 / 0",
+       "ok": true
+      },
+      {
+       "label": "315°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "337.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "look",
+     "title": "Look-at: the head turned to every limit opens no gap in the hair, hood or collar; the aim lands",
+     "ms": 397,
+     "pass": true,
+     "value": "0 px",
+     "detail": "256 renders: idle f0 and walk f2 at 16 facings, the head turned to each limit (yaw ±60, pitch -15 / 20 and the four corners; neck 0.4, head 0.6). Scalp inside the hair region: 0 px. Neck showing through the hood beyond the unturned pose: 0 px. See-through at the neck, collar or hood beyond the unturned pose: 0 px. Aim (share 1): for 21 targets 2 m away inside the limits, lookAt() then the turn points the head's +y within 1.70° of the target (worst at bearing 50°, -0.35 m).",
+     "gate": true
+    },
+    {
+     "id": "tones",
+     "title": "Tone discipline: each material lights at most four ramp steps in a frame (the contour step aside)",
+     "ms": 323,
+     "pass": true,
+     "value": "4 steps",
+     "detail": "392 renders. The most lit steps any one material spends in a frame: 4 (over · idle f0 N). The inner contour darkens one step past that — the outline doing its job, not a fifth tone.",
+     "gate": true
+    },
+    {
+     "id": "light",
+     "title": "Top-of-frame key: the rest pose at E is the mirror of W, to the pixel",
+     "ms": 9,
+     "pass": true,
+     "value": "0 px differ",
+     "detail": "E against W mirrored: 0 px differ. S against itself mirrored (head snap off — an odd-width head cannot sit on a pixel centre and be centred on the pivot seam at once): 0 px. An upper-left key cannot pass this; the key is 0.000, 0.811, 0.585 (right, up, toward camera) — the fleet key without its left component.",
+     "gate": true
+    },
+    {
+     "id": "budget",
+     "title": "Budget against rig 7 (reported: over 1,000 tris is allowed)",
+     "ms": 68,
+     "pass": false,
+     "value": "1065 tris",
+     "detail": "1065 tris (503 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1820 KB of clip JSON against 2,155 KB for 35 · bind mesh 168 KB against 235 KB.",
+     "gate": false
+    },
+    {
+     "id": "sidecar",
+     "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
+     "ms": 31,
+     "pass": true,
+     "value": "53 clips · 438 frames",
+     "detail": "Schema hidden-harbours/character-gameplay@1. Walk 0.705 m/s, run 1.94 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 0.970; ladder 0.545). No section missing.",
+     "gate": true
+    },
+    {
+     "id": "heights",
+     "title": "World heights: the crown in idle is the build's designed height",
+     "ms": 0,
+     "pass": true,
+     "value": "1.474 m",
+     "detail": "Crown in idle 1.474 m against the build's 1.490 m (adult, height step 0; the Fisher is 1.522, rig 7 1.523). Hip joint 0.564 (rig 7 0.587). Palms at rest 0.558 m. Legs 0.490 m hip to ankle (rig 7 0.541), arms 0.462 m shoulder to palm.",
+     "gate": true
+    }
+   ]
+  },
+  "skipper": {
+   "label": "Skipper",
+   "passed": 19,
+   "of": 19,
+   "reported": 1,
+   "ms": 6859,
+   "checks": [
+    {
+     "id": "timing",
+     "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
+     "ms": 1,
+     "pass": true,
+     "value": "35 / 35",
+     "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)",
+     "gate": true
+    },
+    {
+     "id": "skeleton",
+     "title": "Skeleton: 28 bones, parents first, identity bind, every deform length constant in every frame",
+     "ms": 52,
+     "pass": true,
+     "value": "2.22e-16 m",
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 2.22e-16 m (place f1 hand_L). No tip, cuff, hem or inseam bones.",
+     "gate": true
+    },
+    {
+     "id": "skin",
+     "title": "Skin weights: every vertex sums to 1; the only blended ring is the waist",
+     "ms": 1,
+     "pass": true,
+     "value": "10 blended",
+     "detail": "2148 vertices, 0 with weights that do not sum to 1. 10 distinct blended positions (spine 0.5 / chest 0.5), all on this build's waist ring at 0.835 m (and the bib or apron edge that rides it).",
+     "gate": true
+    },
+    {
+     "id": "roundtrip",
+     "title": "Export round trip: quaternions out → FK → skinned mesh equals the solver",
+     "ms": 224,
+     "pass": true,
+     "value": "7.04e-16 m",
+     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 7.04e-16 m at mountCab f9; gate 1e-6 m.",
+     "gate": true
+    },
+    {
+     "id": "continuity",
+     "title": "Quaternion tracks stay in one hemisphere frame to frame",
+     "ms": 28,
+     "pass": true,
+     "value": "0 flips",
+     "detail": "Sign continuity on every bone of every clip. Largest joint step between two frames: 142.4° (mountCab f6→7 hip_R) — a slerp between neighbours never takes the long way round.",
+     "gate": true
+    },
+    {
+     "id": "rock",
+     "title": "Deck rock is a three-bone additive, keyed on the rock alone",
+     "ms": 686,
+     "pass": true,
+     "value": "3 of 28 bones",
+     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0. Deltas equal the table (keyed on the rock alone) to 0; clip + table through quaternions skins to the rocked solve within 9.16e-16 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock.",
+     "gate": true
+    },
+    {
+     "id": "loops",
+     "title": "Loops close: u = 1 is u = 0, the ladder included (it is body-anchored)",
+     "ms": 15,
+     "pass": true,
+     "value": "2.99e-16 m",
+     "detail": "37 looping clips. Worst seam 2.99e-16 m (balance).",
+     "gate": true
+    },
+    {
+     "id": "handoffs",
+     "title": "One-shots meet the clips they hand to, to the micron",
+     "ms": 19,
+     "pass": true,
+     "value": "8.95e-16 m",
+     "detail": "board last = idle on the deck 8.88e-16 · boardDown f0 = idle on the deck 8.88e-16 · boardDown last = idle on the dock 0 · mountUp f0 = idle beside the machine 4.58e-16 · mountUp last = astride f0 8.95e-16 · mountDown f0 = astride f0 8.95e-16 · mountDown last = idle beside 4.58e-16 · mountCab last = astride(bench) f0 8.95e-16 · mountCabDown f0 = astride(bench) f0 8.95e-16 · reach last = idle 0",
+     "gate": true
+    },
+    {
+     "id": "contacts",
+     "title": "Contacts: no skate at the engine speed, no sole below the ground, limbs make their targets",
+     "ms": 114,
+     "pass": true,
+     "value": "0.00 mm skate",
+     "detail": "Planted-foot drift against a ground moving at the clip speed: 0.00 mm (walk L). Deepest vertex below z = 0 on grounded clips: 1.3 mm (mountCab f15). Limbs short of a target by > 5 mm on gated clips: none. Reported, not gated: astride 42 mm, astrideStand 63 mm, mountUp 132 mm, mountDown 129 mm, mountCab 61 mm, mountCabDown 57 mm — at the default saddle, whose seat and pegs these legs cannot reach. Saddle family at the fitted saddle (the default scaled to 0.4, the idle spot 0.6 m beside it): worst limb 0 mm, seat gap 0 mm, standing foot on the ground until the seat carries the body — gated.",
+     "rows": [
+      {
+       "label": "astride",
+       "value": "42 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "astrideStand",
+       "value": "63 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "mountUp",
+       "value": "132 mm",
+       "note": "footR f8 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountDown",
+       "value": "129 mm",
+       "note": "footR f6 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCab",
+       "value": "61 mm",
+       "note": "footL f16 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCabDown",
+       "value": "57 mm",
+       "note": "footL f1 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "saddle family at scale 0.4",
+       "value": "0 mm",
+       "note": "seat gap 0 mm · standing foot grounded",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "travel",
+     "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
+     "ms": 128,
+     "pass": true,
+     "value": "0.343 m",
+     "detail": "Largest single-frame vertex move 0.343 m (cast f4→5), gate 0.367 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.325 m (mountDown f5→6). Reported: the mounts at the default saddle, 0.591 m (mountCab f6→7). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.536 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.402 m (a 0.55 m drop in six frames, 570 ms).",
+     "gate": true
+    },
+    {
+     "id": "cell",
+     "title": "Every frame fits the 64 × 92 cell at every facing, keyline included, 1 px spare",
+     "ms": 4169,
+     "pass": true,
+     "value": "1 px spare",
+     "detail": "2992 renders. Tightest: 1 px (dig f0 SW). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one.",
+     "gate": true
+    },
+    {
+     "id": "face",
+     "title": "The face resolves at 32 px/m: two eyes in front views, one in profile, none from behind",
+     "ms": 178,
+     "pass": true,
+     "value": "8 / 8 facings",
+     "detail": "Every face group draws at S: eyes.open 8 · eyes.half 8 · eyes.shut 8 · eyes.wide 8 · eyes.left 8 · eyes.right 8 · brows.flat 4 · brows.up 4 · brows.knit 4 · mouth.flat 2 · mouth.open 5 · mouth.grit 4 · mouth.smile 4 px. Every state changes its slot pixels at S against the default. At the diagonals these read the same as the default: mouth.smile SE, mouth.smile SW.",
+     "rows": [
+      {
+       "label": "N",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NE",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "E",
+       "value": "1 eye",
+       "note": "eyes 0+6 px · nose 1 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "SE",
+       "value": "2 eyes",
+       "note": "eyes 2+3 px · nose 1 px · mouth 1 px",
+       "ok": true
+      },
+      {
+       "label": "S",
+       "value": "2 eyes",
+       "note": "eyes 4+4 px · nose 1 px · mouth 2 px",
+       "ok": true
+      },
+      {
+       "label": "SW",
+       "value": "2 eyes",
+       "note": "eyes 3+2 px · nose 1 px · mouth 2 px",
+       "ok": true
+      },
+      {
+       "label": "W",
+       "value": "1 eye",
+       "note": "eyes 6+0 px · nose 1 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NW",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "hair",
+     "title": "Hair: no skull skin where the hair is — 16 facings, idle, walk and the head turned to its limits",
+     "ms": 163,
+     "pass": true,
+     "value": "0 px",
+     "detail": "128 renders (16 facings × idle f0, f3, walk f2, f6 and idle with the head turned to yaw ±60 and pitch −15 / +20). Skull skin inside the hair region: 0 px; skull faces painted skin inside it: 0. Hair region (crop): front hairline 1.426, corners 1.36, temples 1.425, over the ear 1.333, nape 1.245. The skin meant to show, most in one render: face and forehead 26 px, temples 6, over the ear line 0, nape 0. Painted scalp (hair-coloured skull) showing through the shell: at most 41 px.",
+     "gate": true
+    },
+    {
+     "id": "gaze",
+     "title": "Gaze: eyes.left and eyes.right move the pupils at every facing where the eyes show",
+     "ms": 63,
+     "pass": true,
+     "value": "11 facings",
+     "detail": "At 32 px/m, idle f0, 16 facings: the pupil (the ink and iris pixels) of eyes.left and of eyes.right against eyes.open, screen x of the pupils' centre (\"hidden\" where the only eye shown turns away in profile). Where two eyes show, eyes.left and eyes.right each move the pupils; where one eye shows in profile the two read apart (toward the camera the pupil stays, away it turns white).",
+     "rows": [
+      {
+       "label": "0°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "22.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "45°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "67.5°",
+       "value": "left hidden · right -0.5 px",
+       "note": "pupil px 1 / 0 / 2",
+       "ok": true
+      },
+      {
+       "label": "90°",
+       "value": "left hidden · right -0.5 px",
+       "note": "pupil px 2 / 0 / 3",
+       "ok": true
+      },
+      {
+       "label": "112.5°",
+       "value": "left +0.3 px · right -1.1 px",
+       "note": "pupil px 4 / 1 / 5",
+       "ok": true
+      },
+      {
+       "label": "135°",
+       "value": "left -1.0 px · right -0.5 px",
+       "note": "pupil px 2 / 1 / 2",
+       "ok": true
+      },
+      {
+       "label": "157.5°",
+       "value": "left +0.2 px · right -0.3 px",
+       "note": "pupil px 3 / 2 / 3",
+       "ok": true
+      },
+      {
+       "label": "180°",
+       "value": "left +0.5 px · right -0.5 px",
+       "note": "pupil px 2 / 2 / 2",
+       "ok": true
+      },
+      {
+       "label": "202.5°",
+       "value": "left +0.5 px · right -0.5 px",
+       "note": "pupil px 2 / 2 / 2",
+       "ok": true
+      },
+      {
+       "label": "225°",
+       "value": "left +0.5 px · right +1.0 px",
+       "note": "pupil px 2 / 2 / 1",
+       "ok": true
+      },
+      {
+       "label": "247.5°",
+       "value": "left +1.3 px · right -2.0 px",
+       "note": "pupil px 2 / 3 / 1",
+       "ok": true
+      },
+      {
+       "label": "270°",
+       "value": "left +1.0 px · right hidden",
+       "note": "pupil px 1 / 3 / 0",
+       "ok": true
+      },
+      {
+       "label": "292.5°",
+       "value": "left +0.5 px · right hidden",
+       "note": "pupil px 1 / 2 / 0",
+       "ok": true
+      },
+      {
+       "label": "315°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "337.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "look",
+     "title": "Look-at: the head turned to every limit opens no gap in the hair, hood or collar; the aim lands",
+     "ms": 432,
+     "pass": true,
+     "value": "0 px",
+     "detail": "256 renders: idle f0 and walk f2 at 16 facings, the head turned to each limit (yaw ±60, pitch -15 / 20 and the four corners; neck 0.4, head 0.6). Scalp inside the hair region: 0 px. See-through at the neck, collar or hood beyond the unturned pose: 0 px. Aim (share 1): for 21 targets 2 m away inside the limits, lookAt() then the turn points the head's +y within 2.40° of the target (worst at bearing -50°, +0.25 m).",
+     "gate": true
+    },
+    {
+     "id": "tones",
+     "title": "Tone discipline: each material lights at most four ramp steps in a frame (the contour step aside)",
+     "ms": 468,
+     "pass": true,
+     "value": "4 steps",
+     "detail": "392 renders. The most lit steps any one material spends in a frame: 4 (over · idle f0 N). The inner contour darkens one step past that — the outline doing its job, not a fifth tone.",
+     "gate": true
+    },
+    {
+     "id": "light",
+     "title": "Top-of-frame key: the rest pose at E is the mirror of W, to the pixel",
+     "ms": 9,
+     "pass": true,
+     "value": "0 px differ",
+     "detail": "E against W mirrored: 0 px differ. S against itself mirrored (head snap off — an odd-width head cannot sit on a pixel centre and be centred on the pivot seam at once): 0 px. An upper-left key cannot pass this; the key is 0.000, 0.811, 0.585 (right, up, toward camera) — the fleet key without its left component.",
+     "gate": true
+    },
+    {
+     "id": "budget",
+     "title": "Budget against rig 7 (reported: over 1,000 tris is allowed)",
+     "ms": 64,
+     "pass": false,
+     "value": "1072 tris",
+     "detail": "1072 tris (538 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1832 KB of clip JSON against 2,155 KB for 35 · bind mesh 183 KB against 235 KB.",
+     "gate": false
+    },
+    {
+     "id": "sidecar",
+     "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
+     "ms": 32,
+     "pass": true,
+     "value": "53 clips · 438 frames",
+     "detail": "Schema hidden-harbours/character-gameplay@1. Walk 0.721 m/s, run 1.983 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 0.992; ladder 0.545). No section missing.",
+     "gate": true
+    },
+    {
+     "id": "heights",
+     "title": "World heights: the crown in idle is the build's designed height",
+     "ms": 0,
+     "pass": true,
+     "value": "1.488 m",
+     "detail": "Crown in idle 1.488 m against the build's 1.508 m (elder, height step +1; the Fisher is 1.522, rig 7 1.523). Hip joint 0.576 (rig 7 0.587). Palms at rest 0.572 m. Legs 0.501 m hip to ankle (rig 7 0.541), arms 0.473 m shoulder to palm.",
+     "gate": true
+    }
+   ]
+  },
+  "nan": {
+   "label": "Nan",
+   "passed": 19,
+   "of": 19,
+   "reported": 1,
+   "ms": 6655,
+   "checks": [
+    {
+     "id": "timing",
+     "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
+     "ms": 0,
+     "pass": true,
+     "value": "35 / 35",
+     "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)",
+     "gate": true
+    },
+    {
+     "id": "skeleton",
+     "title": "Skeleton: 28 bones, parents first, identity bind, every deform length constant in every frame",
+     "ms": 54,
+     "pass": true,
+     "value": "1.67e-16 m",
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 1.67e-16 m (board f9 neck). No tip, cuff, hem or inseam bones.",
+     "gate": true
+    },
+    {
+     "id": "skin",
+     "title": "Skin weights: every vertex sums to 1; the only blended ring is the waist",
+     "ms": 2,
+     "pass": true,
+     "value": "8 blended",
+     "detail": "2084 vertices, 0 with weights that do not sum to 1. 8 distinct blended positions (spine 0.5 / chest 0.5), all on this build's waist ring at 0.741 m (and the bib or apron edge that rides it).",
+     "gate": true
+    },
+    {
+     "id": "roundtrip",
+     "title": "Export round trip: quaternions out → FK → skinned mesh equals the solver",
+     "ms": 218,
+     "pass": true,
+     "value": "8.95e-16 m",
+     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 8.95e-16 m at astrideStand f0; gate 1e-6 m.",
+     "gate": true
+    },
+    {
+     "id": "continuity",
+     "title": "Quaternion tracks stay in one hemisphere frame to frame",
+     "ms": 27,
+     "pass": true,
+     "value": "0 flips",
+     "detail": "Sign continuity on every bone of every clip. Largest joint step between two frames: 169.3° (mountCabDown f9→10 hip_R) — a slerp between neighbours never takes the long way round.",
+     "gate": true
+    },
+    {
+     "id": "rock",
+     "title": "Deck rock is a three-bone additive, keyed on the rock alone",
+     "ms": 670,
+     "pass": true,
+     "value": "3 of 28 bones",
+     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0. Deltas equal the table (keyed on the rock alone) to 0; clip + table through quaternions skins to the rocked solve within 8.97e-16 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock.",
+     "gate": true
+    },
+    {
+     "id": "loops",
+     "title": "Loops close: u = 1 is u = 0, the ladder included (it is body-anchored)",
+     "ms": 14,
+     "pass": true,
+     "value": "4.44e-16 m",
+     "detail": "37 looping clips. Worst seam 4.44e-16 m (run).",
+     "gate": true
+    },
+    {
+     "id": "handoffs",
+     "title": "One-shots meet the clips they hand to, to the micron",
+     "ms": 20,
+     "pass": true,
+     "value": "4.58e-16 m",
+     "detail": "board last = idle on the deck 4.44e-16 · boardDown f0 = idle on the deck 4.44e-16 · boardDown last = idle on the dock 0 · mountUp f0 = idle beside the machine 4.58e-16 · mountUp last = astride f0 2.83e-16 · mountDown f0 = astride f0 2.83e-16 · mountDown last = idle beside 4.58e-16 · mountCab last = astride(bench) f0 2.83e-16 · mountCabDown f0 = astride(bench) f0 2.83e-16 · reach last = idle 0",
+     "gate": true
+    },
+    {
+     "id": "contacts",
+     "title": "Contacts: no skate at the engine speed, no sole below the ground, limbs make their targets",
+     "ms": 113,
+     "pass": true,
+     "value": "0.02 mm skate",
+     "detail": "Planted-foot drift against a ground moving at the clip speed: 0.02 mm (walk L). Deepest vertex below z = 0 on grounded clips: 1.2 mm (mountCab f15). Cloth (skirt, apron) that meets the ground in a crouch, reported: 104 mm (reach f3) — it folds in the engine. Limbs short of a target by > 5 mm on gated clips: none. Reported, not gated: hauler 42 mm, drive 36 mm, astride 108 mm, astrideStand 129 mm, mountUp 254 mm, mountDown 250 mm, mountCab 132 mm, mountCabDown 134 mm — at the default saddle, whose seat and pegs these legs cannot reach. Saddle family at the fitted saddle (the default scaled to 0.4, the idle spot 0.6 m beside it): worst limb 0 mm, seat gap 0 mm, standing foot on the ground until the seat carries the body — reported (a build smaller than the Fisher).",
+     "rows": [
+      {
+       "label": "hauler",
+       "value": "42 mm",
+       "note": "handL f4 · workZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "drive",
+       "value": "36 mm",
+       "note": "footR f4 · wheel sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "astride",
+       "value": "108 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "astrideStand",
+       "value": "129 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "mountUp",
+       "value": "254 mm",
+       "note": "footR f8 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountDown",
+       "value": "250 mm",
+       "note": "footR f6 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCab",
+       "value": "132 mm",
+       "note": "footR f9 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCabDown",
+       "value": "134 mm",
+       "note": "footR f7 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "saddle family at scale 0.4",
+       "value": "0 mm",
+       "note": "seat gap 0 mm · standing foot grounded · reported",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "travel",
+     "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
+     "ms": 130,
+     "pass": true,
+     "value": "0.308 m",
+     "detail": "Largest single-frame vertex move 0.308 m (swim f4→5), gate 0.350 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). Cloth (skirt, apron) reported: 0.368 m (mountDown f0→1). The mounts at the fitted saddle: 0.339 m (mountDown f5→6), reported on a build smaller than the Fisher. Reported: the mounts at the default saddle and the world-contract clips (rail, bench, cab) on this build smaller than the Fisher, 0.560 m (mountDown f8→9). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.485 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.396 m (a 0.55 m drop in six frames, 570 ms).",
+     "gate": true
+    },
+    {
+     "id": "cell",
+     "title": "Every frame fits the 64 × 92 cell at every facing, keyline included, 1 px spare",
+     "ms": 4027,
+     "pass": true,
+     "value": "1 px spare",
+     "detail": "2992 renders. Tightest: 1 px (stagger f3 SE). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one.",
+     "gate": true
+    },
+    {
+     "id": "face",
+     "title": "The face resolves at 32 px/m: two eyes in front views, one in profile, none from behind",
+     "ms": 183,
+     "pass": true,
+     "value": "8 / 8 facings",
+     "detail": "Every face group draws at S: eyes.open 8 · eyes.half 8 · eyes.shut 8 · eyes.wide 8 · eyes.left 8 · eyes.right 8 · brows.flat 4 · brows.up 4 · brows.knit 4 · mouth.flat 3 · mouth.open 3 · mouth.grit 5 · mouth.smile 5 px. Every state changes its slot pixels at S against the default. At the diagonals these read the same as the default: mouth.smile SE, mouth.smile SW.",
+     "rows": [
+      {
+       "label": "N",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NE",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "E",
+       "value": "1 eye",
+       "note": "eyes 0+6 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "SE",
+       "value": "2 eyes",
+       "note": "eyes 2+3 px · nose 1 px · mouth 1 px",
+       "ok": true
+      },
+      {
+       "label": "S",
+       "value": "2 eyes",
+       "note": "eyes 4+4 px · nose 1 px · mouth 3 px",
+       "ok": true
+      },
+      {
+       "label": "SW",
+       "value": "2 eyes",
+       "note": "eyes 3+2 px · nose 1 px · mouth 1 px",
+       "ok": true
+      },
+      {
+       "label": "W",
+       "value": "1 eye",
+       "note": "eyes 4+0 px · nose 1 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NW",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "hair",
+     "title": "Hair: no skull skin where the hair is — 16 facings, idle, walk and the head turned to its limits",
+     "ms": 149,
+     "pass": true,
+     "value": "0 px",
+     "detail": "128 renders (16 facings × idle f0, f3, walk f2, f6 and idle with the head turned to yaw ±60 and pitch −15 / +20). Skull skin inside the hair region: 0 px; skull faces painted skin inside it: 0. Hair region (bun): front hairline 1.429, corners 1.36, temples 1.425, over the ear 1.333, nape 1.26. The skin meant to show, most in one render: face and forehead 47 px, temples 7, over the ear line 3, nape 20. Painted scalp (hair-coloured skull) showing through the shell: at most 2 px.",
+     "gate": true
+    },
+    {
+     "id": "gaze",
+     "title": "Gaze: eyes.left and eyes.right move the pupils at every facing where the eyes show",
+     "ms": 70,
+     "pass": true,
+     "value": "11 facings",
+     "detail": "At 32 px/m, idle f0, 16 facings: the pupil (the ink and iris pixels) of eyes.left and of eyes.right against eyes.open, screen x of the pupils' centre (\"hidden\" where the only eye shown turns away in profile). Where two eyes show, eyes.left and eyes.right each move the pupils; where one eye shows in profile the two read apart (toward the camera the pupil stays, away it turns white).",
+     "rows": [
+      {
+       "label": "0°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "22.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "45°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "67.5°",
+       "value": "left hidden · right -0.5 px",
+       "note": "pupil px 2 / 0 / 3",
+       "ok": true
+      },
+      {
+       "label": "90°",
+       "value": "left hidden · right -1.0 px",
+       "note": "pupil px 1 / 0 / 3",
+       "ok": true
+      },
+      {
+       "label": "112.5°",
+       "value": "left hidden · right -3.3 px",
+       "note": "pupil px 2 / 0 / 5",
+       "ok": true
+      },
+      {
+       "label": "135°",
+       "value": "left -0.8 px · right +1.7 px",
+       "note": "pupil px 3 / 2 / 1",
+       "ok": true
+      },
+      {
+       "label": "157.5°",
+       "value": "left +1.3 px · right +2.3 px",
+       "note": "pupil px 3 / 4 / 1",
+       "ok": true
+      },
+      {
+       "label": "180°",
+       "value": "left +0.5 px · right -0.5 px",
+       "note": "pupil px 2 / 2 / 2",
+       "ok": true
+      },
+      {
+       "label": "202.5°",
+       "value": "left -1.5 px · right -1.5 px",
+       "note": "pupil px 2 / 1 / 3",
+       "ok": true
+      },
+      {
+       "label": "225°",
+       "value": "left +0.5 px · right +1.0 px",
+       "note": "pupil px 2 / 2 / 1",
+       "ok": true
+      },
+      {
+       "label": "247.5°",
+       "value": "left -0.7 px · right hidden",
+       "note": "pupil px 1 / 3 / 0",
+       "ok": true
+      },
+      {
+       "label": "270°",
+       "value": "left +0.5 px · right hidden",
+       "note": "pupil px 1 / 2 / 0",
+       "ok": true
+      },
+      {
+       "label": "292.5°",
+       "value": "left +0.5 px · right hidden",
+       "note": "pupil px 1 / 2 / 0",
+       "ok": true
+      },
+      {
+       "label": "315°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "337.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "look",
+     "title": "Look-at: the head turned to every limit opens no gap in the hair, hood or collar; the aim lands",
+     "ms": 410,
+     "pass": true,
+     "value": "0 px",
+     "detail": "256 renders: idle f0 and walk f2 at 16 facings, the head turned to each limit (yaw ±60, pitch -15 / 20 and the four corners; neck 0.4, head 0.6). Scalp inside the hair region: 0 px. See-through at the neck, collar or hood beyond the unturned pose: 0 px. Aim (share 1): for 21 targets 2 m away inside the limits, lookAt() then the turn points the head's +y within 2.40° of the target (worst at bearing -50°, +0.25 m).",
+     "gate": true
+    },
+    {
+     "id": "tones",
+     "title": "Tone discipline: each material lights at most four ramp steps in a frame (the contour step aside)",
+     "ms": 455,
+     "pass": true,
+     "value": "4 steps",
+     "detail": "392 renders. The most lit steps any one material spends in a frame: 4 (hair · idle f0 NE). The inner contour darkens one step past that — the outline doing its job, not a fifth tone.",
+     "gate": true
+    },
+    {
+     "id": "light",
+     "title": "Top-of-frame key: the rest pose at E is the mirror of W, to the pixel",
+     "ms": 10,
+     "pass": true,
+     "value": "0 px differ",
+     "detail": "E against W mirrored: 0 px differ. S against itself mirrored (head snap off — an odd-width head cannot sit on a pixel centre and be centred on the pivot seam at once): 0 px. An upper-left key cannot pass this; the key is 0.000, 0.811, 0.585 (right, up, toward camera) — the fleet key without its left component.",
+     "gate": true
+    },
+    {
+     "id": "budget",
+     "title": "Budget against rig 7 (reported: over 1,000 tris is allowed)",
+     "ms": 63,
+     "pass": false,
+     "value": "1042 tris",
+     "detail": "1042 tris (521 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1834 KB of clip JSON against 2,155 KB for 35 · bind mesh 180 KB against 235 KB.",
+     "gate": false
+    },
+    {
+     "id": "sidecar",
+     "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
+     "ms": 25,
+     "pass": true,
+     "value": "53 clips · 438 frames",
+     "detail": "Schema hidden-harbours/character-gameplay@1. Walk 0.628 m/s, run 1.727 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 0.864; ladder 0.545). No section missing.",
+     "gate": true
+    },
+    {
+     "id": "heights",
+     "title": "World heights: the crown in idle is the build's designed height",
+     "ms": 0,
+     "pass": true,
+     "value": "1.357 m",
+     "detail": "Crown in idle 1.357 m against the build's 1.377 m (elder, height step -1; the Fisher is 1.522, rig 7 1.523). Hip joint 0.508 (rig 7 0.587). Palms at rest 0.509 m. Legs 0.436 m hip to ankle (rig 7 0.541), arms 0.421 m shoulder to palm.",
+     "gate": true
+    }
+   ]
+  },
+  "deckboss": {
+   "label": "Deck boss",
+   "passed": 19,
+   "of": 19,
+   "reported": 1,
+   "ms": 5980,
+   "checks": [
+    {
+     "id": "timing",
+     "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
+     "ms": 1,
+     "pass": true,
+     "value": "35 / 35",
+     "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)",
+     "gate": true
+    },
+    {
+     "id": "skeleton",
+     "title": "Skeleton: 28 bones, parents first, identity bind, every deform length constant in every frame",
+     "ms": 52,
+     "pass": true,
+     "value": "2.22e-16 m",
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 2.22e-16 m (mountUp f9 foot_R). No tip, cuff, hem or inseam bones.",
+     "gate": true
+    },
+    {
+     "id": "skin",
+     "title": "Skin weights: every vertex sums to 1; the only blended ring is the waist",
+     "ms": 1,
+     "pass": true,
+     "value": "8 blended",
+     "detail": "1744 vertices, 0 with weights that do not sum to 1. 8 distinct blended positions (spine 0.5 / chest 0.5), all on this build's waist ring at 0.913 m (and the bib or apron edge that rides it).",
+     "gate": true
+    },
+    {
+     "id": "roundtrip",
+     "title": "Export round trip: quaternions out → FK → skinned mesh equals the solver",
+     "ms": 198,
+     "pass": true,
+     "value": "8.96e-16 m",
+     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 8.96e-16 m at lift f4; gate 1e-6 m.",
+     "gate": true
+    },
+    {
+     "id": "continuity",
+     "title": "Quaternion tracks stay in one hemisphere frame to frame",
+     "ms": 29,
+     "pass": true,
+     "value": "0 flips",
+     "detail": "Sign continuity on every bone of every clip. Largest joint step between two frames: 145.9° (mountDown f4→5 hip_R) — a slerp between neighbours never takes the long way round.",
+     "gate": true
+    },
+    {
+     "id": "rock",
+     "title": "Deck rock is a three-bone additive, keyed on the rock alone",
+     "ms": 576,
+     "pass": true,
+     "value": "3 of 28 bones",
+     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0. Deltas equal the table (keyed on the rock alone) to 0; clip + table through quaternions skins to the rocked solve within 9.19e-16 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock.",
+     "gate": true
+    },
+    {
+     "id": "loops",
+     "title": "Loops close: u = 1 is u = 0, the ladder included (it is body-anchored)",
+     "ms": 12,
+     "pass": true,
+     "value": "5.09e-16 m",
+     "detail": "37 looping clips. Worst seam 5.09e-16 m (balance).",
+     "gate": true
+    },
+    {
+     "id": "handoffs",
+     "title": "One-shots meet the clips they hand to, to the micron",
+     "ms": 15,
+     "pass": true,
+     "value": "4.97e-16 m",
+     "detail": "board last = idle on the deck 4.97e-16 · boardDown f0 = idle on the deck 4.97e-16 · boardDown last = idle on the dock 0 · mountUp f0 = idle beside the machine 3.14e-16 · mountUp last = astride f0 2.72e-16 · mountDown f0 = astride f0 2.72e-16 · mountDown last = idle beside 3.14e-16 · mountCab last = astride(bench) f0 2.72e-16 · mountCabDown f0 = astride(bench) f0 2.72e-16 · reach last = idle 0",
+     "gate": true
+    },
+    {
+     "id": "contacts",
+     "title": "Contacts: no skate at the engine speed, no sole below the ground, limbs make their targets",
+     "ms": 93,
+     "pass": true,
+     "value": "0.04 mm skate",
+     "detail": "Planted-foot drift against a ground moving at the clip speed: 0.04 mm (walk L). Deepest vertex below z = 0 on grounded clips: 1.3 mm (mountCab f15). Limbs short of a target by > 5 mm on gated clips: none. Reported, not gated: astride 2 mm, astrideStand 3 mm, mountUp 43 mm, mountDown 32 mm, mountCab 40 mm, mountCabDown 43 mm — at the default saddle, whose seat and pegs these legs cannot reach. Saddle family at the fitted saddle (the default scaled to 0.4, the idle spot 0.6 m beside it): worst limb 0 mm, seat gap 0 mm, standing foot on the ground until the seat carries the body — gated.",
+     "rows": [
+      {
+       "label": "board",
+       "value": "4 mm",
+       "note": "handL f2",
+       "ok": true
+      },
+      {
+       "label": "reach",
+       "value": "2 mm",
+       "note": "handL f1",
+       "ok": true
+      },
+      {
+       "label": "astride",
+       "value": "2 mm",
+       "note": "handR f2 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "astrideStand",
+       "value": "3 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "mountUp",
+       "value": "43 mm",
+       "note": "footL f14 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountDown",
+       "value": "32 mm",
+       "note": "footL f1 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCab",
+       "value": "40 mm",
+       "note": "footL f16 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCabDown",
+       "value": "43 mm",
+       "note": "footL f1 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "saddle family at scale 0.4",
+       "value": "0 mm",
+       "note": "seat gap 0 mm · standing foot grounded",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "travel",
+     "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
+     "ms": 123,
+     "pass": true,
+     "value": "0.386 m",
+     "detail": "Largest single-frame vertex move 0.386 m (swim f4→5), gate 0.401 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.300 m (mountDown f5→6). Reported: the mounts at the default saddle, 0.590 m (mountCab f6→7). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.576 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.404 m (a 0.55 m drop in six frames, 570 ms).",
+     "gate": true
+    },
+    {
+     "id": "cell",
+     "title": "Every frame fits the 64 × 92 cell at every facing, keyline included, 1 px spare",
+     "ms": 3566,
+     "pass": true,
+     "value": "1 px spare",
+     "detail": "2992 renders. Tightest: 1 px (dig f0 SW). Reported, not gated: cloth (skirt, apron) reaches the cell edge in sleep f0 N; it folds in the engine. Reported, not gated: swim, sleep and tread on a build taller than the Fisher, tightest 0 px (sleep f0 N); at 0 px the body reaches the cell edge. The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one.",
+     "gate": true
+    },
+    {
+     "id": "face",
+     "title": "The face resolves at 32 px/m: two eyes in front views, one in profile, none from behind",
+     "ms": 177,
+     "pass": true,
+     "value": "8 / 8 facings",
+     "detail": "Every face group draws at S: eyes.open 8 · eyes.half 4 · eyes.shut 6 · eyes.wide 8 · eyes.left 8 · eyes.right 8 · brows.flat 4 · brows.up 2 · brows.knit 4 · mouth.flat 3 · mouth.open 6 · mouth.grit 5 · mouth.smile 5 px. Every state changes its slot pixels at S against the default. At the diagonals these read the same as the default: mouth.smile SE.",
+     "rows": [
+      {
+       "label": "N",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NE",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "E",
+       "value": "1 eye",
+       "note": "eyes 0+4 px · nose 1 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "SE",
+       "value": "2 eyes",
+       "note": "eyes 2+3 px · nose 0 px · mouth 2 px",
+       "ok": true
+      },
+      {
+       "label": "S",
+       "value": "2 eyes",
+       "note": "eyes 4+4 px · nose 0 px · mouth 3 px",
+       "ok": true
+      },
+      {
+       "label": "SW",
+       "value": "2 eyes",
+       "note": "eyes 3+2 px · nose 0 px · mouth 1 px",
+       "ok": true
+      },
+      {
+       "label": "W",
+       "value": "1 eye",
+       "note": "eyes 4+0 px · nose 1 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NW",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "hair",
+     "title": "Hair: no skull skin where the hair is — 16 facings, idle, walk and the head turned to its limits",
+     "ms": 157,
+     "pass": true,
+     "value": "0 px",
+     "detail": "128 renders (16 facings × idle f0, f3, walk f2, f6 and idle with the head turned to yaw ±60 and pitch −15 / +20). Skull skin inside the hair region: 0 px; skull faces painted skin inside it: 0. Hair region (buzz): front hairline 1.425, corners 1.425, temples 1.425, over the ear 1.333, nape 1.3. The skin meant to show, most in one render: face and forehead 79 px, temples 9, over the ear line 1, nape 39. Painted scalp (hair-coloured skull) showing through the shell: at most 62 px.",
+     "gate": true
+    },
+    {
+     "id": "gaze",
+     "title": "Gaze: eyes.left and eyes.right move the pupils at every facing where the eyes show",
+     "ms": 56,
+     "pass": true,
+     "value": "11 facings",
+     "detail": "At 32 px/m, idle f0, 16 facings: the pupil (the ink and iris pixels) of eyes.left and of eyes.right against eyes.open, screen x of the pupils' centre (\"hidden\" where the only eye shown turns away in profile). Where two eyes show, eyes.left and eyes.right each move the pupils; where one eye shows in profile the two read apart (toward the camera the pupil stays, away it turns white).",
+     "rows": [
+      {
+       "label": "0°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "22.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "45°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "67.5°",
+       "value": "left hidden · right -0.2 px",
+       "note": "pupil px 4 / 0 / 5",
+       "ok": true
+      },
+      {
+       "label": "90°",
+       "value": "left hidden · right -0.2 px",
+       "note": "pupil px 3 / 0 / 4",
+       "ok": true
+      },
+      {
+       "label": "112.5°",
+       "value": "left +2.0 px · right -0.5 px",
+       "note": "pupil px 10 / 4 / 11",
+       "ok": true
+      },
+      {
+       "label": "135°",
+       "value": "left -0.3 px · right -0.3 px",
+       "note": "pupil px 4 / 3 / 4",
+       "ok": true
+      },
+      {
+       "label": "157.5°",
+       "value": "left +0.3 px · right +0.5 px",
+       "note": "pupil px 6 / 4 / 5",
+       "ok": true
+      },
+      {
+       "label": "180°",
+       "value": "left +0.2 px · right -0.2 px",
+       "note": "pupil px 6 / 6 / 6",
+       "ok": true
+      },
+      {
+       "label": "202.5°",
+       "value": "left +0.2 px · right -0.4 px",
+       "note": "pupil px 5 / 5 / 4",
+       "ok": true
+      },
+      {
+       "label": "225°",
+       "value": "left +0.3 px · right +0.3 px",
+       "note": "pupil px 4 / 4 / 3",
+       "ok": true
+      },
+      {
+       "label": "247.5°",
+       "value": "left +0.9 px · right -1.2 px",
+       "note": "pupil px 10 / 12 / 5",
+       "ok": true
+      },
+      {
+       "label": "270°",
+       "value": "left +0.2 px · right hidden",
+       "note": "pupil px 3 / 4 / 0",
+       "ok": true
+      },
+      {
+       "label": "292.5°",
+       "value": "left +0.0 px · right hidden",
+       "note": "pupil px 3 / 4 / 0",
+       "ok": true
+      },
+      {
+       "label": "315°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "337.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "look",
+     "title": "Look-at: the head turned to every limit opens no gap in the hair, hood or collar; the aim lands",
+     "ms": 393,
+     "pass": true,
+     "value": "0 px",
+     "detail": "256 renders: idle f0 and walk f2 at 16 facings, the head turned to each limit (yaw ±60, pitch -15 / 20 and the four corners; neck 0.4, head 0.6). Scalp inside the hair region: 0 px. See-through at the neck, collar or hood beyond the unturned pose: 0 px. Aim (share 1): for 21 targets 2 m away inside the limits, lookAt() then the turn points the head's +y within 1.70° of the target (worst at bearing 50°, -0.35 m).",
+     "gate": true
+    },
+    {
+     "id": "tones",
+     "title": "Tone discipline: each material lights at most four ramp steps in a frame (the contour step aside)",
+     "ms": 412,
+     "pass": true,
+     "value": "4 steps",
+     "detail": "392 renders. The most lit steps any one material spends in a frame: 4 (over · idle f0 N). The inner contour darkens one step past that — the outline doing its job, not a fifth tone.",
+     "gate": true
+    },
+    {
+     "id": "light",
+     "title": "Top-of-frame key: the rest pose at E is the mirror of W, to the pixel",
+     "ms": 12,
+     "pass": true,
+     "value": "0 px differ",
+     "detail": "E against W mirrored: 0 px differ. S against itself mirrored (head snap off — an odd-width head cannot sit on a pixel centre and be centred on the pivot seam at once): 0 px. An upper-left key cannot pass this; the key is 0.000, 0.811, 0.585 (right, up, toward camera) — the fleet key without its left component.",
+     "gate": true
+    },
+    {
+     "id": "budget",
+     "title": "Budget against rig 7 (reported: over 1,000 tris is allowed)",
+     "ms": 57,
+     "pass": true,
+     "value": "894 tris",
+     "detail": "894 tris (425 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1824 KB of clip JSON against 2,155 KB for 35 · bind mesh 147 KB against 235 KB.",
+     "gate": false
+    },
+    {
+     "id": "sidecar",
+     "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
+     "ms": 38,
+     "pass": true,
+     "value": "53 clips · 438 frames",
+     "detail": "Schema hidden-harbours/character-gameplay@1. Walk 0.8 m/s, run 2.202 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.101; ladder 0.545). No section missing.",
+     "gate": true
+    },
+    {
+     "id": "heights",
+     "title": "World heights: the crown in idle is the build's designed height",
+     "ms": 0,
+     "pass": true,
+     "value": "1.598 m",
+     "detail": "Crown in idle 1.598 m against the build's 1.614 m (adult, height step +2; the Fisher is 1.522, rig 7 1.523). Hip joint 0.633 (rig 7 0.587). Palms at rest 0.622 m. Legs 0.556 m hip to ankle (rig 7 0.541), arms 0.514 m shoulder to palm.",
+     "gate": true
+    }
+   ]
+  },
+  "packer": {
+   "label": "Packer",
+   "passed": 19,
+   "of": 19,
+   "reported": 1,
+   "ms": 6757,
+   "checks": [
+    {
+     "id": "timing",
+     "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
+     "ms": 0,
+     "pass": true,
+     "value": "35 / 35",
+     "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)",
+     "gate": true
+    },
+    {
+     "id": "skeleton",
+     "title": "Skeleton: 28 bones, parents first, identity bind, every deform length constant in every frame",
+     "ms": 52,
+     "pass": true,
+     "value": "2.22e-16 m",
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 2.22e-16 m (run f0 hand_R). No tip, cuff, hem or inseam bones.",
+     "gate": true
+    },
+    {
+     "id": "skin",
+     "title": "Skin weights: every vertex sums to 1; the only blended ring is the waist",
+     "ms": 1,
+     "pass": true,
+     "value": "10 blended",
+     "detail": "2089 vertices, 0 with weights that do not sum to 1. 10 distinct blended positions (spine 0.5 / chest 0.5), all on this build's waist ring at 0.805 m (and the bib or apron edge that rides it).",
+     "gate": true
+    },
+    {
+     "id": "roundtrip",
+     "title": "Export round trip: quaternions out → FK → skinned mesh equals the solver",
+     "ms": 222,
+     "pass": true,
+     "value": "8.95e-16 m",
+     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 8.95e-16 m at reach f2; gate 1e-6 m.",
+     "gate": true
+    },
+    {
+     "id": "continuity",
+     "title": "Quaternion tracks stay in one hemisphere frame to frame",
+     "ms": 29,
+     "pass": true,
+     "value": "0 flips",
+     "detail": "Sign continuity on every bone of every clip. Largest joint step between two frames: 151.1° (mountCabDown f9→10 hip_R) — a slerp between neighbours never takes the long way round.",
+     "gate": true
+    },
+    {
+     "id": "rock",
+     "title": "Deck rock is a three-bone additive, keyed on the rock alone",
+     "ms": 696,
+     "pass": true,
+     "value": "3 of 28 bones",
+     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0. Deltas equal the table (keyed on the rock alone) to 0; clip + table through quaternions skins to the rocked solve within 1.12e-15 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock.",
+     "gate": true
+    },
+    {
+     "id": "loops",
+     "title": "Loops close: u = 1 is u = 0, the ladder included (it is body-anchored)",
+     "ms": 15,
+     "pass": true,
+     "value": "3.19e-16 m",
+     "detail": "37 looping clips. Worst seam 3.19e-16 m (balance).",
+     "gate": true
+    },
+    {
+     "id": "handoffs",
+     "title": "One-shots meet the clips they hand to, to the micron",
+     "ms": 20,
+     "pass": true,
+     "value": "4.58e-16 m",
+     "detail": "board last = idle on the deck 4.45e-16 · boardDown f0 = idle on the deck 4.45e-16 · boardDown last = idle on the dock 0 · mountUp f0 = idle beside the machine 4.44e-16 · mountUp last = astride f0 4.58e-16 · mountDown f0 = astride f0 4.58e-16 · mountDown last = idle beside 4.44e-16 · mountCab last = astride(bench) f0 4.58e-16 · mountCabDown f0 = astride(bench) f0 4.58e-16 · reach last = idle 0",
+     "gate": true
+    },
+    {
+     "id": "contacts",
+     "title": "Contacts: no skate at the engine speed, no sole below the ground, limbs make their targets",
+     "ms": 107,
+     "pass": true,
+     "value": "0.03 mm skate",
+     "detail": "Planted-foot drift against a ground moving at the clip speed: 0.03 mm (walk R). Deepest vertex below z = 0 on grounded clips: 1.3 mm (mountCab f15). Cloth (skirt, apron) that meets the ground in a crouch, reported: 54 mm (reach f3) — it folds in the engine. Limbs short of a target by > 5 mm on gated clips: none. Reported, not gated: astride 59 mm, astrideStand 80 mm, mountUp 164 mm, mountDown 160 mm, mountCab 68 mm, mountCabDown 62 mm — at the default saddle, whose seat and pegs these legs cannot reach. Saddle family at the fitted saddle (the default scaled to 0.4, the idle spot 0.6 m beside it): worst limb 0 mm, seat gap 0 mm, standing foot on the ground until the seat carries the body — reported (a build smaller than the Fisher).",
+     "rows": [
+      {
+       "label": "astride",
+       "value": "59 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "astrideStand",
+       "value": "80 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "mountUp",
+       "value": "164 mm",
+       "note": "footR f8 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountDown",
+       "value": "160 mm",
+       "note": "footR f6 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCab",
+       "value": "68 mm",
+       "note": "footL f16 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCabDown",
+       "value": "62 mm",
+       "note": "footL f1 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "saddle family at scale 0.4",
+       "value": "0 mm",
+       "note": "seat gap 0 mm · standing foot grounded · reported",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "travel",
+     "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
+     "ms": 127,
+     "pass": true,
+     "value": "0.329 m",
+     "detail": "Largest single-frame vertex move 0.329 m (swim f2→3), gate 0.350 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). Cloth (skirt, apron) reported: 0.324 m (reach f3→4). The mounts at the fitted saddle: 0.331 m (mountDown f5→6), reported on a build smaller than the Fisher. Reported: the mounts at the default saddle and the world-contract clips (rail, bench, cab) on this build smaller than the Fisher, 0.577 m (mountCab f6→7). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.507 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.401 m (a 0.55 m drop in six frames, 570 ms).",
+     "gate": true
+    },
+    {
+     "id": "cell",
+     "title": "Every frame fits the 64 × 92 cell at every facing, keyline included, 1 px spare",
+     "ms": 4094,
+     "pass": true,
+     "value": "1 px spare",
+     "detail": "2992 renders. Tightest: 1 px (dig f0 SW). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one.",
+     "gate": true
+    },
+    {
+     "id": "face",
+     "title": "The face resolves at 32 px/m: two eyes in front views, one in profile, none from behind",
+     "ms": 173,
+     "pass": true,
+     "value": "8 / 8 facings",
+     "detail": "Every face group draws at S: eyes.open 8 · eyes.half 4 · eyes.shut 4 · eyes.wide 12 · eyes.left 8 · eyes.right 8 · brows.flat 4 · brows.up 4 · brows.knit 4 · mouth.flat 3 · mouth.open 6 · mouth.grit 5 · mouth.smile 5 px. Every state changes its slot pixels at S against the default. At the diagonals these read the same as the default: mouth.smile SE, mouth.smile SW.",
+     "rows": [
+      {
+       "label": "N",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NE",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "E",
+       "value": "1 eye",
+       "note": "eyes 0+4 px · nose 1 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "SE",
+       "value": "2 eyes",
+       "note": "eyes 2+4 px · nose 1 px · mouth 1 px",
+       "ok": true
+      },
+      {
+       "label": "S",
+       "value": "2 eyes",
+       "note": "eyes 4+4 px · nose 1 px · mouth 3 px",
+       "ok": true
+      },
+      {
+       "label": "SW",
+       "value": "2 eyes",
+       "note": "eyes 3+2 px · nose 1 px · mouth 2 px",
+       "ok": true
+      },
+      {
+       "label": "W",
+       "value": "1 eye",
+       "note": "eyes 4+0 px · nose 1 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NW",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "hair",
+     "title": "Hair: no skull skin where the hair is — 16 facings, idle, walk and the head turned to its limits",
+     "ms": 159,
+     "pass": true,
+     "value": "0 px",
+     "detail": "128 renders (16 facings × idle f0, f3, walk f2, f6 and idle with the head turned to yaw ±60 and pitch −15 / +20). Skull skin inside the hair region: 0 px; skull faces painted skin inside it: 0. Hair region (bun): front hairline 1.429, corners 1.36, temples 1.425, over the ear 1.333, nape 1.26. The skin meant to show, most in one render: face and forehead 50 px, temples 9, over the ear line 2, nape 24. Painted scalp (hair-coloured skull) showing through the shell: at most 2 px.",
+     "gate": true
+    },
+    {
+     "id": "gaze",
+     "title": "Gaze: eyes.left and eyes.right move the pupils at every facing where the eyes show",
+     "ms": 70,
+     "pass": true,
+     "value": "11 facings",
+     "detail": "At 32 px/m, idle f0, 16 facings: the pupil (the ink and iris pixels) of eyes.left and of eyes.right against eyes.open, screen x of the pupils' centre (\"hidden\" where the only eye shown turns away in profile). Where two eyes show, eyes.left and eyes.right each move the pupils; where one eye shows in profile the two read apart (toward the camera the pupil stays, away it turns white).",
+     "rows": [
+      {
+       "label": "0°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "22.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "45°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "67.5°",
+       "value": "left hidden · right -0.5 px",
+       "note": "pupil px 2 / 0 / 4",
+       "ok": true
+      },
+      {
+       "label": "90°",
+       "value": "left hidden · right -0.5 px",
+       "note": "pupil px 2 / 0 / 4",
+       "ok": true
+      },
+      {
+       "label": "112.5°",
+       "value": "left hidden · right -0.4 px",
+       "note": "pupil px 7 / 0 / 10",
+       "ok": true
+      },
+      {
+       "label": "135°",
+       "value": "left -0.9 px · right +1.4 px",
+       "note": "pupil px 5 / 3 / 2",
+       "ok": true
+      },
+      {
+       "label": "157.5°",
+       "value": "left +1.1 px · right +1.2 px",
+       "note": "pupil px 7 / 7 / 4",
+       "ok": true
+      },
+      {
+       "label": "180°",
+       "value": "left +0.5 px · right -0.5 px",
+       "note": "pupil px 4 / 4 / 4",
+       "ok": true
+      },
+      {
+       "label": "202.5°",
+       "value": "left -0.8 px · right -1.3 px",
+       "note": "pupil px 6 / 4 / 6",
+       "ok": true
+      },
+      {
+       "label": "225°",
+       "value": "left -1.0 px · right +1.0 px",
+       "note": "pupil px 4 / 2 / 2",
+       "ok": true
+      },
+      {
+       "label": "247.5°",
+       "value": "left +1.1 px · right hidden",
+       "note": "pupil px 6 / 10 / 0",
+       "ok": true
+      },
+      {
+       "label": "270°",
+       "value": "left +0.5 px · right hidden",
+       "note": "pupil px 2 / 4 / 0",
+       "ok": true
+      },
+      {
+       "label": "292.5°",
+       "value": "left +0.5 px · right hidden",
+       "note": "pupil px 2 / 4 / 0",
+       "ok": true
+      },
+      {
+       "label": "315°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "337.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "look",
+     "title": "Look-at: the head turned to every limit opens no gap in the hair, hood or collar; the aim lands",
+     "ms": 421,
+     "pass": true,
+     "value": "0 px",
+     "detail": "256 renders: idle f0 and walk f2 at 16 facings, the head turned to each limit (yaw ±60, pitch -15 / 20 and the four corners; neck 0.4, head 0.6). Scalp inside the hair region: 0 px. See-through at the neck, collar or hood beyond the unturned pose: 0 px. Aim (share 1): for 21 targets 2 m away inside the limits, lookAt() then the turn points the head's +y within 1.70° of the target (worst at bearing 50°, -0.35 m).",
+     "gate": true
+    },
+    {
+     "id": "tones",
+     "title": "Tone discipline: each material lights at most four ramp steps in a frame (the contour step aside)",
+     "ms": 473,
+     "pass": true,
+     "value": "4 steps",
+     "detail": "392 renders. The most lit steps any one material spends in a frame: 4 (hair · idle f0 N). The inner contour darkens one step past that — the outline doing its job, not a fifth tone.",
+     "gate": true
+    },
+    {
+     "id": "light",
+     "title": "Top-of-frame key: the rest pose at E is the mirror of W, to the pixel",
+     "ms": 13,
+     "pass": true,
+     "value": "0 px differ",
+     "detail": "E against W mirrored: 0 px differ. S against itself mirrored (head snap off — an odd-width head cannot sit on a pixel centre and be centred on the pivot seam at once): 0 px. An upper-left key cannot pass this; the key is 0.000, 0.811, 0.585 (right, up, toward camera) — the fleet key without its left component.",
+     "gate": true
+    },
+    {
+     "id": "budget",
+     "title": "Budget against rig 7 (reported: over 1,000 tris is allowed)",
+     "ms": 49,
+     "pass": false,
+     "value": "1055 tris",
+     "detail": "1055 tris (517 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1806 KB of clip JSON against 2,155 KB for 35 · bind mesh 167 KB against 235 KB.",
+     "gate": false
+    },
+    {
+     "id": "sidecar",
+     "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
+     "ms": 21,
+     "pass": true,
+     "value": "53 clips · 438 frames",
+     "detail": "Schema hidden-harbours/character-gameplay@1. Walk 0.694 m/s, run 1.91 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 0.955; ladder 0.545). No section missing.",
+     "gate": true
+    },
+    {
+     "id": "heights",
+     "title": "World heights: the crown in idle is the build's designed height",
+     "ms": 1,
+     "pass": true,
+     "value": "1.452 m",
+     "detail": "Crown in idle 1.452 m against the build's 1.468 m (adult, height step 0; the Fisher is 1.522, rig 7 1.523). Hip joint 0.556 (rig 7 0.587). Palms at rest 0.550 m. Legs 0.482 m hip to ankle (rig 7 0.541), arms 0.455 m shoulder to palm.",
+     "gate": true
+    }
+   ]
+  },
+  "cutter": {
+   "label": "Cutter",
+   "passed": 19,
+   "of": 19,
+   "reported": 1,
+   "ms": 6471,
+   "checks": [
+    {
+     "id": "timing",
+     "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
+     "ms": 0,
+     "pass": true,
+     "value": "35 / 35",
+     "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)",
+     "gate": true
+    },
+    {
+     "id": "skeleton",
+     "title": "Skeleton: 28 bones, parents first, identity bind, every deform length constant in every frame",
+     "ms": 55,
+     "pass": true,
+     "value": "1.67e-16 m",
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 1.67e-16 m (mountCabDown f7 hand_L). No tip, cuff, hem or inseam bones.",
+     "gate": true
+    },
+    {
+     "id": "skin",
+     "title": "Skin weights: every vertex sums to 1; the only blended ring is the waist",
+     "ms": 1,
+     "pass": true,
+     "value": "10 blended",
+     "detail": "2012 vertices, 0 with weights that do not sum to 1. 10 distinct blended positions (spine 0.5 / chest 0.5), all on this build's waist ring at 0.709 m (and the bib or apron edge that rides it).",
+     "gate": true
+    },
+    {
+     "id": "roundtrip",
+     "title": "Export round trip: quaternions out → FK → skinned mesh equals the solver",
+     "ms": 218,
+     "pass": true,
+     "value": "7.03e-16 m",
+     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 7.03e-16 m at ladderDown f0; gate 1e-6 m.",
+     "gate": true
+    },
+    {
+     "id": "continuity",
+     "title": "Quaternion tracks stay in one hemisphere frame to frame",
+     "ms": 28,
+     "pass": true,
+     "value": "0 flips",
+     "detail": "Sign continuity on every bone of every clip. Largest joint step between two frames: 171.6° (mountCabDown f9→10 hip_R) — a slerp between neighbours never takes the long way round.",
+     "gate": true
+    },
+    {
+     "id": "rock",
+     "title": "Deck rock is a three-bone additive, keyed on the rock alone",
+     "ms": 656,
+     "pass": true,
+     "value": "3 of 28 bones",
+     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0. Deltas equal the table (keyed on the rock alone) to 0; clip + table through quaternions skins to the rocked solve within 9.07e-16 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock.",
+     "gate": true
+    },
+    {
+     "id": "loops",
+     "title": "Loops close: u = 1 is u = 0, the ladder included (it is body-anchored)",
+     "ms": 15,
+     "pass": true,
+     "value": "3.72e-16 m",
+     "detail": "37 looping clips. Worst seam 3.72e-16 m (ladderDown).",
+     "gate": true
+    },
+    {
+     "id": "handoffs",
+     "title": "One-shots meet the clips they hand to, to the micron",
+     "ms": 18,
+     "pass": true,
+     "value": "6.69e-16 m",
+     "detail": "board last = idle on the deck 6.69e-16 · boardDown f0 = idle on the deck 6.69e-16 · boardDown last = idle on the dock 0 · mountUp f0 = idle beside the machine 4.74e-16 · mountUp last = astride f0 2.99e-16 · mountDown f0 = astride f0 2.99e-16 · mountDown last = idle beside 4.74e-16 · mountCab last = astride(bench) f0 2.99e-16 · mountCabDown f0 = astride(bench) f0 2.99e-16 · reach last = idle 0",
+     "gate": true
+    },
+    {
+     "id": "contacts",
+     "title": "Contacts: no skate at the engine speed, no sole below the ground, limbs make their targets",
+     "ms": 112,
+     "pass": true,
+     "value": "0.05 mm skate",
+     "detail": "Planted-foot drift against a ground moving at the clip speed: 0.05 mm (walk L). Deepest vertex below z = 0 on grounded clips: 1.2 mm (mountCab f15). Cloth (skirt, apron) that meets the ground in a crouch, reported: 43 mm (reach f3) — it folds in the engine. Limbs short of a target by > 5 mm on gated clips: none. Reported, not gated: ladderDown 27 mm, hauler 69 mm, drive 52 mm, astride 128 mm, astrideStand 148 mm, mountUp 283 mm, mountDown 279 mm, mountCab 160 mm, mountCabDown 162 mm — at the default saddle, whose seat and pegs these legs cannot reach. Saddle family at the fitted saddle (the default scaled to 0.4, the idle spot 0.6 m beside it): worst limb 0 mm, seat gap 0 mm, standing foot on the ground until the seat carries the body — reported (a build smaller than the Fisher).",
+     "rows": [
+      {
+       "label": "ladderDown",
+       "value": "27 mm",
+       "note": "handL f0 · rung sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "hauler",
+       "value": "69 mm",
+       "note": "handL f4 · workZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "drive",
+       "value": "52 mm",
+       "note": "footR f4 · wheel sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "astride",
+       "value": "128 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "astrideStand",
+       "value": "148 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "mountUp",
+       "value": "283 mm",
+       "note": "footR f8 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountDown",
+       "value": "279 mm",
+       "note": "footR f6 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCab",
+       "value": "160 mm",
+       "note": "footR f9 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCabDown",
+       "value": "162 mm",
+       "note": "footR f7 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "saddle family at scale 0.4",
+       "value": "0 mm",
+       "note": "seat gap 0 mm · standing foot grounded · reported",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "travel",
+     "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
+     "ms": 126,
+     "pass": true,
+     "value": "0.304 m",
+     "detail": "Largest single-frame vertex move 0.304 m (swim f4→5), gate 0.350 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). Cloth (skirt, apron) reported: 0.391 m (mountDown f0→1). The mounts at the fitted saddle: 0.331 m (mountDown f5→6), reported on a build smaller than the Fisher. Reported: the mounts at the default saddle and the world-contract clips (rail, bench, cab) on this build smaller than the Fisher, 0.557 m (mountDown f8→9). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.461 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.394 m (a 0.55 m drop in six frames, 570 ms).",
+     "gate": true
+    },
+    {
+     "id": "cell",
+     "title": "Every frame fits the 64 × 92 cell at every facing, keyline included, 1 px spare",
+     "ms": 3861,
+     "pass": true,
+     "value": "1 px spare",
+     "detail": "2992 renders. Tightest: 1 px (tread f4 SE). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one.",
+     "gate": true
+    },
+    {
+     "id": "face",
+     "title": "The face resolves at 32 px/m: two eyes in front views, one in profile, none from behind",
+     "ms": 177,
+     "pass": true,
+     "value": "8 / 8 facings",
+     "detail": "Every face group draws at S: eyes.open 8 · eyes.half 4 · eyes.shut 6 · eyes.wide 8 · eyes.left 8 · eyes.right 8 · brows.flat 4 · brows.up 4 · brows.knit 4 · mouth.flat 3 · mouth.open 3 · mouth.grit 5 · mouth.smile 5 px. Every state changes its slot pixels at S against the default. At the diagonals these read the same as the default: mouth.smile SE, mouth.smile SW.",
+     "rows": [
+      {
+       "label": "N",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NE",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "E",
+       "value": "1 eye",
+       "note": "eyes 0+4 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "SE",
+       "value": "2 eyes",
+       "note": "eyes 4+4 px · nose 0 px · mouth 1 px",
+       "ok": true
+      },
+      {
+       "label": "S",
+       "value": "2 eyes",
+       "note": "eyes 4+4 px · nose 2 px · mouth 3 px",
+       "ok": true
+      },
+      {
+       "label": "SW",
+       "value": "2 eyes",
+       "note": "eyes 4+2 px · nose 1 px · mouth 1 px",
+       "ok": true
+      },
+      {
+       "label": "W",
+       "value": "1 eye",
+       "note": "eyes 5+0 px · nose 1 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NW",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "hair",
+     "title": "Hair: no skull skin where the hair is — 16 facings, idle, walk and the head turned to its limits",
+     "ms": 162,
+     "pass": true,
+     "value": "0 px",
+     "detail": "128 renders (16 facings × idle f0, f3, walk f2, f6 and idle with the head turned to yaw ±60 and pitch −15 / +20). Skull skin inside the hair region: 0 px; skull faces painted skin inside it: 0. Hair region (ponytail): front hairline 1.425, corners 1.36, temples 1.425, over the ear 1.333, nape 1.26. The skin meant to show, most in one render: face and forehead 33 px, temples 7, over the ear line 3, nape 14. Painted scalp (hair-coloured skull) showing through the shell: at most 2 px.",
+     "gate": true
+    },
+    {
+     "id": "gaze",
+     "title": "Gaze: eyes.left and eyes.right move the pupils at every facing where the eyes show",
+     "ms": 66,
+     "pass": true,
+     "value": "11 facings",
+     "detail": "At 32 px/m, idle f0, 16 facings: the pupil (the ink and iris pixels) of eyes.left and of eyes.right against eyes.open, screen x of the pupils' centre (\"hidden\" where the only eye shown turns away in profile). Where two eyes show, eyes.left and eyes.right each move the pupils; where one eye shows in profile the two read apart (toward the camera the pupil stays, away it turns white).",
+     "rows": [
+      {
+       "label": "0°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "22.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "45°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "67.5°",
+       "value": "left hidden · right -0.2 px",
+       "note": "pupil px 2 / 0 / 3",
+       "ok": true
+      },
+      {
+       "label": "90°",
+       "value": "left hidden · right -0.2 px",
+       "note": "pupil px 3 / 0 / 4",
+       "ok": true
+      },
+      {
+       "label": "112.5°",
+       "value": "left +2.3 px · right -0.6 px",
+       "note": "pupil px 6 / 2 / 9",
+       "ok": true
+      },
+      {
+       "label": "135°",
+       "value": "left -0.3 px · right +0.3 px",
+       "note": "pupil px 8 / 6 / 6",
+       "ok": true
+      },
+      {
+       "label": "157.5°",
+       "value": "left +0.8 px · right +0.5 px",
+       "note": "pupil px 7 / 8 / 5",
+       "ok": true
+      },
+      {
+       "label": "180°",
+       "value": "left +0.2 px · right -0.2 px",
+       "note": "pupil px 6 / 6 / 6",
+       "ok": true
+      },
+      {
+       "label": "202.5°",
+       "value": "left -0.2 px · right -0.8 px",
+       "note": "pupil px 6 / 5 / 7",
+       "ok": true
+      },
+      {
+       "label": "225°",
+       "value": "left -0.4 px · right +0.3 px",
+       "note": "pupil px 6 / 4 / 5",
+       "ok": true
+      },
+      {
+       "label": "247.5°",
+       "value": "left +0.3 px · right -2.2 px",
+       "note": "pupil px 9 / 11 / 3",
+       "ok": true
+      },
+      {
+       "label": "270°",
+       "value": "left +0.2 px · right hidden",
+       "note": "pupil px 4 / 5 / 0",
+       "ok": true
+      },
+      {
+       "label": "292.5°",
+       "value": "left +0.2 px · right hidden",
+       "note": "pupil px 2 / 3 / 0",
+       "ok": true
+      },
+      {
+       "label": "315°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "337.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "look",
+     "title": "Look-at: the head turned to every limit opens no gap in the hair, hood or collar; the aim lands",
+     "ms": 417,
+     "pass": true,
+     "value": "0 px",
+     "detail": "256 renders: idle f0 and walk f2 at 16 facings, the head turned to each limit (yaw ±60, pitch -15 / 20 and the four corners; neck 0.4, head 0.6). Scalp inside the hair region: 0 px. See-through at the neck, collar or hood beyond the unturned pose: 0 px. Aim (share 1): for 21 targets 2 m away inside the limits, lookAt() then the turn points the head's +y within 1.70° of the target (worst at bearing 50°, -0.35 m).",
+     "gate": true
+    },
+    {
+     "id": "tones",
+     "title": "Tone discipline: each material lights at most four ramp steps in a frame (the contour step aside)",
+     "ms": 433,
+     "pass": true,
+     "value": "4 steps",
+     "detail": "392 renders. The most lit steps any one material spends in a frame: 4 (hair · idle f0 N). The inner contour darkens one step past that — the outline doing its job, not a fifth tone.",
+     "gate": true
+    },
+    {
+     "id": "light",
+     "title": "Top-of-frame key: the rest pose at E is the mirror of W, to the pixel",
+     "ms": 17,
+     "pass": true,
+     "value": "0 px differ",
+     "detail": "E against W mirrored: 0 px differ. S against itself mirrored (head snap off — an odd-width head cannot sit on a pixel centre and be centred on the pivot seam at once): 0 px. An upper-left key cannot pass this; the key is 0.000, 0.811, 0.585 (right, up, toward camera) — the fleet key without its left component.",
+     "gate": true
+    },
+    {
+     "id": "budget",
+     "title": "Budget against rig 7 (reported: over 1,000 tris is allowed)",
+     "ms": 60,
+     "pass": false,
+     "value": "1028 tris",
+     "detail": "1028 tris (492 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1829 KB of clip JSON against 2,155 KB for 35 · bind mesh 174 KB against 235 KB.",
+     "gate": false
+    },
+    {
+     "id": "sidecar",
+     "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
+     "ms": 35,
+     "pass": true,
+     "value": "53 clips · 438 frames",
+     "detail": "Schema hidden-harbours/character-gameplay@1. Walk 0.609 m/s, run 1.677 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 0.838; ladder 0.545). No section missing.",
+     "gate": true
+    },
+    {
+     "id": "heights",
+     "title": "World heights: the crown in idle is the build's designed height",
+     "ms": 0,
+     "pass": true,
+     "value": "1.318 m",
+     "detail": "Crown in idle 1.318 m against the build's 1.334 m (youth, height step -1; the Fisher is 1.522, rig 7 1.523). Hip joint 0.495 (rig 7 0.587). Palms at rest 0.484 m. Legs 0.423 m hip to ankle (rig 7 0.541), arms 0.400 m shoulder to palm.",
+     "gate": true
+    }
+   ]
+  },
+  "hand": {
+   "label": "Deckhand",
+   "passed": 19,
+   "of": 19,
+   "reported": 1,
+   "ms": 4976,
+   "checks": [
+    {
+     "id": "timing",
+     "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
+     "ms": 0,
+     "pass": true,
+     "value": "35 / 35",
+     "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)",
+     "gate": true
+    },
+    {
+     "id": "skeleton",
+     "title": "Skeleton: 28 bones, parents first, identity bind, every deform length constant in every frame",
+     "ms": 51,
+     "pass": true,
+     "value": "1.67e-16 m",
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 1.67e-16 m (castRelease f6 hand_R). No tip, cuff, hem or inseam bones.",
+     "gate": true
+    },
+    {
+     "id": "skin",
+     "title": "Skin weights: every vertex sums to 1; the only blended ring is the waist",
+     "ms": 1,
+     "pass": true,
+     "value": "8 blended",
+     "detail": "1931 vertices, 0 with weights that do not sum to 1. 8 distinct blended positions (spine 0.5 / chest 0.5), all on this build's waist ring at 0.794 m (and the bib or apron edge that rides it).",
+     "gate": true
+    },
+    {
+     "id": "roundtrip",
+     "title": "Export round trip: quaternions out → FK → skinned mesh equals the solver",
+     "ms": 205,
+     "pass": true,
+     "value": "7.11e-16 m",
+     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 7.11e-16 m at astrideStand f1; gate 1e-6 m.",
+     "gate": true
+    },
+    {
+     "id": "continuity",
+     "title": "Quaternion tracks stay in one hemisphere frame to frame",
+     "ms": 28,
+     "pass": true,
+     "value": "0 flips",
+     "detail": "Sign continuity on every bone of every clip. Largest joint step between two frames: 151.2° (mountCabDown f9→10 hip_R) — a slerp between neighbours never takes the long way round.",
+     "gate": true
+    },
+    {
+     "id": "rock",
+     "title": "Deck rock is a three-bone additive, keyed on the rock alone",
+     "ms": 603,
+     "pass": true,
+     "value": "3 of 28 bones",
+     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0. Deltas equal the table (keyed on the rock alone) to 0; clip + table through quaternions skins to the rocked solve within 9.17e-16 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock.",
+     "gate": true
+    },
+    {
+     "id": "loops",
+     "title": "Loops close: u = 1 is u = 0, the ladder included (it is body-anchored)",
+     "ms": 12,
+     "pass": true,
+     "value": "2.54e-16 m",
+     "detail": "37 looping clips. Worst seam 2.54e-16 m (ladderDown).",
+     "gate": true
+    },
+    {
+     "id": "handoffs",
+     "title": "One-shots meet the clips they hand to, to the micron",
+     "ms": 14,
+     "pass": true,
+     "value": "4.59e-16 m",
+     "detail": "board last = idle on the deck 4.44e-16 · boardDown f0 = idle on the deck 4.44e-16 · boardDown last = idle on the dock 0 · mountUp f0 = idle beside the machine 4.59e-16 · mountUp last = astride f0 0 · mountDown f0 = astride f0 0 · mountDown last = idle beside 4.59e-16 · mountCab last = astride(bench) f0 0 · mountCabDown f0 = astride(bench) f0 0 · reach last = idle 0",
+     "gate": true
+    },
+    {
+     "id": "contacts",
+     "title": "Contacts: no skate at the engine speed, no sole below the ground, limbs make their targets",
+     "ms": 101,
+     "pass": true,
+     "value": "0.01 mm skate",
+     "detail": "Planted-foot drift against a ground moving at the clip speed: 0.01 mm (walk R). Deepest vertex below z = 0 on grounded clips: 1.3 mm (mountCab f15). Limbs short of a target by > 5 mm on gated clips: none. Reported, not gated: astride 67 mm, astrideStand 88 mm, mountUp 172 mm, mountDown 168 mm, mountCab 70 mm, mountCabDown 63 mm — at the default saddle, whose seat and pegs these legs cannot reach. Saddle family at the fitted saddle (the default scaled to 0.4, the idle spot 0.6 m beside it): worst limb 0 mm, seat gap 0 mm, standing foot on the ground until the seat carries the body — reported (a build smaller than the Fisher).",
+     "rows": [
+      {
+       "label": "astride",
+       "value": "67 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "astrideStand",
+       "value": "88 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "mountUp",
+       "value": "172 mm",
+       "note": "footR f8 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountDown",
+       "value": "168 mm",
+       "note": "footR f6 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCab",
+       "value": "70 mm",
+       "note": "footL f16 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCabDown",
+       "value": "63 mm",
+       "note": "footL f1 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "saddle family at scale 0.4",
+       "value": "0 mm",
+       "note": "seat gap 0 mm · standing foot grounded · reported",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "travel",
+     "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
+     "ms": 134,
+     "pass": true,
+     "value": "0.321 m",
+     "detail": "Largest single-frame vertex move 0.321 m (swim f2→3), gate 0.350 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.324 m (mountDown f5→6), reported on a build smaller than the Fisher. Reported: the mounts at the default saddle and the world-contract clips (rail, bench, cab) on this build smaller than the Fisher, 0.569 m (mountCab f6→7). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.512 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.401 m (a 0.55 m drop in six frames, 570 ms).",
+     "gate": true
+    },
+    {
+     "id": "cell",
+     "title": "Every frame fits the 64 × 92 cell at every facing, keyline included, 1 px spare",
+     "ms": 2663,
+     "pass": true,
+     "value": "1 px spare",
+     "detail": "2992 renders. Tightest: 1 px (stagger f3 SE). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one.",
+     "gate": true
+    },
+    {
+     "id": "face",
+     "title": "The face resolves at 32 px/m: two eyes in front views, one in profile, none from behind",
+     "ms": 188,
+     "pass": true,
+     "value": "8 / 8 facings",
+     "detail": "Every face group draws at S: eyes.open 8 · eyes.half 4 · eyes.shut 4 · eyes.wide 12 · eyes.left 8 · eyes.right 8 · brows.flat 4 · brows.up 4 · brows.knit 4 · mouth.flat 3 · mouth.open 6 · mouth.grit 5 · mouth.smile 5 px. Every state changes its slot pixels at S against the default. At the diagonals these read the same as the default: mouth.smile SE, mouth.smile SW.",
+     "rows": [
+      {
+       "label": "N",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NE",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "E",
+       "value": "1 eye",
+       "note": "eyes 0+6 px · nose 1 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "SE",
+       "value": "2 eyes",
+       "note": "eyes 2+4 px · nose 1 px · mouth 2 px",
+       "ok": true
+      },
+      {
+       "label": "S",
+       "value": "2 eyes",
+       "note": "eyes 4+4 px · nose 1 px · mouth 3 px",
+       "ok": true
+      },
+      {
+       "label": "SW",
+       "value": "2 eyes",
+       "note": "eyes 3+2 px · nose 1 px · mouth 2 px",
+       "ok": true
+      },
+      {
+       "label": "W",
+       "value": "1 eye",
+       "note": "eyes 5+0 px · nose 1 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NW",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "hair",
+     "title": "Hair: no skull skin where the hair is — 16 facings, idle, walk and the head turned to its limits",
+     "ms": 116,
+     "pass": true,
+     "value": "0 px",
+     "detail": "128 renders (16 facings × idle f0, f3, walk f2, f6 and idle with the head turned to yaw ±60 and pitch −15 / +20). Skull skin inside the hair region: 0 px; skull faces painted skin inside it: 0. Hair region (crop): front hairline 1.425, corners 1.36, temples 1.425, over the ear 1.331, nape 1.245. The skin meant to show, most in one render: face and forehead 44 px, temples 10, over the ear line 3, nape 16. Painted scalp (hair-coloured skull) showing through the shell: at most 2 px.",
+     "gate": true
+    },
+    {
+     "id": "gaze",
+     "title": "Gaze: eyes.left and eyes.right move the pupils at every facing where the eyes show",
+     "ms": 35,
+     "pass": true,
+     "value": "11 facings",
+     "detail": "At 32 px/m, idle f0, 16 facings: the pupil (the ink and iris pixels) of eyes.left and of eyes.right against eyes.open, screen x of the pupils' centre (\"hidden\" where the only eye shown turns away in profile). Where two eyes show, eyes.left and eyes.right each move the pupils; where one eye shows in profile the two read apart (toward the camera the pupil stays, away it turns white).",
+     "rows": [
+      {
+       "label": "0°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "22.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "45°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "67.5°",
+       "value": "left hidden · right -0.5 px",
+       "note": "pupil px 1 / 0 / 4",
+       "ok": true
+      },
+      {
+       "label": "90°",
+       "value": "left hidden · right -0.7 px",
+       "note": "pupil px 3 / 0 / 6",
+       "ok": true
+      },
+      {
+       "label": "112.5°",
+       "value": "left hidden · right -1.1 px",
+       "note": "pupil px 6 / 0 / 10",
+       "ok": true
+      },
+      {
+       "label": "135°",
+       "value": "left -0.9 px · right +1.4 px",
+       "note": "pupil px 5 / 3 / 2",
+       "ok": true
+      },
+      {
+       "label": "157.5°",
+       "value": "left +1.1 px · right +1.2 px",
+       "note": "pupil px 7 / 7 / 4",
+       "ok": true
+      },
+      {
+       "label": "180°",
+       "value": "left +0.5 px · right -0.5 px",
+       "note": "pupil px 4 / 4 / 4",
+       "ok": true
+      },
+      {
+       "label": "202.5°",
+       "value": "left -0.8 px · right -1.3 px",
+       "note": "pupil px 6 / 4 / 6",
+       "ok": true
+      },
+      {
+       "label": "225°",
+       "value": "left -1.0 px · right +1.0 px",
+       "note": "pupil px 4 / 2 / 2",
+       "ok": true
+      },
+      {
+       "label": "247.5°",
+       "value": "left +1.1 px · right hidden",
+       "note": "pupil px 6 / 10 / 0",
+       "ok": true
+      },
+      {
+       "label": "270°",
+       "value": "left +0.8 px · right hidden",
+       "note": "pupil px 2 / 5 / 0",
+       "ok": true
+      },
+      {
+       "label": "292.5°",
+       "value": "left +0.7 px · right hidden",
+       "note": "pupil px 1 / 3 / 0",
+       "ok": true
+      },
+      {
+       "label": "315°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "337.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "look",
+     "title": "Look-at: the head turned to every limit opens no gap in the hair, hood or collar; the aim lands",
+     "ms": 389,
+     "pass": true,
+     "value": "0 px",
+     "detail": "256 renders: idle f0 and walk f2 at 16 facings, the head turned to each limit (yaw ±60, pitch -15 / 20 and the four corners; neck 0.4, head 0.6). Scalp inside the hair region: 0 px. See-through at the neck, collar or hood beyond the unturned pose: 0 px. Aim (share 1): for 21 targets 2 m away inside the limits, lookAt() then the turn points the head's +y within 1.70° of the target (worst at bearing 50°, -0.35 m).",
+     "gate": true
+    },
+    {
+     "id": "tones",
+     "title": "Tone discipline: each material lights at most four ramp steps in a frame (the contour step aside)",
+     "ms": 311,
+     "pass": true,
+     "value": "4 steps",
+     "detail": "392 renders. The most lit steps any one material spends in a frame: 4 (over · idle f0 N). The inner contour darkens one step past that — the outline doing its job, not a fifth tone.",
+     "gate": true
+    },
+    {
+     "id": "light",
+     "title": "Top-of-frame key: the rest pose at E is the mirror of W, to the pixel",
+     "ms": 9,
+     "pass": true,
+     "value": "0 px differ",
+     "detail": "E against W mirrored: 0 px differ. S against itself mirrored (head snap off — an odd-width head cannot sit on a pixel centre and be centred on the pivot seam at once): 0 px. An upper-left key cannot pass this; the key is 0.000, 0.811, 0.585 (right, up, toward camera) — the fleet key without its left component.",
+     "gate": true
+    },
+    {
+     "id": "budget",
+     "title": "Budget against rig 7 (reported: over 1,000 tris is allowed)",
+     "ms": 64,
+     "pass": true,
+     "value": "985 tris",
+     "detail": "985 tris (473 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1827 KB of clip JSON against 2,155 KB for 35 · bind mesh 163 KB against 235 KB.",
+     "gate": false
+    },
+    {
+     "id": "sidecar",
+     "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
+     "ms": 36,
+     "pass": true,
+     "value": "53 clips · 438 frames",
+     "detail": "Schema hidden-harbours/character-gameplay@1. Walk 0.694 m/s, run 1.909 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 0.954; ladder 0.545). No section missing.",
+     "gate": true
+    },
+    {
+     "id": "heights",
+     "title": "World heights: the crown in idle is the build's designed height",
+     "ms": 0,
+     "pass": true,
+     "value": "1.448 m",
+     "detail": "Crown in idle 1.448 m against the build's 1.464 m (youth, height step +1; the Fisher is 1.522, rig 7 1.523). Hip joint 0.556 (rig 7 0.587). Palms at rest 0.540 m. Legs 0.482 m hip to ankle (rig 7 0.541), arms 0.446 m shoulder to palm.",
+     "gate": true
+    }
+   ]
+  },
+  "boy": {
+   "label": "Wharf boy",
+   "passed": 19,
+   "of": 19,
+   "reported": 1,
+   "ms": 6602,
+   "checks": [
+    {
+     "id": "timing",
+     "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
+     "ms": 0,
+     "pass": true,
+     "value": "35 / 35",
+     "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)",
+     "gate": true
+    },
+    {
+     "id": "skeleton",
+     "title": "Skeleton: 28 bones, parents first, identity bind, every deform length constant in every frame",
+     "ms": 54,
+     "pass": true,
+     "value": "1.39e-16 m",
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 1.39e-16 m (stagger f6 hand_R). No tip, cuff, hem or inseam bones.",
+     "gate": true
+    },
+    {
+     "id": "skin",
+     "title": "Skin weights: every vertex sums to 1; the only blended ring is the waist",
+     "ms": 1,
+     "pass": true,
+     "value": "8 blended",
+     "detail": "2058 vertices, 0 with weights that do not sum to 1. 8 distinct blended positions (spine 0.5 / chest 0.5), all on this build's waist ring at 0.579 m (and the bib or apron edge that rides it).",
+     "gate": true
+    },
+    {
+     "id": "roundtrip",
+     "title": "Export round trip: quaternions out → FK → skinned mesh equals the solver",
+     "ms": 216,
+     "pass": true,
+     "value": "6.87e-16 m",
+     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 6.87e-16 m at mountCab f14; gate 1e-6 m.",
+     "gate": true
+    },
+    {
+     "id": "continuity",
+     "title": "Quaternion tracks stay in one hemisphere frame to frame",
+     "ms": 29,
+     "pass": true,
+     "value": "0 flips",
+     "detail": "Sign continuity on every bone of every clip. Largest joint step between two frames: 166.7° (mountCabDown f9→10 hip_R) — a slerp between neighbours never takes the long way round.",
+     "gate": true
+    },
+    {
+     "id": "rock",
+     "title": "Deck rock is a three-bone additive, keyed on the rock alone",
+     "ms": 635,
+     "pass": true,
+     "value": "3 of 28 bones",
+     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0. Deltas equal the table (keyed on the rock alone) to 0; clip + table through quaternions skins to the rocked solve within 8.90e-16 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock.",
+     "gate": true
+    },
+    {
+     "id": "loops",
+     "title": "Loops close: u = 1 is u = 0, the ladder included (it is body-anchored)",
+     "ms": 14,
+     "pass": true,
+     "value": "4.44e-16 m",
+     "detail": "37 looping clips. Worst seam 4.44e-16 m (ladderDown).",
+     "gate": true
+    },
+    {
+     "id": "handoffs",
+     "title": "One-shots meet the clips they hand to, to the micron",
+     "ms": 19,
+     "pass": true,
+     "value": "4.52e-16 m",
+     "detail": "board last = idle on the deck 4.52e-16 · boardDown f0 = idle on the deck 4.52e-16 · boardDown last = idle on the dock 0 · mountUp f0 = idle beside the machine 2.48e-16 · mountUp last = astride f0 2.48e-16 · mountDown f0 = astride f0 2.48e-16 · mountDown last = idle beside 2.48e-16 · mountCab last = astride(bench) f0 2.48e-16 · mountCabDown f0 = astride(bench) f0 2.48e-16 · reach last = idle 0",
+     "gate": true
+    },
+    {
+     "id": "contacts",
+     "title": "Contacts: no skate at the engine speed, no sole below the ground, limbs make their targets",
+     "ms": 116,
+     "pass": true,
+     "value": "0.01 mm skate",
+     "detail": "Planted-foot drift against a ground moving at the clip speed: 0.01 mm (walk L). Deepest vertex below z = 0 on grounded clips: 1.1 mm (mountCab f15). Limbs short of a target by > 5 mm on gated clips: none. Reported, not gated: board 26 mm, ladderDown 221 mm, hauler 210 mm, bench 114 mm, chop 127 mm, lift 58 mm, place 59 mm, drive 163 mm, reach 2 mm, astride 240 mm, astrideStand 261 mm, mountUp 499 mm, mountDown 495 mm, mountCab 368 mm, mountCabDown 370 mm, board+buckets 26 mm, board+tray 26 mm, board+pot 26 mm — at the default saddle, whose seat and pegs these legs cannot reach. Saddle family at the fitted saddle (the default scaled to 0.4, the idle spot 0.6 m beside it): worst limb 0 mm, seat gap 7 mm (mountDown f1), standing foot on the ground until the seat carries the body — reported (a build smaller than the Fisher).",
+     "rows": [
+      {
+       "label": "board",
+       "value": "26 mm",
+       "note": "footR f3 · railZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "ladderDown",
+       "value": "221 mm",
+       "note": "handL f0 · rung sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "hauler",
+       "value": "210 mm",
+       "note": "handL f4 · workZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "bench",
+       "value": "114 mm",
+       "note": "handR f2 · workZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "chop",
+       "value": "127 mm",
+       "note": "handR f5 · workZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "lift",
+       "value": "58 mm",
+       "note": "handR f7 · workZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "place",
+       "value": "59 mm",
+       "note": "handR f3 · workZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "drive",
+       "value": "163 mm",
+       "note": "footR f4 · wheel sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "reach",
+       "value": "2 mm",
+       "note": "handR f1 · lift sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "astride",
+       "value": "240 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "astrideStand",
+       "value": "261 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "mountUp",
+       "value": "499 mm",
+       "note": "footR f8 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountDown",
+       "value": "495 mm",
+       "note": "footR f6 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCab",
+       "value": "368 mm",
+       "note": "footR f9 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCabDown",
+       "value": "370 mm",
+       "note": "footR f7 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "board+buckets",
+       "value": "26 mm",
+       "note": "footR f3 · railZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "board+tray",
+       "value": "26 mm",
+       "note": "footR f3 · railZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "board+pot",
+       "value": "26 mm",
+       "note": "footR f3 · railZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "saddle family at scale 0.4",
+       "value": "0 mm",
+       "note": "seat gap 7 mm · standing foot grounded · reported",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "travel",
+     "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
+     "ms": 127,
+     "pass": true,
+     "value": "0.292 m",
+     "detail": "Largest single-frame vertex move 0.292 m (swim f4→5), gate 0.350 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.336 m (mountDown f4→5), reported on a build smaller than the Fisher. Reported: the mounts at the default saddle and the world-contract clips (rail, bench, cab) on this build smaller than the Fisher, 0.618 m (mountDown f0→1). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.412 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.408 m (a 0.55 m drop in six frames, 570 ms).",
+     "gate": true
+    },
+    {
+     "id": "cell",
+     "title": "Every frame fits the 64 × 92 cell at every facing, keyline included, 1 px spare",
+     "ms": 4021,
+     "pass": true,
+     "value": "2 px spare",
+     "detail": "2992 renders. Tightest: 2 px (ladderDown f0 SW). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one.",
+     "gate": true
+    },
+    {
+     "id": "face",
+     "title": "The face resolves at 32 px/m: two eyes in front views, one in profile, none from behind",
+     "ms": 188,
+     "pass": true,
+     "value": "8 / 8 facings",
+     "detail": "Every face group draws at S: eyes.open 8 · eyes.half 4 · eyes.shut 4 · eyes.wide 12 · eyes.left 8 · eyes.right 8 · brows.flat 4 · brows.up 4 · brows.knit 4 · mouth.flat 3 · mouth.open 3 · mouth.grit 5 · mouth.smile 5 px. Every state changes its slot pixels at S against the default. At the diagonals these read the same as the default: mouth.smile SE, mouth.smile SW.",
+     "rows": [
+      {
+       "label": "N",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NE",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "E",
+       "value": "1 eye",
+       "note": "eyes 0+6 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "SE",
+       "value": "2 eyes",
+       "note": "eyes 4+4 px · nose 0 px · mouth 1 px",
+       "ok": true
+      },
+      {
+       "label": "S",
+       "value": "2 eyes",
+       "note": "eyes 4+4 px · nose 2 px · mouth 3 px",
+       "ok": true
+      },
+      {
+       "label": "SW",
+       "value": "2 eyes",
+       "note": "eyes 4+2 px · nose 1 px · mouth 1 px",
+       "ok": true
+      },
+      {
+       "label": "W",
+       "value": "1 eye",
+       "note": "eyes 6+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NW",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "hair",
+     "title": "Hair: no skull skin where the hair is — 16 facings, idle, walk and the head turned to its limits",
+     "ms": 152,
+     "pass": true,
+     "value": "0 px",
+     "detail": "128 renders (16 facings × idle f0, f3, walk f2, f6 and idle with the head turned to yaw ±60 and pitch −15 / +20). Skull skin inside the hair region: 0 px; skull faces painted skin inside it: 0. Hair region (mop): front hairline 1.433, corners 1.36, temples 1.425, over the ear 1.334, nape 1.225. The skin meant to show, most in one render: face and forehead 41 px, temples 7, over the ear line 2, nape 12. Painted scalp (hair-coloured skull) showing through the shell: at most 5 px.",
+     "gate": true
+    },
+    {
+     "id": "gaze",
+     "title": "Gaze: eyes.left and eyes.right move the pupils at every facing where the eyes show",
+     "ms": 59,
+     "pass": true,
+     "value": "11 facings",
+     "detail": "At 32 px/m, idle f0, 16 facings: the pupil (the ink and iris pixels) of eyes.left and of eyes.right against eyes.open, screen x of the pupils' centre (\"hidden\" where the only eye shown turns away in profile). Where two eyes show, eyes.left and eyes.right each move the pupils; where one eye shows in profile the two read apart (toward the camera the pupil stays, away it turns white).",
+     "rows": [
+      {
+       "label": "0°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "22.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "45°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "67.5°",
+       "value": "left hidden · right -0.5 px",
+       "note": "pupil px 2 / 0 / 4",
+       "ok": true
+      },
+      {
+       "label": "90°",
+       "value": "left hidden · right -1.0 px",
+       "note": "pupil px 2 / 0 / 6",
+       "ok": true
+      },
+      {
+       "label": "112.5°",
+       "value": "left hidden · right -0.8 px",
+       "note": "pupil px 4 / 0 / 8",
+       "ok": true
+      },
+      {
+       "label": "135°",
+       "value": "left -1.0 px · right -0.3 px",
+       "note": "pupil px 6 / 2 / 6",
+       "ok": true
+      },
+      {
+       "label": "157.5°",
+       "value": "left +2.0 px · right -0.5 px",
+       "note": "pupil px 4 / 6 / 4",
+       "ok": true
+      },
+      {
+       "label": "180°",
+       "value": "left +0.5 px · right -0.5 px",
+       "note": "pupil px 4 / 4 / 4",
+       "ok": true
+      },
+      {
+       "label": "202.5°",
+       "value": "left +0.5 px · right -1.0 px",
+       "note": "pupil px 4 / 4 / 4",
+       "ok": true
+      },
+      {
+       "label": "225°",
+       "value": "left +0.1 px · right +0.9 px",
+       "note": "pupil px 5 / 4 / 3",
+       "ok": true
+      },
+      {
+       "label": "247.5°",
+       "value": "left +2.2 px · right hidden",
+       "note": "pupil px 3 / 9 / 0",
+       "ok": true
+      },
+      {
+       "label": "270°",
+       "value": "left +1.0 px · right hidden",
+       "note": "pupil px 2 / 6 / 0",
+       "ok": true
+      },
+      {
+       "label": "292.5°",
+       "value": "left +0.5 px · right hidden",
+       "note": "pupil px 1 / 4 / 0",
+       "ok": true
+      },
+      {
+       "label": "315°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "337.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "look",
+     "title": "Look-at: the head turned to every limit opens no gap in the hair, hood or collar; the aim lands",
+     "ms": 409,
+     "pass": true,
+     "value": "0 px",
+     "detail": "256 renders: idle f0 and walk f2 at 16 facings, the head turned to each limit (yaw ±60, pitch -15 / 20 and the four corners; neck 0.4, head 0.6). Scalp inside the hair region: 0 px. See-through at the neck, collar or hood beyond the unturned pose: 0 px. Aim (share 1): for 21 targets 2 m away inside the limits, lookAt() then the turn points the head's +y within 1.70° of the target (worst at bearing 50°, -0.35 m).",
+     "gate": true
+    },
+    {
+     "id": "tones",
+     "title": "Tone discipline: each material lights at most four ramp steps in a frame (the contour step aside)",
+     "ms": 440,
+     "pass": true,
+     "value": "4 steps",
+     "detail": "392 renders. The most lit steps any one material spends in a frame: 4 (shirt · idle f0 N). The inner contour darkens one step past that — the outline doing its job, not a fifth tone.",
+     "gate": true
+    },
+    {
+     "id": "light",
+     "title": "Top-of-frame key: the rest pose at E is the mirror of W, to the pixel",
+     "ms": 18,
+     "pass": true,
+     "value": "0 px differ",
+     "detail": "E against W mirrored: 0 px differ. S against itself mirrored (head snap off — an odd-width head cannot sit on a pixel centre and be centred on the pivot seam at once): 0 px. An upper-left key cannot pass this; the key is 0.000, 0.811, 0.585 (right, up, toward camera) — the fleet key without its left component.",
+     "gate": true
+    },
+    {
+     "id": "budget",
+     "title": "Budget against rig 7 (reported: over 1,000 tris is allowed)",
+     "ms": 60,
+     "pass": false,
+     "value": "1032 tris",
+     "detail": "1032 tris (513 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1817 KB of clip JSON against 2,155 KB for 35 · bind mesh 164 KB against 235 KB.",
+     "gate": false
+    },
+    {
+     "id": "sidecar",
+     "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
+     "ms": 29,
+     "pass": true,
+     "value": "53 clips · 438 frames",
+     "detail": "Schema hidden-harbours/character-gameplay@1. Walk 0.452 m/s, run 1.243 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 0.622; ladder 0.545). No section missing.",
+     "gate": true
+    },
+    {
+     "id": "heights",
+     "title": "World heights: the crown in idle is the build's designed height",
+     "ms": 1,
+     "pass": true,
+     "value": "1.139 m",
+     "detail": "Crown in idle 1.139 m against the build's 1.156 m (child, height step 0; the Fisher is 1.522, rig 7 1.523). Hip joint 0.381 (rig 7 0.587). Palms at rest 0.405 m. Legs 0.314 m hip to ankle (rig 7 0.541), arms 0.338 m shoulder to palm.",
+     "gate": true
+    }
+   ]
+  },
+  "girl": {
+   "label": "Wharf girl",
+   "passed": 19,
+   "of": 19,
+   "reported": 1,
+   "ms": 4771,
+   "checks": [
+    {
+     "id": "timing",
+     "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
+     "ms": 0,
+     "pass": true,
+     "value": "35 / 35",
+     "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)",
+     "gate": true
+    },
+    {
+     "id": "skeleton",
+     "title": "Skeleton: 28 bones, parents first, identity bind, every deform length constant in every frame",
+     "ms": 52,
+     "pass": true,
+     "value": "1.39e-16 m",
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 1.39e-16 m (board f9 elbow_R). No tip, cuff, hem or inseam bones.",
+     "gate": true
+    },
+    {
+     "id": "skin",
+     "title": "Skin weights: every vertex sums to 1; the only blended ring is the waist",
+     "ms": 1,
+     "pass": true,
+     "value": "8 blended",
+     "detail": "1902 vertices, 0 with weights that do not sum to 1. 8 distinct blended positions (spine 0.5 / chest 0.5), all on this build's waist ring at 0.571 m (and the bib or apron edge that rides it).",
+     "gate": true
+    },
+    {
+     "id": "roundtrip",
+     "title": "Export round trip: quaternions out → FK → skinned mesh equals the solver",
+     "ms": 201,
+     "pass": true,
+     "value": "7.04e-16 m",
+     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 7.04e-16 m at astrideStand f2; gate 1e-6 m.",
+     "gate": true
+    },
+    {
+     "id": "continuity",
+     "title": "Quaternion tracks stay in one hemisphere frame to frame",
+     "ms": 28,
+     "pass": true,
+     "value": "0 flips",
+     "detail": "Sign continuity on every bone of every clip. Largest joint step between two frames: 166.9° (mountCab f6→7 knee_R) — a slerp between neighbours never takes the long way round.",
+     "gate": true
+    },
+    {
+     "id": "rock",
+     "title": "Deck rock is a three-bone additive, keyed on the rock alone",
+     "ms": 587,
+     "pass": true,
+     "value": "3 of 28 bones",
+     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0. Deltas equal the table (keyed on the rock alone) to 0; clip + table through quaternions skins to the rocked solve within 8.97e-16 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock.",
+     "gate": true
+    },
+    {
+     "id": "loops",
+     "title": "Loops close: u = 1 is u = 0, the ladder included (it is body-anchored)",
+     "ms": 12,
+     "pass": true,
+     "value": "3.38e-16 m",
+     "detail": "37 looping clips. Worst seam 3.38e-16 m (ladderDown).",
+     "gate": true
+    },
+    {
+     "id": "handoffs",
+     "title": "One-shots meet the clips they hand to, to the micron",
+     "ms": 15,
+     "pass": true,
+     "value": "3.16e-16 m",
+     "detail": "board last = idle on the deck 3.16e-16 · boardDown f0 = idle on the deck 3.16e-16 · boardDown last = idle on the dock 0 · mountUp f0 = idle beside the machine 2.45e-16 · mountUp last = astride f0 2.50e-16 · mountDown f0 = astride f0 2.50e-16 · mountDown last = idle beside 2.45e-16 · mountCab last = astride(bench) f0 2.50e-16 · mountCabDown f0 = astride(bench) f0 2.50e-16 · reach last = idle 0",
+     "gate": true
+    },
+    {
+     "id": "contacts",
+     "title": "Contacts: no skate at the engine speed, no sole below the ground, limbs make their targets",
+     "ms": 104,
+     "pass": true,
+     "value": "0.01 mm skate",
+     "detail": "Planted-foot drift against a ground moving at the clip speed: 0.01 mm (walk R). Deepest vertex below z = 0 on grounded clips: 1.1 mm (mountCab f15). Limbs short of a target by > 5 mm on gated clips: none. Reported, not gated: board 35 mm, ladderDown 236 mm, hauler 215 mm, bench 122 mm, chop 139 mm, lift 72 mm, place 73 mm, drive 169 mm, astride 246 mm, astrideStand 267 mm, mountUp 509 mm, mountDown 505 mm, mountCab 378 mm, mountCabDown 380 mm, board+buckets 35 mm, board+tray 35 mm, board+pot 35 mm — at the default saddle, whose seat and pegs these legs cannot reach. Saddle family at the fitted saddle (the default scaled to 0.4, the idle spot 0.6 m beside it): worst limb 0 mm, seat gap 12 mm (mountDown f1), standing foot on the ground until the seat carries the body — reported (a build smaller than the Fisher).",
+     "rows": [
+      {
+       "label": "board",
+       "value": "35 mm",
+       "note": "footR f3 · railZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "ladderDown",
+       "value": "236 mm",
+       "note": "handL f0 · rung sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "hauler",
+       "value": "215 mm",
+       "note": "handL f4 · workZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "bench",
+       "value": "122 mm",
+       "note": "handR f2 · workZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "chop",
+       "value": "139 mm",
+       "note": "handR f5 · workZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "lift",
+       "value": "72 mm",
+       "note": "handR f7 · workZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "place",
+       "value": "73 mm",
+       "note": "handR f3 · workZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "drive",
+       "value": "169 mm",
+       "note": "footR f4 · wheel sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "astride",
+       "value": "246 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "astrideStand",
+       "value": "267 mm",
+       "note": "footL f1 · pegs, reported",
+       "ok": true
+      },
+      {
+       "label": "mountUp",
+       "value": "509 mm",
+       "note": "footR f8 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountDown",
+       "value": "505 mm",
+       "note": "footR f6 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCab",
+       "value": "378 mm",
+       "note": "footR f9 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "mountCabDown",
+       "value": "380 mm",
+       "note": "footR f7 · transition, reported",
+       "ok": true
+      },
+      {
+       "label": "board+buckets",
+       "value": "35 mm",
+       "note": "footR f3 · railZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "board+tray",
+       "value": "35 mm",
+       "note": "footR f3 · railZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "board+pot",
+       "value": "35 mm",
+       "note": "footR f3 · railZ sized for the Fisher, reported",
+       "ok": true
+      },
+      {
+       "label": "saddle family at scale 0.4",
+       "value": "0 mm",
+       "note": "seat gap 12 mm · standing foot grounded · reported",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "travel",
+     "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
+     "ms": 137,
+     "pass": true,
+     "value": "0.289 m",
+     "detail": "Largest single-frame vertex move 0.289 m (swim f4→5), gate 0.350 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.334 m (mountDown f4→5), reported on a build smaller than the Fisher. Reported: the mounts at the default saddle and the world-contract clips (rail, bench, cab) on this build smaller than the Fisher, 0.625 m (mountDown f0→1). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.407 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.409 m (a 0.55 m drop in six frames, 570 ms).",
+     "gate": true
+    },
+    {
+     "id": "cell",
+     "title": "Every frame fits the 64 × 92 cell at every facing, keyline included, 1 px spare",
+     "ms": 2518,
+     "pass": true,
+     "value": "2 px spare",
+     "detail": "2992 renders. Tightest: 2 px (tread f0 SW). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one.",
+     "gate": true
+    },
+    {
+     "id": "face",
+     "title": "The face resolves at 32 px/m: two eyes in front views, one in profile, none from behind",
+     "ms": 195,
+     "pass": true,
+     "value": "8 / 8 facings",
+     "detail": "Every face group draws at S: eyes.open 8 · eyes.half 4 · eyes.shut 4 · eyes.wide 12 · eyes.left 8 · eyes.right 8 · brows.flat 4 · brows.up 4 · brows.knit 4 · mouth.flat 3 · mouth.open 3 · mouth.grit 5 · mouth.smile 5 px. Every state changes its slot pixels at S against the default. At the diagonals these read the same as the default: mouth.smile SE, mouth.smile SW.",
+     "rows": [
+      {
+       "label": "N",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NE",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "E",
+       "value": "1 eye",
+       "note": "eyes 0+4 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "SE",
+       "value": "2 eyes",
+       "note": "eyes 4+4 px · nose 0 px · mouth 1 px",
+       "ok": true
+      },
+      {
+       "label": "S",
+       "value": "2 eyes",
+       "note": "eyes 4+4 px · nose 2 px · mouth 3 px",
+       "ok": true
+      },
+      {
+       "label": "SW",
+       "value": "2 eyes",
+       "note": "eyes 4+4 px · nose 0 px · mouth 1 px",
+       "ok": true
+      },
+      {
+       "label": "W",
+       "value": "1 eye",
+       "note": "eyes 4+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      },
+      {
+       "label": "NW",
+       "value": "0 eyes",
+       "note": "eyes 0+0 px · nose 0 px · mouth 0 px",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "hair",
+     "title": "Hair: no skull skin where the hair is — 16 facings, idle, walk and the head turned to its limits",
+     "ms": 108,
+     "pass": true,
+     "value": "0 px",
+     "detail": "128 renders (16 facings × idle f0, f3, walk f2, f6 and idle with the head turned to yaw ±60 and pitch −15 / +20). Skull skin inside the hair region: 0 px; skull faces painted skin inside it: 0. Hair region (long): front hairline 1.428, corners 1.34, temples 1.425, over the ear 1.333, nape 1.2. The skin meant to show, most in one render: face and forehead 32 px, temples 7, over the ear line 1, nape 0. Painted scalp (hair-coloured skull) showing through the shell: at most 4 px.",
+     "gate": true
+    },
+    {
+     "id": "gaze",
+     "title": "Gaze: eyes.left and eyes.right move the pupils at every facing where the eyes show",
+     "ms": 45,
+     "pass": true,
+     "value": "11 facings",
+     "detail": "At 32 px/m, idle f0, 16 facings: the pupil (the ink and iris pixels) of eyes.left and of eyes.right against eyes.open, screen x of the pupils' centre (\"hidden\" where the only eye shown turns away in profile). Where two eyes show, eyes.left and eyes.right each move the pupils; where one eye shows in profile the two read apart (toward the camera the pupil stays, away it turns white).",
+     "rows": [
+      {
+       "label": "0°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "22.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "45°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "67.5°",
+       "value": "left hidden · right -0.7 px",
+       "note": "pupil px 1 / 0 / 3",
+       "ok": true
+      },
+      {
+       "label": "90°",
+       "value": "left hidden · right -0.5 px",
+       "note": "pupil px 2 / 0 / 4",
+       "ok": true
+      },
+      {
+       "label": "112.5°",
+       "value": "left hidden · right -0.5 px",
+       "note": "pupil px 5 / 0 / 9",
+       "ok": true
+      },
+      {
+       "label": "135°",
+       "value": "left -1.0 px · right -0.3 px",
+       "note": "pupil px 6 / 2 / 6",
+       "ok": true
+      },
+      {
+       "label": "157.5°",
+       "value": "left +1.0 px · right -1.3 px",
+       "note": "pupil px 4 / 4 / 6",
+       "ok": true
+      },
+      {
+       "label": "180°",
+       "value": "left +0.5 px · right -0.5 px",
+       "note": "pupil px 4 / 4 / 4",
+       "ok": true
+      },
+      {
+       "label": "202.5°",
+       "value": "left +0.5 px · right -1.0 px",
+       "note": "pupil px 4 / 4 / 4",
+       "ok": true
+      },
+      {
+       "label": "225°",
+       "value": "left +0.3 px · right +1.0 px",
+       "note": "pupil px 6 / 6 / 2",
+       "ok": true
+      },
+      {
+       "label": "247.5°",
+       "value": "left +0.5 px · right hidden",
+       "note": "pupil px 5 / 9 / 0",
+       "ok": true
+      },
+      {
+       "label": "270°",
+       "value": "left +0.5 px · right hidden",
+       "note": "pupil px 2 / 4 / 0",
+       "ok": true
+      },
+      {
+       "label": "292.5°",
+       "value": "left +0.7 px · right hidden",
+       "note": "pupil px 1 / 3 / 0",
+       "ok": true
+      },
+      {
+       "label": "315°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      },
+      {
+       "label": "337.5°",
+       "value": "no eyes",
+       "note": "",
+       "ok": true
+      }
+     ],
+     "gate": true
+    },
+    {
+     "id": "look",
+     "title": "Look-at: the head turned to every limit opens no gap in the hair, hood or collar; the aim lands",
+     "ms": 367,
+     "pass": true,
+     "value": "0 px",
+     "detail": "256 renders: idle f0 and walk f2 at 16 facings, the head turned to each limit (yaw ±60, pitch -15 / 20 and the four corners; neck 0.4, head 0.6). Scalp inside the hair region: 0 px. See-through at the neck, collar or hood beyond the unturned pose: 0 px. Aim (share 1): for 21 targets 2 m away inside the limits, lookAt() then the turn points the head's +y within 1.70° of the target (worst at bearing 50°, -0.35 m).",
+     "gate": true
+    },
+    {
+     "id": "tones",
+     "title": "Tone discipline: each material lights at most four ramp steps in a frame (the contour step aside)",
+     "ms": 277,
+     "pass": true,
+     "value": "4 steps",
+     "detail": "392 renders. The most lit steps any one material spends in a frame: 4 (hair · idle f0 N). The inner contour darkens one step past that — the outline doing its job, not a fifth tone.",
+     "gate": true
+    },
+    {
+     "id": "light",
+     "title": "Top-of-frame key: the rest pose at E is the mirror of W, to the pixel",
+     "ms": 10,
+     "pass": true,
+     "value": "0 px differ",
+     "detail": "E against W mirrored: 0 px differ. S against itself mirrored (head snap off — an odd-width head cannot sit on a pixel centre and be centred on the pivot seam at once): 0 px. An upper-left key cannot pass this; the key is 0.000, 0.811, 0.585 (right, up, toward camera) — the fleet key without its left component.",
+     "gate": true
+    },
+    {
+     "id": "budget",
+     "title": "Budget against rig 7 (reported: over 1,000 tris is allowed)",
+     "ms": 69,
+     "pass": true,
+     "value": "970 tris",
+     "detail": "970 tris (466 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1815 KB of clip JSON against 2,155 KB for 35 · bind mesh 163 KB against 235 KB.",
+     "gate": false
+    },
+    {
+     "id": "sidecar",
+     "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
+     "ms": 31,
+     "pass": true,
+     "value": "53 clips · 438 frames",
+     "detail": "Schema hidden-harbours/character-gameplay@1. Walk 0.445 m/s, run 1.225 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 0.612; ladder 0.545). No section missing.",
+     "gate": true
+    },
+    {
+     "id": "heights",
+     "title": "World heights: the crown in idle is the build's designed height",
+     "ms": 0,
+     "pass": true,
+     "value": "1.137 m",
+     "detail": "Crown in idle 1.137 m against the build's 1.153 m (child, height step 0; the Fisher is 1.522, rig 7 1.523). Hip joint 0.376 (rig 7 0.587). Palms at rest 0.400 m. Legs 0.309 m hip to ankle (rig 7 0.541), arms 0.334 m shoulder to palm.",
+     "gate": true
+    }
+   ]
+  }
+ }
+}
