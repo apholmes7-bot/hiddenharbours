@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 220c438eaec5c5a3836529a81f1cd7ed
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 65451201529540185
+    second: concreteQuayEnd_0
+  - first:
+      213: 556953475311298827
+    second: concreteQuayEnd_1
+  - first:
+      213: 138781562227437672
+    second: concreteQuayEnd_2
+  - first:
+      213: 433162182958030692
+    second: concreteQuayEnd_3
+  - first:
+      213: 53389092112777957
+    second: concreteQuayEnd_4
+  - first:
+      213: 895832702105489832
+    second: concreteQuayEnd_5
+  - first:
+      213: 737109583044947785
+    second: concreteQuayEnd_6
+  - first:
+      213: 313135364140786158
+    second: concreteQuayEnd_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: concreteQuayEnd_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 524
+        width: 572
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982517482517482, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75c057df0f5f32e4e4a97a6b21b55a97
+      internalID: 65451201529540185
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: concreteQuayEnd_1
+      rect:
+        serializedVersion: 2
+        x: 572
+        y: 524
+        width: 572
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982517482517482, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60182fd3ccbb017e4b7715b1e44bc1fc
+      internalID: 556953475311298827
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: concreteQuayEnd_2
+      rect:
+        serializedVersion: 2
+        x: 1144
+        y: 524
+        width: 572
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982517482517482, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b49bae6985028c5737f0cabde4a29163
+      internalID: 138781562227437672
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: concreteQuayEnd_3
+      rect:
+        serializedVersion: 2
+        x: 1716
+        y: 524
+        width: 572
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982517482517482, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 834785c0f7743953f06dc918e6b74c58
+      internalID: 433162182958030692
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: concreteQuayEnd_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 572
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982517482517482, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 533bb913b59ff72314938d0b3f390b73
+      internalID: 53389092112777957
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: concreteQuayEnd_5
+      rect:
+        serializedVersion: 2
+        x: 572
+        y: 0
+        width: 572
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982517482517482, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b76125e3a29f444cb504af277be96c52
+      internalID: 895832702105489832
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: concreteQuayEnd_6
+      rect:
+        serializedVersion: 2
+        x: 1144
+        y: 0
+        width: 572
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982517482517482, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a74fe439ff6ab8ff11ca64fde802a4a3
+      internalID: 737109583044947785
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: concreteQuayEnd_7
+      rect:
+        serializedVersion: 2
+        x: 1716
+        y: 0
+        width: 572
+        height: 524
+      alignment: 9
+      pivot: {x: 0.4982517482517482, y: 0.40839694656488545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a085d8094300436da3739ac0a8d92ea0
+      internalID: 313135364140786158
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID: 9d00db96ec162aa205ac06a3a7998137
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      concreteQuayEnd_0: 65451201529540185
+      concreteQuayEnd_1: 556953475311298827
+      concreteQuayEnd_2: 138781562227437672
+      concreteQuayEnd_3: 433162182958030692
+      concreteQuayEnd_4: 53389092112777957
+      concreteQuayEnd_5: 895832702105489832
+      concreteQuayEnd_6: 737109583044947785
+      concreteQuayEnd_7: 313135364140786158
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:
