@@ -106,16 +106,13 @@ namespace HiddenHarbours.Tests.PlayMode
                 }
                 int frame = Time.frameCount + (step == 1 || step == 3 ? 1 : 0);
                 do { yield return null; } while (moving.SampleFrame < frame || still.SampleFrame < frame);
-                Assert.Multiple(() =>
-                {
-                    Assert.AreEqual(new Vector4(4f, 6f, 0f, 1f), still.Origin,
-                        "Still hull lost its published pivot after real LateUpdate.");
-                    Assert.AreEqual(expectedMoving, moving.Origin,
-                        "Moving hull lost its published pivot after real LateUpdate.");
-                    Assert.AreEqual(0f, still.Lit);
-                    Assert.AreEqual(1f, moving.Lit,
-                        "Moving hull lost its lit flag after real LateUpdate.");
-                });
+                Assert.AreEqual(new Vector4(4f, 6f, 0f, 1f), still.Origin,
+                    "Still hull lost its published pivot after real LateUpdate.");
+                Assert.AreEqual(expectedMoving, moving.Origin,
+                    "Moving hull lost its published pivot after real LateUpdate.");
+                Assert.AreEqual(0f, still.Lit);
+                Assert.AreEqual(1f, moving.Lit,
+                    "Moving hull lost its lit flag after real LateUpdate.");
                 Assert.AreEqual(new Vector4(expectedMoving.x, expectedMoving.y, 0f, 0f), moving.HullOrigin,
                     "Production hull LateUpdate must publish the moved root too.");
                 if (step > 0)

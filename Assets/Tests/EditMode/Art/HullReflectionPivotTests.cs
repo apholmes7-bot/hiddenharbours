@@ -76,13 +76,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 _hull.ApplyPose();
                 _hull.ApplyPose(); // also the clean-pose frame, with no reflector refresh
                 var block = Read(_overlay);
-                Assert.Multiple(() =>
-                {
-                    Assert.AreEqual(expected, block.GetVector(ReflectionShaderIds.ReflectOrigin),
-                        "HullOverlay ApplyPose erased the published reflection origin.");
-                    Assert.AreEqual(lit ? 1f : 0f, block.GetFloat(ReflectionShaderIds.ReflectLit),
-                        "HullOverlay ApplyPose erased the published reflection lit flag.");
-                });
+                Assert.AreEqual(expected, block.GetVector(ReflectionShaderIds.ReflectOrigin),
+                    "HullOverlay ApplyPose erased the published reflection origin.");
+                Assert.AreEqual(lit ? 1f : 0f, block.GetFloat(ReflectionShaderIds.ReflectLit),
+                    "HullOverlay ApplyPose erased the published reflection lit flag.");
             }
         }
 
