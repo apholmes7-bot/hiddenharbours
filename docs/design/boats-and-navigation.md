@@ -1122,6 +1122,18 @@ the fleet is the coast *looking* worked.
   Live: a 3-probe bow look-ahead on the slow tick (`AmbientFleetSteering.DepthAvoid`, current water level)
   swings a player-displaced boat toward the deeper bow and eases her down. **No NavMesh** — the painted
   seabed (`ITidalTerrain` via Core) is the map.
+- **The grounds are all the water the fleet can reach (owner ruling 2026-09-26, #886: "They should fish
+  everywhere accessible").** `AmbientFleetWater` measures it once per region load and tide profile, on an
+  `AccessCellMeters` grid (St Peters: 180 × 120 cells at 4 m). A point is ground when it keeps the margin
+  at spring low, joins `AccessSeedPoint` (the arrival route's seaward end) through water that keeps it — a
+  four-way flood fill, so a pool behind a bar that dries is never planned — and lies
+  `BoatAvoidRadius + PlayerAvoidRadius` inside the grounds rectangle and off every `KeepClear` area (the
+  slip, the approach, the wharf, the fairways, the marks, the #875 wake frame; `AmbientFleetGroundsTests`
+  ties each to its Editor source). A day's plan draws each boat's first spot from that water and every next
+  spot within one leg — what her slowest cruise covers between two work windows
+  (`AmbientFleetSchedule.TransitSeconds`); no leg passes within the clearance of a `KeepClear` area. The
+  grid only proposes: every spot and leg is checked exactly against the terrain. The margin relaxes only
+  where the reachable water cannot hold it (a hard shore); on St Peters it never does.
 - **Collision avoidance is local steering**: linear-falloff repulsion from other NPC boats, the player's
   boat (a bigger berth), and the player's placed buoys (positions off the Core `TrapPlaced`/`TrapRemoved`
   signals — Fishing is never referenced), with a starboard bias so a head-on meet curls both boats the
@@ -1140,7 +1152,7 @@ the fleet is the coast *looking* worked.
   always shrinks inside the distance left, so no stable orbit exists at any radius.
 - **Content is data (rule 2/6):** one `AmbientFleetDef` per region (`Data/Boats`,
   `fleet.st_peters_ambient`) carries every tunable — boat count (3-5), hull art, speed band, grounds
-  rect, depth margin, work rhythm (slots/day + work window), avoidance radii, buoy palette. Fleets are
+  (the rectangle, the access seed and the keep-clear areas), depth margin, work rhythm (slots/day + work window), avoidance radii, buoy palette. Fleets are
   indexed by the Resources `AmbientFleetLibrary` (the `FishSpeciesLibrary` pattern).
 - **The fleet wears the owner's boat (owner ask 2026-07-12).** `AmbientFleetDef.HullFacings` takes the
   8-way fishing-boat compass (CW from North — the same art the player sails), **all-or-nothing** like

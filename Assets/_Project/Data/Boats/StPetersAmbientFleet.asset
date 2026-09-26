@@ -20,8 +20,8 @@ MonoBehaviour:
   MinSpeedMetersPerSecond: 1.6
   MaxSpeedMetersPerSecond: 2.4
   TurnRateDegreesPerSecond: 70
-  GroundsCenter: {x: 70, y: -95}
-  GroundsSize: {x: 85, y: 22}
+  GroundsCenter: {x: 0, y: 0}
+  GroundsSize: {x: 720, y: 480}
   SpotsPerBoat: 2
   MinDepthMeters: 0.4
   SpotSpacingMeters: 8
@@ -48,3 +48,210 @@ MonoBehaviour:
   HullVisual: {fileID: 11400000, guid: 659bf2471d548444ea2d4b2389c7e79e, type: 2}
   HullFacings: []
   HullTintStrength: 0.35
+  AccessSeedPoint: {x: 340, y: 40}
+  AccessCellMeters: 4
+  KeepClear:
+  - Name: beach slip
+    Source: 'StPetersBuilder.BerthFrom, BerthTo, BerthHalfWidth'
+    Shape: 0
+    A: {x: 240, y: 0}
+    B: {x: 190, y: 0}
+    Radius: 8
+  - Name: dredged approach
+    Source: 'StPetersBuilder.ApproachFrom, ApproachTo, ApproachHalfWidth'
+    Shape: 0
+    A: {x: 255, y: 0}
+    B: {x: 206, y: 0}
+    Radius: 8
+  - Name: dock
+    Source: StPetersBuilder.DockZonePos
+    Shape: 0
+    A: {x: 211.5, y: -5.8}
+    B: {x: 211.5, y: -5.8}
+    Radius: 0
+  - Name: disembark
+    Source: StPetersBuilder.DisembarkPos
+    Shape: 0
+    A: {x: 211.5, y: -1.9}
+    B: {x: 211.5, y: -1.9}
+    Radius: 0
+  - Name: arrival
+    Source: StPetersBuilder.ArrivalPos
+    Shape: 0
+    A: {x: 213.5, y: -5.8}
+    B: {x: 213.5, y: -5.8}
+    Radius: 0
+  - Name: dory berth
+    Source: StPetersBuilder.DoryMooredPos
+    Shape: 0
+    A: {x: 213.5, y: 4.25}
+    B: {x: 213.5, y: 4.25}
+    Radius: 0
+  - Name: entrance fairway leg 0
+    Source: 'StPetersNavMarks.Entrance: Waypoints, HalfWidthMetres'
+    Shape: 0
+    A: {x: 340, y: 40}
+    B: {x: 262, y: 26}
+    Radius: 10
+  - Name: entrance fairway leg 1
+    Source: 'StPetersNavMarks.Entrance: Waypoints, HalfWidthMetres'
+    Shape: 0
+    A: {x: 262, y: 26}
+    B: {x: 255, y: 0}
+    Radius: 10
+  - Name: entrance fairway leg 2
+    Source: 'StPetersNavMarks.Entrance: Waypoints, HalfWidthMetres'
+    Shape: 0
+    A: {x: 255, y: 0}
+    B: {x: 211.5, y: -5.8}
+    Radius: 10
+  - Name: wharf
+    Source: 'StPetersWharf.RootCellX to HeadCellX + 1, MinCellY to MaxCellY + 1'
+    Shape: 1
+    A: {x: 183, y: -3}
+    B: {x: 214, y: 3}
+    Radius: 0
+  - Name: sandbar
+    Source: 'StPetersBuilder.SandbarFrom, SandbarTo, SandbarHalfWidth'
+    Shape: 0
+    A: {x: -45, y: 0}
+    B: {x: -350, y: 0}
+    Radius: 30
+  - Name: bar gut
+    Source: StPetersNavMarks.GutCentre() and GutAxis() times SandbarHalfWidth; StPetersBuilder.ChannelHalfWidth
+    Shape: 0
+    A: {x: -234.1, y: -30}
+    B: {x: -234.1, y: 30}
+    Radius: 15
+  - Name: bar gut fairway leg 0
+    Source: 'StPetersNavMarks.BarGut: Waypoints, HalfWidthMetres'
+    Shape: 0
+    A: {x: -234.1, y: -45}
+    B: {x: -234.1, y: 45}
+    Radius: 12
+  - Name: Nine Mile Creek passage
+    Source: 'StPetersBuilder.ToNineMileCreekPassagePos; 10 m round (terrain pass 9, section 2.1)'
+    Shape: 0
+    A: {x: -356, y: 0}
+    B: {x: -356, y: 0}
+    Radius: 10
+  - Name: West Water passage
+    Source: 'StPetersBuilder.ToWestWaterPassagePos; 10 m round (terrain pass 9, section 2.1)'
+    Shape: 0
+    A: {x: -356, y: 150}
+    B: {x: -356, y: 150}
+    Radius: 10
+  - Name: East Water passage
+    Source: 'StPetersBuilder.ToEastWaterPassagePos; 10 m round (terrain pass 9, section 2.1)'
+    Shape: 0
+    A: {x: 356, y: 40}
+    B: {x: 356, y: 40}
+    Radius: 10
+  - Name: East Water arrival
+    Source: 'StPetersBuilder.FromEastWaterArrivalPos; 10 m round (terrain pass 9, section 2.1)'
+    Shape: 0
+    A: {x: 316, y: 40}
+    B: {x: 316, y: 40}
+    Radius: 10
+  - Name: Nine Mile Creek band
+    Source: 'StPetersBuilder.ToNineMileCreekPassagePos, 3 by SandbarHalfWidth times 2'
+    Shape: 1
+    A: {x: -357.5, y: -30}
+    B: {x: -354.5, y: 30}
+    Radius: 0
+  - Name: West Water band
+    Source: 'StPetersBuilder.ToWestWaterPassagePos, WestWaterPassageBandSize'
+    Shape: 1
+    A: {x: -359, y: 90}
+    B: {x: -353, y: 210}
+    Radius: 0
+  - Name: East Water band
+    Source: 'StPetersBuilder.ToEastWaterPassagePos, EastWaterPassageBandSize'
+    Shape: 1
+    A: {x: 353, y: -20}
+    B: {x: 359, y: 100}
+    Radius: 0
+  - Name: mark channel.stpeters_entrance.p0
+    Source: StPetersNavMarks.Plan(terrain).Marks
+    Shape: 0
+    A: {x: 341.7666, y: 30.15729}
+    B: {x: 341.7666, y: 30.15729}
+    Radius: 0
+  - Name: mark channel.stpeters_entrance.s0
+    Source: StPetersNavMarks.Plan(terrain).Marks
+    Shape: 0
+    A: {x: 338.2334, y: 49.84271}
+    B: {x: 338.2334, y: 49.84271}
+    Radius: 0
+  - Name: mark channel.stpeters_entrance.p1
+    Source: StPetersNavMarks.Plan(terrain).Marks
+    Shape: 0
+    A: {x: 270.0077, y: 17.27748}
+    B: {x: 270.0077, y: 17.27748}
+    Radius: 0
+  - Name: mark channel.stpeters_entrance.s1
+    Source: StPetersNavMarks.Plan(terrain).Marks
+    Shape: 0
+    A: {x: 253.9923, y: 34.72252}
+    B: {x: 253.9923, y: 34.72252}
+    Radius: 0
+  - Name: mark channel.stpeters_entrance.p2
+    Source: StPetersNavMarks.Plan(terrain).Marks
+    Shape: 0
+    A: {x: 262.9244, y: -9.031903}
+    B: {x: 262.9244, y: -9.031903}
+    Radius: 0
+  - Name: mark channel.stpeters_entrance.s2
+    Source: StPetersNavMarks.Plan(terrain).Marks
+    Shape: 0
+    A: {x: 247.0756, y: 9.031911}
+    B: {x: 247.0756, y: 9.031911}
+    Radius: 0
+  - Name: mark channel.stpeters_entrance.p3
+    Source: StPetersNavMarks.Plan(terrain).Marks
+    Shape: 0
+    A: {x: 212.8216, y: -15.71228}
+    B: {x: 212.8216, y: -15.71228}
+    Radius: 0
+  - Name: mark channel.stpeters_entrance.s3
+    Source: StPetersNavMarks.Plan(terrain).Marks
+    Shape: 0
+    A: {x: 210.1784, y: 4.112279}
+    B: {x: 210.1784, y: 4.112279}
+    Radius: 0
+  - Name: mark channel.stpeters_bar_gut.p0
+    Source: StPetersNavMarks.Plan(terrain).Marks
+    Shape: 0
+    A: {x: -246.1, y: -45}
+    B: {x: -246.1, y: -45}
+    Radius: 0
+  - Name: mark channel.stpeters_bar_gut.s0
+    Source: StPetersNavMarks.Plan(terrain).Marks
+    Shape: 0
+    A: {x: -222.1, y: -45}
+    B: {x: -222.1, y: -45}
+    Radius: 0
+  - Name: mark channel.stpeters_bar_gut.p1
+    Source: StPetersNavMarks.Plan(terrain).Marks
+    Shape: 0
+    A: {x: -246.1, y: 45}
+    B: {x: -246.1, y: 45}
+    Radius: 0
+  - Name: mark channel.stpeters_bar_gut.s1
+    Source: StPetersNavMarks.Plan(terrain).Marks
+    Shape: 0
+    A: {x: -222.1, y: 45}
+    B: {x: -222.1, y: 45}
+    Radius: 0
+  - Name: mark mark.stpeters_reef_north
+    Source: StPetersNavMarks.Plan(terrain).Marks
+    Shape: 0
+    A: {x: 70, y: 107.9167}
+    B: {x: 70, y: 107.9167}
+    Radius: 0
+  - Name: '#875 wake frame'
+    Source: 'The #875 plates at the arrival route''s seaward end: 80 by 64 m framed at 2133 by 1600 px (WakeCentrePhotographPlayTests.GameplayAcceptance.cs, docs/verification/wake-v24/README.md)'
+    Shape: 1
+    A: {x: 297.3, y: 8}
+    B: {x: 382.7, y: 72}
+    Radius: 0
