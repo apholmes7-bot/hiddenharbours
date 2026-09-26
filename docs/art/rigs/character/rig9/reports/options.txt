@@ -1,0 +1,83 @@
+check-options — data/options.v9.json and the triangle budget
+rig 02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144  poses 42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07
+
+18 axes, 140 options, 32 materials, 72 ramps.
+  shape     person/body           5 options  creator: Body
+  age       person/body           4 options  not a creator control
+  height    person/body           5 options  creator: Body
+  weight    person/body           5 options  creator: Body
+  head      person/face           7 options  creator: Face
+  skin      person/skin           9 options  creator: Body
+  hair      person/hair           9 options  creator: Hair
+  hairStyle person/hair           8 options  creator: Hair
+  beard     person/facial hair    8 options  creator: Hair
+  eyes      person/eyes           7 options  creator: Face
+  eyeShape  person/eyes           3 options  creator: Face
+  garment   clothing/clothing     13 options  creator: Clothes
+  outfit    clothing/clothing     15 options  creator: Clothes
+  shirt     clothing/clothing     10 options  creator: Clothes
+  hat       clothing/clothing     13 options  creator: Hats
+  hatCol    clothing/clothing     9 options  creator: Hats
+  apronCol  clothing/clothing     7 options  creator: Clothes
+  bottom    clothing/clothing     3 options  creator: Clothes
+
+Budget: tris = body[garment/bottom] + 28 (nose, ears) + face[eyeShape] + beard[beard] + hairAndHat[hat|hairStyle] (the skull cut along the style's hairline, the hair and the hat; at the head size: byHeadSize[headSizeIndex] where it varies).
+the formula equals sizes(b).tris on 610 builds (the ten presets and 600 drawn at random).
+The most any build reaches: 1150 tris (overalls, hood, crop, long, lidded).
+Over 1000: 34688 garment/hat/hair/beard/eye rows (31626 at every head size), 17736285 of 32760000 cells; creator 11807672.
+  tee/trousers          1885 rows (1848 at every head size), up to 1118 tris
+  tee/shorts            1885 rows (1848 at every head size), up to 1118 tris
+  tee/skirt             1905 rows (1881 at every head size), up to 1122 tris
+  longsleeve/trousers   872 rows (703 at every head size), up to 1070 tris
+  longsleeve/shorts     872 rows (703 at every head size), up to 1070 tris
+  longsleeve/skirt      962 rows (815 at every head size), up to 1074 tris
+  workshirt/trousers    1183 rows (986 at every head size), up to 1081 tris
+  workshirt/shorts      1183 rows (986 at every head size), up to 1081 tris
+  workshirt/skirt       1314 rows (1119 at every head size), up to 1085 tris
+  sweater/trousers      1345 rows (1155 at every head size), up to 1086 tris
+  sweater/shorts        1345 rows (1155 at every head size), up to 1086 tris
+  sweater/skirt         1473 rows (1293 at every head size), up to 1090 tris
+  vest/trousers         1018 rows (855 at every head size), up to 1076 tris
+  vest/shorts           1018 rows (855 at every head size), up to 1076 tris
+  vest/skirt            1149 rows (952 at every head size), up to 1080 tris
+  apron/trousers        1952 rows (1944 at every head size), up to 1132 tris
+  apron/shorts          1952 rows (1944 at every head size), up to 1132 tris
+  apron/skirt           1991 rows (1985 at every head size), up to 1136 tris
+  overalls/trousers     2091 rows (2090 at every head size), up to 1150 tris
+  oilskins/trousers     1664 rows (1542 at every head size), up to 1098 tris
+  skirt/trousers        1496 rows (1331 at every head size), up to 1091 tris
+  suit/trousers         1044 rows (881 at every head size), up to 1077 tris
+  tux/trousers          1083 rows (898 at every head size), up to 1078 tris
+  dress/trousers        1788 rows (1707 at every head size), up to 1106 tris
+  gown/trousers         218 rows (150 at every head size), up to 1042 tris
+
+Same figure, different buildKey:
+  bottom under overalls, oilskins, skirt, suit, tux, dress, gown
+  hatCol with hat none
+  hair bob = long under hat hood
+  hair bun = ponytail under hat hood
+  apronCol with tee+trousers
+  apronCol with tee+shorts
+  apronCol with tee+skirt
+  apronCol with longsleeve+trousers
+  apronCol with longsleeve+shorts
+  apronCol with longsleeve+skirt
+  apronCol with workshirt+trousers
+  apronCol with workshirt+shorts
+  apronCol with workshirt+skirt
+  apronCol with sweater+trousers
+  apronCol with sweater+shorts
+  apronCol with sweater+skirt
+  apronCol with vest+trousers
+  apronCol with vest+shorts
+  apronCol with vest+skirt
+  apronCol with overalls
+  apronCol with oilskins
+  apronCol with skirt
+  shirt with dress
+  shirt, apronCol with gown
+
+Not offered: age child (presets only).
+
+data/options.v9.json: regenerated, byte-identical to the committed file
+OK — no problems.

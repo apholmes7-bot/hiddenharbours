@@ -23,7 +23,7 @@ namespace HiddenHarbours.Tests.RigBaking
     /// bumped and the export is not re-run: the skinned mesh simply stops agreeing with the sprite,
     /// one clip at a time, in the frames nobody screenshots.</para>
     /// </summary>
-    public class CharacterSkinnedExportTests
+    public partial class CharacterSkinnedExportTests
     {
         static IRigScriptHost Host()
         {

@@ -38,7 +38,7 @@ namespace HiddenHarbours.Tests.RigBaking
     /// every heading that faces the camera, and the push that made them land must have moved no adult's
     /// face. Both run the rig's JavaScript in V8 and need no GPU.</para>
     /// </summary>
-    public class CharacterFaceCompositionTests
+    public partial class CharacterFaceCompositionTests
     {
         const string FaceModule = "characterFaceComposition";
 
