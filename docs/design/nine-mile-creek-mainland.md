@@ -56,6 +56,22 @@ and the images disagree, the images win — and §2 records the two places they 
 - **The town is inland**, strung along a through-road (the overhead's Route 19) ~230 m west of the
   shore — the way a rural PEI community actually sits, not clustered round a square.
 
+> **2026-09-26 — the owner's eight areas ([`world-map-plan.md`](world-map-plan.md) §8).** Four things
+> were ruled onto Nine Mile Creek. Each is **RULED 2026-09-26; a later pass; not planned here.**
+>
+> - **Houses on the south shore** — *"we need to add more south shore to it"*; *"Yes with houses on
+>   south shore"*. Which shore "south" means against this document's east-facing coast is
+>   world-map-plan §7 Q19.
+> - **The terrain overhaul, with several rivers for river fish** — *"NMC gets the same overhaul terrain
+>   pass St. Peter’s got. With several rivers for fishing river fish."* After St Peters' terrain pass 9.
+>   The one town river is [`harbour-geography.md`](harbour-geography.md) §5; "several" is new.
+> - **The road to Rice Point** — *"There are several houses here, road connects to nine mile creek."*
+>   Rice Point is §1's landmark to the south-west, now the player's future wharf.
+> - **The road north to Cumberland and Rocky Point** — *"theres a road north from nine mile which
+>   heads west to rocky point. Through cumberland past the resort and to a lighthouse"*. Route 91 (this
+>   region's `ThroughRoad`) or a branch: world-map-plan §7 Q17. That lighthouse is on the city's
+>   harbour channel, not this wharf's range light (§7).
+
 ### 1.2 Roads
 
 | Road | Route | Length | Walk |
