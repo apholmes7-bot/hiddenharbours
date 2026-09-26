@@ -537,6 +537,17 @@ namespace HiddenHarbours.Core
         public static AnchorSettings Anchor =>
             Config != null ? Config.Anchor : AnchorSettings.Default;
 
+        /// <summary>The HULL-TRIM policy (the bow answers her speed — owner 2026-09-21; where the hump
+        /// sits, and the limits and lag a hull that authors none inherits), same contract as
+        /// <see cref="WaveField"/> including the <c>Config != null</c> discipline (never
+        /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>) and the resolved-per-read liveness, so
+        /// dragging the trim sliders in play moves the next tick's bow. Falls back to
+        /// <see cref="HullTrimSettings.Default"/> with no config wired. Read by <c>BoatController</c>,
+        /// which publishes the target its one drawer eases after.
+        /// FLAG lead-architect: new Core accessor (the trim block, the WaveField pattern).</summary>
+        public static HullTrimSettings HullTrim =>
+            Config != null ? Config.HullTrim : HullTrimSettings.Default;
+
         /// <summary>The LADDER-BOARDING policy (the tide gap at which a step aboard becomes a climb, and
         /// the measured rig geometry the climb runs on), same contract as <see cref="WaveField"/> —
         /// including the <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a
