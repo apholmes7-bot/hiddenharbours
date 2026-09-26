@@ -495,6 +495,9 @@ namespace HiddenHarbours.Art
             // subscription would be missed by both, and that half-frame is exactly the window this is
             // here to close — the whole failure is a registration arriving at a moment nobody is looking.
             GameServices.TidalTerrainChanged += OnTidalTerrainChanged;
+            // (ADR 0046) Hold the still-water globals: they follow the registered still water while any sea
+            // is live, and read "none" — this shader's pre-seam waterline — wherever a region has no still map.
+            StillWaterGlobals.Hold(this);
             BakeHeightMapIfNeeded();
             // (ADR 0027 #7) Publish this region's seabed unconditionally, not only down the two
             // height-feed paths above. Those are skipped whenever the height bake is off or no source
@@ -538,6 +541,7 @@ namespace HiddenHarbours.Art
             // and the WaveFieldBridge.PublishEmpty discipline).
             PublishSeaLevelUnset();
             SeabedGlobals.PublishUnset();   // the published seabed goes with the waterline (ADR 0040 rev 3)
+            StillWaterGlobals.Release(this);   // the last sea to go unsets the still water too (ADR 0046)
             // (WS-2) Free the baked fallback height texture (the painted path never allocates _heightTex).
             DestroyBakedHeightTexture();
         }

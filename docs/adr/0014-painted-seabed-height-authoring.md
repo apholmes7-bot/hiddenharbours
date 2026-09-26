@@ -289,6 +289,10 @@ when not playing beyond the throttle).
   but a gently shelving flat may band. The asset supports R16 (`TextureFormat.R16`) for finer authoring;
   default R8 for now, revisit if the owner sees elevation banding (orthogonal to the ADR-0012 *positional*
   texel grid).
+  **Answered 2026-09-25 by [ADR 0046](0046-still-water-above-the-tide.md) §8:** the owner ruled a 16-bit
+  height map (terrain pass 9, decision 11). The paint tool now writes R16, and the sim and the shaders read
+  all sixteen bits. The two committed maps stay 8-bit until they are painted; the first stroke widens one
+  losslessly (code k becomes 257·k).
 - **Multiple painted maps per region / layered edits.** One map per region for now; if a region needs
   separable features (a painted bar over an analytic deep floor) a composite source is a later additive
   step.
