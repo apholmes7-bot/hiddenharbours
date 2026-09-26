@@ -1,6 +1,6 @@
 {
   "kit": "Hidden Harbours edge strips",
-  "version": 2,
+  "version": 3,
   "pxPerMetre": 32,
   "colorSpace": "sRGB",
   "alpha": "straight, 0 at both t ends — these are decals, not tiles",
@@ -28,5 +28,15 @@
       "alsoWorksOver": ["oysterreef|silt", "musselbed|foreshore", "irishmoss|ledge", "eelgrass|sand"],
       "note": "t = 0 is ON the bed and is left almost entirely transparent — the painted bed shows through. t = 1 is the open flat.",
       "steps": ["a soft margin, the bed just thinning out", "a rim, a moat, an apron of loose shell", "an eroding margin — undercut rim, deep moat, outliers well out"] }
-  ]
+  ],
+  "strips": {
+    "note": "Terrain pass 9 (PR 2 of docs/design/st-peters-terrain-pass-9.md): a second kind of strip. It is drawn in the ground's own materials along a centre line, not as a decal PNG across a boundary, so none of the decal fields above apply to it. The splat cannot hold a rut at 0.5 m per texel, so a strip carries it. PR 2 defines the kind; PR 5 lays the ruts along St Peters' cart tracks.",
+    "sample": "d = distance from the track's centre line (m); a texel is rut where |d - offsetMetres| < halfWidthMetres + wobbleMetres * snoise(x, y, wobbleWavelengthMetres); a rut texel draws material, or puddle where fbm(along / puddleScaleMetres.along, across / puddleScaleMetres.across) > puddleAbove",
+    "items": [
+      { "key": "rut", "name": "Cart ruts", "kind": "material", "along": "cart_track",
+        "material": "dirt", "offsetMetres": 0.45, "halfWidthMetres": 0.07, "wobbleMetres": 0.02, "wobbleWavelengthMetres": 0.8,
+        "puddle": "mud", "puddleAbove": 0.64, "puddleScaleMetres": { "along": 0.375, "across": 0.156 },
+        "from": "The pass 9 kit's meadow road (pxKit9.js): a rut 5.5 px either side of the centre, 1.6 px half-width, in dirt, and mud where fb(x / 12, y / 5) > 0.64 with x along the road; at 32 px/m the puddle scales are 0.375 m along and 0.156 m across. The offset, half-width and wobble are St Peters' cart-track scale, from part 1's preview (|d - 0.45| < 0.07 + 0.02 snoise at 0.8 m, docs/design/st-peters-terrain-pass-9.md §5)." }
+    ]
+  }
 }

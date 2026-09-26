@@ -528,7 +528,8 @@ namespace HiddenHarbours.App.Editor
             foreach (var s in Object.FindObjectsByType<TerrainSplatSurface>())
             {
                 if (s == null) continue;
-                s.ConfigureSplat(_splatTexs[0], _splatTexs[1], _splatTexs[2], _splatTexs[3], _splatTexs[4]);
+                s.ConfigureSplat(_splatTexs[0], _splatTexs[1], _splatTexs[2], _splatTexs[3], _splatTexs[4],
+                                 _splatTexs[5]);
                 if (s.isActiveAndEnabled) { s.enabled = false; s.enabled = true; }
             }
         }
@@ -1870,7 +1871,7 @@ namespace HiddenHarbours.App.Editor
             {
                 Undo.RecordObject(surface, "Adopt painted seabed");
                 surface.ConfigureHeightMap(_map.HeightTexture, _map.MinElevation, _map.MaxElevation);
-                surface.ConfigureSplat(adopted[0], adopted[1], adopted[2], adopted[3], adopted[4]);
+                surface.ConfigureSplat(adopted[0], adopted[1], adopted[2], adopted[3], adopted[4], adopted[5]);
                 EditorUtility.SetDirty(surface);
                 if (surface.isActiveAndEnabled) { surface.enabled = false; surface.enabled = true; }
             }
