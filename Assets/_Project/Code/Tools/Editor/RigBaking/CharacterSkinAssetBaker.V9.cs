@@ -13,10 +13,11 @@ namespace HiddenHarbours.Tools.RigBaking
     // from a rig 7 def only in what the rig said.
     public static partial class CharacterSkinAssetBaker
     {
-        /// <summary>The rig the cast is baked from. Rig 7 until the v9 bake lands with its plates, in
-        /// its own step; this is the one line that switches it. Read-only static rather than a
-        /// const, so the branch that is not taken still compiles and still warns nobody.</summary>
-        public static readonly string LiveRig = CharacterSkinExtractor.CatalogKey;
+        /// <summary>The rig the cast is baked from: rig 9 since the intake's Phase B (2026-09-26), which
+        /// baked all ten figures from it and shot their plates against rig 7. This is the one line
+        /// that switches it. Read-only static rather than a const, so the branch that is not taken
+        /// still compiles and still warns nobody.</summary>
+        public static readonly string LiveRig = CharacterSkinExtractor.V9CatalogKey;
 
         public static bool LiveRigIsV9 => LiveRig == CharacterSkinExtractor.V9CatalogKey;
 

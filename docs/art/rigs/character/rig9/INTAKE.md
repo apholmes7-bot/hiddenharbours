@@ -3,9 +3,9 @@
 Landed 2026-09-25 by the art-pipeline lane: PR 1 of the character rig and builder intake
 (charter `HANDOFF-2026-09-23-character-rig-and-builder-intake.md`). This folder is Claude Design's kit
 **as delivered**, except for 21 generated files that real Node writes differently (below). Nothing in
-the rig was edited. Rig 7's folder (`../rig7/`, `../../characterIsoRig7.js`) is unchanged, and rig 7
-is still the rig the editor bakes (`CharacterSkinAssetBaker.LiveRig`). Rig 9 is registered beside it
-as catalog key `characterRig9`.
+the rig was edited. Rig 7's folder (`../rig7/`, `../../characterIsoRig7.js`) is unchanged. Rig 9 is
+registered beside it as catalog key `characterRig9`, and since Phase B (below) it is the rig the editor
+bakes (`CharacterSkinAssetBaker.LiveRig`).
 
 | | |
 |---|---|
@@ -15,6 +15,17 @@ as catalog key `characterRig9`.
 | Rig | `Art/characterIsoRig9.js`, rev 9.2, pass 9, global `CharacterIso9`, sha256 (LF) `02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144` |
 | Pose library | `Art/characterIsoRig9.poses.js`, sha256 (LF) `42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07` |
 | Added by the intake | `INTAKE.md` (this file), `INTAKE.SHA256SUMS.txt`, `APPEARANCE-MAP.md` (the builder mapping) |
+
+## Phase B: the bake and the switch (2026-09-26)
+
+All ten committed skins (`Assets/_Project/Data/Characters/Skin/<preset>.asset`, the player and the
+nine cast) were re-baked from rig 9 in one headless run. Each keeps its GUID, id and switch states. Each
+now pins `characterIsoRig9.js` and `characterIsoRig9.poses.js` at the hashes above and records revision
+9.2 and tone rule V9. Each carries 28 bones, 53 clips and a bind mesh of 1,468 to 1,800 corners, and
+paints 18 to 23 of the 32 colour slots that V9 allows. The plates were shot in the same slot: ashore,
+aboard and mounted at all eight facings, the animation sheets, and a before/after against rig 7. They
+are evidence and are not committed; the PR carries their numbers. Rig 7 stays in the catalog. To go
+back, set `LiveRig` to `CharacterSkinExtractor.CatalogKey` and re-bake.
 
 ## The 21 files Node regenerated
 

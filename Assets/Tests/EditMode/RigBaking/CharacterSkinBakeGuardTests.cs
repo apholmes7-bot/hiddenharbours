@@ -511,12 +511,22 @@ namespace HiddenHarbours.Tests.RigBaking
         /// guard the moment it is committed. Red means RE-BAKE, never re-pin: for the player the menu is
         /// "Bake character SKIN (the player, ADR 0044 d)". A hash edited by hand says the skin matches
         /// rigs it was never baked from, which is the one thing this pin exists to rule out.</para>
+        ///
+        /// <para><b>The pair it reads is the pair the baker writes today</b>, which
+        /// <see cref="CharacterSkinAssetBaker.LiveRig"/> names: rig 7 over rig 6, or, since the character
+        /// intake's Phase B (2026-09-26), rig 9 over its poses file (<c>ComposeV9</c> pins
+        /// <see cref="CharacterSkinExtractor.V9ScriptPath"/> and
+        /// <see cref="CharacterSkinExtractor.V9PosesPath"/>).</para>
         /// </summary>
         [Test]
         public void EveryCommittedSkinDef_PinsTheRigsAsTheyAreToday()
         {
-            string liveRig7 = CharacterSkinExtractor.SourceSha256();
-            string liveRig6 = CharacterPoseMeshExtractor.SourceSha256();
+            bool v9 = CharacterSkinAssetBaker.LiveRigIsV9;
+            string sourcePath = v9 ? CharacterSkinExtractor.V9ScriptPath : CharacterSkinExtractor.ScriptPath;
+            string basePath = v9 ? CharacterSkinExtractor.V9PosesPath : CharacterPoseMeshExtractor.ScriptPath;
+            string liveSource = v9 ? CharacterSkinExtractor.SourceSha256V9() : CharacterSkinExtractor.SourceSha256();
+            string liveBase = v9 ? CharacterSkinExtractor.PosesSha256V9() : CharacterPoseMeshExtractor.SourceSha256();
+            string sourceName = v9 ? "rig 9" : "rig 7", baseName = v9 ? "rig 9's poses" : "rig 6";
             string[] guids = UnityEditor.AssetDatabase.FindAssets(
                 "t:" + nameof(CharacterSkinDef), new[] { "Assets" });
             Assert.IsNotEmpty(guids,
@@ -529,15 +539,15 @@ namespace HiddenHarbours.Tests.RigBaking
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                 var committed = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(path);
                 Assert.IsNotNull(committed, $"{path} is indexed as a CharacterSkinDef and does not load as one.");
-                Assert.AreEqual(CharacterSkinExtractor.ScriptPath, committed.SourceRigPath,
-                    $"{path} was baked from a different skinned export");
-                Assert.AreEqual(CharacterPoseMeshExtractor.ScriptPath, committed.BaseRigPath,
-                    $"{path} was baked from a different body rig");
+                Assert.AreEqual(sourcePath, committed.SourceRigPath,
+                    $"{path} was baked from a different skinned export than {sourceName}");
+                Assert.AreEqual(basePath, committed.BaseRigPath,
+                    $"{path} was baked from a different body rig than {baseName}");
 
-                if (!string.Equals(liveRig7, committed.SourceRigSha256, StringComparison.Ordinal))
-                    stale.Add($"{path}: rig 7 {Head(committed.SourceRigSha256)} baked, {Head(liveRig7)} live");
-                if (!string.Equals(liveRig6, committed.BaseRigSha256, StringComparison.Ordinal))
-                    stale.Add($"{path}: rig 6 {Head(committed.BaseRigSha256)} baked, {Head(liveRig6)} live");
+                if (!string.Equals(liveSource, committed.SourceRigSha256, StringComparison.Ordinal))
+                    stale.Add($"{path}: {sourceName} {Head(committed.SourceRigSha256)} baked, {Head(liveSource)} live");
+                if (!string.Equals(liveBase, committed.BaseRigSha256, StringComparison.Ordinal))
+                    stale.Add($"{path}: {baseName} {Head(committed.BaseRigSha256)} baked, {Head(liveBase)} live");
             }
 
             Assert.IsEmpty(stale,
@@ -546,7 +556,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 "(the player: \"Bake character SKIN (the player, ADR 0044 d)\") and commit the asset with " +
                 "the rig change. Never edit the hash.");
             Debug.Log($"[char-skin guard] {guids.Length} committed def(s) pin the live rigs: " +
-                      $"rig 7 {Head(liveRig7)} / rig 6 {Head(liveRig6)}");
+                      $"{sourceName} {Head(liveSource)} / {baseName} {Head(liveBase)}");
         }
 
         /// <summary>
@@ -573,6 +583,13 @@ namespace HiddenHarbours.Tests.RigBaking
         ///
         /// <para>Hashing the face chain into the def (a <c>FaceChainSha256</c> field) would say the same
         /// more cheaply. It is a Core schema change and the lead-architect's call, so it is not here.</para>
+        ///
+        /// <para><b>"The chain" is the one the baker runs today</b>, which
+        /// <see cref="CharacterSkinAssetBaker.LiveRig"/> names. Since the character intake's Phase B
+        /// (2026-09-26) that is rig 9, so the composed side is
+        /// <see cref="CharacterSkinAssetBaker.ComposeV9"/> for the player, held to its own tolerance
+        /// (<see cref="CharacterSkinExtractor.V9Tolerance"/>), and the face is rig 9's own rest face
+        /// (<see cref="CharacterSkinExtractor.DefaultFaceMeshJs9"/>), not the pass-06 layers above.</para>
         /// </summary>
         [Test]
         public void TheCommittedBindMeshIsTheFaceTheChainComposesToday()
@@ -580,7 +597,8 @@ namespace HiddenHarbours.Tests.RigBaking
             string path = CharacterSkinAssetBaker.AssetPathFor(Player);
             var committed = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(path);
             Assert.IsNotNull(committed, $"no CharacterSkinDef at {path}: the player's skin is committed content.");
-            Mesh disk = committed.BindMesh, live = _def.BindMesh;
+            CharacterSkinAssetBaker.SkinBake bake = CharacterSkinAssetBaker.LiveRigIsV9 ? V9Bake(Player) : _bake;
+            Mesh disk = committed.BindMesh, live = bake.Def.BindMesh;
             Assert.IsNotNull(disk, $"{path} carries no bind mesh sub-asset.");
             const string rebake = " The face chain moved her face and the committed skin still wears the " +
                                   "old one: re-bake the player (\"Bake character SKIN (the player, ADR 0044 " +
@@ -609,9 +627,9 @@ namespace HiddenHarbours.Tests.RigBaking
                 double d = Vector3.Distance(lv[i], dv[i]);
                 if (d > worst) { worst = d; worstAt = i; }
             }
-            Assert.LessOrEqual(worst, _bake.Tolerance,
+            Assert.LessOrEqual(worst, bake.Tolerance,
                 $"corner {worstAt} is {worst:E3} m from where the committed mesh has it, against the rig's " +
-                $"tolerance of {_bake.Tolerance:E1} m." + rebake);
+                $"tolerance of {bake.Tolerance:E1} m." + rebake);
 
             BoneWeight[] lw = live.boneWeights, dw = disk.boneWeights;
             Assert.AreEqual(lw.Length, dw.Length, "the bone weight count differs." + rebake);

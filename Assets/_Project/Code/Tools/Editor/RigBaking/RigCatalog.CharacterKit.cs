@@ -177,8 +177,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 // contract), so it names no prerequisite. Its poses (characterIsoRig9.poses.js) and
                 // checks (characterIsoRig9.checks.js) patch THIS global and define none of their own,
                 // so they cannot be entries: InstallModule asserts the global an entry names.
-                // CharacterSkinExtractor.Load9 runs them. Nothing bakes from it until
-                // CharacterSkinAssetBaker.LiveRig names it.
+                // CharacterSkinExtractor.Load9 runs them. The cast bakes from it because
+                // CharacterSkinAssetBaker.LiveRig names it (Phase B, 2026-09-26).
                 ["characterRig9"] = new RigEntry(
                     $"{RigFolder}/character/rig9/Art/characterIsoRig9.js",
                     "CharacterIso9",
