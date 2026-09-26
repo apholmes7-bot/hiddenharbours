@@ -372,6 +372,18 @@ namespace HiddenHarbours.Tools.RigBaking
             var readings = new List<FacetSignReading>();
             foreach ((string state, int frame) in FacetSignFrames(host))
                 readings.Add(ReadFacetSign(host, preset, state, frame));
+            return AdjudicateFacetSign(readings, out report);
+        }
+
+        /// <summary>
+        /// The ruling half of <see cref="MeasureFacetSign"/>: the 4x bar, the deciding frame, the
+        /// report and both refusals. Split out, unchanged, so rig 9 (whose truth is its own
+        /// <c>render</c>, not rig 6's) is judged by the SAME bar and the SAME report shape the
+        /// guards parse. Two copies could drift, and then one rig would pass a sign the other refuses.
+        /// </summary>
+        internal static bool AdjudicateFacetSign(IReadOnlyList<FacetSignReading> readings,
+                                                 out string report)
+        {
             if (readings.Count == 0)
                 throw new InvalidOperationException(
                     "FACET SIGN ADJUDICATION INCONCLUSIVE — the rig carries no frame to read the " +
@@ -454,7 +466,14 @@ namespace HiddenHarbours.Tools.RigBaking
         /// than one guessed "mid-stride" index, because which frame of the cycle is the contact pose
         /// is the rig's business and not this baker's.</para>
         /// </summary>
-        static List<(string state, int frame)> FacetSignFrames(IRigScriptHost host)
+        static List<(string state, int frame)> FacetSignFrames(IRigScriptHost host) =>
+            FacetSignPlan(CharacterPoseMeshExtractor.Anims(host),
+                          gait => CharacterPoseMeshExtractor.FrameCount(host, gait));
+
+        /// <summary>The same fixed plan for any rig: the caller says which clips it carries and how
+        /// many frames each has.</summary>
+        internal static List<(string state, int frame)> FacetSignPlan(IReadOnlyList<string> anims,
+                                                                     Func<string, int> frameCount)
         {
             var plan = new List<(string state, int frame)>();
             var seen = new HashSet<string>();
@@ -467,14 +486,13 @@ namespace HiddenHarbours.Tools.RigBaking
 
             Add("idle", 0);
 
-            string[] anims = CharacterPoseMeshExtractor.Anims(host);
             foreach (string gait in GaitStatesForSign)
             {
                 bool carried = false;
                 foreach (string a in anims) if (a == gait) { carried = true; break; }
                 if (!carried) continue;
 
-                int n = CharacterPoseMeshExtractor.FrameCount(host, gait);
+                int n = frameCount(gait);
                 if (n <= 0) continue;
                 Add(gait, 0);
                 Add(gait, Math.Min(n / 4, n - 1));
@@ -488,7 +506,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
         /// <summary>One frame's reading of the sign: the two oracle renders against the rig's own
         /// East view, and whether the margin between them clears the 4x bar.</summary>
-        readonly struct FacetSignReading
+        internal readonly struct FacetSignReading
         {
             public readonly string State;
             public readonly int Frame;

@@ -1,0 +1,26 @@
+check-shading — the facet pass, written out and switched part by part
+rig 02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144  poses 42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07
+
+refPaint (every part on) against CharacterIso9.paintSolved: 800 renders, identical to the pixel
+
+One part off at a time, 240 renders (10 presets x idle f0, walk f2, dig f3 x 8 facings); % of figure pixels that change:
+  part      renders changed  pixels   mean %  worst %  silhouette px  E/W mirror px  what
+  form      240 / 240        23442    18.94   41.43    0              0              no form term (s = n.key)
+  loHi      214 / 240        1478     1.19    5.56     0              0              no lo..hi limit (clamped to the ramp only)
+  band      240 / 240        6132     4.96    8.56     0              0              no per-face band offset b
+  off       240 / 240        12681    10.25   20.92    0              0              no material offset off (every shade variant on its base tone)
+  edges     240 / 240        7036     5.69    13.62    0              0              no inner contour
+  keyline   240 / 240        25980    20.99   25.93    25980          0              no keyline
+  snap      240 / 240        12288    9.82    20.93    2541           0              no head snap
+  minT      188 / 240        1381     1.11    5.75     209            0              face marks without their minT (only the back-face cull)
+  db        174 / 240        631      0.51    2.86     0              0              no depth bias db
+  roundS    0 / 240          0        0       0        0              0              s not rounded to 1e-9 before the step
+  roundD    1 / 240          1        0       0.2      0              0              depth not quantised to 1e-7 before the test
+  f32       0 / 240          0        0       0        0              0              float64 depth buffers instead of float32
+  bankers   0 / 240          0        0       0        0              0              round half to even (C# Math.Round, Unity Mathf.Round) instead of Math.round (half up)
+  fleetKey  240 / 240        47869    38.68   59.69    0              2371           rig 6/7's fleet key, with its left component, instead of v9's
+  E/W mirror px: the rest pose at E against W mirrored, summed over the ten presets (0 with every part on).
+
+Optional for the look (switching it off changed no pixel in this sample and kept E the mirror of W): roundS, f32, bankers.
+data/shading.v9.json: regenerated, byte-identical to the committed file
+OK — no problems.

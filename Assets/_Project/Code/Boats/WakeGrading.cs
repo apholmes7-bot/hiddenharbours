@@ -131,6 +131,14 @@ namespace HiddenHarbours.Boats
         public static float SpeedOnset(float speed, in WakeGradeConfig c)
             => Ramp01(speed, c.PlumeSpeedOnset, c.PlumeSpeedOnsetRange);
 
+        /// <summary>Continuous drive strength over the configured speed range, rather than
+        /// full opacity just above the emission threshold. Hull size still grades the footprint.</summary>
+        public static float DriveStrength(float speed, in WakeGradeConfig c)
+        {
+            float v = Mathf.Max(0f, speed);
+            return SpeedOnset(v, in c) * v / (v + Mathf.Max(0.001f, c.SpeedRefMax));
+        }
+
         // ==== plume placement + orientation (the pure math the orientation fix pins) =======================
 
         /// <summary>

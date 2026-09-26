@@ -447,11 +447,15 @@ namespace HiddenHarbours.App.Editor
                 return 0;
             }
 
+            // The colour slot's file by the material's look — v10 colour, or the px index the bake
+            // moved into it keeping the GUID. Asked once per build, of the catalog, never spelled here.
+            string colour = CliffCatalog.ColourChannel(CliffBakeMenu.IsPxLook);
+
             var root = new GameObject(RootName);
             int built = 0, stratified = 0;
             foreach (Chunk chunk in chunks)
             {
-                if (!TryLoadBands(chunk, out CliffFaceBand[] bands, out Texture2D profile)) continue;
+                if (!TryLoadBands(chunk, colour, out CliffFaceBand[] bands, out Texture2D profile)) continue;
                 if (bands.Length > 1) stratified++;
 
                 LoadDecals(chunk, out Texture2D browStrip, out Texture2D toeStrip);
@@ -507,7 +511,7 @@ namespace HiddenHarbours.App.Editor
         /// One profile serves both — it is the LANDFORM's displacement and the bands are materials lying
         /// on it. The fallback to one unstratified band is deliberate: a hole in the coast is a far worse
         /// failure than an unstratified cliff.</summary>
-        static bool TryLoadBands(Chunk chunk, out CliffFaceBand[] bands, out Texture2D profile)
+        static bool TryLoadBands(Chunk chunk, string colour, out CliffFaceBand[] bands, out Texture2D profile)
         {
             bands = new CliffFaceBand[0];
             int catalogBatter = CatalogBatter(chunk);
@@ -517,7 +521,7 @@ namespace HiddenHarbours.App.Editor
                 $"{CliffBaker.SubFolder(CliffCatalog.BakeRoot, CliffAssetKind.Profile)}/" +
                 $"{CliffCatalog.ProfileName(Rock, catalogBatter)}.png");
 
-            if (!TryLoadFaceSet(Rock, aspect, catalogBatter, out CliffFaceBand rock))
+            if (!TryLoadFaceSet(Rock, aspect, catalogBatter, colour, out CliffFaceBand rock))
             {
                 Debug.LogWarning(
                     $"[nmc-cliff-walls] no baked face for {Rock} {aspect} " +
@@ -533,7 +537,7 @@ namespace HiddenHarbours.App.Editor
             float overburden = CliffWallGeometry.OverburdenSurfaceMetres(
                 OverburdenMetres, CliffCatalog.BatterAngles[catalogBatter]);
 
-            if (!TryLoadFaceSet(OverburdenRock, aspect, catalogBatter, out CliffFaceBand soil))
+            if (!TryLoadFaceSet(OverburdenRock, aspect, catalogBatter, colour, out CliffFaceBand soil))
             {
                 Debug.LogWarning(
                     $"[nmc-cliff-walls] no baked {OverburdenRock} face for {aspect} " +
@@ -555,10 +559,11 @@ namespace HiddenHarbours.App.Editor
             return true;
         }
 
-        static bool TryLoadFaceSet(string rock, string aspect, int catalogBatter, out CliffFaceBand band)
+        static bool TryLoadFaceSet(string rock, string aspect, int catalogBatter, string colour,
+                                   out CliffFaceBand band)
         {
             band = CliffFaceBand.WholeFace(
-                LoadFace(rock, aspect, catalogBatter, "_unlit"),
+                LoadFace(rock, aspect, catalogBatter, colour),
                 LoadFace(rock, aspect, catalogBatter, "_normal"),
                 LoadFace(rock, aspect, catalogBatter, "_mask"),
                 rock);

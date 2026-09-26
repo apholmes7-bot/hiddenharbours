@@ -530,6 +530,30 @@ installed anywhere but the presenter yet.
 catch probability; every item here moves a picture. If a future lane finds that one of them seems to
 require touching the bite roll, that is the signal to stop and ask, not to widen.
 
+## Logged from the owner's world map (2026-09-26, unscheduled)
+
+The owner numbered eight areas of the bay on 2026-09-26. The words, the table and the open questions
+are in [`../docs/design/world-map-plan.md`](../docs/design/world-map-plan.md) §8 and §7 Q12–Q21. Each
+line below is a later job, **logged, not scheduled**; its phase is proposed in §7 Q18, not decided.
+
+- **The Nine Mile Creek terrain overhaul and its rivers** — *"the same overhaul terrain pass St.
+  Peter’s got"*, several rivers for river fish, and the south-shore houses. After St Peters' terrain
+  pass 9 (and world-map-plan §7 Q10, Q19).
+- **Area 8's water** — the southern fishing grounds south of Nine Mile Creek, reached by sailing
+  around St Peters Island. Which scene holds it: world-map-plan §7 Q15.
+- **Rice Point's wharf, fleet and staff** — the unused wharf the player comes to own and grow, their
+  own fleet with staff stationed there, several houses. P4.
+- **Cumberland, the resort, the golf course and the marina business** — the marina purchasable, one
+  of several in the game. The place is world-content's; the business is economy-sim's.
+- **Charters** — *"Boat charters are an option as a business as well"*. economy-sim.
+- **The lighthouse** — marks the harbour channel into the bay outside the city, at the end of the road
+  past the resort.
+- **The roads** — Nine Mile Creek to Rice Point; north from Nine Mile Creek through Cumberland, past
+  the resort, to the lighthouse. Route 91 or a branch: world-map-plan §7 Q17; direction: Q13.
+- **Fleets moving between areas, and the seasonal trap moves** — boats move between areas on their
+  daily fishing; traps are moved through the season as the lobsters migrate. Joins
+  [`settlement-population.md`](../docs/design/settlement-population.md) slice P4.
+
 ## Polish (deep backlog)
 
 Small, real, and not worth a branch of their own — pick one up when you are already in the file.

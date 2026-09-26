@@ -11,6 +11,12 @@
 > **[`harbour-geography.md`](harbour-geography.md)**, which owns the bay's *landform*; this document
 > goes on owning its *regions and ports*. The sections below carry the marks; the detail lives there.
 >
+> **AMENDED 2026-09-26: the eight areas (§8).** The owner numbered eight areas of the bay on their
+> private screenshots and said what each one is. §8 quotes them verbatim, tables them and draws a
+> fresh text schematic; §7 Q12–Q21 carry what their words leave open or set against the rulings
+> above. **Nothing ruled here is rewritten** — where the new words touch it, a dated note stands
+> beside the old text and points to §8.
+>
 > Subordinate to [`../vision-and-pillars.md`](../vision-and-pillars.md) (canon — amended for these
 > rulings in the same PR that rewrote this document) and
 > [`world-and-regions.md`](world-and-regions.md).
@@ -79,6 +85,13 @@ Compass facts, all **RULED** from the chart:
   **east** toward the harbour entrance and ends in a **point**, with a **small bay** behind it opening
   to the city's harbour (the chart's Rocky Point, mirrored). Its **south shore**, north of St Peters
   Island, carries **a marina** (§2.2). That point is the approach the player sails on the city run.
+  ⚠ *2026-09-26 — see §8 and §7 Q12, Q13.* The owner now calls this land **Cumberland** — *"5 is
+  cumerland which is built onto a point (rocky point) which is the western landmass leading into the
+  main cities harbour"* — and writes *"7 is the west river with rocky point to its south"*, which puts
+  the river **north** of the point. The two bullets above, read from Nine Mile Creek, put it **between
+  the town and the peninsula** (*"the land beyond the west river heads **east**"*; Route 91 *"crosses
+  the **west-running river** (which makes the peninsula)"*). The ruled text stands until the owner
+  answers Q12.
 - ⭐ **The three rivers are tidal fisheries** *(RULED 2026-08-20)* — the west, north and east rivers
   are **shellfish and river-fishing waters**, carrying leases. Their reach ladder is §2.3.
 - ⚠ **A river runs off the ocean up through Nine Mile Creek town** *(RULED 2026-08-20)*, dividing it
@@ -129,6 +142,14 @@ belongs to **the mid-bay or to a new scene north of it**, and deliberately **not
 a slip harbour there would put a destination inside the first sail, which is the dory's sheltered
 water and should stay empty of them. Region-level mark only — no layout is proposed, and the ruling's
 own wording needs one confirmation ([`harbour-geography.md`](harbour-geography.md) §6.2).
+
+⚠ *2026-09-26 — see §8.* Two things in this section meet the owner's eight areas. **The east water:**
+the table above runs it *"Governors Island across to East Point"*, while the shipped
+`region.east_water` reads *"The open water off St Peters' east wall, and where the game begins"* and
+the owner's area 4 is *"eastern waters to east of St. Peter’s. Player starts here in intro"* (§7 Q20).
+**The marina** is now the resort's, on this same shore: *"The resort will have a marina on its south
+shore which will be a purchasable and business option amongst other marinas in game."* Which scene
+each of the eight areas falls in — and whether the three "for now" are still three — is §7 Q15.
 
 Extents to be derived by time-to-cross in each scene's gating boat
 ([`scene-sizing-and-world-scale.md`](scene-sizing-and-world-scale.md) §1.3) when the water-scene
@@ -246,6 +267,10 @@ directly. Canon names locked in `vision-and-pillars.md` §5.3, as amended:
 | The **Nine Mile Creek town river** | — | **owed, but nearly self-answering:** ⭐ the town is already named for a creek, and the built coast already calls the notch "the creek mouth" |
 | Far-arc regions | canon names stand (Banks, Ironbound, Smother…) | geography unruled — §7 |
 
+*2026-09-26 — see §8 and §7 Q16.* The owner's eight areas use four more real names — **Cumberland**,
+**Rice Point**, **Rocky Point** and the **West River** — beside the names this table rules. They are
+recorded as the owner wrote them; nothing here is renamed.
+
 ---
 
 ## 6. Order of work
@@ -298,3 +323,185 @@ complete rather than duplicated:
 10. **When may Nine Mile Creek be re-cut?** The wharf, lifecycle and municipal branches are all open
     against this exact geometry right now. **The only thing still gating the town-river work.**
 11. **The name slate** for the three rivers, the point, the cove, the marina and the town river.
+
+**From the owner's eight areas (2026-09-26)** — §8 holds the words. Q12–Q18 are the coordinator's
+(a)–(g); Q19–Q21 were found while writing §8. Each quotes both sides; none is resolved here.
+
+12. **(a) Which side of the West River is the peninsula on?** The 2026-08-20 ruling: §1, *"the land
+    beyond the west river heads **east** toward the harbour entrance"*, and
+    [`harbour-geography.md`](harbour-geography.md) §1 ruling 1, Route 91 *"crosses a **west-running
+    river**, making the peninsula/point"* — read from Nine Mile Creek, the river lies between the town
+    and the peninsula. The owner, 2026-09-26: *"7 is the west river with rocky point to its south"* —
+    the river **north** of the point; the coordinator's reading of the owner's private screenshots
+    puts 5 between the river and the bay.
+13. **(b) Which way does the road run?** The owner: *"theres a road north from nine mile which heads
+    west to rocky point."* The docs: the peninsula *"heads **east** toward the harbour entrance"* (§1),
+    and the coordinator's reading of the screenshots has Rocky Point **north-east** of Nine Mile Creek.
+14. **(c) What is area 6?** The owner, A: *"...the western landmass leading into the main cities
+    harbour 6, 7 is the west river"* — which can be read as 6 = the city's harbour. The coordinator
+    read 6 as **the water outside the city's harbour**, where the lighthouse's channel is, because that
+    is where 6 sits on the screenshot. The owner's answer, B, skips 6: *"5. Yes ... 7. Yes"*.
+15. **(d) Eight areas, three water scenes.** §2.2, RULED "for now": *"The bay partitions into **three
+    water scenes**; the channel to the city and the strait crossing are **passages, not scenes**, until
+    their phases arrive."* The owner now names eight areas, and 4, 6, 7 and 8 are water, with the
+    marina's water off 5 and a wharf's water at 3. **Proposed, not decided:** **4** is the east water
+    (the shipped `region.east_water`); **8** falls in the mid-bay — or in a south-water scene of its own
+    if the crossing-time rule (§2.2) says the mid-bay cannot hold it; **the marina's water off 5** is the
+    mid-bay's north or a new scene north of it, as §2.2 already allows; **6** stays a passage until the
+    city's phase; **7** is a river scene of its own when the river fishery arrives; **3's water** goes
+    with a Rice Point scene. The owner's call: does 8, or the waters of 3, 5, 6 and 7, get a scene of
+    its own?
+16. **(e) Names.** The owner's words use four real names: **Cumberland**, **Rice Point**, **Rocky
+    Point**, the **West River**. The docs mix real names (St Peters Island, Nine Mile Creek, Governors
+    Island, East Point) with variants and coined names (Finnigan's Landing, New Scotland, and Route 91 —
+    *"the real Rte 19, digits reversed"*); §5 records that *"The owner ruled for **variants of real PEI
+    names**"*, and Q4 asks for the water scenes' names in *"the owner's PEI-variant style"*.
+    [`harbour-geography.md`](harbour-geography.md) §9 already lists Rocky Point and West River as
+    candidates beside variants (Amherst Point, Warren Point; Eliot River, Westmount River). Are the
+    owner's four names ruled as written, or candidates to vary? Nothing is renamed here.
+17. **(f) Is the owner's road Route 91, or a branch off it?** The owner: *"theres a road north from
+    nine mile which heads west to rocky point. Through cumberland past the resort and to a lighthouse"*.
+    The docs: Route 91 *"**is** the shipped `NineMileCreekMainland.ThroughRoad`"*; it runs north,
+    crosses the west river, then the north river, and *"arrives at **Finnigan's Landing**"* (§1). A road
+    that ends at a lighthouse on the point may be the trunk or a branch off it. And `ThroughRoad` also
+    enters Nine Mile Creek from the **south** ([`harbour-geography.md`](harbour-geography.md) §2) — is
+    that the road to Rice Point (*"road connects to nine mile creek"*)?
+18. **(g) The phase of each new item — proposed against [`../roadmap.md`](../roadmap.md), not
+    decided.**
+    - Nine Mile Creek's south-shore houses and terrain overhaul: **M2**, after St Peters' terrain
+      pass 9 and after Q10 (when Nine Mile Creek may be re-cut).
+    - Nine Mile Creek's several rivers for river fish: the ground with the overhaul (M2); the river
+      fishing with the river fishery (**M3**, [`harbour-geography.md`](harbour-geography.md) §7) — or
+      pulled into M2 with the ground?
+    - Area 8, the southern fishing grounds: **M2**, with the mid-bay (§6 step 4).
+    - Rice Point's wharf, the player's own fleet and staff: **M3** — the roadmap's *"the first
+      automation (a staffed second boat)"*, pillar P4; the wharf may be seen, unowned, earlier.
+    - Cumberland, the resort and the golf course: **M3** as places (the north of the bay is capture
+      only today, [`harbour-geography.md`](harbour-geography.md) §7); the marina business and charters
+      are economy-sim's, **M3 or later**.
+    - The lighthouse: with the channel and Finnigan's Landing (**late**, §6 step 6), perhaps seen
+      from the water before then.
+    - The roads: each with the land it reaches.
+    - Fleets moving between areas, and the seasonal trap moves: with
+      [`settlement-population.md`](settlement-population.md) slice P4, **M2 at the earliest**, once
+      there is more than one area of water to move between.
+19. **Which shore is Nine Mile Creek on, and which is its "south shore"?** §1: *"Nine Mile Creek is on
+    the west shore, further north than St Peters. Crossing the sandbar westward you land with shoreline
+    on the south, then the shore runs north"*; [`nine-mile-creek-mainland.md`](nine-mile-creek-mainland.md)
+    §1.1: *"Water is EAST; the fields are WEST. The coastline runs south → north across the whole
+    region"*, and its §1 has *"Rice Point to the south-west"*. The coordinator's reading of the
+    screenshots: *"Along the bay's north shore, west to east: 3 Rice Point, then 2 Nine Mile Creek."*
+    The owner: *"we need to add more south shore to it"*; *"Yes with houses on south shore"*. Is the
+    south shore the coast south of the landing (the built region's south end, and beyond it), or a
+    shore that faces south onto the bay?
+20. **What is "the east water"?** §2.2: *"The east water | Governors Island across to East Point | The
+    working run"*. The shipped `region.east_water` (`Data/Regions/EastWater.asset`): *"The open water
+    off St Peters' east wall, and where the game begins - out with the captain at six in the
+    morning"*. The owner: *"4 is eastern waters to east of St. Peter’s. Player starts here in intro"*.
+    Area 4 matches the shipped region, and §2.2's row is older than both. Does §2.2's east water become
+    area 4, with the run to East Point beyond it?
+21. **Where do Governors Island, East Point and New Scotland sit among the eight areas?** Ruled
+    2026-08-07: Governors Island *"lies mid-bay: **uninhabited, rocks all around**"*; East Point is on
+    *"The east side of the bay"*; New Scotland lies *"Across the strait to the south-east"* (§1, §3).
+    The owner's eight areas name none of them. Do they stand as ruled, beyond the eight?
+
+---
+
+## 8. The eight areas (the owner, 2026-09-26)
+
+On 2026-09-26 the owner sent two of their private screenshots of the real bay, the first numbered 1 to
+7, and said what each area is; area 8 is not on the screenshots. This section writes down the words,
+what they build on, and what they leave open. **Capture only** — no system design, no numbers, no new
+ids, no new ADR. Where the words touch a ruling above, the ruling stands and §7 Q12–Q21 ask the
+question.
+
+### 8.1 The owner's words, verbatim
+
+> **A — 2026-09-26, 02:02Z**, sent with the owner's private screenshots:
+>
+> "Im attaching two reginonal photos. 1 is st peters, 2 nine mile creek but we need to add more south shore to it below 2 can be 8 a southern fishing grounds. 3 is rice point an usued wharf which the player eventually comes to own and grow and has his personal fleet with staff stationed here 4 is eastern waters to east of St. Peter’s. Player starts here in intro learning to fish on the boat after catching fish the captain asks if they want to head into shore which then starts the St. Peter’s landing. 5 is cumerland which is built onto a point (rocky point) which is the western landmass leading into the main cities harbour 6, 7 is the west river with rocky point to its south and it winds offering shelter for shellfish farming and to fish river fish on the various streams and river landing into the west river. Cumberland will be home to a resort bordered by a golfcourse. The resort will have a marina on its south shore which will be a purchasable and business option amongst other marinas in game. Boat charters are an option as a business as well"
+>
+> *The coordinator read that back as eight areas (not the owner's words; B answers it):* 1 St Peters,
+> the home island; 2 Nine Mile Creek, with more south shore; 3 Rice Point, an unused wharf the player
+> later owns, with their own fleet and staff; 4 the eastern waters, where the game starts; 5 Cumberland
+> on Rocky Point, with the resort, golf course and marina; 6 the main city's harbour; 7 the West River;
+> 8 south of Nine Mile Creek, a new fishing ground.
+>
+> **B — 02:11Z**, the owner's answer to that reading:
+>
+> "1. Yes 2. Yes with houses on south shore, NMC gets the same overhaul terrain pass St. Peter’s got. With several rivers for fishing river fish. 3. There are several houses here, road connects to nine mile creek. 4. Yes 5. Yes theres a road north from nine mile which heads west to rocky point. Through cumberland past the resort and to a lighthouse which marks the harbour channel entering to the bay outside the main city. 7. Yes 8. Yes but boats sail around St. Peter’s to reach here"
+>
+> **C — 02:12Z**, answering whether fleets fish beyond St Peters:
+>
+> "Boats will move between areas on their daily fishing. They move traps throughout the season as lobsters migrate etc"
+>
+> *Context for C:* earlier the same day (00:44Z), ruling on the St Peters fleet in #886, the owner
+> wrote *"They should fish everywherr accessible."* #886 itself stays in St Peters' water.
+
+### 8.2 The eight areas
+
+Scene and phase are **proposed**, not ruled — §7 Q15 and Q18.
+
+| # | Area | What the owner said it is | What in the docs it builds on or changes | Scene (proposed) | Phase (proposed) |
+|---|---|---|---|---|---|
+| **1** | **St Peters** — the home island | *"1 is st peters"* · B: *"1. Yes"* | The built home island (§2.1). Changes nothing. | St Peters (built) | built, M1 — its terrain pass 9 is in flight |
+| **2** | **Nine Mile Creek**, with more south shore | *"2 nine mile creek but we need to add more south shore to it"* · B: *"Yes with houses on south shore, NMC gets the same overhaul terrain pass St. Peter’s got. With several rivers for fishing river fish."* | The built mainland ([`nine-mile-creek-mainland.md`](nine-mile-creek-mainland.md)) and its one town river ([`harbour-geography.md`](harbour-geography.md) §5). **New:** the south-shore houses; St Peters' terrain overhaul, applied here; **several** rivers for river fish, where the docs have one. Which shore is "south": §7 Q19. | Nine Mile Creek (built); whether the south shore fits its 760 × 560 m rectangle is the builder's question | M2, after St Peters' terrain pass 9 and §7 Q10 |
+| **3** | **Rice Point** | *"3 is rice point an usued wharf which the player eventually comes to own and grow and has his personal fleet with staff stationed here"* · B: *"There are several houses here, road connects to nine mile creek."* | **New.** Named once in the docs, as a landmark to the south-west on the owner's 08-06 overhead ([`nine-mile-creek-mainland.md`](nine-mile-creek-mainland.md) §1). Now: the player's future wharf, the base for their own fleet and staff (P2, P4), several houses, a road to Nine Mile Creek. | a land scene of its own, beside Nine Mile Creek | M3 — the first automation; the wharf seen, unowned, earlier |
+| **4** | **The eastern waters** | *"4 is eastern waters to east of St. Peter’s. Player starts here in intro learning to fish on the boat after catching fish the captain asks if they want to head into shore which then starts the St. Peter’s landing."* · B: *"4. Yes"* | The 2026-09-06 intro ruling and the shipped `region.east_water` (*"where the game begins - out with the captain at six in the morning"*) — it matches. It differs from §2.2's east water, *"Governors Island across to East Point"* (§7 Q20). | the east water (`region.east_water`; its scene is the east-water region PR's) | now — the opening, the M2 pull-forward already in flight |
+| **5** | **Cumberland**, on Rocky Point | *"5 is cumerland which is built onto a point (rocky point) which is the western landmass leading into the main cities harbour"* · *"Cumberland will be home to a resort bordered by a golfcourse. The resort will have a marina on its south shore which will be a purchasable and business option amongst other marinas in game. Boat charters are an option as a business as well"* · B: *"Yes theres a road north from nine mile which heads west to rocky point. Through cumberland past the resort and to a lighthouse which marks the harbour channel entering to the bay outside the main city."* | The peninsula, the point and the marina (§1; [`harbour-geography.md`](harbour-geography.md) §3.2, §6). **New:** Cumberland as a place; the resort; the golf course; the marina becomes the resort's, can be bought, one of several; charters as a business; the road; the lighthouse. Open: which side of the West River (§7 Q12), the road's direction (Q13), Route 91 or a branch (Q17). | a land scene on the peninsula; the marina's water in the mid-bay or a scene north of it, as §2.2 already says | M3 for the place and its businesses (economy-sim's); seen from the water earlier |
+| **6** | **Outside the city's harbour** *(the coordinator's reading)* | *"...leading into the main cities harbour 6, 7 is the west river"* · B skips 6 | The harbour mouth — *"round the point, a small bay behind it, then the city"* (§3; [`harbour-geography.md`](harbour-geography.md) §3.2) — and Finnigan's Landing. The lighthouse's channel lands here. What 6 is: §7 Q14. | a passage, not a scene, until its phase (§2.2); then a scene with the city's approach | late — with the channel and Finnigan's Landing (§6 step 6), glimpse-grade first |
+| **7** | **The West River** | *"7 is the west river with rocky point to its south and it winds offering shelter for shellfish farming and to fish river fish on the various streams and river landing into the west river."* · B: *"7. Yes"* | The west-running river and its fishery (§1; [`harbour-geography.md`](harbour-geography.md) §3, §4). **New:** it winds; shelter for shellfish farming; river fish on its streams. Perhaps changes which side of the peninsula it is on (§7 Q12). | a river scene of its own | M3 — the river fishery's phase ([`harbour-geography.md`](harbour-geography.md) §7) |
+| **8** | **The southern fishing grounds** | *"below 2 can be 8 a southern fishing grounds"* · B: *"8. Yes but boats sail around St. Peter’s to reach here"* | **New**, and not on the screenshots. Open water south of Nine Mile Creek, reached **around** St Peters Island, not over the bar. Builds on §1's home fishing ground *"to its **north, east and south**"*. | the mid-bay — or a south-water scene of its own if the crossing time says so (§7 Q15) | M2, with the mid-bay (§6 step 4) |
+
+### 8.3 A text schematic — not to scale
+
+Drawn fresh from the owner's words and the coordinator's reading of the numbered screenshot. North is
+up. **Not to scale**, and it decides none of §7 Q12–Q21 — where the words and the reading disagree
+(the West River's side, the road's direction, Nine Mile Creek's shore) it follows the reading and
+marks the question.
+
+```
+                          NOT TO SCALE  ·  north is up
+
+   ~~ 7  THE WEST RIVER ~~ winds in from the west ~~~~~~          the city (Finnigan's Landing)
+         streams · river fish · shellfish farming                  up its harbour, to the NE
+                                          (river's side: Q12)              ^
+                                                                           |
+   ===== 5  CUMBERLAND ================================ ROCKY POINT    6  outside the
+         the resort · the golf course                  ▲ lighthouse       city's harbour
+         the marina on its south shore                   marks the harbour channel  (Q14)
+                                  :
+                                  :  the road: north from Nine Mile Creek, along the
+                                  :  peninsula, through Cumberland, past the resort,
+                                  :  to the lighthouse
+                                  :  (its direction: Q13 · Route 91 or a branch: Q17)
+                                  :
+                                  :          ~ open water ~
+   3  RICE POINT ···· road ···· 2  NINE MILE CREEK
+      the unused wharf              the town · the wharf
+      several houses                the south shore, with houses  (which shore: Q19)
+                                         \
+                                          \ the bar
+                                           \
+                                        1  ST PETERS ISLAND  ·····  4  THE EASTERN WATERS
+                                           home                        the game begins here
+
+      8  THE SOUTHERN FISHING GROUNDS — south of Nine Mile Creek;
+         boats reach it by sailing AROUND St Peters Island, not over the bar
+```
+
+### 8.4 The fleets leave home water
+
+Two rulings, both from C, **captured, not designed**:
+
+- **Boats move between areas on their daily fishing.** *"Boats will move between areas on their daily
+  fishing."* A fleet's day is not bound to one area's water. It builds on the 00:44Z ruling for the St
+  Peters fleet — *"They should fish everywherr accessible"* — and on
+  [`settlement-population.md`](settlement-population.md) slice P4, "Different routes". #886 itself
+  stays in St Peters' water.
+- **The traps follow the lobsters.** *"They move traps throughout the season as lobsters migrate
+  etc"*. A boat's trap ground is not fixed for the year; it moves through the season.
+
+What a boat that sails out of the player's scene does while it is gone, and how a season's trap moves
+are driven, are **questions for whoever builds P4**, not answered here. Logged in
+[`../../backlog/backlog.md`](../../backlog/backlog.md) → "Logged from the owner's world map".

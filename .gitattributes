@@ -253,6 +253,21 @@ Assets/_Project/Art/Sprites/Shore/RockPx/*.json       text eol=lf
 Assets/_Project/Art/Sprites/Shore/RockPx/sidecar/*.json text eol=lf
 Assets/_Project/Art/Sprites/Shore/RockPx/seat/*.json  text eol=lf
 
+# The character rig 9.2 kit (Claude Design, docs/art/rigs/character/rig9/) ships SHA256SUMS.txt over
+# 193 files, all LF as served (measured: 0 CR in its 74 text files), and the character baker pins
+# the rig and its poses file by their LF sha256. Pin the working-tree form so the kit's checksum
+# files verify on any checkout, the same reasoning as the kits above.
+#
+# BY EXTENSION, NOT `docs/art/rigs/character/rig9/**`: the kit ships 120 renders as *.png, and a
+# blanket `text eol=lf` would override the `-text` inside [attr]lfs and corrupt every one of them
+# on checkout (see the Modern 3500 kit above).
+docs/art/rigs/character/rig9/**/*.js                  text eol=lf
+docs/art/rigs/character/rig9/**/*.cjs                 text eol=lf
+docs/art/rigs/character/rig9/**/*.json                text eol=lf
+docs/art/rigs/character/rig9/**/*.txt                 text eol=lf
+docs/art/rigs/character/rig9/**/*.md                  text eol=lf
+docs/art/rigs/character/rig9/**/*.html                text eol=lf
+
 # Terrain pass 9 (PR 2, the ground): two drops' JavaScript as bytes, with SHA256SUMS.txt and a README
 # table of each file's sha256 inside its zip, and TerrainRelight.json stamps the rig files' sha256 as
 # the bake loaded them. All of those are over the LF bytes as written. Pin the working-tree form so
