@@ -39,8 +39,8 @@ TERRAIN_LAYERS = (
 
 _LAYER_UNAVAILABLE = {
     "ground": "The ground is not tiles. It is an iso-contour of the painted height map "
-              "(PaintedHeightMap + TerrainSplatSurface, ADR 0014) — an R8 texture stored in Git "
-              "LFS, whose bytes are absent from a plain checkout. The map is pinned by its LFS "
+              "(PaintedHeightMap + TerrainSplatSurface, ADR 0014) — a greyscale height texture "
+              "stored in Git LFS, whose bytes are absent from a plain checkout. The map is pinned by its LFS "
               "oid under terrain.x-heightMap instead.",
     "road": "Roads are painted by the region builder from centrelines through RoadKitContract "
             "into two tilemaps (RoadTop/RoadSkirt). No road tilemap exists in the committed "

@@ -1,6 +1,6 @@
 """The painted height map, read without Unity — and the ground contour that falls out of it.
 
-``PaintedHeightMap`` is an R8 texture plus a world rect and an elevation range (ADR 0014: one map
+``PaintedHeightMap`` is an R8 or R16 texture plus a world rect and an elevation range (ADR 0014: one map
 serves render and sim together, so paint = sail). The texture is a Git LFS object, absent from a
 pointer-only checkout — so everything here is **gated on the bytes actually being present**, and
 the exporter says which of the two it produced.
@@ -29,63 +29,107 @@ PAINT_FLOOR = "PaintFloorElevation"
 
 
 class Png:
-    """A decoded 8-bit greyscale PNG: ``width``, ``height``, ``rows`` of bytes."""
+    """Decoded greyscale samples: ``rows[y][x]`` is one 8- or 16-bit code."""
 
-    __slots__ = ("width", "height", "rows")
+    __slots__ = ("width", "height", "rows", "bit_depth", "max_code")
 
-    def __init__(self, width, height, rows):
+    def __init__(self, width, height, rows, bit_depth=8):
         self.width = width
         self.height = height
         self.rows = rows
+        self.bit_depth = bit_depth
+        self.max_code = float((1 << bit_depth) - 1)
 
     def value(self, x, y):
         return self.rows[y][x]
 
 
 def decode_r8(data):
-    """Decode a greyscale-8 PNG. Returns ``None`` for anything else — including an LFS pointer.
-
-    Deliberately narrow: the height maps are R8 by construction (``PaintedHeightMap`` writes
-    them), so a file that is not greyscale-8 is not one of them and should be refused rather
-    than coerced into a plausible-looking elevation field.
-    """
-    if not data.startswith(b"\x89PNG\r\n\x1a\n"):
+    """Compatibility entry point: decode either supported depth, or return ``None``."""
+    try:
+        return decode_greyscale(data)
+    except ValueError:
         return None
-    width = height = None
-    bit_depth = colour_type = interlace = None
+
+
+def decode_greyscale(data):
+    """Decode non-interlaced greyscale 8/16 PNG; refuse with a specific ``ValueError``.
+
+    Filtering operates on bytes, with a whole pixel (one or two bytes) between left
+    neighbours. Only after unfiltering do 16-bit pairs become big-endian sample codes.
+    """
+    if data.startswith(b"version https://git-lfs"):
+        raise ValueError("the height texture is a Git LFS pointer — its bytes are not in this checkout")
+    if not data.startswith(b"\x89PNG\r\n\x1a\n"):
+        raise ValueError("the height texture is not a PNG")
+    header = None
     idat = bytearray()
     offset = 8
-    while offset + 8 <= len(data):
-        length, kind = struct.unpack(">I4s", data[offset:offset + 8])
-        body = data[offset + 8:offset + 8 + length]
-        offset += 12 + length
+    ended = False
+    while offset < len(data):
+        if offset + 12 > len(data):
+            raise ValueError("the height texture has truncated PNG chunk data")
+        length, kind = struct.unpack_from(">I4s", data, offset)
+        end = offset + 8 + length
+        if end + 4 > len(data):
+            raise ValueError("the height texture has truncated PNG chunk data")
+        body = data[offset + 8:end]
+        crc = struct.unpack_from(">I", data, end)[0]
+        if zlib.crc32(kind + body) & 0xFFFFFFFF != crc:
+            raise ValueError("the height texture has an invalid PNG chunk checksum")
+        offset = end + 4
+        if header is None and kind != b"IHDR":
+            raise ValueError("the height texture has no leading PNG IHDR")
         if kind == b"IHDR":
-            width, height, bit_depth, colour_type, _c, _f, interlace = struct.unpack(
-                ">IIBBBBB", body)
+            if header is not None or length != 13:
+                raise ValueError("the height texture has an invalid PNG IHDR")
+            header = struct.unpack(">IIBBBBB", body)
         elif kind == b"IDAT":
             idat += body
         elif kind == b"IEND":
+            if length != 0:
+                raise ValueError("the height texture has an invalid PNG IEND")
+            ended = True
             break
-    if width is None or bit_depth != 8 or colour_type != 0 or interlace != 0:
-        return None
-    raw = zlib.decompress(bytes(idat))
-    rows, previous, cursor = [], bytearray(width), 0
+    if not ended or header is None:
+        raise ValueError("the height texture has truncated PNG data (missing IEND)")
+    width, height, bit_depth, colour_type, compression, filtering, interlace = header
+    if colour_type != 0:
+        raise ValueError(f"the height texture has PNG colour type {colour_type}; expected greyscale (0)")
+    if bit_depth not in (8, 16):
+        raise ValueError(f"the height texture has PNG bit depth {bit_depth}; expected 8 or 16")
+    if interlace != 0:
+        raise ValueError("the height texture is an interlaced PNG; expected non-interlaced")
+    if not width or not height or compression != 0 or filtering != 0:
+        raise ValueError("the height texture has unsupported PNG dimensions, compression or filtering")
+    try:
+        decompressor = zlib.decompressobj()
+        raw = decompressor.decompress(bytes(idat)) + decompressor.flush()
+    except zlib.error as error:
+        raise ValueError("the height texture has invalid PNG compressed data") from error
+    bpp = bit_depth // 8
+    stride = width * bpp
+    if not decompressor.eof or len(raw) != height * (stride + 1):
+        raise ValueError("the height texture has truncated or incorrect PNG scanline data")
+    if decompressor.unused_data:
+        raise ValueError("the height texture has extra PNG compressed data")
+    rows, previous, cursor = [], bytearray(stride), 0
     for _ in range(height):
         filter_type = raw[cursor]
         cursor += 1
-        line = bytearray(raw[cursor:cursor + width])
-        cursor += width
-        _unfilter(filter_type, line, previous)
-        rows.append(bytes(line))
+        line = bytearray(raw[cursor:cursor + stride])
+        cursor += stride
+        _unfilter(filter_type, line, previous, bpp)
+        rows.append(bytes(line) if bit_depth == 8 else struct.unpack(f">{width}H", line))
         previous = line
-    return Png(width, height, rows)
+    return Png(width, height, rows, bit_depth)
 
 
-def _unfilter(filter_type, line, previous):
+def _unfilter(filter_type, line, previous, bpp=1):
     if filter_type == 0:
         return
     for i in range(len(line)):
-        left = line[i - 1] if i else 0
+        left = line[i - bpp] if i >= bpp else 0
         up = previous[i]
         if filter_type == 1:
             line[i] = (line[i] + left) & 0xFF
@@ -94,7 +138,7 @@ def _unfilter(filter_type, line, previous):
         elif filter_type == 3:
             line[i] = (line[i] + ((left + up) >> 1)) & 0xFF
         elif filter_type == 4:
-            upper_left = previous[i - 1] if i else 0
+            upper_left = previous[i - bpp] if i >= bpp else 0
             line[i] = (line[i] + _paeth(left, up, upper_left)) & 0xFF
         else:
             raise ValueError(f"unknown PNG filter {filter_type}")
@@ -124,7 +168,7 @@ def contour(repo, height_map, cols, rows, origin_nw):
     """A ground grid of band names, or ``None`` when the texture's bytes are not on disk.
 
     Sampled per cell centre by nearest texel — the map is 2 texels per metre against a 1 m cell,
-    so nearest is the honest reading; interpolating would invent a smoothness the R8 source does
+    so nearest is the honest reading; interpolating would invent a smoothness the raster source does
     not have.
     """
     texture = height_map.get("texture") if height_map else None
@@ -134,9 +178,11 @@ def contour(repo, height_map, cols, rows, origin_nw):
         data = handle.read()
     if data.startswith(b"version https://git-lfs"):
         return None, "the height texture is a Git LFS pointer — its bytes are not in this checkout"
-    png = decode_r8(data)
-    if png is None:
-        return None, "the height texture did not decode as an 8-bit greyscale PNG"
+    try:
+        png = decode_greyscale(data)
+    except ValueError as error:
+        return None, str(error)
+    max_code = png.max_code
 
     paint_floor, bands = read_bands(repo)
     if paint_floor is None:
@@ -164,7 +210,7 @@ def contour(repo, height_map, cols, rows, origin_nw):
             tx = int((world_x - left) / width_m * png.width)
             if not 0 <= tx < png.width:
                 continue
-            elevation = low + (line[tx] / 255.0) * span
+            elevation = low + (line[tx] / max_code) * span
             if elevation < paint_floor:
                 continue
             for name, floor in bands:
@@ -192,9 +238,11 @@ def sample_field(repo, height_map, cols, rows, origin_nw, stride_m):
         data = handle.read()
     if data.startswith(b"version https://git-lfs"):
         return None, "the height texture is a Git LFS pointer — its bytes are not in this checkout"
-    png = decode_r8(data)
-    if png is None:
-        return None, "the height texture did not decode as an 8-bit greyscale PNG"
+    try:
+        png = decode_greyscale(data)
+    except ValueError as error:
+        return None, str(error)
+    max_code = png.max_code
 
     low = height_map["minElevation"]
     span = height_map["maxElevation"] - low
@@ -216,7 +264,7 @@ def sample_field(repo, height_map, cols, rows, origin_nw, stride_m):
             if line is None or not 0 <= tx < png.width:
                 values.append(None)     # outside the painted map: absent, not zero
                 continue
-            values.append(round(low + (line[tx] / 255.0) * span, 3))
+            values.append(round(low + (line[tx] / max_code) * span, 3))
     field = {
         "strideMeters": stride_m,
         "cols": field_cols,
@@ -259,9 +307,9 @@ def sample_field_full(repo, height_map, cols, rows, origin_nw):
 
     Values are metres above chart datum — directly comparable to ``terrain.waterLevelMeters``, with
     no decode step, which is the whole point of a field a reader thresholds at a sea level. They
-    carry the map's own 8-bit quantisation and nothing finer: 255 steps across ``elevationRange``,
-    so the quantum is stated and equal values run together. ``null`` is a sample outside the painted
-    map — absent, not zero.
+    carry the map's own 8- or 16-bit quantisation, then round to 3 dp. The source quantum is
+    stated separately from that 0.001 m output step, and equal values run together. ``null`` is a
+    sample outside the painted map — absent, not zero.
     """
     texture = height_map.get("texture") if height_map else None
     if not texture or not repo.exists(texture):
@@ -270,9 +318,11 @@ def sample_field_full(repo, height_map, cols, rows, origin_nw):
         data = handle.read()
     if data.startswith(b"version https://git-lfs"):
         return None, "the height texture is a Git LFS pointer — its bytes are not in this checkout"
-    png = decode_r8(data)
-    if png is None:
-        return None, "the height texture did not decode as an 8-bit greyscale PNG"
+    try:
+        png = decode_greyscale(data)
+    except ValueError as error:
+        return None, str(error)
+    max_code = png.max_code
 
     low = height_map["minElevation"]
     span = height_map["maxElevation"] - low
@@ -280,10 +330,9 @@ def sample_field_full(repo, height_map, cols, rows, origin_nw):
     centre_x, centre_y = height_map["worldCenter"]
     left, top = centre_x - width_m / 2.0, centre_y + height_m / 2.0
 
-    # One decoded metre-value per 8-bit code, computed once. The elevation is a function of the code
-    # alone, so a per-cell round() over 425,600 cells would be 425,600 identical divisions and 256
-    # distinct answers — and rounding ONCE is also what keeps two equal codes encoding to one run.
-    table = [round(low + code / 255.0 * span, 3) for code in range(256)]
+    # Build once per field: 256 entries at 8 bits, 65,536 at 16 bits. Keep division
+    # (not multiplication by a reciprocal) so existing 3 dp rounding stays byte-identical.
+    table = [round(low + code / max_code * span, 3) for code in range(int(max_code) + 1)]
 
     runs, current, length = [], _UNSET, 0
     for row in range(rows):
@@ -307,7 +356,7 @@ def sample_field_full(repo, height_map, cols, rows, origin_nw):
     if length:
         runs.append([current, length])
 
-    quantum = span / 255.0
+    quantum = span / max_code
     field = {
         "strideMeters": 1,
         "cols": cols,
@@ -328,8 +377,13 @@ def sample_field_full(repo, height_map, cols, rows, origin_nw):
                   "textureSha256.",
         "values": runs,
     }
+    if png.bit_depth == 16:
+        field["x-note"] = field["x-note"].replace(
+            "8-bit quantisation — quantumMeters is that step, and values are rounded to 3 dp "
+            "which is finer than it.",
+            "16-bit quantisation — quantumMeters is the source step; values are rounded to "
+            "3 dp (0.001 m output step), which can be coarser than the source step.")
     return field, None
-
 
 
 class Sampler:
@@ -360,9 +414,10 @@ class Sampler:
             self.reason = ("the height texture is a Git LFS pointer — its bytes are not in this "
                            "checkout")
             return
-        png = decode_r8(data)
-        if png is None:
-            self.reason = "the height texture did not decode as an 8-bit greyscale PNG"
+        try:
+            png = decode_greyscale(data)
+        except ValueError as error:
+            self.reason = str(error)
             return
         self._png = png
         self._low = height_map["minElevation"]
@@ -377,11 +432,18 @@ class Sampler:
         return self._png is not None
 
     @property
+    def bit_depth(self):
+        return None if self._png is None else self._png.bit_depth
+
+    @property
     def quantum(self):
-        """The map's own elevation step — ``elevationRange`` over 255. Every sampled elevation is a
-        multiple of it, so a comparison against a declared constant is only ever meaningful to
-        within one of these."""
-        return None if self._png is None else self._span / 255.0
+        """The source map's elevation step, before rounding sampled metres to 3 dp."""
+        return None if self._png is None else self._span / self._png.max_code
+
+    @property
+    def tolerance(self):
+        """A comparison cannot claim precision finer than the source or the 1 mm output step."""
+        return None if self._png is None else max(self.quantum, 0.001)
 
     def at(self, x, y):
         """Metres above chart datum at a world point, or ``None`` outside the painted map."""
@@ -392,4 +454,4 @@ class Sampler:
         if not (0 <= tx < self._png.width and 0 <= ty < self._png.height):
             return None
         code = self._png.rows[self._png.height - 1 - ty][tx]
-        return round(self._low + code / 255.0 * self._span, 3)
+        return round(self._low + code / self._png.max_code * self._span, 3)

@@ -56,7 +56,7 @@ hh_scene_export.py          CLI. --out, --region, --check.
 hhexport/unityyaml.py       Unity Force-Text YAML reader (stdlib; keeps every scalar a string)
 hhexport/csharp.py          declared literals out of C# — routes, band floors, rig globals
 hhexport/roads.py           strokes the declared ways into the road layer
-hhexport/heightmap.py       R8 PNG decode, the ground iso-contour, the tide field (LFS-gated)
+hhexport/heightmap.py       R8/R16 PNG decode, the ground iso-contour, the tide field (LFS-gated)
 hhexport/tide.py            the tide's DECLARED terms - sea level, a face's lip, a hull's ride
 hhexport/passages.py        the doors between regions - what the sprite walk cannot see
 hhexport/clifflines.py      the cliffs - 165 walls the package SAID it shipped and did not
@@ -67,7 +67,7 @@ hhexport/scene.py           hierarchy, world transforms, the scene's own orderin
 hhexport/package.py         the hiddenharbours.scene/1 emitter
 hhexport/provenance.py      what vintage of the world a package is a picture of
 packages/                   the committed output (regenerate with the command above)
-tests/                      148 tests: parser, rig pinning, the contract compared block-for-block
+tests/                      168 tests: parser, rig pinning, the contract compared block-for-block
                             against docs/tools/reference/sample-scene.json, the rasterised
                             layers, the tide applied from the package alone, portability,
                             determinism
@@ -86,3 +86,8 @@ Same commit in, byte-identical package out — no timestamps, no run ids, no dic
 dependence (entities follow the scene's own `SceneRoots` walk; rigs and paths are sorted).
 `--check` re-derives and compares without writing, so a stale committed package fails a test
 rather than surfacing as a wrong-looking harbour. `DeterminismTests` pins both halves.
+
+Height textures may be non-interlaced greyscale PNGs at 8 or 16 bits. All readers use the
+map's own code range (255 or 65535); sampled metres still round to 3 dp. `quantumMeters`
+is the source step, which at 16 bits can be finer than the 0.001 m output step. Lip
+cross-checks use the larger of those two steps. Existing 8-bit exports stay byte-identical.

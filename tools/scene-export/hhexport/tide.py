@@ -27,8 +27,8 @@ Reimplementing that composition in Python would be a second definition of the co
 the review's §7(c) trap and the same one ``heightmap``'s docstring refuses. So the lip elevation is
 the DECLARED deck constant the run stands on, and the committed height map — which
 ``TerrainPaintTool.BakeNineMileCreekSeabed`` rasterises out of that very terrain — is sampled at the
-same footprint centre the game samples and shipped beside it as a CROSS-CHECK. The two agree to
-within the map's own 8-bit quantum on every course, and the package says so per piece.
+same footprint centre the game samples and shipped beside it as a CROSS-CHECK. Agreement is
+judged against the map/output precision and reported per piece.
 """
 
 import math
@@ -485,12 +485,12 @@ def _lip_sample(terms, record, lip_y, seaward, centre, sampler, declared):
         return None
     spot = terms.underfoot((record["pos"][0] + centre[0], lip_y), seaward)
     metres = sampler.at(*spot)
-    return {
+    sample = {
         "atWorld": [_round(spot[0]), _round(spot[1])],
         "metres": metres,
         "quantumMeters": round(sampler.quantum, 6),
         "agreesWithDeclared": (metres is not None
-                               and abs(metres - declared) <= sampler.quantum),
+                               and abs(metres - declared) <= sampler.tolerance),
         "x-note": "the committed height map read at the SAME footprint centre "
                   "NineMileCreekDressing.FaceLipElevation samples the analytic terrain at - half a "
                   "course inboard of the lip, clear of the fill's falloff. A CROSS-CHECK, not the "
@@ -498,6 +498,13 @@ def _lip_sample(terms, record, lip_y, seaward, centre, sampler, declared):
                   "(TerrainPaintTool.BakeNineMileCreekSeabed) and carries its own 8-bit "
                   "quantisation, so agreement is only ever meaningful to within one quantum.",
     }
+
+    if sampler.bit_depth == 16:
+        sample["x-note"] = sample["x-note"].replace(
+            "8-bit quantisation, so agreement is only ever meaningful to within one quantum.",
+            "16-bit quantisation; sampled metres are rounded to 3 dp, so agreement uses the "
+            "larger of one source quantum and the 0.001 m output step.")
+    return sample
 
 
 _COMPASS = ((0.0, "north"), (90.0, "east"), (180.0, "south"), (270.0, "west"))
@@ -684,9 +691,13 @@ def _bed_of(sampler, position):
     if sampler is not None and sampler.ready:
         metres = sampler.at(*position)
         if metres is not None:
+            precision = (f"quantised to {round(sampler.quantum, 6)} m."
+                         if sampler.bit_depth == 8 else
+                         f"quantised to {round(sampler.quantum, 6)} m at 16 bits, then rounded "
+                         "to 3 dp (0.001 m output step).")
             return metres, ("the committed height map at her plan point - the same read "
                             "HullTideRide.BedElevation makes against ITidalTerrain, on a raster of "
-                            f"that terrain, quantised to {round(sampler.quantum, 6)} m.")
+                            f"that terrain, {precision}")
         return None, ("her plan point falls outside the painted height map, so there is no bottom "
                       "stated under her. TidalRide's reading of that is open water: she can never "
                       "take the ground. It is NOT an elevation of zero.")
