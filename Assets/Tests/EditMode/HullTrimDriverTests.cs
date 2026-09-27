@@ -92,6 +92,19 @@ namespace HiddenHarbours.Tests.EditMode
             public int TrimRestSerial => Serial;
         }
 
+        // What the skinner installs her picture through, handing back one recording renderer.
+        sealed class OneRendererService : IHullMeshPresentationService
+        {
+            readonly IHullMeshRenderer _renderer;
+            public OneRendererService(IHullMeshRenderer renderer) => _renderer = renderer;
+            public IHullMeshRenderer Install(GameObject host, HullMeshDef def, HullPaintSchemeDef scheme = null)
+                => _renderer;
+            public IHullPropRenderer AttachProp(GameObject host, HullPropMeshDef def, string slot) => null;
+            public void DetachProps(GameObject host) { }
+            public void DetachProp(GameObject host, string slot) { }
+            public void Remove(GameObject host) { }
+        }
+
         sealed class DrawnHull
         {
             public GameObject Root;
@@ -398,6 +411,144 @@ namespace HiddenHarbours.Tests.EditMode
             MountedRockPoseMath.MirrorHull(deckPoint, hull.DrawnHeadingDegrees(), hull.AppliedRollDegrees,
                                            hull.AppliedPitchDegrees, hull.AppliedHeaveMeters - hull.DrawnRideMeters,
                                            hull.BakeElevationDegrees, 1f);
+
+        sealed class GearedHull
+        {
+            public GameObject Root;
+            public Transform Visual;
+            public MeshHullDriver Driver;
+            public SternDeckGearPresenter Deck;
+        }
+
+        // A hull as BoatHullSkinner leaves her, a hauler bolted at her transom (2 m aft, 0.3 m up: the
+        // very point her wake is born at) and her stern gear on the same root. The gear finds her the
+        // way it does in play, through the presenter host the skinner writes.
+        GearedHull Geared(Vector2 bow, Vector2 position, float trim,
+                          float rockRoll = 0f, float rockPitch = 0f, float rockHeave = 0f)
+        {
+            var def = Def(rockRoll, rockPitch, rockHeave);
+            def.Mesh = new Mesh();
+            _spawned.Add(def.Mesh);
+            def.Ramps = new[] { new HullMeshDef.Ramp { Colors = new[] { new Color32(1, 2, 3, 255) } } };
+            def.Bayer16 = new float[16];
+            def.CellW = 456; def.CellH = 420;
+            var visual = ScriptableObject.CreateInstance<BoatVisualDef>();
+            _spawned.Add(visual);
+            visual.Id = "visual.trim_gear_test";
+            visual.Variant = BoatHullVariant.Mesh;
+            visual.HullMesh = def;
+
+            var root = new GameObject("TrimGearedHull");
+            _spawned.Add(root);
+            root.transform.position = position;
+            root.transform.up = new Vector3(bow.x, bow.y, 0f).normalized;
+            var source = root.AddComponent<StubTrimSource>();   // before the skin: Configure finds it there
+            source.Target = trim;
+            source.Response = 0f;                                // a zero lag follows the target exactly
+
+            BoatHullSkinner.Rig rig;
+            IHullMeshPresentationService previous = HullMeshPresentation.Service;
+            try
+            {
+                HullMeshPresentation.Service = new OneRendererService(new RecordingRenderer());
+                rig = BoatHullSkinner.Apply(root, visual, boat: null,
+                    new BoatHullSkinner.Options { SkipWaveMotion = true, SkipOars = true });
+            }
+            finally { HullMeshPresentation.Service = previous; }
+            Assert.IsTrue(rig.Skinned, "harness: she is skinned as a mesh");
+
+            var gear = ScriptableObject.CreateInstance<BoatDeckGearDef>();
+            _spawned.Add(gear);
+            gear.Id = "deckgear.trim_test";
+            gear.Mounts = new[]
+            {
+                new BoatDeckGearMount { Kind = DeckGearKind.HaulerStation,
+                                        MountLocalMeters = new Vector3(0f, -SternOffsetMeters, WaterlineMeters),
+                                        Dir = 2 },
+            };
+            var kit = ScriptableObject.CreateInstance<DeckGearKitDef>();
+            _spawned.Add(kit);
+            kit.Id = "deckgearkit.trim_test";
+            kit.FacingCount = 8;
+            // No art: the stand-in draws at exactly the measured point, which is all this reads.
+            kit.Entries = new[] { new DeckGearKitEntry { Kind = DeckGearKind.HaulerStation,
+                                                         Facings = System.Array.Empty<Sprite>() } };
+            var deck = root.AddComponent<SternDeckGearPresenter>();
+            deck.Configure(gear, kit, null);
+
+            return new GearedHull
+            {
+                Root = root, Visual = rig.Visual, Driver = root.GetComponent<MeshHullDriver>(), Deck = deck,
+            };
+        }
+
+        // Two drives a frame apart (the first after a skin is level and starts her clock; a zero lag
+        // then follows the target exactly), then her gear, which in play draws after her in the frame
+        // (its LateUpdate at order 100, her driver at −110).
+        Transform DrawTheHauler(GearedHull hull)
+        {
+            hull.Driver.Drive();
+            _clock.Advance(0.1);
+            hull.Driver.Drive();
+            hull.Deck.Draw();
+            Assert.AreEqual(1, hull.Deck.DrawnCount, "harness: her one mount drew");
+            Transform piece = hull.Root.transform.Find("SternDeckGear/DeckGear_0");
+            Assert.IsNotNull(piece, "harness: the hauler's renderer");
+            return piece;
+        }
+
+        [Test]
+        public void HerSternGear_StandsWhereSheIsDrawn_NotWhereSheWouldBeLevel()
+        {
+            // Bow north, so every term works by hand. At y −2.1 so that the drawn and the level points
+            // fall in different sort orders; at −2 they share one and the order check could not tell.
+            var hull = Geared(Vector2.up, new Vector2(3f, -2.1f), trim: 3.5f);
+            // The wave's bob moves the PICTURE, not the boat: BoatWaveMotion writes exactly this child.
+            hull.Visual.localPosition = new Vector3(0f, 0.21f, 0f);
+            Transform piece = DrawTheHauler(hull);
+            Assert.AreEqual(3.5f, hull.Driver.AppliedPitchDegrees, 0f, "harness: 3.5° of trim drawn");
+
+            // Her transom (2 m aft, 0.3 m up) turns through 3.5° of bow-up to 2.01458 m aft and
+            // 0.17734 m up, which the 40° camera draws 1.15910 m below her picture's origin (level, it
+            // drew 1.05576 m below). The picture is bobbed 0.21 m up off her root. So the hauler stands
+            // at −2.1 + 0.21 − 1.15910 = −3.04910, where the level placement stood it at
+            // −2.1 − 1.05576 = −3.15576: 10.67 cm, 5 px at the default helm camera.
+            Assert.AreEqual(3f, piece.position.x, Tol, "bow north: on her centreline");
+            Assert.AreEqual(-3.04910f, piece.position.y, Tol, "the hauler stands on the transom she is drawn with");
+            Assert.AreEqual(0f, piece.position.z, 0f, "on her root's plane");
+
+            // …and SORTS where the level placement did, so a heave or a trim never re-sorts the gear
+            // against the figures working among it. The decor band's rule, at each point:
+            int levelOrder = Mathf.RoundToInt(SortingBands.DecorBase + 3.15576f * SortingBands.OrdersPerMetre);
+            int drawnOrder = Mathf.RoundToInt(SortingBands.DecorBase + 3.04910f * SortingBands.OrdersPerMetre);
+            Assert.AreNotEqual(levelOrder, drawnOrder, "harness: the two points sort apart");
+            Assert.AreEqual(levelOrder, piece.GetComponent<SpriteRenderer>().sortingOrder,
+                "the gear keeps the level point's order");
+        }
+
+        [Test]
+        public void HerSternGear_IsBoltedToTheTransomHerWakeIsBornAt_ThroughTrimRockAndHeave()
+        {
+            // Everything the drawn hull has and a level placement lacks, at once: her hump trim, a
+            // rolling, pitching, heaving sea, an oblique heading, and the picture bobbed off her root.
+            var hull = Geared(new Vector2(0.6f, 0.8f), new Vector2(3f, -2f), trim: 3.5f,
+                              rockRoll: 2.8f, rockPitch: 1.6f, rockHeave: 1.2f);
+            hull.Visual.localPosition = new Vector3(0f, 0.21f, 0f);
+            hull.Driver.SetRockPhaseDegrees(60f);
+            Transform piece = DrawTheHauler(hull);
+
+            // 60° into the rig's cycle she rolls 2.8·sin 60° = 2.425°, pitches 1.6·cos 60° = 0.8° over
+            // her 3.5° of trim, and heaves 1.2·sin 60° = 1.04 px.
+            Assert.AreEqual(2.4249f, hull.Driver.AppliedRollDegrees, 1e-3f, "harness: rolled");
+            Assert.AreEqual(4.3f, hull.Driver.AppliedPitchDegrees, 1e-3f, "harness: trimmed and pitched");
+            Assert.That(hull.Driver.AppliedHeaveMeters, Is.Not.EqualTo(0f), "harness: heaved");
+
+            // The hauler stands on the transom the driver draws her wake from: the one drawn attitude,
+            // read twice.
+            Assert.IsTrue(hull.Driver.TryGetWakePose(out HullWakePose wake));
+            Assert.AreEqual(wake.DrawnStern.x, piece.position.x, Tol, "bolted to her drawn transom (x)");
+            Assert.AreEqual(wake.DrawnStern.y, piece.position.y, Tol, "bolted to her drawn transom (y)");
+        }
 
         // ------------------------------------------------------------------ at the helm, end to end
 
