@@ -141,7 +141,9 @@ namespace HiddenHarbours.Art
 
         /// <summary>Where this face's waterline is right now, or <see cref="float.NegativeInfinity"/> when
         /// there is no published sea or the piece is not riding — "below everything", which is what an
-        /// uncut face means. The number a fixture measures instead of counting pixels.</summary>
+        /// uncut face means. The number a fixture measures instead of counting pixels. The TIDE's row: where
+        /// a face stands in still water above the tide (ADR 0046) the shader cuts at max(tide, still) per
+        /// pixel, and this still reads the tide alone.</summary>
         public float WaterlineWorldYNow()
         {
             if (!_configured || !_ridesTheTide) return float.NegativeInfinity;

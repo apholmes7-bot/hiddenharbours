@@ -104,7 +104,12 @@ esac
 [ "$DRAFT" = "True" ] || [ "$DRAFT" = "true" ] && warn "DRAFT — a cloud lane's PR or one still owed a plate; do not merge a draft"
 
 # ─────────────────────────────────────────────────────────────────────────────── G2 CI on the exact head
-hdr "G2 · CI ran on the exact head sha, both jobs green"
+# ci.yml has run one job since the scene exporter's retirement (2026-09-27, tools/scene-export/README.md).
+# A run made before that still carries the exporter's job, and its red is a NOTE, never a FAIL.
+TESTS_JOB="EditMode + PlayMode tests"
+RETIRED_JOB="Scene export (python)"
+RETIRED_NOTE="the scene exporter was RETIRED on 2026-09-27 (tools/scene-export/README.md); only a run made before that carries its job, so its red is not counted"
+hdr "G2 · CI ran on the exact head sha, the tests job green"
 gh run list --branch "$HEADREF" --event pull_request --limit 30 --json databaseId,headSha,status,conclusion,createdAt,event \
   > "$WORK/runs.json" || echo "[]" > "$WORK/runs.json"
 RUNID=$(py -c 'import json,sys
@@ -119,24 +124,41 @@ else
   RUNCONC=$(py -c 'import json,sys; print([r for r in json.load(open(sys.argv[1])) if str(r["databaseId"])==sys.argv[2]][0]["conclusion"])' "$WORK/runs.json" "$RUNID")
   RUNTIME=$(py -c 'import json,sys; print([r for r in json.load(open(sys.argv[1])) if str(r["databaseId"])==sys.argv[2]][0]["createdAt"])' "$WORK/runs.json" "$RUNID")
   note "run $RUNID on ${HEAD:0:8}: $RUNSTATUS / $RUNCONC, created $RUNTIME  (https://github.com/$REPO/actions/runs/$RUNID)"
+  # the run's jobs, one "<conclusion, or status while running><TAB><name>" line each
+  gh run view "$RUNID" --json jobs > "$WORK/jobs.json" 2>/dev/null || echo '{"jobs":[]}' > "$WORK/jobs.json"
+  py -c 'import json,sys
+for j in json.load(open(sys.argv[1])).get("jobs") or []:
+    print("%s\t%s" % (j.get("conclusion") or j.get("status") or "?", j["name"]))' "$WORK/jobs.json" > "$WORK/jobs.txt"
+  TJOB=$(awk -F'\t' -v n="$TESTS_JOB" '$2==n{print $1; exit}' "$WORK/jobs.txt")
   if [ "$RUNSTATUS" != "completed" ]; then fail "run $RUNID is $RUNSTATUS — wait; never merge on a pending run"
-  elif [ "$RUNCONC" = "success" ]; then pass "run $RUNID completed success"
-  else fail "run $RUNID concluded $RUNCONC"; fi
+  elif [ -z "$TJOB" ]; then fail "run $RUNID ($RUNCONC) has no '$TESTS_JOB' job — read the run"
+  elif [ "$TJOB" = "success" ]; then pass "'$TESTS_JOB' completed success in run $RUNID"
+  else fail "'$TESTS_JOB' concluded $TJOB in run $RUNID"; fi
+  # every other job must be green too, bar the retired exporter's
+  while IFS=$'\t' read -r jc jn; do
+    [ -n "$jn" ] && [ "$jn" != "$TESTS_JOB" ] || continue
+    case "$jc" in success|skipped) continue ;; esac
+    if [ "$jn" = "$RETIRED_JOB" ]; then note "NOTE  job '$jn' $jc — $RETIRED_NOTE"
+    else fail "job '$jn' concluded $jc in run $RUNID"; fi
+  done < "$WORK/jobs.txt"
   # older runs on other heads are history, not evidence
   NOLDER=$(py -c 'import json,sys; print(len([r for r in json.load(open(sys.argv[1])) if r["headSha"]!=sys.argv[2]]))' "$WORK/runs.json" "$HEAD")
   [ "$NOLDER" -gt 0 ] && note "$NOLDER earlier run(s) on other heads of this branch — history, not evidence"
 fi
-# per-job view: the scene-export job is the exporter's --check; the tests job is Unity
+# per-job view: the tests job is Unity; a "Scene export (python)" check is the retired exporter's (a NOTE)
 gh pr checks "$PR" --json name,state,bucket,link > "$WORK/checks.json" 2>/dev/null || echo "[]" > "$WORK/checks.json"
 "$PY" - "$WORK/checks.json" <<'PY'
 import json, sys
 for c in json.load(open(sys.argv[1])):
     print("      check: %s: %s (%s)" % (c["name"], c["state"], c["bucket"]))
 PY
-NBAD=$(py -c 'import json,sys; print(len([c for c in json.load(open(sys.argv[1])) if c["bucket"] not in ("pass",)]))' "$WORK/checks.json")
+NBAD=$(py -c 'import json,sys; print(len([c for c in json.load(open(sys.argv[1])) if c["bucket"] not in ("pass",) and c["name"]!=sys.argv[2]]))' "$WORK/checks.json" "$RETIRED_JOB")
+NRET=$(py -c 'import json,sys; print(len([c for c in json.load(open(sys.argv[1])) if c["bucket"] not in ("pass",) and c["name"]==sys.argv[2]]))' "$WORK/checks.json" "$RETIRED_JOB")
 NCHK=$(py -c 'import json,sys; print(len(json.load(open(sys.argv[1]))))' "$WORK/checks.json")
+[ "$NRET" != 0 ] && note "NOTE  check '$RETIRED_JOB' not passing — $RETIRED_NOTE"
 if [ "$NCHK" = 0 ]; then warn "gh pr checks lists no checks (merged PR, or none reported yet)"
-elif [ "$NBAD" = 0 ]; then pass "all $NCHK checks pass (scene-export --check and Unity tests)"
+elif [ "$NBAD" = 0 ] && [ "$NRET" = 0 ]; then pass "all $NCHK checks pass"
+elif [ "$NBAD" = 0 ]; then pass "every check passes but the retired '$RETIRED_JOB' (noted above)"
 else fail "$NBAD of $NCHK checks not passing — 'gh pr view $PR' CLEAN is not 'its tests pass'"; fi
 
 # ─────────────────────────────────────────────────────────────────────────────── G3 the run's own results
@@ -274,15 +296,23 @@ PY
 fi
 
 # ─────────────────────────────────────────────────────────────────────────────── G7 scene / builder touch
-hdr "G7 · a PR that touches a SCENE or BUILDER re-runs the exporter"
+hdr "G7 · a PR that touches a SCENE or BUILDER"
 SCENE=$(grep -E '^Assets/_Project/Scenes/.*\.unity$|(^|/)[A-Za-z]*Builder[A-Za-z]*\.cs$|^Assets/_Project/Prefabs/.*\.prefab$' "$WORK/files.txt" || true)
-PKG=$(grep -E '^tools/scene-export/packages/' "$WORK/files.txt" || true)
 if [ -z "$SCENE" ]; then pass "no scene or builder file touched"
 else
   note "scene/builder files: $(echo "$SCENE" | tr '\n' ' ')"
-  if [ -n "$PKG" ]; then pass "export packages regenerated in the same PR ($(echo "$PKG" | wc -l | tr -d ' ') package files)"
-  else warn "scene/builder touched but tools/scene-export/packages/ NOT regenerated — the CI scene-export job's --check is the arbiter (G2); if it is green the change was invisible to the exporter (sprite-less object?) — ask the lane"; fi
+  note "the scene exporter was RETIRED on 2026-09-27 (tools/scene-export/README.md), so no export packages are regenerated"
   grep -qE '^Assets/_Project/Scenes/StPeters\.unity$' "$WORK/files.txt" && warn "StPeters.unity touched — it cannot be REBUILT (≈590 hunks stale); a hand patch rebases by regeneration; a rebuilt scene regenerates every id"
+fi
+# a package the PR adds or changes is warned; deleting one is the retirement's own cleanup. The files API
+# carries each file's status; without it, every package path is warned.
+PKG=$(grep -E '^tools/scene-export/packages/' "$WORK/files.txt" || true)
+if [ -n "$PKG" ]; then
+  if gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '.[] | "\(.status)\t\(.filename)"' > "$WORK/pr-files.tsv" 2>/dev/null; then
+    PKG=$(tr -d '\r' < "$WORK/pr-files.tsv" | awk -F'\t' '$1!="removed" && $2 ~ /^tools\/scene-export\/packages\// {print $2}')
+  fi
+  if [ -n "$PKG" ]; then warn "export package(s) added or changed: $(echo "$PKG" | tr '\n' ' ')— the scene exporter was RETIRED on 2026-09-27 and its packages are no longer committed; a branch cut before that carries them back, so ask the lane to drop them"
+  else note "the PR only deletes files under tools/scene-export/packages/ — the retirement's own cleanup"; fi
 fi
 
 # ─────────────────────────────────────────────────────────────────────────────── G8 fixture-law lint on added test lines

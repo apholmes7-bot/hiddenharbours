@@ -70,153 +70,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  scene-export:
-    name: Scene export (python)
-    runs-on: ubuntu-latest
-    # ⭐ WHY THIS JOB EXISTS. tools/scene-export ships 107 stdlib tests, and until now CI ran none
-    # of them — the only job in this workflow is Unity's. One of those tests is
-    # DeterminismTests.test_the_committed_artifacts_are_what_this_commit_produces, the guard that
-    # catches tools/scene-export/packages/** drifting from what the commit actually produces. With
-    # nobody running it, `main` went red and stayed red: PR #763 regenerated the packages from a
-    # branch cut before #765 merged, so `builderCommitsSinceScene` moved 0 -> 1 and the committed
-    # Nine Mile Creek package stopped being what the commit produces. NO CONTENT had changed —
-    # provenance drift alone reddens it — so this will recur every time a builder commit lands
-    # after a regeneration, and it needs a machine watching rather than a habit.
-    #
-    # ⚠️ IT IS A SEPARATE JOB, ON PURPOSE, and it does not depend on `tests`. Unity's job is
-    # ~25-45 min, needs a licence and a ~227 MB LFS set, and is the one that goes red for
-    # environment faults (see the hub pin and the LFS budget notes in the header). This one is
-    # python3 and the standard library, and it must stay able to report in about a minute while
-    # that one is still installing an editor. Nothing here may grow a Unity dependency; the
-    # exporter's whole premise is that it runs on the committed text alone.
-    timeout-minutes: 10
-    steps:
-      # Pointer-only, exactly like the Unity job: `lfs: true` pulls the whole ~227 MB object set
-      # and that is what exhausted the account's LFS budget on 2026-08-06.
-      - name: Checkout (LFS pointers only, FULL history)
-        uses: actions/checkout@v4
-        with:
-          lfs: false
-          # ⚠️ fetch-depth 0, AND THE EXPORTER DOES NOT WORK WITHOUT IT. checkout defaults to
-          # depth 1, and the exporter's provenance asks `git log -1 --format=%H -- <scene>` for
-          # the commit each scene was last banked at. In a depth-1 clone there IS only one
-          # commit, so that query answers HEAD for every path — and on a pull_request run HEAD
-          # is refs/pull/N/merge, a synthetic commit nobody has locally. The package then pins
-          # the merge sha as "the commit this scene was built at", which is both false and
-          # different every run, so --check reports STALE and
-          # DeterminismTests.test_nothing_in_a_package_is_keyed_to_the_checked_out_commit fails.
-          # Measured on a real `git clone --depth 1` of this repo: the scene's "last built"
-          # commit came back as HEAD; with full history it is 31f0d08a, which is the truth.
-          #
-          # The cost is one fetch of 803 commits / ~99 MiB of pack — seconds, and NO LFS objects,
-          # because `lfs: false` still holds and the two seabed textures are pulled by include
-          # below. The Unity job keeps its shallow checkout: it does not run the exporter.
-          fetch-depth: 0
-
-      # ⚠️ THE TWO SEABED TEXTURES ARE THE ONE THING THIS JOB CANNOT DO WITHOUT — and they are the
-      # ONLY LFS objects it needs: 108,507 bytes the pair, out of 1,999 objects and ~227 MB.
-      #
-      # Everything else the exporter reads is committed text — the scenes, the Defs, the .png.meta
-      # import settings, docs/art/rigs/**. But the height maps are R8 PNGs in LFS, and `--check`
-      # compares the WHOLE document, including `x-provenance.heightMap.textureBytesRead`, which
-      # legitimately flips with the checkout. So a pointer-only run reports STALE on a package
-      # that is perfectly current (the exporter says so itself, in its own "cause:" line) and the
-      # staleness gate would cry wolf on every single run. Measured on both the tide branch and
-      # its base before this job was written: it predates the tide work and is how --check is
-      # built, not a defect to fix here.
-      - name: Pull the seabed height maps only
-        id: lfs_pull
-        shell: bash
-        run: |
-          # `pull --include` then `checkout` — the same two calls the Unity job makes, for the
-          # same reason: pull fetches the objects, checkout smudges the pointers in the tree.
-          # The log is tee'd so the verdict step can tell an exhausted LFS budget (account
-          # billing, which a re-run can NEVER fix) from a transient checkout death. That
-          # misdiagnosis has cost this repo a day before.
-          set -o pipefail
-          if ! git lfs pull --include="Assets/_Project/Data/Terrain/*Seabed_HeightTex.png" 2>&1 | tee "$RUNNER_TEMP/git-lfs-pull.log"; then
-            if grep -qi "exceeded its LFS budget" "$RUNNER_TEMP/git-lfs-pull.log"; then
-              echo "budget=exceeded" >> "$GITHUB_OUTPUT"
-            fi
-            exit 1
-          fi
-          git lfs checkout
-          # A pointer that did not smudge is the failure this job must not paper over: it would
-          # surface as an unexplained STALE two steps later. Fail here, where the cause is legible.
-          for tex in Assets/_Project/Data/Terrain/*Seabed_HeightTex.png; do
-            if head -c 40 "$tex" | grep -q "git-lfs"; then
-              echo "::error title=Seabed height map is still an LFS pointer::$tex did not download. The scene export's --check compares height-derived content, so it cannot run truthfully without these bytes."
-              exit 1
-            fi
-            echo "  $tex  $(stat -c%s "$tex") bytes"
-          done
-
-      # No setup-python and no pin: ubuntu-latest ships a python3 well past the 3.8 the exporter
-      # asks for, the exporter and its tests import nothing outside the standard library, and a
-      # version printed into the log is enough to spot a runner-image bump that ever mattered.
-      - name: python3 version
-        shell: bash
-        run: python3 -VV
-
-      # The staleness gate FIRST and by itself, so its red is unambiguous. The suite runs it too
-      # (DeterminismTests), but buried among 107 results a reader has to go looking for it — and
-      # this is the one failure whose fix is a command rather than a code change.
-      - name: Committed packages match this commit (--check)
-        id: check
-        shell: bash
-        run: python3 tools/scene-export/hh_scene_export.py --check
-
-      # ⚠️ RUNS EVEN WHEN --check FAILED. A stale package must not hide a broken exporter: the
-      # two are independent failures with independent fixes (commit a regeneration / fix the
-      # code), and the first observed run of this job proved the point by skipping all 107 tests
-      # because the packages were stale. The condition is deliberately narrower than the Unity
-      # job's `success() || failure()`: it names the ONE earlier failure that should not stop the
-      # tests, so a dead checkout or an LFS pull that never delivered still skips them instead of
-      # reporting a confusing red about the exporter.
-      - name: Scene export tests
-        id: unittests
-        if: success() || steps.check.outcome == 'failure'
-        shell: bash
-        run: python3 -m unittest discover -s tools/scene-export/tests -v
-
-      # A reporter, not a gate — the same shape as the Unity job's verdict step and for the same
-      # reason: these red causes need different actions, and the difference is invisible in a
-      # rollup. Never changes the outcome.
-      - name: Red X verdict — stale packages or failing tests?
-        if: failure()
-        shell: bash
-        env:
-          LFS_BUDGET: ${{ steps.lfs_pull.outputs.budget }}
-          CHECK: ${{ steps.check.outcome }}
-          UNITTESTS: ${{ steps.unittests.outcome }}
-        run: |
-          verdict() {
-            echo "::error title=${1}::${2}"
-            { echo "## ${1}"; echo; echo "${2}"; } >> "$GITHUB_STEP_SUMMARY"
-          }
-          # Budget first: it is the one fault here a re-run can never fix, and it presents as
-          # every later step being skipped rather than as anything about the exporter.
-          if [ "$LFS_BUDGET" = "exceeded" ]; then
-            verdict "ACCOUNT BILLING — Git LFS budget exhausted — re-runs CANNOT pass" \
-              "GitHub refused the seabed height maps because the account has exceeded its Git LFS bandwidth budget. Billing, not code — do NOT re-run. The owner must raise the budget (Settings ▸ Billing and plans ▸ Git LFS). This job asks for ~108 KB of the ~227 MB set, so it is not the driver; the Unity job's full pull is."
-          elif [ "$CHECK" = "failure" ]; then
-            verdict "STALE PACKAGES — regenerate and commit, no code change needed" \
-              "tools/scene-export/packages/** is not what this commit produces. Run 'python3 tools/scene-export/hh_scene_export.py' and commit the result. This reddens on provenance drift alone — a builder commit landing after the last regeneration is enough, with no content change — so read the exporter's own 'cause:' line above before hunting for a scene re-bank. The tests ran anyway (${UNITTESTS}); if they also failed, that is a SECOND and separate fault, and regenerating will not fix it."
-          elif [ "$UNITTESTS" = "failure" ]; then
-            verdict "SCENE EXPORT TESTS FAILED — read the failing test names" \
-              "The committed packages match this commit but a test asserts otherwise about the exporter itself. Reproduce locally with 'python3 -m unittest discover -s tools/scene-export/tests -v' — it needs no Unity, no network and nothing outside the standard library."
-          else
-            verdict "FAILED OUTSIDE CHECK AND TESTS — read the step list" \
-              "Neither the staleness gate nor the test run failed (check: ${CHECK}, tests: ${UNITTESTS}). Checkout or the LFS pull did."
-          fi
-
   tests:
     name: EditMode + PlayMode tests
     runs-on: ubuntu-latest
     # A wedged run otherwise rides GitHub's 6-hour default while the queue stacks up behind it —
     # 2026-08-19 saw FOUR runs hang the same way in one afternoon (see the step timeout below).
-    # A full healthy run is ~25–45 min; 75 leaves headroom without letting a hang own the runner.
-    timeout-minutes: 75
+    # A healthy run takes ~63 min: six runs on 2026-09-26 took 62.6–63.5 ("Set up Unity" ~2,
+    # EditMode ~15, PlayMode ~44.7). A slow runner costs ~12 min more: "Set up Unity" 9.8–11.6
+    # (installing the editor instead of restoring it) and EditMode ~18.5. The old cap of 75 was
+    # that close: #890's PR run 36280358956 passed at 74.8 min, 12 s inside it, and main
+    # cf6a819b's push run 36282573170 was cancelled at it (2026-09-27 01:43Z) with PlayMode at
+    # 42.9 of its usual 44.7 min. 100 holds a slow run with room to spare and still stops a hang
+    # hours short of the default.
+    timeout-minutes: 100
+    env:
+      # The Unity Hub's editor folder. "Set up Unity" installs into it and lists from it
+      # (`install-path`), and the editor cache restores and saves exactly this folder. Runner logs
+      # put the editor at /home/runner/Unity/Hub/Editor/6000.5.0f1/Editor/Unity.
+      HH_UNITY_EDITOR_DIR: /home/runner/Unity/Hub/Editor
     steps:
       # WHY LFS IS CACHED (not `lfs: true` on checkout): checkout with `lfs: true` downloads
       # the full ~227 MB LFS object set from GitHub's LFS store on EVERY run. At ~164 runs in
@@ -224,8 +95,10 @@ jobs:
       # account's Git LFS budget on 2026-08-06. Instead: plain checkout (pointer files only),
       # restore `.git/lfs` from the actions cache keyed on the LFS manifest, then `git lfs
       # pull` fetches only the objects the cache lacks. An unchanged LFS set costs ~zero LFS
-      # bandwidth per run. (The actions cache only saves on a green job, so the first green
-      # run after a change pays the download once and later runs ride the cache.)
+      # bandwidth per run. (Since 2026-09-27 only a green push to main saves this cache, and a
+      # pull_request run restores main's copy and saves nothing: see "WHO SAVES WHAT" above
+      # "Restore the Unity editor". Main's first green run after an LFS change pays that
+      # download once and later runs ride its cache; a PR pulls the objects it adds on each run.)
       - name: Checkout (LFS pointers only)
         uses: actions/checkout@v4
         with:
@@ -236,7 +109,9 @@ jobs:
         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
 
       - name: Cache LFS objects
-        uses: actions/cache@v4
+        id: lfs_cache
+        # Restore only. "Save LFS objects (main only)" near the end of the job saves it.
+        uses: actions/cache/restore@v4
         with:
           path: .git/lfs
           key: lfs-${{ hashFiles('.lfs-assets-id') }}
@@ -259,12 +134,43 @@ jobs:
           git lfs checkout
 
       - name: Cache Library
-        uses: actions/cache@v4
+        id: library_cache
+        # Restore only. "Save Library (main only)" near the end of the job saves it.
+        uses: actions/cache/restore@v4
         with:
           path: Library
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
+
+      # THE EDITOR CACHE (2026-09-27). "Set up Unity" used to cache the editor itself
+      # (`cache-installation: true`): one folder, the Hub's install path, 4,964,041,197 B under
+      # `unity-setup-linux-6000.5.0f1-linux-il2cpp`, which main's run 36259864843 restored in 40 s
+      # (setup 2.0 min). Since ~2026-09-26 23:44Z that entry is gone, and the action cannot save it
+      # again: its post step asks the Hub for the install path a second time, and after a fresh
+      # install the Hub's answer starts with a log line, so every run warned `Unity installation path
+      # "[install-state] downloads-store: pruned N terminal row(s) ..." is invalid, skipping cache
+      # save` and installed the editor from Unity's servers (setup 5.4 to 14.5 min). So this job
+      # caches that folder itself, around the action, and pins the Hub to it with `install-path`.
+      #
+      # WHO SAVES WHAT. Only a push to main saves a cache; a pull_request run never does. The repo's
+      # caches share GitHub's 10 GB, evicted least-recently-used first, and a copy saved under a
+      # PR's ref helps no other run: the editor alone would take half the budget, and nearly every
+      # PR saved its own 1.46 GB Library. So main saves the editor right after "Set up Unity"
+      # installs it (a later red test cannot stop that save), and LFS and Library at the end of a
+      # green job, each only when its restore missed the exact key. Every run restores main's
+      # copies, so the editor, restored by each run, stays more recently used than main's old
+      # Library copies. The price: a PR's second push restores main's Library, not its own last
+      # one, so Unity re-imports that PR's changed assets, and git lfs pulls the objects it adds.
+      - name: Restore the Unity editor
+        id: editor_cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.HH_UNITY_EDITOR_DIR }}
+          # The exact key only, no restore-keys: an editor upgrade (ProjectVersion.txt) starts a
+          # fresh copy instead of restoring the old editor beside the new one and saving both.
+          # `il2cpp` is the one module `build-targets: StandaloneLinux64` installs; change them together.
+          key: unity-editor-${{ runner.os }}-${{ hashFiles('ProjectSettings/ProjectVersion.txt') }}-il2cpp
 
       - name: Drop the runner image's Google Chrome apt source
         # See "WHY THE CHROME APT SOURCE IS DROPPED" in the header: keeps unity-setup's apt-get
@@ -273,17 +179,33 @@ jobs:
 
       - name: Set up Unity
         id: setup_unity
-        # A healthy setup takes ~3 min (cache hit) and the install path is the workflow's one
-        # documented environment-fault class: on 2026-08-19 four separate runs wedged HERE for
-        # 1–2.5 h each (a cancel + re-run cleared every one). 15 min converts that hang into a
-        # fast, obviously-infrastructure failure instead of a silent queue block.
-        timeout-minutes: 15
+        # ~2 min when the editor is restored, 5.4–14.5 min when it installs from Unity's servers
+        # (runs of 2026-09-26/27). The install path is the workflow's one documented
+        # environment-fault class: on 2026-08-19 four separate runs wedged HERE for 1–2.5 h each
+        # (a cancel + re-run cleared every one). 25 min lets a full install finish (one has taken
+        # 14.5, and main's first run after 2026-09-27's cache change installs once before it can
+        # save) and still turns that hang into a fast, obviously-infrastructure failure instead of
+        # a silent queue block.
+        timeout-minutes: 25
         uses: buildalon/unity-setup@30fcbcb56c10ea5d64298e970d952b8d29bc268b # v2
         with:
           version-file: 'ProjectSettings/ProjectVersion.txt'   # resolves to 6000.5.0f1
           build-targets: StandaloneLinux64
-          cache-installation: true                             # cache the multi-GB editor between runs
+          install-path: ${{ env.HH_UNITY_EDITOR_DIR }}         # the folder the editor cache holds
+          # false since 2026-09-27: this job saves the editor itself, from a push to main only,
+          # because the action's own save broke on the Hub's log line (see "THE EDITOR CACHE" and
+          # "WHO SAVES WHAT" above "Restore the Unity editor").
+          cache-installation: false
           hub-version: '3.19.5'                                # see "WHY THE HUB IS PINNED" above
+
+      - name: Save the Unity editor (main only)
+        # Right after the install, so a later red test cannot stop it; only when the restore
+        # missed. A pull_request run never saves it (see "WHO SAVES WHAT" above).
+        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.editor_cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.HH_UNITY_EDITOR_DIR }}
+          key: ${{ steps.editor_cache.outputs.cache-primary-key }}
 
       - name: Activate Unity license (Personal)
         id: activate_license
@@ -381,6 +303,23 @@ jobs:
           if not any_failed:
               print("\nNo failing test cases in any results file.")
           PY
+
+      # The other half of "WHO SAVES WHAT" (above "Restore the Unity editor"): a green push to main
+      # saves LFS and Library here, at the end of the job, each only when its restore missed the
+      # exact key. A pull_request run saves nothing.
+      - name: Save LFS objects (main only)
+        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.lfs_cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .git/lfs
+          key: ${{ steps.lfs_cache.outputs.cache-primary-key }}
+
+      - name: Save Library (main only)
+        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.library_cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: Library
+          key: ${{ steps.library_cache.outputs.cache-primary-key }}
 
       # WHY THIS EXISTS: this job has two documented pre-test fault modes — "Set up Unity"
       # (the hub-pin story above) and "Activate Unity license" (licensing servers / secrets) —

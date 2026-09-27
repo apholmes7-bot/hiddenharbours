@@ -263,6 +263,63 @@ namespace HiddenHarbours.Core
         public static event System.Action TidalTerrainChanged;
 
         /// <summary>
+        /// The active region's <b>still water</b> — the fresh water that stands above the tide (ponds, a
+        /// brook's fresh reach), as a level per plan point (<see cref="IStillWater"/>, ADR 0046). The
+        /// region's painted terrain registers it on enable and clears it on disable, beside
+        /// <see cref="TidalTerrain"/>; its readers compose it with the tide through
+        /// <see cref="StillWaterLevels.Compose"/>: <b>water = max(tide, still)</b>.
+        ///
+        /// <para><b>Never null.</b> Absent a registrant — every region without a still map, a bare scene,
+        /// EditMode — this reads <see cref="EmptyStillWater.Instance"/>, no still water anywhere, and every
+        /// composition returns the tide bit for bit. Assign null to clear it; the getter turns that back
+        /// into the empty map, as <see cref="FishSchools"/> does.</para>
+        ///
+        /// <para><b>⚠ Assigning raises <see cref="StillWaterChanged"/></b>, for the one kind of consumer
+        /// that cannot ask per query: the render, which publishes the still map as shader globals and must
+        /// re-publish when the region's still water comes or goes.</para>
+        /// FLAG lead-architect: new Core contract (the still-water seam, ADR 0046).
+        /// </summary>
+        public static IStillWater StillWater
+        {
+            get
+            {
+                IStillWater still = _stillWater;
+                // Never `??` here, for FishSchools' reason: a producer that is a UnityEngine.Object reads
+                // FAKE-null once destroyed, which `??` does not see. Ask the Unity way first.
+                if (still is UnityEngine.Object producer && producer == null) return EmptyStillWater.Instance;
+                return still != null ? still : EmptyStillWater.Instance;
+            }
+            set
+            {
+                // Reference equality, as TidalTerrain: the raise re-publishes the render's globals, so a
+                // self-assignment must not re-raise.
+                if (ReferenceEquals(_stillWater, value)) return;
+                _stillWater = value;
+                StillWaterChanged?.Invoke();
+            }
+        }
+
+        private static IStillWater _stillWater;
+
+        /// <summary>
+        /// True when <paramref name="still"/> is the still water registered right now — the RAW slot, so a
+        /// registrant can clear only its own registration on teardown. (Comparing against
+        /// <see cref="StillWater"/> would compare against the getter's stand-in, not the slot.)
+        /// </summary>
+        public static bool IsRegisteredStillWater(IStillWater still)
+            => still != null && ReferenceEquals(_stillWater, still);
+
+        /// <summary>
+        /// Raised whenever <see cref="StillWater"/> starts pointing at a different still water (including
+        /// at null on teardown). For consumers that publish the still map rather than ask it per query —
+        /// the water render's shader globals.
+        ///
+        /// <para><b>Subscribers must unsubscribe</b>; <see cref="Reset"/> does not clear the list, for
+        /// <see cref="TidalTerrainChanged"/>'s reason.</para>
+        /// </summary>
+        public static event System.Action StillWaterChanged;
+
+        /// <summary>
         /// The ON-FOOT PLAYER's transform — "where the person walking this world actually is". The
         /// <b>App</b> travel rig is the writer (<c>RegionTravelCoordinator</c> holds the persistent,
         /// DontDestroyOnLoad player and publishes it for that player's whole lifetime); <b>World</b>
@@ -907,6 +964,7 @@ namespace HiddenHarbours.Core
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
             Save = null;
             TidalTerrain = null;
+            StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;
             Hands = null;
             CatchHands = null;
