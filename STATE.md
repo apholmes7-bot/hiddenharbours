@@ -1,6 +1,6 @@
 # Hidden Harbours: the design desk
 
-**As of 2026-09-27 18:36Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
+**As of 2026-09-27 18:46Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
 
 Read this file at the start of every session, then the brief the owner names. A ruling the owner gives you in a message wins over this file and over any brief. Some older docs still describe sprites where the owner has since ruled meshes (section 4); where they disagree, the ruling wins.
 
@@ -8,9 +8,9 @@ Read this file at the start of every session, then the brief the owner names. A 
 
 - This branch, `design-desk`, holds text only: this file and the `briefs/` folder. It is public, and it is never merged into the game.
 - The owner pastes you one line: "Read <link> and follow it." The link names one brief.
-- Links into the game point at one commit of its `main` branch (`db3934b4` today), so they cannot move while you work. A file link opens a GitHub page; the same address with `/raw/` in place of `/blob/` gives the plain file.
+- Links into the game point at one commit of its `main` branch (`db3934b4` today), so they cannot move while you work. Open them with your GitHub file reader. `/raw/` links are refused on your side (the channel check, 09-27), so briefs give `/blob/` links only.
 - You only read here. Your work comes back as files the owner downloads (section 5).
-- Pictures: the game keeps PNG, JPG, PSD and ZIP files in Git LFS, so a link may show you a short pointer text instead of the file. The channel check (the brief of 09-27) tests this. Until it passes, any picture you need comes to you in a zip the owner uploads.
+- Pictures do not reach you through GitHub. The game keeps PNG, JPG, PSD and ZIP files in Git LFS, and the channel check of 09-27 found no way through: the GitHub page showed no image, the raw link was refused, the file server could not be reached, and your file reader returned only the pointer text. Every picture you need comes to you in a zip the owner uploads; the brief names it.
 
 ## 2. The game
 
@@ -58,7 +58,7 @@ Each thread has, or will get, its own paste in its own conversation. This list i
 - The boats switch (09-26). Asked of you: the batch plan; one versioned spec for the new layout (every field with its units and frame, the scripts that write it, and a checker in each zip); then the batches, the six new boats and the two sport fishers first, with the 53 at 0.67 m. On our side: your sport-fishers PROPOSAL zip of 09-26 (mesh interiors, ghost cutaway) is still to be downloaded.
 - The village v3 send-back (09-26). Asked of you: Plan B drawn, two or three manor sites, the manor on the light engine, room heights and the side-entry rooms, the school's classroom, and the outbuilding rig's params sidecar with the kit designs.
 - The St Peters key scenes (09-27). Asked of you: seven scenes (the Landing, the cannery, the north-east lighthouse and cliff, the village square, Ginny's plot, the waterfall, the tidal crossing), starting with the Landing and the cannery.
-- The channel check (09-27, on this branch): [briefs/BRIEF-2026-09-27-channel-check.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-27-channel-check.md).
+- The channel check (09-27, on this branch): DONE the same day. Text reaches you; pictures do not (section 1). [briefs/BRIEF-2026-09-27-channel-check.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-27-channel-check.md).
 
 ## 7. Landed in the game from you
 
