@@ -1,5 +1,49 @@
 # Scene export — the repo's authored regions, in the scene editor's format
 
+> **RETIRED 2026-09-27** on the owner's word: "Retired until needed further". Nothing in the game
+> reads the packages. The retiring PR (branch `chore/retire-scene-export`) removed the committed
+> packages and the CI job; the code and the tests stay here, parked. After "To revive", this
+> README describes the tool as it was the day it retired.
+
+## To revive
+
+1. **Restore the CI job and the `.gitattributes` rule** from the parent of the retiring PR's squash
+   commit, which is the last commit that deleted the packages:
+
+   ```bash
+   RETIRED=$(git log -1 --format=%H --diff-filter=D -- tools/scene-export/packages/MANIFEST.json)
+   git show "$RETIRED^:.github/workflows/ci.yml"   # the `scene-export` job, "Scene export (python)"
+   git show "$RETIRED^:.gitattributes"             # `tools/scene-export/packages/** text eol=lf` and its comment
+   ```
+
+2. **Regenerate the packages** with `python3 tools/scene-export/hh_scene_export.py`. It needs the two
+   seabed height maps' LFS bytes, which the old job's LFS step pulled. It also needs full git
+   history: each package stamps the commit its scene was last banked at, and a shallow clone
+   answers HEAD for every path (the old job's `fetch-depth: 0` comment tells that story).
+
+   ```bash
+   git lfs pull --include="Assets/_Project/Data/Terrain/*Seabed_HeightTex.png"
+   python3 tools/scene-export/hh_scene_export.py
+   ```
+
+3. **Run the tests** where step 2 ran, with the height maps pulled, as the old job did:
+   `python3 -m unittest discover -s tools/scene-export/tests -v` (148 tests). These five read the
+   committed packages, so they need step 2 first:
+   - `DeterminismTests.test_the_committed_artifacts_are_what_this_commit_produces` runs `--check`
+     against `packages/`.
+   - `ManifestCarryForwardTests.test_a_region_subset_export_keeps_the_other_entry_byte_for_byte`,
+     `test_a_tampered_other_package_refuses_and_writes_nothing`,
+     `test_a_missing_other_entry_refuses_and_writes_nothing` and
+     `test_a_full_run_writes_the_committed_manifest_and_never_reads_the_old_one` copy the committed
+     packages into a scratch folder (`_bank`); the last also compares a fresh run's `MANIFEST.json`
+     with the committed one.
+
+4. **Restore the gauntlet's G2 and G7** (`tools/gauntlet/pr-gauntlet.sh` and its `README.md`) from
+   the same parent. Since the retirement, G2 notes a red `Scene export (python)` job instead of
+   failing it, and G7 warns on any package a PR adds or changes.
+
+---
+
 Exports **Nine Mile Creek** and **St Peters** out of the committed repo and into a
 `hiddenharbours.scene/1` document, so the owner can open his own harbours in the Claude-Design
 scene editor and look at them. The format is the one settled in

@@ -1,5 +1,10 @@
 # `hiddenharbours.scene/1` — the write-back half
 
+> **RETIRED 2026-09-27**, with the scene exporter it extends, on the owner's word, "Retired until
+> needed further". The write-back half was never built. The format stays documented here for a
+> revival; the steps to revive the exporter are under "To revive" in
+> [`tools/scene-export/README.md`](../../tools/scene-export/README.md).
+
 **What this is.** The **return leg** of the scene-export contract: what the owner may change in his
 scene editor, how those changes come home, and how we prove they arrived. The outbound half —
 the envelope, the seventeen settled fields, the RLE rules — is
