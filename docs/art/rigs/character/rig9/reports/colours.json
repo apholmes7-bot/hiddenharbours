@@ -1,0 +1,1704 @@
+{
+  "tool": "check-colours",
+  "rig": "02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144",
+  "poses": "42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07",
+  "ok": true,
+  "problems": [],
+  "definitions": {
+    "painted": "distinct material names on the bind mesh, face groups included: each shade variant and each fixed face colour its own slot",
+    "rampsPlusFixed": "distinct ramps (by content for a preset; by source for the creator maximum, colours chosen so no two sources coincide) + fixed colours counted once per value (lid = lip = skin ramp [1], mouth = skin ramp [0])",
+    "rampsPlusFixedMaterials": "the same, but every fixed face material its own slot"
+  },
+  "rampSources": {
+    "skin": "skin",
+    "skinD": "skin",
+    "stub": "skin",
+    "lid": "skin",
+    "lip": "skin",
+    "mouth": "skin",
+    "hair": "hair",
+    "hairD": "hair",
+    "beard": "hair",
+    "buzz": "hair",
+    "brow": "hair",
+    "iris": "eyes",
+    "over": "outfit",
+    "overD": "outfit",
+    "overL": "outfit",
+    "shirt": "shirt",
+    "shirtD": "shirt",
+    "collar": "shirt",
+    "hat": "hatCol",
+    "hatL": "hatCol",
+    "hatD": "hatCol",
+    "apron": "apronCol",
+    "apronD": "apronCol",
+    "belt": "LEATHER",
+    "hose": "BOOT",
+    "boot": "BOOT",
+    "bootL": "BOOT",
+    "sole": "BOOT",
+    "brass": "BRASS"
+  },
+  "fixedValue": {
+    "ink": "ink",
+    "ink2": "ink2",
+    "white": "white",
+    "iris": "iris",
+    "brow": "brow",
+    "lid": "skin[1]",
+    "lip": "skin[1]",
+    "mouth": "skin[0]"
+  },
+  "presets": {
+    "fisher": {
+      "label": "Fisher",
+      "paintedMaterials": 21,
+      "materials": [
+        "boot",
+        "bootL",
+        "brass",
+        "brow",
+        "collar",
+        "hair",
+        "hairD",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "over",
+        "overD",
+        "shirt",
+        "shirtD",
+        "skin",
+        "skinD",
+        "sole",
+        "stub",
+        "white"
+      ],
+      "shadeVariants": {
+        "BOOT": [
+          "boot",
+          "bootL",
+          "sole"
+        ],
+        "BRASS": [
+          "brass"
+        ],
+        "shirt": [
+          "collar",
+          "shirt",
+          "shirtD"
+        ],
+        "hair": [
+          "hair",
+          "hairD"
+        ],
+        "outfit": [
+          "over",
+          "overD"
+        ],
+        "skin": [
+          "skin",
+          "skinD",
+          "stub"
+        ]
+      },
+      "fixedColours": [
+        "brow",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "white"
+      ],
+      "distinctRamps": 6,
+      "rampSources": [
+        "BOOT",
+        "BRASS",
+        "hair",
+        "outfit",
+        "shirt",
+        "skin"
+      ],
+      "distinctFixedValues": 7,
+      "rampsPlusFixed": 13,
+      "rampsPlusFixedMaterials": 13
+    },
+    "ginny": {
+      "label": "Ginny",
+      "paintedMaterials": 21,
+      "materials": [
+        "boot",
+        "bootL",
+        "brass",
+        "brow",
+        "collar",
+        "hair",
+        "hat",
+        "hatD",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "over",
+        "overD",
+        "shirt",
+        "shirtD",
+        "skin",
+        "skinD",
+        "sole",
+        "white"
+      ],
+      "shadeVariants": {
+        "BOOT": [
+          "boot",
+          "bootL",
+          "sole"
+        ],
+        "BRASS": [
+          "brass"
+        ],
+        "shirt": [
+          "collar",
+          "shirt",
+          "shirtD"
+        ],
+        "hair": [
+          "hair"
+        ],
+        "hatCol": [
+          "hat",
+          "hatD"
+        ],
+        "outfit": [
+          "over",
+          "overD"
+        ],
+        "skin": [
+          "skin",
+          "skinD"
+        ]
+      },
+      "fixedColours": [
+        "brow",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "white"
+      ],
+      "distinctRamps": 7,
+      "rampSources": [
+        "BOOT",
+        "BRASS",
+        "hair",
+        "hatCol",
+        "outfit",
+        "shirt",
+        "skin"
+      ],
+      "distinctFixedValues": 7,
+      "rampsPlusFixed": 14,
+      "rampsPlusFixedMaterials": 14
+    },
+    "skipper": {
+      "label": "Skipper",
+      "paintedMaterials": 21,
+      "materials": [
+        "beard",
+        "boot",
+        "bootL",
+        "brow",
+        "hair",
+        "hairD",
+        "hat",
+        "hatL",
+        "ink",
+        "ink2",
+        "iris",
+        "lid",
+        "lip",
+        "mouth",
+        "over",
+        "overD",
+        "shirt",
+        "skin",
+        "skinD",
+        "sole",
+        "white"
+      ],
+      "shadeVariants": {
+        "hair": [
+          "beard",
+          "hair",
+          "hairD"
+        ],
+        "BOOT": [
+          "boot",
+          "bootL",
+          "sole"
+        ],
+        "hatCol": [
+          "hat",
+          "hatL"
+        ],
+        "outfit": [
+          "over",
+          "overD"
+        ],
+        "shirt": [
+          "shirt"
+        ],
+        "skin": [
+          "skin",
+          "skinD"
+        ]
+      },
+      "fixedColours": [
+        "brow",
+        "ink",
+        "ink2",
+        "iris",
+        "lid",
+        "lip",
+        "mouth",
+        "white"
+      ],
+      "distinctRamps": 5,
+      "rampSources": [
+        "BOOT",
+        "hair",
+        "hatCol",
+        "outfit",
+        "shirt",
+        "skin"
+      ],
+      "distinctFixedValues": 7,
+      "rampsPlusFixed": 12,
+      "rampsPlusFixedMaterials": 13
+    },
+    "nan": {
+      "label": "Nan",
+      "paintedMaterials": 24,
+      "materials": [
+        "boot",
+        "bootL",
+        "brow",
+        "collar",
+        "hair",
+        "hairD",
+        "hat",
+        "hatD",
+        "hose",
+        "ink",
+        "ink2",
+        "iris",
+        "lid",
+        "lip",
+        "mouth",
+        "over",
+        "overD",
+        "overL",
+        "shirt",
+        "shirtD",
+        "skin",
+        "skinD",
+        "sole",
+        "white"
+      ],
+      "shadeVariants": {
+        "BOOT": [
+          "boot",
+          "bootL",
+          "hose",
+          "sole"
+        ],
+        "shirt": [
+          "collar",
+          "shirt",
+          "shirtD"
+        ],
+        "hair": [
+          "hair",
+          "hairD"
+        ],
+        "hatCol": [
+          "hat",
+          "hatD"
+        ],
+        "outfit": [
+          "over",
+          "overD",
+          "overL"
+        ],
+        "skin": [
+          "skin",
+          "skinD"
+        ]
+      },
+      "fixedColours": [
+        "brow",
+        "ink",
+        "ink2",
+        "iris",
+        "lid",
+        "lip",
+        "mouth",
+        "white"
+      ],
+      "distinctRamps": 6,
+      "rampSources": [
+        "BOOT",
+        "hair",
+        "hatCol",
+        "outfit",
+        "shirt",
+        "skin"
+      ],
+      "distinctFixedValues": 7,
+      "rampsPlusFixed": 13,
+      "rampsPlusFixedMaterials": 14
+    },
+    "deckboss": {
+      "label": "Deck boss",
+      "paintedMaterials": 22,
+      "materials": [
+        "beard",
+        "belt",
+        "boot",
+        "bootL",
+        "brass",
+        "brow",
+        "buzz",
+        "hat",
+        "hatD",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "over",
+        "overD",
+        "shirt",
+        "shirtD",
+        "skin",
+        "skinD",
+        "sole",
+        "white"
+      ],
+      "shadeVariants": {
+        "hair": [
+          "beard",
+          "buzz"
+        ],
+        "LEATHER": [
+          "belt"
+        ],
+        "BOOT": [
+          "boot",
+          "bootL",
+          "sole"
+        ],
+        "BRASS": [
+          "brass"
+        ],
+        "hatCol": [
+          "hat",
+          "hatD"
+        ],
+        "outfit": [
+          "over",
+          "overD"
+        ],
+        "shirt": [
+          "shirt",
+          "shirtD"
+        ],
+        "skin": [
+          "skin",
+          "skinD"
+        ]
+      },
+      "fixedColours": [
+        "brow",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "white"
+      ],
+      "distinctRamps": 8,
+      "rampSources": [
+        "BOOT",
+        "BRASS",
+        "LEATHER",
+        "hair",
+        "hatCol",
+        "outfit",
+        "shirt",
+        "skin"
+      ],
+      "distinctFixedValues": 7,
+      "rampsPlusFixed": 15,
+      "rampsPlusFixedMaterials": 15
+    },
+    "packer": {
+      "label": "Packer",
+      "paintedMaterials": 25,
+      "materials": [
+        "apron",
+        "apronD",
+        "belt",
+        "boot",
+        "bootL",
+        "brass",
+        "brow",
+        "collar",
+        "hair",
+        "hairD",
+        "hat",
+        "hatD",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "over",
+        "overD",
+        "shirt",
+        "shirtD",
+        "skin",
+        "skinD",
+        "sole",
+        "white"
+      ],
+      "shadeVariants": {
+        "apronCol": [
+          "apron",
+          "apronD"
+        ],
+        "LEATHER": [
+          "belt"
+        ],
+        "BOOT": [
+          "boot",
+          "bootL",
+          "sole"
+        ],
+        "BRASS": [
+          "brass"
+        ],
+        "shirt": [
+          "collar",
+          "shirt",
+          "shirtD"
+        ],
+        "hair": [
+          "hair",
+          "hairD"
+        ],
+        "hatCol": [
+          "hat",
+          "hatD"
+        ],
+        "outfit": [
+          "over",
+          "overD"
+        ],
+        "skin": [
+          "skin",
+          "skinD"
+        ]
+      },
+      "fixedColours": [
+        "brow",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "white"
+      ],
+      "distinctRamps": 9,
+      "rampSources": [
+        "BOOT",
+        "BRASS",
+        "LEATHER",
+        "apronCol",
+        "hair",
+        "hatCol",
+        "outfit",
+        "shirt",
+        "skin"
+      ],
+      "distinctFixedValues": 7,
+      "rampsPlusFixed": 16,
+      "rampsPlusFixedMaterials": 16
+    },
+    "cutter": {
+      "label": "Cutter",
+      "paintedMaterials": 23,
+      "materials": [
+        "apron",
+        "apronD",
+        "belt",
+        "boot",
+        "bootL",
+        "brass",
+        "brow",
+        "collar",
+        "hair",
+        "hairD",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "over",
+        "overD",
+        "shirt",
+        "shirtD",
+        "skin",
+        "skinD",
+        "sole",
+        "white"
+      ],
+      "shadeVariants": {
+        "apronCol": [
+          "apron",
+          "apronD"
+        ],
+        "LEATHER": [
+          "belt"
+        ],
+        "BOOT": [
+          "boot",
+          "bootL",
+          "sole"
+        ],
+        "BRASS": [
+          "brass"
+        ],
+        "shirt": [
+          "collar",
+          "shirt",
+          "shirtD"
+        ],
+        "hair": [
+          "hair",
+          "hairD"
+        ],
+        "outfit": [
+          "over",
+          "overD"
+        ],
+        "skin": [
+          "skin",
+          "skinD"
+        ]
+      },
+      "fixedColours": [
+        "brow",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "white"
+      ],
+      "distinctRamps": 8,
+      "rampSources": [
+        "BOOT",
+        "BRASS",
+        "LEATHER",
+        "apronCol",
+        "hair",
+        "outfit",
+        "shirt",
+        "skin"
+      ],
+      "distinctFixedValues": 7,
+      "rampsPlusFixed": 15,
+      "rampsPlusFixedMaterials": 15
+    },
+    "hand": {
+      "label": "Deckhand",
+      "paintedMaterials": 23,
+      "materials": [
+        "belt",
+        "boot",
+        "bootL",
+        "brass",
+        "brow",
+        "collar",
+        "hair",
+        "hairD",
+        "hat",
+        "hatL",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "over",
+        "overD",
+        "shirt",
+        "shirtD",
+        "skin",
+        "skinD",
+        "sole",
+        "white"
+      ],
+      "shadeVariants": {
+        "LEATHER": [
+          "belt"
+        ],
+        "BOOT": [
+          "boot",
+          "bootL",
+          "sole"
+        ],
+        "BRASS": [
+          "brass"
+        ],
+        "shirt": [
+          "collar",
+          "shirt",
+          "shirtD"
+        ],
+        "hair": [
+          "hair",
+          "hairD"
+        ],
+        "hatCol": [
+          "hat",
+          "hatL"
+        ],
+        "outfit": [
+          "over",
+          "overD"
+        ],
+        "skin": [
+          "skin",
+          "skinD"
+        ]
+      },
+      "fixedColours": [
+        "brow",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "white"
+      ],
+      "distinctRamps": 8,
+      "rampSources": [
+        "BOOT",
+        "BRASS",
+        "LEATHER",
+        "hair",
+        "hatCol",
+        "outfit",
+        "shirt",
+        "skin"
+      ],
+      "distinctFixedValues": 7,
+      "rampsPlusFixed": 15,
+      "rampsPlusFixedMaterials": 15
+    },
+    "boy": {
+      "label": "Wharf boy",
+      "paintedMaterials": 20,
+      "materials": [
+        "boot",
+        "bootL",
+        "brow",
+        "hair",
+        "hairD",
+        "hat",
+        "hatL",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "over",
+        "overD",
+        "shirt",
+        "shirtD",
+        "skin",
+        "skinD",
+        "sole",
+        "white"
+      ],
+      "shadeVariants": {
+        "BOOT": [
+          "boot",
+          "bootL",
+          "sole"
+        ],
+        "hair": [
+          "hair",
+          "hairD"
+        ],
+        "hatCol": [
+          "hat",
+          "hatL"
+        ],
+        "outfit": [
+          "over",
+          "overD"
+        ],
+        "shirt": [
+          "shirt",
+          "shirtD"
+        ],
+        "skin": [
+          "skin",
+          "skinD"
+        ]
+      },
+      "fixedColours": [
+        "brow",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "white"
+      ],
+      "distinctRamps": 5,
+      "rampSources": [
+        "BOOT",
+        "hair",
+        "hatCol",
+        "outfit",
+        "shirt",
+        "skin"
+      ],
+      "distinctFixedValues": 7,
+      "rampsPlusFixed": 12,
+      "rampsPlusFixedMaterials": 12
+    },
+    "girl": {
+      "label": "Wharf girl",
+      "paintedMaterials": 21,
+      "materials": [
+        "belt",
+        "boot",
+        "bootL",
+        "brass",
+        "brow",
+        "collar",
+        "hair",
+        "hairD",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "over",
+        "overD",
+        "shirt",
+        "shirtD",
+        "skin",
+        "skinD",
+        "sole",
+        "white"
+      ],
+      "shadeVariants": {
+        "LEATHER": [
+          "belt"
+        ],
+        "BOOT": [
+          "boot",
+          "bootL",
+          "sole"
+        ],
+        "BRASS": [
+          "brass"
+        ],
+        "shirt": [
+          "collar",
+          "shirt",
+          "shirtD"
+        ],
+        "hair": [
+          "hair",
+          "hairD"
+        ],
+        "outfit": [
+          "over",
+          "overD"
+        ],
+        "skin": [
+          "skin",
+          "skinD"
+        ]
+      },
+      "fixedColours": [
+        "brow",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "white"
+      ],
+      "distinctRamps": 7,
+      "rampSources": [
+        "BOOT",
+        "BRASS",
+        "LEATHER",
+        "hair",
+        "outfit",
+        "shirt",
+        "skin"
+      ],
+      "distinctFixedValues": 7,
+      "rampsPlusFixed": 14,
+      "rampsPlusFixedMaterials": 14
+    }
+  },
+  "presetRange": {
+    "painted": [
+      20,
+      25
+    ]
+  },
+  "creator": {
+    "combinations": 62400,
+    "splitChecked": 610,
+    "maxPainted": 28,
+    "maxPaintedCount": 390,
+    "maxPaintedWitnesses": [
+      {
+        "materials": [
+          "apron",
+          "apronD",
+          "belt",
+          "boot",
+          "bootL",
+          "brass",
+          "brow",
+          "collar",
+          "hair",
+          "hairD",
+          "hat",
+          "hatL",
+          "hose",
+          "ink",
+          "ink2",
+          "iris",
+          "lid",
+          "lip",
+          "mouth",
+          "over",
+          "overD",
+          "shirt",
+          "shirtD",
+          "skin",
+          "skinD",
+          "sole",
+          "stub",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "skirt",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "stubble",
+        "eyeShape": "lidded"
+      },
+      {
+        "materials": [
+          "apron",
+          "apronD",
+          "beard",
+          "belt",
+          "boot",
+          "bootL",
+          "brass",
+          "brow",
+          "collar",
+          "hair",
+          "hairD",
+          "hat",
+          "hatL",
+          "hose",
+          "ink",
+          "ink2",
+          "iris",
+          "lid",
+          "lip",
+          "mouth",
+          "over",
+          "overD",
+          "shirt",
+          "shirtD",
+          "skin",
+          "skinD",
+          "sole",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "skirt",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "moustache",
+        "eyeShape": "lidded"
+      },
+      {
+        "materials": [
+          "apron",
+          "apronD",
+          "beard",
+          "belt",
+          "boot",
+          "bootL",
+          "brass",
+          "brow",
+          "collar",
+          "hair",
+          "hairD",
+          "hat",
+          "hatL",
+          "hose",
+          "ink",
+          "ink2",
+          "iris",
+          "lid",
+          "lip",
+          "mouth",
+          "over",
+          "overD",
+          "shirt",
+          "shirtD",
+          "skin",
+          "skinD",
+          "sole",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "skirt",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "chinstrap",
+        "eyeShape": "lidded"
+      },
+      {
+        "materials": [
+          "apron",
+          "apronD",
+          "beard",
+          "belt",
+          "boot",
+          "bootL",
+          "brass",
+          "brow",
+          "collar",
+          "hair",
+          "hairD",
+          "hat",
+          "hatL",
+          "hose",
+          "ink",
+          "ink2",
+          "iris",
+          "lid",
+          "lip",
+          "mouth",
+          "over",
+          "overD",
+          "shirt",
+          "shirtD",
+          "skin",
+          "skinD",
+          "sole",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "skirt",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "goatee",
+        "eyeShape": "lidded"
+      },
+      {
+        "materials": [
+          "apron",
+          "apronD",
+          "beard",
+          "belt",
+          "boot",
+          "bootL",
+          "brass",
+          "brow",
+          "collar",
+          "hair",
+          "hairD",
+          "hat",
+          "hatL",
+          "hose",
+          "ink",
+          "ink2",
+          "iris",
+          "lid",
+          "lip",
+          "mouth",
+          "over",
+          "overD",
+          "shirt",
+          "shirtD",
+          "skin",
+          "skinD",
+          "sole",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "skirt",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "mutton",
+        "eyeShape": "lidded"
+      },
+      {
+        "materials": [
+          "apron",
+          "apronD",
+          "beard",
+          "belt",
+          "boot",
+          "bootL",
+          "brass",
+          "brow",
+          "collar",
+          "hair",
+          "hairD",
+          "hat",
+          "hatL",
+          "hose",
+          "ink",
+          "ink2",
+          "iris",
+          "lid",
+          "lip",
+          "mouth",
+          "over",
+          "overD",
+          "shirt",
+          "shirtD",
+          "skin",
+          "skinD",
+          "sole",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "skirt",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "full",
+        "eyeShape": "lidded"
+      },
+      {
+        "materials": [
+          "apron",
+          "apronD",
+          "beard",
+          "belt",
+          "boot",
+          "bootL",
+          "brass",
+          "brow",
+          "collar",
+          "hair",
+          "hairD",
+          "hat",
+          "hatL",
+          "hose",
+          "ink",
+          "ink2",
+          "iris",
+          "lid",
+          "lip",
+          "mouth",
+          "over",
+          "overD",
+          "shirt",
+          "shirtD",
+          "skin",
+          "skinD",
+          "sole",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "skirt",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "long",
+        "eyeShape": "lidded"
+      },
+      {
+        "materials": [
+          "apron",
+          "apronD",
+          "belt",
+          "boot",
+          "bootL",
+          "brass",
+          "brow",
+          "collar",
+          "hair",
+          "hairD",
+          "hat",
+          "hatL",
+          "hose",
+          "ink",
+          "ink2",
+          "iris",
+          "lid",
+          "lip",
+          "mouth",
+          "over",
+          "overD",
+          "shirt",
+          "shirtD",
+          "skin",
+          "skinD",
+          "sole",
+          "stub",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "skirt",
+        "hat": "watchcap",
+        "hairStyle": "mop",
+        "beard": "stubble",
+        "eyeShape": "lidded"
+      },
+      {
+        "materials": [
+          "apron",
+          "apronD",
+          "beard",
+          "belt",
+          "boot",
+          "bootL",
+          "brass",
+          "brow",
+          "collar",
+          "hair",
+          "hairD",
+          "hat",
+          "hatL",
+          "hose",
+          "ink",
+          "ink2",
+          "iris",
+          "lid",
+          "lip",
+          "mouth",
+          "over",
+          "overD",
+          "shirt",
+          "shirtD",
+          "skin",
+          "skinD",
+          "sole",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "skirt",
+        "hat": "watchcap",
+        "hairStyle": "mop",
+        "beard": "moustache",
+        "eyeShape": "lidded"
+      },
+      {
+        "materials": [
+          "apron",
+          "apronD",
+          "beard",
+          "belt",
+          "boot",
+          "bootL",
+          "brass",
+          "brow",
+          "collar",
+          "hair",
+          "hairD",
+          "hat",
+          "hatL",
+          "hose",
+          "ink",
+          "ink2",
+          "iris",
+          "lid",
+          "lip",
+          "mouth",
+          "over",
+          "overD",
+          "shirt",
+          "shirtD",
+          "skin",
+          "skinD",
+          "sole",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "skirt",
+        "hat": "watchcap",
+        "hairStyle": "mop",
+        "beard": "chinstrap",
+        "eyeShape": "lidded"
+      },
+      {
+        "materials": [
+          "apron",
+          "apronD",
+          "beard",
+          "belt",
+          "boot",
+          "bootL",
+          "brass",
+          "brow",
+          "collar",
+          "hair",
+          "hairD",
+          "hat",
+          "hatL",
+          "hose",
+          "ink",
+          "ink2",
+          "iris",
+          "lid",
+          "lip",
+          "mouth",
+          "over",
+          "overD",
+          "shirt",
+          "shirtD",
+          "skin",
+          "skinD",
+          "sole",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "skirt",
+        "hat": "watchcap",
+        "hairStyle": "mop",
+        "beard": "goatee",
+        "eyeShape": "lidded"
+      },
+      {
+        "materials": [
+          "apron",
+          "apronD",
+          "beard",
+          "belt",
+          "boot",
+          "bootL",
+          "brass",
+          "brow",
+          "collar",
+          "hair",
+          "hairD",
+          "hat",
+          "hatL",
+          "hose",
+          "ink",
+          "ink2",
+          "iris",
+          "lid",
+          "lip",
+          "mouth",
+          "over",
+          "overD",
+          "shirt",
+          "shirtD",
+          "skin",
+          "skinD",
+          "sole",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "skirt",
+        "hat": "watchcap",
+        "hairStyle": "mop",
+        "beard": "mutton",
+        "eyeShape": "lidded"
+      }
+    ],
+    "paintedHistogram": {
+      "16": 18,
+      "17": 159,
+      "18": 791,
+      "19": 2724,
+      "20": 6371,
+      "21": 9128,
+      "22": 12839,
+      "23": 12394,
+      "24": 8114,
+      "25": 4357,
+      "26": 3257,
+      "27": 1858,
+      "28": 390
+    },
+    "maxRampsPlusFixed": 16,
+    "maxRampsPlusFixedMaterials": 17,
+    "maxRampsPlusFixedCount": 6912,
+    "maxRampsPlusFixedWitnesses": [
+      {
+        "rampSources": [
+          "BOOT",
+          "BRASS",
+          "LEATHER",
+          "apronCol",
+          "hair",
+          "hatCol",
+          "outfit",
+          "shirt",
+          "skin"
+        ],
+        "fixedValues": [
+          "brow",
+          "ink",
+          "ink2",
+          "iris",
+          "skin[0]",
+          "skin[1]",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "trousers",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "none",
+        "eyeShape": "round"
+      },
+      {
+        "rampSources": [
+          "BOOT",
+          "BRASS",
+          "LEATHER",
+          "apronCol",
+          "hair",
+          "hatCol",
+          "outfit",
+          "shirt",
+          "skin"
+        ],
+        "fixedValues": [
+          "brow",
+          "ink",
+          "ink2",
+          "iris",
+          "skin[0]",
+          "skin[1]",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "trousers",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "none",
+        "eyeShape": "narrow"
+      },
+      {
+        "rampSources": [
+          "BOOT",
+          "BRASS",
+          "LEATHER",
+          "apronCol",
+          "hair",
+          "hatCol",
+          "outfit",
+          "shirt",
+          "skin"
+        ],
+        "fixedValues": [
+          "brow",
+          "ink",
+          "ink2",
+          "iris",
+          "skin[0]",
+          "skin[1]",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "trousers",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "none",
+        "eyeShape": "lidded"
+      },
+      {
+        "rampSources": [
+          "BOOT",
+          "BRASS",
+          "LEATHER",
+          "apronCol",
+          "hair",
+          "hatCol",
+          "outfit",
+          "shirt",
+          "skin"
+        ],
+        "fixedValues": [
+          "brow",
+          "ink",
+          "ink2",
+          "iris",
+          "skin[0]",
+          "skin[1]",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "trousers",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "stubble",
+        "eyeShape": "round"
+      },
+      {
+        "rampSources": [
+          "BOOT",
+          "BRASS",
+          "LEATHER",
+          "apronCol",
+          "hair",
+          "hatCol",
+          "outfit",
+          "shirt",
+          "skin"
+        ],
+        "fixedValues": [
+          "brow",
+          "ink",
+          "ink2",
+          "iris",
+          "skin[0]",
+          "skin[1]",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "trousers",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "stubble",
+        "eyeShape": "narrow"
+      },
+      {
+        "rampSources": [
+          "BOOT",
+          "BRASS",
+          "LEATHER",
+          "apronCol",
+          "hair",
+          "hatCol",
+          "outfit",
+          "shirt",
+          "skin"
+        ],
+        "fixedValues": [
+          "brow",
+          "ink",
+          "ink2",
+          "iris",
+          "skin[0]",
+          "skin[1]",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "trousers",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "stubble",
+        "eyeShape": "lidded"
+      },
+      {
+        "rampSources": [
+          "BOOT",
+          "BRASS",
+          "LEATHER",
+          "apronCol",
+          "hair",
+          "hatCol",
+          "outfit",
+          "shirt",
+          "skin"
+        ],
+        "fixedValues": [
+          "brow",
+          "ink",
+          "ink2",
+          "iris",
+          "skin[0]",
+          "skin[1]",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "trousers",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "moustache",
+        "eyeShape": "round"
+      },
+      {
+        "rampSources": [
+          "BOOT",
+          "BRASS",
+          "LEATHER",
+          "apronCol",
+          "hair",
+          "hatCol",
+          "outfit",
+          "shirt",
+          "skin"
+        ],
+        "fixedValues": [
+          "brow",
+          "ink",
+          "ink2",
+          "iris",
+          "skin[0]",
+          "skin[1]",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "trousers",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "moustache",
+        "eyeShape": "narrow"
+      },
+      {
+        "rampSources": [
+          "BOOT",
+          "BRASS",
+          "LEATHER",
+          "apronCol",
+          "hair",
+          "hatCol",
+          "outfit",
+          "shirt",
+          "skin"
+        ],
+        "fixedValues": [
+          "brow",
+          "ink",
+          "ink2",
+          "iris",
+          "skin[0]",
+          "skin[1]",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "trousers",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "moustache",
+        "eyeShape": "lidded"
+      },
+      {
+        "rampSources": [
+          "BOOT",
+          "BRASS",
+          "LEATHER",
+          "apronCol",
+          "hair",
+          "hatCol",
+          "outfit",
+          "shirt",
+          "skin"
+        ],
+        "fixedValues": [
+          "brow",
+          "ink",
+          "ink2",
+          "iris",
+          "skin[0]",
+          "skin[1]",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "trousers",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "chinstrap",
+        "eyeShape": "round"
+      },
+      {
+        "rampSources": [
+          "BOOT",
+          "BRASS",
+          "LEATHER",
+          "apronCol",
+          "hair",
+          "hatCol",
+          "outfit",
+          "shirt",
+          "skin"
+        ],
+        "fixedValues": [
+          "brow",
+          "ink",
+          "ink2",
+          "iris",
+          "skin[0]",
+          "skin[1]",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "trousers",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "chinstrap",
+        "eyeShape": "narrow"
+      },
+      {
+        "rampSources": [
+          "BOOT",
+          "BRASS",
+          "LEATHER",
+          "apronCol",
+          "hair",
+          "hatCol",
+          "outfit",
+          "shirt",
+          "skin"
+        ],
+        "fixedValues": [
+          "brow",
+          "ink",
+          "ink2",
+          "iris",
+          "skin[0]",
+          "skin[1]",
+          "white"
+        ],
+        "garment": "apron",
+        "bottom": "trousers",
+        "hat": "watchcap",
+        "hairStyle": "crop",
+        "beard": "chinstrap",
+        "eyeShape": "lidded"
+      }
+    ],
+    "rampsPlusFixedHistogram": {
+      "11": 192,
+      "12": 4416,
+      "13": 26112,
+      "14": 9984,
+      "15": 14784,
+      "16": 6912
+    }
+  }
+}

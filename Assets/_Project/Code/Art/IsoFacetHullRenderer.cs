@@ -930,13 +930,28 @@ namespace HiddenHarbours.Art
                     _overlayChild.localPosition = window;
             }
 
+            int activeDeckSlots = UpdateDeckSlots();
             _props ??= new MaterialPropertyBlock();
+            Vector3 p = transform.position;
+            var origin = new Vector4(p.x, p.y, 0f, 0f);
+            PublishDrawProperties(_meshRenderer, origin, depthShear, activeDeckSlots);
+            if (_leafRenderer != null)
+                PublishDrawProperties(_leafRenderer, origin, depthShear, activeDeckSlots);
+            PublishDrawProperties(_overlayRenderer, origin, depthShear, activeDeckSlots);
+        }
+
+        private void PublishDrawProperties(Renderer target, Vector4 origin, Vector4 depthShear,
+                                           int activeDeckSlots)
+        {
+            // Each renderer owns its other overrides (notably the overlay's reflection pivot and
+            // lit flag). Get replaces the scratch block, including clearing it for a bare renderer,
+            // so none of those values can leak from the mesh to the leaf or overlay next frame.
+            target.GetPropertyBlock(_props);
             // The hull ORIGIN the dither grid is phased against is this root — NOT the heaved
             // child: the rig subtracts heave from screen y AFTER projecting, so its dither stays
             // indexed by the final screen pixel, which the world-derived cell coordinate
             // reproduces only when the origin excludes the heave offset.
-            Vector3 p = transform.position;
-            _props.SetVector(IsoFacetShaderIds.HullOrigin, new Vector4(p.x, p.y, 0f, 0f));
+            _props.SetVector(IsoFacetShaderIds.HullOrigin, origin);
             _props.SetVector(IsoFacetShaderIds.HullShear, depthShear);
             _props.SetFloat(IsoFacetShaderIds.HullId, _hullId / 255f);
             _props.SetFloat(IsoFacetShaderIds.HullIdFore, _foreHullId / 255f);
@@ -946,10 +961,9 @@ namespace HiddenHarbours.Art
             // her sister. Inert while HH_LEVEL_GATE is off: nothing reads it.
             _props.SetFloat(IsoFacetShaderIds.LevelShown, _cutaway.Level);
             _props.SetFloat(IsoFacetShaderIds.LevelLid, _cutaway.Lid);
-            PublishDeckSlots();
-            _meshRenderer.SetPropertyBlock(_props);
-            if (_leafRenderer != null) _leafRenderer.SetPropertyBlock(_props);
-            _overlayRenderer.SetPropertyBlock(_props);
+            _props.SetVectorArray(IsoFacetShaderIds.DeckOccupant, _deckSlotVectors);
+            _props.SetFloat(IsoFacetShaderIds.DeckOccupantCount, activeDeckSlots);
+            target.SetPropertyBlock(_props);
         }
 
         /// <summary>
@@ -993,7 +1007,7 @@ namespace HiddenHarbours.Art
         /// aboard, which is nearly all of them — and the slot loop never runs at all, leaving the
         /// facet alpha byte-identical to before any of this existed.</para>
         /// </summary>
-        private void PublishDeckSlots()
+        private int UpdateDeckSlots()
         {
             int active = 0;
             bool live = _foreHullId != 0 && _meshChild != null;
@@ -1011,8 +1025,7 @@ namespace HiddenHarbours.Art
                     _deckSlotVectors[i] = Vector4.zero;
                 }
             }
-            _props.SetVectorArray(IsoFacetShaderIds.DeckOccupant, _deckSlotVectors);
-            _props.SetFloat(IsoFacetShaderIds.DeckOccupantCount, active);
+            return active;
         }
 
         /// <summary>One slot: who holds it, where they stand, and the depth that was published for

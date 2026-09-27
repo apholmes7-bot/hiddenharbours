@@ -197,13 +197,23 @@ namespace HiddenHarbours.Art.Editor
         /// <c>&lt;face&gt;_unlit.png</c> to <c>&lt;face&gt;_index.png</c> with
         /// <c>AssetDatabase.MoveAsset</c> — which keeps the GUID — before writing the index bytes into it.
         /// Every serialised reference then resolves to the index with no scene change; a v10 bake moves
-        /// it back. Renaming the band field itself is PR 3.</para>
+        /// it back. The band field keeps its name (<c>CliffFaceBand.Unlit</c>, owner 09-24): renaming it
+        /// would rewrite every band line in both scenes and buy nothing — see
+        /// <see cref="ColourChannel"/>.</para>
         /// </summary>
         public const string IndexChannel = "_index";
 
         /// <summary>The px bake's three wall channels — <see cref="LiveChannels"/> with the colour slot
         /// carrying <see cref="IndexChannel"/>.</summary>
         public static readonly string[] PxLiveChannels = { IndexChannel, "_normal", "_mask" };
+
+        /// <summary>
+        /// The band's colour slot (<c>CliffFaceBand.Unlit</c>, kept by name): <see cref="UnlitChannel"/>
+        /// in the v10 look, <see cref="IndexChannel"/> in px. The one place the choice is made — the bake,
+        /// the sentinel and both region wall builders ask here, so a builder can never wire the colour
+        /// slot by the other look's name.
+        /// </summary>
+        public static string ColourChannel(bool px) => px ? IndexChannel : UnlitChannel;
 
         /// <summary>Whether a channel imports as sRGB. Albedo is colour; the normal, the mask, the
         /// displacement profile and the px index are DATA and must import linear — the first three or

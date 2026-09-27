@@ -1,0 +1,27 @@
+export-builds — the committed build files, from the rig
+rig 02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144  poses 42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07
+
+  identical builds/fisher.v9.json  (1996964 bytes)
+  identical gameplay/characterIsoRig9.fisher.gameplay.json  (582067 bytes)
+  identical builds/ginny.v9.json  (2051115 bytes)
+  identical gameplay/characterIsoRig9.ginny.gameplay.json  (584414 bytes)
+  identical builds/skipper.v9.json  (2078825 bytes)
+  identical gameplay/characterIsoRig9.skipper.gameplay.json  (583851 bytes)
+  identical builds/nan.v9.json  (2078177 bytes)
+  identical gameplay/characterIsoRig9.nan.gameplay.json  (585629 bytes)
+  identical builds/deckboss.v9.json  (2033346 bytes)
+  identical gameplay/characterIsoRig9.deckboss.gameplay.json  (582119 bytes)
+  identical builds/packer.v9.json  (2035998 bytes)
+  identical gameplay/characterIsoRig9.packer.gameplay.json  (584161 bytes)
+  identical builds/cutter.v9.json  (2066653 bytes)
+  identical gameplay/characterIsoRig9.cutter.gameplay.json  (587366 bytes)
+  identical builds/hand.v9.json  (2055316 bytes)
+  identical gameplay/characterIsoRig9.hand.gameplay.json  (584638 bytes)
+  identical builds/boy.v9.json  (2045075 bytes)
+  identical gameplay/characterIsoRig9.boy.gameplay.json  (590387 bytes)
+  identical builds/girl.v9.json  (2041527 bytes)
+  identical gameplay/characterIsoRig9.girl.gameplay.json  (591175 bytes)
+  identical builds/rock.v9.json  (100235 bytes)
+  identical builds/presets.json  (20667 bytes)
+
+OK — no problems.

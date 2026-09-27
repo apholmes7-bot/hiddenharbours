@@ -596,6 +596,12 @@ roster of 44 cannot promise. **Q5 stays the owner's, and this is evidence for it
 | **P4** | **Different routes** — `FishingGroundDef` + `RouteAssignment`, joined to the ambient fleet | P0, and the three M2 hulls if they have landed | the boats finally leave — **ten ways at the target** |
 | **P5** | **Processing** — the four cannery hands | ~~the cannery site the owner owes~~ ✅ **SITED** · now: the building standing on St Peters, + `municipal-infrastructure.md` **S9** | ⭐ **no longer blocked on a ruling.** It is blocked on *work* now, and on a different region's work: a building placed in the harbour cove and one lane leaf to reach it |
 
+> **2026-09-26 — cross-reference for P4 ([`world-map-plan.md`](world-map-plan.md) §8.4). Capture
+> only.** The owner: *"Boats will move between areas on their daily fishing. They move traps throughout
+> the season as lobsters migrate etc"* — so a route is not bound to one area's water, and a boat's
+> trap grounds move through the season. The same day (00:44Z), for the St Peters fleet in #886: *"They
+> should fish everywherr accessible."* #886 itself stays in St Peters' water.
+
 ⭐ **P0 and P2 are the two that make the ruling read.** P0 needs nothing that is not already shipped.
 
 ⚠️ **P5 moved regions on 2026-08-20 and the phasing table is the place that is easiest to miss it.**

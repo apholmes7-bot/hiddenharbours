@@ -24,6 +24,23 @@ namespace HiddenHarbours.Tests.EditMode
     {
         private static WakeGradeConfig Cfg() => WakeGradeConfig.Default;
 
+        [Test]
+        public void DriveStrength_KeepsRespondingAboveTheOldOnsetPlateau_AndStopsAtRest()
+        {
+            var c = Cfg();
+            Assert.AreEqual(0f, WakeGrading.DriveStrength(0f, in c));
+            float previous = 0f;
+            foreach (float speed in new[] { 0.5f, 2f, 6f, 12f, 24f })
+            {
+                float value = WakeGrading.DriveStrength(speed, in c);
+                Assert.That(value, Is.GreaterThan(previous).And.LessThan(1f), $"speed {speed}");
+                previous = value;
+            }
+            float atCruise = WakeGrading.DriveStrength(6f, in c);
+            c.SpeedRefMax *= 2f;
+            Assert.Less(WakeGrading.DriveStrength(6f, in c), atCruise, "The owner's speed reference must tune the response");
+        }
+
         // ==== Normalize01 ================================================================================
 
         [Test]

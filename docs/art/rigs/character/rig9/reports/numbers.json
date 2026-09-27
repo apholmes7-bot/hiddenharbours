@@ -1,0 +1,1307 @@
+{
+  "tool": "check-numbers",
+  "rig": "02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144",
+  "poses": "42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07",
+  "ok": true,
+  "problems": [],
+  "families": {
+    "walk": [
+      "walk",
+      "walk+buckets",
+      "walk+tray",
+      "walk+pot",
+      "helm_walk",
+      "oars_row"
+    ],
+    "run": [
+      "run",
+      "run+buckets",
+      "run+tray"
+    ],
+    "dig": [
+      "dig"
+    ],
+    "fish": [
+      "hold",
+      "cast",
+      "castBack",
+      "castRelease",
+      "bite",
+      "strike",
+      "reel",
+      "land"
+    ],
+    "swim": [
+      "swim",
+      "tread"
+    ],
+    "sleep": [
+      "sleep"
+    ],
+    "sit/drive": [
+      "drive"
+    ],
+    "ride": [
+      "astride",
+      "astrideStand"
+    ],
+    "mount": [
+      "mountUp",
+      "mountDown",
+      "mountCab",
+      "mountCabDown"
+    ]
+  },
+  "notes": {
+    "vertices": "unwelded: one per face corner (flat shading keeps faces unwelded); uniqueVertices welds equal position + equal skin weights",
+    "bones": "28 = root + 17 deform + 10 sockets, the same in every build",
+    "sit": "drive is the only seated clip; there is no separate sit",
+    "reach": "worst limb shortfall at the default world contracts, mm; <= 5 makes its targets",
+    "fitted": "ride and mount also at CONTRACT.saddleFit, the saddle they are gated at"
+  },
+  "presets": {
+    "fisher": {
+      "label": "Fisher",
+      "paintedMaterials": 21,
+      "distinctRamps": 6,
+      "fixedColours": 7,
+      "vertices": 2076,
+      "uniqueVertices": 792,
+      "faces": 508,
+      "tris": 1060,
+      "bones": 28,
+      "deformBones": 17,
+      "socketBones": 10,
+      "clips": 53,
+      "frames": 438,
+      "crown_m": 1.537,
+      "families": {
+        "walk": {
+          "clips": [
+            "walk",
+            "walk+buckets",
+            "walk+tray",
+            "walk+pot",
+            "helm_walk",
+            "oars_row"
+          ],
+          "frames": 48,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 0.727
+        },
+        "run": {
+          "clips": [
+            "run",
+            "run+buckets",
+            "run+tray"
+          ],
+          "frames": 18,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 2
+        },
+        "dig": {
+          "clips": [
+            "dig"
+          ],
+          "frames": 10,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "fish": {
+          "clips": [
+            "hold",
+            "cast",
+            "castBack",
+            "castRelease",
+            "bite",
+            "strike",
+            "reel",
+            "land"
+          ],
+          "frames": 66,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "swim": {
+          "clips": [
+            "swim",
+            "tread"
+          ],
+          "frames": 14,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sleep": {
+          "clips": [
+            "sleep"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sit/drive": {
+          "clips": [
+            "drive"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "sit": "drive"
+        },
+        "ride": {
+          "clips": [
+            "astride",
+            "astrideStand"
+          ],
+          "frames": 14,
+          "reach_mm": 59,
+          "makesTargets": false,
+          "worstAt": "astrideStand f1 footL",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        },
+        "mount": {
+          "clips": [
+            "mountUp",
+            "mountDown",
+            "mountCab",
+            "mountCabDown"
+          ],
+          "frames": 64,
+          "reach_mm": 125,
+          "makesTargets": false,
+          "worstAt": "mountUp f8 footR",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        }
+      }
+    },
+    "ginny": {
+      "label": "Ginny",
+      "paintedMaterials": 21,
+      "distinctRamps": 7,
+      "fixedColours": 7,
+      "vertices": 2071,
+      "uniqueVertices": 780,
+      "faces": 503,
+      "tris": 1065,
+      "bones": 28,
+      "deformBones": 17,
+      "socketBones": 10,
+      "clips": 53,
+      "frames": 438,
+      "crown_m": 1.505,
+      "families": {
+        "walk": {
+          "clips": [
+            "walk",
+            "walk+buckets",
+            "walk+tray",
+            "walk+pot",
+            "helm_walk",
+            "oars_row"
+          ],
+          "frames": 48,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 0.705
+        },
+        "run": {
+          "clips": [
+            "run",
+            "run+buckets",
+            "run+tray"
+          ],
+          "frames": 18,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 1.94
+        },
+        "dig": {
+          "clips": [
+            "dig"
+          ],
+          "frames": 10,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "fish": {
+          "clips": [
+            "hold",
+            "cast",
+            "castBack",
+            "castRelease",
+            "bite",
+            "strike",
+            "reel",
+            "land"
+          ],
+          "frames": 66,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "swim": {
+          "clips": [
+            "swim",
+            "tread"
+          ],
+          "frames": 14,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sleep": {
+          "clips": [
+            "sleep"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sit/drive": {
+          "clips": [
+            "drive"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "sit": "drive"
+        },
+        "ride": {
+          "clips": [
+            "astride",
+            "astrideStand"
+          ],
+          "frames": 14,
+          "reach_mm": 76,
+          "makesTargets": false,
+          "worstAt": "astrideStand f1 footL",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        },
+        "mount": {
+          "clips": [
+            "mountUp",
+            "mountDown",
+            "mountCab",
+            "mountCabDown"
+          ],
+          "frames": 64,
+          "reach_mm": 154,
+          "makesTargets": false,
+          "worstAt": "mountUp f8 footR",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        }
+      }
+    },
+    "skipper": {
+      "label": "Skipper",
+      "paintedMaterials": 21,
+      "distinctRamps": 5,
+      "fixedColours": 8,
+      "vertices": 2148,
+      "uniqueVertices": 745,
+      "faces": 538,
+      "tris": 1072,
+      "bones": 28,
+      "deformBones": 17,
+      "socketBones": 10,
+      "clips": 53,
+      "frames": 438,
+      "crown_m": 1.523,
+      "families": {
+        "walk": {
+          "clips": [
+            "walk",
+            "walk+buckets",
+            "walk+tray",
+            "walk+pot",
+            "helm_walk",
+            "oars_row"
+          ],
+          "frames": 48,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 0.721
+        },
+        "run": {
+          "clips": [
+            "run",
+            "run+buckets",
+            "run+tray"
+          ],
+          "frames": 18,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 1.983
+        },
+        "dig": {
+          "clips": [
+            "dig"
+          ],
+          "frames": 10,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "fish": {
+          "clips": [
+            "hold",
+            "cast",
+            "castBack",
+            "castRelease",
+            "bite",
+            "strike",
+            "reel",
+            "land"
+          ],
+          "frames": 66,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "swim": {
+          "clips": [
+            "swim",
+            "tread"
+          ],
+          "frames": 14,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sleep": {
+          "clips": [
+            "sleep"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sit/drive": {
+          "clips": [
+            "drive"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "sit": "drive"
+        },
+        "ride": {
+          "clips": [
+            "astride",
+            "astrideStand"
+          ],
+          "frames": 14,
+          "reach_mm": 63,
+          "makesTargets": false,
+          "worstAt": "astrideStand f1 footL",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        },
+        "mount": {
+          "clips": [
+            "mountUp",
+            "mountDown",
+            "mountCab",
+            "mountCabDown"
+          ],
+          "frames": 64,
+          "reach_mm": 132,
+          "makesTargets": false,
+          "worstAt": "mountUp f8 footR",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        }
+      }
+    },
+    "nan": {
+      "label": "Nan",
+      "paintedMaterials": 24,
+      "distinctRamps": 6,
+      "fixedColours": 8,
+      "vertices": 2084,
+      "uniqueVertices": 720,
+      "faces": 521,
+      "tris": 1042,
+      "bones": 28,
+      "deformBones": 17,
+      "socketBones": 10,
+      "clips": 53,
+      "frames": 438,
+      "crown_m": 1.392,
+      "families": {
+        "walk": {
+          "clips": [
+            "walk",
+            "walk+buckets",
+            "walk+tray",
+            "walk+pot",
+            "helm_walk",
+            "oars_row"
+          ],
+          "frames": 48,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 0.628
+        },
+        "run": {
+          "clips": [
+            "run",
+            "run+buckets",
+            "run+tray"
+          ],
+          "frames": 18,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 1.727
+        },
+        "dig": {
+          "clips": [
+            "dig"
+          ],
+          "frames": 10,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "fish": {
+          "clips": [
+            "hold",
+            "cast",
+            "castBack",
+            "castRelease",
+            "bite",
+            "strike",
+            "reel",
+            "land"
+          ],
+          "frames": 66,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "swim": {
+          "clips": [
+            "swim",
+            "tread"
+          ],
+          "frames": 14,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sleep": {
+          "clips": [
+            "sleep"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sit/drive": {
+          "clips": [
+            "drive"
+          ],
+          "frames": 6,
+          "reach_mm": 36,
+          "makesTargets": false,
+          "worstAt": "drive f4 footR",
+          "sit": "drive"
+        },
+        "ride": {
+          "clips": [
+            "astride",
+            "astrideStand"
+          ],
+          "frames": 14,
+          "reach_mm": 129,
+          "makesTargets": false,
+          "worstAt": "astrideStand f1 footL",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        },
+        "mount": {
+          "clips": [
+            "mountUp",
+            "mountDown",
+            "mountCab",
+            "mountCabDown"
+          ],
+          "frames": 64,
+          "reach_mm": 254,
+          "makesTargets": false,
+          "worstAt": "mountUp f8 footR",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        }
+      }
+    },
+    "deckboss": {
+      "label": "Deck boss",
+      "paintedMaterials": 22,
+      "distinctRamps": 8,
+      "fixedColours": 7,
+      "vertices": 1744,
+      "uniqueVertices": 645,
+      "faces": 425,
+      "tris": 894,
+      "bones": 28,
+      "deformBones": 17,
+      "socketBones": 10,
+      "clips": 53,
+      "frames": 438,
+      "crown_m": 1.629,
+      "families": {
+        "walk": {
+          "clips": [
+            "walk",
+            "walk+buckets",
+            "walk+tray",
+            "walk+pot",
+            "helm_walk",
+            "oars_row"
+          ],
+          "frames": 48,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 0.8
+        },
+        "run": {
+          "clips": [
+            "run",
+            "run+buckets",
+            "run+tray"
+          ],
+          "frames": 18,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 2.202
+        },
+        "dig": {
+          "clips": [
+            "dig"
+          ],
+          "frames": 10,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "fish": {
+          "clips": [
+            "hold",
+            "cast",
+            "castBack",
+            "castRelease",
+            "bite",
+            "strike",
+            "reel",
+            "land"
+          ],
+          "frames": 66,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "swim": {
+          "clips": [
+            "swim",
+            "tread"
+          ],
+          "frames": 14,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sleep": {
+          "clips": [
+            "sleep"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sit/drive": {
+          "clips": [
+            "drive"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "sit": "drive"
+        },
+        "ride": {
+          "clips": [
+            "astride",
+            "astrideStand"
+          ],
+          "frames": 14,
+          "reach_mm": 3,
+          "makesTargets": true,
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        },
+        "mount": {
+          "clips": [
+            "mountUp",
+            "mountDown",
+            "mountCab",
+            "mountCabDown"
+          ],
+          "frames": 64,
+          "reach_mm": 43,
+          "makesTargets": false,
+          "worstAt": "mountUp f14 footL",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        }
+      }
+    },
+    "packer": {
+      "label": "Packer",
+      "paintedMaterials": 25,
+      "distinctRamps": 9,
+      "fixedColours": 7,
+      "vertices": 2089,
+      "uniqueVertices": 771,
+      "faces": 517,
+      "tris": 1055,
+      "bones": 28,
+      "deformBones": 17,
+      "socketBones": 10,
+      "clips": 53,
+      "frames": 438,
+      "crown_m": 1.483,
+      "families": {
+        "walk": {
+          "clips": [
+            "walk",
+            "walk+buckets",
+            "walk+tray",
+            "walk+pot",
+            "helm_walk",
+            "oars_row"
+          ],
+          "frames": 48,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 0.694
+        },
+        "run": {
+          "clips": [
+            "run",
+            "run+buckets",
+            "run+tray"
+          ],
+          "frames": 18,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 1.91
+        },
+        "dig": {
+          "clips": [
+            "dig"
+          ],
+          "frames": 10,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "fish": {
+          "clips": [
+            "hold",
+            "cast",
+            "castBack",
+            "castRelease",
+            "bite",
+            "strike",
+            "reel",
+            "land"
+          ],
+          "frames": 66,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "swim": {
+          "clips": [
+            "swim",
+            "tread"
+          ],
+          "frames": 14,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sleep": {
+          "clips": [
+            "sleep"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sit/drive": {
+          "clips": [
+            "drive"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "sit": "drive"
+        },
+        "ride": {
+          "clips": [
+            "astride",
+            "astrideStand"
+          ],
+          "frames": 14,
+          "reach_mm": 80,
+          "makesTargets": false,
+          "worstAt": "astrideStand f1 footL",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        },
+        "mount": {
+          "clips": [
+            "mountUp",
+            "mountDown",
+            "mountCab",
+            "mountCabDown"
+          ],
+          "frames": 64,
+          "reach_mm": 164,
+          "makesTargets": false,
+          "worstAt": "mountUp f8 footR",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        }
+      }
+    },
+    "cutter": {
+      "label": "Cutter",
+      "paintedMaterials": 23,
+      "distinctRamps": 8,
+      "fixedColours": 7,
+      "vertices": 2012,
+      "uniqueVertices": 738,
+      "faces": 492,
+      "tris": 1028,
+      "bones": 28,
+      "deformBones": 17,
+      "socketBones": 10,
+      "clips": 53,
+      "frames": 438,
+      "crown_m": 1.349,
+      "families": {
+        "walk": {
+          "clips": [
+            "walk",
+            "walk+buckets",
+            "walk+tray",
+            "walk+pot",
+            "helm_walk",
+            "oars_row"
+          ],
+          "frames": 48,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 0.609
+        },
+        "run": {
+          "clips": [
+            "run",
+            "run+buckets",
+            "run+tray"
+          ],
+          "frames": 18,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 1.677
+        },
+        "dig": {
+          "clips": [
+            "dig"
+          ],
+          "frames": 10,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "fish": {
+          "clips": [
+            "hold",
+            "cast",
+            "castBack",
+            "castRelease",
+            "bite",
+            "strike",
+            "reel",
+            "land"
+          ],
+          "frames": 66,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "swim": {
+          "clips": [
+            "swim",
+            "tread"
+          ],
+          "frames": 14,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sleep": {
+          "clips": [
+            "sleep"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sit/drive": {
+          "clips": [
+            "drive"
+          ],
+          "frames": 6,
+          "reach_mm": 52,
+          "makesTargets": false,
+          "worstAt": "drive f4 footR",
+          "sit": "drive"
+        },
+        "ride": {
+          "clips": [
+            "astride",
+            "astrideStand"
+          ],
+          "frames": 14,
+          "reach_mm": 148,
+          "makesTargets": false,
+          "worstAt": "astrideStand f1 footL",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        },
+        "mount": {
+          "clips": [
+            "mountUp",
+            "mountDown",
+            "mountCab",
+            "mountCabDown"
+          ],
+          "frames": 64,
+          "reach_mm": 283,
+          "makesTargets": false,
+          "worstAt": "mountUp f8 footR",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        }
+      }
+    },
+    "hand": {
+      "label": "Deckhand",
+      "paintedMaterials": 23,
+      "distinctRamps": 8,
+      "fixedColours": 7,
+      "vertices": 1931,
+      "uniqueVertices": 718,
+      "faces": 473,
+      "tris": 985,
+      "bones": 28,
+      "deformBones": 17,
+      "socketBones": 10,
+      "clips": 53,
+      "frames": 438,
+      "crown_m": 1.479,
+      "families": {
+        "walk": {
+          "clips": [
+            "walk",
+            "walk+buckets",
+            "walk+tray",
+            "walk+pot",
+            "helm_walk",
+            "oars_row"
+          ],
+          "frames": 48,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 0.694
+        },
+        "run": {
+          "clips": [
+            "run",
+            "run+buckets",
+            "run+tray"
+          ],
+          "frames": 18,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 1.909
+        },
+        "dig": {
+          "clips": [
+            "dig"
+          ],
+          "frames": 10,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "fish": {
+          "clips": [
+            "hold",
+            "cast",
+            "castBack",
+            "castRelease",
+            "bite",
+            "strike",
+            "reel",
+            "land"
+          ],
+          "frames": 66,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "swim": {
+          "clips": [
+            "swim",
+            "tread"
+          ],
+          "frames": 14,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sleep": {
+          "clips": [
+            "sleep"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sit/drive": {
+          "clips": [
+            "drive"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "sit": "drive"
+        },
+        "ride": {
+          "clips": [
+            "astride",
+            "astrideStand"
+          ],
+          "frames": 14,
+          "reach_mm": 88,
+          "makesTargets": false,
+          "worstAt": "astrideStand f1 footL",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        },
+        "mount": {
+          "clips": [
+            "mountUp",
+            "mountDown",
+            "mountCab",
+            "mountCabDown"
+          ],
+          "frames": 64,
+          "reach_mm": 172,
+          "makesTargets": false,
+          "worstAt": "mountUp f8 footR",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        }
+      }
+    },
+    "boy": {
+      "label": "Wharf boy",
+      "paintedMaterials": 20,
+      "distinctRamps": 5,
+      "fixedColours": 7,
+      "vertices": 2058,
+      "uniqueVertices": 755,
+      "faces": 513,
+      "tris": 1032,
+      "bones": 28,
+      "deformBones": 17,
+      "socketBones": 10,
+      "clips": 53,
+      "frames": 438,
+      "crown_m": 1.171,
+      "families": {
+        "walk": {
+          "clips": [
+            "walk",
+            "walk+buckets",
+            "walk+tray",
+            "walk+pot",
+            "helm_walk",
+            "oars_row"
+          ],
+          "frames": 48,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 0.452
+        },
+        "run": {
+          "clips": [
+            "run",
+            "run+buckets",
+            "run+tray"
+          ],
+          "frames": 18,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 1.243
+        },
+        "dig": {
+          "clips": [
+            "dig"
+          ],
+          "frames": 10,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "fish": {
+          "clips": [
+            "hold",
+            "cast",
+            "castBack",
+            "castRelease",
+            "bite",
+            "strike",
+            "reel",
+            "land"
+          ],
+          "frames": 66,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "swim": {
+          "clips": [
+            "swim",
+            "tread"
+          ],
+          "frames": 14,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sleep": {
+          "clips": [
+            "sleep"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sit/drive": {
+          "clips": [
+            "drive"
+          ],
+          "frames": 6,
+          "reach_mm": 163,
+          "makesTargets": false,
+          "worstAt": "drive f4 footR",
+          "sit": "drive"
+        },
+        "ride": {
+          "clips": [
+            "astride",
+            "astrideStand"
+          ],
+          "frames": 14,
+          "reach_mm": 261,
+          "makesTargets": false,
+          "worstAt": "astrideStand f1 footL",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        },
+        "mount": {
+          "clips": [
+            "mountUp",
+            "mountDown",
+            "mountCab",
+            "mountCabDown"
+          ],
+          "frames": 64,
+          "reach_mm": 499,
+          "makesTargets": false,
+          "worstAt": "mountUp f8 footR",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        }
+      }
+    },
+    "girl": {
+      "label": "Wharf girl",
+      "paintedMaterials": 21,
+      "distinctRamps": 7,
+      "fixedColours": 7,
+      "vertices": 1902,
+      "uniqueVertices": 699,
+      "faces": 466,
+      "tris": 970,
+      "bones": 28,
+      "deformBones": 17,
+      "socketBones": 10,
+      "clips": 53,
+      "frames": 438,
+      "crown_m": 1.168,
+      "families": {
+        "walk": {
+          "clips": [
+            "walk",
+            "walk+buckets",
+            "walk+tray",
+            "walk+pot",
+            "helm_walk",
+            "oars_row"
+          ],
+          "frames": 48,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 0.445
+        },
+        "run": {
+          "clips": [
+            "run",
+            "run+buckets",
+            "run+tray"
+          ],
+          "frames": 18,
+          "reach_mm": 0,
+          "makesTargets": true,
+          "speed_mps": 1.225
+        },
+        "dig": {
+          "clips": [
+            "dig"
+          ],
+          "frames": 10,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "fish": {
+          "clips": [
+            "hold",
+            "cast",
+            "castBack",
+            "castRelease",
+            "bite",
+            "strike",
+            "reel",
+            "land"
+          ],
+          "frames": 66,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "swim": {
+          "clips": [
+            "swim",
+            "tread"
+          ],
+          "frames": 14,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sleep": {
+          "clips": [
+            "sleep"
+          ],
+          "frames": 6,
+          "reach_mm": 0,
+          "makesTargets": true
+        },
+        "sit/drive": {
+          "clips": [
+            "drive"
+          ],
+          "frames": 6,
+          "reach_mm": 169,
+          "makesTargets": false,
+          "worstAt": "drive f4 footR",
+          "sit": "drive"
+        },
+        "ride": {
+          "clips": [
+            "astride",
+            "astrideStand"
+          ],
+          "frames": 14,
+          "reach_mm": 267,
+          "makesTargets": false,
+          "worstAt": "astrideStand f1 footL",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        },
+        "mount": {
+          "clips": [
+            "mountUp",
+            "mountDown",
+            "mountCab",
+            "mountCabDown"
+          ],
+          "frames": 64,
+          "reach_mm": 509,
+          "makesTargets": false,
+          "worstAt": "mountUp f8 footR",
+          "fitted": {
+            "saddle": "the default scaled to 0.4, idle spot 0.6 m",
+            "reach_mm": 0,
+            "makesTargets": true
+          }
+        }
+      }
+    }
+  }
+}

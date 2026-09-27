@@ -1,0 +1,2438 @@
+{
+ "schema": "hidden-harbours/character-renders@1",
+ "rig": "characterIsoRig9.js",
+ "exportSymbol": "CharacterIso9",
+ "derivedFromRigSha256": "02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144",
+ "posesDerivedFromRigSha256": "42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07",
+ "revision": "9.2",
+ "authoring": "CharacterIso9.render({ clip, frame, dir, build }) for every frame, laid left to right; 4x is the 1x strip scaled by 4, nearest neighbour. tools/check-renders.cjs re-renders and compares.",
+ "render": {
+  "px_per_m": 32,
+  "elev_deg": 40,
+  "cell": [
+   64,
+   92
+  ],
+  "pivot": [
+   32,
+   82
+  ],
+  "keyline": true,
+  "contour": true,
+  "headSnap": true,
+  "background": "transparent (0,0,0,0)",
+  "rock": "none (on land)"
+ },
+ "facings": {
+  "front": "S, dir 4, facing the camera",
+  "back": "N, dir 0, facing away"
+ },
+ "clips": [
+  "idle",
+  "walk",
+  "dig"
+ ],
+ "toolPose": "dig: the spade clip (tool_R + tool_L, the shaft between the palms). The spade itself is shovelIsoRig on the tool sockets and is not drawn by this rig.",
+ "images": [
+  {
+   "file": "renders/1x/fisher.idle.front.png",
+   "preset": "fisher",
+   "label": "Fisher",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "e9a7ad5c3d05fba8c9f6d7b4c5ebe533dbc98ef6b3aee3c64671a95112460f8d",
+   "pngSha256": "0b71c1ed13364b016ad72eb56d3a2e7cefe449a91806c6140f47224bacf1b436"
+  },
+  {
+   "file": "renders/4x/fisher.idle.front.png",
+   "preset": "fisher",
+   "label": "Fisher",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "800417f36bb061166419dee44f90b2fe2304b587da77b008d8b957e7ef5c4a4e",
+   "pngSha256": "147e9188dc4dc3591d05072091aa3a009e97cefce4f73ba17918829830349587"
+  },
+  {
+   "file": "renders/1x/fisher.idle.back.png",
+   "preset": "fisher",
+   "label": "Fisher",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "6e4498f0a429223d1b6e53b488f095e32f6511b9a8352a9c695d4895ac258f43",
+   "pngSha256": "70bcc4589e7f39ce64a53fdd49073700b2c35904932569b769e65a699ac85ca4"
+  },
+  {
+   "file": "renders/4x/fisher.idle.back.png",
+   "preset": "fisher",
+   "label": "Fisher",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "a5a0d435bccff707fbe4c639edacaa06740ad342eb9df7c0c60d8eb889c23dbc",
+   "pngSha256": "cb9a797730eabefe7aeb0dce9467427388afd150929444c1759b7193b613d266"
+  },
+  {
+   "file": "renders/1x/fisher.walk.front.png",
+   "preset": "fisher",
+   "label": "Fisher",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "592d2eb99e9c3d471f72d54637d26f27f4d87b9453d5615f937480cbfcdc8350",
+   "pngSha256": "a5bf7618d93eb04dd826b1396de5d3ddd4518e7b9a30ffe252c19f3d6d2b474d"
+  },
+  {
+   "file": "renders/4x/fisher.walk.front.png",
+   "preset": "fisher",
+   "label": "Fisher",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "e4b3dee386b749a42ce70058e829d67993dc3eab784c6c5dd78e183a9b39aa77",
+   "pngSha256": "a1e99d3c389c21881b7c4419e3497b67cd864c7cf8ccf55af8d161746dbde345"
+  },
+  {
+   "file": "renders/1x/fisher.walk.back.png",
+   "preset": "fisher",
+   "label": "Fisher",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "0de8d1d3f1e930bca60cd0f5fd78bbfe98b17ab6ad50cd8494b41963f04c4f9a",
+   "pngSha256": "a046d211b6d250d1f1b22eded14df5cb02b99bf72925fc11cd79bc6244c8278f"
+  },
+  {
+   "file": "renders/4x/fisher.walk.back.png",
+   "preset": "fisher",
+   "label": "Fisher",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "6493ab57c54a8f0aaddd5c22711bdd42644a0ff51c78f0f53293f11ed7aa4843",
+   "pngSha256": "dc1fcf0311538a7a4e3f97a488531c8d3dd866353282fc298babb9e4c6cd0985"
+  },
+  {
+   "file": "renders/1x/fisher.dig.front.png",
+   "preset": "fisher",
+   "label": "Fisher",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "c9a54d3f2a996a217af3fbc850f9d3fac768b63c3a4dccd192c7cb882f67f220",
+   "pngSha256": "cdf90a8de2c5c292122efc5e7c5ad080c9d89fa1fc5994c92f2d45238d46fbd3"
+  },
+  {
+   "file": "renders/4x/fisher.dig.front.png",
+   "preset": "fisher",
+   "label": "Fisher",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "847c642957fb477027668f724be57d3c2ca231ab617aaf413832cba9d61ae567",
+   "pngSha256": "87e5c8437e3e20333427630c534a2ee1641ca77da9ae271a0bb657c51631d5df"
+  },
+  {
+   "file": "renders/1x/fisher.dig.back.png",
+   "preset": "fisher",
+   "label": "Fisher",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "b11d97a3a7aefbca5086ff9ad144f3d68acce4cdf6030e04d000466c7b848088",
+   "pngSha256": "e0abfea810f0bc17f850dcea475106b9c198de1e622c85276525ce5b2e1438f3"
+  },
+  {
+   "file": "renders/4x/fisher.dig.back.png",
+   "preset": "fisher",
+   "label": "Fisher",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "256e18eee11c744635ecda44e40d2a64abec681ccd52d25e2df79526b5500e30",
+   "pngSha256": "5be5c8ee66e96c14743c42df5f08ae00c70f6a6f97917e52d404f4c69df3cded"
+  },
+  {
+   "file": "renders/1x/ginny.idle.front.png",
+   "preset": "ginny",
+   "label": "Ginny",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "64e79886a9a3a3ca2c061ee1c2bd280892ed7984f0a64b64f2a5a5ba124a5a1c",
+   "pngSha256": "c2b4aec643f221fe158fcdc4bcce73469807dc43d92e0d129367ce38a328c6f5"
+  },
+  {
+   "file": "renders/4x/ginny.idle.front.png",
+   "preset": "ginny",
+   "label": "Ginny",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "98df04866da9259809db24612f33a84d4ee20bbdde8f1e74b8dc5e45ce5c01d9",
+   "pngSha256": "24ce5bc8f70cc475fef258cf523d69a82ad251a6caeccc8620fabbae229482c4"
+  },
+  {
+   "file": "renders/1x/ginny.idle.back.png",
+   "preset": "ginny",
+   "label": "Ginny",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "b62b962a50cffac6378ef4994a1d1d8960c5e309ef45549e555c86ad07ed98bc",
+   "pngSha256": "0aa2016c451bfc197e175e351802e01784235790796f31ae28a29cc463382cb2"
+  },
+  {
+   "file": "renders/4x/ginny.idle.back.png",
+   "preset": "ginny",
+   "label": "Ginny",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "67be3435ff79447cd08c714569e15d7ea4e5f21531e2f1042357c42cc051e0d5",
+   "pngSha256": "e65983794a40ed553ccc77cdcb2a9a2d6add18c41d97fd7fd82ef1a924042659"
+  },
+  {
+   "file": "renders/1x/ginny.walk.front.png",
+   "preset": "ginny",
+   "label": "Ginny",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "46d1998a136f209e505e094a830764d5023724544f50c0506f185c4402839b57",
+   "pngSha256": "bda633a349c133962d0a6e3bd67074b6c6ab6ace8a877b79fc3097a07fa10ae2"
+  },
+  {
+   "file": "renders/4x/ginny.walk.front.png",
+   "preset": "ginny",
+   "label": "Ginny",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "7b82ef2f22f138fa23c53fe52655f385e0cba76291ebbf695e9563fc2b759dfe",
+   "pngSha256": "0156c50a29bef700a7b46372ba147d1b6d02ffbf8b9c149d11ae08f5680e334a"
+  },
+  {
+   "file": "renders/1x/ginny.walk.back.png",
+   "preset": "ginny",
+   "label": "Ginny",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "098cf37c67caf909346e5e0f62658e60ec07bb4d095fb16667c5edc98e27de8a",
+   "pngSha256": "893551a03b93c73dd74cdf4fece524bcc1e978ccfc1a4b2c792f04a7b84ebc2f"
+  },
+  {
+   "file": "renders/4x/ginny.walk.back.png",
+   "preset": "ginny",
+   "label": "Ginny",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "9352290e0002f5bcef40a732b3973c903443b250de5066ed62041545016b8cc4",
+   "pngSha256": "c29c64410e083fe8db26d1f8d3fa4367d1c7277ff4398a2c045c1a2d73cb5aee"
+  },
+  {
+   "file": "renders/1x/ginny.dig.front.png",
+   "preset": "ginny",
+   "label": "Ginny",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "b6b6de8a7df46021a7e877a929c0c254e578b8ceff03e673abaeff1a9e4425e5",
+   "pngSha256": "ec7dd58038f4a8bea5c4ca67a25c43f746687213643449feebad640ab1629f64"
+  },
+  {
+   "file": "renders/4x/ginny.dig.front.png",
+   "preset": "ginny",
+   "label": "Ginny",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "aa972b3679d6d17a317d5869a352a5be80456c287f0bea4112b740952275f33e",
+   "pngSha256": "6eec070920e40db50b59f99d4707c251c9d05ab1f6656bd833388716a110e404"
+  },
+  {
+   "file": "renders/1x/ginny.dig.back.png",
+   "preset": "ginny",
+   "label": "Ginny",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "6143ea4ab7efe6268af2ac49272011334b153ca2d3ddfcce637c9255af604c7d",
+   "pngSha256": "79ba2c115622baf296c21ca95e25457d0dd7f8c472c07190fc542d12c0ab8965"
+  },
+  {
+   "file": "renders/4x/ginny.dig.back.png",
+   "preset": "ginny",
+   "label": "Ginny",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "1856c90daa2267798391bd7ec62830807abe55fd57e29f038a32eed905334a8e",
+   "pngSha256": "16ddb6d11b9ba6aca6602e1000259357e526d73813084e5e1a9aad91225be0e7"
+  },
+  {
+   "file": "renders/1x/skipper.idle.front.png",
+   "preset": "skipper",
+   "label": "Skipper",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "e38385ce55531c93993955e375d82aa72d7ad4abbfddce5a124c43eca6906a50",
+   "pngSha256": "de4ce43d3ca8de21cb64ea0b2076c8065ae44bcfc9431fbfab6c5e10c574722e"
+  },
+  {
+   "file": "renders/4x/skipper.idle.front.png",
+   "preset": "skipper",
+   "label": "Skipper",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "ded9245dc80eb3c6cdee1d6db45fcd22bdb434f814512f42de1c0ccb59fae889",
+   "pngSha256": "3376033987392ab43c1d515c570100707bd63f23410709deef5afdb2f35d90a9"
+  },
+  {
+   "file": "renders/1x/skipper.idle.back.png",
+   "preset": "skipper",
+   "label": "Skipper",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "f0e48862c8081319dd4726bf5171d0d467c76dac80222992015f7f3bbb4ceb49",
+   "pngSha256": "52e542c4d9006a1383a7ee9a8d6f9634c6cea5a9025be494fe1a4bccc40faa96"
+  },
+  {
+   "file": "renders/4x/skipper.idle.back.png",
+   "preset": "skipper",
+   "label": "Skipper",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "ea8e93915770ba991faf42783510a7d05745f3de1120694c13de894cc75ccdc1",
+   "pngSha256": "a853d6882bb6c10b17a7241a64c0bf1ed47c9d3867565c0ca3b33920acf5006d"
+  },
+  {
+   "file": "renders/1x/skipper.walk.front.png",
+   "preset": "skipper",
+   "label": "Skipper",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "35a3061308caf3ae02d58a473354b4ae1e65d3f26020ddebb9fe6ed459f507fd",
+   "pngSha256": "e1c7dfa6810bad6b1704232dabd7dd062097fdcebad2d0d7a4bdf1313b2115ad"
+  },
+  {
+   "file": "renders/4x/skipper.walk.front.png",
+   "preset": "skipper",
+   "label": "Skipper",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "5f86b5b93de479bd232cdaf2a13a8f1b6deeb75a1dabdc2cabb7c34ee0b9f997",
+   "pngSha256": "4d29d3bba670066654bd59aa346abf02bb3a1c10ca16221a4eb57a93999e581f"
+  },
+  {
+   "file": "renders/1x/skipper.walk.back.png",
+   "preset": "skipper",
+   "label": "Skipper",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "2be4580388f3046a50b766a72f0b4f49ad22acd550723c2e5a628e67f0cf5d35",
+   "pngSha256": "24e16c2e7a83601f2b1866a8818286d73940939ba123058fe38d09a49e489521"
+  },
+  {
+   "file": "renders/4x/skipper.walk.back.png",
+   "preset": "skipper",
+   "label": "Skipper",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "8b1d2d68ee159d70c31493eeb7ab325b5dfe8911cc7ea76e53b35e8af9b5a085",
+   "pngSha256": "ea706bb43c57225fd156730f0257f323a3df6f2b9bf8fb1f850abfcf09b16fda"
+  },
+  {
+   "file": "renders/1x/skipper.dig.front.png",
+   "preset": "skipper",
+   "label": "Skipper",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "a08d8e18fdce9e9bc7113118e0b66a3336d5343180b70effc7ebe8764a2d94be",
+   "pngSha256": "7dce864e3cfbbced99798d0b39b2668cc55315deba65f31d4265368965882b9b"
+  },
+  {
+   "file": "renders/4x/skipper.dig.front.png",
+   "preset": "skipper",
+   "label": "Skipper",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "a152e16d3e7049ad093f71f4f5581ae9e28033efd865058d283e097e8d772625",
+   "pngSha256": "6494452173f5836827738b4e4d89e67786e2d1bea77d86a52448684df563a6ed"
+  },
+  {
+   "file": "renders/1x/skipper.dig.back.png",
+   "preset": "skipper",
+   "label": "Skipper",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "ab047bb1ff5ac793fd4bd22dec7e83756a272a317534066b456053a0dfaf09ff",
+   "pngSha256": "685d2b53237fbc96f14c8f4ea5e72e893e9a5e7b718d85d6299a7ae8093c39b5"
+  },
+  {
+   "file": "renders/4x/skipper.dig.back.png",
+   "preset": "skipper",
+   "label": "Skipper",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "688623eb0e8aa2b26e7cb8309d9faefbb16f0812015d7a429596b18e1865b683",
+   "pngSha256": "4f4a0571590fd4deec0551db3c7f787e94604f73d9d3d51a703d1af46a504d5c"
+  },
+  {
+   "file": "renders/1x/nan.idle.front.png",
+   "preset": "nan",
+   "label": "Nan",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "7e583b0be639e3772eced9bbf880e1fae494bbc2b49fc2712003a33092324493",
+   "pngSha256": "a3d771995b9c9b08aebf517c1b17718e4380d4d72c0fe69e180ae8c3ae937273"
+  },
+  {
+   "file": "renders/4x/nan.idle.front.png",
+   "preset": "nan",
+   "label": "Nan",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "b6fc3220524f628ed538387ffd7e9f8766d949c7a18534c3624504695120f477",
+   "pngSha256": "3ce12b87cf6daf194c1189e360bec127692916a87ee3fca54617547b82bbc44e"
+  },
+  {
+   "file": "renders/1x/nan.idle.back.png",
+   "preset": "nan",
+   "label": "Nan",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "9b457faa78aa775444016f0366dd9be1d586fca50e849d382dacca69d31c911d",
+   "pngSha256": "b016f3e4e7dd927a866fb4fe7559b0bf7363709a79ed9a497cd012d584305b84"
+  },
+  {
+   "file": "renders/4x/nan.idle.back.png",
+   "preset": "nan",
+   "label": "Nan",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "ef71d979ab789fa81d38e444c61b396e2ff373df675dd797d9586a1c3e706665",
+   "pngSha256": "ca6a1b60165d7d8200cd85781469950bf1e1b4bf291b1efbc5819e7cc24265a2"
+  },
+  {
+   "file": "renders/1x/nan.walk.front.png",
+   "preset": "nan",
+   "label": "Nan",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "11d995c756f76edc869e013ac4a0115651af5f63b5d64ef2beb212d41c0acafd",
+   "pngSha256": "2ed18db5437bae0956eda5fa28f036d2680a8c573b8be12cdac3e78a250f2e04"
+  },
+  {
+   "file": "renders/4x/nan.walk.front.png",
+   "preset": "nan",
+   "label": "Nan",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "112721b0d6fd3f8ce7a33f089f83709923da4b8a455a597b8df889a93f2791a6",
+   "pngSha256": "fd2104154267297441c7855e18be5ddf805cbe0dd76c3d04bcb8f1be05b320ba"
+  },
+  {
+   "file": "renders/1x/nan.walk.back.png",
+   "preset": "nan",
+   "label": "Nan",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "a4178ae2f916b7fb3a317c8a34fb9cc32a41e6bd2e08c6d48aa391bdfa3b1928",
+   "pngSha256": "4a7191e3b2ab742a75596f2dd8b3ee1eaf2b32835dd704e126a6b96c34eab660"
+  },
+  {
+   "file": "renders/4x/nan.walk.back.png",
+   "preset": "nan",
+   "label": "Nan",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "4c8fff41201c38694a3db71a9edc5f2a8dd40225eb95fcbd8cdcd89109d85210",
+   "pngSha256": "3b7672f02325bdce73ec0cfd684e9a465d12da574350843d2a50b80d0083890a"
+  },
+  {
+   "file": "renders/1x/nan.dig.front.png",
+   "preset": "nan",
+   "label": "Nan",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "4398dc15824078168e1491bcc4e7dce411be90bbe172783b8084daa4913d6c28",
+   "pngSha256": "963df14ed5b58c1c57bf1b3d2241b1d06cf62fe3855a5dd3b5c2a643f3c73bb6"
+  },
+  {
+   "file": "renders/4x/nan.dig.front.png",
+   "preset": "nan",
+   "label": "Nan",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "daa4f93c3f3c28782655d6265cc52c6d3649a7ee70d93ac618134eb76ee8a2f4",
+   "pngSha256": "62b4f9d44855e43638d3415d7cc7ca295733af8b7f805cafde0d9e401a85e470"
+  },
+  {
+   "file": "renders/1x/nan.dig.back.png",
+   "preset": "nan",
+   "label": "Nan",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "c33924b468df67b9b5e030bce3ae2fd986368ae77a4739cf8475a762cd7c19d6",
+   "pngSha256": "e1ad10c15fb597776c479a336aecad7985779c66cd56fbdec7aea79db2dadef4"
+  },
+  {
+   "file": "renders/4x/nan.dig.back.png",
+   "preset": "nan",
+   "label": "Nan",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "d9cd9460da34260a93db2b54757fc07caf7a13e798a35128b89d869417b9b9c7",
+   "pngSha256": "9019431724b563b16d078367c61963c1acfee67243167c9818bed5fece1345d4"
+  },
+  {
+   "file": "renders/1x/deckboss.idle.front.png",
+   "preset": "deckboss",
+   "label": "Deck boss",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "178f5897fe6744be1e69f18c82329a578bb7f4405768c08aab5ab29a0fb55ac5",
+   "pngSha256": "e395fa2463f5d1e59ed323c53cee8d0f822d52ef9d7187cc2f199095c3e90670"
+  },
+  {
+   "file": "renders/4x/deckboss.idle.front.png",
+   "preset": "deckboss",
+   "label": "Deck boss",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "1d920df6b097048c10e2468f17e3e150a2c2948e1e0845a28d1d9ccc664e7246",
+   "pngSha256": "11ac3cb4f2c7a07b125a0969ff4ddaed662e87f009c526e86a644849fedd1b5b"
+  },
+  {
+   "file": "renders/1x/deckboss.idle.back.png",
+   "preset": "deckboss",
+   "label": "Deck boss",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "96fc6751b7e2ffdd896e7f65a06603bede65c7f9987ea2f619c9dff30948ed3e",
+   "pngSha256": "a79a4eaa3c7ab1645608ac63f0a67bd1ddfff7dee53d947c4c286c57be30aa7a"
+  },
+  {
+   "file": "renders/4x/deckboss.idle.back.png",
+   "preset": "deckboss",
+   "label": "Deck boss",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "269055218db8075eb17dcb40d887dd894b8aeb025c216d593d12fe2b4439e38c",
+   "pngSha256": "47c572d5b0b54ea1c972cc1253519ce667aedc3ca96012199c430ff49336e987"
+  },
+  {
+   "file": "renders/1x/deckboss.walk.front.png",
+   "preset": "deckboss",
+   "label": "Deck boss",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "8e0bad06578888e834f43fa7558cc2938153ce89b8579f939614b9530cb29939",
+   "pngSha256": "30a46af24760a55452a4959e16c351762541962aee5e8a1da98d2669c1ebb34d"
+  },
+  {
+   "file": "renders/4x/deckboss.walk.front.png",
+   "preset": "deckboss",
+   "label": "Deck boss",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "6c29fbf8cfbe7fb5d8d49bacf23a2fbb8b52557ad4456391a27354e62cb60d3a",
+   "pngSha256": "5875095df2b17e52f50500b1aebfe20ef71e3a0e04eda1a3e8f58da050f738db"
+  },
+  {
+   "file": "renders/1x/deckboss.walk.back.png",
+   "preset": "deckboss",
+   "label": "Deck boss",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "bff854da388dd92851821a1b1292af3ee99e4bc14a95febdfff86ebc4b50b488",
+   "pngSha256": "34c810621b42d857a6571ac4091e0bbbf986a13bd230590b8e229c25431c3729"
+  },
+  {
+   "file": "renders/4x/deckboss.walk.back.png",
+   "preset": "deckboss",
+   "label": "Deck boss",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "97609a99cb3a3696e87860fdd390b67a07e7bf998235a022338c28138ff5c733",
+   "pngSha256": "dbfe28481365e4542328a4f0d95d68265c5dff194a38cac332bbccb301763459"
+  },
+  {
+   "file": "renders/1x/deckboss.dig.front.png",
+   "preset": "deckboss",
+   "label": "Deck boss",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "f92ec6dbc38e76600385c7f56fe72f7c38a32b5b1faf445ed86818a543273b0e",
+   "pngSha256": "2f72b5e6ffb1d243ace35a886e4bd83c3fb78bd345a40dc6d3ba42fa7a37a27a"
+  },
+  {
+   "file": "renders/4x/deckboss.dig.front.png",
+   "preset": "deckboss",
+   "label": "Deck boss",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "4508a824c8650d7ea000626a37147c56477d96346e6d86c641edc24e52b10c6c",
+   "pngSha256": "1454e221b4f1f05deb635c9be0324ea3d96f36f7cace0139a03afd4e6a62ee0e"
+  },
+  {
+   "file": "renders/1x/deckboss.dig.back.png",
+   "preset": "deckboss",
+   "label": "Deck boss",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "2098af3da42b6f85c02d366a307a5ff4cd71ea5ce7472007ffa875899cf34d52",
+   "pngSha256": "f708e25d6da5b071a2b7783dc1202dd01dd63f86f9eb049e07be4331ae2e4bec"
+  },
+  {
+   "file": "renders/4x/deckboss.dig.back.png",
+   "preset": "deckboss",
+   "label": "Deck boss",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "1eacf9243ff41f189bf9425e6a0464ccd014b32eede61727ec37bfce44535ef1",
+   "pngSha256": "d0a63df6a7083feb3c1cb1e8f3a2a45e06dfd01586bc5b0c75a9abd3bf079bf1"
+  },
+  {
+   "file": "renders/1x/packer.idle.front.png",
+   "preset": "packer",
+   "label": "Packer",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "73b2667dc2eaf13e8c79e65f27244ce92f38f05491cc723dfc14c1675745eb16",
+   "pngSha256": "920e955aed478bae48846088520703d08cfaf56fdde16ea5e2b4d4bea4129e7e"
+  },
+  {
+   "file": "renders/4x/packer.idle.front.png",
+   "preset": "packer",
+   "label": "Packer",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "8ac009627f9841d0f451dba8120e081a4cf4b391dac0f37611db3826b7dc1336",
+   "pngSha256": "7ce05c16f2d05dd6a4490b88b074fd504a2c87c630d34d77704ec776024234e3"
+  },
+  {
+   "file": "renders/1x/packer.idle.back.png",
+   "preset": "packer",
+   "label": "Packer",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "a7d953698b5fad4952b3a829f401880a1ef5b30df0ea93ae851ee785040efea5",
+   "pngSha256": "7af03ed8188357268f06c801fa54203563cd91a5cdbc1c05b3873441c18b3a88"
+  },
+  {
+   "file": "renders/4x/packer.idle.back.png",
+   "preset": "packer",
+   "label": "Packer",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "8a3d620d36b3b3741194c5816823328947021f4d60aad96a1da4921bd41c3678",
+   "pngSha256": "ecf80bbd1bc98174a2b5c9e32975d5dd4ac98fea7af4c2014140c59140729d4f"
+  },
+  {
+   "file": "renders/1x/packer.walk.front.png",
+   "preset": "packer",
+   "label": "Packer",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "cdcd520548cb526d9014b389da8c9d5fbf786f2c4f3d90b06aa3f7d660cdc684",
+   "pngSha256": "6e8689a29754d786823284002d80e1212a4df60a69f72f30014de4f27499d6f4"
+  },
+  {
+   "file": "renders/4x/packer.walk.front.png",
+   "preset": "packer",
+   "label": "Packer",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "ea7539ea5c15ecaa46a513f64213d466c4ef2db22923437b2c2313d6874db949",
+   "pngSha256": "c998f13ff7b0b34b0b287588a23864e53db4f6a7a615dc412d144e8d4b1df2c9"
+  },
+  {
+   "file": "renders/1x/packer.walk.back.png",
+   "preset": "packer",
+   "label": "Packer",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "d061df9e23ee7a7189e4ab6db78248fd2623b57359fa0cc85e3a86cad2a8ae99",
+   "pngSha256": "6785f61a0fc267a590a1382c7516d9d09031b1b7ed01cf45c31844e5cc962922"
+  },
+  {
+   "file": "renders/4x/packer.walk.back.png",
+   "preset": "packer",
+   "label": "Packer",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "744e318340945d91bd068b274b04415db791af427cd0478f9c7e329ded8487e0",
+   "pngSha256": "b34987eed1d24d91f4aa0609e4aee7cf2264bb2331b5087aab9fb05e3f89a252"
+  },
+  {
+   "file": "renders/1x/packer.dig.front.png",
+   "preset": "packer",
+   "label": "Packer",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "fccb863b4a48ad32591d9283d5eaea775e7713f9506aa468448ab7355b8cda76",
+   "pngSha256": "32f294210d8335699adacc42cbbe0126e6235906da4d2980ee58a77001fa3dd1"
+  },
+  {
+   "file": "renders/4x/packer.dig.front.png",
+   "preset": "packer",
+   "label": "Packer",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "4d0d16f999e4a40a00afc94b7b94318de17ec210924e392468639a50fe66c73b",
+   "pngSha256": "52a76396ee2886f311439a0f385751f6dc4192eea45de643f6bb3ae653d3fe13"
+  },
+  {
+   "file": "renders/1x/packer.dig.back.png",
+   "preset": "packer",
+   "label": "Packer",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "f661106b53d0484dd6b3b3d88a2c72584e547f9be155bc19fc0948cc1efc5c98",
+   "pngSha256": "d0a32e7e3b88695f23b23ae329752d2fc18e923b9c669e7ae90ce6c194381386"
+  },
+  {
+   "file": "renders/4x/packer.dig.back.png",
+   "preset": "packer",
+   "label": "Packer",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "384de20a852de511e585f1de306980681ccc88afcda4d8d3aae3c3d5edfe6d32",
+   "pngSha256": "9c86cb0c6176faca578b43994e16af06268ac174732e938e39d507f78c33c9d7"
+  },
+  {
+   "file": "renders/1x/cutter.idle.front.png",
+   "preset": "cutter",
+   "label": "Cutter",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "19a6e098cdfe52dbbf8b6536b5581f5f828850c28982ebeae55a1264d9ba6f0f",
+   "pngSha256": "6790d16221e2831697651d3ef71bde648afbaa62c4a4c67677275b776ff97b4f"
+  },
+  {
+   "file": "renders/4x/cutter.idle.front.png",
+   "preset": "cutter",
+   "label": "Cutter",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "62dc3abb927023554f743e48ccbe25f2b797f10c4d50a7460c8d37f10671c51d",
+   "pngSha256": "13ded28b2ea8315d9adca42063bc37c228be4e3b6508701e005bcab1e695838f"
+  },
+  {
+   "file": "renders/1x/cutter.idle.back.png",
+   "preset": "cutter",
+   "label": "Cutter",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "af88d7bf0dcdf9fa08f1f8a2605a85542a6144d17b3799e87d6a0fcf40fac6f0",
+   "pngSha256": "49318250d5a7ff31ae1816adfeabbf1a3a69cef0ba6a54f1e8e908c55aeac83c"
+  },
+  {
+   "file": "renders/4x/cutter.idle.back.png",
+   "preset": "cutter",
+   "label": "Cutter",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "698ef48f9a41f23f7b0175a7d8d2dc8244baefceda0f3e0b412bb2bb25946ca4",
+   "pngSha256": "7d19d7aff433e8f048caa6c8fba05a0e9f9e1b5cd813fd63876d833780cde2fc"
+  },
+  {
+   "file": "renders/1x/cutter.walk.front.png",
+   "preset": "cutter",
+   "label": "Cutter",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "99403ddad1deaf34931ec845888ba923842182c1ce1384bcd20017c48b23c185",
+   "pngSha256": "a7702b7a9d2046bb39bc42a6e572e90d56b4c2d488195d78c050e0f2ee9b0b9b"
+  },
+  {
+   "file": "renders/4x/cutter.walk.front.png",
+   "preset": "cutter",
+   "label": "Cutter",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "4bc23cfa5cf4de4a3bff4f37a8e8442b5fa293c80ae59e69b1f45aae80dcb5e8",
+   "pngSha256": "d17decec0a4ea801f3c1805063f766aff47163a34ebbbc814e6d247ab457feb4"
+  },
+  {
+   "file": "renders/1x/cutter.walk.back.png",
+   "preset": "cutter",
+   "label": "Cutter",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "1b7c540c750301f8a5af6aba3a2665c18124956c077e85b64b0878c73c67b61b",
+   "pngSha256": "f52587c19109eb4258a3c2ad2db866ec73aa61b02f2a1af873e1e4e824566afa"
+  },
+  {
+   "file": "renders/4x/cutter.walk.back.png",
+   "preset": "cutter",
+   "label": "Cutter",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "c48884f9f38790d0ce8b8ba6311dfa672e5660a441263c7ed12f05b534609888",
+   "pngSha256": "b7e9492677f5b432e2eea72863cd4f7921af807e3343ad34ec24efde6a5ccb3d"
+  },
+  {
+   "file": "renders/1x/cutter.dig.front.png",
+   "preset": "cutter",
+   "label": "Cutter",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "da529ec9a2877d4829f2942953f2eed00a08c657762960a2b80533bf7feb358b",
+   "pngSha256": "2fc087f29cb2d0e1e5762d35a3e85fdabe877fecc7b524d25867fb5589b33bc1"
+  },
+  {
+   "file": "renders/4x/cutter.dig.front.png",
+   "preset": "cutter",
+   "label": "Cutter",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "3ad8ef63eb15b8374a8352882185e11f7152dfaec00a60300ff6aa2d7bf2bdb9",
+   "pngSha256": "cd485486cdc603e07439092ec9bd8d1c5cb6dfdc37e2010b1335de1de0a741b2"
+  },
+  {
+   "file": "renders/1x/cutter.dig.back.png",
+   "preset": "cutter",
+   "label": "Cutter",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "4adb4ec7faa373d2a9efd16d44f0f378966f5fda6a66f5bd37245316b41f10f7",
+   "pngSha256": "8677cbf48365bb1a74f03dd233bfac22591ceef266b3b8dbff225d7d44b6ef10"
+  },
+  {
+   "file": "renders/4x/cutter.dig.back.png",
+   "preset": "cutter",
+   "label": "Cutter",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "9f1cf5fd433420ee747787b27913bf00af305301a87c0e95181134e367375657",
+   "pngSha256": "aa936aa2d264a9f27a897d0afbf411eff0f18687ebf626c6b2647a95c19383f7"
+  },
+  {
+   "file": "renders/1x/hand.idle.front.png",
+   "preset": "hand",
+   "label": "Deckhand",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "156bfd3caf6031af4afd2adb46633593628061a3b063f5020034a97a0e2b6433",
+   "pngSha256": "64a7339af64a20ec9eb277aac59e12dd3cc9cd6bec614a225b9b9da1540dc7c4"
+  },
+  {
+   "file": "renders/4x/hand.idle.front.png",
+   "preset": "hand",
+   "label": "Deckhand",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "8a885bcb5ad34e6b34230a6a7d0ebe1267b1945f15c280b90a799206430b61dc",
+   "pngSha256": "73ef3911c4571875c70fd24f39765b8dc71ef2ff5b456a1193d69d5903c9b54e"
+  },
+  {
+   "file": "renders/1x/hand.idle.back.png",
+   "preset": "hand",
+   "label": "Deckhand",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "22f6a794b7b54834d082e5f730abd44d6b3f66de2930bb551492b1172ee63afd",
+   "pngSha256": "9361f89d85d9e61d0fa75a5a119c70a7f299987d89e47a4f6df7a68cd0708b00"
+  },
+  {
+   "file": "renders/4x/hand.idle.back.png",
+   "preset": "hand",
+   "label": "Deckhand",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "4cbdf388842a17c797b59845d874c2557f33c1b7f39a23c5435dc0412a83317f",
+   "pngSha256": "d9cbc62b10aab43fedbf32c4a20fd234322ee97795afcd59de16e69253ff59f7"
+  },
+  {
+   "file": "renders/1x/hand.walk.front.png",
+   "preset": "hand",
+   "label": "Deckhand",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "61e16a0a809cf76ae1e4679e742ea2aa7617b9ccf2413c3c14a6b305c7ca728f",
+   "pngSha256": "4a347531bb3bbedbf0839c417284cb05afc58dd934b7dbd0bae4435459956742"
+  },
+  {
+   "file": "renders/4x/hand.walk.front.png",
+   "preset": "hand",
+   "label": "Deckhand",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "722f02caf18acd1fcbf044aa9a29afa9ed53bad29735827cb8ca98f2c1a9ed49",
+   "pngSha256": "d5c4062b44e67f06115f9a93ff7c1a9fee46a26749874ac30a96178fdf4bc478"
+  },
+  {
+   "file": "renders/1x/hand.walk.back.png",
+   "preset": "hand",
+   "label": "Deckhand",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "554242b8fd4a86ddf130ec01e467e34316f56ee7fa39f26a61ae941404792ae3",
+   "pngSha256": "06393a2478b130f0317f48c7afbeefccc89f7822291003eb53323126a465f129"
+  },
+  {
+   "file": "renders/4x/hand.walk.back.png",
+   "preset": "hand",
+   "label": "Deckhand",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "458fda5f2d2029c7b35f633bc39740effb1b75ddd9fb9bd0657341ab47b3a1ba",
+   "pngSha256": "1ac46c9d5661ca11c5690c9ec43a1f6a2b4b2c9a397ba5b2136703912646476b"
+  },
+  {
+   "file": "renders/1x/hand.dig.front.png",
+   "preset": "hand",
+   "label": "Deckhand",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "4c71a6e38e938161483e2f109686d043fb5c9bbd92a471dfd22e998c3ab511a9",
+   "pngSha256": "d1c1aaa82017c703b43fb8f7ce62fdb2c941873b3239dbc71e1c412b10550793"
+  },
+  {
+   "file": "renders/4x/hand.dig.front.png",
+   "preset": "hand",
+   "label": "Deckhand",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "ea4505af094b402517acfe7d242ba2d7c8e0401516e6c03e5c31bcba94f4463f",
+   "pngSha256": "f35bf7b87b37056e09fdbc68da8777939372e20b90df44d0f9983061564d7dfc"
+  },
+  {
+   "file": "renders/1x/hand.dig.back.png",
+   "preset": "hand",
+   "label": "Deckhand",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "7344aab31869aac85f67d1bd35c9d81a356ee67ee748f7f65d12feddf3c7a30f",
+   "pngSha256": "d8d867eff2bf51faf4f795400d8eff100b237b1e4c39bafe8eb447584957a01a"
+  },
+  {
+   "file": "renders/4x/hand.dig.back.png",
+   "preset": "hand",
+   "label": "Deckhand",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "961784626f2648faffe93148c93ef9caa7ce9261dd543de43facd4530ea9e480",
+   "pngSha256": "9e84c5b40f9b9ff391ac78faef00e53ce5cbf1a7793ae4852c306d65482bbffd"
+  },
+  {
+   "file": "renders/1x/boy.idle.front.png",
+   "preset": "boy",
+   "label": "Wharf boy",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "b117255cf3da91585f0ab982dacb4eba5f7352cc9e192578979169f7584e33cc",
+   "pngSha256": "7aa4b1068b6a2c7e52299245e621be2bedd1fb73d081ce8de1eb9ec70ca478fd"
+  },
+  {
+   "file": "renders/4x/boy.idle.front.png",
+   "preset": "boy",
+   "label": "Wharf boy",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "d1ab87e25da543b58ed23aeb3585bb1259083b163fa98037be47467a64673ef5",
+   "pngSha256": "1afecc17f6447b5bdd45ffd2159e819588cb77022a8c79d43998d536cf059532"
+  },
+  {
+   "file": "renders/1x/boy.idle.back.png",
+   "preset": "boy",
+   "label": "Wharf boy",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "8d11f75dc08aa3461dac955950a3d166d3b395eddaf97c53317080e2d947ae40",
+   "pngSha256": "4d605e019cdc61989be1466ae0a69607957e7cc9d8523cd6136e20cc4e6fb7c0"
+  },
+  {
+   "file": "renders/4x/boy.idle.back.png",
+   "preset": "boy",
+   "label": "Wharf boy",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "a1bca04368bfa1c090250e7444bcb10e3389a9a3aec4ccf517a539a5be9f1f07",
+   "pngSha256": "b1b2fe03e6293d4ed331b7306751c7d667d01f6928f3569c6e31020d333ac1ee"
+  },
+  {
+   "file": "renders/1x/boy.walk.front.png",
+   "preset": "boy",
+   "label": "Wharf boy",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "3aec8d55e3e6d7ec0a0fc8abaaea17089a7e1c8ee49ac1f9f4619392a72aabc9",
+   "pngSha256": "47b539f35703760b45f9d1f6375258cd7201e1929116f0fb357dd0a280ae5a0c"
+  },
+  {
+   "file": "renders/4x/boy.walk.front.png",
+   "preset": "boy",
+   "label": "Wharf boy",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "b9415255006344d3966658fe3d1fb0f68801591ceb4d9a6456e8e8ac68c1c0f1",
+   "pngSha256": "d62b3bb256e5e013d2e3949dbcbe7f522e75e56aec5fcad996f5370525329b79"
+  },
+  {
+   "file": "renders/1x/boy.walk.back.png",
+   "preset": "boy",
+   "label": "Wharf boy",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "b820402dc70ba2bc7a77183cedbdb9a8ab8add203e73b809d34261b7599912f1",
+   "pngSha256": "204fd11aea812d25f46af767bc3c917aa5f7635e23e112e83409369c84020b98"
+  },
+  {
+   "file": "renders/4x/boy.walk.back.png",
+   "preset": "boy",
+   "label": "Wharf boy",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "7ecdc8fb5c1e1f1b5b6d9cd64f31e3f4568f870b05d87be1fb1a757edc44e626",
+   "pngSha256": "1febb1ae9c33f3d83b0a3ca0ee50c37563c373d0999ed334eef1896edf9d2567"
+  },
+  {
+   "file": "renders/1x/boy.dig.front.png",
+   "preset": "boy",
+   "label": "Wharf boy",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "f93a1680f8c844bc263b0ccf2098562c7fa68370f60b2346ad4d608bc19fb5c8",
+   "pngSha256": "1120b7e61b1b2921a57c2e26e2bcefd7897d67618fe04fd675f668908f572b44"
+  },
+  {
+   "file": "renders/4x/boy.dig.front.png",
+   "preset": "boy",
+   "label": "Wharf boy",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "3c806d449c8d36c516f6d34856d1079ef4eea629850955500b43ef70c37e4e8a",
+   "pngSha256": "6642d08385c74e84c259918ab634fb8a87e0797e16c0355a7ce6ee0d9e34579e"
+  },
+  {
+   "file": "renders/1x/boy.dig.back.png",
+   "preset": "boy",
+   "label": "Wharf boy",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "6a1106367c8f5c5cbd950c2d5da250beecfd7177e5fd0bf2dc2a2528bb96288e",
+   "pngSha256": "caed509cdbdcab61ac4948020b1aa6ec615f3bb413b886d41f32485554c128fe"
+  },
+  {
+   "file": "renders/4x/boy.dig.back.png",
+   "preset": "boy",
+   "label": "Wharf boy",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "ae04cf4d2cf0d28f184f499258a2444297a0264258b9710ca77d1a6692e0fa38",
+   "pngSha256": "b7b234c19dcae87589224ab6a0c5a0f6a76e9eac89cf85efcc2f69f65ef9a2c6"
+  },
+  {
+   "file": "renders/1x/girl.idle.front.png",
+   "preset": "girl",
+   "label": "Wharf girl",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "5b6902ee4dba1184b8ac2b5d41eac8cfc004a6480dba3bf8e3a6b28f5dd01af2",
+   "pngSha256": "a006644bf3473540d7484fb70b0d879da3585004152217c06e6775d99ec7732c"
+  },
+  {
+   "file": "renders/4x/girl.idle.front.png",
+   "preset": "girl",
+   "label": "Wharf girl",
+   "clip": "idle",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "856685f5aea5f670742c6fd6ba988f468b5e2d2d5abdcd479540b239071c7fd0",
+   "pngSha256": "36e70d79eb2c30f8624fd7c0bc123e6cd063d7b2401c981156f3509696c72fed"
+  },
+  {
+   "file": "renders/1x/girl.idle.back.png",
+   "preset": "girl",
+   "label": "Wharf girl",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 384,
+   "height": 92,
+   "rgbaSha256": "d2ca456af7746355606479bd3cc8f9c018add54aa3df7eb6e0e7a34de967ab8a",
+   "pngSha256": "c2fc8ae623db554de5288dacf02767032b1cf8b2a1479ce3d8d838dfc5580641"
+  },
+  {
+   "file": "renders/4x/girl.idle.back.png",
+   "preset": "girl",
+   "label": "Wharf girl",
+   "clip": "idle",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 6,
+   "ms": 170,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 1536,
+   "height": 368,
+   "rgbaSha256": "2044a09f9a07ad2dcc9fa75d92d6b7a1c9be776e32b5fa5215e340ab6c62a10f",
+   "pngSha256": "97faf9434fde8139580e4d96e0a02cfc035634da8478a39df4a41f945ddc980a"
+  },
+  {
+   "file": "renders/1x/girl.walk.front.png",
+   "preset": "girl",
+   "label": "Wharf girl",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "60ebf15568ed67159c2cba7cc1dae16466c80413cd89cf7ae4baa6b587cfc8b4",
+   "pngSha256": "2974c2ab60efd26954584d1b33a9c43c1f7baf3e6f904051f0fd55006a016313"
+  },
+  {
+   "file": "renders/4x/girl.walk.front.png",
+   "preset": "girl",
+   "label": "Wharf girl",
+   "clip": "walk",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "74ecb03e88d9dee1c692a982e967a05d50cdae0b8c660e0d116fe14888a2556a",
+   "pngSha256": "0e181dbc45de5a75f9adc386a23d359b10b917739ad7cb36d6b8bcb6cb8eaa6f"
+  },
+  {
+   "file": "renders/1x/girl.walk.back.png",
+   "preset": "girl",
+   "label": "Wharf girl",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 512,
+   "height": 92,
+   "rgbaSha256": "faa90fc854cbe70756c05bff06cd3a03611545fafa16ac5e375399495942d800",
+   "pngSha256": "5088af159777168e961f2209d2a82f2a8345a3ccf340aed5672854df171d445f"
+  },
+  {
+   "file": "renders/4x/girl.walk.back.png",
+   "preset": "girl",
+   "label": "Wharf girl",
+   "clip": "walk",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 8,
+   "ms": 110,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2048,
+   "height": 368,
+   "rgbaSha256": "a265630d0824c87b7db5f583ab4750a447a72baeda537b5d08cee1372bbc2d37",
+   "pngSha256": "d75319d92b3f55a39e93426192141f63a01d70ceb30da73fa9d21fd85cd0cd01"
+  },
+  {
+   "file": "renders/1x/girl.dig.front.png",
+   "preset": "girl",
+   "label": "Wharf girl",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "c0624f8105517228e9af8cbbfa54a4f04cf459180198a12289448fb421d8a14f",
+   "pngSha256": "ae963d179f3a477fce3f1eb82d85067e4f86950b6d16841ea6a9d9d8d4cc5b4a"
+  },
+  {
+   "file": "renders/4x/girl.dig.front.png",
+   "preset": "girl",
+   "label": "Wharf girl",
+   "clip": "dig",
+   "facing": "front",
+   "dir": 4,
+   "dirName": "S",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "6490e534dd3bf4b668c6e1bfd857a1580ad51b13850fd7ec4514d7533e0d7d7c",
+   "pngSha256": "015d3ff04b38145349a524b33bf9afad0a3b4088202282554760db6253e03f5c"
+  },
+  {
+   "file": "renders/1x/girl.dig.back.png",
+   "preset": "girl",
+   "label": "Wharf girl",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 1,
+   "cell": [
+    64,
+    92
+   ],
+   "width": 640,
+   "height": 92,
+   "rgbaSha256": "c16154eb80c859bc6c956ec0527eea7877fdd5bb3143ed44a8b90f20cda313c6",
+   "pngSha256": "5bc9a51304700aaf5f0c9e9c0a41c3c8592a9c8529c210e1bb1a8e2582123933"
+  },
+  {
+   "file": "renders/4x/girl.dig.back.png",
+   "preset": "girl",
+   "label": "Wharf girl",
+   "clip": "dig",
+   "facing": "back",
+   "dir": 0,
+   "dirName": "N",
+   "frames": 10,
+   "ms": 90,
+   "scale": 4,
+   "cell": [
+    256,
+    368
+   ],
+   "width": 2560,
+   "height": 368,
+   "rgbaSha256": "7505116394e674401ac55e0ff2439f7a2a28a9627a165ad412fad15789e1fdd7",
+   "pngSha256": "618ba9b863df20121e134505149c9853b9360129a51adce7a8c4fbd9f586b289"
+  }
+ ]
+}

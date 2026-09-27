@@ -48,12 +48,17 @@ namespace HiddenHarbours.Boats
                  "brisk but never twitchy.")]
         [Min(1f)] public float TurnRateDegreesPerSecond = 70f;
 
-        [Header("Fishing grounds (the world-rect spots are drawn from; the depth gate carves the real shape)")]
-        [Tooltip("Centre of the grounds rectangle (world units). St Peters default: the deep harbour " +
-                 "south of the sandbar, clear of the island and the player's slip.")]
-        public Vector2 GroundsCenter = new Vector2(5f, -32f);
-        [Tooltip("Size of the grounds rectangle (world units).")]
-        public Vector2 GroundsSize = new Vector2(85f, 22f);
+        [Header("Fishing grounds (the rectangle the accessible water is measured inside)")]
+        [Tooltip("Centre of the rectangle the fleet's water is measured inside (world units). The fleet " +
+                 "fishes every point in it that is ACCESSIBLE (#886, the owner's ruling of 2026-09-26): deep " +
+                 "enough at spring low, joined to AccessSeedPoint by such water, and BoatAvoidRadius + " +
+                 "PlayerAvoidRadius inside this rectangle and off every KeepClear area. St Peters default: " +
+                 "the region's centre (StPetersBuilder.RegionWorldCenter), so the rectangle is the map less " +
+                 "its 20 m edge band. Until #886 this was one small rectangle of water, (70, -95) x 85 x 22.")]
+        public Vector2 GroundsCenter = new Vector2(0f, 0f);
+        [Tooltip("Size of that rectangle (world units). St Peters default: 720 x 480, the 760 x 520 map " +
+                 "(StPetersBuilder.RegionWorldSize) less a 20 m band along each edge (AmbientFleetGroundsTests).")]
+        public Vector2 GroundsSize = new Vector2(720f, 480f);
         [Tooltip("Buoy spots each boat works per day. 2 keeps the loop readable (set one, go work the " +
                  "other, come back) and the buoy count modest (rule 7).")]
         [Range(1, 4)] public int SpotsPerBoat = 2;
@@ -67,7 +72,9 @@ namespace HiddenHarbours.Boats
         [Min(0f)] public float SpotSpacingMeters = 8f;
         [Tooltip("Sampling step (m) when validating the depth of a travel leg between two spots.")]
         [Min(0.5f)] public float LegSampleStepMeters = 4f;
-        [Tooltip("Max seeded candidates tried per spot before the planner relaxes the depth margin.")]
+        [Tooltip("Max seeded candidates tried before the planner relaxes the depth margin. On the accessible " +
+                 "water: up to this many first spots per boat, and for each, this many draws for the next " +
+                 "spot within one leg.")]
         [Range(8, 256)] public int MaxCandidateTries = 64;
 
         [Header("Work rhythm (fractions of the game day / of a slot — follows the clock, no unit maths)")]
@@ -207,6 +214,24 @@ namespace HiddenHarbours.Boats
                  "(Core SnagTargets — the drifting weed hooks on her planking, not at her keel). Her buoys " +
                  "publish while shown, radius 0 (a line). Under way she is withdrawn.")]
         [Min(0f)] public float HullSnagRadiusMeters = 1.2f;
+
+        // Appended (#886, the owner's ruling of 2026-09-26: "They should fish everywhere accessible").
+        // Fields are append-only: a fleet asset without them picks these defaults up.
+        [Header("Accessible water (the fleet fishes all of it: AmbientFleetWater)")]
+        [Tooltip("The open water the fleet's grounds are measured from. A spot is ground only when it joins " +
+                 "this point through water that keeps MinDepthMeters at spring low, so a boat can always get " +
+                 "there and back, at any tide; water cut off behind a bar that dries at spring low is never " +
+                 "planned. St Peters default: (340, 40), the arrival route's seaward end, where the player " +
+                 "comes in (StPetersNavMarks.Entrance.Waypoints[0]).")]
+        public Vector2 AccessSeedPoint = new Vector2(340f, 40f);
+        [Tooltip("Grid cell (m) the accessible water is measured on, once per region load and tide profile. " +
+                 "Finer costs more: St Peters at 4 m is 180 x 120 cells. The grid only finds candidates and " +
+                 "joins them to AccessSeedPoint; every spot and leg is still checked exactly against the terrain.")]
+        [Min(0.5f)] public float AccessCellMeters = 4f;
+        [Tooltip("Places the fleet keeps BoatAvoidRadius + PlayerAvoidRadius clear of: no spot lies within that " +
+                 "of one, and no leg passes within it. Each entry's numbers come from the Editor source its " +
+                 "Source names, and AmbientFleetGroundsTests ties them together. Empty = nothing kept clear.")]
+        public FleetKeepClearArea[] KeepClear = System.Array.Empty<FleetKeepClearArea>();
 
         /// <summary>
         /// True when this fleet has a COMPLETE compass to wear — either the shared

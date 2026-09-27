@@ -39,6 +39,11 @@ it. The 2026-08-07 ruling already made the home world *a variant of Hillsborough
 | 5 | **A marina** on the **south side of the peninsula**, north of St Peters Island. | the Charlottetown-area marinas | Nothing built; a region-level mark. §6 |
 | 6 | The harbour-mouth shoreline **mirrors Rocky Point**: a point, a small bay behind it, opening to Finnigan's Landing's harbour. | Rocky Point / Fort Amherst | Nothing built. §3.2 |
 
+⚠ *2026-09-26 — see [`world-map-plan.md`](world-map-plan.md) §8.* The owner's eight areas touch ruling
+1. It reads *"crosses a **west-running river**, making the peninsula/point"* — from Nine Mile Creek,
+the river between the town and the peninsula. The owner now writes *"7 is the west river with rocky
+point to its south"* — the river north of the point. Ruling 1 stands as written; §10 Q7.
+
 **Route 91's name is RULED. Nothing else here is named** — the PEI-variant name slate is still owed
 to the owner, so §9 lists candidates and christens nothing.
 
@@ -129,6 +134,16 @@ rivers discharge through that same mouth, which is why a real tide runs in it.
 > set-piece**. The nav-buoy kit already ships, channels are already data, and IALA-B marks are
 > already computed from them. A point to round with a marked channel behind it is the best possible
 > advertisement for the chart the player has been learning to read.
+
+*2026-09-26 — see [`world-map-plan.md`](world-map-plan.md) §8.* The owner has put two things here.
+**Cumberland** is on the peninsula: *"5 is cumerland which is built onto a point (rocky point) which is
+the western landmass leading into the main cities harbour"*, home to *"a resort bordered by a
+golfcourse"*. And **a lighthouse** marks the channel: the road runs *"Through cumberland past the resort
+and to a lighthouse which marks the harbour channel entering to the bay outside the main city."* The
+set-piece above now has its landmark. It is not the old *"small lighthouse on the point"* of
+`world-and-regions.md` §6.3, which belonged to the retired Port Greywick, nor Nine Mile Creek's range
+light ([`nine-mile-creek-mainland.md`](nine-mile-creek-mainland.md) §7). Which side of the West River
+the peninsula is on: §10 Q7. What area 6 is: §10 Q9.
 
 ### 3.3 How a boat enters a river — the proposed reach ladder
 
@@ -344,6 +359,13 @@ once. This document does not schedule it; it flags it. §10 Q3.
 **Ruled:** a marina on the **south side of the peninsula**, north of St Peters Island — the pleasure
 and small-craft harbour, distinct from Nine Mile Creek's working wharf.
 
+*2026-09-26 — see [`world-map-plan.md`](world-map-plan.md) §8.* The marina is now **the resort's**, on
+this same shore: *"Cumberland will be home to a resort bordered by a golfcourse. The resort will have a
+marina on its south shore which will be a purchasable and business option amongst other marinas in
+game. Boat charters are an option as a business as well"*. So it **can be bought**, it is **one of
+several** marinas, and **charters** are a business beside it. The business side is economy-sim's and
+later; nothing below changes.
+
 ### 6.1 What a marina *is* here
 
 The distinction is the point, and it is a P3 (Living Working Coast) distinction:
@@ -443,6 +465,12 @@ real bay names, lightly varied:
 creek the built region already has a mouth for. Naming it anything else would make the town's own
 name a coincidence. **§10 Q5** — but this one barely needs asking.
 
+*2026-09-26 — see [`world-map-plan.md`](world-map-plan.md) §8.* The owner's eight areas use four real
+names, recorded here as **candidates**, as the owner wrote them: **Cumberland** (the place on the
+peninsula, with the resort — new), **Rocky Point** (the point — already a candidate above), **the West
+River** (already a candidate above) and **Rice Point** (the unused wharf beside Nine Mile Creek —
+new). Ruled as written, or varied in house style: §10 Q11.
+
 ---
 
 ## 10. Open questions for the owner
@@ -473,6 +501,26 @@ below.
 6. **Is the town river simply "Nine Mile Creek"?** (§9 — the town is already named for it.) And the
    three big rivers' names, whenever the name slate comes due.
 
+**From the owner's eight areas, 2026-09-26** — asked in full in [`world-map-plan.md`](world-map-plan.md)
+§7 Q12–Q21; the ones that belong to this document's landform are listed here.
+
+7. **Which side of the West River is the peninsula on?** Ruling 1: Route 91 *"crosses a
+   **west-running river**, making the peninsula/point that heads **east** toward the harbour
+   entrance"* (§1), and §2.1 puts crossing #1 before the peninsula. The owner: *"7 is the west river
+   with rocky point to its south"*. (world-map-plan Q12.)
+8. **Which way does the road to Rocky Point run?** The owner: *"theres a road north from nine mile
+   which heads west to rocky point."* This document: the peninsula *"heads **east** toward the harbour
+   entrance"* (§1, §2.1). (world-map-plan Q13.)
+9. **What is area 6?** The owner: *"...leading into the main cities harbour 6, 7 is the west river"*.
+   The coordinator read 6 as the water outside the city's harbour — the harbour mouth of §3.2, where
+   the lighthouse's channel is. The owner's answer skips 6. (world-map-plan Q14.)
+10. **Is the owner's road Route 91, or a branch off it?** The owner: *"a road north from nine mile ...
+    Through cumberland past the resort and to a lighthouse"*. §2: Route 91 is the shipped `ThroughRoad`
+    and runs on to Finnigan's Landing. (world-map-plan Q17.)
+11. **Names.** Cumberland, Rice Point, Rocky Point and the West River are real names, used by the
+    owner as written; §9 lists Rocky Point and West River among variants. Ruled as written, or
+    candidates? (world-map-plan Q16.)
+
 ---
 
 ## Appendix — amendments to `world-map-plan.md`
@@ -490,3 +538,7 @@ Made in the same PR as this document:
 
 **Checked and *not* amended:** §2's home-water partition and §3's Market Port split were already
 superseded and correctly folded in by the 2026-08-07 rewrite. Nothing stale was found there.
+
+**2026-09-26:** [`world-map-plan.md`](world-map-plan.md) gained **§8, the eight areas**, and §7
+Q12–Q21. This document's §1, §3.2, §6, §9 and §10 (Q7–Q11) carry dated notes pointing to it; nothing
+above was renumbered or rewritten.

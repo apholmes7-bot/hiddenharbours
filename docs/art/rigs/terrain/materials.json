@@ -1,6 +1,6 @@
 {
   "kit": "Hidden Harbours terrain materials",
-  "version": 5,
+  "version": 6,
   "pxPerMetre": 32,
   "colorSpace": "sRGB",
   "alpha": "always 255",
@@ -9,6 +9,7 @@
   "notBaked": ["cast shadow", "sun AO", "water", "pools", "wet/damp bands", "specular"],
   "keyLight": "BAKED in every \"px\": true material: the greenery px kit's tiles are pre-lit at its fixed upper-left key (docs/art/rigs/px-greenery-harmony-kit/Art/Textures/TerrainPx/README.md). NOT baked in lawn or sandstone, which are still this kit's own pass bakes.",
   "pxFlip": "2026-09-17, PR 1 of 3 (albedo). A \"px\": true material's live PNGs, all three ladder steps, ARE the px kit's bytes: copied, never re-baked or hand-edited, and TerrainKitAlbedoBytesTests proves it by sha256. The px kit ships every material at 256 px / 8 m, so the seven plan materials that were 512 px / 16 m moved into the one 256 array and the 512 array retired (owner ruling A2). Mud is new: splat index 19, _SplatE.a (owner ruling M1). The terrainBake*.js pass bakers still describe the RETIRED bakes, with their own size tables, and no longer make the live tiles; \"pass\" records the bake pass that introduced a material.",
+  "pass9": "2026-09-25, terrain pass 9 PR 2 (the ground). path is new: the pass 9 kit's gravel track, for splat index 20 on _SplatF.r (docs/design/st-peters-terrain-pass-9.md §5); it takes a chunk offset like dirt, because a gravel track has no lie to slice. docs/art/rigs/terrain/pass9/bakePass9.js bakes every \"px\": true material from that kit through TerrainLight6: the albedo from the light's unlit, and the engine contract's _normal, _light and _detail beside it. The bake's maps land under Art/Terrain together with the arrays they pack into; until then the live albedo stays the px kit's bytes, as above.",
   "materials": [
     { "key": "ripple",    "name": "Ripple",    "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": false, "pass": 2, "px": true,
       "steps": ["relict, all but planed off", "working ripple field", "storm-built, gravel lag in the troughs"] },
@@ -56,6 +57,9 @@
     { "key": "lawn",      "name": "Lawn",      "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": true,  "pass": 6,
       "steps": ["neglected — moss, bare scuffs, the first tussocks", "kept — clover and a little wear", "crisp — dense, fine, even, cut tips catching"] },
     { "key": "mud",       "name": "Mud",       "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": true,  "px": true,
-      "steps": ["a cracked skin", "puddled", "flooded"] }
+      "steps": ["a cracked skin", "puddled", "flooded"] },
+
+    { "key": "path",      "name": "Path",      "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": true,  "px": true,
+      "steps": ["after rain — dark damp patches, more hollows", "a gravel track — single stones and pairs, pale polished plates where feet pack it", "bone dry, straw blown across"] }
   ]
 }

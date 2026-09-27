@@ -29,6 +29,13 @@ namespace HiddenHarbours.Tools.RigBaking
     /// together because the colour slot holds either v10 colour or a px index, and the shader branch
     /// must match what is on disk. There is no runtime toggle, and the material ships in the v10
     /// look.</para>
+    ///
+    /// <para><b>⭐ THE MATERIAL IS TRACKED AND THE FACES ARE NOT, SO THEY CAN DISAGREE.</b> Pull a look
+    /// change onto a checkout baked in the other look and the shader reads the other skin's bytes: v10
+    /// colour read as px indices is a wall of near-black. So a narrow self-heal (owner, 09-24) re-bakes
+    /// the faces into the material's look once — only on a MISMATCH (a rock the wall needs is missing
+    /// in the material's look and present in the other one), never on an absence, never inside an
+    /// import, never in play mode, and only as a warning in batchmode. See <see cref="HealFor"/>.</para>
     /// </summary>
     public static class CliffBakeMenu
     {
@@ -85,8 +92,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>The sentinel in a named look: the colour slot is <c>_unlit</c> in v10 and
         /// <c>_index</c> in px — the channel the wall shader cannot render without.</summary>
         public static string SentinelFacePathFor(string rock, bool px) =>
-            CliffBaker.FaceAssetPath(CliffCatalog.BakeRoot, rock, "S", 0,
-                                     px ? CliffCatalog.IndexChannel : CliffCatalog.UnlitChannel);
+            CliffBaker.FaceAssetPath(CliffCatalog.BakeRoot, rock, "S", 0, CliffCatalog.ColourChannel(px));
 
         /// <summary>
         /// True when this checkout carries a baked face for <b>every rock the wall is built from</b>.
@@ -118,40 +124,152 @@ namespace HiddenHarbours.Tools.RigBaking
         /// builder is re-run constantly; and re-baking on every build would silently overwrite a rock the
         /// owner had chosen from the two alternate menu items above.</para>
         ///
-        /// <para><b>⚠ In the px look it refuses, baked or not.</b> Both region builders wire each wall's
-        /// colour texture by its v10 name (<c>LoadFace(…, "_unlit")</c>), and a px bake has moved that
-        /// file to <c>_index</c> — so a build now would stand the coast up with no colour on any wall. A
-        /// builder change would re-run the exporter, and this switch ships without one; until the band's
-        /// field is renamed, the way to rebuild is v10, rebuild, px — and the message says so.</para>
+        /// <para><b>⭐ It bakes in the look the material is in.</b> In px that is the px skin, and
+        /// <see cref="CliffBaker.ClaimSlot"/> moves any v10 <c>_unlit</c> it finds to <c>_index</c> first,
+        /// keeping the GUID the walls reference. Both region wall builders pick the colour slot the same
+        /// way (<see cref="CliffCatalog.ColourChannel"/> of <see cref="IsPxLook"/>), so a build in either
+        /// look wires the faces this call leaves on disk.</para>
         /// </summary>
         public static bool EnsureBaked(string rock = null)
         {
-            if (IsPxLook)
-                throw new InvalidOperationException(
-                    "[cliff-bake] the cliff kit is in the px look, and a region builder cannot wire it yet: " +
-                    "it loads each wall's colour texture by its v10 name (_unlit), which the px bake moved " +
-                    $"to _index. Press {Said(KitV10Item)}, rebuild the region, then press {Said(KitPxItem)}.");
+            bool px = IsPxLook;
+            string[] plan = RocksEnsureBakedWouldBake(
+                px, rock, path => AssetDatabase.LoadAssetAtPath<Texture2D>(path) != null);
+            if (plan.Length == 0) return false;
 
-            if (IsBaked) return false;
-
-            // Named rock: the caller wants that one and only that one.
-            if (rock != null)
-            {
-                Debug.Log($"[cliff-bake] baking {rock} into {CliffCatalog.BakeRoot} on request.");
-                Bake(rock, px: false);
-                return true;
-            }
-
-            // ⭐ Bake only the rocks that are actually MISSING. A checkout baked before the strata
-            // landed has sandstone already, and re-baking it would spend ~30 s overwriting good pixels
-            // just to reach the till it genuinely lacks.
-            Debug.Log($"[cliff-bake] {CliffCatalog.BakeRoot} is missing a rock the wall needs — baking " +
-                      "now (the kit ships as the rig; the PNGs are gitignored and regenerate in seconds).");
-            foreach (string needed in CliffBaker.DefaultRocks)
-                if (AssetDatabase.LoadAssetAtPath<Texture2D>(SentinelFacePathFor(needed, false)) == null)
-                    Bake(needed, px: false);
+            CliffBaker.AssertSlotsUnambiguous(CliffCatalog.BakeRoot, plan);
+            Debug.Log(rock != null
+                ? $"[cliff-bake] baking {rock} ({Look(px)}) into {CliffCatalog.BakeRoot} on request."
+                : $"[cliff-bake] {CliffCatalog.BakeRoot} is missing a rock the wall needs in the " +
+                  $"{Look(px)} look — baking {string.Join(", ", plan)} now (the kit ships as the rig; " +
+                  "the PNGs are gitignored and regenerate in seconds).");
+            foreach (string r in plan) Bake(r, px);
             return true;
         }
+
+        /// <summary>
+        /// What <see cref="EnsureBaked"/> would bake, without baking: nothing when every rock the wall is
+        /// built from is <paramref name="present"/> in the look; otherwise the named
+        /// <paramref name="rock"/> alone, or — with none named — only the rocks actually MISSING. A
+        /// checkout baked before the strata landed has sandstone already, and re-baking it would spend
+        /// ~30 s overwriting good pixels just to reach the till it genuinely lacks.
+        /// </summary>
+        public static string[] RocksEnsureBakedWouldBake(bool px, string rock, Func<string, bool> present)
+        {
+            string[] missing = CliffBaker.DefaultRocks.Where(r => !present(SentinelFacePathFor(r, px))).ToArray();
+            if (missing.Length == 0) return Array.Empty<string>();
+            return rock != null ? new[] { rock } : missing;
+        }
+
+        /// <summary>What the look self-heal does about the faces on disk (<see cref="HealFor"/>).</summary>
+        public enum LookHeal { None, Warn, Bake }
+
+        /// <summary>
+        /// The self-heal's rule, as a pure function of the look and what is on disk.
+        /// <b>Bake</b> (or, in batchmode, <b>Warn</b>) only on a MISMATCH: some rock the wall is built
+        /// from is missing in the material's look while its face IS on disk in the other look — the
+        /// state a pulled look change leaves on a checkout baked the old way. An ABSENCE (a fresh clone,
+        /// CI, a rock never baked in either look) is <see cref="EnsureBaked"/>'s job at the next build,
+        /// so it is <b>None</b> here: a heal that baked on every clean box would put ~1 min on every
+        /// editor start there.
+        /// </summary>
+        public static LookHeal HealFor(bool px, bool batchMode, Func<string, bool> onDisk)
+        {
+            bool mismatch = CliffBaker.DefaultRocks.Any(
+                r => !onDisk(SentinelFacePathFor(r, px)) && onDisk(SentinelFacePathFor(r, !px)));
+            if (!mismatch) return LookHeal.None;
+            return batchMode ? LookHeal.Warn : LookHeal.Bake;
+        }
+
+        /// <summary>The per-look <see cref="SessionState"/> key: set BEFORE a heal acts, so it acts at
+        /// most once per look per editor session and a bake that throws cannot loop.</summary>
+        const string HealedKey = "HiddenHarbours.CliffLookHeal.";
+
+        /// <summary>
+        /// Trigger 1: editor start and every domain reload. The check itself waits for
+        /// <see cref="EditorApplication.delayCall"/> — never inside the load, never in an import worker.
+        /// Trigger 2 is <see cref="CliffLookHealOnImport"/>: pulling a look change touches no script, so
+        /// no reload follows it.
+        /// </summary>
+        [InitializeOnLoadMethod]
+        static void ScheduleTheLookHealOnLoad()
+        {
+            if (AssetDatabase.IsAssetImportWorkerProcess()) return;
+            ScheduleTheLookHeal();
+        }
+
+        /// <summary>Queues one look check for the next editor tick (idempotent while queued).</summary>
+        internal static void ScheduleTheLookHeal()
+        {
+            EditorApplication.delayCall -= HealTheLook;
+            EditorApplication.delayCall += HealTheLook;
+        }
+
+        static void HealTheLook()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                // Play mode is not the time for a minute of baking: wait for edit mode.
+                EditorApplication.playModeStateChanged -= HealBackInEditMode;
+                EditorApplication.playModeStateChanged += HealBackInEditMode;
+                return;
+            }
+            if (EditorApplication.isUpdating || EditorApplication.isCompiling)
+            {
+                ScheduleTheLookHeal();
+                return;
+            }
+
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(CliffCatalog.MaterialPath);
+            if (mat == null) return;
+            bool px = mat.IsKeywordEnabled(CliffCatalog.PxKeyword);
+
+            // ≤ 4 File.Exists: 2 rocks × 2 looks, no refresh and no directory walk.
+            LookHeal heal = HealFor(px, Application.isBatchMode, CliffBaker.OnDisk);
+            if (heal == LookHeal.None) return;
+
+            string key = HealedKey + Look(px);
+            if (SessionState.GetBool(key, false)) return;
+            SessionState.SetBool(key, true);
+
+            string item = px ? KitPxItem : KitV10Item;
+            if (heal == LookHeal.Warn)
+            {
+                string method = $"{typeof(CliffBakeMenu).FullName}.{(px ? nameof(BakeKitPx) : nameof(BakeKitV10))}";
+                Debug.LogWarning(
+                    $"[cliff-bake] the wall material is in the {Look(px)} look but this checkout's cliff faces " +
+                    $"are {Look(!px)}, so every wall draws wrong until they are re-baked. Batchmode never bakes " +
+                    $"on its own: run -executeMethod {method}, or press {Said(item)} in the editor.");
+                return;
+            }
+
+            string[] rocks = RocksToBake();
+            try
+            {
+                CliffBaker.AssertSlotsUnambiguous(CliffCatalog.BakeRoot, rocks);
+                // Faces only: never SetLook and never the palette, so the heal leaves no tracked diff.
+                foreach (string rock in rocks) Bake(rock, px);
+                Debug.Log(
+                    $"[cliff-bake] the material is {Look(px)} but the faces on disk were {Look(!px)} — baked " +
+                    $"{string.Join(", ", rocks)} into {Look(px)} once.");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(
+                    $"[cliff-bake] the material is {Look(px)} but the faces on disk were {Look(!px)}, and the " +
+                    $"bake to match it stopped ({e.Message}). It will not retry this session; press " +
+                    $"{Said(item)}.");
+            }
+        }
+
+        static void HealBackInEditMode(PlayModeStateChange change)
+        {
+            if (change != PlayModeStateChange.EnteredEditMode) return;
+            EditorApplication.playModeStateChanged -= HealBackInEditMode;
+            ScheduleTheLookHeal();
+        }
+
+        static string Look(bool px) => px ? "px" : "v10";
 
         /// <summary>
         /// The rocks a whole-kit bake re-bakes: the two the coast is built from, plus any other rock
@@ -302,5 +420,21 @@ namespace HiddenHarbours.Tools.RigBaking
 
         /// <summary>A menu path the way a person reads it off the menu bar.</summary>
         static string Said(string menuPath) => menuPath.Replace("/", " ▸ ");
+    }
+
+    /// <summary>
+    /// The look self-heal's second trigger: the wall material was imported — a pulled look change, with
+    /// the editor open, re-imports it and reloads no script. It only schedules the check
+    /// (<see cref="CliffBakeMenu.HealFor"/>); nothing is checked or baked inside the import.
+    /// </summary>
+    sealed class CliffLookHealOnImport : AssetPostprocessor
+    {
+        static void OnPostprocessAllAssets(string[] imported, string[] deleted, string[] moved,
+                                           string[] movedFrom)
+        {
+            if (Array.IndexOf(imported, CliffCatalog.MaterialPath) < 0) return;
+            if (AssetDatabase.IsAssetImportWorkerProcess()) return;
+            CliffBakeMenu.ScheduleTheLookHeal();
+        }
     }
 }

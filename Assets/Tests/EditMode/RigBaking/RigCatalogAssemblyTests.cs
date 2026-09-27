@@ -150,6 +150,11 @@ namespace HiddenHarbours.Tests.RigBaking
                          "CharacterHands6", AzimuthConvention.Clockwise, "character"),
             new Snapshot("characterHead", "docs/art/rigs/headIsoRig3.js",
                          "HeadIso3", AzimuthConvention.Clockwise, "characterEye"),
+            // Added by the character rig intake, PR 1 (2026-09-25): Claude Design's kit v9.2, landed
+            // as delivered. Its own body, so no prerequisite; its poses and checks are sidecars that
+            // CharacterSkinExtractor.Load9 runs, not entries.
+            new Snapshot("characterRig9", "docs/art/rigs/character/rig9/Art/characterIsoRig9.js",
+                         "CharacterIso9", AzimuthConvention.Clockwise),
             // Added by the rig-7 skinned-export drop (2026-09-09). Draws nothing: it is the body
             // re-expressed as skeleton + bind mesh + clips. Its API is Object.create(CharacterIso6),
             // so the prerequisite is not politeness — without the body the prototype is missing and

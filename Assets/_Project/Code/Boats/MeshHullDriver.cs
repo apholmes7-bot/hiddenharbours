@@ -31,7 +31,7 @@ namespace HiddenHarbours.Boats
     /// </summary>
     [DisallowMultipleComponent]
     [DefaultExecutionOrder(-110)]   // after BoatWaveMotion (−120), before the overlay readers (−100)
-    public class MeshHullDriver : MonoBehaviour
+    public class MeshHullDriver : MonoBehaviour, IHullWakePoseSource
     {
         private IHullMeshRenderer _renderer;
         private Transform _visual;
@@ -141,6 +141,22 @@ namespace HiddenHarbours.Boats
         /// that went into the renderer, so the two cannot drift.</para>
         /// </summary>
         public float DrawnRideMeters => _drawnRideMeters;
+
+        public bool TryGetWakePose(out HullWakePose pose)
+        {
+            pose = default;
+            if (!isActiveAndEnabled || _renderer == null || _visual == null) return false;
+            // The rig's measured transom at its authored design waterline, projected using
+            // the attitude actually handed to the renderer. Never use the visual child's up:
+            // Drive deliberately holds that child at screen identity.
+            Vector2 projected = MountedRockPoseMath.Project(
+                new Vector3(0f, -_wakeSternOffsetMeters, _designWaterlineMeters),
+                CurrentDirUnits * Mathf.PI / 4f, _appliedRollDegrees * Mathf.Deg2Rad,
+                _appliedPitchDegrees * Mathf.Deg2Rad, _elevationDegrees * Mathf.Deg2Rad);
+            Vector2 drawn = (Vector2)_visual.position + projected + Vector2.up * _appliedHeaveMeters;
+            pose = new HullWakePose(drawn, transform.up, _visual.position.y - transform.position.y);
+            return true;
+        }
 
         /// <summary>
         /// ⭐ <b>THE ATTITUDE THIS HULL IS ACTUALLY DRAWN AT</b> — the roll and pitch handed to the
