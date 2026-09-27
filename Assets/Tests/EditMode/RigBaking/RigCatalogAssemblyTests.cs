@@ -326,7 +326,7 @@ namespace HiddenHarbours.Tests.RigBaking
                          "WharfIso", AzimuthConvention.CounterClockwise),
             // Added by wharf rig kit pass 2, drop 12; raster convention measured from its G-buffer.
             new Snapshot("wharfRig2", "docs/art/rigs/wharf-rig-kit-v2/wharfRig2.js",
-                         "WharfRig2", AzimuthConvention.CounterClockwise, "wharfRig2Families", "wharfRig2Verbs"),
+                         "WharfRig2", AzimuthConvention.CounterClockwise, "wharfRig2Geometry", "wharfRig2Families", "wharfRig2Verbs"),
             // Wharf rig kit pass 2, drop 12: non-directional family builders; unique completion marker.
             new Snapshot("wharfRig2Families", "docs/art/rigs/wharf-rig-kit-v2/wharfRig2.fam.js",
                          "WharfGeo2.FAMILIES", AzimuthConvention.Clockwise, "wharfRig2Geometry"),

@@ -16,7 +16,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 // the +X axis rotates -45 degrees after undoing the 40-degree foreshortening.
                 ["wharfRig2"] = new RigEntry($"{RigFolder}/wharf-rig-kit-v2/wharfRig2.js",
                     "WharfRig2", AzimuthConvention.CounterClockwise,
-                    new[] { "wharfRig2Families", "wharfRig2Verbs" }),
+                    new[] { "wharfRig2Geometry", "wharfRig2Families", "wharfRig2Verbs" }),
                 // Geometry builders/verbs have no rendered heading. Clockwise is an unused
                 // placeholder, following the existing non-directional catalog entries.
                 ["wharfRig2Families"] = new RigEntry($"{RigFolder}/wharf-rig-kit-v2/wharfRig2.fam.js",
