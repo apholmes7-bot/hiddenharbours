@@ -1,0 +1,5251 @@
+{
+ "schema": "hidden-harbours/wharf-gameplay@2",
+ "rig": "wharfRig2.js + wharfRig2.geo.js + wharfRig2.fam.js + wharfRig2.verbs.js + wharfRig2.kit.js",
+ "exportSymbol": "WharfRig2",
+ "key": "harbour:cove",
+ "label": "Cove wharf",
+ "generated": "WharfRig2Kit.gameplay() off the live model — do not hand-edit, regenerate",
+ "frame": {
+  "units": "metres",
+  "axes": "+x east, +y north (the sea), +z up",
+  "origin": "harbour origin at chart datum",
+  "scale_px_per_m": 32,
+  "elev_deg": 40,
+  "dirs": 8,
+  "dir": 0
+ },
+ "params": {
+  "variant": 0,
+  "season": "summer",
+  "stage": "weathered",
+  "age": 0.65,
+  "tideRange": 1.2,
+  "tide": 0.6,
+  "frame": 0,
+  "wind": {
+   "w": 0.2,
+   "gust": 0.4,
+   "dir": 1
+  },
+  "sea": null
+ },
+ "SPRITE": {
+  "cell": [
+   861,
+   420
+  ],
+  "pivot": [
+   542,
+   356
+  ],
+  "pivotIs": "the projection of the model origin (x 0, y 0, z 0): blit at screen(origin) − pivot",
+  "loop": 16,
+  "moving": true
+ },
+ "WALK": [
+  {
+   "module": "head",
+   "poly": [
+    [
+     -9.2,
+     -3.5
+    ],
+    [
+     -2.8,
+     -3.5
+    ],
+    [
+     -2.8,
+     1.5
+    ],
+    [
+     -9.2,
+     1.5
+    ]
+   ],
+   "surface": "plank",
+   "z": 2.2,
+   "rides": null,
+   "clearWidth": 5
+  },
+  {
+   "module": "pier",
+   "poly": [
+    [
+     -4.5,
+     1.5
+    ],
+    [
+     -4.5,
+     10.5
+    ],
+    [
+     -7.5,
+     10.5
+    ],
+    [
+     -7.5,
+     1.5
+    ]
+   ],
+   "surface": "plank",
+   "z": 2.2,
+   "rides": null,
+   "clearWidth": 3
+  },
+  {
+   "module": "float",
+   "poly": [
+    [
+     0.7,
+     14.1
+    ],
+    [
+     0.7,
+     5.1
+    ],
+    [
+     3.2,
+     5.1
+    ],
+    [
+     3.2,
+     14.1
+    ]
+   ],
+   "surface": "hdpe grid",
+   "z": 0.917,
+   "rides": 1,
+   "clearWidth": 2.5
+  },
+  {
+   "module": "finger0",
+   "poly": [
+    [
+     3.2,
+     12.9
+    ],
+    [
+     9.2,
+     12.9
+    ],
+    [
+     9.2,
+     14.1
+    ],
+    [
+     3.2,
+     14.1
+    ]
+   ],
+   "surface": "hdpe grid",
+   "z": 0.925,
+   "rides": 1,
+   "clearWidth": 1.2
+  },
+  {
+   "module": "finger1",
+   "poly": [
+    [
+     3.2,
+     7.5
+    ],
+    [
+     9.2,
+     7.5
+    ],
+    [
+     9.2,
+     8.7
+    ],
+    [
+     3.2,
+     8.7
+    ]
+   ],
+   "surface": "hdpe grid",
+   "z": 0.925,
+   "rides": 1,
+   "clearWidth": 1.2
+  },
+  {
+   "module": "slip",
+   "poly": [
+    [
+     -13.46,
+     -3.5
+    ],
+    [
+     -13.46,
+     8.5
+    ],
+    [
+     -16.54,
+     8.5
+    ],
+    [
+     -16.54,
+     -3.5
+    ]
+   ],
+   "surface": "ribbed concrete",
+   "z0": 2.15,
+   "z1": -0.7,
+   "axis": [
+    0,
+    1
+   ],
+   "slopeDeg": 13.36,
+   "zAt": "z0 + (z1 − z0)·t, t = 0 at the crest, 1 at the toe",
+   "underwaterFrom_t": 0.544,
+   "launchable": true
+  },
+  {
+   "module": "edge",
+   "poly": [
+    [
+     0,
+     -4.3
+    ],
+    [
+     9,
+     -4.3
+    ],
+    [
+     9,
+     0.7
+    ],
+    [
+     0,
+     0.7
+    ]
+   ],
+   "surface": "armour stone",
+   "walkable": false,
+   "note": "loose stone: scramble, not walk"
+  },
+  {
+   "module": "gangway",
+   "kind": "gangway",
+   "hinge": [
+    -4.5,
+    7.5,
+    2.2
+   ],
+   "toe": [
+    1.361,
+    7.5,
+    0.915
+   ],
+   "L": 6,
+   "span": 5.861,
+   "drop": 1.285,
+   "slopeDeg": 12.37,
+   "surface": "alloy treads @ 0.30 m",
+   "clearWidth": 1.1,
+   "rails": [
+    0.5,
+    1
+   ],
+   "walkable": true,
+   "comfortable": true,
+   "note": "hinge fixed, toe rolls on the float deck; z along it is linear hinge → toe",
+   "toeOnFloat_m": {
+    "datum": 0.5,
+    "highestWater": 0.76,
+    "rule": "the toe rollers stay at least 0.3 m inside the float deck at every tide"
+   }
+  }
+ ],
+ "HOLES": [],
+ "BLOCKERS": [
+  {
+   "shape": "circle",
+   "x": -7.2,
+   "y": 3.52,
+   "r": 0.26,
+   "h": 0.22,
+   "kind": "cleat",
+   "low": true,
+   "stepOver": true,
+   "module": "pier"
+  },
+  {
+   "shape": "circle",
+   "x": -7.2,
+   "y": 9.86,
+   "r": 0.26,
+   "h": 0.22,
+   "kind": "cleat",
+   "low": true,
+   "stepOver": true,
+   "module": "pier"
+  },
+  {
+   "shape": "circle",
+   "x": 0.36,
+   "y": 13.5,
+   "r": 0.26,
+   "h": 2.48,
+   "kind": "guide pile",
+   "module": "float"
+  },
+  {
+   "shape": "circle",
+   "x": 0.36,
+   "y": 5.7,
+   "r": 0.26,
+   "h": 2.48,
+   "kind": "guide pile",
+   "module": "float"
+  },
+  {
+   "shape": "circle",
+   "x": 3.8,
+   "y": 13.8,
+   "r": 0.26,
+   "h": 0.22,
+   "kind": "cleat",
+   "low": true,
+   "stepOver": true,
+   "module": "finger0"
+  },
+  {
+   "shape": "circle",
+   "x": 5.65,
+   "y": 13.8,
+   "r": 0.26,
+   "h": 0.22,
+   "kind": "cleat",
+   "low": true,
+   "stepOver": true,
+   "module": "finger0"
+  },
+  {
+   "shape": "circle",
+   "x": 7.75,
+   "y": 13.8,
+   "r": 0.26,
+   "h": 0.22,
+   "kind": "cleat",
+   "low": true,
+   "stepOver": true,
+   "module": "finger0"
+  },
+  {
+   "shape": "circle",
+   "x": 9.54,
+   "y": 13.5,
+   "r": 0.26,
+   "h": 2.48,
+   "kind": "guide pile",
+   "module": "finger0"
+  },
+  {
+   "shape": "circle",
+   "x": 3.8,
+   "y": 8.4,
+   "r": 0.26,
+   "h": 0.22,
+   "kind": "cleat",
+   "low": true,
+   "stepOver": true,
+   "module": "finger1"
+  },
+  {
+   "shape": "circle",
+   "x": 5.65,
+   "y": 8.4,
+   "r": 0.26,
+   "h": 0.22,
+   "kind": "cleat",
+   "low": true,
+   "stepOver": true,
+   "module": "finger1"
+  },
+  {
+   "shape": "circle",
+   "x": 7.75,
+   "y": 8.4,
+   "r": 0.26,
+   "h": 0.22,
+   "kind": "cleat",
+   "low": true,
+   "stepOver": true,
+   "module": "finger1"
+  },
+  {
+   "shape": "circle",
+   "x": 9.54,
+   "y": 8.1,
+   "r": 0.26,
+   "h": 2.48,
+   "kind": "guide pile",
+   "module": "finger1"
+  },
+  {
+   "shape": "poly",
+   "poly": [
+    [
+     -5.55,
+     -3.25
+    ],
+    [
+     -6.25,
+     -3.25
+    ],
+    [
+     -6.25,
+     -3.45
+    ],
+    [
+     -5.55,
+     -3.45
+    ]
+   ],
+   "h": 1.45,
+   "kind": "ringPost",
+   "module": "head",
+   "rides": null
+  },
+  {
+   "shape": "poly",
+   "poly": [
+    [
+     -6.85,
+     -2.79
+    ],
+    [
+     -8.45,
+     -2.79
+    ],
+    [
+     -8.45,
+     -3.45
+    ],
+    [
+     -6.85,
+     -3.45
+    ]
+   ],
+   "h": 0.72,
+   "kind": "fishTable",
+   "module": "head",
+   "rides": null
+  },
+  {
+   "shape": "poly",
+   "poly": [
+    [
+     -3.9,
+     -2.84
+    ],
+    [
+     -4.9,
+     -2.84
+    ],
+    [
+     -4.9,
+     -3.46
+    ],
+    [
+     -3.9,
+     -3.46
+    ]
+   ],
+   "h": 0.85,
+   "kind": "dockBox",
+   "module": "head",
+   "rides": null
+  },
+  {
+   "shape": "poly",
+   "poly": [
+    [
+     -7.25,
+     4.95
+    ],
+    [
+     -7.25,
+     5.65
+    ],
+    [
+     -7.45,
+     5.65
+    ],
+    [
+     -7.45,
+     4.95
+    ]
+   ],
+   "h": 1.45,
+   "kind": "ringPost",
+   "module": "pier",
+   "rides": null
+  },
+  {
+   "shape": "poly",
+   "poly": [
+    [
+     -5.21,
+     4.6
+    ],
+    [
+     -5.21,
+     3
+    ],
+    [
+     -4.55,
+     3
+    ],
+    [
+     -4.55,
+     4.6
+    ]
+   ],
+   "h": 0.72,
+   "kind": "fishTable",
+   "module": "pier",
+   "rides": null
+  },
+  {
+   "shape": "poly",
+   "poly": [
+    [
+     -5.16,
+     8.8
+    ],
+    [
+     -5.16,
+     7.8
+    ],
+    [
+     -4.54,
+     7.8
+    ],
+    [
+     -4.54,
+     8.8
+    ]
+   ],
+   "h": 0.85,
+   "kind": "dockBox",
+   "module": "pier",
+   "rides": null
+  },
+  {
+   "shape": "poly",
+   "poly": [
+    [
+     -5.05,
+     7.05
+    ],
+    [
+     -5.05,
+     6.55
+    ],
+    [
+     -4.55,
+     6.55
+    ],
+    [
+     -4.55,
+     7.05
+    ]
+   ],
+   "h": 1.9,
+   "kind": "davit",
+   "module": "pier",
+   "rides": null
+  },
+  {
+   "shape": "poly",
+   "poly": [
+    [
+     2.95,
+     10.4
+    ],
+    [
+     2.95,
+     9.7
+    ],
+    [
+     3.15,
+     9.7
+    ],
+    [
+     3.15,
+     10.4
+    ]
+   ],
+   "h": 1.45,
+   "kind": "ringPost",
+   "module": "float",
+   "rides": 1
+  },
+  {
+   "shape": "poly",
+   "poly": [
+    [
+     1.36,
+     11.3
+    ],
+    [
+     1.36,
+     12.3
+    ],
+    [
+     0.74,
+     12.3
+    ],
+    [
+     0.74,
+     11.3
+    ]
+   ],
+   "h": 0.85,
+   "kind": "dockBox",
+   "module": "float",
+   "rides": 1
+  }
+ ],
+ "CLIMB": [
+  {
+   "id": "pier.ladder0",
+   "module": "pier",
+   "kind": "wharf ladder",
+   "berth": "pier.water.berth0",
+   "plane": [
+    -7.66,
+    6.94
+   ],
+   "out": [
+    -1,
+    0
+   ],
+   "faceYaw": 90,
+   "rung": 0.24,
+   "width": 0.45,
+   "standoff": 0.275,
+   "rungZ": [
+    1.96,
+    1.72,
+    1.48,
+    1.24,
+    1,
+    0.76,
+    0.52,
+    0.28,
+    0.04,
+    -0.2,
+    -0.44,
+    -0.68,
+    -0.92
+   ],
+   "topZ": 2.2,
+   "bottomRungZ": -0.92,
+   "grabZ": 3.2,
+   "root": {
+    "x": -7.93,
+    "y": 6.94,
+    "zFrom": -0.92,
+    "zTo": 1.96,
+    "note": "the figure faces the ladder (faceYaw) with its root standoff out from the rung plane; root z = the rung its lower foot is on"
+   },
+   "exit": {
+    "x": -6.95,
+    "y": 6.94,
+    "z": 2.2,
+    "note": "standing spot on the deck behind the grab hoops"
+   },
+   "rideGroup": null,
+   "atTide": {
+    "rungsDry": 6,
+    "rungsWet": 7,
+    "footInWater": true,
+    "swimmerCanReach": true
+   },
+   "clip": "ladderDown",
+   "play": "forward to go down, reversed to climb; root motion 0.436 m/s",
+   "opts": {
+    "rung": 0.24,
+    "ladderW": 0.45
+   },
+   "fitsCreatorBodies": true
+  },
+  {
+   "id": "float.ladder0",
+   "module": "float",
+   "kind": "swim ladder",
+   "berth": null,
+   "plane": [
+    3.36,
+    5.9
+   ],
+   "out": [
+    1,
+    0
+   ],
+   "faceYaw": -90,
+   "rung": 0.24,
+   "width": 0.45,
+   "standoff": 0.275,
+   "rungZ": [
+    0.679,
+    0.439,
+    0.199,
+    -0.041
+   ],
+   "topZ": 0.919,
+   "bottomRungZ": -0.041,
+   "grabZ": 1.919,
+   "root": {
+    "x": 3.63,
+    "y": 5.9,
+    "zFrom": -0.041,
+    "zTo": 0.679,
+    "note": "the figure faces the ladder (faceYaw) with its root standoff out from the rung plane; root z = the rung its lower foot is on"
+   },
+   "exit": {
+    "x": 2.65,
+    "y": 5.9,
+    "z": 0.919,
+    "note": "standing spot on the deck behind the grab hoops"
+   },
+   "rideGroup": 1,
+   "atTide": {
+    "rungsDry": 1,
+    "rungsWet": 3,
+    "footInWater": true,
+    "swimmerCanReach": true
+   },
+   "clip": "ladderDown",
+   "play": "forward to go down, reversed to climb; root motion 0.436 m/s",
+   "opts": {
+    "rung": 0.24,
+    "ladderW": 0.45
+   },
+   "fitsCreatorBodies": true
+  }
+ ],
+ "TIE": [
+  {
+   "id": "pier.cleat0",
+   "type": "cleat",
+   "module": "pier",
+   "berth": "pier.water.berth0",
+   "lead": "bow",
+   "at": [
+    -7.2,
+    3.52,
+    2.395
+   ],
+   "stand": [
+    -6.94,
+    3.39,
+    2.2
+   ],
+   "yaw": -90,
+   "clip": "reach",
+   "opts": {
+    "lift": 0.1,
+    "want": [
+     0.132,
+     0.265,
+     0.195
+    ]
+   },
+   "then": {
+    "clip": "haul",
+    "leadYaw": -90
+   },
+   "line": "≤ 22 mm",
+   "holds": "A · B · C",
+   "fitsCreatorBodies": true,
+   "rideGroup": null
+  },
+  {
+   "id": "pier.cleat1",
+   "type": "cleat",
+   "module": "pier",
+   "berth": "pier.water.berth0",
+   "lead": "stern",
+   "at": [
+    -7.2,
+    9.86,
+    2.395
+   ],
+   "stand": [
+    -6.94,
+    9.73,
+    2.2
+   ],
+   "yaw": -90,
+   "clip": "reach",
+   "opts": {
+    "lift": 0.1,
+    "want": [
+     0.132,
+     0.265,
+     0.195
+    ]
+   },
+   "then": {
+    "clip": "haul",
+    "leadYaw": -90
+   },
+   "line": "≤ 22 mm",
+   "holds": "A · B · C",
+   "fitsCreatorBodies": true,
+   "rideGroup": null
+  },
+  {
+   "id": "pier.ring2",
+   "type": "ring",
+   "module": "pier",
+   "berth": "pier.water.berth0",
+   "lead": null,
+   "at": [
+    -7.2,
+    9.24,
+    2.23
+   ],
+   "stand": [
+    -6.94,
+    9.11,
+    2.2
+   ],
+   "yaw": -90,
+   "clip": "reach",
+   "opts": {
+    "lift": 0,
+    "want": [
+     0.132,
+     0.265,
+     0.095
+    ]
+   },
+   "then": {
+    "clip": "haul",
+    "leadYaw": -90
+   },
+   "line": "≤ 16 mm",
+   "holds": "A",
+   "fitsCreatorBodies": true,
+   "rideGroup": null
+  },
+  {
+   "id": "finger0.cleat3",
+   "type": "cleat",
+   "module": "finger0",
+   "berth": "finger0.water.berth0",
+   "lead": "bow",
+   "at": [
+    3.8,
+    13.8,
+    1.115
+   ],
+   "stand": [
+    3.67,
+    13.54,
+    0.92
+   ],
+   "yaw": 0,
+   "clip": "reach",
+   "opts": {
+    "lift": 0.1,
+    "want": [
+     0.132,
+     0.265,
+     0.195
+    ]
+   },
+   "then": {
+    "clip": "haul",
+    "leadYaw": 0
+   },
+   "line": "≤ 22 mm",
+   "holds": "A · B",
+   "fitsCreatorBodies": true,
+   "rideGroup": 1
+  },
+  {
+   "id": "finger0.cleat4",
+   "type": "cleat",
+   "module": "finger0",
+   "berth": "finger0.water.berth0",
+   "lead": "spring",
+   "at": [
+    5.65,
+    13.8,
+    1.119
+   ],
+   "stand": [
+    5.52,
+    13.54,
+    0.924
+   ],
+   "yaw": 0,
+   "clip": "reach",
+   "opts": {
+    "lift": 0.1,
+    "want": [
+     0.132,
+     0.265,
+     0.195
+    ]
+   },
+   "then": {
+    "clip": "haul",
+    "leadYaw": 0
+   },
+   "line": "≤ 22 mm",
+   "holds": "A · B",
+   "fitsCreatorBodies": true,
+   "rideGroup": 1
+  },
+  {
+   "id": "finger0.cleat5",
+   "type": "cleat",
+   "module": "finger0",
+   "berth": "finger0.water.berth0",
+   "lead": "spring",
+   "at": [
+    7.75,
+    13.8,
+    1.124
+   ],
+   "stand": [
+    7.62,
+    13.54,
+    0.929
+   ],
+   "yaw": 0,
+   "clip": "reach",
+   "opts": {
+    "lift": 0.1,
+    "want": [
+     0.132,
+     0.265,
+     0.195
+    ]
+   },
+   "then": {
+    "clip": "haul",
+    "leadYaw": 0
+   },
+   "line": "≤ 22 mm",
+   "holds": "A · B",
+   "fitsCreatorBodies": true,
+   "rideGroup": 1
+  },
+  {
+   "id": "finger1.cleat6",
+   "type": "cleat",
+   "module": "finger1",
+   "berth": "finger1.water.berth0",
+   "lead": "bow",
+   "at": [
+    3.8,
+    8.4,
+    1.115
+   ],
+   "stand": [
+    3.67,
+    8.14,
+    0.92
+   ],
+   "yaw": 0,
+   "clip": "reach",
+   "opts": {
+    "lift": 0.1,
+    "want": [
+     0.132,
+     0.265,
+     0.195
+    ]
+   },
+   "then": {
+    "clip": "haul",
+    "leadYaw": 0
+   },
+   "line": "≤ 22 mm",
+   "holds": "A · B",
+   "fitsCreatorBodies": true,
+   "rideGroup": 1
+  },
+  {
+   "id": "finger1.cleat7",
+   "type": "cleat",
+   "module": "finger1",
+   "berth": "finger1.water.berth0",
+   "lead": "spring",
+   "at": [
+    5.65,
+    8.4,
+    1.119
+   ],
+   "stand": [
+    5.52,
+    8.14,
+    0.924
+   ],
+   "yaw": 0,
+   "clip": "reach",
+   "opts": {
+    "lift": 0.1,
+    "want": [
+     0.132,
+     0.265,
+     0.195
+    ]
+   },
+   "then": {
+    "clip": "haul",
+    "leadYaw": 0
+   },
+   "line": "≤ 22 mm",
+   "holds": "A · B",
+   "fitsCreatorBodies": true,
+   "rideGroup": 1
+  },
+  {
+   "id": "finger1.cleat8",
+   "type": "cleat",
+   "module": "finger1",
+   "berth": "finger1.water.berth0",
+   "lead": "spring",
+   "at": [
+    7.75,
+    8.4,
+    1.124
+   ],
+   "stand": [
+    7.62,
+    8.14,
+    0.929
+   ],
+   "yaw": 0,
+   "clip": "reach",
+   "opts": {
+    "lift": 0.1,
+    "want": [
+     0.132,
+     0.265,
+     0.195
+    ]
+   },
+   "then": {
+    "clip": "haul",
+    "leadYaw": 0
+   },
+   "line": "≤ 22 mm",
+   "holds": "A · B",
+   "fitsCreatorBodies": true,
+   "rideGroup": 1
+  }
+ ],
+ "BOARD": [
+  {
+   "berth": "pier.water.berth0",
+   "hull": "bowrider",
+   "at": [
+    -7.5,
+    6.94
+   ],
+   "yaw": -90,
+   "deckZ": 2.2,
+   "hullSoleZ": 0.62,
+   "step": -1.58,
+   "clip": "ladder",
+   "opts": null,
+   "fitsCreatorBodies": true,
+   "how": {
+    "aboard": "ladder",
+    "ashore": "ladder"
+   },
+   "aboard": {
+    "dz": -1.58,
+    "how": "ladder",
+    "seq": [
+     {
+      "verb": "climbDown",
+      "ladder": "pier.ladder0"
+     }
+    ],
+    "fits": true,
+    "first": "climbDown",
+    "opts": null
+   },
+   "ashore": {
+    "dz": 1.58,
+    "how": "ladder",
+    "seq": [
+     {
+      "verb": "climbUp",
+      "ladder": "pier.ladder0"
+     }
+    ],
+    "fits": true,
+    "first": "climbUp",
+    "opts": null
+   },
+   "ladder": "pier.ladder0",
+   "rides": null
+  },
+  {
+   "berth": "finger0.water.berth0",
+   "hull": "skiff",
+   "at": [
+    6.7,
+    14.1
+   ],
+   "yaw": 0,
+   "deckZ": 0.927,
+   "hullSoleZ": 0.62,
+   "step": -0.307,
+   "clip": "boardDown",
+   "opts": {
+    "railZ": 0.307
+   },
+   "fitsCreatorBodies": true,
+   "how": {
+    "aboard": "step down",
+    "ashore": "low step up"
+   },
+   "aboard": {
+    "dz": -0.307,
+    "how": "step down",
+    "seq": [
+     {
+      "clip": "boardDown",
+      "once": true,
+      "opts": {
+       "railZ": 0.307
+      },
+      "advance": "to the landing over t 0.04–0.86"
+     }
+    ],
+    "fits": true,
+    "first": "boardDown",
+    "opts": {
+     "railZ": 0.307
+    }
+   },
+   "ashore": {
+    "dz": 0.307,
+    "how": "low step up",
+    "seq": [
+     {
+      "clip": "boardDown",
+      "once": true,
+      "reverse": true,
+      "opts": {
+       "railZ": 0.307
+      },
+      "advance": "to the landing over t 0.14–0.96 (the clip reversed)",
+      "note": "no grip",
+      "request": "stepUp"
+     }
+    ],
+    "fits": true,
+    "first": "boardDown",
+    "opts": {
+     "railZ": 0.307
+    }
+   },
+   "ladder": null,
+   "rides": 1
+  },
+  {
+   "berth": "finger1.water.berth0",
+   "hull": "skiff",
+   "at": [
+    6.7,
+    8.7
+   ],
+   "yaw": 0,
+   "deckZ": 0.926,
+   "hullSoleZ": 0.62,
+   "step": -0.306,
+   "clip": "boardDown",
+   "opts": {
+    "railZ": 0.306
+   },
+   "fitsCreatorBodies": true,
+   "how": {
+    "aboard": "step down",
+    "ashore": "low step up"
+   },
+   "aboard": {
+    "dz": -0.306,
+    "how": "step down",
+    "seq": [
+     {
+      "clip": "boardDown",
+      "once": true,
+      "opts": {
+       "railZ": 0.306
+      },
+      "advance": "to the landing over t 0.04–0.86"
+     }
+    ],
+    "fits": true,
+    "first": "boardDown",
+    "opts": {
+     "railZ": 0.306
+    }
+   },
+   "ashore": {
+    "dz": 0.306,
+    "how": "low step up",
+    "seq": [
+     {
+      "clip": "boardDown",
+      "once": true,
+      "reverse": true,
+      "opts": {
+       "railZ": 0.306
+      },
+      "advance": "to the landing over t 0.14–0.96 (the clip reversed)",
+      "note": "no grip",
+      "request": "stepUp"
+     }
+    ],
+    "fits": true,
+    "first": "boardDown",
+    "opts": {
+     "railZ": 0.306
+    }
+   },
+   "ladder": null,
+   "rides": 1
+  }
+ ],
+ "BERTHS": [
+  {
+   "id": "pier.water.berth0",
+   "module": "pier",
+   "face": "water",
+   "hull": "bowrider",
+   "label": "bowrider",
+   "cls": "A",
+   "loa": 5.64,
+   "beam": 2.29,
+   "draft": 0.4,
+   "footprint": {
+    "centre": [
+     -9.09,
+     6.94
+    ],
+    "heading": [
+     0,
+     1
+    ],
+    "length": 5.64,
+    "width": 2.29
+   },
+   "line": "12–16 mm",
+   "fender": "foam",
+   "bedUnder": -0.03,
+   "depthAtDatum": 0.03,
+   "afloatAtDatum": false,
+   "floatsFrom": 0.67,
+   "dries": true,
+   "afloatNow": false,
+   "aground": false,
+   "ties": [
+    "pier.cleat0",
+    "pier.cleat1",
+    "pier.ring2"
+   ],
+   "ladder": "pier.ladder0"
+  },
+  {
+   "id": "finger0.water.berth0",
+   "module": "finger0",
+   "face": "water",
+   "hull": "skiff",
+   "label": "console skiff",
+   "cls": "A",
+   "loa": 7,
+   "beam": 2.3,
+   "draft": 0.42,
+   "footprint": {
+    "centre": [
+     6.7,
+     15.37
+    ],
+    "heading": [
+     1,
+     0
+    ],
+    "length": 7,
+    "width": 2.3
+   },
+   "line": "12–16 mm",
+   "fender": "foam",
+   "bedUnder": -2.6,
+   "depthAtDatum": 2.6,
+   "afloatAtDatum": true,
+   "floatsFrom": -1.88,
+   "dries": false,
+   "afloatNow": true,
+   "aground": false,
+   "ties": [
+    "finger0.cleat3",
+    "finger0.cleat4",
+    "finger0.cleat5"
+   ],
+   "ladder": null
+  },
+  {
+   "id": "finger1.water.berth0",
+   "module": "finger1",
+   "face": "water",
+   "hull": "skiff",
+   "label": "console skiff",
+   "cls": "A",
+   "loa": 7,
+   "beam": 2.3,
+   "draft": 0.42,
+   "footprint": {
+    "centre": [
+     6.7,
+     9.97
+    ],
+    "heading": [
+     1,
+     0
+    ],
+    "length": 7,
+    "width": 2.3
+   },
+   "line": "12–16 mm",
+   "fender": "foam",
+   "bedUnder": -1.31,
+   "depthAtDatum": 1.31,
+   "afloatAtDatum": true,
+   "floatsFrom": -0.59,
+   "dries": false,
+   "afloatNow": true,
+   "aground": false,
+   "ties": [
+    "finger1.cleat6",
+    "finger1.cleat7",
+    "finger1.cleat8"
+   ],
+   "ladder": null
+  }
+ ],
+ "FENDERS": [
+  {
+   "type": "foam",
+   "x": -7.5,
+   "y": 5.53,
+   "r": 0.28,
+   "module": "pier"
+  },
+  {
+   "type": "foam",
+   "x": -7.5,
+   "y": 8.35,
+   "r": 0.28,
+   "module": "pier"
+  },
+  {
+   "type": "dolphin",
+   "x": -6,
+   "y": 11.9,
+   "r": 0.73,
+   "module": "dolphin",
+   "note": "a pile cluster: a fender and a mooring post, not a deck"
+  }
+ ],
+ "FLOAT": {
+  "1": {
+   "group": 1,
+   "members": [
+    "float",
+    "finger0",
+    "finger1"
+   ],
+   "freeboard": 0.32,
+   "waterplane": [
+    9,
+    8.5
+   ],
+   "centre": [
+    4.95,
+    9.6
+   ],
+   "axisDeg": -90,
+   "loop": [
+    {
+     "heave": 0.003,
+     "rollDeg": 0.12,
+     "pitchDeg": 0
+    },
+    {
+     "heave": 0.005,
+     "rollDeg": 0.09,
+     "pitchDeg": 0.15
+    },
+    {
+     "heave": 0.008,
+     "rollDeg": 0.02,
+     "pitchDeg": 0.28
+    },
+    {
+     "heave": 0.01,
+     "rollDeg": -0.04,
+     "pitchDeg": 0.37
+    },
+    {
+     "heave": 0.011,
+     "rollDeg": -0.08,
+     "pitchDeg": 0.4
+    },
+    {
+     "heave": 0.01,
+     "rollDeg": -0.08,
+     "pitchDeg": 0.37
+    },
+    {
+     "heave": 0.007,
+     "rollDeg": -0.04,
+     "pitchDeg": 0.28
+    },
+    {
+     "heave": 0.003,
+     "rollDeg": 0,
+     "pitchDeg": 0.15
+    },
+    {
+     "heave": -0.003,
+     "rollDeg": 0.02,
+     "pitchDeg": 0
+    },
+    {
+     "heave": -0.008,
+     "rollDeg": 0,
+     "pitchDeg": -0.15
+    },
+    {
+     "heave": -0.011,
+     "rollDeg": -0.03,
+     "pitchDeg": -0.28
+    },
+    {
+     "heave": -0.012,
+     "rollDeg": -0.06,
+     "pitchDeg": -0.37
+    },
+    {
+     "heave": -0.01,
+     "rollDeg": -0.05,
+     "pitchDeg": -0.4
+    },
+    {
+     "heave": -0.007,
+     "rollDeg": -0.01,
+     "pitchDeg": -0.37
+    },
+    {
+     "heave": -0.004,
+     "rollDeg": 0.05,
+     "pitchDeg": -0.28
+    },
+    {
+     "heave": 0,
+     "rollDeg": 0.1,
+     "pitchDeg": -0.15
+    }
+   ],
+   "law": "heave, roll, pitch = the waterplane average (sinc) and first moment of three loop-periodic components (1, 2, 1 cycles per 16 frames) running with the water shader toward the shore; roll/pitch ×0.7, heave ×0.9",
+   "rockFor": "WharfRig2.rockFor(frame, group, yawDeg) → { roll, pitch } for CharacterIso9.render({ roll, pitch })"
+  }
+ },
+ "SOCKETS": [
+  {
+   "id": "head.nx",
+   "module": "head",
+   "at": [
+    -9.2,
+    -1,
+    2.2
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "head.px",
+   "module": "head",
+   "at": [
+    -2.8,
+    -1,
+    2.2
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "head.water0",
+   "module": "head",
+   "at": [
+    -9.2,
+    1.5,
+    2.2
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3.2,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "head.shore0",
+   "module": "head",
+   "at": [
+    -9.2,
+    -3.5,
+    2.2
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3.2,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "head.water1",
+   "module": "head",
+   "at": [
+    -6,
+    1.5,
+    2.2
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3.2,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "head.shore1",
+   "module": "head",
+   "at": [
+    -6,
+    -3.5,
+    2.2
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3.2,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "head.water2",
+   "module": "head",
+   "at": [
+    -2.8,
+    1.5,
+    2.2
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3.2,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "head.shore2",
+   "module": "head",
+   "at": [
+    -2.8,
+    -3.5,
+    2.2
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3.2,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "pier.nx",
+   "module": "pier",
+   "at": [
+    -6,
+    1.5,
+    2.2
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": true,
+   "face": null
+  },
+  {
+   "id": "pier.px",
+   "module": "pier",
+   "at": [
+    -6,
+    10.5,
+    2.2
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "pier.water0",
+   "module": "pier",
+   "at": [
+    -7.5,
+    1.5,
+    2.2
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "pier.shore0",
+   "module": "pier",
+   "at": [
+    -4.5,
+    1.5,
+    2.2
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "pier.water1",
+   "module": "pier",
+   "at": [
+    -7.5,
+    4.5,
+    2.2
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "pier.shore1",
+   "module": "pier",
+   "at": [
+    -4.5,
+    4.5,
+    2.2
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "pier.water2",
+   "module": "pier",
+   "at": [
+    -7.5,
+    7.5,
+    2.2
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "pier.shore2",
+   "module": "pier",
+   "at": [
+    -4.5,
+    7.5,
+    2.2
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "pier.water3",
+   "module": "pier",
+   "at": [
+    -7.5,
+    10.5,
+    2.2
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "pier.shore3",
+   "module": "pier",
+   "at": [
+    -4.5,
+    10.5,
+    2.2
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "float.nx",
+   "module": "float",
+   "at": [
+    1.95,
+    14.1,
+    0.32
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 2.5,
+   "type": "float",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "float.px",
+   "module": "float",
+   "at": [
+    1.95,
+    5.1,
+    0.32
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 2.5,
+   "type": "float",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "float.water0",
+   "module": "float",
+   "at": [
+    3.2,
+    14.1,
+    0.32
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "float.shore0",
+   "module": "float",
+   "at": [
+    0.7,
+    14.1,
+    0.32
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "float.water1",
+   "module": "float",
+   "at": [
+    3.2,
+    11.1,
+    0.32
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "float.shore1",
+   "module": "float",
+   "at": [
+    0.7,
+    11.1,
+    0.32
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "float.water2",
+   "module": "float",
+   "at": [
+    3.2,
+    8.1,
+    0.32
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "float.shore2",
+   "module": "float",
+   "at": [
+    0.7,
+    8.1,
+    0.32
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "float.water3",
+   "module": "float",
+   "at": [
+    3.2,
+    5.1,
+    0.32
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "float.shore3",
+   "module": "float",
+   "at": [
+    0.7,
+    5.1,
+    0.32
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "finger0.nx",
+   "module": "finger0",
+   "at": [
+    3.2,
+    13.5,
+    0.32
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 1.2,
+   "type": "float",
+   "joined": true,
+   "face": null
+  },
+  {
+   "id": "finger0.px",
+   "module": "finger0",
+   "at": [
+    9.2,
+    13.5,
+    0.32
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 1.2,
+   "type": "float",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "finger0.water0",
+   "module": "finger0",
+   "at": [
+    3.2,
+    14.1,
+    0.32
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "finger0.shore0",
+   "module": "finger0",
+   "at": [
+    3.2,
+    12.9,
+    0.32
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "finger0.water1",
+   "module": "finger0",
+   "at": [
+    6.2,
+    14.1,
+    0.32
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "finger0.shore1",
+   "module": "finger0",
+   "at": [
+    6.2,
+    12.9,
+    0.32
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "finger0.water2",
+   "module": "finger0",
+   "at": [
+    9.2,
+    14.1,
+    0.32
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "finger0.shore2",
+   "module": "finger0",
+   "at": [
+    9.2,
+    12.9,
+    0.32
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "finger1.nx",
+   "module": "finger1",
+   "at": [
+    3.2,
+    8.1,
+    0.32
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 1.2,
+   "type": "float",
+   "joined": true,
+   "face": null
+  },
+  {
+   "id": "finger1.px",
+   "module": "finger1",
+   "at": [
+    9.2,
+    8.1,
+    0.32
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 1.2,
+   "type": "float",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "finger1.water0",
+   "module": "finger1",
+   "at": [
+    3.2,
+    8.7,
+    0.32
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "finger1.shore0",
+   "module": "finger1",
+   "at": [
+    3.2,
+    7.5,
+    0.32
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "finger1.water1",
+   "module": "finger1",
+   "at": [
+    6.2,
+    8.7,
+    0.32
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "finger1.shore1",
+   "module": "finger1",
+   "at": [
+    6.2,
+    7.5,
+    0.32
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "finger1.water2",
+   "module": "finger1",
+   "at": [
+    9.2,
+    8.7,
+    0.32
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "finger1.shore2",
+   "module": "finger1",
+   "at": [
+    9.2,
+    7.5,
+    0.32
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "float",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "dolphin.nx",
+   "module": "dolphin",
+   "at": [
+    -6.7,
+    11.9,
+    2.2
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 1.4,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "dolphin.px",
+   "module": "dolphin",
+   "at": [
+    -5.3,
+    11.9,
+    2.2
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 1.4,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "dolphin.water0",
+   "module": "dolphin",
+   "at": [
+    -6.7,
+    12.6,
+    2.2
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 1.4,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "dolphin.shore0",
+   "module": "dolphin",
+   "at": [
+    -6.7,
+    11.2,
+    2.2
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 1.4,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "dolphin.water1",
+   "module": "dolphin",
+   "at": [
+    -5.3,
+    12.6,
+    2.2
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 1.4,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "dolphin.shore1",
+   "module": "dolphin",
+   "at": [
+    -5.3,
+    11.2,
+    2.2
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 1.4,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "slip.nx",
+   "module": "slip",
+   "at": [
+    -15,
+    -3.5,
+    2.15
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3.6,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "slip.px",
+   "module": "slip",
+   "at": [
+    -15,
+    8.5,
+    2.15
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3.6,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "slip.water0",
+   "module": "slip",
+   "at": [
+    -16.8,
+    -3.5,
+    2.15
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 12,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "slip.shore0",
+   "module": "slip",
+   "at": [
+    -13.2,
+    -3.5,
+    2.15
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 12,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "slip.water1",
+   "module": "slip",
+   "at": [
+    -16.8,
+    8.5,
+    2.15
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 12,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "slip.shore1",
+   "module": "slip",
+   "at": [
+    -13.2,
+    8.5,
+    2.15
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 12,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "edge.nx",
+   "module": "edge",
+   "at": [
+    0,
+    -1.8,
+    2.15
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "edge.px",
+   "module": "edge",
+   "at": [
+    9,
+    -1.8,
+    2.15
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "edge.water0",
+   "module": "edge",
+   "at": [
+    0,
+    0.7,
+    2.15
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "edge.shore0",
+   "module": "edge",
+   "at": [
+    0,
+    -4.3,
+    2.15
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "edge.water1",
+   "module": "edge",
+   "at": [
+    3,
+    0.7,
+    2.15
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "edge.shore1",
+   "module": "edge",
+   "at": [
+    3,
+    -4.3,
+    2.15
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "edge.water2",
+   "module": "edge",
+   "at": [
+    6,
+    0.7,
+    2.15
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "edge.shore2",
+   "module": "edge",
+   "at": [
+    6,
+    -4.3,
+    2.15
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "edge.water3",
+   "module": "edge",
+   "at": [
+    9,
+    0.7,
+    2.15
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "edge.shore3",
+   "module": "edge",
+   "at": [
+    9,
+    -4.3,
+    2.15
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  }
+ ],
+ "WATER": {
+  "bakedWaterPixels": 0,
+  "rule": "every pixel whose z is under the tide (view \"sub\") is the water shader’s: draw the sea over it, the first 0.16 m through three steps of water",
+  "contact": "WharfRig2.contact(frame): the waterline, for the foam lace",
+  "shade": "castShadow levels → TerrainLight6 relight o.lv"
+ },
+ "SNOW": {
+  "map": "frame.snow, one byte per pixel",
+  "rule": "snowed = round(cover × 254) >= byte; 255 never",
+  "never": "vertical faces, growth, sky visibility < 0.18, below tide + 0.25 + 0.2·wind"
+ },
+ "SHADOW": {
+  "levels": "1 canopy (under a deck, stays in overcast) · 2 partial · 3 full",
+  "call": "WharfRig2.castShadow(frame, sky, {z}) or shadeAt(frame, sky, x, y, z)"
+ },
+ "SORT": {
+  "floorLayer": "lay 0: decks and all under them draw under figures",
+  "raised": "lay 1: rails, bollards, grab hoops, dolphin rails, gangway rails — y-sort each by its base row",
+  "channel": "view \"layer\""
+ },
+ "CHAR": {
+  "from": "export/character-v9.2-import-kit reports/worldfit.txt",
+  "rev": "9.2",
+  "rig": "characterIsoRig9.js",
+  "rigSha": "02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144",
+  "rung": 0.24,
+  "rungFit": [
+   0.211,
+   0.273
+  ],
+  "rungClamp": [
+   0.18,
+   0.45
+  ],
+  "ladderW": 0.45,
+  "standoff": 0.275,
+  "hands": 0.17,
+  "railFit": [
+   0.549,
+   0.724
+  ],
+  "railClamp": [
+   0.06,
+   1.3
+  ],
+  "reachLift": [
+   0,
+   1.012
+  ],
+  "gripRise": 0.095,
+  "want": [
+   0.132,
+   0.265
+  ],
+  "loadFit": [
+   0.718,
+   0.978
+  ],
+  "radius": [
+   0.141,
+   0.229
+  ],
+  "fisherR": 0.2,
+  "footprint": [
+   0.458,
+   0.37
+  ],
+  "head": 1.8,
+  "clips": {
+   "climb": "ladderDown (reverse to climb)",
+   "tie": "reach",
+   "haul": "haul",
+   "step": "board / boardDown",
+   "walk": "walk",
+   "swim": "swim / tread"
+  },
+  "built": {
+   "rung": 0.24,
+   "ladderW": 0.45,
+   "grab": 1,
+   "cleatHorn": 0.22,
+   "bollard": 0.75,
+   "gangwaySlopeMax": 18.43,
+   "gangwayClear": 1.1,
+   "rail": 1.05
+  }
+ },
+ "FIXTURES": [
+  {
+   "id": "head.ringPost0",
+   "kind": "ringPost",
+   "label": "life-ring post",
+   "module": "head",
+   "face": "shore",
+   "stand": [
+    -5.9,
+    -3,
+    2.2
+   ],
+   "yaw": -180,
+   "height": 1.45,
+   "rides": null,
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.95,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ],
+   "footprint": [
+    [
+     -5.55,
+     -3.25
+    ],
+    [
+     -6.25,
+     -3.25
+    ],
+    [
+     -6.25,
+     -3.45
+    ],
+    [
+     -5.55,
+     -3.45
+    ]
+   ]
+  },
+  {
+   "id": "head.fishTable1",
+   "kind": "fishTable",
+   "label": "fish-cleaning table",
+   "module": "head",
+   "face": "shore",
+   "stand": [
+    -7.65,
+    -2.65,
+    2.2
+   ],
+   "yaw": -180,
+   "height": 0.72,
+   "rides": null,
+   "fits": [
+    {
+     "param": "knife",
+     "value": 0.72,
+     "range": [
+      0.598,
+      0.76
+     ],
+     "ok": true
+    },
+    {
+     "param": "bench",
+     "value": 0.72,
+     "range": [
+      0.643,
+      0.853
+     ],
+     "ok": true
+    }
+   ],
+   "footprint": [
+    [
+     -6.85,
+     -2.79
+    ],
+    [
+     -8.45,
+     -2.79
+    ],
+    [
+     -8.45,
+     -3.45
+    ],
+    [
+     -6.85,
+     -3.45
+    ]
+   ]
+  },
+  {
+   "id": "head.dockBox2",
+   "kind": "dockBox",
+   "label": "dock box",
+   "module": "head",
+   "face": "shore",
+   "stand": [
+    -4.4,
+    -2.62,
+    2.2
+   ],
+   "yaw": -180,
+   "height": 0.85,
+   "rides": null,
+   "fits": [
+    {
+     "param": "load",
+     "value": 0.85,
+     "range": [
+      0.718,
+      0.978
+     ],
+     "ok": true
+    }
+   ],
+   "footprint": [
+    [
+     -3.9,
+     -2.84
+    ],
+    [
+     -4.9,
+     -2.84
+    ],
+    [
+     -4.9,
+     -3.46
+    ],
+    [
+     -3.9,
+     -3.46
+    ]
+   ]
+  },
+  {
+   "id": "pier.ringPost0",
+   "kind": "ringPost",
+   "label": "life-ring post",
+   "module": "pier",
+   "face": "water",
+   "stand": [
+    -7,
+    5.3,
+    2.2
+   ],
+   "yaw": -90,
+   "height": 1.45,
+   "rides": null,
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.95,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ],
+   "footprint": [
+    [
+     -7.25,
+     4.95
+    ],
+    [
+     -7.25,
+     5.65
+    ],
+    [
+     -7.45,
+     5.65
+    ],
+    [
+     -7.45,
+     4.95
+    ]
+   ]
+  },
+  {
+   "id": "pier.fishTable1",
+   "kind": "fishTable",
+   "label": "fish-cleaning table",
+   "module": "pier",
+   "face": "shore",
+   "stand": [
+    -5.35,
+    3.8,
+    2.2
+   ],
+   "yaw": 90,
+   "height": 0.72,
+   "rides": null,
+   "fits": [
+    {
+     "param": "knife",
+     "value": 0.72,
+     "range": [
+      0.598,
+      0.76
+     ],
+     "ok": true
+    },
+    {
+     "param": "bench",
+     "value": 0.72,
+     "range": [
+      0.643,
+      0.853
+     ],
+     "ok": true
+    }
+   ],
+   "footprint": [
+    [
+     -5.21,
+     4.6
+    ],
+    [
+     -5.21,
+     3
+    ],
+    [
+     -4.55,
+     3
+    ],
+    [
+     -4.55,
+     4.6
+    ]
+   ]
+  },
+  {
+   "id": "pier.dockBox2",
+   "kind": "dockBox",
+   "label": "dock box",
+   "module": "pier",
+   "face": "shore",
+   "stand": [
+    -5.38,
+    8.3,
+    2.2
+   ],
+   "yaw": 90,
+   "height": 0.85,
+   "rides": null,
+   "fits": [
+    {
+     "param": "load",
+     "value": 0.85,
+     "range": [
+      0.718,
+      0.978
+     ],
+     "ok": true
+    }
+   ],
+   "footprint": [
+    [
+     -5.16,
+     8.8
+    ],
+    [
+     -5.16,
+     7.8
+    ],
+    [
+     -4.54,
+     7.8
+    ],
+    [
+     -4.54,
+     8.8
+    ]
+   ]
+  },
+  {
+   "id": "pier.davit3",
+   "kind": "davit",
+   "label": "wharf davit + hauler",
+   "module": "pier",
+   "face": "shore",
+   "stand": [
+    -5.05,
+    6.8,
+    2.2
+   ],
+   "yaw": 90,
+   "height": 1.9,
+   "rides": null,
+   "fits": [
+    {
+     "param": "warp sheave scale at 1.05",
+     "value": 0.52,
+     "range": [
+      0.4,
+      0.632
+     ],
+     "ok": true
+    }
+   ],
+   "footprint": [
+    [
+     -5.05,
+     7.05
+    ],
+    [
+     -5.05,
+     6.55
+    ],
+    [
+     -4.55,
+     6.55
+    ],
+    [
+     -4.55,
+     7.05
+    ]
+   ]
+  },
+  {
+   "id": "pier.fishSpot4",
+   "kind": "fishSpot",
+   "label": "fishing spot",
+   "module": "pier",
+   "face": "shore",
+   "stand": [
+    -4.95,
+    5.55,
+    2.2
+   ],
+   "yaw": 90,
+   "height": 0,
+   "rides": null,
+   "fits": []
+  },
+  {
+   "id": "float.ringPost0",
+   "kind": "ringPost",
+   "label": "life-ring post",
+   "module": "float",
+   "face": "water",
+   "stand": [
+    2.7,
+    10.05,
+    0.911
+   ],
+   "yaw": 90,
+   "height": 1.45,
+   "rides": 1,
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.95,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ],
+   "footprint": [
+    [
+     2.95,
+     10.4
+    ],
+    [
+     2.95,
+     9.7
+    ],
+    [
+     3.15,
+     9.7
+    ],
+    [
+     3.15,
+     10.4
+    ]
+   ]
+  },
+  {
+   "id": "float.dockBox1",
+   "kind": "dockBox",
+   "label": "dock box",
+   "module": "float",
+   "face": "shore",
+   "stand": [
+    1.58,
+    11.8,
+    0.908
+   ],
+   "yaw": -90,
+   "height": 0.85,
+   "rides": 1,
+   "fits": [
+    {
+     "param": "load",
+     "value": 0.85,
+     "range": [
+      0.718,
+      0.978
+     ],
+     "ok": true
+    }
+   ],
+   "footprint": [
+    [
+     1.36,
+     11.3
+    ],
+    [
+     1.36,
+     12.3
+    ],
+    [
+     0.74,
+     12.3
+    ],
+    [
+     0.74,
+     11.3
+    ]
+   ]
+  },
+  {
+   "id": "float.fishSpot2",
+   "kind": "fishSpot",
+   "label": "fishing spot",
+   "module": "float",
+   "face": "shore",
+   "stand": [
+    1.15,
+    9.8,
+    0.912
+   ],
+   "yaw": -90,
+   "height": 0,
+   "rides": 1,
+   "fits": []
+  }
+ ],
+ "VERBS": [
+  {
+   "id": "head.ringPost0.throwRing",
+   "verb": "throwRing",
+   "fixture": "head.ringPost0",
+   "module": "head",
+   "stand": [
+    -5.9,
+    -3,
+    2.2
+   ],
+   "yaw": -180,
+   "rides": null,
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.95,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "rest": "stowV"
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the ring leaves the hand at tossRelease 0.52"
+    }
+   ]
+  },
+  {
+   "id": "head.fishTable1.gut",
+   "verb": "gut",
+   "fixture": "head.fishTable1",
+   "module": "head",
+   "stand": [
+    -7.65,
+    -2.65,
+    2.2
+   ],
+   "yaw": -180,
+   "rides": null,
+   "fits": [
+    {
+     "param": "knife",
+     "value": 0.72,
+     "range": [
+      0.598,
+      0.76
+     ],
+     "ok": true
+    },
+    {
+     "param": "bench",
+     "value": 0.72,
+     "range": [
+      0.643,
+      0.853
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "chop",
+     "loop": true,
+     "opts": {
+      "workZ": 0.72
+     }
+    }
+   ],
+   "note": "the cut lands 0.32 m ahead, on the cutting board"
+  },
+  {
+   "id": "head.fishTable1.bait",
+   "verb": "bait",
+   "fixture": "head.fishTable1",
+   "module": "head",
+   "stand": [
+    -7.65,
+    -2.65,
+    2.2
+   ],
+   "yaw": -180,
+   "rides": null,
+   "fits": [
+    {
+     "param": "knife",
+     "value": 0.72,
+     "range": [
+      0.598,
+      0.76
+     ],
+     "ok": true
+    },
+    {
+     "param": "bench",
+     "value": 0.72,
+     "range": [
+      0.643,
+      0.853
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "bench",
+     "loop": true,
+     "opts": {
+      "workZ": 0.72
+     }
+    }
+   ]
+  },
+  {
+   "id": "head.dockBox2.stow",
+   "verb": "stow",
+   "fixture": "head.dockBox2",
+   "module": "head",
+   "stand": [
+    -4.4,
+    -2.62,
+    2.2
+   ],
+   "yaw": -180,
+   "rides": null,
+   "fits": [
+    {
+     "param": "load",
+     "value": 0.85,
+     "range": [
+      0.718,
+      0.978
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "place",
+     "once": true,
+     "opts": {
+      "workZ": 0.85
+     },
+     "from": "a carry (idle+tray, idle+pot) or lift"
+    }
+   ],
+   "note": "the load sets 0.42 m ahead, on the lid"
+  },
+  {
+   "id": "head.dockBox2.fetch",
+   "verb": "fetch",
+   "fixture": "head.dockBox2",
+   "module": "head",
+   "stand": [
+    -4.4,
+    -2.62,
+    2.2
+   ],
+   "yaw": -180,
+   "rides": null,
+   "fits": [
+    {
+     "param": "load",
+     "value": 0.85,
+     "range": [
+      0.718,
+      0.978
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "place",
+     "once": true,
+     "reverse": true,
+     "opts": {
+      "workZ": 0.85
+     }
+    }
+   ],
+   "note": "place played backward takes the load off the lid (lift starts at 0.30 m, below it)"
+  },
+  {
+   "id": "pier.ringPost0.throwRing",
+   "verb": "throwRing",
+   "fixture": "pier.ringPost0",
+   "module": "pier",
+   "stand": [
+    -7,
+    5.3,
+    2.2
+   ],
+   "yaw": -90,
+   "rides": null,
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.95,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "rest": "stowV"
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the ring leaves the hand at tossRelease 0.52"
+    }
+   ]
+  },
+  {
+   "id": "pier.fishTable1.gut",
+   "verb": "gut",
+   "fixture": "pier.fishTable1",
+   "module": "pier",
+   "stand": [
+    -5.35,
+    3.8,
+    2.2
+   ],
+   "yaw": 90,
+   "rides": null,
+   "fits": [
+    {
+     "param": "knife",
+     "value": 0.72,
+     "range": [
+      0.598,
+      0.76
+     ],
+     "ok": true
+    },
+    {
+     "param": "bench",
+     "value": 0.72,
+     "range": [
+      0.643,
+      0.853
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "chop",
+     "loop": true,
+     "opts": {
+      "workZ": 0.72
+     }
+    }
+   ],
+   "note": "the cut lands 0.32 m ahead, on the cutting board"
+  },
+  {
+   "id": "pier.fishTable1.bait",
+   "verb": "bait",
+   "fixture": "pier.fishTable1",
+   "module": "pier",
+   "stand": [
+    -5.35,
+    3.8,
+    2.2
+   ],
+   "yaw": 90,
+   "rides": null,
+   "fits": [
+    {
+     "param": "knife",
+     "value": 0.72,
+     "range": [
+      0.598,
+      0.76
+     ],
+     "ok": true
+    },
+    {
+     "param": "bench",
+     "value": 0.72,
+     "range": [
+      0.643,
+      0.853
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "bench",
+     "loop": true,
+     "opts": {
+      "workZ": 0.72
+     }
+    }
+   ]
+  },
+  {
+   "id": "pier.dockBox2.stow",
+   "verb": "stow",
+   "fixture": "pier.dockBox2",
+   "module": "pier",
+   "stand": [
+    -5.38,
+    8.3,
+    2.2
+   ],
+   "yaw": 90,
+   "rides": null,
+   "fits": [
+    {
+     "param": "load",
+     "value": 0.85,
+     "range": [
+      0.718,
+      0.978
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "place",
+     "once": true,
+     "opts": {
+      "workZ": 0.85
+     },
+     "from": "a carry (idle+tray, idle+pot) or lift"
+    }
+   ],
+   "note": "the load sets 0.42 m ahead, on the lid"
+  },
+  {
+   "id": "pier.dockBox2.fetch",
+   "verb": "fetch",
+   "fixture": "pier.dockBox2",
+   "module": "pier",
+   "stand": [
+    -5.38,
+    8.3,
+    2.2
+   ],
+   "yaw": 90,
+   "rides": null,
+   "fits": [
+    {
+     "param": "load",
+     "value": 0.85,
+     "range": [
+      0.718,
+      0.978
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "place",
+     "once": true,
+     "reverse": true,
+     "opts": {
+      "workZ": 0.85
+     }
+    }
+   ],
+   "note": "place played backward takes the load off the lid (lift starts at 0.30 m, below it)"
+  },
+  {
+   "id": "pier.davit3.haulTrap",
+   "verb": "haulTrap",
+   "fixture": "pier.davit3",
+   "module": "pier",
+   "stand": [
+    -5.05,
+    6.8,
+    2.2
+   ],
+   "yaw": 90,
+   "rides": null,
+   "fits": [
+    {
+     "param": "warp sheave scale at 1.05",
+     "value": 0.52,
+     "range": [
+      0.4,
+      0.632
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "hauler",
+     "loop": true,
+     "opts": {
+      "workZ": 1.05,
+      "sheave": [
+       0.125,
+       0.177,
+       1.31
+      ]
+     }
+    }
+   ],
+   "note": "the warp runs from the sheave over the arm-tip block to the water"
+  },
+  {
+   "id": "pier.fishSpot4.fish",
+   "verb": "fish",
+   "fixture": "pier.fishSpot4",
+   "module": "pier",
+   "stand": [
+    -4.95,
+    5.55,
+    2.2
+   ],
+   "yaw": 90,
+   "rides": null,
+   "fits": [],
+   "seq": [
+    {
+     "clip": "hold",
+     "loop": true
+    },
+    {
+     "clip": "castBack",
+     "once": true
+    },
+    {
+     "clip": "castRelease",
+     "once": true
+    },
+    {
+     "clip": "hold",
+     "loop": true
+    },
+    {
+     "chain": "bite → strike → reel → land"
+    }
+   ],
+   "note": "stand 0.45 m back from the edge, face out"
+  },
+  {
+   "id": "float.ringPost0.throwRing",
+   "verb": "throwRing",
+   "fixture": "float.ringPost0",
+   "module": "float",
+   "stand": [
+    2.7,
+    10.05,
+    0.911
+   ],
+   "yaw": 90,
+   "rides": 1,
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.95,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "rest": "stowV"
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the ring leaves the hand at tossRelease 0.52"
+    }
+   ]
+  },
+  {
+   "id": "float.dockBox1.stow",
+   "verb": "stow",
+   "fixture": "float.dockBox1",
+   "module": "float",
+   "stand": [
+    1.58,
+    11.8,
+    0.908
+   ],
+   "yaw": -90,
+   "rides": 1,
+   "fits": [
+    {
+     "param": "load",
+     "value": 0.85,
+     "range": [
+      0.718,
+      0.978
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "place",
+     "once": true,
+     "opts": {
+      "workZ": 0.85
+     },
+     "from": "a carry (idle+tray, idle+pot) or lift"
+    }
+   ],
+   "note": "the load sets 0.42 m ahead, on the lid"
+  },
+  {
+   "id": "float.dockBox1.fetch",
+   "verb": "fetch",
+   "fixture": "float.dockBox1",
+   "module": "float",
+   "stand": [
+    1.58,
+    11.8,
+    0.908
+   ],
+   "yaw": -90,
+   "rides": 1,
+   "fits": [
+    {
+     "param": "load",
+     "value": 0.85,
+     "range": [
+      0.718,
+      0.978
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "place",
+     "once": true,
+     "reverse": true,
+     "opts": {
+      "workZ": 0.85
+     }
+    }
+   ],
+   "note": "place played backward takes the load off the lid (lift starts at 0.30 m, below it)"
+  },
+  {
+   "id": "float.fishSpot2.fish",
+   "verb": "fish",
+   "fixture": "float.fishSpot2",
+   "module": "float",
+   "stand": [
+    1.15,
+    9.8,
+    0.912
+   ],
+   "yaw": -90,
+   "rides": 1,
+   "fits": [],
+   "seq": [
+    {
+     "clip": "hold",
+     "loop": true
+    },
+    {
+     "clip": "castBack",
+     "once": true
+    },
+    {
+     "clip": "castRelease",
+     "once": true
+    },
+    {
+     "clip": "hold",
+     "loop": true
+    },
+    {
+     "chain": "bite → strike → reel → land"
+    }
+   ],
+   "note": "stand 0.45 m back from the edge, face out"
+  },
+  {
+   "id": "pier.ladder0.climbDown",
+   "verb": "climbDown",
+   "ladder": "pier.ladder0",
+   "module": "pier",
+   "stand": [
+    -6.95,
+    6.94,
+    2.2
+   ],
+   "yaw": 270,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "idle",
+     "turnTo": 90,
+     "note": "face the deck, back to the water"
+    },
+    {
+     "join": "blend",
+     "ms": 300,
+     "to": [
+      -7.93,
+      6.94,
+      1.48
+     ],
+     "request": "ladderOn"
+    },
+    {
+     "clip": "ladderDown",
+     "loop": true,
+     "opts": {
+      "rung": 0.24,
+      "ladderW": 0.45
+     },
+     "rootMotion": [
+      0,
+      0,
+      -0.436
+     ],
+     "until": "root z at the station wanted (bottom rung -0.92, or the hull sole)"
+    },
+    {
+     "clip": "tread",
+     "note": "the pelvis is under the water: tread at the ladder root",
+     "request": null
+    }
+   ],
+   "fits": [
+    {
+     "param": "rung",
+     "value": 0.24,
+     "range": [
+      0.211,
+      0.273
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "pier.ladder0.climbUp",
+   "verb": "climbUp",
+   "ladder": "pier.ladder0",
+   "module": "pier",
+   "stand": [
+    -7.93,
+    6.94,
+    -0.92
+   ],
+   "yaw": 90,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "tread",
+     "then": "blend 300 ms",
+     "request": "treadToLadder"
+    },
+    {
+     "clip": "ladderDown",
+     "loop": true,
+     "reverse": true,
+     "opts": {
+      "rung": 0.24,
+      "ladderW": 0.45
+     },
+     "rootMotion": [
+      0,
+      0,
+      0.436
+     ],
+     "until": "root z = 1.48, the top station"
+    },
+    {
+     "clip": "board",
+     "once": true,
+     "opts": {
+      "railZ": 0.72
+     },
+     "advance": {
+      "m": 0.6,
+      "over": [
+       0.28,
+       0.88
+      ]
+     },
+     "note": "the left hand takes the grab hoop at the deck edge"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rung",
+     "value": 0.24,
+     "range": [
+      0.211,
+      0.273
+     ],
+     "ok": true
+    },
+    {
+     "param": "rail",
+     "value": 0.72,
+     "range": [
+      0.549,
+      0.724
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "float.ladder0.climbDown",
+   "verb": "swimIn",
+   "ladder": "float.ladder0",
+   "module": "float",
+   "stand": [
+    2.65,
+    5.9,
+    0.919
+   ],
+   "yaw": 90,
+   "rides": 1,
+   "seq": [
+    {
+     "clip": "idle",
+     "turnTo": -90,
+     "note": "face the deck, back to the water"
+    },
+    {
+     "join": "blend",
+     "ms": 300,
+     "to": [
+      3.63,
+      5.9,
+      0.199
+     ],
+     "request": "ladderOn"
+    },
+    {
+     "clip": "ladderDown",
+     "loop": true,
+     "opts": {
+      "rung": 0.24,
+      "ladderW": 0.45
+     },
+     "rootMotion": [
+      0,
+      0,
+      -0.436
+     ],
+     "until": "root z at the station wanted (bottom rung -0.041, or the hull sole)"
+    },
+    {
+     "clip": "tread",
+     "note": "the pelvis is under the water: tread at the ladder root",
+     "request": null
+    }
+   ],
+   "fits": [
+    {
+     "param": "rung",
+     "value": 0.24,
+     "range": [
+      0.211,
+      0.273
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "float.ladder0.climbUp",
+   "verb": "swimOut",
+   "ladder": "float.ladder0",
+   "module": "float",
+   "stand": [
+    3.63,
+    5.9,
+    -0.041
+   ],
+   "yaw": -90,
+   "rides": 1,
+   "seq": [
+    {
+     "clip": "tread",
+     "then": "blend 300 ms",
+     "request": "treadToLadder"
+    },
+    {
+     "clip": "ladderDown",
+     "loop": true,
+     "reverse": true,
+     "opts": {
+      "rung": 0.24,
+      "ladderW": 0.45
+     },
+     "rootMotion": [
+      0,
+      0,
+      0.436
+     ],
+     "until": "root z = 0.199, the top station"
+    },
+    {
+     "clip": "board",
+     "once": true,
+     "opts": {
+      "railZ": 0.72
+     },
+     "advance": {
+      "m": 0.6,
+      "over": [
+       0.28,
+       0.88
+      ]
+     },
+     "note": "the left hand takes the grab hoop at the deck edge"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rung",
+     "value": 0.24,
+     "range": [
+      0.211,
+      0.273
+     ],
+     "ok": true
+    },
+    {
+     "param": "rail",
+     "value": 0.72,
+     "range": [
+      0.549,
+      0.724
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "pier.water.berth0.stepAboard",
+   "verb": "stepAboard",
+   "berth": "pier.water.berth0",
+   "hull": "bowrider",
+   "stand": [
+    -7.5,
+    6.94,
+    2.2
+   ],
+   "yaw": -90,
+   "rides": null,
+   "step": -1.58,
+   "how": "ladder",
+   "seq": [
+    {
+     "verb": "climbDown",
+     "ladder": "pier.ladder0"
+    }
+   ],
+   "fits": [],
+   "fitsCreatorBodies": true,
+   "boardingStep": null,
+   "note": null
+  },
+  {
+   "id": "pier.water.berth0.stepAshore",
+   "verb": "stepAshore",
+   "berth": "pier.water.berth0",
+   "hull": "bowrider",
+   "stand": [
+    -7.5,
+    6.94,
+    0.62
+   ],
+   "yaw": 90,
+   "rides": "the hull",
+   "step": 1.58,
+   "how": "ladder",
+   "seq": [
+    {
+     "verb": "climbUp",
+     "ladder": "pier.ladder0"
+    }
+   ],
+   "fits": [],
+   "fitsCreatorBodies": true,
+   "alt": null,
+   "note": null
+  },
+  {
+   "id": "finger0.water.berth0.stepAboard",
+   "verb": "stepAboard",
+   "berth": "finger0.water.berth0",
+   "hull": "skiff",
+   "stand": [
+    6.7,
+    14.1,
+    0.927
+   ],
+   "yaw": 0,
+   "rides": 1,
+   "step": -0.307,
+   "how": "step down",
+   "seq": [
+    {
+     "clip": "boardDown",
+     "once": true,
+     "opts": {
+      "railZ": 0.307
+     },
+     "advance": "to the landing over t 0.04–0.86"
+    }
+   ],
+   "fits": [
+    {
+     "param": "stepDown",
+     "value": 0.307,
+     "range": [
+      0.06,
+      1.3
+     ],
+     "ok": true
+    }
+   ],
+   "fitsCreatorBodies": true,
+   "boardingStep": null,
+   "note": null
+  },
+  {
+   "id": "finger0.water.berth0.stepAshore",
+   "verb": "stepAshore",
+   "berth": "finger0.water.berth0",
+   "hull": "skiff",
+   "stand": [
+    6.7,
+    14.1,
+    0.62
+   ],
+   "yaw": 180,
+   "rides": "the hull",
+   "step": 0.307,
+   "how": "low step up",
+   "seq": [
+    {
+     "clip": "boardDown",
+     "once": true,
+     "reverse": true,
+     "opts": {
+      "railZ": 0.307
+     },
+     "advance": "to the landing over t 0.14–0.96 (the clip reversed)",
+     "note": "no grip",
+     "request": "stepUp"
+    }
+   ],
+   "fits": [
+    {
+     "param": "stepUpNoGrip",
+     "value": 0.307,
+     "range": [
+      0.06,
+      1.3
+     ],
+     "ok": true
+    }
+   ],
+   "fitsCreatorBodies": true,
+   "alt": null,
+   "note": null
+  },
+  {
+   "id": "finger1.water.berth0.stepAboard",
+   "verb": "stepAboard",
+   "berth": "finger1.water.berth0",
+   "hull": "skiff",
+   "stand": [
+    6.7,
+    8.7,
+    0.926
+   ],
+   "yaw": 0,
+   "rides": 1,
+   "step": -0.306,
+   "how": "step down",
+   "seq": [
+    {
+     "clip": "boardDown",
+     "once": true,
+     "opts": {
+      "railZ": 0.306
+     },
+     "advance": "to the landing over t 0.04–0.86"
+    }
+   ],
+   "fits": [
+    {
+     "param": "stepDown",
+     "value": 0.306,
+     "range": [
+      0.06,
+      1.3
+     ],
+     "ok": true
+    }
+   ],
+   "fitsCreatorBodies": true,
+   "boardingStep": null,
+   "note": null
+  },
+  {
+   "id": "finger1.water.berth0.stepAshore",
+   "verb": "stepAshore",
+   "berth": "finger1.water.berth0",
+   "hull": "skiff",
+   "stand": [
+    6.7,
+    8.7,
+    0.62
+   ],
+   "yaw": 180,
+   "rides": "the hull",
+   "step": 0.306,
+   "how": "low step up",
+   "seq": [
+    {
+     "clip": "boardDown",
+     "once": true,
+     "reverse": true,
+     "opts": {
+      "railZ": 0.306
+     },
+     "advance": "to the landing over t 0.14–0.96 (the clip reversed)",
+     "note": "no grip",
+     "request": "stepUp"
+    }
+   ],
+   "fits": [
+    {
+     "param": "stepUpNoGrip",
+     "value": 0.306,
+     "range": [
+      0.06,
+      1.3
+     ],
+     "ok": true
+    }
+   ],
+   "fitsCreatorBodies": true,
+   "alt": null,
+   "note": null
+  },
+  {
+   "id": "pier.cleat0.tieUp",
+   "verb": "tieUp",
+   "tie": "pier.cleat0",
+   "module": "pier",
+   "stand": [
+    -6.94,
+    3.39,
+    2.2
+   ],
+   "yaw": -90,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "haul",
+     "loop": true,
+     "until": "the line is fast"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "pier.cleat0.castOff",
+   "verb": "castOff",
+   "tie": "pier.cleat0",
+   "module": "pier",
+   "stand": [
+    -6.94,
+    3.39,
+    2.2
+   ],
+   "yaw": -90,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the line goes aboard at tossRelease 0.52"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "pier.cleat1.tieUp",
+   "verb": "tieUp",
+   "tie": "pier.cleat1",
+   "module": "pier",
+   "stand": [
+    -6.94,
+    9.73,
+    2.2
+   ],
+   "yaw": -90,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "haul",
+     "loop": true,
+     "until": "the line is fast"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "pier.cleat1.castOff",
+   "verb": "castOff",
+   "tie": "pier.cleat1",
+   "module": "pier",
+   "stand": [
+    -6.94,
+    9.73,
+    2.2
+   ],
+   "yaw": -90,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the line goes aboard at tossRelease 0.52"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "pier.ring2.tieUp",
+   "verb": "tieUp",
+   "tie": "pier.ring2",
+   "module": "pier",
+   "stand": [
+    -6.94,
+    9.11,
+    2.2
+   ],
+   "yaw": -90,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0,
+      "want": [
+       0.132,
+       0.265,
+       0.095
+      ]
+     }
+    },
+    {
+     "clip": "haul",
+     "loop": true,
+     "until": "the line is fast"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "pier.ring2.castOff",
+   "verb": "castOff",
+   "tie": "pier.ring2",
+   "module": "pier",
+   "stand": [
+    -6.94,
+    9.11,
+    2.2
+   ],
+   "yaw": -90,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0,
+      "want": [
+       0.132,
+       0.265,
+       0.095
+      ]
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the line goes aboard at tossRelease 0.52"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "finger0.cleat3.tieUp",
+   "verb": "tieUp",
+   "tie": "finger0.cleat3",
+   "module": "finger0",
+   "stand": [
+    3.67,
+    13.54,
+    0.92
+   ],
+   "yaw": 0,
+   "rides": 1,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "haul",
+     "loop": true,
+     "until": "the line is fast"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "finger0.cleat3.castOff",
+   "verb": "castOff",
+   "tie": "finger0.cleat3",
+   "module": "finger0",
+   "stand": [
+    3.67,
+    13.54,
+    0.92
+   ],
+   "yaw": 0,
+   "rides": 1,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the line goes aboard at tossRelease 0.52"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "finger0.cleat4.tieUp",
+   "verb": "tieUp",
+   "tie": "finger0.cleat4",
+   "module": "finger0",
+   "stand": [
+    5.52,
+    13.54,
+    0.924
+   ],
+   "yaw": 0,
+   "rides": 1,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "haul",
+     "loop": true,
+     "until": "the line is fast"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "finger0.cleat4.castOff",
+   "verb": "castOff",
+   "tie": "finger0.cleat4",
+   "module": "finger0",
+   "stand": [
+    5.52,
+    13.54,
+    0.924
+   ],
+   "yaw": 0,
+   "rides": 1,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the line goes aboard at tossRelease 0.52"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "finger0.cleat5.tieUp",
+   "verb": "tieUp",
+   "tie": "finger0.cleat5",
+   "module": "finger0",
+   "stand": [
+    7.62,
+    13.54,
+    0.929
+   ],
+   "yaw": 0,
+   "rides": 1,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "haul",
+     "loop": true,
+     "until": "the line is fast"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "finger0.cleat5.castOff",
+   "verb": "castOff",
+   "tie": "finger0.cleat5",
+   "module": "finger0",
+   "stand": [
+    7.62,
+    13.54,
+    0.929
+   ],
+   "yaw": 0,
+   "rides": 1,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the line goes aboard at tossRelease 0.52"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "finger1.cleat6.tieUp",
+   "verb": "tieUp",
+   "tie": "finger1.cleat6",
+   "module": "finger1",
+   "stand": [
+    3.67,
+    8.14,
+    0.92
+   ],
+   "yaw": 0,
+   "rides": 1,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "haul",
+     "loop": true,
+     "until": "the line is fast"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "finger1.cleat6.castOff",
+   "verb": "castOff",
+   "tie": "finger1.cleat6",
+   "module": "finger1",
+   "stand": [
+    3.67,
+    8.14,
+    0.92
+   ],
+   "yaw": 0,
+   "rides": 1,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the line goes aboard at tossRelease 0.52"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "finger1.cleat7.tieUp",
+   "verb": "tieUp",
+   "tie": "finger1.cleat7",
+   "module": "finger1",
+   "stand": [
+    5.52,
+    8.14,
+    0.924
+   ],
+   "yaw": 0,
+   "rides": 1,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "haul",
+     "loop": true,
+     "until": "the line is fast"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "finger1.cleat7.castOff",
+   "verb": "castOff",
+   "tie": "finger1.cleat7",
+   "module": "finger1",
+   "stand": [
+    5.52,
+    8.14,
+    0.924
+   ],
+   "yaw": 0,
+   "rides": 1,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the line goes aboard at tossRelease 0.52"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "finger1.cleat8.tieUp",
+   "verb": "tieUp",
+   "tie": "finger1.cleat8",
+   "module": "finger1",
+   "stand": [
+    7.62,
+    8.14,
+    0.929
+   ],
+   "yaw": 0,
+   "rides": 1,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "haul",
+     "loop": true,
+     "until": "the line is fast"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "finger1.cleat8.castOff",
+   "verb": "castOff",
+   "tie": "finger1.cleat8",
+   "module": "finger1",
+   "stand": [
+    7.62,
+    8.14,
+    0.929
+   ],
+   "yaw": 0,
+   "rides": 1,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.1,
+      "want": [
+       0.132,
+       0.265,
+       0.195
+      ]
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the line goes aboard at tossRelease 0.52"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.1,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "gangway.walkDown",
+   "verb": "walkGangway",
+   "gangway": "gangway",
+   "dir": "hinge → toe",
+   "slopeDeg": 12.37,
+   "walkable": true,
+   "comfortable": true,
+   "seq": [
+    {
+     "clip": "walk",
+     "speed": 0.71,
+     "rootZ": "linear along the ramp; the toe end rides the float",
+     "request": "walkSlope"
+    }
+   ]
+  },
+  {
+   "id": "gangway.walkUp",
+   "verb": "walkGangway",
+   "gangway": "gangway",
+   "dir": "toe → hinge",
+   "slopeDeg": 12.37,
+   "walkable": true,
+   "comfortable": true,
+   "seq": [
+    {
+     "clip": "walk",
+     "speed": 0.71,
+     "rootZ": "linear along the ramp; the toe end rides the float",
+     "request": "walkSlope"
+    }
+   ]
+  }
+ ],
+ "CHAR_FIT": [
+  {
+   "fixture": "ladder",
+   "what": "rung spacing",
+   "param": "rung",
+   "value": 0.24,
+   "range": [
+    0.211,
+    0.273
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "ladder",
+   "what": "top-out: board at three rungs",
+   "param": "rail",
+   "value": 0.72,
+   "range": [
+    0.549,
+    0.724
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "boarding",
+   "what": "step down · boardDown",
+   "param": "stepDown",
+   "value": "≤ 1.30",
+   "range": [
+    0.06,
+    1.3
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "boarding",
+   "what": "step up · board, hand on the edge",
+   "param": "stepUp",
+   "value": "0.549–0.724",
+   "range": [
+    0.549,
+    0.724
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "boarding",
+   "what": "lower step up · boardDown backward",
+   "param": "stepUpNoGrip",
+   "value": "< 0.549",
+   "range": [
+    0.06,
+    1.3
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "cleat",
+   "what": "reach to the horn",
+   "param": "rest",
+   "value": 0.1,
+   "range": [
+    0,
+    1.012
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "bollard",
+   "what": "reach to the head",
+   "param": "rest",
+   "value": 0.555,
+   "range": [
+    0,
+    1.012
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "fish-cleaning table",
+   "what": "knife",
+   "param": "knife",
+   "value": 0.72,
+   "range": [
+    0.598,
+    0.76
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "fish-cleaning table",
+   "what": "bench",
+   "param": "bench",
+   "value": 0.72,
+   "range": [
+    0.643,
+    0.853
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "dock box",
+   "what": "load",
+   "param": "load",
+   "value": 0.85,
+   "range": [
+    0.718,
+    0.978
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "wharf davit + hauler",
+   "what": "warp",
+   "param": "warp sheave scale at 1.05",
+   "value": 0.52,
+   "range": [
+    0.4,
+    0.632
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "life-ring post",
+   "what": "rest",
+   "param": "rest",
+   "value": 0.95,
+   "range": [
+    0,
+    1.012
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "service pedestal",
+   "what": "rest",
+   "param": "rest",
+   "value": 0.95,
+   "range": [
+    0,
+    1.012
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "boarding step",
+   "what": "rail",
+   "param": "rail",
+   "value": 0.6,
+   "range": [
+    0.549,
+    0.724
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "gangway",
+   "what": "slope at chart datum",
+   "param": "deg",
+   "value": 18.43,
+   "range": [
+    0,
+    18.43
+   ],
+   "ok": true,
+   "note": "v9.2 walk is level: walkSlope requested"
+  }
+ ],
+ "CHAR_REQUESTS": [
+  {
+   "clip": "ladderOn / ladderOff",
+   "why": "v9.2 has the ladder loop and no way on or off it at the top",
+   "now": "down: blend 300 ms from idle at the deck spot (0.55 m inboard, back to the water) to ladderDown u 0 at the top station (root 0.435 m out from the face, z = deck − 0.72). Up: board at railZ 0.72, exact for every creator body, with the root advanced 0.60 m onto the deck over the drive (t 0.28–0.88)."
+  },
+  {
+   "clip": "ladderToHull",
+   "why": "stepping back off a ladder onto a boat alongside",
+   "now": "stop the loop with the lower foot at the sole, blend 250 ms to idle on the hull, then turn"
+  },
+  {
+   "clip": "walkSlope",
+   "why": "gangways (18.4° comfortable, 24° steep) and slipways (to 15°): v9.2 walk plants on a level",
+   "now": "walk at 0.727 m/s along the slope, root z linear hinge → toe; at 18° the feet float at most ±1.5 px"
+  },
+  {
+   "clip": "board travel",
+   "why": "board and boardDown end at idle over the start xy; their horizontal travel is not published",
+   "now": "advance the root to the landing over the drive (t 0.28–0.88); the kit gives the landing"
+  },
+  {
+   "clip": "treadToLadder",
+   "why": "a swimmer taking the bottom rung",
+   "now": "blend 300 ms from tread at the ladder root to ladderDown reversed"
+  },
+  {
+   "clip": "stepUp",
+   "why": "board grips the edge it steps onto, and below 0.549 m the tallest creator bodies cannot reach it: a boat’s sole up onto a float is 0.3–0.5 m",
+   "now": "boardDown played backward, which fits every creator body from 0.06 to 1.30 m (measured on all 375)"
+  }
+ ]
+}
