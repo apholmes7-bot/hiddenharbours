@@ -1,5 +1,10 @@
 # `hiddenharbours.scene/1` — the contract
 
+> **RETIRED 2026-09-27.** The scene exporter that implements this contract is retired on the owner's
+> word, "Retired until needed further": its committed packages and its CI job are gone, and its code
+> and tests stay parked in `tools/scene-export/`. The format stays documented here for a revival; the
+> steps to revive it are under "To revive" in [`tools/scene-export/README.md`](../../tools/scene-export/README.md).
+
 **What this is.** The scene editor's package format. It began as a reconstruction from
 [`scene-editor-review.md`](scene-editor-review.md) (#571, corrected by #576) with seventeen
 fields the review named but never specified; **lead-architect settled all seventeen on PR #588**
