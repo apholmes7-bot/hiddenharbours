@@ -165,6 +165,16 @@ namespace HiddenHarbours.Tests.RigBaking
             // catch pass 2. The wire roller basket, lathed against the shared turntable.
             new Snapshot("clamHod", "docs/art/rigs/catch-pass-2-kit/Art/clamHodRig.js",
                          "ClamHod", AzimuthConvention.Clockwise, "deckIsoSolid"),
+            // The coastal-heritage pass (drop 14, the village return; first carried by #853). NOT A
+            // RIG — an aesthetic COMPANION that repaints slate, stone, joinery and interior finishes
+            // for house, interior, manorIso and manorUnitIso, and the shared light engine. Clockwise
+            // is the placeholder every non-directional entry carries (buildingLifecycle,
+            // dialogueBubble, catchKit); nothing probes it. It names interiorProp and deliberately NOT
+            // house: house will name IT, and InstallPrerequisites has no cycle guard, so a house row
+            // here would close house -> coastalPass -> house. CoastalPass.enabled=false reverts the
+            // LOOK only — the stair geometry lives in the host rigs and stays.
+            new Snapshot("coastalPass", "docs/art/rigs/village-return/houses-kit/Art/coastalPass.js",
+                         "CoastalPass", AzimuthConvention.Clockwise, "interiorProp"),
             new Snapshot("crustacean", "docs/art/rigs/crustaceanRig.js",
                          "Crustacean", AzimuthConvention.Clockwise),
             // catch pass 2. ⚠️ render() takes the KIND first and the camera in opts.dir; an
@@ -214,6 +224,20 @@ namespace HiddenHarbours.Tests.RigBaking
             // lobsterBoat in one host — +45.000° per step at all 8 headings, un-squashed.
             new Snapshot("lobsterBoatVariants", "docs/art/rigs/lobsterBoatVariantsIsoRig.js",
                          "LobsterBoatVariantsIso", AzimuthConvention.CounterClockwise),
+            // The coastal-heritage pass (drop 14; first carried by #853). The manor SHELL — the v3
+            // return's, so no bake and no placement yet. ⚠️ It MUST be installed before
+            // manorUnitIso, which reads ManorIso for its footprint: without it ManorUnitIso.dims
+            // answers {Wd:0, Ln:0, topZ:0} and throws nothing, so the failure is silently a manor of
+            // zero size.
+            new Snapshot("manorIso", "docs/art/rigs/village-return/houses-kit/Art/manorIsoRig.js",
+                         "ManorIso", AzimuthConvention.CounterClockwise, "coastalPass"),
+            // The manor INTERIOR, floor by floor. Prerequisites are IN INSTALL ORDER and the
+            // first is load-bearing (see manorIso above). ⚠️ Its anchors() returns
+            // {anchors, openings, dims} and none of the door/floor/Wd/Ln/storeyZ that
+            // InteriorRigBaker reads, so it cannot bake through that baker as it stands.
+            new Snapshot("manorUnitIso", "docs/art/rigs/village-return/houses-kit/Art/manorUnitIsoRig.js",
+                         "ManorUnitIso", AzimuthConvention.CounterClockwise,
+                         "manorIso", "interiorProp", "coastalPass"),
             new Snapshot("navBuoy", "docs/art/rigs/nav-buoy-kit/navBuoyRig.js",
                          "NavBuoy", AzimuthConvention.Clockwise, "deckIsoSolid"),
             // The player's notebook — the main UI surface (drop 2026-08-17, imported here).

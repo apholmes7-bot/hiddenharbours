@@ -169,16 +169,39 @@ namespace HiddenHarbours.Tools.RigBaking
                     // InteriorRigBakeTests checks every key in the set against the rig's own list.
                     requireDistinctFromDefault: false);
 
+            // A room is registered against the shell it stands inside, with that shell's own options
+            // (InteriorRigBaker.ExteriorOptsFor says why) — the same lookup the contract's
+            // registration uses, so the per-room bake and the contract cannot measure different doors.
             if (build.IsPreset)
                 return InteriorBakeRequest.RoomPreset(
                     build.Preset, RigCatalog.Get("interior").GlobalName,
                     RoomsFolder, InteriorKit.RoomStemFor(build.Key), InteriorKit.Facings,
-                    InteriorKit.ImportSizeCap);
+                    InteriorKit.ImportSizeCap)
+                    .WithExterior(ExteriorOptionsFor(build.Key));
 
             return InteriorBakeRequest.Room(
                 OptionsLiteralFor(build), build.Label,
                 RoomsFolder, InteriorKit.RoomStemFor(build.Key), InteriorKit.Facings,
-                InteriorKit.ImportSizeCap);
+                InteriorKit.ImportSizeCap)
+                .WithExterior(ExteriorOptionsFor(build.Key));
+        }
+
+        /// <summary>
+        /// The options literal of the village shell a room stands inside — the shell's own build,
+        /// through the building kit's own serialiser, as a finished house (every room's shell is one;
+        /// no lifecycle state is layered on) — or null when the room has no shell in
+        /// <see cref="VillageBuildingKit"/>. Pure and static, like <see cref="RequestFor"/>.
+        /// </summary>
+        public static string ExteriorOptionsFor(string roomKey)
+        {
+            string exteriorKey = InteriorKit.ExteriorKeyFor(roomKey);
+            if (exteriorKey == null) return null;
+
+            var exterior = VillageBuildingKit.FindBuild(exteriorKey);
+            if (exterior == null) return null;
+
+            return VillageBuildingBakeMenu.BaseOptionsLiteralFor(
+                exterior.Value, RigCatalog.Get(exterior.Value.RigKey).GlobalName);
         }
 
         /// <summary>The dialled options as the JS literal <c>render()</c> takes, through the same
@@ -338,19 +361,13 @@ namespace HiddenHarbours.Tools.RigBaking
 
             foreach (var room in rooms)
             {
+                string exteriorOpts = ExteriorOptionsFor(room.key);
+                if (exteriorOpts == null) continue;
                 string exteriorKey = InteriorKit.ExteriorKeyFor(room.key);
-                if (exteriorKey == null) continue;
-
-                var exterior = VillageBuildingKit.FindBuild(exteriorKey);
-                if (exterior == null) continue;
 
                 using IRigScriptHost host = RigScriptHostFactory.Create();
                 RigCatalog.Install(host, houseRig);
                 RigCatalog.Install(host, interiorRig);
-
-                string exteriorOpts = exterior.Value.IsPreset
-                    ? $"Object.assign({{}},{houseRig.GlobalName}.PRESETS['{exterior.Value.Preset}'])"
-                    : VillageBuildingBakeMenu.OptionsLiteralFor(exterior.Value);
 
                 InteriorRigAzimuthProbe.Registration reg = InteriorRigAzimuthProbe.MeasureRegistration(
                     host, houseRig.GlobalName, exteriorOpts,
