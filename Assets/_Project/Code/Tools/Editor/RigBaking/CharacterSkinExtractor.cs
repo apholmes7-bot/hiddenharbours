@@ -107,7 +107,7 @@ namespace HiddenHarbours.Tools.RigBaking
     /// −y, w)" is for a y-up importer and is deliberately NOT applied; see
     /// <see cref="Core.CharacterSkinDef"/>.</para>
     /// </summary>
-    public static class CharacterSkinExtractor
+    public static partial class CharacterSkinExtractor
     {
         /// <summary>The catalog key for the skinned export — <c>characterIsoRig7.js</c>, global
         /// <c>CharacterIso7</c>, prerequisite <c>character</c>.</summary>
@@ -788,10 +788,17 @@ namespace HiddenHarbours.Tools.RigBaking
         /// rigs, and two normalisations that disagreed about a lone CR would let one hash go stale
         /// while the other stayed fresh — the exact failure the pin exists to catch.</para>
         /// </summary>
-        public static string SourceSha256()
+        public static string SourceSha256() => LfSha256(ScriptPath);
+
+        /// <summary>The LF-normalised SHA-256 of a repo file, by the one rule every pin here uses
+        /// (a CR is dropped only when an LF follows it).</summary>
+        static string LfSha256(string repoRelativePath) =>
+            LfSha256File(Path.Combine(RigCatalog.RepoRoot, repoRelativePath));
+
+        /// <summary>The same hash for a file named by its full path.</summary>
+        public static string LfSha256File(string fullPath)
         {
-            string full = Path.Combine(RigCatalog.RepoRoot, ScriptPath);
-            byte[] raw = File.ReadAllBytes(full);
+            byte[] raw = File.ReadAllBytes(fullPath);
             var lf = new List<byte>(raw.Length);
             for (int i = 0; i < raw.Length; i++)
                 if (raw[i] != (byte)'\r' || i + 1 >= raw.Length || raw[i + 1] != (byte)'\n')

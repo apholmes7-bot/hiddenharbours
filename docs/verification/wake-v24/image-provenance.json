@@ -1,0 +1,232 @@
+[
+  {
+    "sheet": "cape-before-after.png",
+    "label": "Before: west, original emitter + injector",
+    "path": "Evidence~\\wake-resumed-v24\\baseline-controlled\\v24-cape-west-270-complete.png",
+    "sha256": "d48fd1c544715dbeea6fd8dd4bcc7f86f597020f396cae2021b5038e19f7dfe2",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "cape-before-after.png",
+    "label": "After: west, revised pose + grading",
+    "path": "Evidence~\\wake-resumed-v24\\fixed-visuals\\v24-cape-west-270-complete.png",
+    "sha256": "bd7537779a5a0966a404c2d1b64c175ed8f29471dad6a37ff01d12537ff9f173",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "cape-before-after.png",
+    "label": "Before: clockwise 22 deg/s",
+    "path": "Evidence~\\wake-resumed-v24\\baseline-controlled\\v24-cape-clockwise-complete.png",
+    "sha256": "04c9384ebfc7b345568bec950e53630b88f39d503866e1175caacb79edabe3bd",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "cape-before-after.png",
+    "label": "After: clockwise 22 deg/s",
+    "path": "Evidence~\\wake-resumed-v24\\fixed-visuals\\v24-cape-clockwise-complete.png",
+    "sha256": "f1582c6068f27ca33f122591214c0f2c622119e43701337a297f023b6616fd8a",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "cape-speed-age.png",
+    "label": "0.5 m/s through water",
+    "path": "Evidence~\\wake-resumed-v24\\fixed-visuals\\v24-response-speed-0.5-complete.png",
+    "sha256": "7409d5c32fd8608848daf6e0c91a9653537e551a8bab4e13907e5b16ed2afa6a",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "cape-speed-age.png",
+    "label": "2 m/s through water",
+    "path": "Evidence~\\wake-resumed-v24\\fixed-visuals\\v24-response-speed-2-complete.png",
+    "sha256": "ceb6d7995e97914813c88c2ae29bab883cac8bc8cc43584ae8f26bf50994888c",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "cape-speed-age.png",
+    "label": "6 m/s through water",
+    "path": "Evidence~\\wake-resumed-v24\\fixed-visuals\\v24-response-speed-6-complete.png",
+    "sha256": "e2e9d4833157a86e7465909abbee26e438d35bd864e07f5e6023a814bd1b4a9d",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "cape-speed-age.png",
+    "label": "12 m/s through water",
+    "path": "Evidence~\\wake-resumed-v24\\fixed-visuals\\v24-response-speed-12-complete.png",
+    "sha256": "c9401f2db9060d2be6c964be26b1eddbf3a7aebc62fd959eb6222e242746ca9b",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "cape-speed-age.png",
+    "label": "Release: 3 seconds, 24 live crests",
+    "path": "Evidence~\\wake-resumed-v24\\fixed-visuals\\v24-response-release-age-3-complete.png",
+    "sha256": "d394d29b151125c5a997bff5c5ae13810691a85fc6a937086a45a0b0400ea6e2",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "cape-speed-age.png",
+    "label": "Release: 12 seconds, zero live crests",
+    "path": "Evidence~\\wake-resumed-v24\\fixed-visuals\\v24-response-release-age-12-complete.png",
+    "sha256": "b2b7731c0dc0cdcd677fd3a70fccc61cbd8bb87d4418d261e8d805b642f4ee4b",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "fleet-turns.png",
+    "label": "Cape",
+    "path": "Evidence~\\wake-resumed-v24\\fixed-visuals\\v24-cape-counterclockwise-complete.png",
+    "sha256": "a35f29c49704ffaaef3e7696b82ba7e016e222c5c771e1491575b2643cdeed52",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "fleet-turns.png",
+    "label": "Dory",
+    "path": "Evidence~\\wake-resumed-v24\\fixed-visuals\\v24-dory-counterclockwise-complete.png",
+    "sha256": "0c5992a778b33836cb4f8c421747b0055579719e0d8f24027b5d624da9949091",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "fleet-turns.png",
+    "label": "Punt",
+    "path": "Evidence~\\wake-resumed-v24\\punt-tide-final-2\\v24-punt-counterclockwise-complete.png",
+    "sha256": "6d02679ef97bb2e4305fb812bf7dcd8c7e408587cb234463d12dfe8097f0974e",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "fleet-turns.png",
+    "label": "Lobster",
+    "path": "Evidence~\\wake-resumed-v24\\fixed-visuals\\v24-lobster-counterclockwise-complete.png",
+    "sha256": "5ff8d578507b751963bdb46c85f1b15c12bdeeb5c321d9b8ef30a4ef8204cacf",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "intro-route.png",
+    "label": "Route mark 0",
+    "path": "Evidence~\\wake-resumed-v24\\intro-punt-guards\\v24-intro-mark-0.png",
+    "sha256": "70a60ac68383c8b091eefe01c5faac588983cc9c5844f002505ae81b6872bcc4",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "intro-route.png",
+    "label": "Route mark 1",
+    "path": "Evidence~\\wake-resumed-v24\\intro-punt-guards\\v24-intro-mark-1.png",
+    "sha256": "d6aee25eec24b699211b3406c2b07827a2bce9e55018d47ed687f890b3cdb93a",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "intro-route.png",
+    "label": "Route mark 2",
+    "path": "Evidence~\\wake-resumed-v24\\intro-punt-guards\\v24-intro-mark-2.png",
+    "sha256": "c79543b208b79e682f56126fc6dffd12d8d625f7d3aab638608d36ded69a2040",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "intro-route.png",
+    "label": "Route mark 3",
+    "path": "Evidence~\\wake-resumed-v24\\intro-punt-guards\\v24-intro-mark-3.png",
+    "sha256": "2cbc3e47dd5d1d33dbf650b14ba94f877898c98c26876c490f843382c82df952",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "cape-ramp.png",
+    "label": "Accelerating: 6 m/s, frame 90",
+    "path": "Evidence~\\wake-resumed-v24\\ramp-isolated\\v24-ramp-frame-90-speed-6-complete.png",
+    "sha256": "d8576ea4f66bb56eb242a213e5241c54a5da936769aab4003d78f5d0dc40da9a",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "cape-ramp.png",
+    "label": "Full: 12 m/s, frame 180",
+    "path": "Evidence~\\wake-resumed-v24\\ramp-isolated\\v24-ramp-frame-180-speed-12-complete.png",
+    "sha256": "6566398df2d025ce78f309e9fd4eaf26ad5774e05a80c3bfc7809c7b250bb98d",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "cape-ramp.png",
+    "label": "Decelerating: 6 m/s, frame 270",
+    "path": "Evidence~\\wake-resumed-v24\\ramp-isolated\\v24-ramp-frame-270-speed-6-complete.png",
+    "sha256": "6cb845687f2ab6a3f8d17e808160d30561ee00e899e600360177f3a078fc12c6",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "cape-ramp.png",
+    "label": "Released: 0 m/s, frame 360",
+    "path": "Evidence~\\wake-resumed-v24\\ramp-isolated\\v24-ramp-frame-360-speed-0-complete.png",
+    "sha256": "348aca662694332809da9b1b3de3305493e3d6ded89317aac0cb309e6db8f9b0",
+    "size": [
+      2133,
+      1600
+    ]
+  },
+  {
+    "sheet": "cape-ramp.png",
+    "label": "At rest for 12 seconds, frame 720",
+    "path": "Evidence~\\wake-resumed-v24\\ramp-isolated\\v24-ramp-frame-720-speed-0-complete.png",
+    "sha256": "a25edd7c3e7cd7e4c8c974727e9de0ac301361d7d50e5518c3e6f50060e1976a",
+    "size": [
+      2133,
+      1600
+    ]
+  }
+]

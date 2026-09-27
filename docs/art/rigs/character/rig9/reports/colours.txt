@@ -1,0 +1,36 @@
+check-colours — colour slots per character (v9 colours, unchanged)
+rig 02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144  poses 42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07
+
+(a) painted materials per preset (each shade variant and each fixed face colour its own slot)
+    preset      painted  ramps  fixed(values)  ramps+fixed
+    fisher      21       6      7 (7)          13
+    ginny       21       7      7 (7)          14
+    skipper     21       5      8 (7)          12
+    nan         24       6      8 (7)          13
+    deckboss    22       8      7 (7)          15
+    packer      25       9      7 (7)          16
+    cutter      23       8      7 (7)          15
+    hand        23       8      7 (7)          15
+    boy         20       5      7 (7)          12
+    girl        21       7      7 (7)          14
+    range 20–25 painted; packer at 25.
+      fisher    boot bootL brass brow collar hair hairD ink ink2 iris lip mouth over overD shirt shirtD skin skinD sole stub white
+      ginny     boot bootL brass brow collar hair hat hatD ink ink2 iris lip mouth over overD shirt shirtD skin skinD sole white
+      skipper   beard boot bootL brow hair hairD hat hatL ink ink2 iris lid lip mouth over overD shirt skin skinD sole white
+      nan       boot bootL brow collar hair hairD hat hatD hose ink ink2 iris lid lip mouth over overD overL shirt shirtD skin skinD sole white
+      deckboss  beard belt boot bootL brass brow buzz hat hatD ink ink2 iris lip mouth over overD shirt shirtD skin skinD sole white
+      packer    apron apronD belt boot bootL brass brow collar hair hairD hat hatD ink ink2 iris lip mouth over overD shirt shirtD skin skinD sole white
+      cutter    apron apronD belt boot bootL brass brow collar hair hairD ink ink2 iris lip mouth over overD shirt shirtD skin skinD sole white
+      hand      belt boot bootL brass brow collar hair hairD hat hatL ink ink2 iris lip mouth over overD shirt shirtD skin skinD sole white
+      boy       boot bootL brow hair hairD hat hatL ink ink2 iris lip mouth over overD shirt shirtD skin skinD sole white
+      girl      belt boot bootL brass brow collar hair hairD ink ink2 iris lip mouth over overD shirt shirtD skin skinD sole white
+
+(b) the most any creator build can need (62400 garment+bottom x hat x hair x beard x eyes combinations; colours free)
+    painted materials:           28   (390 combinations reach it, e.g. apron / skirt / watchcap / crop / stubble / lidded)
+      apron apronD belt boot bootL brass brow collar hair hairD hat hatL hose ink ink2 iris lid lip mouth over overD shirt shirtD skin skinD sole stub white
+    distinct ramps + fixed colours: 16   (fixed counted once per value; 17 with every fixed face material its own slot)
+      e.g. apron / trousers / watchcap / crop / none / round: ramps BOOT BRASS LEATHER apronCol hair hatCol outfit shirt skin + fixed brow ink ink2 iris skin[0] skin[1] white
+    painted histogram: 16:18 17:159 18:791 19:2724 20:6371 21:9128 22:12839 23:12394 24:8114 25:4357 26:3257 27:1858 28:390
+
+split verified on 610 whole builds (the ten presets and 600 at random): all equal
+OK — no problems.

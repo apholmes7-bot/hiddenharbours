@@ -394,7 +394,8 @@ namespace HiddenHarbours.Art
                 public Vector2 Origin;          // cell-snapped window corner (world m)
                 public Vector2 DriftResidual;   // sub-cell drift banked for a later whole-cell step
                 public bool Primed;
-                public bool NeedsClear = true;  // only true for the first frame after a (re)allocation
+                public readonly FoamHistoryInitialization Initialization = new FoamHistoryInitialization();
+                public bool NeedsClear => !Initialization.Ready;
                 public int LastFrame = -1;
                 public int Resolution;
                 // The format the pair was actually allocated in (FoamBuffer.SelectFormat). Held so a
@@ -422,6 +423,12 @@ namespace HiddenHarbours.Art
                     B?.Release();
                     A = null;
                     B = null;
+                    Initialization.ResetAllocation();
+                    ReadIsA = true;
+                    LastFrame = -1;
+                    Primed = false;
+                    Origin = Vector2.zero;
+                    DriftResidual = Vector2.zero;
                 }
             }
 
@@ -483,6 +490,17 @@ namespace HiddenHarbours.Art
                 bool drawHulls = DrawHulls && ResolveMaterial != null;
                 bool drawFoam = DrawFoam && FoamMaterial != null;
                 if (!drawHulls && !DrawWater && !DrawReflections && !drawFoam) return;
+
+                // Do not advance/read a camera's pair until its previous initialization commands
+                // have completed. The first graph itself has explicit clear -> advect dependencies.
+                FoamState cameraFoam = null;
+                if (drawFoam)
+                {
+                    float foamExtent = Mathf.Clamp(FoamWindowMeters, FoamBuffer.MinExtentMeters, 512f);
+                    cameraFoam = GetFoamState(cameraData.camera.GetEntityId(), FoamBuffer.ResolutionForExtent(foamExtent));
+                    drawFoam = cameraFoam.Initialization.CanRecord();
+                    if (!drawFoam) Shader.SetGlobalVector(FoamShaderIds.BufferWorld, Vector4.zero);
+                }
 
                 // ---- OBJECT REFLECTIONS (ADR 0027 #8) ------------------------------------------
                 // A fourth filtered renderer list: every renderer that BOTH has an HHReflect pass
@@ -554,13 +572,22 @@ namespace HiddenHarbours.Art
                 {
                     float extent = Mathf.Clamp(FoamWindowMeters, FoamBuffer.MinExtentMeters, 512f);
                     int res = FoamBuffer.ResolutionForExtent(extent);
-                    FoamState state = GetFoamState(cameraData.camera.GetEntityId(), res);
+                    FoamState state = cameraFoam;
+                    if (state.Initialization.RequiresRecording)
+                    {
+                        // Also used when a recorded graph was abandoned before the init callback.
+                        state.ReadIsA = true;
+                        state.LastFrame = -1;
+                        state.Primed = false;
+                        state.DriftResidual = Vector2.zero;
+                    }
 
                     // dt ONCE per camera per frame. Two cameras each decay their own buffer once; the
                     // same camera recorded twice in a frame must not decay twice (that would make the
                     // trail's lifetime depend on how many times Unity happened to render it).
                     int frame = Time.frameCount;
-                    float dt = state.LastFrame == frame ? 0f : Mathf.Max(0f, Time.deltaTime);
+                    bool repeatedRender = state.LastFrame == frame;
+                    float dt = repeatedRender ? 0f : Mathf.Max(0f, Time.deltaTime);
                     state.LastFrame = frame;
 
                     Vector3 camPos = cameraData.camera.transform.position;
@@ -577,7 +604,9 @@ namespace HiddenHarbours.Art
                     // Pack this frame's deposits into the camera's OWN slot arrays (never a shared
                     // one — the render func runs after recording, and a second camera recording in
                     // between would otherwise overwrite the first camera's slots).
-                    int injected = FoamInjectionRegistry.CollectInjections(_foamInjections);
+                    // Deposits/freshness, like decay, apply once per camera frame. A same-frame
+                    // re-render must not inject the still-pending registry capsules a second time.
+                    int injected = repeatedRender ? 0 : FoamInjectionRegistry.CollectInjections(_foamInjections);
                     for (int i = 0; i < FoamBuffer.MaxInjectors; i++)
                     {
                         if (i < injected)
@@ -626,13 +655,12 @@ namespace HiddenHarbours.Art
                     // BOTH shaders take this one origin (see FoamBuffer.DrawOrigin).
                     Vector2 drawOrigin = FoamBuffer.DrawOrigin(newOrigin, state.DriftResidual);
                     var foamWorld = new Vector4(drawOrigin.x, drawOrigin.y, extent, 1f / extent);
-                    // Only the FIRST frame after a (re)allocation clears: every later frame the read
-                    // side IS last frame's foam, and clearing it would be the buffer's whole point
-                    // thrown away. The write side never needs a clear — the blit covers every texel.
+                    // Keep sampled-import flags constant. The pinned graph hash does not include
+                    // descriptor clear flags for an ordinary sampled read. Initialization is instead
+                    // a declared full write of BOTH textures, ordered before this first deposit.
                     TextureHandle prevTex = renderGraph.ImportTexture(state.Read, new ImportResourceParams
                     {
-                        clearOnFirstUse = state.NeedsClear,
-                        clearColor = Color.black,
+                        clearOnFirstUse = false,
                         discardOnLastUse = false,
                     });
                     TextureHandle nextTex = renderGraph.ImportTexture(state.Write, new ImportResourceParams
@@ -640,7 +668,7 @@ namespace HiddenHarbours.Art
                         clearOnFirstUse = false,
                         discardOnLastUse = false,
                     });
-                    state.NeedsClear = false;
+                    state.Initialization.Record(renderGraph, prevTex, nextTex);
 
                     using (var builder = renderGraph.AddRasterRenderPass<FoamPassData>(
                                "HH Advected Foam Buffer", out FoamPassData passData, profilingSampler))
@@ -1032,7 +1060,8 @@ namespace HiddenHarbours.Art
                 // place that states why (FoamBuffer.FormatPreference), resolved against what THIS
                 // device will actually render to.
                 RenderTextureFormat format = FoamFormat();
-                if (state.A != null && state.B != null && state.Resolution == resolution
+                if (state.A != null && state.B != null && state.A.rt != null && state.B.rt != null
+                    && state.A.rt.IsCreated() && state.B.rt.IsCreated() && state.Resolution == resolution
                     && state.Format == format)
                     return state;
 
@@ -1058,7 +1087,7 @@ namespace HiddenHarbours.Art
                 state.Format = format;
                 // A fresh target's contents are undefined, and the window it was anchored to is gone:
                 // start from clean water rather than from whatever was in memory.
-                state.NeedsClear = true;
+                // Release() reset the initialization generation; the next graph must clear both.
                 state.Primed = false;
                 state.DriftResidual = Vector2.zero;
                 return state;

@@ -4,6 +4,24 @@ using UnityEngine;
 namespace HiddenHarbours.Core
 {
     /// <summary>
+    /// <b>Which tone rule shades a <see cref="CharacterSkinDef"/>.</b> Absence is data: a def that
+    /// never set <see cref="CharacterSkinDef.ToneRule"/> — every asset baked before the field existed —
+    /// reads <see cref="Rig7"/> and is drawn exactly as before.
+    /// </summary>
+    public enum ToneRule
+    {
+        /// <summary>Rig 7's pipeline: at most <see cref="CharacterSkinDef.RampSlots"/> materials, the
+        /// facet shader's one global gain and bias, the Bayer step.</summary>
+        Rig7 = 0,
+
+        /// <summary>The v9.1 character kit's rule (its <c>data/shading.v9.json</c>, rules 3, 5, 6, 7
+        /// and 11): up to <see cref="CharacterSkinDef.V9RampSlots"/> materials, each with its own gain,
+        /// bias and four-tone window, plus a form term. Drawn by the facet shader's <c>HH_FIGURE</c>
+        /// variant.</summary>
+        V9 = 1,
+    }
+
+    /// <summary>
     /// <b>A rig-extracted character as ONE SKINNED MESH — a bind mesh, a skeleton, and bone clips
     /// (ADR 0044 §3.6, owner ruling 2026-09-09 option (d)).</b> Everything
     /// <see cref="CharacterMeshDef"/> carries about how a character is SHADED, carried verbatim,
@@ -78,6 +96,22 @@ namespace HiddenHarbours.Core
         /// alias, so a widening of one path is a deliberate decision about the other.</summary>
         public const int RampSlots = 16;
 
+        /// <summary>The <see cref="ToneRule.V9"/> cap: the facet shader's <c>HH_FIGURE</c> tables
+        /// (<c>_RampMetaFigure</c>, <c>_RampToneFigure</c>) are <c>float4[32]</c>, behind their own keyword
+        /// so the fleet's <c>float4[16]</c> never widens. The v9.1 kit's cast paints 32 materials. A test
+        /// holds the shader's literal to this number.</summary>
+        public const int V9RampSlots = 32;
+
+        /// <summary>The most materials a def of this tone rule may carry: <see cref="RampSlots"/> for rig
+        /// 7, <see cref="V9RampSlots"/> for v9, and 0 for a value this build does not know, so
+        /// <see cref="IsUsable"/> refuses it rather than guessing a table width.</summary>
+        public static int MaxMaterials(ToneRule rule)
+        {
+            if (rule == ToneRule.Rig7) return RampSlots;
+            if (rule == ToneRule.V9) return V9RampSlots;
+            return 0;
+        }
+
         /// <summary>The rig's measured maximum influences per vertex, across all ten builds. See the
         /// class remarks: this is the number a renderer's blend-weight quality must MEET, and
         /// dropping to one costs 452× the rig's own tolerance in the hems.</summary>
@@ -126,6 +160,16 @@ namespace HiddenHarbours.Core
                      "STAMP materials. No polygon references them; recorded so a presenter that " +
                      "re-adds the face has the rig's own numbers. −1 = shaded normally.")]
             public int FixedIndex;
+
+            [Tooltip("V9 only: the lowest tone this material may take BEFORE its Offset (kit rule 6's " +
+                     "lo). A v9 FIXED material (ink, brow, lid) is a one-colour ramp with ToneLo = " +
+                     "ToneHi = 0 and Offset 0 — never FixedIndex, which means no polygon draws it. " +
+                     "Rig 7 ignores it.")]
+            public int ToneLo;
+
+            [Tooltip("V9 only: the highest tone this material may take BEFORE its Offset (kit rule 6's " +
+                     "hi). 0 on a fixed, one-colour material. Rig 7 ignores it.")]
+            public int ToneHi;
 
             /// <summary>The material's effective shade bias — its own, or the def's global one.</summary>
             public float BiasOr(float globalBias) => float.IsNaN(Bias) ? globalBias : Bias;
@@ -349,6 +393,24 @@ namespace HiddenHarbours.Core
                  "index a face's UV0.x carries.")]
         public Material[] Materials = Array.Empty<Material>();
 
+        [Header("Tone rule (absence is data: a def that never set it is rig 7)")]
+        [Tooltip("Which tone rule draws this def. Rig7, the default and what every def baked before " +
+                 "this field reads as: at most RampSlots materials, one global Gain/Bias in the shader, " +
+                 "the Bayer step. V9: up to V9RampSlots materials, each with its own effective gain " +
+                 "(Gain × Material.Gain), bias (Material.BiasOr(Bias)) and ToneLo..ToneHi window, plus " +
+                 "the Form term — the facet shader's HH_FIGURE variant.")]
+        public ToneRule ToneRule = ToneRule.Rig7;
+        [Tooltip("V9 only: how strongly a face turned toward the camera brightens (kit rule 5's form). " +
+                 "Rig 7 ignores it.")]
+        public float Form;
+        [Tooltip("V9 only: the 'toward' at which the form term is zero (kit rule 5's formMid). Rig 7 " +
+                 "ignores it.")]
+        public float FormMid;
+        [Tooltip("V9 only: the kit's key light in the SCREEN basis (right, up, toward the eye) — the " +
+                 "basis LightN is in. It turns with the camera, not with the world. Rig 7 ignores it " +
+                 "and reads LightN.")]
+        public Vector3 KeyScreen;
+
         [Header("Pose facts (MEASURED, never declared)")]
         [Tooltip("True when the mapping from heading to rig dir-units must NEGATE. Adjudicated in " +
                  "pixels at bake time against the rig's own East view, on the SILHOUETTE, with a " +
@@ -450,6 +512,10 @@ namespace HiddenHarbours.Core
         /// the two things that fail SILENTLY: a clip whose key array does not match its own frame
         /// and bone counts (which reads as another frame's pose, not as an error), and an influence
         /// count below two (which is the 452×-tolerance hem collapse).
+        ///
+        /// <para>The material cap follows the tone rule (<see cref="MaxMaterials"/>). A v9 material must
+        /// also carry a window with <c>0 ≤ ToneLo ≤ ToneHi</c>; rig 7 carries none and is checked
+        /// exactly as before.</para>
         /// </summary>
         public bool IsUsable()
         {
@@ -458,9 +524,12 @@ namespace HiddenHarbours.Core
             if (Bones == null || Bones.Length == 0) return false;
             if (MaxInfluences < 1 || MaxInfluences > MaxBoneInfluences) return false;
             if (Materials == null || Materials.Length == 0) return false;
-            if (Materials.Length > RampSlots) return false;
+            if (Materials.Length > MaxMaterials(ToneRule)) return false;
             foreach (Material m in Materials)
+            {
                 if (m.Colors == null || m.Colors.Length == 0) return false;
+                if (ToneRule == ToneRule.V9 && (m.ToneLo < 0 || m.ToneLo > m.ToneHi)) return false;
+            }
             if (Bayer16 == null || Bayer16.Length != 16) return false;
             if (CellW <= 0 || CellH <= 0 || PxPerMetre <= 0) return false;
 

@@ -1,0 +1,119 @@
+{
+  "tool": "export-builds",
+  "rig": "02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144",
+  "poses": "42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07",
+  "ok": true,
+  "problems": [],
+  "files": [
+    {
+      "path": "builds/fisher.v9.json",
+      "bytes": 1996964,
+      "identical": true
+    },
+    {
+      "path": "gameplay/characterIsoRig9.fisher.gameplay.json",
+      "bytes": 582067,
+      "identical": true
+    },
+    {
+      "path": "builds/ginny.v9.json",
+      "bytes": 2051115,
+      "identical": true
+    },
+    {
+      "path": "gameplay/characterIsoRig9.ginny.gameplay.json",
+      "bytes": 584414,
+      "identical": true
+    },
+    {
+      "path": "builds/skipper.v9.json",
+      "bytes": 2078825,
+      "identical": true
+    },
+    {
+      "path": "gameplay/characterIsoRig9.skipper.gameplay.json",
+      "bytes": 583851,
+      "identical": true
+    },
+    {
+      "path": "builds/nan.v9.json",
+      "bytes": 2078177,
+      "identical": true
+    },
+    {
+      "path": "gameplay/characterIsoRig9.nan.gameplay.json",
+      "bytes": 585629,
+      "identical": true
+    },
+    {
+      "path": "builds/deckboss.v9.json",
+      "bytes": 2033346,
+      "identical": true
+    },
+    {
+      "path": "gameplay/characterIsoRig9.deckboss.gameplay.json",
+      "bytes": 582119,
+      "identical": true
+    },
+    {
+      "path": "builds/packer.v9.json",
+      "bytes": 2035998,
+      "identical": true
+    },
+    {
+      "path": "gameplay/characterIsoRig9.packer.gameplay.json",
+      "bytes": 584161,
+      "identical": true
+    },
+    {
+      "path": "builds/cutter.v9.json",
+      "bytes": 2066653,
+      "identical": true
+    },
+    {
+      "path": "gameplay/characterIsoRig9.cutter.gameplay.json",
+      "bytes": 587366,
+      "identical": true
+    },
+    {
+      "path": "builds/hand.v9.json",
+      "bytes": 2055316,
+      "identical": true
+    },
+    {
+      "path": "gameplay/characterIsoRig9.hand.gameplay.json",
+      "bytes": 584638,
+      "identical": true
+    },
+    {
+      "path": "builds/boy.v9.json",
+      "bytes": 2045075,
+      "identical": true
+    },
+    {
+      "path": "gameplay/characterIsoRig9.boy.gameplay.json",
+      "bytes": 590387,
+      "identical": true
+    },
+    {
+      "path": "builds/girl.v9.json",
+      "bytes": 2041527,
+      "identical": true
+    },
+    {
+      "path": "gameplay/characterIsoRig9.girl.gameplay.json",
+      "bytes": 591175,
+      "identical": true
+    },
+    {
+      "path": "builds/rock.v9.json",
+      "bytes": 100235,
+      "identical": true
+    },
+    {
+      "path": "builds/presets.json",
+      "bytes": 20667,
+      "identical": true
+    }
+  ]
+}

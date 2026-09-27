@@ -158,6 +158,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 WriteMeasurements("PARTIAL-" + TestContext.CurrentContext.Test.Name);
 
             Time.timeScale = 1f;   // ⚠ a STATIC: left at 0 it stops every test that follows
+            Time.captureDeltaTime = _v24PreviousCaptureDelta;
             if (GameServices.Clock != null) GameServices.Clock.TimeScale = 1f;
             if (_emitter != null) { _emitter.enabled = true; _emitter = null; }
             RestoreLiftDials();     // the dials this class wrote on the RUNTIME water materials
@@ -183,7 +184,7 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
                 Scene s = SceneManager.GetSceneAt(i);
-                if (s.IsValid() && s != clean && s.name == SceneName)
+                if (s.IsValid() && s != clean && (s.name == SceneName || (_v24LoadedIntro && s.name == "StPeters")))
                     yield return SceneManager.UnloadSceneAsync(s);
             }
         }
@@ -235,6 +236,17 @@ namespace HiddenHarbours.Tests.PlayMode
                 new Leg("east-090", 90f, 0f),
                 new Leg("turn-000-thru-088", 0f, TurnRateDegPerSec),
             };
+
+            if (subject.StartsWith("v24-"))
+                legs = new[]
+                {
+                    new Leg("north-000", 0f, 0f),
+                    new Leg("east-090", 90f, 0f),
+                    new Leg("south-180", 180f, 0f),
+                    new Leg("west-270", 270f, 0f),
+                    new Leg("clockwise", 0f, TurnRateDegPerSec),
+                    new Leg("counterclockwise", 0f, -TurnRateDegPerSec),
+                };
 
             if (!TryLegAnchors(legs.Length, out List<Vector2> anchors, out float depth))
             {
@@ -333,6 +345,7 @@ namespace HiddenHarbours.Tests.PlayMode
             }
 
             // ── the arms, all inside ONE frozen frame ────────────────────────────────────────────────
+            byte[] complete = subject.StartsWith("v24-") ? ShootNamed(wakeRoot, injector, "ALL") : null;
             byte[] all = ShootArm(wakeRoot, injector, sheet: true, foam: true, crest: true);
             byte[] armA = ShootArm(wakeRoot, injector, sheet: true, foam: false, crest: false);
             byte[] armB = ShootArm(wakeRoot, injector, sheet: false, foam: true, crest: false);
@@ -391,6 +404,17 @@ namespace HiddenHarbours.Tests.PlayMode
             SavePlate($"{subject}-{leg.Name}-C-crests.png", armC);
             SavePlate($"{subject}-{leg.Name}-bare.png", bare);
             SavePlate($"{subject}-{leg.Name}-marked.png", Annotate(all, lines, marks, crop));
+            if (complete != null)
+            {
+                SavePlate($"{subject}-{leg.Name}-complete.png", complete);
+                foreach (string family in new[]{"plume","sternRoll","bubble","bowSpray"})
+                {
+                    byte[] isolated = ShootNamed(wakeRoot, injector, family);
+                    SavePlate($"{subject}-{leg.Name}-{family}.png", isolated);
+                    WorstChannelDelta(isolated,bare,out int changed);
+                    _rows.Add($"ISOLATION {subject}/{leg.Name}/{family} changedPixels={changed}");
+                }
+            }
 
             // SHOT FROM, and THROUGH WHAT. A measurement that cannot name its own frame is not evidence.
             Debug.Log($"[{PlateDir}] {subject}/{leg.Name}: SHOT FROM " +
@@ -862,6 +886,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             starts = new List<Vector2>(); depth = 0f;
             ITidalTerrain terrain = GameServices.TidalTerrain;
+            Debug.Log($"[v24-anchor] terrain={terrain?.GetType().Name ?? "null"} region={GameServices.CurrentRegionBounds}");
             if (terrain == null) return false;
 
             Rect region = GameServices.CurrentRegionBounds;
@@ -895,9 +920,12 @@ namespace HiddenHarbours.Tests.PlayMode
                 }
             }
             if (scored.Count == 0) return false;
+            Debug.Log($"[v24-anchor] candidates={scored.Count} requested={count} deepest={scored[0].Clearance}");
             scored.Sort((l, r) => r.Clearance.CompareTo(l.Clearance));
 
-            float sep = Mathf.Min(LegSpacingMetres, 0.4f * Mathf.Min(maxX - minX, maxY - minY));
+            // Six v24 legs fit in the region with disjoint 40 m run discs plus a 10 m gap.
+            float spacing = count > 3 ? 2f * runRadius + 10f : LegSpacingMetres;
+            float sep = Mathf.Min(spacing, 0.4f * Mathf.Min(maxX - minX, maxY - minY));
             foreach (Candidate c in scored)
             {
                 bool clear = true;
@@ -909,6 +937,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 depth = starts.Count == 1 ? c.Clearance : Mathf.Min(depth, c.Clearance);
                 if (starts.Count == count) return true;
             }
+            Debug.Log($"[v24-anchor] separated={starts.Count} requested={count} sep={sep}");
             return false;
         }
 
@@ -1130,7 +1159,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var tex = new Texture2D(_w, _h, TextureFormat.RGBA32, false);
             tex.LoadRawTextureData(rgbaBottomLeft);
             tex.Apply();
-            string dir = Path.Combine(Application.temporaryCachePath, PlateDir);
+            string dir = Path.Combine(Application.dataPath, "../Evidence~/wake-resumed-v24", System.Environment.GetEnvironmentVariable("HH_WAKE_PHASE") ?? "baseline");
             Directory.CreateDirectory(dir);
             string path = Path.Combine(dir, name);
             File.WriteAllBytes(path, tex.EncodeToPNG());
@@ -2532,7 +2561,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             var sb = new StringBuilder();
             foreach (string row in _rows) sb.AppendLine(row);
-            string dir = Path.Combine(Application.temporaryCachePath, PlateDir);
+            string dir = Path.Combine(Application.dataPath, "../Evidence~/wake-resumed-v24", System.Environment.GetEnvironmentVariable("HH_WAKE_PHASE") ?? "baseline");
             Directory.CreateDirectory(dir);
             string path = Path.Combine(dir, $"MEASURED-{subject}.txt");
             File.WriteAllText(path, sb.ToString());

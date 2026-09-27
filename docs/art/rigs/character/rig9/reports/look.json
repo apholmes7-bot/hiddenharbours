@@ -1,0 +1,3152 @@
+{
+  "tool": "check-look",
+  "rig": "02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144",
+  "poses": "42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07",
+  "ok": true,
+  "problems": [],
+  "look": {
+    "bones": [
+      "neck",
+      "head"
+    ],
+    "split": {
+      "neck": 0.4,
+      "head": 0.6
+    },
+    "yaw_deg": [
+      -60,
+      60
+    ],
+    "pitch_deg": [
+      -15,
+      20
+    ],
+    "sense": "yaw > 0 turns the face toward the figure's +x (its right); pitch > 0 tips it down (the rig's pitch: the top toward +y)",
+    "compose": "neck.local = clip.neck.local * E(split.neck * yaw, split.neck * pitch); head.local = rock.head * clip.head.local * E(split.head * yaw, split.head * pitch); E(y, p) = Rz(-y) * Rx(-p), angles in degrees, both clamped to the limits first",
+    "aim": "on the frame as the clip poses it (unrocked, no turn): d = the target minus the head point (head bone * headMid), f = the head bone's +y, both in the chest frame; need.yaw = atan2(d.x, d.y) - atan2(f.x, f.y) (wrapped to -180..180), need.pitch = -atan2(d.z, |d.xy|) + atan2(f.z, |f.xy|); turn = clamp(headShare * need) per axis",
+    "headShare": 0.7,
+    "eyes": {
+      "left": "eyes.left",
+      "centre": "eyes.open",
+      "right": "eyes.right",
+      "beyond_deg": 8,
+      "rule": "eyes.right when need.yaw - turn.yaw > beyond_deg, eyes.left when < -beyond_deg, else eyes.open; only in place of eyes.open (half, shut and wide stay as the clip has them); vertical gaze is the head pitch"
+    }
+  },
+  "gaze": {
+    "builds": 504,
+    "failing": []
+  },
+  "turn": {
+    "builds": 117,
+    "failing": [],
+    "aimWithin_deg": 1.7
+  },
+  "rows": [
+    {
+      "id": "gaze:child/round/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/round/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/oval/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/square/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/long/1/2/lidded",
+      "pass": true,
+      "value": "9 facings"
+    },
+    {
+      "id": "gaze:child/heart/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/0.5/-2/lidded",
+      "pass": true,
+      "value": "9 facings"
+    },
+    {
+      "id": "gaze:child/heart/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/heart/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/wide/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:child/pear/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/0.5/-2/lidded",
+      "pass": true,
+      "value": "9 facings"
+    },
+    {
+      "id": "gaze:youth/round/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/round/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/oval/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/square/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/long/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/0.5/-2/lidded",
+      "pass": true,
+      "value": "9 facings"
+    },
+    {
+      "id": "gaze:youth/heart/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/heart/1/2/lidded",
+      "pass": true,
+      "value": "9 facings"
+    },
+    {
+      "id": "gaze:youth/wide/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/wide/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:youth/pear/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/0/-2/lidded",
+      "pass": true,
+      "value": "10 facings"
+    },
+    {
+      "id": "gaze:adult/round/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/0.5/-2/lidded",
+      "pass": true,
+      "value": "9 facings"
+    },
+    {
+      "id": "gaze:adult/round/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/round/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/oval/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/square/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/0/-2/lidded",
+      "pass": true,
+      "value": "10 facings"
+    },
+    {
+      "id": "gaze:adult/long/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/long/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/0.5/-2/lidded",
+      "pass": true,
+      "value": "9 facings"
+    },
+    {
+      "id": "gaze:adult/heart/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/1/-2/lidded",
+      "pass": true,
+      "value": "9 facings"
+    },
+    {
+      "id": "gaze:adult/heart/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/heart/1/2/lidded",
+      "pass": true,
+      "value": "9 facings"
+    },
+    {
+      "id": "gaze:adult/wide/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/wide/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:adult/pear/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/0.5/-2/lidded",
+      "pass": true,
+      "value": "9 facings"
+    },
+    {
+      "id": "gaze:elder/round/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/round/1/2/lidded",
+      "pass": true,
+      "value": "9 facings"
+    },
+    {
+      "id": "gaze:elder/oval/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/oval/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/square/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/long/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/1/-2/lidded",
+      "pass": true,
+      "value": "9 facings"
+    },
+    {
+      "id": "gaze:elder/heart/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/heart/1/2/lidded",
+      "pass": true,
+      "value": "9 facings"
+    },
+    {
+      "id": "gaze:elder/wide/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/wide/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/0/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/0/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/0/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/0/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/0/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/0/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/0.5/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/0.5/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/0.5/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/0.5/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/0.5/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/0.5/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/1/-2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/1/-2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/1/-2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/1/2/round",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/1/2/narrow",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "gaze:elder/pear/1/2/lidded",
+      "pass": true,
+      "value": "11 facings"
+    },
+    {
+      "id": "turn:none/crop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:none/mop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:none/bob",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:none/long",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:none/bun",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:none/ponytail",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:none/buzz",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:none/bald",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:watchcap/crop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:watchcap/mop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:watchcap/bob",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:watchcap/long",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:watchcap/bun",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:watchcap/ponytail",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:watchcap/buzz",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:watchcap/bald",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:souwester/crop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:souwester/mop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:souwester/bob",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:souwester/long",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:souwester/bun",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:souwester/ponytail",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:souwester/buzz",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:souwester/bald",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:ballcap/crop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:ballcap/mop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:ballcap/bob",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:ballcap/long",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:ballcap/bun",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:ballcap/ponytail",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:ballcap/buzz",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:ballcap/bald",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:kerchief/crop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:kerchief/mop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:kerchief/bob",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:kerchief/long",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:kerchief/bun",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:kerchief/ponytail",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:kerchief/buzz",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:kerchief/bald",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:flatcap/crop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:flatcap/mop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:flatcap/bob",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:flatcap/long",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:flatcap/bun",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:flatcap/ponytail",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:flatcap/buzz",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:flatcap/bald",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:hood/crop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:hood/mop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:hood/bob",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:hood/long",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:hood/bun",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:hood/ponytail",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:hood/buzz",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:hood/bald",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:tophat/crop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:tophat/mop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:tophat/bob",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:tophat/long",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:tophat/bun",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:tophat/ponytail",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:tophat/buzz",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:tophat/bald",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bowler/crop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bowler/mop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bowler/bob",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bowler/long",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bowler/bun",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bowler/ponytail",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bowler/buzz",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bowler/bald",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:captain/crop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:captain/mop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:captain/bob",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:captain/long",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:captain/bun",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:captain/ponytail",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:captain/buzz",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:captain/bald",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:sunhat/crop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:sunhat/mop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:sunhat/bob",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:sunhat/long",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:sunhat/bun",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:sunhat/ponytail",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:sunhat/buzz",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:sunhat/bald",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bucket/crop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bucket/mop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bucket/bob",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bucket/long",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bucket/bun",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bucket/ponytail",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bucket/buzz",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:bucket/bald",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:beret/crop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:beret/mop",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:beret/bob",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:beret/long",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:beret/bun",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:beret/ponytail",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:beret/buzz",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:beret/bald",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:tee/hood",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:longsleeve/hood",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:workshirt/hood",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:sweater/hood",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:vest/hood",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:apron/hood",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:overalls/hood",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:oilskins/hood",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:skirt/hood",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:suit/hood",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:tux/hood",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:dress/hood",
+      "pass": true,
+      "value": "0 px"
+    },
+    {
+      "id": "turn:gown/hood",
+      "pass": true,
+      "value": "0 px"
+    }
+  ]
+}
