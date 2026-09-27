@@ -52,6 +52,7 @@ When you add an ADR, add its row here in the same PR.
 | 0043 | Input: intents in Core, bindings as data | Accepted (rulings 2026-09-02; PR 0 seams the walk — rolling out: helm/verbs PR 1, gamepad PR 2) |
 | 0044 | Characters are meshes in every state; sheets retire per state at parity | **Proposed** (owner overruled the spike 2026-09-09; amends 0024's scope AND its numbers — seat to ratify) |
 | 0046 | Still water above the tide: water = max(tide, still), one map for sim and render, a 16-bit height map | Accepted (terrain pass 9 PR 4; decisions 6, 7 and 11 ruled 2026-09-25; the seam's contract and the 8-bit committed maps accepted 2026-09-26; answers 0014's R8/R16 question) |
+| 0048 | The boats switch: each hull's rig carries its room, its cut and its walk | **Proposed** (the owner accepts it by merging; ghost or gate, drops 15 and 16, and the sloops' place open; each batch's intake extends its rollout record) |
 
 **Conventions.** `Proposed` = awaiting the named decider; `Accepted` = ratified (by the owner where
 the ADR says so, otherwise by `lead-architect` on merge); `Implemented` = accepted and the code

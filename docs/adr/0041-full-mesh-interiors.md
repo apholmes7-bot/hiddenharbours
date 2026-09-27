@@ -4,6 +4,7 @@
   with the owner's eyeball passed; PR 2 (#690, the cape) merged 2026-09-01 (`bfd765d4`) on the
   owner's approval. The sprite-sheet interior system still draws every unconverted hull. Rollout
   record at the bottom of this file.
+- **Amended in part by [ADR 0048](0048-the-boats-switch.md)** (proposed 2026-09-27): the boats switch — each hull's room, cut and walk come from its own rig and walk sidecar.
 - **Date:** 2026-08-29
 - **Decision owner:** `lead-architect` (a shipped-shader change plus a new Core field on
   `HullMeshDef` — CLAUDE.md rule 4). `gameplay-systems` owns the extraction and the bake;
