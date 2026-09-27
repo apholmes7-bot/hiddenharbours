@@ -267,3 +267,10 @@ docs/art/rigs/character/rig9/**/*.json                text eol=lf
 docs/art/rigs/character/rig9/**/*.txt                 text eol=lf
 docs/art/rigs/character/rig9/**/*.md                  text eol=lf
 docs/art/rigs/character/rig9/**/*.html                text eol=lf
+
+# Wharf rig kit pass 2 (drop 12): preserve SHA256SUMS without overriding PNG LFS -text.
+docs/art/rigs/wharf-rig-kit-v2/**/*.js                text eol=lf
+docs/art/rigs/wharf-rig-kit-v2/**/*.json              text eol=lf
+docs/art/rigs/wharf-rig-kit-v2/**/*.txt               text eol=lf
+docs/art/rigs/wharf-rig-kit-v2/**/*.md                text eol=lf
+docs/art/rigs/wharf-rig-kit-v2/**/*.html              text eol=lf

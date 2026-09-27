@@ -324,6 +324,21 @@ namespace HiddenHarbours.Tests.RigBaking
                          "WharfDecor", AzimuthConvention.CounterClockwise),
             new Snapshot("wharfIso", "docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js",
                          "WharfIso", AzimuthConvention.CounterClockwise),
+            // Added by wharf rig kit pass 2, drop 12; raster convention measured from its G-buffer.
+            new Snapshot("wharfRig2", "docs/art/rigs/wharf-rig-kit-v2/wharfRig2.js",
+                         "WharfRig2", AzimuthConvention.CounterClockwise, "wharfRig2Families", "wharfRig2Verbs"),
+            // Wharf rig kit pass 2, drop 12: non-directional family builders; unique completion marker.
+            new Snapshot("wharfRig2Families", "docs/art/rigs/wharf-rig-kit-v2/wharfRig2.fam.js",
+                         "WharfGeo2.FAMILIES", AzimuthConvention.Clockwise, "wharfRig2Geometry"),
+            // Wharf rig kit pass 2, drop 12: non-directional geometry library.
+            new Snapshot("wharfRig2Geometry", "docs/art/rigs/wharf-rig-kit-v2/wharfRig2.geo.js",
+                         "WharfGeo2", AzimuthConvention.Clockwise),
+            // Wharf rig kit pass 2, drop 12: harbour composition uses the measured raster camera.
+            new Snapshot("wharfRig2Kit", "docs/art/rigs/wharf-rig-kit-v2/wharfRig2.kit.js",
+                         "WharfRig2Kit", AzimuthConvention.CounterClockwise, "wharfRig2"),
+            // Wharf rig kit pass 2, drop 12: non-directional character interaction data.
+            new Snapshot("wharfRig2Verbs", "docs/art/rigs/wharf-rig-kit-v2/wharfRig2.verbs.js",
+                         "WharfVerbs2", AzimuthConvention.Clockwise, "wharfRig2Families"),
             // Added by the dooryard & landscaping kit (drop 2026-08-20, imported #604, baked here).
             // Standalone: its bed pieces WOULD compose with globalThis.Flowers/Shrubs if those were
             // loaded, but nothing this repo bakes from it is a bed and YardKit passes compose:false

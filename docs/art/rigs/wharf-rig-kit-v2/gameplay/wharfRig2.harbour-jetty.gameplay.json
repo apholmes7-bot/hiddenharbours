@@ -1,0 +1,3347 @@
+{
+ "schema": "hidden-harbours/wharf-gameplay@2",
+ "rig": "wharfRig2.js + wharfRig2.geo.js + wharfRig2.fam.js + wharfRig2.verbs.js + wharfRig2.kit.js",
+ "exportSymbol": "WharfRig2",
+ "key": "harbour:jetty",
+ "label": "Tanker jetty",
+ "generated": "WharfRig2Kit.gameplay() off the live model — do not hand-edit, regenerate",
+ "frame": {
+  "units": "metres",
+  "axes": "+x east, +y north (the sea), +z up",
+  "origin": "harbour origin at chart datum",
+  "scale_px_per_m": 32,
+  "elev_deg": 40,
+  "dirs": 8,
+  "dir": 0
+ },
+ "params": {
+  "variant": 0,
+  "season": "summer",
+  "stage": "weathered",
+  "age": 0.65,
+  "tideRange": 1.8,
+  "tide": 0.9,
+  "frame": 0,
+  "wind": {
+   "w": 0.2,
+   "gust": 0.4,
+   "dir": 1
+  },
+  "sea": null
+ },
+ "SPRITE": {
+  "cell": [
+   3197,
+   629
+  ],
+  "pivot": [
+   1598,
+   286
+  ],
+  "pivotIs": "the projection of the model origin (x 0, y 0, z 0): blit at screen(origin) − pivot",
+  "loop": 16,
+  "moving": false
+ },
+ "WALK": [
+  {
+   "module": "platform",
+   "poly": [
+    [
+     -12,
+     -6
+    ],
+    [
+     12,
+     -6
+    ],
+    [
+     12,
+     6
+    ],
+    [
+     -12,
+     6
+    ]
+   ],
+   "surface": "concrete",
+   "z": 3.6,
+   "rides": null,
+   "clearWidth": 12
+  },
+  {
+   "module": "breastW",
+   "poly": [
+    [
+     -24.5,
+     1.5
+    ],
+    [
+     -19.5,
+     1.5
+    ],
+    [
+     -19.5,
+     6.5
+    ],
+    [
+     -24.5,
+     6.5
+    ]
+   ],
+   "surface": "concrete",
+   "z": 3.6,
+   "rides": null,
+   "clearWidth": 5
+  },
+  {
+   "module": "moorW",
+   "poly": [
+    [
+     -49.8,
+     -5.8
+    ],
+    [
+     -46.2,
+     -5.8
+    ],
+    [
+     -46.2,
+     -2.2
+    ],
+    [
+     -49.8,
+     -2.2
+    ]
+   ],
+   "surface": "concrete",
+   "z": 3.6,
+   "rides": null,
+   "clearWidth": 3.6
+  },
+  {
+   "module": "walkAW",
+   "poly": [
+    [
+     -19.5,
+     3.4
+    ],
+    [
+     -12,
+     3.4
+    ],
+    [
+     -12,
+     4.6
+    ],
+    [
+     -19.5,
+     4.6
+    ]
+   ],
+   "surface": "steel grating",
+   "z": 3.6,
+   "rides": null,
+   "clearWidth": 1.1
+  },
+  {
+   "module": "walkBW",
+   "poly": [
+    [
+     -24.71,
+     4.56
+    ],
+    [
+     -46.41,
+     -3.44
+    ],
+    [
+     -45.99,
+     -4.56
+    ],
+    [
+     -24.29,
+     3.44
+    ]
+   ],
+   "surface": "steel grating",
+   "z": 3.6,
+   "rides": null,
+   "clearWidth": 1.1
+  },
+  {
+   "module": "breastE",
+   "poly": [
+    [
+     19.5,
+     1.5
+    ],
+    [
+     24.5,
+     1.5
+    ],
+    [
+     24.5,
+     6.5
+    ],
+    [
+     19.5,
+     6.5
+    ]
+   ],
+   "surface": "concrete",
+   "z": 3.6,
+   "rides": null,
+   "clearWidth": 5
+  },
+  {
+   "module": "moorE",
+   "poly": [
+    [
+     46.2,
+     -5.8
+    ],
+    [
+     49.8,
+     -5.8
+    ],
+    [
+     49.8,
+     -2.2
+    ],
+    [
+     46.2,
+     -2.2
+    ]
+   ],
+   "surface": "concrete",
+   "z": 3.6,
+   "rides": null,
+   "clearWidth": 3.6
+  },
+  {
+   "module": "walkAE",
+   "poly": [
+    [
+     12,
+     3.4
+    ],
+    [
+     19.5,
+     3.4
+    ],
+    [
+     19.5,
+     4.6
+    ],
+    [
+     12,
+     4.6
+    ]
+   ],
+   "surface": "steel grating",
+   "z": 3.6,
+   "rides": null,
+   "clearWidth": 1.1
+  },
+  {
+   "module": "walkBE",
+   "poly": [
+    [
+     24.29,
+     3.44
+    ],
+    [
+     45.99,
+     -4.56
+    ],
+    [
+     46.41,
+     -3.44
+    ],
+    [
+     24.71,
+     4.56
+    ]
+   ],
+   "surface": "steel grating",
+   "z": 3.6,
+   "rides": null,
+   "clearWidth": 1.1
+  }
+ ],
+ "HOLES": [],
+ "BLOCKERS": [
+  {
+   "shape": "wall",
+   "a": [
+    -11.9,
+    -5.92
+   ],
+   "b": [
+    11.9,
+    -5.92
+   ],
+   "h": 1.05,
+   "kind": "rail",
+   "module": "platform"
+  },
+  {
+   "shape": "wall",
+   "a": [
+    -11.92,
+    -5.9
+   ],
+   "b": [
+    -11.92,
+    5.9
+   ],
+   "h": 1.05,
+   "kind": "rail",
+   "module": "platform"
+  },
+  {
+   "shape": "wall",
+   "a": [
+    11.92,
+    -5.9
+   ],
+   "b": [
+    11.92,
+    5.9
+   ],
+   "h": 1.05,
+   "kind": "rail",
+   "module": "platform"
+  },
+  {
+   "shape": "circle",
+   "x": -22,
+   "y": 2.4,
+   "r": 0.2,
+   "h": 0.75,
+   "kind": "bollard",
+   "module": "breastW"
+  },
+  {
+   "shape": "circle",
+   "x": -48,
+   "y": -3.9,
+   "r": 0.2,
+   "h": 0.75,
+   "kind": "bollard",
+   "module": "moorW"
+  },
+  {
+   "shape": "circle",
+   "x": 22,
+   "y": 2.4,
+   "r": 0.2,
+   "h": 0.75,
+   "kind": "bollard",
+   "module": "breastE"
+  },
+  {
+   "shape": "circle",
+   "x": 48,
+   "y": -3.9,
+   "r": 0.2,
+   "h": 0.75,
+   "kind": "bollard",
+   "module": "moorE"
+  },
+  {
+   "shape": "poly",
+   "poly": [
+    [
+     -2.05,
+     5.75
+    ],
+    [
+     -1.35,
+     5.75
+    ],
+    [
+     -1.35,
+     5.95
+    ],
+    [
+     -2.05,
+     5.95
+    ]
+   ],
+   "h": 1.45,
+   "kind": "ringPost",
+   "module": "platform",
+   "rides": null
+  },
+  {
+   "shape": "poly",
+   "poly": [
+    [
+     -5.15,
+     -5.29
+    ],
+    [
+     -6.75,
+     -5.29
+    ],
+    [
+     -6.75,
+     -5.95
+    ],
+    [
+     -5.15,
+     -5.95
+    ]
+   ],
+   "h": 0.72,
+   "kind": "fishTable",
+   "module": "platform",
+   "rides": null
+  },
+  {
+   "shape": "poly",
+   "poly": [
+    [
+     6.55,
+     -5.34
+    ],
+    [
+     5.55,
+     -5.34
+    ],
+    [
+     5.55,
+     -5.96
+    ],
+    [
+     6.55,
+     -5.96
+    ]
+   ],
+   "h": 0.85,
+   "kind": "dockBox",
+   "module": "platform",
+   "rides": null
+  },
+  {
+   "shape": "poly",
+   "poly": [
+    [
+     2.8,
+     5.45
+    ],
+    [
+     3.3,
+     5.45
+    ],
+    [
+     3.3,
+     5.95
+    ],
+    [
+     2.8,
+     5.95
+    ]
+   ],
+   "h": 1.9,
+   "kind": "davit",
+   "module": "platform",
+   "rides": null
+  }
+ ],
+ "CLIMB": [
+  {
+   "id": "platform.ladder0",
+   "module": "platform",
+   "kind": "wharf ladder",
+   "berth": "platform.water.berth0",
+   "plane": [
+    0,
+    6.16
+   ],
+   "out": [
+    0,
+    1
+   ],
+   "faceYaw": -180,
+   "rung": 0.24,
+   "width": 0.45,
+   "standoff": 0.275,
+   "rungZ": [
+    3.36,
+    3.12,
+    2.88,
+    2.64,
+    2.4,
+    2.16,
+    1.92,
+    1.68,
+    1.44,
+    1.2,
+    0.96,
+    0.72,
+    0.48,
+    0.24,
+    0,
+    -0.24,
+    -0.48,
+    -0.72
+   ],
+   "topZ": 3.6,
+   "bottomRungZ": -0.72,
+   "grabZ": 4.6,
+   "root": {
+    "x": 0,
+    "y": 6.44,
+    "zFrom": -0.72,
+    "zTo": 3.36,
+    "note": "the figure faces the ladder (faceYaw) with its root standoff out from the rung plane; root z = the rung its lower foot is on"
+   },
+   "exit": {
+    "x": 0,
+    "y": 5.45,
+    "z": 3.6,
+    "note": "standing spot on the deck behind the grab hoops"
+   },
+   "rideGroup": null,
+   "atTide": {
+    "rungsDry": 11,
+    "rungsWet": 7,
+    "footInWater": true,
+    "swimmerCanReach": true
+   },
+   "clip": "ladderDown",
+   "play": "forward to go down, reversed to climb; root motion 0.436 m/s",
+   "opts": {
+    "rung": 0.24,
+    "ladderW": 0.45
+   },
+   "fitsCreatorBodies": true
+  }
+ ],
+ "TIE": [
+  {
+   "id": "breastW.bollard0",
+   "type": "bollard",
+   "module": "breastW",
+   "berth": "platform.water.berth0",
+   "lead": "breast · spring",
+   "at": [
+    -22,
+    2.4,
+    4.25
+   ],
+   "stand": [
+    -22.13,
+    2.13,
+    3.6
+   ],
+   "yaw": 0,
+   "clip": "reach",
+   "opts": {
+    "lift": 0.555,
+    "want": [
+     0.132,
+     0.265,
+     0.65
+    ]
+   },
+   "then": {
+    "clip": "haul",
+    "leadYaw": 0
+   },
+   "line": "40 mm + wires",
+   "holds": "D · E",
+   "fitsCreatorBodies": true,
+   "rideGroup": null,
+   "dolphin": "breasting"
+  },
+  {
+   "id": "moorW.bollard1",
+   "type": "bollard",
+   "module": "moorW",
+   "berth": "platform.water.berth0",
+   "lead": "head · stern",
+   "at": [
+    -48,
+    -3.9,
+    4.25
+   ],
+   "stand": [
+    -48.13,
+    -4.16,
+    3.6
+   ],
+   "yaw": 0,
+   "clip": "reach",
+   "opts": {
+    "lift": 0.555,
+    "want": [
+     0.132,
+     0.265,
+     0.65
+    ]
+   },
+   "then": {
+    "clip": "haul",
+    "leadYaw": 0
+   },
+   "line": "40 mm + wires",
+   "holds": "D · E",
+   "fitsCreatorBodies": true,
+   "rideGroup": null,
+   "dolphin": "mooring"
+  },
+  {
+   "id": "breastE.bollard2",
+   "type": "bollard",
+   "module": "breastE",
+   "berth": "platform.water.berth0",
+   "lead": "breast · spring",
+   "at": [
+    22,
+    2.4,
+    4.25
+   ],
+   "stand": [
+    21.87,
+    2.13,
+    3.6
+   ],
+   "yaw": 0,
+   "clip": "reach",
+   "opts": {
+    "lift": 0.555,
+    "want": [
+     0.132,
+     0.265,
+     0.65
+    ]
+   },
+   "then": {
+    "clip": "haul",
+    "leadYaw": 0
+   },
+   "line": "40 mm + wires",
+   "holds": "D · E",
+   "fitsCreatorBodies": true,
+   "rideGroup": null,
+   "dolphin": "breasting"
+  },
+  {
+   "id": "moorE.bollard3",
+   "type": "bollard",
+   "module": "moorE",
+   "berth": "platform.water.berth0",
+   "lead": "head · stern",
+   "at": [
+    48,
+    -3.9,
+    4.25
+   ],
+   "stand": [
+    47.87,
+    -4.16,
+    3.6
+   ],
+   "yaw": 0,
+   "clip": "reach",
+   "opts": {
+    "lift": 0.555,
+    "want": [
+     0.132,
+     0.265,
+     0.65
+    ]
+   },
+   "then": {
+    "clip": "haul",
+    "leadYaw": 0
+   },
+   "line": "40 mm + wires",
+   "holds": "D · E",
+   "fitsCreatorBodies": true,
+   "rideGroup": null,
+   "dolphin": "mooring"
+  }
+ ],
+ "BOARD": [
+  {
+   "berth": "platform.water.berth0",
+   "hull": "tanker",
+   "at": [
+    0,
+    6
+   ],
+   "yaw": 0,
+   "deckZ": 3.6,
+   "hullSoleZ": 3.3,
+   "step": -0.3,
+   "clip": "boardDown",
+   "opts": {
+    "railZ": 0.3
+   },
+   "fitsCreatorBodies": true,
+   "how": {
+    "aboard": "step down",
+    "ashore": "low step up"
+   },
+   "aboard": {
+    "dz": -0.3,
+    "how": "step down",
+    "seq": [
+     {
+      "clip": "boardDown",
+      "once": true,
+      "opts": {
+       "railZ": 0.3
+      },
+      "advance": "to the landing over t 0.04–0.86"
+     }
+    ],
+    "fits": true,
+    "first": "boardDown",
+    "opts": {
+     "railZ": 0.3
+    }
+   },
+   "ashore": {
+    "dz": 0.3,
+    "how": "low step up",
+    "seq": [
+     {
+      "clip": "boardDown",
+      "once": true,
+      "reverse": true,
+      "opts": {
+       "railZ": 0.3
+      },
+      "advance": "to the landing over t 0.14–0.96 (the clip reversed)",
+      "note": "no grip",
+      "request": "stepUp"
+     }
+    ],
+    "fits": true,
+    "first": "boardDown",
+    "opts": {
+     "railZ": 0.3
+    }
+   },
+   "ladder": "platform.ladder0",
+   "rides": null
+  }
+ ],
+ "BERTHS": [
+  {
+   "id": "platform.water.berth0",
+   "module": "platform",
+   "face": "water",
+   "hull": "tanker",
+   "label": "gas tanker",
+   "cls": "E",
+   "loa": 110,
+   "beam": 17.4,
+   "draft": 6.2,
+   "footprint": {
+    "centre": [
+     0,
+     15.9
+    ],
+    "heading": [
+     1,
+     0
+    ],
+    "length": 110,
+    "width": 17.4
+   },
+   "line": "40 mm + wires",
+   "fender": "breasting dolphin panel",
+   "bedUnder": -9,
+   "depthAtDatum": 9,
+   "afloatAtDatum": true,
+   "floatsFrom": -1.3,
+   "dries": false,
+   "afloatNow": true,
+   "aground": false,
+   "ties": [
+    "breastW.bollard0",
+    "moorW.bollard1",
+    "breastE.bollard2",
+    "moorE.bollard3"
+   ],
+   "ladder": "platform.ladder0"
+  }
+ ],
+ "FENDERS": [
+  {
+   "type": "panel",
+   "x": -23.2,
+   "y": 6.5,
+   "w": 1.6,
+   "module": "breastW"
+  },
+  {
+   "type": "panel",
+   "x": -20.8,
+   "y": 6.5,
+   "w": 1.6,
+   "module": "breastW"
+  },
+  {
+   "type": "panel",
+   "x": 20.8,
+   "y": 6.5,
+   "w": 1.6,
+   "module": "breastE"
+  },
+  {
+   "type": "panel",
+   "x": 23.2,
+   "y": 6.5,
+   "w": 1.6,
+   "module": "breastE"
+  }
+ ],
+ "FLOAT": {},
+ "SOCKETS": [
+  {
+   "id": "platform.nx",
+   "module": "platform",
+   "at": [
+    -12,
+    0,
+    3.6
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 12,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "platform.px",
+   "module": "platform",
+   "at": [
+    12,
+    0,
+    3.6
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 12,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "platform.water0",
+   "module": "platform",
+   "at": [
+    -12,
+    6,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "platform.shore0",
+   "module": "platform",
+   "at": [
+    -12,
+    -6,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "platform.water1",
+   "module": "platform",
+   "at": [
+    -9,
+    6,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "platform.shore1",
+   "module": "platform",
+   "at": [
+    -9,
+    -6,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "platform.water2",
+   "module": "platform",
+   "at": [
+    -6,
+    6,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "platform.shore2",
+   "module": "platform",
+   "at": [
+    -6,
+    -6,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "platform.water3",
+   "module": "platform",
+   "at": [
+    -3,
+    6,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "platform.shore3",
+   "module": "platform",
+   "at": [
+    -3,
+    -6,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "platform.water4",
+   "module": "platform",
+   "at": [
+    0,
+    6,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "platform.shore4",
+   "module": "platform",
+   "at": [
+    0,
+    -6,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "platform.water5",
+   "module": "platform",
+   "at": [
+    3,
+    6,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "platform.shore5",
+   "module": "platform",
+   "at": [
+    3,
+    -6,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "platform.water6",
+   "module": "platform",
+   "at": [
+    6,
+    6,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "platform.shore6",
+   "module": "platform",
+   "at": [
+    6,
+    -6,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "platform.water7",
+   "module": "platform",
+   "at": [
+    9,
+    6,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "platform.shore7",
+   "module": "platform",
+   "at": [
+    9,
+    -6,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "platform.water8",
+   "module": "platform",
+   "at": [
+    12,
+    6,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "platform.shore8",
+   "module": "platform",
+   "at": [
+    12,
+    -6,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "breastW.nx",
+   "module": "breastW",
+   "at": [
+    -24.5,
+    4,
+    3.6
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "breastW.px",
+   "module": "breastW",
+   "at": [
+    -19.5,
+    4,
+    3.6
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "breastW.water0",
+   "module": "breastW",
+   "at": [
+    -24.5,
+    6.5,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "breastW.shore0",
+   "module": "breastW",
+   "at": [
+    -24.5,
+    1.5,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "breastW.water1",
+   "module": "breastW",
+   "at": [
+    -19.5,
+    6.5,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "breastW.shore1",
+   "module": "breastW",
+   "at": [
+    -19.5,
+    1.5,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "moorW.nx",
+   "module": "moorW",
+   "at": [
+    -49.8,
+    -4,
+    3.6
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 3.6,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "moorW.px",
+   "module": "moorW",
+   "at": [
+    -46.2,
+    -4,
+    3.6
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 3.6,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "moorW.water0",
+   "module": "moorW",
+   "at": [
+    -49.8,
+    -2.2,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3.6,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "moorW.shore0",
+   "module": "moorW",
+   "at": [
+    -49.8,
+    -5.8,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3.6,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "moorW.water1",
+   "module": "moorW",
+   "at": [
+    -46.2,
+    -2.2,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3.6,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "moorW.shore1",
+   "module": "moorW",
+   "at": [
+    -46.2,
+    -5.8,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3.6,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "walkAW.nx",
+   "module": "walkAW",
+   "at": [
+    -19.5,
+    4,
+    3.6
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 1.2,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "walkAW.px",
+   "module": "walkAW",
+   "at": [
+    -12,
+    4,
+    3.6
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 1.2,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "walkAW.water0",
+   "module": "walkAW",
+   "at": [
+    -19.5,
+    4.6,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 7.5,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "walkAW.shore0",
+   "module": "walkAW",
+   "at": [
+    -19.5,
+    3.4,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 7.5,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "walkAW.water1",
+   "module": "walkAW",
+   "at": [
+    -12,
+    4.6,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 7.5,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "walkAW.shore1",
+   "module": "walkAW",
+   "at": [
+    -12,
+    3.4,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 7.5,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "walkBW.nx",
+   "module": "walkBW",
+   "at": [
+    -24.5,
+    4,
+    3.6
+   ],
+   "n": [
+    0.938,
+    0.346
+   ],
+   "w": 1.2,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "walkBW.px",
+   "module": "walkBW",
+   "at": [
+    -46.2,
+    -4,
+    3.6
+   ],
+   "n": [
+    -0.938,
+    -0.346
+   ],
+   "w": 1.2,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "walkBW.water0",
+   "module": "walkBW",
+   "at": [
+    -24.29,
+    3.44,
+    3.6
+   ],
+   "n": [
+    0.346,
+    -0.938
+   ],
+   "w": 23.13,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "walkBW.shore0",
+   "module": "walkBW",
+   "at": [
+    -24.71,
+    4.56,
+    3.6
+   ],
+   "n": [
+    -0.346,
+    0.938
+   ],
+   "w": 23.13,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "walkBW.water1",
+   "module": "walkBW",
+   "at": [
+    -45.99,
+    -4.56,
+    3.6
+   ],
+   "n": [
+    0.346,
+    -0.938
+   ],
+   "w": 23.13,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "walkBW.shore1",
+   "module": "walkBW",
+   "at": [
+    -46.41,
+    -3.44,
+    3.6
+   ],
+   "n": [
+    -0.346,
+    0.938
+   ],
+   "w": 23.13,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "breastE.nx",
+   "module": "breastE",
+   "at": [
+    19.5,
+    4,
+    3.6
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "breastE.px",
+   "module": "breastE",
+   "at": [
+    24.5,
+    4,
+    3.6
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "breastE.water0",
+   "module": "breastE",
+   "at": [
+    19.5,
+    6.5,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "breastE.shore0",
+   "module": "breastE",
+   "at": [
+    19.5,
+    1.5,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "breastE.water1",
+   "module": "breastE",
+   "at": [
+    24.5,
+    6.5,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "breastE.shore1",
+   "module": "breastE",
+   "at": [
+    24.5,
+    1.5,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 5,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "moorE.nx",
+   "module": "moorE",
+   "at": [
+    46.2,
+    -4,
+    3.6
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 3.6,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "moorE.px",
+   "module": "moorE",
+   "at": [
+    49.8,
+    -4,
+    3.6
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 3.6,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "moorE.water0",
+   "module": "moorE",
+   "at": [
+    46.2,
+    -2.2,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3.6,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "moorE.shore0",
+   "module": "moorE",
+   "at": [
+    46.2,
+    -5.8,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3.6,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "moorE.water1",
+   "module": "moorE",
+   "at": [
+    49.8,
+    -2.2,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 3.6,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "moorE.shore1",
+   "module": "moorE",
+   "at": [
+    49.8,
+    -5.8,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 3.6,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "walkAE.nx",
+   "module": "walkAE",
+   "at": [
+    12,
+    4,
+    3.6
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 1.2,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "walkAE.px",
+   "module": "walkAE",
+   "at": [
+    19.5,
+    4,
+    3.6
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 1.2,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "walkAE.water0",
+   "module": "walkAE",
+   "at": [
+    12,
+    4.6,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 7.5,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "walkAE.shore0",
+   "module": "walkAE",
+   "at": [
+    12,
+    3.4,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 7.5,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "walkAE.water1",
+   "module": "walkAE",
+   "at": [
+    19.5,
+    4.6,
+    3.6
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 7.5,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "walkAE.shore1",
+   "module": "walkAE",
+   "at": [
+    19.5,
+    3.4,
+    3.6
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 7.5,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "walkBE.nx",
+   "module": "walkBE",
+   "at": [
+    24.5,
+    4,
+    3.6
+   ],
+   "n": [
+    -0.938,
+    0.346
+   ],
+   "w": 1.2,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "walkBE.px",
+   "module": "walkBE",
+   "at": [
+    46.2,
+    -4,
+    3.6
+   ],
+   "n": [
+    0.938,
+    -0.346
+   ],
+   "w": 1.2,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "walkBE.water0",
+   "module": "walkBE",
+   "at": [
+    24.71,
+    4.56,
+    3.6
+   ],
+   "n": [
+    0.346,
+    0.938
+   ],
+   "w": 23.13,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "walkBE.shore0",
+   "module": "walkBE",
+   "at": [
+    24.29,
+    3.44,
+    3.6
+   ],
+   "n": [
+    -0.346,
+    -0.938
+   ],
+   "w": 23.13,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "walkBE.water1",
+   "module": "walkBE",
+   "at": [
+    46.41,
+    -3.44,
+    3.6
+   ],
+   "n": [
+    0.346,
+    0.938
+   ],
+   "w": 23.13,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "walkBE.shore1",
+   "module": "walkBE",
+   "at": [
+    45.99,
+    -4.56,
+    3.6
+   ],
+   "n": [
+    -0.346,
+    -0.938
+   ],
+   "w": 23.13,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  }
+ ],
+ "WATER": {
+  "bakedWaterPixels": 0,
+  "rule": "every pixel whose z is under the tide (view \"sub\") is the water shader’s: draw the sea over it, the first 0.16 m through three steps of water",
+  "contact": "WharfRig2.contact(frame): the waterline, for the foam lace",
+  "shade": "castShadow levels → TerrainLight6 relight o.lv"
+ },
+ "SNOW": {
+  "map": "frame.snow, one byte per pixel",
+  "rule": "snowed = round(cover × 254) >= byte; 255 never",
+  "never": "vertical faces, growth, sky visibility < 0.18, below tide + 0.25 + 0.2·wind"
+ },
+ "SHADOW": {
+  "levels": "1 canopy (under a deck, stays in overcast) · 2 partial · 3 full",
+  "call": "WharfRig2.castShadow(frame, sky, {z}) or shadeAt(frame, sky, x, y, z)"
+ },
+ "SORT": {
+  "floorLayer": "lay 0: decks and all under them draw under figures",
+  "raised": "lay 1: rails, bollards, grab hoops, dolphin rails, gangway rails — y-sort each by its base row",
+  "channel": "view \"layer\""
+ },
+ "CHAR": {
+  "from": "export/character-v9.2-import-kit reports/worldfit.txt",
+  "rev": "9.2",
+  "rig": "characterIsoRig9.js",
+  "rigSha": "02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144",
+  "rung": 0.24,
+  "rungFit": [
+   0.211,
+   0.273
+  ],
+  "rungClamp": [
+   0.18,
+   0.45
+  ],
+  "ladderW": 0.45,
+  "standoff": 0.275,
+  "hands": 0.17,
+  "railFit": [
+   0.549,
+   0.724
+  ],
+  "railClamp": [
+   0.06,
+   1.3
+  ],
+  "reachLift": [
+   0,
+   1.012
+  ],
+  "gripRise": 0.095,
+  "want": [
+   0.132,
+   0.265
+  ],
+  "loadFit": [
+   0.718,
+   0.978
+  ],
+  "radius": [
+   0.141,
+   0.229
+  ],
+  "fisherR": 0.2,
+  "footprint": [
+   0.458,
+   0.37
+  ],
+  "head": 1.8,
+  "clips": {
+   "climb": "ladderDown (reverse to climb)",
+   "tie": "reach",
+   "haul": "haul",
+   "step": "board / boardDown",
+   "walk": "walk",
+   "swim": "swim / tread"
+  },
+  "built": {
+   "rung": 0.24,
+   "ladderW": 0.45,
+   "grab": 1,
+   "cleatHorn": 0.22,
+   "bollard": 0.75,
+   "gangwaySlopeMax": 18.43,
+   "gangwayClear": 1.1,
+   "rail": 1.05
+  }
+ },
+ "FIXTURES": [
+  {
+   "id": "platform.ringPost0",
+   "kind": "ringPost",
+   "label": "life-ring post",
+   "module": "platform",
+   "face": "water",
+   "stand": [
+    -1.7,
+    5.5,
+    3.6
+   ],
+   "yaw": 0,
+   "height": 1.45,
+   "rides": null,
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.95,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ],
+   "footprint": [
+    [
+     -2.05,
+     5.75
+    ],
+    [
+     -1.35,
+     5.75
+    ],
+    [
+     -1.35,
+     5.95
+    ],
+    [
+     -2.05,
+     5.95
+    ]
+   ]
+  },
+  {
+   "id": "platform.fishTable1",
+   "kind": "fishTable",
+   "label": "fish-cleaning table",
+   "module": "platform",
+   "face": "shore",
+   "stand": [
+    -5.95,
+    -5.15,
+    3.6
+   ],
+   "yaw": -180,
+   "height": 0.72,
+   "rides": null,
+   "fits": [
+    {
+     "param": "knife",
+     "value": 0.72,
+     "range": [
+      0.598,
+      0.76
+     ],
+     "ok": true
+    },
+    {
+     "param": "bench",
+     "value": 0.72,
+     "range": [
+      0.643,
+      0.853
+     ],
+     "ok": true
+    }
+   ],
+   "footprint": [
+    [
+     -5.15,
+     -5.29
+    ],
+    [
+     -6.75,
+     -5.29
+    ],
+    [
+     -6.75,
+     -5.95
+    ],
+    [
+     -5.15,
+     -5.95
+    ]
+   ]
+  },
+  {
+   "id": "platform.dockBox2",
+   "kind": "dockBox",
+   "label": "dock box",
+   "module": "platform",
+   "face": "shore",
+   "stand": [
+    6.05,
+    -5.12,
+    3.6
+   ],
+   "yaw": -180,
+   "height": 0.85,
+   "rides": null,
+   "fits": [
+    {
+     "param": "load",
+     "value": 0.85,
+     "range": [
+      0.718,
+      0.978
+     ],
+     "ok": true
+    }
+   ],
+   "footprint": [
+    [
+     6.55,
+     -5.34
+    ],
+    [
+     5.55,
+     -5.34
+    ],
+    [
+     5.55,
+     -5.96
+    ],
+    [
+     6.55,
+     -5.96
+    ]
+   ]
+  },
+  {
+   "id": "platform.davit3",
+   "kind": "davit",
+   "label": "wharf davit + hauler",
+   "module": "platform",
+   "face": "water",
+   "stand": [
+    3.05,
+    5.45,
+    3.6
+   ],
+   "yaw": 0,
+   "height": 1.9,
+   "rides": null,
+   "fits": [
+    {
+     "param": "warp sheave scale at 1.05",
+     "value": 0.52,
+     "range": [
+      0.4,
+      0.632
+     ],
+     "ok": true
+    }
+   ],
+   "footprint": [
+    [
+     2.8,
+     5.45
+    ],
+    [
+     3.3,
+     5.45
+    ],
+    [
+     3.3,
+     5.95
+    ],
+    [
+     2.8,
+     5.95
+    ]
+   ]
+  },
+  {
+   "id": "platform.fishSpot4",
+   "kind": "fishSpot",
+   "label": "fishing spot",
+   "module": "platform",
+   "face": "shore",
+   "stand": [
+    0.05,
+    -5.55,
+    3.6
+   ],
+   "yaw": -180,
+   "height": 0,
+   "rides": null,
+   "fits": []
+  },
+  {
+   "id": "platform.fishSpot5",
+   "kind": "fishSpot",
+   "label": "fishing spot",
+   "module": "platform",
+   "face": "shore",
+   "stand": [
+    -7.7,
+    -5.55,
+    3.6
+   ],
+   "yaw": -180,
+   "height": 0,
+   "rides": null,
+   "fits": []
+  }
+ ],
+ "VERBS": [
+  {
+   "id": "platform.ringPost0.throwRing",
+   "verb": "throwRing",
+   "fixture": "platform.ringPost0",
+   "module": "platform",
+   "stand": [
+    -1.7,
+    5.5,
+    3.6
+   ],
+   "yaw": 0,
+   "rides": null,
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.95,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "rest": "stowV"
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the ring leaves the hand at tossRelease 0.52"
+    }
+   ]
+  },
+  {
+   "id": "platform.fishTable1.gut",
+   "verb": "gut",
+   "fixture": "platform.fishTable1",
+   "module": "platform",
+   "stand": [
+    -5.95,
+    -5.15,
+    3.6
+   ],
+   "yaw": -180,
+   "rides": null,
+   "fits": [
+    {
+     "param": "knife",
+     "value": 0.72,
+     "range": [
+      0.598,
+      0.76
+     ],
+     "ok": true
+    },
+    {
+     "param": "bench",
+     "value": 0.72,
+     "range": [
+      0.643,
+      0.853
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "chop",
+     "loop": true,
+     "opts": {
+      "workZ": 0.72
+     }
+    }
+   ],
+   "note": "the cut lands 0.32 m ahead, on the cutting board"
+  },
+  {
+   "id": "platform.fishTable1.bait",
+   "verb": "bait",
+   "fixture": "platform.fishTable1",
+   "module": "platform",
+   "stand": [
+    -5.95,
+    -5.15,
+    3.6
+   ],
+   "yaw": -180,
+   "rides": null,
+   "fits": [
+    {
+     "param": "knife",
+     "value": 0.72,
+     "range": [
+      0.598,
+      0.76
+     ],
+     "ok": true
+    },
+    {
+     "param": "bench",
+     "value": 0.72,
+     "range": [
+      0.643,
+      0.853
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "bench",
+     "loop": true,
+     "opts": {
+      "workZ": 0.72
+     }
+    }
+   ]
+  },
+  {
+   "id": "platform.dockBox2.stow",
+   "verb": "stow",
+   "fixture": "platform.dockBox2",
+   "module": "platform",
+   "stand": [
+    6.05,
+    -5.12,
+    3.6
+   ],
+   "yaw": -180,
+   "rides": null,
+   "fits": [
+    {
+     "param": "load",
+     "value": 0.85,
+     "range": [
+      0.718,
+      0.978
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "place",
+     "once": true,
+     "opts": {
+      "workZ": 0.85
+     },
+     "from": "a carry (idle+tray, idle+pot) or lift"
+    }
+   ],
+   "note": "the load sets 0.42 m ahead, on the lid"
+  },
+  {
+   "id": "platform.dockBox2.fetch",
+   "verb": "fetch",
+   "fixture": "platform.dockBox2",
+   "module": "platform",
+   "stand": [
+    6.05,
+    -5.12,
+    3.6
+   ],
+   "yaw": -180,
+   "rides": null,
+   "fits": [
+    {
+     "param": "load",
+     "value": 0.85,
+     "range": [
+      0.718,
+      0.978
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "place",
+     "once": true,
+     "reverse": true,
+     "opts": {
+      "workZ": 0.85
+     }
+    }
+   ],
+   "note": "place played backward takes the load off the lid (lift starts at 0.30 m, below it)"
+  },
+  {
+   "id": "platform.davit3.haulTrap",
+   "verb": "haulTrap",
+   "fixture": "platform.davit3",
+   "module": "platform",
+   "stand": [
+    3.05,
+    5.45,
+    3.6
+   ],
+   "yaw": 0,
+   "rides": null,
+   "fits": [
+    {
+     "param": "warp sheave scale at 1.05",
+     "value": 0.52,
+     "range": [
+      0.4,
+      0.632
+     ],
+     "ok": true
+    }
+   ],
+   "seq": [
+    {
+     "clip": "hauler",
+     "loop": true,
+     "opts": {
+      "workZ": 1.05,
+      "sheave": [
+       0.125,
+       0.177,
+       1.31
+      ]
+     }
+    }
+   ],
+   "note": "the warp runs from the sheave over the arm-tip block to the water"
+  },
+  {
+   "id": "platform.fishSpot4.fish",
+   "verb": "fish",
+   "fixture": "platform.fishSpot4",
+   "module": "platform",
+   "stand": [
+    0.05,
+    -5.55,
+    3.6
+   ],
+   "yaw": -180,
+   "rides": null,
+   "fits": [],
+   "seq": [
+    {
+     "clip": "hold",
+     "loop": true
+    },
+    {
+     "clip": "castBack",
+     "once": true
+    },
+    {
+     "clip": "castRelease",
+     "once": true
+    },
+    {
+     "clip": "hold",
+     "loop": true
+    },
+    {
+     "chain": "bite → strike → reel → land"
+    }
+   ],
+   "note": "stand 0.45 m back from the edge, face out"
+  },
+  {
+   "id": "platform.fishSpot5.fish",
+   "verb": "fish",
+   "fixture": "platform.fishSpot5",
+   "module": "platform",
+   "stand": [
+    -7.7,
+    -5.55,
+    3.6
+   ],
+   "yaw": -180,
+   "rides": null,
+   "fits": [],
+   "seq": [
+    {
+     "clip": "hold",
+     "loop": true
+    },
+    {
+     "clip": "castBack",
+     "once": true
+    },
+    {
+     "clip": "castRelease",
+     "once": true
+    },
+    {
+     "clip": "hold",
+     "loop": true
+    },
+    {
+     "chain": "bite → strike → reel → land"
+    }
+   ],
+   "note": "stand 0.45 m back from the edge, face out"
+  },
+  {
+   "id": "platform.ladder0.climbDown",
+   "verb": "climbDown",
+   "ladder": "platform.ladder0",
+   "module": "platform",
+   "stand": [
+    0,
+    5.45,
+    3.6
+   ],
+   "yaw": 0,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "idle",
+     "turnTo": -180,
+     "note": "face the deck, back to the water"
+    },
+    {
+     "join": "blend",
+     "ms": 300,
+     "to": [
+      0,
+      6.44,
+      2.88
+     ],
+     "request": "ladderOn"
+    },
+    {
+     "clip": "ladderDown",
+     "loop": true,
+     "opts": {
+      "rung": 0.24,
+      "ladderW": 0.45
+     },
+     "rootMotion": [
+      0,
+      0,
+      -0.436
+     ],
+     "until": "root z at the station wanted (bottom rung -0.72, or the hull sole)"
+    },
+    {
+     "clip": "tread",
+     "note": "the pelvis is under the water: tread at the ladder root",
+     "request": null
+    }
+   ],
+   "fits": [
+    {
+     "param": "rung",
+     "value": 0.24,
+     "range": [
+      0.211,
+      0.273
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "platform.ladder0.climbUp",
+   "verb": "climbUp",
+   "ladder": "platform.ladder0",
+   "module": "platform",
+   "stand": [
+    0,
+    6.44,
+    -0.72
+   ],
+   "yaw": -180,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "tread",
+     "then": "blend 300 ms",
+     "request": "treadToLadder"
+    },
+    {
+     "clip": "ladderDown",
+     "loop": true,
+     "reverse": true,
+     "opts": {
+      "rung": 0.24,
+      "ladderW": 0.45
+     },
+     "rootMotion": [
+      0,
+      0,
+      0.436
+     ],
+     "until": "root z = 2.88, the top station"
+    },
+    {
+     "clip": "board",
+     "once": true,
+     "opts": {
+      "railZ": 0.72
+     },
+     "advance": {
+      "m": 0.6,
+      "over": [
+       0.28,
+       0.88
+      ]
+     },
+     "note": "the left hand takes the grab hoop at the deck edge"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rung",
+     "value": 0.24,
+     "range": [
+      0.211,
+      0.273
+     ],
+     "ok": true
+    },
+    {
+     "param": "rail",
+     "value": 0.72,
+     "range": [
+      0.549,
+      0.724
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "platform.water.berth0.stepAboard",
+   "verb": "stepAboard",
+   "berth": "platform.water.berth0",
+   "hull": "tanker",
+   "stand": [
+    0,
+    6,
+    3.6
+   ],
+   "yaw": 0,
+   "rides": null,
+   "step": -0.3,
+   "how": "step down",
+   "seq": [
+    {
+     "clip": "boardDown",
+     "once": true,
+     "opts": {
+      "railZ": 0.3
+     },
+     "advance": "to the landing over t 0.04–0.86"
+    }
+   ],
+   "fits": [
+    {
+     "param": "stepDown",
+     "value": 0.3,
+     "range": [
+      0.06,
+      1.3
+     ],
+     "ok": true
+    }
+   ],
+   "fitsCreatorBodies": true,
+   "boardingStep": null,
+   "note": null
+  },
+  {
+   "id": "platform.water.berth0.stepAshore",
+   "verb": "stepAshore",
+   "berth": "platform.water.berth0",
+   "hull": "tanker",
+   "stand": [
+    0,
+    6,
+    3.3
+   ],
+   "yaw": 180,
+   "rides": "the hull",
+   "step": 0.3,
+   "how": "low step up",
+   "seq": [
+    {
+     "clip": "boardDown",
+     "once": true,
+     "reverse": true,
+     "opts": {
+      "railZ": 0.3
+     },
+     "advance": "to the landing over t 0.14–0.96 (the clip reversed)",
+     "note": "no grip",
+     "request": "stepUp"
+    }
+   ],
+   "fits": [
+    {
+     "param": "stepUpNoGrip",
+     "value": 0.3,
+     "range": [
+      0.06,
+      1.3
+     ],
+     "ok": true
+    }
+   ],
+   "fitsCreatorBodies": true,
+   "alt": null,
+   "note": null
+  },
+  {
+   "id": "breastW.bollard0.tieUp",
+   "verb": "tieUp",
+   "tie": "breastW.bollard0",
+   "module": "breastW",
+   "stand": [
+    -22.13,
+    2.13,
+    3.6
+   ],
+   "yaw": 0,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.555,
+      "want": [
+       0.132,
+       0.265,
+       0.65
+      ]
+     }
+    },
+    {
+     "clip": "haul",
+     "loop": true,
+     "until": "the line is fast"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.555,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "breastW.bollard0.castOff",
+   "verb": "castOff",
+   "tie": "breastW.bollard0",
+   "module": "breastW",
+   "stand": [
+    -22.13,
+    2.13,
+    3.6
+   ],
+   "yaw": 0,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.555,
+      "want": [
+       0.132,
+       0.265,
+       0.65
+      ]
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the line goes aboard at tossRelease 0.52"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.555,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "moorW.bollard1.tieUp",
+   "verb": "tieUp",
+   "tie": "moorW.bollard1",
+   "module": "moorW",
+   "stand": [
+    -48.13,
+    -4.16,
+    3.6
+   ],
+   "yaw": 0,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.555,
+      "want": [
+       0.132,
+       0.265,
+       0.65
+      ]
+     }
+    },
+    {
+     "clip": "haul",
+     "loop": true,
+     "until": "the line is fast"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.555,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "moorW.bollard1.castOff",
+   "verb": "castOff",
+   "tie": "moorW.bollard1",
+   "module": "moorW",
+   "stand": [
+    -48.13,
+    -4.16,
+    3.6
+   ],
+   "yaw": 0,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.555,
+      "want": [
+       0.132,
+       0.265,
+       0.65
+      ]
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the line goes aboard at tossRelease 0.52"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.555,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "breastE.bollard2.tieUp",
+   "verb": "tieUp",
+   "tie": "breastE.bollard2",
+   "module": "breastE",
+   "stand": [
+    21.87,
+    2.13,
+    3.6
+   ],
+   "yaw": 0,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.555,
+      "want": [
+       0.132,
+       0.265,
+       0.65
+      ]
+     }
+    },
+    {
+     "clip": "haul",
+     "loop": true,
+     "until": "the line is fast"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.555,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "breastE.bollard2.castOff",
+   "verb": "castOff",
+   "tie": "breastE.bollard2",
+   "module": "breastE",
+   "stand": [
+    21.87,
+    2.13,
+    3.6
+   ],
+   "yaw": 0,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.555,
+      "want": [
+       0.132,
+       0.265,
+       0.65
+      ]
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the line goes aboard at tossRelease 0.52"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.555,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "moorE.bollard3.tieUp",
+   "verb": "tieUp",
+   "tie": "moorE.bollard3",
+   "module": "moorE",
+   "stand": [
+    47.87,
+    -4.16,
+    3.6
+   ],
+   "yaw": 0,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.555,
+      "want": [
+       0.132,
+       0.265,
+       0.65
+      ]
+     }
+    },
+    {
+     "clip": "haul",
+     "loop": true,
+     "until": "the line is fast"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.555,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  },
+  {
+   "id": "moorE.bollard3.castOff",
+   "verb": "castOff",
+   "tie": "moorE.bollard3",
+   "module": "moorE",
+   "stand": [
+    47.87,
+    -4.16,
+    3.6
+   ],
+   "yaw": 0,
+   "rides": null,
+   "seq": [
+    {
+     "clip": "reach",
+     "once": true,
+     "opts": {
+      "lift": 0.555,
+      "want": [
+       0.132,
+       0.265,
+       0.65
+      ]
+     }
+    },
+    {
+     "clip": "toss",
+     "once": true,
+     "opts": {
+      "workZ": 0.93
+     },
+     "note": "the line goes aboard at tossRelease 0.52"
+    }
+   ],
+   "fits": [
+    {
+     "param": "rest",
+     "value": 0.555,
+     "range": [
+      0,
+      1.012
+     ],
+     "ok": true
+    }
+   ]
+  }
+ ],
+ "CHAR_FIT": [
+  {
+   "fixture": "ladder",
+   "what": "rung spacing",
+   "param": "rung",
+   "value": 0.24,
+   "range": [
+    0.211,
+    0.273
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "ladder",
+   "what": "top-out: board at three rungs",
+   "param": "rail",
+   "value": 0.72,
+   "range": [
+    0.549,
+    0.724
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "boarding",
+   "what": "step down · boardDown",
+   "param": "stepDown",
+   "value": "≤ 1.30",
+   "range": [
+    0.06,
+    1.3
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "boarding",
+   "what": "step up · board, hand on the edge",
+   "param": "stepUp",
+   "value": "0.549–0.724",
+   "range": [
+    0.549,
+    0.724
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "boarding",
+   "what": "lower step up · boardDown backward",
+   "param": "stepUpNoGrip",
+   "value": "< 0.549",
+   "range": [
+    0.06,
+    1.3
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "cleat",
+   "what": "reach to the horn",
+   "param": "rest",
+   "value": 0.1,
+   "range": [
+    0,
+    1.012
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "bollard",
+   "what": "reach to the head",
+   "param": "rest",
+   "value": 0.555,
+   "range": [
+    0,
+    1.012
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "fish-cleaning table",
+   "what": "knife",
+   "param": "knife",
+   "value": 0.72,
+   "range": [
+    0.598,
+    0.76
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "fish-cleaning table",
+   "what": "bench",
+   "param": "bench",
+   "value": 0.72,
+   "range": [
+    0.643,
+    0.853
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "dock box",
+   "what": "load",
+   "param": "load",
+   "value": 0.85,
+   "range": [
+    0.718,
+    0.978
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "wharf davit + hauler",
+   "what": "warp",
+   "param": "warp sheave scale at 1.05",
+   "value": 0.52,
+   "range": [
+    0.4,
+    0.632
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "life-ring post",
+   "what": "rest",
+   "param": "rest",
+   "value": 0.95,
+   "range": [
+    0,
+    1.012
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "service pedestal",
+   "what": "rest",
+   "param": "rest",
+   "value": 0.95,
+   "range": [
+    0,
+    1.012
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "boarding step",
+   "what": "rail",
+   "param": "rail",
+   "value": 0.6,
+   "range": [
+    0.549,
+    0.724
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "gangway",
+   "what": "slope at chart datum",
+   "param": "deg",
+   "value": 18.43,
+   "range": [
+    0,
+    18.43
+   ],
+   "ok": true,
+   "note": "v9.2 walk is level: walkSlope requested"
+  }
+ ],
+ "CHAR_REQUESTS": [
+  {
+   "clip": "ladderOn / ladderOff",
+   "why": "v9.2 has the ladder loop and no way on or off it at the top",
+   "now": "down: blend 300 ms from idle at the deck spot (0.55 m inboard, back to the water) to ladderDown u 0 at the top station (root 0.435 m out from the face, z = deck − 0.72). Up: board at railZ 0.72, exact for every creator body, with the root advanced 0.60 m onto the deck over the drive (t 0.28–0.88)."
+  },
+  {
+   "clip": "ladderToHull",
+   "why": "stepping back off a ladder onto a boat alongside",
+   "now": "stop the loop with the lower foot at the sole, blend 250 ms to idle on the hull, then turn"
+  },
+  {
+   "clip": "walkSlope",
+   "why": "gangways (18.4° comfortable, 24° steep) and slipways (to 15°): v9.2 walk plants on a level",
+   "now": "walk at 0.727 m/s along the slope, root z linear hinge → toe; at 18° the feet float at most ±1.5 px"
+  },
+  {
+   "clip": "board travel",
+   "why": "board and boardDown end at idle over the start xy; their horizontal travel is not published",
+   "now": "advance the root to the landing over the drive (t 0.28–0.88); the kit gives the landing"
+  },
+  {
+   "clip": "treadToLadder",
+   "why": "a swimmer taking the bottom rung",
+   "now": "blend 300 ms from tread at the ladder root to ladderDown reversed"
+  },
+  {
+   "clip": "stepUp",
+   "why": "board grips the edge it steps onto, and below 0.549 m the tallest creator bodies cannot reach it: a boat’s sole up onto a float is 0.3–0.5 m",
+   "now": "boardDown played backward, which fits every creator body from 0.06 to 1.30 m (measured on all 375)"
+  }
+ ]
+}

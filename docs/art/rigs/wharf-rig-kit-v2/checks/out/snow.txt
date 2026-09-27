@@ -1,0 +1,11 @@
+check snow — OK
+
+tallPier winter f0      58249 px  never 40%   snowed at 25/50/75/100%: 0% / 9% / 51% / 60%
+logCrib winter f0       67117 px  never 55%   snowed at 25/50/75/100%: 0% / 14% / 40% / 45%
+timberFloat winter f0   19808 px  never 33%   snowed at 25/50/75/100%: 0% / 17% / 58% / 67%
+timberFloat winter f5   19097 px  never 44%   snowed at 25/50/75/100%: 0% / 13% / 49% / 56%
+breakwater winter f0    84159 px  never 88%   snowed at 25/50/75/100%: 0% / 0% / 6% / 12%
+torbayQuay winter f0    147691 px never 43%   snowed at 25/50/75/100%: 0% / 31% / 55% / 57%
+
+rule: snowed = round(cover × 254) >= byte, 255 never; never below tide + 0.25 + 0.2·wind, never where n.z < 0.3, never on growth
+0 problems

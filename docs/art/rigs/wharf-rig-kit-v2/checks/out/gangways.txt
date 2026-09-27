@@ -1,0 +1,9 @@
+check gangways — OK
+
+harbour:fishing gangway       tide 0      L 7.5 m   slope 18.07°   toe inside the float 1.04 m at datum, 1.4 m at highest water
+harbour:fishing gangway       tide 1.8    L 7.5 m   slope 4.02°    toe inside the float 1.04 m at datum, 1.4 m at highest water
+harbour:cove gangway          tide 0      L 6 m     slope 18.31°   toe inside the float 0.5 m at datum, 0.76 m at highest water
+harbour:cove gangway          tide 1.2    L 6 m     slope 6.55°    toe inside the float 0.5 m at datum, 0.76 m at highest water
+
+rule: toe >= 0.3 m inside the deck at both extremes; slope at chart datum <= 18.43° + 0.6° of sea heave
+0 problems

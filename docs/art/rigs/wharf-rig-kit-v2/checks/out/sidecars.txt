@@ -1,0 +1,33 @@
+check sidecars — OK
+
+wharfRig2.lowPier.gameplay.json                       identical
+wharfRig2.tallPier.gameplay.json                      identical
+wharfRig2.sheetedPier.gameplay.json                   identical
+wharfRig2.steelPier.gameplay.json                     identical
+wharfRig2.concreteQuay.gameplay.json                  identical
+wharfRig2.torbayQuay.gameplay.json                    identical
+wharfRig2.timberQuay.gameplay.json                    identical
+wharfRig2.blockQuay.gameplay.json                     identical
+wharfRig2.logCrib.gameplay.json                       identical
+wharfRig2.cappedCrib.gameplay.json                    identical
+wharfRig2.timberFloat.gameplay.json                   identical
+wharfRig2.plasticFloat.gameplay.json                  identical
+wharfRig2.concreteFloat.gameplay.json                 identical
+wharfRig2.drumFloat.gameplay.json                     identical
+wharfRig2.finger.gameplay.json                        identical
+wharfRig2.gangway.gameplay.json                       identical
+wharfRig2.slipway.gameplay.json                       identical
+wharfRig2.graniteEdge.gameplay.json                   identical
+wharfRig2.redEdge.gameplay.json                       identical
+wharfRig2.breakwater.gameplay.json                    identical
+wharfRig2.sheetCell.gameplay.json                     identical
+wharfRig2.timberDolphin.gameplay.json                 identical
+wharfRig2.breastingDolphin.gameplay.json              identical
+wharfRig2.mooringDolphin.gameplay.json                identical
+wharfRig2.catwalk.gameplay.json                       identical
+wharfRig2.harbour-fishing.gameplay.json               identical
+wharfRig2.harbour-cove.gameplay.json                  identical
+wharfRig2.harbour-commercial.gameplay.json            identical
+wharfRig2.harbour-jetty.gameplay.json                 identical
+
+29 identical, 0 differ, 0 missing
