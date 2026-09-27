@@ -271,6 +271,24 @@ This single rule produces *every* tidal gameplay consequence:
 > always-wet east dock — `scene-sizing-and-world-scale.md` §5.1a). The seam matters MORE at the new
 > numbers, not less: the water over the planks is now 6.2 m at spring high.)*
 
+> **Still water above the tide (terrain pass 9, 2026-09-25; [ADR 0046](../adr/0046-still-water-above-the-tide.md)).**
+> A pond or a brook's fresh reach lies above the tide's reach, so the rule above would keep it dry at
+> every tide. Where a region binds a **still map**, the water over a point is the **higher** of the tide
+> and the still level there, and the depth is the same subtraction:
+>
+> ```
+> waterLevel(p, t) = max(tideHeight(t), stillLevel(p))      // stillLevel = −∞ where there is no still water
+> waterDepth(p, t) = waterLevel(p, t) − seabedElevation(p)
+> ```
+>
+> The still level is the map's data. It does not move with the tide, and like the tide it is derived,
+> never saved. Where the tide rises above it, the tide wins, so a brook meets the sea at its head, and
+> the sea is never lowered. The decks exception composes with it: a footbridge over a brook is dry. It
+> is read **on foot and on screen** through the Core `IStillWater` seam
+> (`architecture/tech-architecture.md` §4.1). Boats, clams, traps, fishing and vehicles stay on the
+> tide (ADR 0046 §6.2). **With no still map bound, which is every region until terrain pass 9's PR 5,
+> the answer is bit-identical to the rule above.**
+
 > **Tide range & the wet-reveal tell (owner-ratified vision; art lands M2/M3).** Sablewick's working
 > harbours run a **big tide** — author **marina/wharf tide ranges of ~3–4 m** so the water visibly
 > *walks up and down the walls*. As the tide **falls**, wet pilings, harbour walls, slip ramps,
