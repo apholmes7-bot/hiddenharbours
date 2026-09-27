@@ -37,7 +37,18 @@ namespace HiddenHarbours.Art.Editor
         /// The rig this kit is baked from. Read-only reference for us — it is the art-director
         /// role's file (<c>docs/art/rigs/**</c>).
         ///
-        /// <para><b>PASS 3 since 2026-09-02.</b> <c>treeIsoRig3.js</c> supersedes
+        /// <para><b>PASS 4.1 since 2026-09-27</b> (tree-rig-kit v4.1, handoff 2026-09-23). This names
+        /// the same file as <see cref="Pass4RigScriptPath"/>, so <see cref="IsPass4Live"/> is true: the
+        /// bake menu builds the kit through <c>TreePass4Baker</c>, the planters bind the wind maps, and
+        /// the pass-3 baker refuses the kit. Pass 4 is a re-design, not a re-bake: rig 4 bakes one rest
+        /// pose per season and hands the sway to the shader, so it drops <c>SWAY</c>, <c>LIGHT</c>,
+        /// <c>packMask</c>, <c>normalView</c> and the <c>outline</c> arm (the glue lights the mask by
+        /// rig 3's light), and adds <c>LOOP</c>. The world constants stay: PPU, the camera, SCALE, the
+        /// three rules, SEASONS, STAGES, VARIANTS, KEYLINE_DEFAULT and the ten species keys in their
+        /// order.</para>
+        ///
+        /// <para><b>PASS 3, 2026-09-02 to 2026-09-27</b> (now <see cref="Pass3RigScriptPath"/>).
+        /// <c>treeIsoRig3.js</c> superseded
         /// <c>treeIsoRig2.js</c>, which stays committed as the previous generation (the same way
         /// <c>shoreIsoKitRig2.js</c> sits beside <c>shoreIsoKitRig.js</c>). Pass 1 built real volume
         /// and lit it correctly, but every crown came out of one soft-ellipsoid cloud, so the family
@@ -47,7 +58,7 @@ namespace HiddenHarbours.Art.Editor
         /// hangs authored 4–9 px leaf STAMPS off the limb tips, so the crown silhouette is a
         /// consequence of the wood and winter is the same skeleton with twig fans.
         ///
-        /// <para>⚠️ <b>Nothing about the CONTRACT changed</b>, which is why the swap is two constants
+        /// <para>⚠️ <b>Nothing about the CONTRACT changed at pass 3</b>, which is why that swap was two constants
         /// and a re-bake rather than a pipeline rewrite: PPU, camera (ELEV/CE/SE), LIGHT, the three
         /// rules (RIM_PX/MIN_BODY/MIN_R), SEASONS, STAGES, VARIANTS, SWAY, KEYLINE_DEFAULT and all
         /// ten species keys are IDENTICAL across all three passes — verified constant by constant at
@@ -63,33 +74,39 @@ namespace HiddenHarbours.Art.Editor
         /// planter's spacing, the Y-sort band, texture memory — meets a 7–16 m one. SCALE is a rig
         /// constant: raising or lowering it and re-baking re-measures every cell and pivot.</para>
         /// </summary>
-        public const string RigScriptPath = "docs/art/rigs/treeIsoRig3.js";
+        public const string RigScriptPath = "docs/art/rigs/treeIsoRig4.js";
 
-        /// <summary>⚠️ <c>TreeRig3</c>, not <c>TreeRig2</c> and not <c>TreeRig</c>. Each pass installs
-        /// its OWN global and exposes the same surface, so a consumer swaps ONE identifier — but a
-        /// stale name here would silently bake a previous pass's pixels against this pass's contract
-        /// if two files were ever loaded into one host, and at pass 3 that would be a tree at HALF
-        /// its world height. Everything reads this constant; nothing hardcodes the name.</summary>
-        public const string RigGlobalName = "TreeRig3";
+        /// <summary>⚠️ <c>TreeRig4</c>, not <c>TreeRig3</c>. Each pass installs its OWN global, so a
+        /// stale name here would read a previous pass's rig against this pass's contract whenever two
+        /// files share one host, and the pass-4 tests load rig 3 beside rig 4 on purpose. Everything
+        /// reads this constant; nothing hardcodes the name.</summary>
+        public const string RigGlobalName = "TreeRig4";
 
-        /// <summary>The superseded PREVIOUS-pass rig, kept committed for provenance and for the
-        /// constants-are-identical proof in <c>TreeRigBakeTests</c>. Nothing bakes from it.
-        /// <c>treeIsoRig.js</c> (pass 1) also stays committed, one generation further back.</summary>
-        public const string PreviousRigScriptPath = "docs/art/rigs/treeIsoRig2.js";
+        /// <summary>The superseded PREVIOUS-pass rig, kept committed for provenance: pass 3 since the
+        /// pass-4 switch. <c>treeIsoRig2.js</c> and <c>treeIsoRig.js</c> stay committed further back.</summary>
+        public const string PreviousRigScriptPath = Pass3RigScriptPath;
 
-        public const string PreviousRigGlobalName = "TreeRig2";
+        public const string PreviousRigGlobalName = Pass3RigGlobalName;
+
+        /// <summary>The rig the PASS-3 baker (<c>TreeRigBaker</c>) drives, named for its pass and not for
+        /// its place in line, so the next switch cannot move it. Rig 4 has no <c>packMask</c>,
+        /// <c>normalView</c>, <c>SWAY</c> or <c>LIGHT</c>, so that baker cannot follow
+        /// <see cref="RigScriptPath"/>; it stays a working baker for a folder outside the kit.</summary>
+        public const string Pass3RigScriptPath = "docs/art/rigs/treeIsoRig3.js";
+
+        public const string Pass3RigGlobalName = "TreeRig3";
 
         /// <summary>
-        /// <b>PASS 4.1 (tree-rig-kit v4.1, 2026-09-23) — committed BESIDE pass 3, not yet live.</b>
+        /// <b>PASS 4.1 (tree-rig-kit v4.1, 2026-09-23), live since 2026-09-27.</b>
         /// The rig bakes ONE rest pose per season and hands the wind to the shader: two weight maps
         /// (<c>_wind</c>, <c>_phase</c>) that <c>treeMaps4.js</c> reads off the rig without changing
         /// it, plus a per-pixel snow threshold (<c>_snow</c>) so any cover is one texture instead of a
         /// sheet per cover. <c>HHTreePass4</c> (<c>TreePass4Glue</c>) is our glue over the two.
         ///
-        /// <para>⚠️ <b>The switch is <see cref="RigScriptPath"/>, and it is a Phase B act.</b> Until
-        /// it moves, every consumer keeps reading pass 3: <see cref="IsPass4Live"/> is false, the
-        /// pass-4 baker refuses to overwrite the live kit, and the shader's <c>_TreeMaps</c> row
-        /// defaults to 0, which draws today's trees bit-identically.</para>
+        /// <para>The switch was <see cref="RigScriptPath"/> moving here (Phase B): a re-bake through
+        /// <c>TreePass4Baker</c> and a re-bind of every standing tree through
+        /// <c>AcadianTreeCatalog.Configure</c> (<c>AcadianTreeRebind</c>), never a hand edit. A tree
+        /// whose maps are incomplete still draws with <c>_TreeMaps</c> 0, the pass-3 way.</para>
         /// </summary>
         public const string Pass4RigScriptPath = "docs/art/rigs/treeIsoRig4.js";
 

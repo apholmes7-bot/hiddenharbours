@@ -1,0 +1,411 @@
+fileFormatVersion: 2
+guid: 3e0cb009e2ee444498c48a7888eeebf0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8601602325816507192
+    second: TremblingAspen_mature_winter_wind_0
+  - first:
+      213: 2816027709295049001
+    second: TremblingAspen_mature_winter_wind_1
+  - first:
+      213: 6635575939556165646
+    second: TremblingAspen_mature_winter_wind_2
+  - first:
+      213: 7894132320623616276
+    second: TremblingAspen_mature_winter_wind_3
+  - first:
+      213: -4777172865885829112
+    second: TremblingAspen_mature_winter_wind_4
+  - first:
+      213: -4570991945062628096
+    second: TremblingAspen_mature_winter_wind_5
+  - first:
+      213: -2474152107734238932
+    second: TremblingAspen_mature_winter_wind_6
+  - first:
+      213: -8625035731748079976
+    second: TremblingAspen_mature_winter_wind_7
+  - first:
+      213: -7434955185994947154
+    second: TremblingAspen_mature_winter_wind_8
+  - first:
+      213: -1347345758048149994
+    second: TremblingAspen_mature_winter_wind_9
+  - first:
+      213: 445437655386015933
+    second: TremblingAspen_mature_winter_wind_10
+  - first:
+      213: -2277361172325920660
+    second: TremblingAspen_mature_winter_wind_11
+  - first:
+      213: -908848476629575931
+    second: TremblingAspen_mature_winter_wind_12
+  - first:
+      213: -6990603957240508039
+    second: TremblingAspen_mature_winter_wind_13
+  - first:
+      213: 6234986737658818992
+    second: TremblingAspen_mature_winter_wind_14
+  - first:
+      213: -1563883121339292838
+    second: TremblingAspen_mature_winter_wind_15
+  - first:
+      213: -5146883110618770946
+    second: TremblingAspen_mature_winter_wind_16
+  - first:
+      213: -2497526943423534016
+    second: TremblingAspen_mature_winter_wind_17
+  - first:
+      213: -3707134155582978565
+    second: TremblingAspen_mature_winter_wind_18
+  - first:
+      213: 7159961192729902636
+    second: TremblingAspen_mature_winter_wind_19
+  - first:
+      213: -3872426362826839492
+    second: TremblingAspen_mature_winter_wind_20
+  - first:
+      213: 2592859261009082336
+    second: TremblingAspen_mature_winter_wind_21
+  - first:
+      213: -994557793755390441
+    second: TremblingAspen_mature_winter_wind_22
+  - first:
+      213: 6576953543075420244
+    second: TremblingAspen_mature_winter_wind_23
+  - first:
+      213: -2350865172632229018
+    second: TremblingAspen_mature_winter_wind_24
+  - first:
+      213: -3686477752694098419
+    second: TremblingAspen_mature_winter_wind_25
+  - first:
+      213: -1756001871257608112
+    second: TremblingAspen_mature_winter_wind_26
+  - first:
+      213: -5636343348525753347
+    second: TremblingAspen_mature_winter_wind_27
+  - first:
+      213: -7149793575572623079
+    second: TremblingAspen_mature_winter_wind_28
+  - first:
+      213: -287635460449210690
+    second: TremblingAspen_mature_winter_wind_29
+  - first:
+      213: 7199348997566331802
+    second: TremblingAspen_mature_winter_wind_30
+  - first:
+      213: -5309644153878435065
+    second: TremblingAspen_mature_winter_wind_31
+  - first:
+      213: 1635176043464051328
+    second: TremblingAspen_mature_winter_wind_32
+  - first:
+      213: -3780500303644515227
+    second: TremblingAspen_mature_winter_wind_33
+  - first:
+      213: -2637139873071415238
+    second: TremblingAspen_mature_winter_wind_34
+  - first:
+      213: 3771294311013764052
+    second: TremblingAspen_mature_winter_wind_35
+  - first:
+      213: 291922921839192576
+    second: TremblingAspen_mature_winter_wind_36
+  - first:
+      213: -7771532310863075899
+    second: TremblingAspen_mature_winter_wind_37
+  - first:
+      213: 7386230332350599345
+    second: TremblingAspen_mature_winter_wind_38
+  - first:
+      213: 8548484594016875771
+    second: TremblingAspen_mature_winter_wind_39
+  - first:
+      213: 6677127714439019593
+    second: TremblingAspen_mature_winter_wind_40
+  - first:
+      213: -461677954185743577
+    second: TremblingAspen_mature_winter_wind_41
+  - first:
+      213: -5775159908545961616
+    second: TremblingAspen_mature_winter_wind_42
+  - first:
+      213: 557807704982363353
+    second: TremblingAspen_mature_winter_wind_43
+  - first:
+      213: -1172897644568449330
+    second: TremblingAspen_mature_winter_wind_44
+  - first:
+      213: -4214954827682145577
+    second: TremblingAspen_mature_winter_wind_45
+  - first:
+      213: 6186391931590840303
+    second: TremblingAspen_mature_winter_wind_46
+  - first:
+      213: -189652824571399514
+    second: TremblingAspen_mature_winter_wind_47
+  - first:
+      213: -4776689975001458704
+    second: TremblingAspen_mature_winter_wind_48
+  - first:
+      213: -8191247017913025583
+    second: TremblingAspen_mature_winter_wind_49
+  - first:
+      213: 2942038477634308693
+    second: TremblingAspen_mature_winter_wind_50
+  - first:
+      213: -4482715113882213192
+    second: TremblingAspen_mature_winter_wind_51
+  - first:
+      213: 8486936278980549226
+    second: TremblingAspen_mature_winter_wind_52
+  - first:
+      213: 7193033020620482222
+    second: TremblingAspen_mature_winter_wind_53
+  - first:
+      213: 904104137410627919
+    second: TremblingAspen_mature_winter_wind_54
+  - first:
+      213: -1030633240528381993
+    second: TremblingAspen_mature_winter_wind_55
+  - first:
+      213: -315143204780122944
+    second: TremblingAspen_mature_winter_wind_56
+  - first:
+      213: 5740048149155239816
+    second: TremblingAspen_mature_winter_wind_57
+  - first:
+      213: 2736117815560154150
+    second: TremblingAspen_mature_winter_wind_58
+  - first:
+      213: 9135771669251804355
+    second: TremblingAspen_mature_winter_wind_59
+  - first:
+      213: -506836055103452702
+    second: TremblingAspen_mature_winter_wind_60
+  - first:
+      213: 726743453308652821
+    second: TremblingAspen_mature_winter_wind_61
+  - first:
+      213: -795026469023855492
+    second: TremblingAspen_mature_winter_wind_62
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: TremblingAspen_mature_winter_wind_v0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 226
+        height: 294
+      alignment: 9
+      pivot: {x: 0.5, y: 0.027210884}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 70e64ce12b623794cb82e04329679197
+      internalID: -1955763129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TremblingAspen_mature_winter_wind_v1
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 0
+        width: 226
+        height: 294
+      alignment: 9
+      pivot: {x: 0.5, y: 0.027210884}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bea2011662aedec4e86a699f00d6e8d1
+      internalID: 727778815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TremblingAspen_mature_winter_wind_v2
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 0
+        width: 226
+        height: 294
+      alignment: 9
+      pivot: {x: 0.5, y: 0.027210884}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44bbf15e8d85baa48bd5fd171191ed41
+      internalID: -1666410459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TremblingAspen_mature_winter_wind_v3
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 0
+        width: 226
+        height: 294
+      alignment: 9
+      pivot: {x: 0.5, y: 0.027210884}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c9ae86f217c2479469fc3e6fec840636
+      internalID: 664522605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: dcc5d4f9a24796a4d82b3b6278fc1ab8
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      TremblingAspen_mature_winter_wind_v0: -1955763129
+      TremblingAspen_mature_winter_wind_v1: 727778815
+      TremblingAspen_mature_winter_wind_v2: -1666410459
+      TremblingAspen_mature_winter_wind_v3: 664522605
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

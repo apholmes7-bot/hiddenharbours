@@ -18,10 +18,11 @@ namespace HiddenHarbours.Tests.RigBaking
     /// both kinds of tree (BlackSpruce, a conifer whose winter is its own tree; TremblingAspen, a
     /// broadleaf that shimmers in calm and stands bare in winter) and both seasons the ruled kit bakes.
     ///
-    /// <para>⚠️ <c>Temp/</c> and never the kit: the game still draws pass 3, and
-    /// <see cref="TreePass4Baker.RefuseTheLiveKitWhilePass3"/> refuses a pass-4 write under
-    /// <see cref="TreeKitCatalog.TreesRoot"/> until <c>RigScriptPath</c> switches. Nothing here is
-    /// imported, and each fixture deletes only its own subfolder.</para>
+    /// <para>⚠️ <c>Temp/</c> and never the kit: the committed kit is the bake menu's to write,
+    /// and a test that wrote it would re-import the sheets the game draws. (Until the pass-4 switch,
+    /// <see cref="TreePass4Baker.RefuseTheLiveKitWhilePass3"/> also refused a pass-4 write under
+    /// <see cref="TreeKitCatalog.TreesRoot"/>.) Nothing here is imported, and each fixture deletes
+    /// only its own subfolder.</para>
     ///
     /// <para>A failed bake is CAPTURED, not thrown, so the tests that read no bake (the path guard, the
     /// 2048 gate) still run and report; every test that reads one calls <see cref="Run.Require"/>

@@ -12,11 +12,20 @@ namespace HiddenHarbours.Tests.RigBaking
     /// <summary>
     /// THE ACCEPTANCE SUITE FOR THE TREE BAKE — and the rig is its own oracle.
     ///
-    /// <para>A green test run against our own constants proves nothing here. <c>treeIsoRig.js</c>
-    /// runs in V8 inside the editor, so every committed pixel can be compared against a FRESH
-    /// <c>TreeRig.render()</c>, byte for byte — the same shape of proof that settled the boat bakes
+    /// <para>A green test run against our own constants proves nothing here. The tree rigs run in
+    /// V8 inside the editor, so every committed pixel can be compared against a FRESH render of the
+    /// rig, byte for byte — the same shape of proof that settled the boat bakes
     /// (<c>PuntGoldenMasterTests</c>), except that for a rig-native kit the answer should be exact
     /// rather than "modulo a revision".</para>
+    ///
+    /// <para><b>TWO RIGS SINCE PASS 4 (2026-09-27).</b> The kit is baked from <c>treeIsoRig4.js</c>
+    /// through <c>TreePass4Baker</c> (rig 4, <c>treeMaps4.js</c> and the <c>HHTreePass4</c> glue), so
+    /// every test about the KIT — its pivots, its 2048 fit, its trunk anchors and its committed pixels
+    /// — reads that live rig, and the committed pixels are compared with the glue's cells. Rig 3 stays
+    /// committed and <c>TreeRigBaker</c> still drives it, so the tests about what THAT baker makes of
+    /// it — the mask order, the coverage, the retired keyline, the sway frames and determinism — keep
+    /// reading rig 3 through <c>TreeRigBaker.InstallRig</c>. <see cref="TreePass4BakeTests"/> owns the
+    /// pass-4 bake itself, in <c>Temp/</c>.</para>
     ///
     /// <para><b>Every assert that matters carries a MEASURED SABOTAGE</b> in the same test: the
     /// mutation is applied, the check is shown to reject it, and the magnitude is logged. An assert
@@ -37,12 +46,18 @@ namespace HiddenHarbours.Tests.RigBaking
 
         static string RepoRoot => Directory.GetParent(Application.dataPath)!.FullName;
 
+        /// <summary>The PASS-3 rig, as <c>TreeRigBaker</c> installs it: the host for the tests about
+        /// what that baker makes of rig 3.</summary>
         static IRigScriptHost CreateTreeHost()
         {
             var host = RigScriptHostFactory.Create();
             TreeRigBaker.InstallRig(host);
             return host;
         }
+
+        /// <summary>The LIVE kit's rig — rig 4, its maps and the glue — as <c>TreePass4Baker</c>
+        /// installs them: the host for every test about the committed kit.</summary>
+        static IRigScriptHost CreateLiveTreeHost() => TreePass4TempBake.CreateHost();
 
         static TreeKitCatalog.Contract LoadContract()
         {
@@ -58,86 +73,107 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         // =================================================================================
-        // the rig runs unmodified, and exposes exactly what this baker calls
+        // both rigs run unmodified, and expose exactly what their bakers call
         // =================================================================================
 
-        /// <summary>The five entry points the baker calls straight off the rig's global.</summary>
+        /// <summary>The five entry points the PASS-3 baker (<c>TreeRigBaker</c>) calls straight off
+        /// rig 3's global.</summary>
         static readonly string[] BakerEntryPoints =
         {
             "render", "packMask", "normalView", "sheetSpec", "cellOf",
+        };
+
+        /// <summary>The five the LIVE kit's baker (<c>TreePass4Baker</c>) and its glue call straight
+        /// off rig 4's global. Rig 4 has no <c>packMask</c> or <c>normalView</c>: the glue builds the
+        /// mask by rig 3's formulas and reads the normal through <c>view(rest, 'normal')</c>.</summary>
+        static readonly string[] LiveBakerEntryPoints =
+        {
+            "sheetSpec", "relight", "view", "cellOf", "clearCache",
         };
 
         [Test]
         public void TreeRig_RunsUnmodified_AndNeedsNoShim()
         {
             // No canvas mailbox, no string widening, no globals patched in first: the difference
-            // between this rig and every other one in the repo, and the reason the baker calls its
-            // public API directly.
+            // between these rigs and every other one in the repo, and the reason the bakers call
+            // their public API directly.
             //
-            // ⚠️ The rig FILE and the rig GLOBAL are both read from TreeKitCatalog, never spelled
-            // out here. They were hardcoded as treeIsoRig.js/TreeRig until the pass-2 swap
-            // (2026-07-29), which is precisely the shape of test that keeps passing against the OLD
-            // rig after the pipeline has moved on.
-            using var host = RigScriptHostFactory.Create();
-            string rig = TreeKitCatalog.RigScriptPath, g = TreeKitCatalog.RigGlobalName;
-            string source = File.ReadAllText(Path.Combine(RepoRoot, rig));
-            Assert.DoesNotThrow(() => host.Execute(source),
-                $"{rig} must run in a BARE host. If this throws, something in the rig now " +
-                "needs an environment global — and the shim belongs in host code, never in the " +
-                "art director's file (ADR 0021 §5).");
+            // ⚠️ The rig FILES and the rig GLOBALS are read from TreeKitCatalog, never spelled out
+            // here. They were hardcoded as treeIsoRig.js/TreeRig until the pass-2 swap (2026-07-29),
+            // which is precisely the shape of test that keeps passing against the OLD rig after the
+            // pipeline has moved on. Since pass 4 there are two: the kit's rig (RigScriptPath, which
+            // TreePass4Baker drives) and the pass-3 rig TreeRigBaker still drives, each in its own
+            // bare host.
+            foreach (var (rig, g, entryPoints) in new[]
+                     {
+                         (TreeKitCatalog.RigScriptPath, TreeKitCatalog.RigGlobalName, LiveBakerEntryPoints),
+                         (TreeKitCatalog.Pass3RigScriptPath, TreeKitCatalog.Pass3RigGlobalName, BakerEntryPoints),
+                     })
+            {
+                using var host = RigScriptHostFactory.Create();
+                string source = File.ReadAllText(Path.Combine(RepoRoot, rig));
+                Assert.DoesNotThrow(() => host.Execute(source),
+                    $"{rig} must run in a BARE host. If this throws, something in the rig now " +
+                    "needs an environment global — and the shim belongs in host code, never in the " +
+                    "art director's file (ADR 0021 §5).");
 
-            Assert.IsTrue(host.EvaluateBool($"typeof {g} === 'object' && {g} !== null"),
-                $"{rig} ran but did not install globalThis.{g}.");
+                Assert.IsTrue(host.EvaluateBool($"typeof {g} === 'object' && {g} !== null"),
+                    $"{rig} ran but did not install globalThis.{g}.");
 
-            foreach (string fn in BakerEntryPoints)
-                Assert.IsTrue(host.EvaluateBool($"typeof {g}.{fn} === 'function'"),
-                    $"{g}.{fn}() is missing — the baker calls it directly.");
+                foreach (string fn in entryPoints)
+                    Assert.IsTrue(host.EvaluateBool($"typeof {g}.{fn} === 'function'"),
+                        $"{g}.{fn}() is missing — its baker calls it directly.");
+            }
         }
 
+        /// <summary>
+        /// ⭐ WHAT THE PASS-4 SWITCH KEPT AND WHAT IT MOVED, asserted on the two rigs side by side.
+        ///
+        /// <para>It was <c>PassTwoRig_KeepsEveryContractConstant_SoTheSwapWasAReBakeAndNotAReDesign</c>,
+        /// and at passes 2 and 3 that claim held whole: every world constant identical, only the
+        /// pixels new. Pass 4 is a re-design and says so. Rig 4 bakes ONE rest pose per season and
+        /// hands the sway to the shader, so <c>SWAY</c> (the frame count the pass-3 sheet's rows came
+        /// from) is gone and <c>LOOP</c> (the wind loop the shader replays) takes its place, and
+        /// <c>LIGHT</c>, <c>packMask</c> and <c>normalView</c> went with the pass-3 surface. What must
+        /// NOT move is still asserted, because it is what the world was built under: PPU, the camera,
+        /// SCALE, the three rules, VARIANTS, KEYLINE_DEFAULT, the seasons, the stages and the ten
+        /// species keys in their order.</para>
+        ///
+        /// <para>The mask's meaning is the one thing rig 4 no longer carries: the glue lights the mask
+        /// by rig 3's <c>LIGHT</c>, so the committed contract's light block must BE rig 3's, vector
+        /// for vector — and must not be rig 4's own sun, which is the wrong answer it is shown to
+        /// reject.</para>
+        /// </summary>
         [Test]
-        public void PassTwoRig_KeepsEveryContractConstant_SoTheSwapWasAReBakeAndNotAReDesign()
+        public void PassFourRig_KeepsEveryWorldConstant_AndMovesTheMotionOutOfTheSheet()
         {
-            // ⭐ THE PROOF BEHIND THE PASS-2 SWAP BEING TWO CONSTANTS AND A RE-BAKE.
-            //
-            // treeIsoRig2.js changed what gets BUILT (masses instead of one cloud, Worley leaf cells
-            // instead of per-pixel noise, a serrated outline, visible branches) and therefore every
-            // species' measured cell and pivot. It changed NOTHING that Trees.json records as a
-            // world constant. That distinction is the whole reason the sprite-light mask contract,
-            // the wind shader's _TrunkAnchor and the reflection wiring all survived the swap
-            // untouched — so it is asserted rather than asserted-in-a-commit-message.
-            //
             // Both passes are loaded into ONE host on purpose: they install different globals
-            // (TreeRig vs TreeRig2), so they cannot collide, and comparing them in-process beats
+            // (TreeRig3 vs TreeRig4), so they cannot collide, and comparing them in-process beats
             // comparing either against a number typed in here.
             using var host = RigScriptHostFactory.Create();
-            host.Execute(File.ReadAllText(Path.Combine(RepoRoot, TreeKitCatalog.PreviousRigScriptPath)));
+            host.Execute(File.ReadAllText(Path.Combine(RepoRoot, TreeKitCatalog.Pass3RigScriptPath)));
             host.Execute(File.ReadAllText(Path.Combine(RepoRoot, TreeKitCatalog.RigScriptPath)));
 
-            string p1 = TreeKitCatalog.PreviousRigGlobalName, p2 = TreeKitCatalog.RigGlobalName;
-            Assert.AreNotEqual(p1, p2, "The two passes must install DIFFERENT globals.");
-            foreach (string g in new[] { p1, p2 })
+            string p3 = TreeKitCatalog.Pass3RigGlobalName, p4 = TreeKitCatalog.RigGlobalName;
+            Assert.AreNotEqual(p3, p4, "The two passes must install DIFFERENT globals.");
+            foreach (string g in new[] { p3, p4 })
                 Assert.IsTrue(host.EvaluateBool($"typeof {g} === 'object' && {g} !== null"),
                     $"globalThis.{g} did not install — this test needs both passes side by side.");
 
-            // Every scalar the contract carries as a world constant.
-            foreach (string k in new[] { "PPU", "RIM_PX", "MIN_BODY", "MIN_R", "SWAY", "VARIANTS",
-                                         "ELEV", "CE", "SE" })
+            // ---- what STAYED: every scalar the contract carries as a world constant, and SCALE ----
+            foreach (string k in new[] { "PPU", "RIM_PX", "MIN_BODY", "MIN_R", "VARIANTS",
+                                         "ELEV", "CE", "SE", "SCALE" })
             {
-                double a = host.EvaluateNumber($"{p1}.{k}"), b = host.EvaluateNumber($"{p2}.{k}");
+                foreach (string g in new[] { p3, p4 })
+                    Assert.IsTrue(host.EvaluateBool($"typeof {g}.{k} === 'number'"),
+                        $"{g}.{k} is not a number — the rig no longer publishes it.");
+                double a = host.EvaluateNumber($"{p3}.{k}"), b = host.EvaluateNumber($"{p4}.{k}");
                 Assert.AreEqual(a, b, 1e-12,
                     $"{k} differs between the two passes ({a} vs {b}). Trees.json publishes this as " +
                     "a constant the pixels were built under — if a pass really changed it, the " +
-                    "consumers of that number (Tree.mat, the wind shader, SpriteLightMath) all need " +
-                    "re-deriving, and that is not a re-bake.");
+                    "consumers of that number (Tree.mat, the wind shader, SpriteLightMath, the " +
+                    "planter's spacing) all need re-deriving.");
             }
-
-            // The light vectors — the mask's whole meaning.
-            foreach (string vec in new[] { "key", "rim" })
-            for (int i = 0; i < 3; i++)
-                Assert.AreEqual(host.EvaluateNumber($"{p1}.LIGHT.{vec}[{i}]"),
-                                host.EvaluateNumber($"{p2}.LIGHT.{vec}[{i}]"), 1e-12,
-                    $"LIGHT.{vec}[{i}] moved between passes — every baked mask byte means something " +
-                    "different than the last bake's did.");
 
             // The axes, the species SET in the rig's own order (a re-ordering would silently
             // re-point every prefab and paint-tool index) and the stage multipliers. Compared as
@@ -149,45 +185,89 @@ namespace HiddenHarbours.Tests.RigBaking
                          "SPECIES.map(function(s){return s.key;})",
                          "STAGES",
                      })
-                Assert.AreEqual(host.EvaluateString($"JSON.stringify({p1}.{expr})"),
-                                host.EvaluateString($"JSON.stringify({p2}.{expr})"),
+                Assert.AreEqual(host.EvaluateString($"JSON.stringify({p3}.{expr})"),
+                                host.EvaluateString($"JSON.stringify({p4}.{expr})"),
                     $"{expr} differs between the two passes. Species keys are the sheet stems and " +
                     "the prefab names, their ORDER is what AcadianTreeCatalog.Scan publishes to the " +
                     "paint tool, and a stage's multiplier is what 'mature' MEANS.");
 
-            // ---- MEASURED SABOTAGE: the pixels DID change, or the swap was a no-op ----------
-            // Without this the test above would also pass if someone pointed RigScriptPath back at
-            // pass 1 — identical constants AND identical pixels.
-            string res1 = $"{p1}.render('RedSpruce',{{variant:0,season:'{Season}',frame:0,stage:'{Stage}'}})";
-            string res2 = $"{p2}.render('RedSpruce',{{variant:0,season:'{Season}',frame:0,stage:'{Stage}'}})";
-            byte[] a1 = host.EvaluateBytes($"{res1}.rgba"), a2 = host.EvaluateBytes($"{res2}.rgba");
-            Debug.Log($"[tree-pass2] RedSpruce/{Stage}/{Season} albedo: pass 1 is {a1.Length / 4} px, " +
-                      $"pass 2 is {a2.Length / 4} px.");
-            Assert.AreNotEqual(a1, a2,
-                "Pass 1 and pass 2 rendered the SAME Red Spruce. Either RigScriptPath is still " +
-                "pointing at pass 1, or the drop was not the revised rig.");
+            // ---- what MOVED: the sway, out of the sheet and into the shader ---------------------
+            var contract = LoadContract();
+            Assert.IsTrue(host.EvaluateBool($"typeof {p3}.SWAY === 'number'"),
+                $"{p3}.SWAY is gone — rig 3 is the committed pass-3 rig, which baked its sway as frames.");
+            Assert.IsTrue(host.EvaluateBool($"typeof {p4}.SWAY === 'undefined'"),
+                $"{p4}.SWAY is back. Rig 4 bakes one rest pose and the shader sways it; a sway FRAME " +
+                "count on the live rig means the motion moved back into the sheet — re-read the " +
+                "contract's sheet block before baking anything.");
+            Assert.IsTrue(host.EvaluateBool($"typeof {p4}.LOOP === 'number'"), $"{p4}.LOOP is missing.");
+            int loop = (int)host.EvaluateNumber($"{p4}.LOOP");
+            Assert.AreEqual(loop, contract.maps.loop,
+                "The contract's maps.loop is the rig's LOOP: the shader replays the rig's own wind loop.");
+            Assert.AreEqual(loop / 4, contract.sheet.rigSwayRows,
+                "The rig lays its wind loop out four frames wide, so its own sheet is LOOP/4 rows tall.");
+            Assert.AreEqual(TreeRigBaker.SwayRowsBaked, contract.sheet.rows,
+                "ONE row is baked: the four variants at rest.");
 
-            // ---- ADR 0031: BOTH passes are retired, and pass 1 is the reason it matters --------
-            // Pass 1 is not dead code. TreeKitCatalog.HeldBackSpecies keeps Tamarack on it, so
-            // Tamarack's shipped sheets come off THIS rig — gating only pass 2 would have left one
-            // species inked forever, and no pass-2 test could ever have caught it.
-            foreach (string g in new[] { p1, p2 })
+            // ---- what MOVED: the mask's light, out of the rig and into the glue ------------------
+            Assert.IsTrue(host.EvaluateBool($"typeof {p4}.LIGHT === 'undefined'"),
+                $"{p4} publishes a LIGHT again. The glue lights the mask by its own copy of rig 3's " +
+                "LIGHT; compare the two, and say which one the mask should mean, before re-baking.");
+            Assert.AreEqual(3, contract.light.key.Length, "the contract's key light is a 3-vector");
+            Assert.AreEqual(3, contract.light.rim.Length, "the contract's rim light is a 3-vector");
+            double sunGap = 0;
+            for (int i = 0; i < 3; i++)
             {
+                Assert.AreEqual(host.EvaluateNumber($"{p3}.LIGHT.key[{i}]"), contract.light.key[i], 1e-6,
+                    $"contract light.key[{i}] is not rig 3's LIGHT.key — every baked mask byte would " +
+                    "mean something different than pass 3's did.");
+                Assert.AreEqual(host.EvaluateNumber($"{p3}.LIGHT.rim[{i}]"), contract.light.rim[i], 1e-6,
+                    $"contract light.rim[{i}] is not rig 3's LIGHT.rim.");
+                sunGap = Math.Max(sunGap, Math.Abs(host.EvaluateNumber($"{p4}.REF_SKY.sunV[{i}]") -
+                                                   contract.light.key[i]));
+            }
+
+            // ---- MEASURED SABOTAGE: rig 4's own sun must NOT pass for the mask's key -------------
+            Debug.Log($"[tree-pass4] the mask's key is rig 3's LIGHT.key; rig 4's REF_SKY.sunV (the " +
+                      $"albedo's sun) differs from it by up to {sunGap:F4} per component.");
+            Assert.Greater(sunGap, 1e-3,
+                "SABOTAGE: rig 4's own sun is indistinguishable from rig 3's key at this tolerance, so " +
+                "the check above could not tell the glue's light from the rig's.");
+
+            // ---- MEASURED SABOTAGE: the pixels DID change, or the switch was a no-op -------------
+            // Without this the constants above would also pass if RigScriptPath pointed back at
+            // rig 3 — identical constants AND identical pixels.
+            string o = $"{{variant:0,season:'{Season}',frame:0,stage:'{Stage}'}}";
+            byte[] a3 = host.EvaluateBytes($"{p3}.render('RedSpruce',{o}).rgba");
+            byte[] a4 = host.EvaluateBytes($"{p4}.render('RedSpruce',{o}).rgba");
+            Debug.Log($"[tree-pass4] RedSpruce/{Stage}/{Season} albedo: pass 3 is {a3.Length / 4} px, " +
+                      $"pass 4 is {a4.Length / 4} px (the cell grows by the wind's reach each side).");
+            Assert.AreNotEqual(a3, a4,
+                "Pass 3 and pass 4 rendered the SAME Red Spruce. Either RigScriptPath is still " +
+                "pointing at pass 3, or the drop was not the revised rig.");
+
+            // ---- ADR 0031: the keyline stays retired on BOTH rigs --------------------------------
+            foreach (string g in new[] { p3, p4 })
                 Assert.IsTrue(host.EvaluateBool($"{g}.KEYLINE_DEFAULT === false"),
                     $"{g}.KEYLINE_DEFAULT is not false. The outline is retired from world art " +
-                    "(ADR 0031) and BOTH passes bake shipped sheets — pass 2 for the kit, pass 1 " +
-                    $"for {string.Join("/", TreeKitCatalog.HeldBackSpecies)}.");
+                    "(ADR 0031): rig 4 bakes the kit, and rig 3 is the rig TreeRigBaker still drives.");
 
-                // The control: the flag must still be reachable, or "retired" would be
-                // indistinguishable from "the ring pass was deleted". Probed on the held-back
-                // species where there is one, since that is the one pass 1 still bakes.
-                string probe = TreeKitCatalog.HeldBackSpecies.FirstOrDefault() ?? "RedSpruce";
-                string plain = $"{g}.render('{probe}',{{variant:0,season:'{Season}',frame:0,stage:'{Stage}'}})";
-                string inked = $"{g}.render('{probe}',{{variant:0,season:'{Season}',frame:0,stage:'{Stage}',outline:true}})";
-                Assert.AreNotEqual(host.EvaluateBytes($"{plain}.rgba"), host.EvaluateBytes($"{inked}.rgba"),
-                    $"{g}: {{outline:true}} rendered {probe} identically to the default, so the A/B " +
-                    "arm is gone. Keep the ring code — ADR 0031 gates it, it does not delete it.");
-            }
+            // The control, on rig 3: the flag must still be reachable, or "retired" would be
+            // indistinguishable from "the ring pass was deleted".
+            string plain3 = $"{p3}.render('RedSpruce',{o})";
+            string inked3 = $"{p3}.render('RedSpruce',{{variant:0,season:'{Season}',frame:0,stage:'{Stage}',outline:true}})";
+            Assert.AreNotEqual(host.EvaluateBytes($"{plain3}.rgba"), host.EvaluateBytes($"{inked3}.rgba"),
+                $"{p3}: {{outline:true}} rendered RedSpruce identically to the default, so the A/B " +
+                "arm is gone. Keep the ring code — ADR 0031 gates it, it does not delete it.");
+
+            // ⚠️ Rig 4 renders {outline:true} identically to the default: the A/B arm ADR 0031 keeps
+            // is gone from the live rig. Measured and REPORTED, not asserted either way — rig 4 is
+            // the art director's file, and whether the arm comes back is theirs to rule.
+            string inked4 = $"{p4}.render('RedSpruce',{{variant:0,season:'{Season}',frame:0,stage:'{Stage}',outline:true}})";
+            bool armGone = a4.SequenceEqual(host.EvaluateBytes($"{inked4}.rgba"));
+            Debug.Log($"[tree-pass4] ADR 0031: {p4} {{outline:true}} renders RedSpruce " +
+                      (armGone
+                          ? "IDENTICALLY to the default — the live rig has no A/B arm for the ring (reported to the art director)."
+                          : "with a ring — the live rig keeps the A/B arm."));
         }
 
         [Test]
@@ -209,12 +289,15 @@ namespace HiddenHarbours.Tests.RigBaking
         public void ContractPivots_MatchAFreshSheetSpec_AndAOnePixelOffsetIsRejected()
         {
             var contract = LoadContract();
-            using var host = CreateTreeHost();
+            using var host = CreateLiveTreeHost();
 
             int worstPad = 0;
             foreach (var entry in contract.trees)
             {
-                var spec = TreeRigBaker.ReadSheetSpec(host, entry.species, entry.stage);
+                // The LIVE rig's sheetSpec, as TreePass4Baker reads it: rig 4's cell carries the
+                // wind's reach each side, so rig 3's would be the wrong cell for every species.
+                var spec = TreePass4Baker.ReadSheetSpec(host, entry.species, entry.stage, out int windReach);
+                Assert.AreEqual(windReach, entry.wind.windReach, $"{entry.species}: wind reach drifted");
 
                 // Read from the rig, never from a literal and never from the sprite's alpha.
                 Assert.AreEqual(spec.CellW, entry.cellW, $"{entry.species}: cell width drifted");
@@ -562,11 +645,11 @@ namespace HiddenHarbours.Tests.RigBaking
         public void EverySpecies_FitsUnitys2048Cap_AssertedViaTheRigsOwnFitsFlag()
         {
             var contract = LoadContract();
-            using var host = CreateTreeHost();
+            using var host = CreateLiveTreeHost();
 
             foreach (var entry in contract.trees)
             {
-                var spec = TreeRigBaker.ReadSheetSpec(host, entry.species, entry.stage);
+                var spec = TreePass4Baker.ReadSheetSpec(host, entry.species, entry.stage, out _);
 
                 Assert.IsTrue(spec.RigFits,
                     $"{entry.species}: the rig's own sheetSpec().fits is false at " +
@@ -588,14 +671,14 @@ namespace HiddenHarbours.Tests.RigBaking
         public void TrunkAnchor_IsPerSpecies_AndOneMaterialConstantCannotServeThemAll()
         {
             var contract = LoadContract();
-            using var host = CreateTreeHost();
+            using var host = CreateLiveTreeHost();
 
             float lo = float.MaxValue, hi = float.MinValue;
             string loKey = null, hiKey = null;
 
             foreach (var entry in contract.trees)
             {
-                var spec = TreeRigBaker.ReadSheetSpec(host, entry.species, entry.stage);
+                var spec = TreePass4Baker.ReadSheetSpec(host, entry.species, entry.stage, out _);
                 Assert.AreEqual(spec.TrunkAnchor, entry.trunkAnchor, 1e-6f,
                     $"{entry.species}: trunkAnchor must be pad/cellH read from the live rig.");
                 Assert.AreEqual(entry.unityPivotY, entry.trunkAnchor, 1e-6f,
@@ -609,12 +692,13 @@ namespace HiddenHarbours.Tests.RigBaking
 
             Debug.Log($"[tree-anchor] per-species _TrunkAnchor spans {lo:F4} ({loKey}) to " +
                       $"{hi:F4} ({hiKey}); the shipped Tree.mat constant is " +
-                      $"{ShippedMaterialTrunkAnchor}. Measured 2026-07-29 (pass-2 rig): 0.0519 " +
-                      "(TremblingAspen) to 0.0922 (WhiteCedar); pass 1 was 0.0833 (BlackSpruce) to " +
-                      "0.1447 (RedOak). ⚠️ The pass-2 band sits ENTIRELY below the shipped 0.14, so " +
-                      "the single material value now over-anchors all ten species rather than " +
-                      "eight of the ten — the case for the per-renderer anchor got stronger, not " +
-                      "weaker.");
+                      $"{ShippedMaterialTrunkAnchor}. Measured 2026-09-27 (pass-4.1 rig): 0.0272 " +
+                      "(WhitePine, TremblingAspen) to 0.0965 (WhiteCedar): pass 3's flare pads over " +
+                      "pass 4's cell heights (pass 3 was 0.0271, WhitePine, to 0.0978, WhiteCedar). " +
+                      "Measured 2026-07-29 (pass-2 rig): 0.0519 (TremblingAspen) to 0.0922 " +
+                      "(WhiteCedar); pass 1 was 0.0833 (BlackSpruce) to 0.1447 (RedOak). ⚠️ Since " +
+                      "pass 2 the band sits ENTIRELY below the shipped 0.14, so the single material " +
+                      "value over-anchors all ten species — the case for the per-renderer anchor.");
 
             // The whole justification for making this per species: the spread is bigger than any
             // sane tolerance, and the one shipped constant is not even inside the middle of it.
@@ -653,54 +737,98 @@ namespace HiddenHarbours.Tests.RigBaking
         // ⭐ THE ONE THAT MATTERS: the committed pixels ARE the rig's
         // =================================================================================
 
+        /// <summary>
+        /// Every committed sheet of the live kit — every species, every season that draws its own
+        /// sheets, every channel <see cref="TreeKitCatalog.ChannelsFor"/> routes to it — is the glue's
+        /// FRESH cell, byte for byte, in its column; and the committed palette is exactly the rows
+        /// <see cref="TreePass4Baker.PaletteRows"/> reads off the contract, snow row at the bottom.
+        ///
+        /// <para>Re-pointed at pass 4 on the switch (2026-09-27). It compared each pass-3 sheet with
+        /// <c>TreeRig3.render()</c>; the pass-4 bake reads its cells from <c>HHTreePass4.cell</c> after
+        /// one <c>HHTreePass4.bake</c> per species, by the baker's exact call, so that is what a fresh
+        /// render of the rig means now.</para>
+        /// </summary>
         [Test]
         public void CommittedSheets_AreBitExact_AgainstAFreshRigRender()
         {
             var contract = LoadContract();
-            using var host = CreateTreeHost();
+            using var host = CreateLiveTreeHost();
 
-            int sheets = 0, cells = 0;
+            int sheets = 0, cells = 0, routed = 0;
             foreach (var entry in contract.trees)
-            foreach (string season in entry.seasons)
-            foreach (var channel in TreeKitCatalog.Channels)
             {
-                string assetPath = TreeKitCatalog.SheetPath(entry.species, entry.stage, season, channel);
-                string full = Path.Combine(RepoRoot, assetPath);
-                Assert.IsTrue(File.Exists(full), $"Missing committed sheet: {assetPath}");
-
-                Texture2D tex = Decode(File.ReadAllBytes(full));
-                try
+                TreePass4TempBake.GlueBake(host, contract, entry);
+                int cols = entry.sheetW / entry.cellW;
+                foreach (string season in entry.seasons)
+                foreach (var channel in TreeKitCatalog.ChannelsFor(entry, season))
                 {
-                    Assert.AreEqual(entry.sheetW, tex.width, $"{assetPath}: sheet width");
-                    Assert.AreEqual(entry.sheetH, tex.height, $"{assetPath}: sheet height");
+                    routed++;
+                    string assetPath = TreeKitCatalog.SheetPath(entry.species, entry.stage, season, channel);
+                    string full = Path.Combine(RepoRoot, assetPath);
+                    Assert.IsTrue(File.Exists(full), $"Missing committed sheet: {assetPath}");
 
-                    Color32[] px = tex.GetPixels32();
-                    int cols = entry.sheetW / entry.cellW;
-
-                    for (int v = 0; v < cols; v++)
+                    Texture2D tex = Decode(File.ReadAllBytes(full));
+                    try
                     {
-                        string res = TreeRigBaker.ResultExpr(entry.species, entry.stage, season,
-                                                             variant: v, frame: 0);
-                        byte[] fresh = host.EvaluateBytes(TreeRigBaker.ChannelExpr(res, channel));
-                        int mismatched = CompareCell(px, tex.width, tex.height, entry, v, fresh);
-                        Assert.AreEqual(0, mismatched,
-                            $"{assetPath} variant {v}: {mismatched} px differ from a fresh " +
-                            $"{channel} render. The bake is not a paraphrase of the rig — if this " +
-                            "fires, either the rig changed (re-bake) or the blit is wrong.");
-                        cells++;
+                        Assert.AreEqual(entry.sheetW, tex.width, $"{assetPath}: sheet width");
+                        Assert.AreEqual(entry.sheetH, tex.height, $"{assetPath}: sheet height");
+
+                        Color32[] px = tex.GetPixels32();
+                        for (int v = 0; v < cols; v++)
+                        {
+                            byte[] fresh = host.EvaluateBytes(
+                                $"HHTreePass4.cell({TreePass4TempBake.Js(season)}, " +
+                                $"{TreePass4TempBake.Js(TreePass4Baker.GlueChannel(channel))}, {v})");
+                            Assert.AreEqual(entry.cellW * entry.cellH * 4, fresh.Length,
+                                $"{assetPath} variant {v}: the glue's cell is not the contract's cell.");
+                            int mismatched = CompareCell(px, tex.width, tex.height, entry, v, fresh);
+                            Assert.AreEqual(0, mismatched,
+                                $"{assetPath} variant {v}: {mismatched} px differ from the glue's fresh " +
+                                $"{channel} cell. The bake is not a paraphrase of the rig — if this " +
+                                "fires, either the rig, its maps or the glue changed (re-bake) or the " +
+                                "blit is wrong.");
+                            cells++;
+                        }
+                        sheets++;
                     }
-                    sheets++;
+                    finally
+                    {
+                        UnityEngine.Object.DestroyImmediate(tex);
+                    }
                 }
-                finally
+                host.Execute("HHTreePass4.release();");
+            }
+            host.Execute("delete globalThis.HHTreePass4Last;");
+
+            Assert.Greater(routed, 0, "The contract routes no sheets at all.");
+            Assert.AreEqual(routed, sheets, "Not every routed sheet was compared.");
+
+            // The palette: row 0 — the BOTTOM texel row, as the shader's Load numbers it — is the snow
+            // row, and each season row's paletteRow is its gap row.
+            string[][] rows = TreePass4Baker.PaletteRows(contract);
+            Texture2D pal = Decode(File.ReadAllBytes(Path.Combine(RepoRoot, TreeKitCatalog.PalettePath)));
+            try
+            {
+                Assert.AreEqual(TreeKitCatalog.PaletteWidth, pal.width, "palette width");
+                Assert.AreEqual(rows.Length, pal.height, "palette rows");
+                Color32[] p = pal.GetPixels32();
+                for (int r = 0; r < rows.Length; r++)
+                for (int x = 0; x < pal.width; x++)
                 {
-                    UnityEngine.Object.DestroyImmediate(tex);
+                    Color32 c = p[r * pal.width + x];
+                    Assert.AreEqual(255, c.a, $"palette ({x}, {r}) is not opaque");
+                    Assert.AreEqual(rows[r][x], TreePass4TempBake.Hex(c),
+                        $"palette row {r} colour {x} is not the contract's " +
+                        (r == 0 ? "snow row." : "gap row for it."));
                 }
             }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(pal);
+            }
 
-            int expected = contract.trees.Length * TreeKitCatalog.Channels.Length;
-            Assert.AreEqual(expected, sheets, "Not every claimed sheet was compared.");
-            Debug.Log($"[tree-golden] {sheets} sheets / {cells} cells are BIT-EXACT against a fresh " +
-                      "TreeRig render.");
+            Debug.Log($"[tree-golden] {sheets} sheets / {cells} cells are BIT-EXACT against the glue's " +
+                      $"fresh cells, and the {rows.Length}-row palette is the contract's.");
         }
 
         [Test]
@@ -710,7 +838,7 @@ namespace HiddenHarbours.Tests.RigBaking
             // "Bit-exact" is only evidence if a near-miss fails. Shift the comparison window one
             // row and count what breaks; a sprite that survived that would mean the diff is blind.
             var contract = LoadContract();
-            using var host = CreateTreeHost();
+            using var host = CreateLiveTreeHost();
 
             var entry = TreeKitCatalog.Find(contract, "RedSpruce", Stage);
             Assert.IsNotNull(entry, "RedSpruce/mature is the reference species for this suite.");
@@ -721,9 +849,10 @@ namespace HiddenHarbours.Tests.RigBaking
             try
             {
                 Color32[] px = tex.GetPixels32();
-                string res = TreeRigBaker.ResultExpr(entry.species, entry.stage, Season, 0, 0);
+                TreePass4TempBake.GlueBake(host, contract, entry);
                 byte[] fresh = host.EvaluateBytes(
-                    TreeRigBaker.ChannelExpr(res, TreeKitCatalog.Channel.Albedo));
+                    $"HHTreePass4.cell({TreePass4TempBake.Js(Season)}, " +
+                    $"{TreePass4TempBake.Js(TreePass4Baker.GlueChannel(TreeKitCatalog.Channel.Albedo))}, 0)");
 
                 int aligned = CompareCell(px, tex.width, tex.height, entry, 0, fresh, rowShift: 0);
                 int shifted = CompareCell(px, tex.width, tex.height, entry, 0, fresh, rowShift: 1);
@@ -731,7 +860,9 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.AreEqual(0, aligned);
                 double pct = 100.0 * shifted / (entry.cellW * entry.cellH);
                 Debug.Log($"[tree-golden] sabotage: a 1-row shift breaks {shifted} of " +
-                          $"{entry.cellW * entry.cellH} px = {pct:F2}% of the Red Spruce cell.");
+                          $"{entry.cellW * entry.cellH} px = {pct:F2}% of the Red Spruce cell. Measured " +
+                          "2026-09-27 on the pass-4.1 sheet: 8398 of 81008 px = 10.37%, the tree " +
+                          "being 19% of a cell padded by the wind's reach.");
                 Assert.Greater(pct, 5.0,
                     "A one-row shift must break a meaningful fraction of the cell, or the exact " +
                     "comparison above could pass on a mis-blitted sheet.");
@@ -739,6 +870,7 @@ namespace HiddenHarbours.Tests.RigBaking
             finally
             {
                 UnityEngine.Object.DestroyImmediate(tex);
+                host.Execute("HHTreePass4.release(); delete globalThis.HHTreePass4Last;");
             }
         }
 

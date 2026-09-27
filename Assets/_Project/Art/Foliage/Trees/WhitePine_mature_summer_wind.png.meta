@@ -1,0 +1,249 @@
+fileFormatVersion: 2
+guid: 4332c933f0767694298943c5800de6f1
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5680107776053032254
+    second: WhitePine_mature_summer_wind_0
+  - first:
+      213: -6278484554115601278
+    second: WhitePine_mature_summer_wind_1
+  - first:
+      213: 2923306016173462050
+    second: WhitePine_mature_summer_wind_2
+  - first:
+      213: 3823651212650121965
+    second: WhitePine_mature_summer_wind_3
+  - first:
+      213: -2461805002172177954
+    second: WhitePine_mature_summer_wind_4
+  - first:
+      213: 4220970076334939960
+    second: WhitePine_mature_summer_wind_5
+  - first:
+      213: 775089640790086765
+    second: WhitePine_mature_summer_wind_6
+  - first:
+      213: -1178386795347555027
+    second: WhitePine_mature_summer_wind_7
+  - first:
+      213: -4366446103896637781
+    second: WhitePine_mature_summer_wind_8
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WhitePine_mature_summer_wind_v0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 379
+        height: 441
+      alignment: 9
+      pivot: {x: 0.5013193, y: 0.027210884}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91ad0c8bf695fbb4ab03775d035bbfcc
+      internalID: 460270600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhitePine_mature_summer_wind_v1
+      rect:
+        serializedVersion: 2
+        x: 379
+        y: 0
+        width: 379
+        height: 441
+      alignment: 9
+      pivot: {x: 0.5013193, y: 0.027210884}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b39160c0da753f9468aa426d1a2b3270
+      internalID: 1218954397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhitePine_mature_summer_wind_v2
+      rect:
+        serializedVersion: 2
+        x: 758
+        y: 0
+        width: 379
+        height: 441
+      alignment: 9
+      pivot: {x: 0.5013193, y: 0.027210884}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a979ddf953bbc3a4cb8a300dd624e019
+      internalID: -690586826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhitePine_mature_summer_wind_v3
+      rect:
+        serializedVersion: 2
+        x: 1137
+        y: 0
+        width: 379
+        height: 441
+      alignment: 9
+      pivot: {x: 0.5013193, y: 0.027210884}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2aba98463632e0f489ce0ec0527dd936
+      internalID: 76430684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: b86112b651310e0459b475652353054f
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WhitePine_mature_summer_wind_v0: 460270600
+      WhitePine_mature_summer_wind_v1: 1218954397
+      WhitePine_mature_summer_wind_v2: -690586826
+      WhitePine_mature_summer_wind_v3: 76430684
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

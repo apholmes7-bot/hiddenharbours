@@ -313,31 +313,43 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void TheThreeSheets_ShareOneUvSpace_SoOneAtlasUvHitsAllThree()
+        public void EverySheetASeasonDraws_SharesOneUvSpace_SoOneAtlasUvHitsThemAll()
         {
-            // The shader samples the mask and the normal at the ALBEDO's uv through the ALBEDO's mesh.
-            // That is only sound while all three sheets are the same size with the same cell layout —
-            // which is a bake property, not a law, so it is asserted rather than assumed. It also
-            // covers §2.5's multi-cell trap from the other side: raw atlas uv is fine BECAUSE the three
-            // sheets share it; nothing here needs a per-sprite 0..1 fraction.
+            // The shader samples the mask, the normal and the pass-4 maps at the ALBEDO's uv through the
+            // ALBEDO's mesh. That is only sound while every sheet one season draws is the same size with
+            // the same cell layout — which is a bake property, not a law, so it is asserted rather than
+            // assumed. It also covers §2.5's multi-cell trap from the other side: raw atlas uv is fine
+            // BECAUSE the sheets share it; nothing here needs a per-sprite 0..1 fraction.
+            //
+            // It was TheThreeSheets_ShareOneUvSpace_SoOneAtlasUvHitsAllThree until the pass-4 switch
+            // (2026-09-27): six channels now, and a season may BORROW. Autumn draws summer's maps under
+            // its own albedo, and an evergreen's autumn borrows both, so the sheets a season draws are
+            // the albedo of its row's `albedo` season and the five maps of its row's `maps` season.
+            int drawnSets = 0;
             foreach (var e in _contract.trees)
             foreach (string season in e.seasons)
             {
-                var dims = TreeKitCatalog.Channels
-                    .Select(c => (c, path: TreeKitCatalog.SheetPath(e.species, e.stage, season, c)))
+                var row = TreeKitCatalog.SeasonRowFor(e, season);
+                Assert.IsNotNull(row, $"{e.species}/{season}: the contract has no season row for it.");
+
+                var dims = TreeKitCatalog.Pass4Channels
+                    .Select(c => (c, path: TreeKitCatalog.SheetPath(e.species, e.stage,
+                                                                    c == TreeKitCatalog.Channel.Albedo ? row.albedo : row.maps, c)))
                     .Select(t => (t.c, t.path, size: PngSize(t.path)))
                     .ToArray();
 
                 var albedo = dims.First(d => d.c == TreeKitCatalog.Channel.Albedo);
-                Assert.AreEqual(e.sheetW, albedo.size.w, $"{e.species}: albedo width vs contract");
-                Assert.AreEqual(e.sheetH, albedo.size.h, $"{e.species}: albedo height vs contract");
+                Assert.AreEqual(e.sheetW, albedo.size.w, $"{e.species}/{season}: albedo width vs contract");
+                Assert.AreEqual(e.sheetH, albedo.size.h, $"{e.species}/{season}: albedo height vs contract");
 
                 foreach (var d in dims)
                     Assert.AreEqual(albedo.size, d.size,
-                        $"{e.species} {d.c}: {d.size.w}x{d.size.h} against the albedo's " +
-                        $"{albedo.size.w}x{albedo.size.h}. The shader samples all three at ONE atlas " +
-                        "uv; a different sheet size silently offsets the mask and normal from the art.");
+                        $"{e.species}/{season} {d.c} ({d.path}): {d.size.w}x{d.size.h} against the albedo's " +
+                        $"{albedo.size.w}x{albedo.size.h}. The shader samples every sheet at ONE atlas " +
+                        "uv; a different sheet size silently offsets the maps from the art.");
+                drawnSets++;
             }
+            Assert.AreEqual(_contract.trees.Sum(e => e.seasons.Length), drawnSets, "every season of every tree");
         }
 
         // =================================================================================
