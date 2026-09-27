@@ -277,7 +277,7 @@ namespace HiddenHarbours.App.Editor
                 EditorGUILayout.LabelField(
                     $"Extent: {_region.WorldSizeMeters.x:0.#} × {_region.WorldSizeMeters.y:0.#} m " +
                     $"at {_region.SeabedPixelsPerMetre:0.##} px/m → {_region.SeabedTexels.x} × " +
-                    $"{_region.SeabedTexels.y} texels ({_region.SeabedBytes / 1024f:0.#} KiB R8)",
+                    $"{_region.SeabedTexels.y} texels ({2 * _region.SeabedBytes / 1024f:0.#} KiB R16)",
                     EditorStyles.miniLabel);
 
             using (new EditorGUI.DisabledScope(_region == null || !_region.HasUsableExtent))
@@ -528,7 +528,8 @@ namespace HiddenHarbours.App.Editor
             foreach (var s in Object.FindObjectsByType<TerrainSplatSurface>())
             {
                 if (s == null) continue;
-                s.ConfigureSplat(_splatTexs[0], _splatTexs[1], _splatTexs[2], _splatTexs[3], _splatTexs[4]);
+                s.ConfigureSplat(_splatTexs[0], _splatTexs[1], _splatTexs[2], _splatTexs[3], _splatTexs[4],
+                                 _splatTexs[5]);
                 if (s.isActiveAndEnabled) { s.enabled = false; s.enabled = true; }
             }
         }
@@ -1015,14 +1016,9 @@ namespace HiddenHarbours.App.Editor
             string pngPath = AssetDatabase.GetAssetPath(_tex);
             if (!string.IsNullOrEmpty(pngPath) && pngPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
             {
-                var enc = new Texture2D(_tex.width, _tex.height, TextureFormat.R8, false, true);
-                enc.SetPixels(_pixels);
-                enc.Apply(false, false);
-                File.WriteAllBytes(pngPath, enc.EncodeToPNG());
-                Object.DestroyImmediate(enc);
-                AssetDatabase.ImportAsset(pngPath, ImportAssetOptions.ForceSynchronousImport);
-                ConfigureHeightTextureImporter(pngPath);   // keep isReadable/linear after the re-import
-                _tex = AssetDatabase.LoadAssetAtPath<Texture2D>(pngPath);
+                // Sixteen bits (ADR 0046), through the one write both writers share. An 8-bit map widens
+                // here on its first stroke without moving a texel: code k is rewritten as 257·k.
+                _tex = PaintedHeightPng.WriteAndImport(pngPath, _pixels, _tex.width, _tex.height);
             }
             else
             {
@@ -1581,9 +1577,9 @@ namespace HiddenHarbours.App.Editor
             maxElevation = hi;
         }
 
-        /// <summary>PURE: metres above datum → the R8 grayscale colours the height PNG stores (G = B = R
-        /// so an 8-bit grayscale PNG round-trips), through the one shared
-        /// <see cref="PaintedHeightField.EncodeElevation"/>.</summary>
+        /// <summary>PURE: metres above datum → the normalized grayscale colours (G = B = R) the height PNG
+        /// is written from, through the one shared <see cref="PaintedHeightField.EncodeElevation"/>.
+        /// <see cref="PaintedHeightPng"/> takes R to sixteen bits (ADR 0046).</summary>
         public static Color[] EncodeElevationPixels(float[] elevations, float minElevation, float maxElevation)
         {
             if (elevations == null) return System.Array.Empty<Color>();
@@ -1675,8 +1671,8 @@ namespace HiddenHarbours.App.Editor
                       (worldSize.x / texels.x).ToString("F2") + " × " +
                       (worldSize.y / texels.y).ToString("F2") + " m per texel) over " + worldSize.x +
                       " × " + worldSize.y + " m, elevation " + min0.ToString("F2") + ".." +
-                      max0.ToString("F2") + " m (" + ((max0 - min0) / 255f).ToString("F3") +
-                      " m per R8 step). Paint FROM this coast, then 'Adopt this map on the OPEN scene' " +
+                      max0.ToString("F2") + " m (" + ((max0 - min0) / PaintedHeightPng.CodeCount).ToString("F5") +
+                      " m per R16 step). Paint FROM this coast, then 'Adopt this map on the OPEN scene' " +
                       "to make the sim + water read it.");
             return map;
         }
@@ -1726,29 +1722,19 @@ namespace HiddenHarbours.App.Editor
                 pngPath = dir + "/" + uniqueBase + "_HeightTex.png";
             }
 
-            // Build the R8 pixel buffer (R = normalized elevation; G=B=R so 8-bit grayscale PNG round-trips).
-            var tex = new Texture2D(resX, resY, TextureFormat.R8, false, true);
+            // The pixel buffer (R = normalized elevation; the tool keeps G = B = R), a blank map filled flat.
             if (pixels == null)
             {
                 float r01 = PaintedHeightField.EncodeElevation(fillElevation, minElev, maxElev);
                 var c = new Color(r01, r01, r01, 1f);
-                var fill = new Color[resX * resY];
-                for (int i = 0; i < fill.Length; i++) fill[i] = c;
-                tex.SetPixels(fill);
+                pixels = new Color[resX * resY];
+                for (int i = 0; i < pixels.Length; i++) pixels[i] = c;
             }
-            else tex.SetPixels(pixels);
-            tex.Apply(false, false);
 
-            // Write the PNG to disk (external — LFS-friendly, smart-mergeable .asset alongside) and import it
-            // with the data-texture settings the sim needs: CPU-readable, LINEAR (elevation is data, not
-            // colour), single-channel R usable, point-able wrap=Clamp. Then re-import so isReadable sticks.
-            byte[] png = tex.EncodeToPNG();
-            Object.DestroyImmediate(tex);
-            File.WriteAllBytes(pngPath, png);
-            AssetDatabase.ImportAsset(pngPath, ImportAssetOptions.ForceSynchronousImport);
-            ConfigureHeightTextureImporter(pngPath);
-
-            var importedTex = AssetDatabase.LoadAssetAtPath<Texture2D>(pngPath);
+            // Write the PNG to disk at SIXTEEN bits (ADR 0046; external — LFS-friendly, smart-mergeable
+            // .asset alongside) and import it with the data-texture settings the sim needs: CPU-readable,
+            // LINEAR (elevation is data, not colour), R16 named, wrap=Clamp. Then re-import so they stick.
+            var importedTex = PaintedHeightPng.WriteAndImport(pngPath, pixels, resX, resY);
 
             // Create or update the map .asset, pointing _heightTexture at the EXTERNAL png.
             var map = overwrite ? AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(assetPath) : null;
@@ -1768,27 +1754,6 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.ImportAsset(assetPath);
             return AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(assetPath);
-        }
-
-        /// <summary>
-        /// Import a painted-height PNG as a DATA texture the sim can decode (F1): CPU-readable
-        /// (<c>isReadable</c>), LINEAR (no sRGB gamma — the R channel is metres-of-elevation, not colour),
-        /// no mipmaps, Clamp wrap, and the single-channel R kept usable. Matches the committed
-        /// <c>StPetersSeabed_HeightTex.png</c> import so the seed and freshly-exported maps decode identically.
-        /// </summary>
-        private static void ConfigureHeightTextureImporter(string pngPath)
-        {
-            var importer = AssetImporter.GetAtPath(pngPath) as TextureImporter;
-            if (importer == null) return;
-            importer.textureType = TextureImporterType.Default;
-            importer.sRGBTexture = false;          // linear — elevation is data, not colour
-            importer.isReadable = true;            // the sim MUST be able to GetPixels()
-            importer.mipmapEnabled = false;
-            importer.wrapMode = TextureWrapMode.Clamp;
-            importer.filterMode = FilterMode.Bilinear;
-            importer.npotScale = TextureImporterNPOTScale.None;
-            importer.textureCompression = TextureImporterCompression.Uncompressed; // keep the R byte exact
-            importer.SaveAndReimport();
         }
 
         // ============================ LIVE PREVIEW / ADOPTION ============================
@@ -1870,7 +1835,7 @@ namespace HiddenHarbours.App.Editor
             {
                 Undo.RecordObject(surface, "Adopt painted seabed");
                 surface.ConfigureHeightMap(_map.HeightTexture, _map.MinElevation, _map.MaxElevation);
-                surface.ConfigureSplat(adopted[0], adopted[1], adopted[2], adopted[3], adopted[4]);
+                surface.ConfigureSplat(adopted[0], adopted[1], adopted[2], adopted[3], adopted[4], adopted[5]);
                 EditorUtility.SetDirty(surface);
                 if (surface.isActiveAndEnabled) { surface.enabled = false; surface.enabled = true; }
             }
