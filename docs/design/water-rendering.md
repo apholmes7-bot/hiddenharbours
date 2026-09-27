@@ -3316,6 +3316,15 @@ So `ReflectiveObject` publishes the pivot per renderer into the MaterialProperty
 mirror** and collapses the geometry to a clipped point: a missing reflection is a bug you go and find, a
 reflection pinned to the world origin is a bug that looks like a haunted sea.
 
+**Hull property ownership (water R1).** `IsoFacetHullRenderer.ApplyPose()` reads each target
+renderer's own block before publishing the hull-owned draw fields back to it. The scratch block is
+reused, but each read replaces it: the overlay's `_HHReflectOrigin` and `_HHReflectLit` survive,
+and neither those fields nor a sibling's unrelated overrides travel between FacetMesh, DoorLeaf
+and HullOverlay. Deck-slot depths are still computed once per pose. `ReflectiveObject` keeps its
+existing refresh cadence; this preserves its last published pivot, not a new per-frame pivot update.
+The tree/building reflector path is unchanged. Current-frame hull-image availability is separate
+water-plan R2 work; the first/settled, still/moving contact plate still requires an editor slot.
+
 > ⚠️ **World Y is the mirror axis but NOT "height".** In a top-down game world Y is a ground-plane
 > coordinate (north); the art fakes height by drawing up the screen, which is exactly why mirroring
 > about the pivot's world Y is the right *visual* mirror. The distance gate below is a different

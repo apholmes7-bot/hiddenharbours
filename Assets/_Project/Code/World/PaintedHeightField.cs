@@ -109,6 +109,15 @@ namespace HiddenHarbours.World
             return new Vector2(_worldMin.x + u * _worldSize.x, _worldMin.y + v * _worldSize.y);
         }
 
+        /// <summary>
+        /// The decoded elevation STORED for texel <c>(x, y)</c> — the grid value itself, with no
+        /// interpolation (row 0 at the bottom; out-of-range indices clamp to the edge, as
+        /// <see cref="ElevationAt"/> does). What a texel-by-texel check of the decode reads: a bilinear
+        /// sample at a texel centre lands on this value only up to float rounding.
+        /// </summary>
+        public float ElevationAtTexel(int x, int y)
+            => _elev[Mathf.Clamp(y, 0, _height - 1) * _width + Mathf.Clamp(x, 0, _width - 1)];
+
         /// <summary>Map a normalized 0..1 R sample to metres above datum: <c>lerp(min, max, r)</c>.</summary>
         public static float DecodeElevation(float r01, float minElevation, float maxElevation)
             => Mathf.Lerp(minElevation, maxElevation, Mathf.Clamp01(r01));
