@@ -108,82 +108,14 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         // =============================================================================
-        //  ⭐ the door gable — the trap this kit is built around
-        // =============================================================================
-
-        [Test]
-        public void TheShellsDoorIsOnPlusY_AndTheRoomsIsOnMinusY()
-        {
-            using IRigScriptHost host = Host("house", "interior");
-
-            int shell = InteriorRigAzimuthProbe.DoorGable(host, House, "{}", out double shellTravel);
-            int room = InteriorRigAzimuthProbe.DoorGable(host, Interior, RoomOpts(), out double roomTravel);
-
-            Assert.AreEqual(+1, shell,
-                            $"houseIsoRig puts its door on the +Y gable (door.y travels {shellTravel:F1} px " +
-                            "from dir 0 to dir 4)");
-            Assert.AreEqual(-1, room,
-                            $"interiorIsoRig puts its DOORWAY on −Y — the wall the cutaway drops — and " +
-                            $"gives +Y to the hearth (door.y travels {roomTravel:F1} px). This is the " +
-                            "whole reason the two sheets are shown at different facings.");
-        }
-
-        [Test]
-        public void TheBuildingProbeWouldMeasureTheRoomBackwards_WhichIsWhyItIsNotUsedOnIt()
-        {
-            // A regression guard on the REASON, not on a symptom. BuildingRigAzimuthProbe reads which
-            // side the door lands on at a quarter turn and assumes the +Y gable; on this rig that
-            // inference is inverted. If a later refactor points the interior bake at that probe, this
-            // test says exactly what breaks and why.
-            using IRigScriptHost host = Host("house", "interior");
-
-            double pivotX = host.EvaluateNumber($"{Interior}.pivot.x");
-            double doorX = host.EvaluateNumber($"{Interior}.anchors(2,{RoomOpts()}).door.x");
-
-            Assert.Greater(doorX - pivotX, 0,
-                           "the room's door lands to screen-RIGHT at a quarter turn, which that probe " +
-                           "reads as CLOCKWISE — the opposite of the turntable it actually shares with " +
-                           "houseIsoRig. Measure the gable first (InteriorRigAzimuthProbe) or the bake " +
-                           "applies the wrong correction to all eight cells, silently.");
-
-            double housePivotX = host.EvaluateNumber($"{House}.pivot.x");
-            double houseDoorX = host.EvaluateNumber($"{House}.anchors(2,{{}}).door.x");
-            Assert.Less(houseDoorX - housePivotX, 0,
-                        "and the same reading on the shell gives COUNTER-CLOCKWISE, correctly — same " +
-                        "turntable, opposite gable");
-        }
-
-        // =============================================================================
         //  ⭐ the registration
         // =============================================================================
 
-        [Test]
-        public void TheRoomStandsUnderItsShellAtAFacingOffsetOfFour()
-        {
-            using IRigScriptHost host = Host("house", "interior");
-
-            var exterior = VillageBuildingKit.FindBuild("sageCottage");
-            Assert.IsNotNull(exterior, "the pilot room is the inside of the village's sage cottage");
-
-            string exteriorOpts = VillageBuildingBakeMenu.OptionsLiteralFor(exterior.Value);
-
-            InteriorRigAzimuthProbe.Registration reg = InteriorRigAzimuthProbe.MeasureRegistration(
-                host, House, exteriorOpts, Interior, RoomOpts(), InteriorKit.Facings);
-
-            Assert.AreEqual(4, reg.FacingOffset,
-                            "the two rigs put their doors on opposite gables of the same model, so the " +
-                            "room that belongs under exterior facing f is interior facing f+4. At any " +
-                            "other offset the doorway lands against a wall.\n" + reg.Report);
-
-            Assert.AreEqual(+1, reg.ExteriorGable, "the shell's door is on +Y");
-            Assert.AreEqual(-1, reg.InteriorGable, "the room's doorway is on −Y");
-
-            // The registration is only meaningful if the two describe the same building.
-            Assert.AreEqual(6.6, reg.WidthMetres, 1e-4);
-            Assert.AreEqual(8.05, reg.LengthMetres, 1e-4);
-
-            TestContext.WriteLine(reg.Report);
-        }
+        // The door-gable pins (TheShellsDoorIsOnPlusY_AndTheRoomsIsOnMinusY,
+        // TheBuildingProbeWouldMeasureTheRoomBackwards_WhichIsWhyItIsNotUsedOnIt,
+        // TheRoomStandsUnderItsShellAtAFacingOffsetOfFour) retired with the village return (#898, R2):
+        // the returned room opens its doorway on +Y and registers under its own shell at offset 0,
+        // measured by VillageReturnIntakeTests.TheReturnedRoomsStandUnderTheirOwnShellsAtOffsetZero.
 
         [Test]
         public void TheRoomAndTheShellResolveTheSameFootprint_WhichIsTheOneToOneClaim()
@@ -209,15 +141,17 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             using IRigScriptHost host = Host("interior");
 
-            // The rig is the authority: storeyZ is this storey's ceiling plus the joists it carries.
-            double declared = host.EvaluateNumber($"{Interior}.anchors(0,{RoomOpts()}).storeyZ");
-            double roomH = host.EvaluateNumber($"{Interior}.anchors(0,{RoomOpts()}).roomH");
+            // The rig is the authority, read the way the bake reads it. Since the village return
+            // (drop 14) anchors().storeyZ is this floor's height ABOVE GRADE, not the rise, so the rise
+            // is the upper storey's floor less this one's (InteriorRigBaker.StoreyRiseMetres).
+            double declared = InteriorRigBaker.StoreyRiseMetres(host, Interior, RoomOpts());
+            double aboveGrade = host.EvaluateNumber($"{Interior}.anchors(0,{RoomOpts()}).storeyZ");
 
-            Assert.AreEqual(2.7625, roomH, 1e-6,
-                "sage cottage at size 0.25: min(2.55 + 0.25*0.85, wallH − 0.6)");
-            Assert.AreEqual(roomH + 0.34, declared, 1e-6,
-                "plus the shop kit's own 0.34 m of floor structure — one allowance for both families, " +
-                "not two that happen to agree");
+            Assert.AreEqual(2.65, declared, 1e-6,
+                "the sage cottage's floor-to-floor rise, measured at intake on Node and V8");
+            Assert.Greater(declared - aboveGrade, 1.0,
+                "the anchor is the floor above grade, far from the rise: reading it as the rise would " +
+                "stand an upper storey half a metre off the ground floor");
 
             // ...and the bake wrote it down. This is the seam the whole storey-height fix rests on: the
             // engine reads a NUMBER FROM THE ART rather than one typed into a builder, exactly as it does
@@ -229,8 +163,8 @@ namespace HiddenHarbours.Tests.RigBaking
             InteriorKit.Entry cottage = System.Array.Find(contract.rooms, r => r.key == "sageCottage");
             Assert.IsNotNull(cottage, "the pilot room is in it");
             Assert.AreEqual(declared, cottage.storeyHeightMetres, 1e-4,
-                "the committed contract's storeyHeightMetres must be the rig's own storeyZ — re-bake the " +
-                "interiors kit if this has drifted");
+                "the committed contract's storeyHeightMetres must be the rise the rig's own storeys " +
+                "measure — re-bake the interiors kit if this has drifted");
 
             foreach (InteriorKit.Entry room in contract.rooms)
                 Assert.Greater(room.storeyHeightMetres, 2.0f,

@@ -32589,6 +32589,7 @@ GameObject:
   - component: {fileID: 353585567}
   - component: {fileID: 353585566}
   - component: {fileID: 353585568}
+  - component: {fileID: 8583855581436755678}
   m_Layer: 0
   m_Name: redSaltbox
   m_TagString: Untagged
@@ -32658,7 +32659,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: e41a93ddb4d64064a90f725ea27b61c2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -32692,6 +32693,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!114 &8583855581436755678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 353585564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 566388fab64545bfb3c024c9d2ed3d49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SpriteLightBinder
+  _lightSheet: {fileID: 2800000, guid: 2403804d3d8713f43a0072045cc2eef5, type: 3}
+  _normalSheet: {fileID: 2800000, guid: 21c72c076e713f3439121eca583373a0, type: 3}
+  _rimGateSheet: {fileID: 0}
+  _rimGateChannel: 0
+  _emitSheet: {fileID: 2800000, guid: ed0f617120ad8994d896499ccac25ebe, type: 3}
 --- !u!114 &353585568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33043,6 +33061,7 @@ GameObject:
   - component: {fileID: 356182234}
   - component: {fileID: 356182235}
   - component: {fileID: 356182233}
+  - component: {fileID: 6706420055223088976}
   m_Layer: 0
   m_Name: sageCottage
   m_TagString: Untagged
@@ -33129,7 +33148,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: e41a93ddb4d64064a90f725ea27b61c2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -33163,6 +33182,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!114 &6706420055223088976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 356182231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 566388fab64545bfb3c024c9d2ed3d49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SpriteLightBinder
+  _lightSheet: {fileID: 2800000, guid: 1398622992aa36044bb71c1a7f82e940, type: 3}
+  _normalSheet: {fileID: 2800000, guid: f675e3bebd606f5449b03a92c8744216, type: 3}
+  _rimGateSheet: {fileID: 0}
+  _rimGateChannel: 0
+  _emitSheet: {fileID: 2800000, guid: ee55a954d4e58314ea24294bc07d9e1d, type: 3}
 --- !u!114 &356182235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61473,7 +61509,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1072
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1097303048, guid: 131fdc6b748a1384684495a76cc838fc, type: 3}
+  m_Sprite: {fileID: 1968440425, guid: 131fdc6b748a1384684495a76cc838fc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -80414,6 +80450,7 @@ GameObject:
   - component: {fileID: 816773079}
   - component: {fileID: 816773080}
   - component: {fileID: 816773077}
+  - component: {fileID: 6542321979068713303}
   m_Layer: 0
   m_Name: school
   m_TagString: Untagged
@@ -80495,7 +80532,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: e41a93ddb4d64064a90f725ea27b61c2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -80529,6 +80566,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!114 &6542321979068713303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 816773076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 566388fab64545bfb3c024c9d2ed3d49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SpriteLightBinder
+  _lightSheet: {fileID: 2800000, guid: 3cdcfe12619761745af1bd0c602ded32, type: 3}
+  _normalSheet: {fileID: 2800000, guid: a410d9dde3545d542afc44796d9fee65, type: 3}
+  _rimGateSheet: {fileID: 0}
+  _rimGateChannel: 0
+  _emitSheet: {fileID: 2800000, guid: dd2076a723661d047821b2fdabb0ecb4, type: 3}
 --- !u!114 &816773080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -105753,7 +105807,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -1185071405, guid: 40f66f62463bb464a82d38b8e0b97c80, type: 3}
+  m_Sprite: {fileID: -1621544600, guid: 40f66f62463bb464a82d38b8e0b97c80, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -130786,6 +130840,7 @@ GameObject:
   - component: {fileID: 1378592702}
   - component: {fileID: 1378592701}
   - component: {fileID: 1378592703}
+  - component: {fileID: 5457660621945375635}
   m_Layer: 0
   m_Name: sageCottage
   m_TagString: Untagged
@@ -130855,7 +130910,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: e41a93ddb4d64064a90f725ea27b61c2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -130889,6 +130944,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!114 &5457660621945375635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1378592699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 566388fab64545bfb3c024c9d2ed3d49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SpriteLightBinder
+  _lightSheet: {fileID: 2800000, guid: 1398622992aa36044bb71c1a7f82e940, type: 3}
+  _normalSheet: {fileID: 2800000, guid: f675e3bebd606f5449b03a92c8744216, type: 3}
+  _rimGateSheet: {fileID: 0}
+  _rimGateChannel: 0
+  _emitSheet: {fileID: 2800000, guid: ee55a954d4e58314ea24294bc07d9e1d, type: 3}
 --- !u!114 &1378592703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138004,7 +138076,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -196323458, guid: b901ca9787f3a814e8756afb11ba6241, type: 3}
+  m_Sprite: {fileID: 954949736, guid: b901ca9787f3a814e8756afb11ba6241, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -159877,6 +159949,7 @@ GameObject:
   - component: {fileID: 1673921367}
   - component: {fileID: 1673921366}
   - component: {fileID: 1673921368}
+  - component: {fileID: 6871945506739582179}
   m_Layer: 0
   m_Name: whiteFarmhouse
   m_TagString: Untagged
@@ -159946,7 +160019,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: e41a93ddb4d64064a90f725ea27b61c2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -159980,6 +160053,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!114 &6871945506739582179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1673921364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 566388fab64545bfb3c024c9d2ed3d49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SpriteLightBinder
+  _lightSheet: {fileID: 2800000, guid: 3bfc3088676411c49af188ca5914ca76, type: 3}
+  _normalSheet: {fileID: 2800000, guid: 50ff530b00c48a84c84378416273646b, type: 3}
+  _rimGateSheet: {fileID: 0}
+  _rimGateChannel: 0
+  _emitSheet: {fileID: 2800000, guid: 2b54522a4aa9629459a544d666708517, type: 3}
 --- !u!114 &1673921368
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167300,7 +167390,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -53249580, guid: 131fdc6b748a1384684495a76cc838fc, type: 3}
+  m_Sprite: {fileID: 292250499, guid: 131fdc6b748a1384684495a76cc838fc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -178511,7 +178601,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1240681721, guid: 75b0ae9797480334cb4a0c216bad3e19, type: 3}
+  m_Sprite: {fileID: -909766527, guid: 75b0ae9797480334cb4a0c216bad3e19, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -204178,7 +204268,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1097303048, guid: 131fdc6b748a1384684495a76cc838fc, type: 3}
+  m_Sprite: {fileID: 1968440425, guid: 131fdc6b748a1384684495a76cc838fc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

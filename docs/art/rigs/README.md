@@ -232,6 +232,11 @@ byte-identical golden master was.
   bake time and written into `Interiors.json` as `exteriorFacingOffset`; `InteriorKit.InteriorFacingFor`
   is the one place it is applied. At any other offset the doorway lands against the back wall — you walk
   in the front door and appear at the back of the room, and it reads as an art bug.
+- **Since the village return (drop 14, #898), the measured offset is 0.** The returned `interiorIsoRig`
+  (`village-return/houses-kit/Art/`) opens its doorway on the gable its house's door is on, so each room
+  registers under its own shell at offset 0, and `Interiors.json` says so. The mechanism is unchanged: the
+  probe still measures, and `InteriorKit.InteriorFacingFor` still applies what it measured. The `−Y`
+  doorway and the `+4` above describe the rig before it. Record: `village-return/INTAKE.md`, Phase B.
 
 ⇒ **The baker MUST carry a per-rig convention flag. A blanket correction is wrong** — it would re-mirror
 the two already-correct rigs. And the flag must be *machine-verified against the rendered pixels*, not
