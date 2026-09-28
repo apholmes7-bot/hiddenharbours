@@ -4,8 +4,8 @@ The drop's own `README.md` sits beside this file, imported verbatim. **This file
 the two disagree, this one is the evidence.** Every figure below was measured at intake (2026-09-24)
 on real Node and in the repo's own V8 host, never read off the README.
 
-Nothing in the rig sources was edited. The game still draws the pass-3 trees: `TreeKitCatalog.RigScriptPath`
-stays `treeIsoRig3.js` until the pass-4 bake (Phase B of the intake), and the snow global defaults to 0.
+Nothing in the rig sources was edited. At intake the game still drew the pass-3 trees. Since the pass-4 bake
+(Phase B, 2026-09-27) `TreeKitCatalog.RigScriptPath` names `treeIsoRig4.js`, and the game draws pass 4.
 
 ---
 

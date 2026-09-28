@@ -170,8 +170,9 @@ has no heading, so its sheet axes are **variant × sway frame**, not direction.
 > unchanged, but every cell widens by twice the species' `windReach` so the sway has room, so
 > **`_TrunkAnchor` moves again** (red spruce 0.0304 → 0.0301, aspen 0.0295 → 0.0272). The new outputs
 > are a snow map (the cover at which each pixel turns white), wind weights and a phase map. **The mask
-> order does not change** (R key, G back rim, B depth, A coverage); new data goes in new sheets. Until the
-> pass-4 bake the game still draws pass 3 (`TreeKitCatalog.RigScriptPath`).
+> order does not change** (R key, G back rim, B depth, A coverage); new data goes in new sheets. Since the
+> pass-4 bake (#882, 2026-09-27) the game draws pass 4: `TreeKitCatalog.RigScriptPath` names
+> `treeIsoRig4.js`.
 
 **NOT A RIG AT ALL — the building lifecycle PASS (2026-08-19)** —
 `building-lifecycle-kit/buildingLifecycleRig.js` (`BuildingLifecycle`). The only entry in the catalog that
