@@ -1,6 +1,6 @@
 # Hidden Harbours: the design desk
 
-**As of 2026-09-28 00:53Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
+**As of 2026-09-28 09:47Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
 
 Read this file at the start of every session, then the brief the owner names. A ruling the owner gives you in a message wins over this file and over any brief. Some older docs still describe sprites where the owner has since ruled meshes (section 4); where they disagree, the ruling wins.
 
@@ -43,6 +43,14 @@ Read this file at the start of every session, then the brief the owner names. A 
 - 09-26, the boats switch. Every hull, not only the sport fishers, moves to your new sidecar layout, your mesh interiors and the gameplay you designed, in batches you propose; the six new boats and the two sport fishers go first.
 - 09-27, the 53's draft. The fleet rule stands: every boat floats at about 4% of her length, and a test in the game enforces it. The 53 (16.2 m) floats at 0.67 m, so her painted waterline and boot stripe move from 1.00 m to 0.67 m above the keel bottom, in her rig and in the batch. List it in the README as a changed number, old and new.
 - 09-27, the key scenes, return 1. The pier head's lamp stays, lit at night like both wharf lanterns in the game (`when: 'dusk'`). The tide board goes below the south lip, as drawn. Your strings stand ("BAIT & ICE", "ST PETERS PACKING CO." and the for-sale notice), with the boards blank in pictures. The bait store waits. The cannery's silhouette is your set pieces as drawn, with no `signature` option. The restored look is a reference for M3 only.
+- 09-28, Nine Mile Creek's wharf, the quick look. The following stand:
+  - your berths, with the finger boats as the ambient fleet;
+  - the shore path, and the road into the turning pad;
+  - granite armour;
+  - a boat ramp for small craft beside the working float;
+  - the restaurant and the fish market to the north, with the ground able to grow for them.
+
+  The breakwaters reach further south, so boats can sail round the fingers. The crane replaces the winch and needs gameplay. The harbourmaster moves to the wharf office, and the General Store folds into the gas station, whose name stays open. Ladders go down the quay face.
 
 ## 5. How work comes back
 
@@ -62,7 +70,7 @@ Each thread has, or will get, its own paste in its own conversation. This list i
 - The boats switch (09-26). Asked of you: the batch plan; one versioned spec for the new layout (every field with its units and frame, the scripts that write it, and a checker in each zip); then the batches, the six new boats and the two sport fishers first, with the 53 at 0.67 m. On our side: your sport-fishers PROPOSAL zip of 09-26 (mesh interiors, ghost cutaway) arrived on 09-27, and all 14 sums match. An ADR for the new layout comes next; what it needs from you will follow when it lands.
 - The village v3 send-back (09-26). Asked of you: Plan B drawn, two or three manor sites, the manor on the light engine, room heights and the side-entry rooms, the school's classroom, and the outbuilding rig's params sidecar with the kit designs.
 - The St Peters key scenes (09-27). Asked of you: seven scenes (the Landing, the cannery, the north-east lighthouse and cliff, the village square, Ginny's plot, the waterfall, the tidal crossing). Return 1 (passes 1 to 5) arrived the same day and passed on real Node; the owner's rulings on it are in section 4. Pass 6 (the alder fall, and a fuel stop that moves to Nine Mile Creek) arrived on 09-28. Next, the north-east light first, with the village square held: [briefs/BRIEF-2026-09-27-key-scenes-return-2.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-27-key-scenes-return-2.md).
-- Nine Mile Creek's wharf, an art pass (09-28). Asked of you: the wharf rearranged and redrawn with your newest kits, light and flora. Art comes first and the layout is free. It also takes your pass 6 fuel stop, re-sited on Wharf Road. A quick look first, then the scenes: [briefs/BRIEF-2026-09-28-nmc-wharf-pass.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-28-nmc-wharf-pass.md).
+- Nine Mile Creek's wharf, an art pass (09-28). Asked of you: the wharf rearranged and redrawn with your newest kits, light and flora. Art comes first and the layout is free. It also takes your pass 6 fuel stop, re-sited on Wharf Road: [briefs/BRIEF-2026-09-28-nmc-wharf-pass.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-28-nmc-wharf-pass.md). Your quick look (revision 2) arrived on 09-28 and passed, and the owner ruled on it (section 4). Next, the scenes: [briefs/BRIEF-2026-09-28-nmc-wharf-scene.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-28-nmc-wharf-scene.md).
 - The channel check (09-27, on this branch): DONE the same day. Text reaches you; pictures do not (section 1). [briefs/BRIEF-2026-09-27-channel-check.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-27-channel-check.md).
 
 ## 7. Landed in the game from you
