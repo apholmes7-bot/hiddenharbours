@@ -261,6 +261,13 @@ MonoBehaviour:
     MaxNaturalPeriodSeconds: 8
     MinDampingRatio: 0.35
     MaxDampingRatio: 1
+  HullTrim:
+    Enabled: 1
+    HumpFroude: 0.4
+    PlaningFroude: 0.55
+    DefaultMaxBowUpDegrees: 8
+    DefaultMaxBowDownDegrees: 4
+    DefaultResponseSeconds: 0.6
   RodFight:
     TensionRisePerSec: 0.55
     TensionFallPerSec: 0.7

@@ -253,6 +253,17 @@ namespace HiddenHarbours.Core
                  "surface-bolted ride bit-for-bit; that is the A/B.")]
         public HullWeightSettings HullWeight = HullWeightSettings.Default;
 
+        [Header("Hull trim (the bow answers her speed — owner 2026-09-21)")]
+        [Tooltip("World-wide policy for how a hull TRIMS (owner 2026-09-21: \"Also i want trim " +
+                 "added to the boats depending on speed and deacceleration\"). Her bow rises as she " +
+                 "climbs her own bow wave toward hull speed (HumpFroude), a planing hull settles once " +
+                 "she is over it (PlaningFroude), the bow squats up when the throttle opens and dips " +
+                 "briefly when she slows. How MUCH is per hull — each BoatHullDef's Trim* fields; this " +
+                 "block holds where the hump sits and the limits and lag a hull that authors none " +
+                 "inherits. Enabled off (or a hull whose Trim* values are all 0) draws her pitch " +
+                 "exactly as before trim existed; that is the A/B.")]
+        public HullTrimSettings HullTrim = HullTrimSettings.Default;
+
         [Header("Ground tackle (dropping the hook)")]
         [Tooltip("World-wide ANCHORING policy: the dinghy-class rode a hull carries when her own Def " +
                  "does not say (BoatHullDef.RodeMeters = 0), the swing-circle floor, the firm-limit trio " +
