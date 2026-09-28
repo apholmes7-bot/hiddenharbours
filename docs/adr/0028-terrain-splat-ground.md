@@ -163,3 +163,10 @@ that four painted strip intensities do not fit the two remaining slots:
   hard edges may re-use it.
 - ⚠ Anything that assumed "ground = Tilemap" (e.g. future grid-snapped decals) must read
   the height field instead — which is the correct seam anyway (rule 4).
+
+## Persistence superseded by ADR 0047 (2026-09-27)
+
+The owner approved importing the packed terrain textures from two committed recipes into
+Library. The source PNGs, manifest and shader slice contract remain committed; the five
+native packed assets retire. This supersedes only the packed-array persistence described
+above. Independent byte tests and scene-reference guards preserve the ground's content.

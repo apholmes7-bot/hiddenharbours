@@ -52,6 +52,7 @@ When you add an ADR, add its row here in the same PR.
 | 0043 | Input: intents in Core, bindings as data | Accepted (rulings 2026-09-02; PR 0 seams the walk — rolling out: helm/verbs PR 1, gamepad PR 2) |
 | 0044 | Characters are meshes in every state; sheets retire per state at parity | **Proposed** (owner overruled the spike 2026-09-09; amends 0024's scope AND its numbers — seat to ratify) |
 | 0046 | Still water above the tide: water = max(tide, still), one map for sim and render, a 16-bit height map | Accepted (terrain pass 9 PR 4; decisions 6, 7 and 11 ruled 2026-09-25; the seam's contract and the 8-bit committed maps accepted 2026-09-26; answers 0014's R8/R16 question) |
+| 0047 | Derived art is imported, not committed | Accepted (owner approved the array plan 2026-09-27; implementation awaiting validation) |
 
 **Conventions.** `Proposed` = awaiting the named decider; `Accepted` = ratified (by the owner where
 the ADR says so, otherwise by `lead-architect` on merge); `Implemented` = accepted and the code

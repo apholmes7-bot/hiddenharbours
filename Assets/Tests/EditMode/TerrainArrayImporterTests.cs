@@ -15,7 +15,6 @@ using Object = UnityEngine.Object;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>CPU-only import lifecycle and byte/identity guards for ADR 0047. No missing-kit skips.</summary>
-    [NonParallelizable]
     public class TerrainArrayImporterTests
     {
         const ImportAssetOptions Sync = ImportAssetOptions.ForceSynchronousImport;
@@ -95,8 +94,9 @@ namespace HiddenHarbours.Tests.EditMode
             var before = TerrainArrayAssets.LoadRelightRequired(fixture.RelightPath);
             string[] maps = { ArrayHashes(before.Normal)[0], ArrayHashes(before.Light)[0], ArrayHashes(before.Detail)[0] };
             var manifest = JsonUtility.FromJson<Manifest>(File.ReadAllText(fixture.ManifestPath));
-            manifest.tiles[0].palettes[0] = "#010203";
-            manifest.tiles[0].heightRange = 0.5f;
+            Tile grass = manifest.tiles.Single(t => t.name == "Grass_Lo");
+            grass.palettes[0] = "#010203";
+            grass.heightRange = 0.5f;
             File.WriteAllText(fixture.ManifestPath, JsonUtility.ToJson(manifest), new UTF8Encoding(false));
             ImportSource(fixture.ManifestPath);
             var changed = TerrainArrayAssets.LoadRelightRequired(fixture.RelightPath);
