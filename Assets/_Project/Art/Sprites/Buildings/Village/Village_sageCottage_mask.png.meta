@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 1398622992aa36044bb71c1a7f82e940
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -831272161605606031
+    second: Village_sageCottage_mask_0
+  - first:
+      213: -8037714999648531889
+    second: Village_sageCottage_mask_1
+  - first:
+      213: -5322898723205670518
+    second: Village_sageCottage_mask_2
+  - first:
+      213: -6486280666464027963
+    second: Village_sageCottage_mask_3
+  - first:
+      213: 4766493510146783347
+    second: Village_sageCottage_mask_4
+  - first:
+      213: 2961338680357133245
+    second: Village_sageCottage_mask_5
+  - first:
+      213: 2874293392469019120
+    second: Village_sageCottage_mask_6
+  - first:
+      213: -5836617079863961925
+    second: Village_sageCottage_mask_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Village_sageCottage_mask_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 415
+        width: 418
+        height: 415
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31566265}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1072fc3b96760c34bb8c9e9582495635
+      internalID: 54240459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_sageCottage_mask_d1
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 415
+        width: 418
+        height: 415
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31566265}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c3c31b1e9843824a81bcf064ab2d708
+      internalID: 455624002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_sageCottage_mask_d2
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 415
+        width: 418
+        height: 415
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31566265}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8c41bc9c5ae69f47aadbe67fc66f03d
+      internalID: 479574161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_sageCottage_mask_d3
+      rect:
+        serializedVersion: 2
+        x: 1254
+        y: 415
+        width: 418
+        height: 415
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31566265}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66a8ff1c3ca896940b5c3cb0a90674bd
+      internalID: -286720769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_sageCottage_mask_d4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 418
+        height: 415
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31566265}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d23b0b1d3e6fadc4f9d09312ad58f36a
+      internalID: -1605681469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_sageCottage_mask_d5
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 0
+        width: 418
+        height: 415
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31566265}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d68950796995de646b5816c8bce86963
+      internalID: -1016854870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_sageCottage_mask_d6
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 0
+        width: 418
+        height: 415
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31566265}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1e045291942b2046bf060e015dbac4d
+      internalID: -2036857327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_sageCottage_mask_d7
+      rect:
+        serializedVersion: 2
+        x: 1254
+        y: 0
+        width: 418
+        height: 415
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31566265}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85ea2dcbebc50f641a3872e9fec8ad1c
+      internalID: 538249612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e41108087894fc14a88ff35de1a96109
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Village_sageCottage_mask_d0: 54240459
+      Village_sageCottage_mask_d1: 455624002
+      Village_sageCottage_mask_d2: 479574161
+      Village_sageCottage_mask_d3: -286720769
+      Village_sageCottage_mask_d4: -1605681469
+      Village_sageCottage_mask_d5: -1016854870
+      Village_sageCottage_mask_d6: -2036857327
+      Village_sageCottage_mask_d7: 538249612
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
