@@ -307,6 +307,7 @@ MonoBehaviour:
   MeshCharacter: 1
   MeshCharacterAshore: 1
   MeshCast: 1
+  MeshCastAshore: 1
   FoliageSilhouette: 1
   FoliageSilhouetteTint: {r: 0.94, g: 0.9, b: 0.82, a: 1}
   FoliageSilhouetteStrength: 0.55

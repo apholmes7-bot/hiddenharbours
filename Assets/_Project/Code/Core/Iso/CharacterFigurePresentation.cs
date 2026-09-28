@@ -21,9 +21,10 @@ namespace HiddenHarbours.Core
         IsoCharacterSprite FigureCharacter { get; }
 
         /// <summary>The hull VISUAL transform the character is standing on — the object the hull's
-        /// renderer is installed on — or null ashore. The presenter behind this seam draws a figure only
-        /// through a facet hull, so this is also where it parents her; a figure ashore would hold a facet
-        /// id of her own instead (ADR 0044 §7.3). This stand promises no hull.</summary>
+        /// renderer is installed on — or null ashore. Aboard, the presenter behind this seam draws a figure
+        /// only through a facet hull, so this is also where it parents her; ashore, only a stand that is an
+        /// <see cref="ICharacterFigureAshoreStand"/> is drawn, through a facet id of her own (ADR 0044 §7.3,
+        /// amendment 2026-09-27). This stand promises no hull.</summary>
         Transform FigureHull { get; }
 
         /// <summary>Where the figure's feet are, in that hull's rig frame and metres
@@ -33,6 +34,27 @@ namespace HiddenHarbours.Core
         /// <summary>Where the figure is looking RELATIVE TO THE DECK (degrees; 0 = at the bow, +90 = to
         /// starboard), the <see cref="DeckRiderFacingMath"/> convention.</summary>
         float FigureDeckBearingDegrees { get; }
+    }
+
+    /// <summary>
+    /// <b>A stand on the GROUND: a villager on her own feet</b> (ADR 0044, amendment 2026-09-27). A second
+    /// interface rather than a member on <see cref="ICharacterFigureStand"/>, so every stand and test double
+    /// written before it compiles unchanged. A stand that is one of these and publishes no hull is drawn
+    /// ashore, under a facet id of her own; any other stand with no hull keeps its sprite, as before.
+    ///
+    /// <para>Ashore the hull members are never read: <see cref="ICharacterFigureStand.FigureHull"/> is
+    /// null, and the stand point and deck bearing answer zero. Her facing is her sprite's own
+    /// <see cref="IsoCharacterSprite.HeadingDegrees"/>.</para>
+    /// </summary>
+    public interface ICharacterFigureAshoreStand : ICharacterFigureStand
+    {
+        /// <summary>
+        /// Who she is, as a stable string: a villager's <c>NpcDef</c> id (<c>npc.aunt_ginny</c>), which is
+        /// append-only. The same person gives the same key on every run and machine. It is PRESENTATION: it
+        /// moves her idle phase off her neighbours' so a village does not breathe in step, it is never saved,
+        /// and no simulation reads it (rule 5). Null or empty = no offset of her own.
+        /// </summary>
+        string FigureKey { get; }
     }
 
     /// <summary>
@@ -63,7 +85,8 @@ namespace HiddenHarbours.Core
 
     /// <summary>
     /// <b>Puts a mesh figure on a character that has a skin to draw</b> — the cast's way in. Implemented in
-    /// Art (where the facet renderers live); called by Boats with nothing but Core types in hand.
+    /// Art (where the facet renderers live); called by Boats (a moored skipper) and World (a villager) with
+    /// nothing but Core types in hand.
     /// </summary>
     public interface ICharacterFigurePresentationService
     {
