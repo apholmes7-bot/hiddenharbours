@@ -102,7 +102,10 @@ The game has its own copies of some of these. Ship yours regardless: the Art des
 - But the plan also quotes the game's own positions, which are in ground metres.
 - The plan's authors will settle which reading holds. Do not redraw pass 4 until this branch says which. Its autumn master can wait with it.
 
-**5. The two scenes still to draw:** the alder fall (the waterfall) and the tidal crossing, after items 1 to 3.
+**5. Pass 6, then the tidal crossing.** Pass 6 reached the owner on 28 Sept: the alder fall and the Bar Road Stop.
+- The Bar Road Stop moves to Nine Mile Creek. Another conversation takes it on, working on copies, so leave its pass 6 files as they are and do no more on it here.
+- The alder fall came as WebP views and code only. Send its scene.json, NOTES and PNG masters with item 1.
+- Then the tidal crossing, after items 1 to 3.
 
 ## 5. Every return
 
