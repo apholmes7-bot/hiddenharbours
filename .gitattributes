@@ -189,12 +189,6 @@ LightingData.asset     binary
 Assets/_Project/Art/Terrain/Derived/*.asset filter=lfs diff=lfs merge=lfs -text
 *.hhterrain text eol=lf
 
-# The scene-export packages are generated documents whose bytes are compared by
-# `hh_scene_export.py --check`. A checkout with autocrlf on would rewrite them to CRLF, and a
-# tool that regenerates them writes LF — so pin the working-tree form. The gate reads with
-# universal newlines regardless (belt and braces); this keeps the files themselves LF for
-# everyone, so a diff between two machines shows content and not line endings.
-tools/scene-export/packages/** text eol=lf
 docs/tools/reference/*.json    text eol=lf
 
 # The sail rig kit (docs/art/rigs/sail-rig-kit/) ships its own SHA256SUMS.txt, and BOTH sidecars of
@@ -278,3 +272,10 @@ docs/art/rigs/terrain/pass9/**/*.js                   text eol=lf
 docs/art/rigs/terrain/pass9/**/*.json                 text eol=lf
 docs/art/rigs/terrain/pass9/**/*.md                   text eol=lf
 docs/art/rigs/terrain/pass9/**/*.txt                  text eol=lf
+
+# Wharf rig kit pass 2 (drop 12): preserve SHA256SUMS without overriding PNG LFS -text.
+docs/art/rigs/wharf-rig-kit-v2/**/*.js                text eol=lf
+docs/art/rigs/wharf-rig-kit-v2/**/*.json              text eol=lf
+docs/art/rigs/wharf-rig-kit-v2/**/*.txt               text eol=lf
+docs/art/rigs/wharf-rig-kit-v2/**/*.md                text eol=lf
+docs/art/rigs/wharf-rig-kit-v2/**/*.html              text eol=lf

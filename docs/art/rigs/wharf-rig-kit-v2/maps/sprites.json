@@ -1,0 +1,2702 @@
+{
+ "schema": "hidden-harbours/wharf-sprites@2",
+ "ppu": 32,
+ "elev": 40,
+ "pivotIs": "the projection of the model origin (module centre at chart datum)",
+ "presets": {
+  "lowPier": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      358,
+      234
+     ],
+     "pivot": [
+      179,
+      164
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      313,
+      306
+     ],
+     "pivot": [
+      156,
+      167
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      161,
+      331
+     ],
+     "pivot": [
+      90,
+      177
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      313,
+      306
+     ],
+     "pivot": [
+      156,
+      167
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      358,
+      192
+     ],
+     "pivot": [
+      179,
+      123
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      313,
+      306
+     ],
+     "pivot": [
+      156,
+      167
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      161,
+      331
+     ],
+     "pivot": [
+      71,
+      177
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      313,
+      313
+     ],
+     "pivot": [
+      156,
+      174
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "tallPier": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      473,
+      268
+     ],
+     "pivot": [
+      236,
+      186
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      421,
+      386
+     ],
+     "pivot": [
+      210,
+      212
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      199,
+      415
+     ],
+     "pivot": [
+      109,
+      223
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      421,
+      386
+     ],
+     "pivot": [
+      210,
+      212
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      473,
+      227
+     ],
+     "pivot": [
+      236,
+      145
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      421,
+      386
+     ],
+     "pivot": [
+      210,
+      212
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      199,
+      415
+     ],
+     "pivot": [
+      90,
+      223
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      421,
+      407
+     ],
+     "pivot": [
+      210,
+      234
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "sheetedPier": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      505,
+      276
+     ],
+     "pivot": [
+      252,
+      190
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      457,
+      406
+     ],
+     "pivot": [
+      230,
+      222
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      203,
+      435
+     ],
+     "pivot": [
+      115,
+      234
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      457,
+      408
+     ],
+     "pivot": [
+      230,
+      222
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      505,
+      240
+     ],
+     "pivot": [
+      252,
+      149
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      457,
+      408
+     ],
+     "pivot": [
+      226,
+      222
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      203,
+      435
+     ],
+     "pivot": [
+      87,
+      234
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      457,
+      406
+     ],
+     "pivot": [
+      226,
+      222
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "steelPier": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      505,
+      305
+     ],
+     "pivot": [
+      252,
+      204
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      487,
+      443
+     ],
+     "pivot": [
+      243,
+      250
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      248,
+      454
+     ],
+     "pivot": [
+      138,
+      252
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      487,
+      443
+     ],
+     "pivot": [
+      243,
+      250
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      505,
+      264
+     ],
+     "pivot": [
+      252,
+      163
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      487,
+      443
+     ],
+     "pivot": [
+      243,
+      250
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      248,
+      454
+     ],
+     "pivot": [
+      110,
+      252
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      487,
+      443
+     ],
+     "pivot": [
+      243,
+      250
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "concreteQuay": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      589,
+      317
+     ],
+     "pivot": [
+      294,
+      190
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      604,
+      502
+     ],
+     "pivot": [
+      302,
+      269
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      280,
+      494
+     ],
+     "pivot": [
+      145,
+      265
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      604,
+      497
+     ],
+     "pivot": [
+      302,
+      264
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      589,
+      283
+     ],
+     "pivot": [
+      294,
+      157
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      604,
+      497
+     ],
+     "pivot": [
+      301,
+      264
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      280,
+      494
+     ],
+     "pivot": [
+      134,
+      265
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      604,
+      502
+     ],
+     "pivot": [
+      301,
+      269
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "torbayQuay": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      589,
+      296
+     ],
+     "pivot": [
+      294,
+      180
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      581,
+      487
+     ],
+     "pivot": [
+      290,
+      261
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      248,
+      494
+     ],
+     "pivot": [
+      129,
+      265
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      581,
+      483
+     ],
+     "pivot": [
+      290,
+      257
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      589,
+      263
+     ],
+     "pivot": [
+      294,
+      146
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      581,
+      483
+     ],
+     "pivot": [
+      290,
+      257
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      248,
+      494
+     ],
+     "pivot": [
+      118,
+      265
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      581,
+      487
+     ],
+     "pivot": [
+      290,
+      261
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "timberQuay": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      501,
+      286
+     ],
+     "pivot": [
+      250,
+      175
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      505,
+      436
+     ],
+     "pivot": [
+      252,
+      236
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      232,
+      432
+     ],
+     "pivot": [
+      118,
+      234
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      505,
+      432
+     ],
+     "pivot": [
+      252,
+      232
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      501,
+      254
+     ],
+     "pivot": [
+      250,
+      143
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      505,
+      432
+     ],
+     "pivot": [
+      252,
+      232
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      232,
+      432
+     ],
+     "pivot": [
+      114,
+      234
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      505,
+      436
+     ],
+     "pivot": [
+      252,
+      236
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "blockQuay": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      493,
+      317
+     ],
+     "pivot": [
+      246,
+      190
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      536,
+      454
+     ],
+     "pivot": [
+      268,
+      242
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      277,
+      427
+     ],
+     "pivot": [
+      142,
+      229
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      536,
+      454
+     ],
+     "pivot": [
+      268,
+      242
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      493,
+      283
+     ],
+     "pivot": [
+      246,
+      157
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      536,
+      454
+     ],
+     "pivot": [
+      267,
+      242
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      277,
+      427
+     ],
+     "pivot": [
+      134,
+      229
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      536,
+      454
+     ],
+     "pivot": [
+      267,
+      242
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "logCrib": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      326,
+      253
+     ],
+     "pivot": [
+      163,
+      160
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      351,
+      334
+     ],
+     "pivot": [
+      175,
+      186
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      191,
+      321
+     ],
+     "pivot": [
+      103,
+      178
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      351,
+      328
+     ],
+     "pivot": [
+      175,
+      179
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      326,
+      242
+     ],
+     "pivot": [
+      163,
+      148
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      351,
+      329
+     ],
+     "pivot": [
+      175,
+      180
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      191,
+      321
+     ],
+     "pivot": [
+      88,
+      178
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      351,
+      334
+     ],
+     "pivot": [
+      175,
+      186
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "cappedCrib": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      326,
+      253
+     ],
+     "pivot": [
+      163,
+      160
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      351,
+      334
+     ],
+     "pivot": [
+      175,
+      186
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      191,
+      321
+     ],
+     "pivot": [
+      103,
+      178
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      351,
+      330
+     ],
+     "pivot": [
+      175,
+      181
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      326,
+      242
+     ],
+     "pivot": [
+      163,
+      148
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      351,
+      330
+     ],
+     "pivot": [
+      175,
+      181
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      191,
+      321
+     ],
+     "pivot": [
+      88,
+      178
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      351,
+      334
+     ],
+     "pivot": [
+      175,
+      186
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "timberFloat": {
+   "moving": true,
+   "frames": 16,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      337,
+      226
+     ],
+     "pivot": [
+      188,
+      128
+     ],
+     "sheet": [
+      1348,
+      904
+     ]
+    },
+    {
+     "dir": 1,
+     "cell": [
+      272,
+      336
+     ],
+     "pivot": [
+      135,
+      171
+     ],
+     "sheet": [
+      1088,
+      1344
+     ]
+    },
+    {
+     "dir": 2,
+     "cell": [
+      137,
+      337
+     ],
+     "pivot": [
+      49,
+      175
+     ],
+     "sheet": [
+      548,
+      1348
+     ]
+    },
+    {
+     "dir": 3,
+     "cell": [
+      329,
+      270
+     ],
+     "pivot": [
+      135,
+      172
+     ],
+     "sheet": [
+      1316,
+      1080
+     ]
+    },
+    {
+     "dir": 4,
+     "cell": [
+      337,
+      187
+     ],
+     "pivot": [
+      148,
+      124
+     ],
+     "sheet": [
+      1348,
+      748
+     ]
+    },
+    {
+     "dir": 5,
+     "cell": [
+      272,
+      284
+     ],
+     "pivot": [
+      136,
+      172
+     ],
+     "sheet": [
+      1088,
+      1136
+     ]
+    },
+    {
+     "dir": 6,
+     "cell": [
+      137,
+      300
+     ],
+     "pivot": [
+      88,
+      173
+     ],
+     "sheet": [
+      548,
+      1200
+     ]
+    },
+    {
+     "dir": 7,
+     "cell": [
+      329,
+      282
+     ],
+     "pivot": [
+      193,
+      155
+     ],
+     "sheet": [
+      1316,
+      1128
+     ]
+    }
+   ]
+  },
+  "plasticFloat": {
+   "moving": true,
+   "frames": 16,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      337,
+      225
+     ],
+     "pivot": [
+      188,
+      126
+     ],
+     "sheet": [
+      1348,
+      900
+     ]
+    },
+    {
+     "dir": 1,
+     "cell": [
+      272,
+      335
+     ],
+     "pivot": [
+      135,
+      168
+     ],
+     "sheet": [
+      1088,
+      1340
+     ]
+    },
+    {
+     "dir": 2,
+     "cell": [
+      140,
+      335
+     ],
+     "pivot": [
+      51,
+      173
+     ],
+     "sheet": [
+      560,
+      1340
+     ]
+    },
+    {
+     "dir": 3,
+     "cell": [
+      329,
+      272
+     ],
+     "pivot": [
+      135,
+      172
+     ],
+     "sheet": [
+      1316,
+      1088
+     ]
+    },
+    {
+     "dir": 4,
+     "cell": [
+      337,
+      189
+     ],
+     "pivot": [
+      148,
+      125
+     ],
+     "sheet": [
+      1348,
+      756
+     ]
+    },
+    {
+     "dir": 5,
+     "cell": [
+      272,
+      286
+     ],
+     "pivot": [
+      137,
+      172
+     ],
+     "sheet": [
+      1088,
+      1144
+     ]
+    },
+    {
+     "dir": 6,
+     "cell": [
+      140,
+      300
+     ],
+     "pivot": [
+      89,
+      173
+     ],
+     "sheet": [
+      560,
+      1200
+     ]
+    },
+    {
+     "dir": 7,
+     "cell": [
+      329,
+      280
+     ],
+     "pivot": [
+      194,
+      153
+     ],
+     "sheet": [
+      1316,
+      1120
+     ]
+    }
+   ]
+  },
+  "concreteFloat": {
+   "moving": true,
+   "frames": 16,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      433,
+      239
+     ],
+     "pivot": [
+      236,
+      135
+     ],
+     "sheet": [
+      1732,
+      956
+     ]
+    },
+    {
+     "dir": 1,
+     "cell": [
+      355,
+      390
+     ],
+     "pivot": [
+      177,
+      198
+     ],
+     "sheet": [
+      1420,
+      1560
+     ]
+    },
+    {
+     "dir": 2,
+     "cell": [
+      156,
+      400
+     ],
+     "pivot": [
+      59,
+      207
+     ],
+     "sheet": [
+      624,
+      1600
+     ]
+    },
+    {
+     "dir": 3,
+     "cell": [
+      412,
+      334
+     ],
+     "pivot": [
+      177,
+      198
+     ],
+     "sheet": [
+      1648,
+      1336
+     ]
+    },
+    {
+     "dir": 4,
+     "cell": [
+      433,
+      199
+     ],
+     "pivot": [
+      196,
+      130
+     ],
+     "sheet": [
+      1732,
+      796
+     ]
+    },
+    {
+     "dir": 5,
+     "cell": [
+      355,
+      336
+     ],
+     "pivot": [
+      177,
+      198
+     ],
+     "sheet": [
+      1420,
+      1344
+     ]
+    },
+    {
+     "dir": 6,
+     "cell": [
+      156,
+      362
+     ],
+     "pivot": [
+      97,
+      204
+     ],
+     "sheet": [
+      624,
+      1448
+     ]
+    },
+    {
+     "dir": 7,
+     "cell": [
+      412,
+      332
+     ],
+     "pivot": [
+      234,
+      180
+     ],
+     "sheet": [
+      1648,
+      1328
+     ]
+    }
+   ]
+  },
+  "drumFloat": {
+   "moving": true,
+   "frames": 16,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      241,
+      219
+     ],
+     "pivot": [
+      140,
+      121
+     ],
+     "sheet": [
+      964,
+      876
+     ]
+    },
+    {
+     "dir": 1,
+     "cell": [
+      204,
+      293
+     ],
+     "pivot": [
+      101,
+      149
+     ],
+     "sheet": [
+      816,
+      1172
+     ]
+    },
+    {
+     "dir": 2,
+     "cell": [
+      137,
+      275
+     ],
+     "pivot": [
+      49,
+      144
+     ],
+     "sheet": [
+      548,
+      1100
+     ]
+    },
+    {
+     "dir": 3,
+     "cell": [
+      261,
+      227
+     ],
+     "pivot": [
+      101,
+      150
+     ],
+     "sheet": [
+      1044,
+      908
+     ]
+    },
+    {
+     "dir": 4,
+     "cell": [
+      241,
+      187
+     ],
+     "pivot": [
+      100,
+      124
+     ],
+     "sheet": [
+      964,
+      748
+     ]
+    },
+    {
+     "dir": 5,
+     "cell": [
+      204,
+      240
+     ],
+     "pivot": [
+      102,
+      150
+     ],
+     "sheet": [
+      816,
+      960
+     ]
+    },
+    {
+     "dir": 6,
+     "cell": [
+      137,
+      239
+     ],
+     "pivot": [
+      88,
+      142
+     ],
+     "sheet": [
+      548,
+      956
+     ]
+    },
+    {
+     "dir": 7,
+     "cell": [
+      261,
+      234
+     ],
+     "pivot": [
+      159,
+      129
+     ],
+     "sheet": [
+      1044,
+      936
+     ]
+    }
+   ]
+  },
+  "finger": {
+   "moving": true,
+   "frames": 16,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      221,
+      140
+     ],
+     "pivot": [
+      100,
+      92
+     ],
+     "sheet": [
+      884,
+      560
+     ]
+    },
+    {
+     "dir": 1,
+     "cell": [
+      177,
+      209
+     ],
+     "pivot": [
+      87,
+      141
+     ],
+     "sheet": [
+      708,
+      836
+     ]
+    },
+    {
+     "dir": 2,
+     "cell": [
+      52,
+      242
+     ],
+     "pivot": [
+      26,
+      161
+     ],
+     "sheet": [
+      208,
+      968
+     ]
+    },
+    {
+     "dir": 3,
+     "cell": [
+      177,
+      209
+     ],
+     "pivot": [
+      89,
+      141
+     ],
+     "sheet": [
+      708,
+      836
+     ]
+    },
+    {
+     "dir": 4,
+     "cell": [
+      221,
+      140
+     ],
+     "pivot": [
+      120,
+      92
+     ],
+     "sheet": [
+      884,
+      560
+     ]
+    },
+    {
+     "dir": 5,
+     "cell": [
+      177,
+      215
+     ],
+     "pivot": [
+      89,
+      119
+     ],
+     "sheet": [
+      708,
+      860
+     ]
+    },
+    {
+     "dir": 6,
+     "cell": [
+      52,
+      245
+     ],
+     "pivot": [
+      26,
+      129
+     ],
+     "sheet": [
+      208,
+      980
+     ]
+    },
+    {
+     "dir": 7,
+     "cell": [
+      177,
+      215
+     ],
+     "pivot": [
+      87,
+      119
+     ],
+     "sheet": [
+      708,
+      860
+     ]
+    }
+   ]
+  },
+  "gangway": {
+   "moving": true,
+   "frames": 16,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      283,
+      102
+     ],
+     "pivot": [
+      140,
+      111
+     ],
+     "sheet": [
+      1132,
+      408
+     ]
+    },
+    {
+     "dir": 1,
+     "cell": [
+      230,
+      143
+     ],
+     "pivot": [
+      114,
+      130
+     ],
+     "sheet": [
+      920,
+      572
+     ]
+    },
+    {
+     "dir": 2,
+     "cell": [
+      50,
+      173
+     ],
+     "pivot": [
+      25,
+      145
+     ],
+     "sheet": [
+      200,
+      692
+     ]
+    },
+    {
+     "dir": 3,
+     "cell": [
+      230,
+      143
+     ],
+     "pivot": [
+      115,
+      130
+     ],
+     "sheet": [
+      920,
+      572
+     ]
+    },
+    {
+     "dir": 4,
+     "cell": [
+      283,
+      102
+     ],
+     "pivot": [
+      143,
+      111
+     ],
+     "sheet": [
+      1132,
+      408
+     ]
+    },
+    {
+     "dir": 5,
+     "cell": [
+      230,
+      209
+     ],
+     "pivot": [
+      115,
+      165
+     ],
+     "sheet": [
+      920,
+      836
+     ]
+    },
+    {
+     "dir": 6,
+     "cell": [
+      50,
+      239
+     ],
+     "pivot": [
+      25,
+      180
+     ],
+     "sheet": [
+      200,
+      956
+     ]
+    },
+    {
+     "dir": 7,
+     "cell": [
+      230,
+      209
+     ],
+     "pivot": [
+      114,
+      165
+     ],
+     "sheet": [
+      920,
+      836
+     ]
+    }
+   ]
+  },
+  "slipway": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      338,
+      174
+     ],
+     "pivot": [
+      173,
+      101
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      324,
+      178
+     ],
+     "pivot": [
+      165,
+      89
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      125,
+      187
+     ],
+     "pivot": [
+      62,
+      93
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      324,
+      178
+     ],
+     "pivot": [
+      158,
+      89
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      338,
+      174
+     ],
+     "pivot": [
+      164,
+      101
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      324,
+      299
+     ],
+     "pivot": [
+      158,
+      164
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      125,
+      308
+     ],
+     "pivot": [
+      62,
+      169
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      324,
+      299
+     ],
+     "pivot": [
+      165,
+      164
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "graniteEdge": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      419,
+      53
+     ],
+     "pivot": [
+      211,
+      39
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      379,
+      233
+     ],
+     "pivot": [
+      185,
+      128
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      165,
+      351
+     ],
+     "pivot": [
+      81,
+      183
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      378,
+      339
+     ],
+     "pivot": [
+      184,
+      180
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      419,
+      206
+     ],
+     "pivot": [
+      207,
+      116
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      379,
+      339
+     ],
+     "pivot": [
+      193,
+      180
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      165,
+      350
+     ],
+     "pivot": [
+      83,
+      182
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      378,
+      232
+     ],
+     "pivot": [
+      193,
+      127
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "redEdge": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      419,
+      53
+     ],
+     "pivot": [
+      211,
+      39
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      379,
+      233
+     ],
+     "pivot": [
+      185,
+      128
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      165,
+      351
+     ],
+     "pivot": [
+      81,
+      183
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      378,
+      339
+     ],
+     "pivot": [
+      184,
+      180
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      419,
+      206
+     ],
+     "pivot": [
+      207,
+      116
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      379,
+      339
+     ],
+     "pivot": [
+      193,
+      180
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      165,
+      350
+     ],
+     "pivot": [
+      83,
+      182
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      378,
+      232
+     ],
+     "pivot": [
+      193,
+      127
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "breakwater": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      606,
+      188
+     ],
+     "pivot": [
+      304,
+      84
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      557,
+      404
+     ],
+     "pivot": [
+      273,
+      195
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      227,
+      462
+     ],
+     "pivot": [
+      112,
+      240
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      549,
+      398
+     ],
+     "pivot": [
+      273,
+      189
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      606,
+      185
+     ],
+     "pivot": [
+      302,
+      82
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      557,
+      399
+     ],
+     "pivot": [
+      284,
+      190
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      227,
+      467
+     ],
+     "pivot": [
+      115,
+      243
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      549,
+      403
+     ],
+     "pivot": [
+      276,
+      191
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "sheetCell": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      514,
+      220
+     ],
+     "pivot": [
+      258,
+      124
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      462,
+      384
+     ],
+     "pivot": [
+      231,
+      195
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      201,
+      420
+     ],
+     "pivot": [
+      99,
+      222
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      468,
+      391
+     ],
+     "pivot": [
+      231,
+      201
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      514,
+      212
+     ],
+     "pivot": [
+      256,
+      117
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      462,
+      392
+     ],
+     "pivot": [
+      231,
+      202
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      201,
+      420
+     ],
+     "pivot": [
+      102,
+      221
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      468,
+      391
+     ],
+     "pivot": [
+      237,
+      202
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "timberDolphin": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      51,
+      170
+     ],
+     "pivot": [
+      25,
+      111
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      50,
+      166
+     ],
+     "pivot": [
+      27,
+      111
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      47,
+      168
+     ],
+     "pivot": [
+      19,
+      111
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      50,
+      169
+     ],
+     "pivot": [
+      27,
+      111
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      51,
+      164
+     ],
+     "pivot": [
+      25,
+      111
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      50,
+      169
+     ],
+     "pivot": [
+      23,
+      111
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      47,
+      168
+     ],
+     "pivot": [
+      28,
+      111
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      50,
+      166
+     ],
+     "pivot": [
+      23,
+      111
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "breastingDolphin": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      169,
+      242
+     ],
+     "pivot": [
+      84,
+      149
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      240,
+      279
+     ],
+     "pivot": [
+      122,
+      169
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      192,
+      242
+     ],
+     "pivot": [
+      107,
+      149
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      240,
+      279
+     ],
+     "pivot": [
+      122,
+      169
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      170,
+      242
+     ],
+     "pivot": [
+      85,
+      149
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      240,
+      279
+     ],
+     "pivot": [
+      118,
+      169
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      192,
+      242
+     ],
+     "pivot": [
+      85,
+      149
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      240,
+      279
+     ],
+     "pivot": [
+      118,
+      169
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "mooringDolphin": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      125,
+      212
+     ],
+     "pivot": [
+      62,
+      135
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      172,
+      237
+     ],
+     "pivot": [
+      86,
+      149
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      125,
+      212
+     ],
+     "pivot": [
+      63,
+      135
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      172,
+      237
+     ],
+     "pivot": [
+      86,
+      149
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      125,
+      212
+     ],
+     "pivot": [
+      62,
+      135
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      172,
+      237
+     ],
+     "pivot": [
+      86,
+      149
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      125,
+      212
+     ],
+     "pivot": [
+      62,
+      135
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      172,
+      237
+     ],
+     "pivot": [
+      86,
+      149
+     ],
+     "sheet": null
+    }
+   ]
+  },
+  "catwalk": {
+   "moving": false,
+   "frames": 1,
+   "dirs": [
+    {
+     "dir": 0,
+     "cell": [
+      459,
+      83
+     ],
+     "pivot": [
+      229,
+      111
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 1,
+     "cell": [
+      355,
+      279
+     ],
+     "pivot": [
+      177,
+      209
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 2,
+     "cell": [
+      51,
+      346
+     ],
+     "pivot": [
+      25,
+      242
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 3,
+     "cell": [
+      355,
+      279
+     ],
+     "pivot": [
+      177,
+      209
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 4,
+     "cell": [
+      459,
+      83
+     ],
+     "pivot": [
+      229,
+      111
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 5,
+     "cell": [
+      355,
+      279
+     ],
+     "pivot": [
+      177,
+      209
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 6,
+     "cell": [
+      51,
+      346
+     ],
+     "pivot": [
+      25,
+      242
+     ],
+     "sheet": null
+    },
+    {
+     "dir": 7,
+     "cell": [
+      355,
+      279
+     ],
+     "pivot": [
+      177,
+      209
+     ],
+     "sheet": null
+    }
+   ]
+  }
+ }
+}

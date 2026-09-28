@@ -1,5 +1,10 @@
 # `hiddenharbours.scene/1` — the contract
 
+> **RETIRED 2026-09-27.** The scene exporter that implements this contract is retired on the owner's
+> word, "Retired until needed further": its committed packages and its CI job are gone, and its code
+> and tests stay parked in `tools/scene-export/`. The format stays documented here for a revival; the
+> steps to revive it are under "To revive" in [`tools/scene-export/README.md`](../../tools/scene-export/README.md).
+
 **What this is.** The scene editor's package format. It began as a reconstruction from
 [`scene-editor-review.md`](scene-editor-review.md) (#571, corrected by #576) with seventeen
 fields the review named but never specified; **lead-architect settled all seventeen on PR #588**
@@ -559,6 +564,10 @@ than shipping an empty layer that reads as an oversight.
 The R8 height texture is a Git LFS object. On a pointer-only checkout the ground layer stays
 unpainted with `x-unavailable` naming the reason; on a checkout with the bytes, the exporter
 decodes the PNG and bands each cell by the shore map's **declared floor elevations**.
+⚠ Since terrain pass 9 PR 4 ([ADR 0046](../adr/0046-still-water-above-the-tide.md) §8) the paint
+tool writes the map at **16 bits**, and the first stroke widens a committed 8-bit map. `decode_r8`
+refuses a 16-bit PNG the same way, with the reason "the height texture did not decode as an 8-bit
+greyscale PNG", until the exporter decodes 16 bits.
 
 ⚠ **That contour is not the ground Unity paints, and the package says so in
 `layers.ground.x-derived`.** `ShoreMaterialAt` also wiggles the elevation so the rings meander,

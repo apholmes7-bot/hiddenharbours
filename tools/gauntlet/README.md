@@ -29,12 +29,12 @@ removed test names **after** you have read each one in the diff.
 | # | Check | Law it encodes |
 |---|---|---|
 | G1 | open · base is `main` · `mergeable` | a stacked PR does not re-target itself; a CONFLICTING PR fires no `pull_request` event |
-| G2 | a `pull_request` run exists on the **exact head sha**, completed, success; both jobs pass | zero runs on a sha = check `mergeable`, not CI; `gh pr view` CLEAN is not "its tests pass" |
+| G2 | a `pull_request` run exists on the **exact head sha**, completed; its `EditMode + PlayMode tests` job passes, and so does every other job and check, bar a `Scene export (python)` one from a run made before the exporter's retirement (a NOTE) | zero runs on a sha = check `mergeable`, not CI; `gh pr view` CLEAN is not "its tests pass" |
 | G3 | the run's own results: total > 0, 0 failed, skip count unchanged | `total=0` is a FALSE GREEN; a new skip can hide a test |
 | G4 | per-class count delta vs the stamped base; only the PR's **own** classes (declared in its test files, read at the head sha) may move | authenticate every PR by class; PR CI runs the MERGE ref (main drift shows positive), a run older than the stamp shows later merges negative (age, not damage) |
 | G5 | test **name** sets inside every moved class | a renamed test reads as a deletion in the class diff |
 | G6 | conflict markers in added lines · Library/Temp/csproj/sln · boat Def assets touched · ProjectSettings · binaries not under LFS · metas without assets | `resolver && git add && rebase --continue` commits markers; Unity runs rewrite boat assets; LFS discipline |
-| G7 | scene / builder / prefab touched → export packages regenerated in the same PR (CI's scene-export `--check` is the arbiter) | a PR that touches a SCENE or BUILDER re-runs the exporter; St Peters cannot be rebuilt |
+| G7 | scene / builder / prefab files touched are listed, and `StPeters.unity` is warned; a package the PR adds or changes under `tools/scene-export/packages/` is warned (the scene exporter was retired on 2026-09-27) | St Peters cannot be rebuilt |
 | G8 | lint of **added** lines: `GetInstanceID` (FAIL, obsolete-as-error on 6.5); in tests `Clear<`, `Register`, `LoadSceneMode.Single`, `StartNewGame`, `AddComponent` of a `[RequireComponent]`-added type, hard-coded clocks, savegame writes; in code unseeded randomness, float literals, cross-module `using`s | the fixture laws: a fixture consumes registration and never performs it; a duplicate component makes every negative assertion vacuous; rules 4, 5 and 6 |
 
 ## What it does not do

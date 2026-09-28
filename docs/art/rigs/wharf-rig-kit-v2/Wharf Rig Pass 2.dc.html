@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1418;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#d9a27a;text-decoration:none;}
+  a:hover{color:#f0c9a6;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;background:#243b3d;border-radius:2px;outline:none;margin:0;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:16px;background:#c9d6cc;border:1px solid #0b1418;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:16px;background:#c9d6cc;border:1px solid #0b1418;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1418;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aab6b4;padding:30px 20px 64px;display:flex;flex-direction:column;align-items:center;gap:20px;">
+
+  <div style="width:100%;max-width:1080px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #21322f;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3ee;letter-spacing:0.5px;line-height:1;">Wharves, Piers &amp; Floats &middot; Pass 2</div>
+      <div style="font-size:10.5px;letter-spacing:0.15em;color:#6b807c;line-height:1.7;">THE TREES&rsquo; PARAMETERS &middot; THE CLIFFS&rsquo; LIGHT &middot; FLOATS ON THE WATER SHADER &middot; SNOW &middot; BERTHS FOR THE FLEET &middot; MODULES THAT JOIN &middot; CHARACTER v9.2 FIXTURES</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#d9a27a;max-width:470px;text-align:right;line-height:1.45;text-wrap:pretty;">The wharf kit was the last structure still lit once from a fixed key. Here every module is a G-buffer lit by the same sky as the trees and the cliffs, the floats ride the same sea as the water shader, and every ladder, cleat and table is built to a number the v9.2 figures can use.</div>
+  </div>
+
+  <div style="width:100%;max-width:1080px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+    <div style="font-size:10px;letter-spacing:0.14em;color:#6b807c;margin-right:6px;width:64px;">WEATHER</div>
+    <sc-for list="{{ presets }}" as="p" hint-placeholder-count="11">
+      <div onClick="{{ p.onClick }}" style="padding:6px 10px;font-size:10.5px;letter-spacing:0.05em;cursor:pointer;user-select:none;border:1px solid #26413c;color:{{ p.fg }};background:{{ p.bg }};">{{ p.label }}</div>
+    </sc-for>
+  </div>
+
+  <div style="width:100%;max-width:1080px;display:flex;flex-direction:column;gap:8px;">
+    <div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;">
+      <div style="font-size:10px;letter-spacing:0.14em;color:#6b807c;margin-right:6px;width:64px;">SCENE</div>
+      <sc-for list="{{ sceneBtns }}" as="m" hint-placeholder-count="20">
+        <div onClick="{{ m.onClick }}" style="padding:6px 9px;font-size:10px;letter-spacing:0.05em;cursor:pointer;user-select:none;border:1px solid {{ m.bd }};color:{{ m.fg }};background:{{ m.bg }};">{{ m.label }}</div>
+      </sc-for>
+    </div>
+    <div style="font-size:11px;line-height:1.55;color:#8ba39d;max-width:100ch;padding-left:76px;text-wrap:pretty;">{{ sceneNote }}</div>
+  </div>
+
+  <div style="width:100%;max-width:1080px;display:flex;flex-direction:column;gap:10px;">
+    <div style="position:relative;border:1px solid #21322f;background:#0d1a1c;overflow:auto;max-height:900px;">
+      <div style="position:relative;width:fit-content;">
+        <canvas ref="{{ heroRef }}" width="640" height="420" style="width:640px;height:420px;"></canvas>
+        <canvas ref="{{ ovRef }}" width="640" height="420" style="position:absolute;left:0;top:0;width:640px;height:420px;pointer-events:none;"></canvas>
+      </div>
+      <div style="position:absolute;left:12px;top:10px;display:flex;flex-direction:column;gap:2px;pointer-events:none;">
+        <div style="font-family:'IM Fell English SC',serif;font-size:21px;color:#f3efe6;text-shadow:0 1px 0 #0b1418,0 0 6px rgba(11,20,24,0.7);">{{ clock }}</div>
+        <div style="font-size:10px;letter-spacing:0.12em;color:#f3efe6;text-shadow:0 1px 0 #0b1418,0 0 6px rgba(11,20,24,0.7);">{{ skyName }}</div>
+      </div>
+      <div style="position:absolute;right:12px;top:12px;font-size:10px;letter-spacing:0.1em;color:#f3efe6;text-shadow:0 1px 0 #0b1418,0 0 6px rgba(11,20,24,0.7);pointer-events:none;">{{ frameTag }}</div>
+      <div style="position:absolute;left:12px;bottom:10px;max-width:640px;font-size:10px;line-height:1.5;color:#e7ece7;background:rgba(11,20,24,0.8);padding:6px 9px;pointer-events:none;text-wrap:pretty;">{{ channelNote }}</div>
+      <sc-if value="{{ busy }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;"><div style="font-size:11px;letter-spacing:0.14em;color:#cfd6cc;background:rgba(11,20,24,0.82);padding:9px 14px;border:1px solid #26413c;">{{ status }}</div></div>
+      </sc-if>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <div style="display:flex;border:1px solid #26413c;flex-wrap:wrap;">
+        <sc-for list="{{ channelBtns }}" as="m" hint-placeholder-count="9">
+          <div onClick="{{ m.onClick }}" style="padding:7px 9px;font-size:10px;letter-spacing:0.07em;cursor:pointer;user-select:none;color:{{ m.fg }};background:{{ m.bg }};border-left:{{ m.border }};">{{ m.label }}</div>
+        </sc-for>
+      </div>
+      <div style="display:flex;border:1px solid #26413c;">
+        <sc-for list="{{ zoomBtns }}" as="m" hint-placeholder-count="3">
+          <div onClick="{{ m.onClick }}" style="padding:7px 11px;font-size:10.5px;letter-spacing:0.08em;cursor:pointer;user-select:none;color:{{ m.fg }};background:{{ m.bg }};border-left:{{ m.border }};">{{ m.label }}</div>
+        </sc-for>
+      </div>
+      <sc-for list="{{ toggles }}" as="t" hint-placeholder-count="4">
+        <div onClick="{{ t.onClick }}" style="padding:7px 12px;font-size:10.5px;letter-spacing:0.09em;cursor:pointer;user-select:none;background:{{ t.bg }};border:1px solid #26413c;color:{{ t.fg }};">{{ t.label }}</div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1080px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;">
+    <div style="flex:1;min-width:min(420px,100%);display:flex;flex-direction:column;gap:14px;">
+      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7ece7;letter-spacing:0.05em;">Sky, weather, tide &amp; age</div><div style="font-size:10px;color:#6b807c;">WeatherSky.at and the trees&rsquo; parameters</div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px 20px;border:1px solid #21322f;background:#0e1a1b;padding:14px 14px 16px;">
+        <sc-for list="{{ sliders }}" as="sl" hint-placeholder-count="8">
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.12em;color:#6b807c;"><span>{{ sl.label }}</span><span style="color:#cfd6cc;">{{ sl.text }}</span></div>
+            <input type="range" min="{{ sl.min }}" max="{{ sl.max }}" step="{{ sl.step }}" value="{{ sl.value }}" onInput="{{ sl.onInput }}" />
+          </div>
+        </sc-for>
+      </div>
+      <sc-for list="{{ segRows }}" as="row" hint-placeholder-count="3">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:9.5px;letter-spacing:0.14em;color:#6b807c;width:64px;flex:none;">{{ row.label }}</div>
+          <div style="flex:1;display:flex;border:1px solid #26413c;">
+            <sc-for list="{{ row.btns }}" as="m" hint-placeholder-count="4">
+              <div onClick="{{ m.onClick }}" style="flex:1;text-align:center;padding:7px 6px;font-size:10px;letter-spacing:0.07em;cursor:pointer;user-select:none;color:{{ m.fg }};background:{{ m.bg }};border-left:{{ m.border }};">{{ m.label }}</div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#8fd6a0;"></div><div style="font-size:13px;color:#e7ece7;letter-spacing:0.05em;">Readout</div></div>
+      <div style="border:1px solid #21322f;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ infoRows }}" as="row" hint-placeholder-count="8">
+          <div style="padding:6px 11px;color:#6b807c;letter-spacing:0.07em;border-top:{{ row.border }};background:#0e1a1b;">{{ row.k }}</div>
+          <div style="padding:6px 11px;color:#cfd6cc;border-top:{{ row.border }};border-left:1px solid #21322f;">{{ row.v }}</div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div onClick="{{ dlFrame }}" style="flex:1;min-width:170px;font-size:10.5px;letter-spacing:0.07em;padding:9px 8px;border:1px solid #2f7959;background:#11241d;color:#8fd6a0;text-align:center;cursor:pointer;">&darr;&nbsp; this frame, lit by this sky</div>
+        <div onClick="{{ dlGameplay }}" style="flex:1;min-width:170px;font-size:10.5px;letter-spacing:0.07em;padding:9px 8px;border:1px solid #6a4f2c;background:#1d1710;color:#d9b47c;text-align:center;cursor:pointer;">&darr;&nbsp; gameplay sidecar, this tide</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <sc-for list="{{ files }}" as="f" hint-placeholder-count="6">
+          <a href="{{ f.href }}" download="{{ f.name }}" style="flex:1;min-width:120px;font-size:10px;letter-spacing:0.06em;padding:8px 6px;border:1px solid #35504c;background:#101d1e;color:#9db4ae;text-align:center;">&darr; {{ f.name }}</a>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="width:400px;flex:none;max-width:100%;display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;"><div style="width:8px;height:8px;background:#7fc7d9;"></div><div style="font-size:13px;color:#e7ece7;letter-spacing:0.05em;">Character v9.2 at the wharf</div><div style="font-size:10px;color:#6b807c;">every creator body, 375</div></div>
+      <div style="font-size:10.5px;line-height:1.6;color:#8ba39d;text-wrap:pretty;">Each fixture is built to a height at which every creator body makes every limb target of its clip to within 5 mm (the v9.2 kit&rsquo;s world fit), and publishes its verb: where to stand, which way to face, the clips in order, their opts.</div>
+      <div style="border:1px solid #21322f;display:grid;grid-template-columns:1fr auto auto auto;font-size:10px;line-height:1.45;">
+        <sc-for list="{{ fitRows }}" as="r" hint-placeholder-count="12">
+          <div style="padding:5px 8px;color:#cfd6cc;border-top:{{ r.border }};background:#0e1a1b;">{{ r.what }}</div>
+          <div style="padding:5px 8px;color:#e7ece7;border-top:{{ r.border }};border-left:1px solid #21322f;text-align:right;">{{ r.value }}</div>
+          <div style="padding:5px 8px;color:#6b807c;border-top:{{ r.border }};border-left:1px solid #21322f;">{{ r.range }}</div>
+          <div style="padding:5px 8px;color:{{ r.okc }};border-top:{{ r.border }};border-left:1px solid #21322f;">{{ r.ok }}</div>
+        </sc-for>
+      </div>
+      <div style="font-size:9.5px;letter-spacing:0.14em;color:#6b807c;">VERBS IN THIS SCENE &middot; {{ verbTotal }}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;">
+        <sc-for list="{{ verbChips }}" as="v" hint-placeholder-count="12">
+          <div onClick="{{ v.onClick }}" style="padding:4px 7px;border:1px solid {{ v.bd }};background:{{ v.bg }};font-size:10px;color:{{ v.fg }};cursor:pointer;">{{ v.label }}</div>
+        </sc-for>
+      </div>
+      <div style="border:1px solid #21322f;background:#0e1a1b;padding:9px 11px;display:flex;flex-direction:column;gap:5px;">
+        <div style="font-size:11px;color:#e7ece7;">{{ verbTitle }}</div>
+        <sc-for list="{{ verbSteps }}" as="st" hint-placeholder-count="3">
+          <div style="display:flex;gap:8px;font-size:10px;line-height:1.5;"><span style="color:#7fc7d9;flex:none;width:14px;">{{ st.n }}</span><span style="color:#aab6b4;text-wrap:pretty;">{{ st.t }}</span></div>
+        </sc-for>
+      </div>
+      <div style="font-size:9.5px;letter-spacing:0.14em;color:#6b807c;">ASKED OF THE CHARACTER RIG</div>
+      <sc-for list="{{ requests }}" as="q" hint-placeholder-count="5">
+        <div style="font-size:10px;line-height:1.55;color:#8ba39d;text-wrap:pretty;"><span style="color:#d9b47c;">{{ q.clip }}</span> &mdash; {{ q.why }}. <span style="color:#6b807c;">Until then: {{ q.now }}</span></div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1080px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #21322f;padding-top:18px;">
+    <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;"><div style="width:8px;height:8px;background:#d9a27a;"></div><div style="font-size:13px;color:#e7ece7;letter-spacing:0.05em;">Berths for the whole fleet</div><div style="font-size:10px;color:#6b807c;">plan view to scale &middot; the dashed box is the slot, hull plus end clearances &middot; best mix first, then the biggest hull</div></div>
+    <div style="border:1px solid #21322f;background:#0d1a1c;overflow-x:auto;">
+      <canvas ref="{{ berthRef }}" width="1060" height="420" style="width:1060px;height:420px;"></canvas>
+    </div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;">
+      <sc-for list="{{ classKeys }}" as="c" hint-placeholder-count="5">
+        <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:#8ba39d;"><div style="width:10px;height:10px;background:{{ c.col }};"></div><span style="color:#cfd6cc;">{{ c.k }}</span> {{ c.t }}</div>
+      </sc-for>
+    </div>
+    <div style="border:1px solid #21322f;display:grid;grid-template-columns:minmax(160px,1.4fr) auto repeat(3,auto) minmax(140px,1fr) minmax(120px,1fr);font-size:10px;line-height:1.45;overflow-x:auto;">
+      <sc-for list="{{ fleetRows }}" as="r" hint-placeholder-count="23">
+        <div style="padding:4px 8px;color:{{ r.fg }};border-top:{{ r.border }};background:#0e1a1b;">{{ r.label }}</div>
+        <div style="padding:4px 8px;color:{{ r.cc }};border-top:{{ r.border }};border-left:1px solid #21322f;">{{ r.cls }}</div>
+        <div style="padding:4px 8px;color:#cfd6cc;border-top:{{ r.border }};border-left:1px solid #21322f;text-align:right;">{{ r.loa }}</div>
+        <div style="padding:4px 8px;color:#cfd6cc;border-top:{{ r.border }};border-left:1px solid #21322f;text-align:right;">{{ r.slot }}</div>
+        <div style="padding:4px 8px;color:#cfd6cc;border-top:{{ r.border }};border-left:1px solid #21322f;text-align:right;">{{ r.need }}</div>
+        <div style="padding:4px 8px;color:#aab6b4;border-top:{{ r.border }};border-left:1px solid #21322f;">{{ r.at }}</div>
+        <div style="padding:4px 8px;color:#8ba39d;border-top:{{ r.border }};border-left:1px solid #21322f;">{{ r.moor }}</div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1080px;display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:26px;border-top:1px solid #21322f;padding-top:18px;">
+    <div style="display:flex;flex-direction:column;gap:11px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7ece7;letter-spacing:0.05em;">What was weak, and what changed</div></div>
+      <sc-for list="{{ findings }}" as="f" hint-placeholder-count="10">
+        <div style="display:flex;gap:10px;font-size:11px;line-height:1.55;color:#8ba39d;"><span style="color:#c9a86a;flex:none;width:14px;">{{ f.k }}</span><span style="text-wrap:pretty;"><span style="color:#e7ece7;">{{ f.t }}</span> {{ f.d }}</span></div>
+      </sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:11px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#8fd6a0;"></div><div style="font-size:13px;color:#e7ece7;letter-spacing:0.05em;">Engine contract</div></div>
+      <div style="border:1px solid #21322f;display:grid;grid-template-columns:auto 1fr;font-size:10.5px;line-height:1.5;">
+        <sc-for list="{{ contract }}" as="c" hint-placeholder-count="9">
+          <div style="padding:6px 10px;color:#d9b47c;background:#0e1a1b;border-top:{{ c.border }};">{{ c.k }}</div><div style="padding:6px 10px;color:#aab6b4;border-left:1px solid #21322f;border-top:{{ c.border }};">{{ c.v }}</div>
+        </sc-for>
+      </div>
+      <div style="font-size:11px;line-height:1.6;color:#7d6b5e;text-wrap:pretty;"><span style="color:#a08a6e;">Still open.</span> {{ stillOpen }}</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScene&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;harbour:fishing&quot;,&quot;options&quot;:[&quot;harbour:fishing&quot;,&quot;harbour:cove&quot;,&quot;tallPier&quot;,&quot;timberFloat&quot;,&quot;logCrib&quot;,&quot;torbayQuay&quot;,&quot;plasticFloat&quot;,&quot;breakwater&quot;,&quot;breastingDolphin&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Scene&quot;,&quot;description&quot;:&quot;Scene the page opens on&quot;},&quot;startPreset&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;afternoon&quot;,&quot;options&quot;:[&quot;afternoon&quot;,&quot;dawn&quot;,&quot;morning&quot;,&quot;golden&quot;,&quot;overcast&quot;,&quot;squall&quot;,&quot;fog&quot;,&quot;snow&quot;,&quot;dusk&quot;,&quot;night&quot;,&quot;gale&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Weather&quot;,&quot;description&quot;:&quot;Weather the page opens in&quot;},&quot;fps&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:8,&quot;min&quot;:4,&quot;max&quot;:12,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Playback&quot;,&quot;description&quot;:&quot;Loop playback rate&quot;},&quot;figures&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Playback&quot;,&quot;description&quot;:&quot;v9.2 figures working the fixtures&quot;}}">
+class Component extends DCLogic {
+  state = {
+    time: 16.5, cloud: 0.1, rain: 0, fog: 0, snow: 0, wind: 0.3, gust: 0.4, dir: 1, tideF: 0.55, preset: 'afternoon',
+    season: 'summer', stage: 'weathered', variant: 0, scene: 'harbour:fishing', camDir: 1, ch: 'lit', zoom: 1, play: true,
+    figures: true, overlay: false, busy: true, status: 'LOADING THE RIGS\u2026', info: null, verb: null, loop: 0, gpTick: 0,
+  };
+  heroRef = React.createRef(); ovRef = React.createRef(); berthRef = React.createRef();
+  fi = 0; t0 = 0;
+  componentDidMount() {
+    const D = '', C9 = 'lib/';
+    const files = [D + 'lib/pixelLanguage.js', D + 'lib/pxKit.js', D + 'lib/pxKit2.js', D + 'lib/weatherSky.js', D + 'lib/terrainLight4.js', D + 'lib/pxKit8.js', 'lib/terrainLight5.js', 'lib/terrainLight6.js',
+      'wharfRig2.geo.js', 'wharfRig2.fam.js', 'wharfRig2.verbs.js', 'wharfRig2.js', 'wharfRig2.kit.js', 'wharfStage2.js', 'wharfPlates2.js', C9 + 'characterIsoRig9.js', C9 + 'characterIsoRig9.poses.js'];
+    const ok = () => window.WharfStage2 && window.WharfPlates2 && window.WharfRig2Kit && window.WeatherSky && window.TerrainLight6 && window.PxKit8 && window.CharacterIso9 && window.CharacterIso9.posesLoaded;
+    const load = (src) => new Promise((res) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => { this.loadErr = src; res(); }; document.head.appendChild(s); });
+    (async () => { if (!ok()) for (const f of files) { if (this.dead) return; await load(f); } if (!this.dead) this._bt = setTimeout(() => this.boot(), 20); })();
+  }
+  componentWillUnmount() { this.dead = true; clearInterval(this._iv); [this._bt, this._lt, this._ft, this._bp].forEach(clearTimeout); }
+  boot() {
+    if (!window.WharfStage2 || !window.WharfRig2Kit) { this.setState({ status: 'A RIG DID NOT LOAD' + (this.loadErr ? ' \u00b7 ' + this.loadErr : '') }); return; }
+    const p = window.WeatherSky.PRESETS.find(q => q.key === (this.props.startPreset || 'afternoon')), sc = this.props.startScene || 'harbour:fishing';
+    this.t0 = performance.now(); this.ready = true;
+    this.setState(Object.assign({ scene: sc }, p ? this.presetPatch(p) : {}), () => { this.loadScene(); this.restartLoop(); this._bp = setTimeout(() => this.drawBerths(), 200); });
+  }
+  presetPatch(p) { const o = { preset: p.key, time: p.time, cloud: p.cloud, rain: p.rain, fog: p.fog, snow: p.snow, wind: p.wind, gust: p.gust }; if (p.key === 'snow') o.season = 'winter'; else if (this.state.season === 'winter' && p.snow < 0.2) o.season = 'summer'; return o; }
+  applyPreset(key) { const p = window.WeatherSky && window.WeatherSky.PRESETS.find(q => q.key === key); if (p) this.setState(this.presetPatch(p)); }
+  sky() { const s = this.state; return window.WeatherSky.at({ time: s.time, cloud: s.cloud, rain: s.rain, fog: s.fog, snow: s.snow, wind: s.wind, gust: s.gust, dir: s.dir }); }
+  modelOpts() { const s = this.state; return { season: s.season, stage: s.stage, variant: s.variant }; }
+  harbour() { return /^harbour:/.test(this.state.scene); }
+  tideM() { const R = this.stg ? this.stg.S.R : 1.8; return +(this.state.tideF * R).toFixed(3); }
+
+  // ---- the stage ------------------------------------------------------------------------------------------------------
+  loadScene() {
+    const s = this.state, key = s.scene, SC = Component.SCENES.find(q => q[0] === key);
+    this.setState({ busy: true, status: 'BUILDING ' + (SC ? SC[1] : key).toUpperCase() + '\u2026' });
+    clearTimeout(this._bt); clearTimeout(this._ft);
+    this._bt = setTimeout(() => {
+      if (this.dead) return;
+      try { const t0 = performance.now(); this.stg = new window.WharfStage2.Stage(key, { dir: this.harbour() ? 0 : s.camDir, model: this.modelOpts() }); this.stg.buildMs2 = Math.round(performance.now() - t0); }
+      catch (e) { this.setState({ status: 'BUILD FAILED \u00b7 ' + e.message }); return; }
+      this.sizeCanvases(); this.land();
+    }, 40);
+  }
+  land() {
+    const stg = this.stg; if (!stg || this.dead) return;
+    const s = this.state, sky = this.sky(), tide = this.tideM(), t0 = performance.now();
+    this.setState({ busy: true, status: 'LIGHTING\u2026' });
+    setTimeout(() => {
+      if (this.dead || this.stg !== stg) return;
+      stg.land(sky, { tide, ch: s.ch }); this.landMs = Math.round(performance.now() - t0); this.fi = 0;
+      const t1 = performance.now();
+      try { this.gp = window.WharfRig2Kit.gameplay(s.scene, Object.assign({ dir: stg.S.dir, tide, wind: sky.wind }, this.modelOpts())); } catch (e) { this.gp = null; this.gpErr = e.message; }
+      this.gpMs = Math.round(performance.now() - t1);
+      stg.figs = this.gp && this.props.figures !== false && s.figures ? window.WharfStage2.cast(this.gp, stg.S.mdl, tide) : [];
+      this.draw(); this.drawOverlay(); this.setState({ busy: false, status: '', loop: 1, gpTick: this.state.gpTick + 1, info: this.infoOf(sky) });
+      clearTimeout(this._ft); this._ft = setTimeout(() => this.fill(), 60);
+    }, 30);
+  }
+  // the loop's other fifteen frames are made in the background; playback moves only through frames that exist
+  fill() {
+    const stg = this.stg; if (!stg || this.dead) return;
+    let n = 0; for (let f = 0; f < 16; f++) if (stg.cache.has(f)) n++;
+    if (n >= 16) { if (this.state.loop !== 16) this.setState({ loop: 16 }); return; }
+    for (let f = 0; f < 16; f++) if (!stg.cache.has(f)) { stg.base(f); break; }
+    this.setState({ loop: n + 1 }); this._ft = setTimeout(() => this.fill(), 20);
+  }
+  restartLoop() {
+    clearInterval(this._iv); const fps = Math.max(4, Math.min(12, this.props.fps ?? 8));
+    this._iv = setInterval(() => { if (!this.stg || !this.stg.st || this.state.busy) return;
+      if (this.state.play) { const nx = (this.fi + 1) % 16; if (this.stg.cache.has(nx)) this.fi = nx; }
+      this.draw(); }, 1000 / fps);
+  }
+  sizeCanvases() {
+    const stg = this.stg, z = this.state.zoom; if (!stg) return;
+    for (const r of [this.heroRef, this.ovRef]) { const cv = r.current; if (!cv) continue; if (cv.width !== stg.W * (r === this.ovRef ? z : 1)) { cv.width = stg.W * (r === this.ovRef ? z : 1); cv.height = stg.H * (r === this.ovRef ? z : 1); }
+      cv.style.width = (stg.W * z) + 'px'; cv.style.height = (stg.H * z) + 'px'; }
+  }
+  draw() {
+    const cv = this.heroRef.current, stg = this.stg; if (!cv || !stg || !stg.st || this.dead) return;
+    const t0 = performance.now(), out = stg.frame(this.fi, this.state.play ? performance.now() - this.t0 : 0);
+    cv.getContext('2d').putImageData(new ImageData(out, stg.W, stg.H), 0, 0); this.lastOut = out; this.frameMs = Math.round(performance.now() - t0);
+    if (!this._infoT || performance.now() - this._infoT > 700) { this._infoT = performance.now(); this.setState({ info: this.infoOf(stg.sky) }); }
+  }
+  drawOverlay() {
+    const cv = this.ovRef.current, stg = this.stg; if (!cv || !stg) return; const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, cv.width, cv.height);
+    if (this.state.overlay && this.gp) window.WharfPlates2.overlay(ctx, stg, this.gp, this.state.zoom);
+  }
+  drawBerths() {
+    const cv = this.berthRef.current; if (!cv || !window.WharfPlates2) return; const rows = window.WharfPlates2.plateRows(), ctx = cv.getContext('2d');
+    const H = window.WharfPlates2.plateHeight ? window.WharfPlates2.plateHeight(cv.width, rows) : 20 + rows.length * 46; if (cv.height !== H) { cv.height = H; cv.style.height = H + 'px'; }
+    ctx.fillStyle = '#0d1a1c'; ctx.fillRect(0, 0, cv.width, cv.height); window.WharfPlates2.berthPlate(ctx, cv.width, rows);
+  }
+  componentDidUpdate() {
+    const s = this.state, ps = this._ps || {}, pp = this._pp || {}; this._ps = Object.assign({}, s); this._pp = Object.assign({}, this.props);
+    if (!this.ready || !window.WharfStage2 || ps.scene === undefined) return;
+    if (['scene', 'camDir', 'season', 'stage', 'variant'].some(k => ps[k] !== s[k])) { if (!this.harbour() || ['scene', 'season', 'stage', 'variant'].some(k => ps[k] !== s[k])) this.loadScene(); return; }
+    if (this.stg && ['time', 'cloud', 'rain', 'fog', 'snow', 'tideF', 'ch', 'wind', 'gust', 'dir', 'figures'].some(k => ps[k] !== s[k])) { clearTimeout(this._lt); this._lt = setTimeout(() => this.land(), 140); }
+    if (ps.zoom !== s.zoom) { this.sizeCanvases(); this.draw(); this.drawOverlay(); }
+    if (ps.overlay !== s.overlay) this.drawOverlay();
+    if (pp.fps !== this.props.fps) this.restartLoop();
+  }
+  static SCENES = [['harbour:fishing', 'Fishing harbour'], ['harbour:cove', 'Cove wharf'], ['tallPier', 'Pile pier'], ['sheetedPier', 'Sheeted pier'], ['steelPier', 'Steel pier'], ['lowPier', 'Low pier'], ['logCrib', 'Crib wharf'], ['cappedCrib', 'Capped crib'],
+    ['torbayQuay', 'Sheet-pile quay'], ['timberQuay', 'Timber quay'], ['blockQuay', 'Granite quay'], ['concreteQuay', 'Concrete quay'], ['timberFloat', 'Timber float'], ['plasticFloat', 'Cube float'], ['concreteFloat', 'Pontoon'],
+    ['drumFloat', 'Drum float'], ['finger', 'Finger'], ['gangway', 'Gangway'], ['slipway', 'Slipway'], ['graniteEdge', 'Revetment'], ['breakwater', 'Breakwater'], ['sheetCell', 'Sheet cell'], ['breastingDolphin', 'Breasting dolphin'],
+    ['mooringDolphin', 'Mooring dolphin'], ['timberDolphin', 'Timber dolphin'], ['catwalk', 'Catwalk']];
+  infoOf(sky) {
+    const s = this.state, stg = this.stg; if (!stg || !sky || !stg.st) return null;
+    const f2 = (v) => (Math.round(v * 100) / 100).toFixed(2), fr = stg.frameOf(this.fi), T = fr.tide, R = stg.S.R, M = fr.motion, g = Object.keys(M)[0], sp = window.WharfRig2.sheetSpec(s.scene, Object.assign({ dir: stg.S.dir, tide: T }, this.modelOpts()));
+    const Tf = fr.mdl.T, show = [T < Tf.barnTop && Tf.on.barn ? 'barnacle' : null, T < Tf.weedTop && Tf.on.weed ? 'weed' : null, T < Tf.iceTop && Tf.on.ice ? 'ice scar' : null].filter(Boolean);
+    const rows = [
+      ['sky', sky.clock + ' \u00b7 ' + sky.name],
+      ['key', sky.sunI > 0.01 ? (sky.key === 'moon' ? 'moon' : 'sun') + ' az ' + Math.round(sky.az) + '\u00b0 \u00b7 el ' + Math.round(sky.el) + '\u00b0 \u00b7 ' + f2(sky.sunI) : 'none \u2014 the sun is down'],
+      ['water', f2(T) + ' m of ' + f2(R) + ' above chart datum \u00b7 ' + (show.length ? show.join(', ') + ' showing' : 'the growth is covered')],
+      ['float', g ? 'heave ' + (M[g].heave * 100).toFixed(1) + ' cm \u00b7 roll ' + (M[g].roll / Math.PI * 180).toFixed(2) + '\u00b0 \u00b7 pitch ' + (M[g].pitch / Math.PI * 180).toFixed(2) + '\u00b0 \u00b7 frame ' + (this.fi + 1) : 'nothing floats here'],
+      ['age', s.stage + ' (' + f2(fr.mdl.s.age) + ') \u00b7 ' + s.season + ' \u00b7 variant ' + s.variant],
+      ['sprite', 'cell ' + sp.cell[0] + ' \u00d7 ' + sp.cell[1] + ' \u00b7 pivot ' + sp.pivot.join(', ') + ' \u00b7 4 \u00d7 4 sheet ' + sp.w + ' \u00d7 ' + sp.h + (sp.fits ? '' : ' (over 2048)')],
+      ['gameplay', this.gp ? this.gp.WALK.length + ' walk \u00b7 ' + this.gp.CLIMB.length + ' ladders \u00b7 ' + this.gp.TIE.length + ' ties \u00b7 ' + this.gp.BERTHS.length + ' berths \u00b7 ' + this.gp.FIXTURES.length + ' fixtures \u00b7 ' + this.gp.VERBS.length + ' verbs' : (this.gpErr || '\u2014')],
+      ['cost', 'floor ' + (stg.floorCached ? 'cached' : (stg.buildMs2 || 0) + ' ms') + ' \u00b7 lit ' + (this.landMs || 0) + ' ms \u00b7 sidecar ' + (this.gpMs || 0) + ' ms \u00b7 frame ' + (this.frameMs || 0) + ' ms \u00b7 loop ' + s.loop + '/16'],
+    ];
+    return { rows: rows.map(([k, v], i) => ({ k, v, border: i ? '1px solid #21322f' : 'none' })) };
+  }
+  save(blob, fn) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fn; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); }
+  static NOTES = {
+    lit: 'Everything under this sky: the structure relit from its G-buffer (sky \u00d7 visibility, sun \u00d7 shadow, bounce, the tree ladder), the floor and the sea from TerrainLight6 with the structure\u2019s shade on them, the water drawn over every pixel under the tide, foam lace where the piles meet it.',
+    unlit: 'Structure bands only, under a flat sky: planking, grain, formwork, the tidal frame\u2019s stain, barnacle, weed, ice scour and rime as transforms of their host material.',
+    normal: 'World normals (R east \u00b7 G north \u00b7 B up), one per face: what the sun and the snow read.',
+    ao: 'Sky visibility from nine occlusion maps: the gloom under a deck, between piles, inside a crib; the floats\u2019 own maps ride with them.',
+    sun: 'Sun \u00d7 N\u00b7L \u00d7 the shadow map: the deck shades its piles, a bollard its planks, the gangway the float.',
+    snow: 'The snow map: one byte per pixel, the cover at which it turns. Only what looks up and sees the sky takes it; nothing below the wash line.',
+    sub: 'Depth under the water at this tide: everything blue is the water shader\u2019s. Zero water pixels are baked.',
+    parts: 'Every part in its own colour: piles, caps, stringers, deck, ladder, cleats, fixtures, the float and what rides with it.',
+    layer: 'The sort layers: floor (decks and everything under them) draws under a figure; raised (rails, bollards, hoops, fixtures) y-sorts by its base.',
+  };
+  static FIND = [
+    ['A', 'Lit once, from one key.', 'Pass one ordered-dithered every face from the upper-left and threw no shadow on itself, so the piles under a deck were as bright as the deck. A module is now a G-buffer lit by WeatherSky with the cliffs\u2019 and trees\u2019 law: sky visibility from occlusion maps, a sun shadow map, bounce, the one band ladder, harmony\u2019s grade.'],
+    ['B', 'The float rocked on its own sine.', 'Heave, roll and pitch are the waterplane average of the same three loop-periodic components the water runs on, over the float\u2019s own rectangle; a main float and its fingers are one group. Guide piles, anchor and hinge never move; the gangway is re-solved to the rocked deck every frame, its toe rolling.'],
+    ['C', 'Water was painted, or ignored.', 'Nothing wet is baked. Each pixel knows its depth under this tide; the water shader draws over it, the first 0.16 m through three steps; contact() gives the waterline for the foam lace; castShadow()/shadeAt() give the shade the water takes.'],
+    ['D', 'No weather, no snow.', 'Rain darkens by porosity and glints on lit tops; fog is height-heavy; snow is one byte per pixel on what looks up and sees the sky; winter adds ice collars, icicles and spray rime to the geometry; the tide leaves a splash line.'],
+    ['E', 'Berths stopped at an 18 m dragger.', 'Twenty-two hulls from the dory to the gas tanker in five classes, each with its end, side and under-keel clearance, line, fender and the faces it berths at. A face is packed with the best mix; each berth gets its ladder, fenders at the quarters and lines at bow, stern and springs.'],
+    ['F', 'Modules sat side by side.', 'An end is free or joined (a join drops its end wall, rail return and one pile row), a side takes open spans for a butting module, texture phase runs from the chain\u2019s end, and a harbour builds as one model: one shadow, one sea.'],
+    ['G', 'Fittings were drawn to fit a cell.', 'Ladders at 0.24 m rungs with hoops 1.0 m over a gap in the bull rail; the top-out is the board clip at three rungs, 0.72 m. Tables, dock boxes, a davit, ring posts and pedestals sit at heights every v9.2 creator body fits.'],
+    ['H', 'One age.', 'New, seasoned, weathered and derelict change the geometry as well as the colour: growth comes with age, a derelict deck loses boards (published as holes) and rails.'],
+    ['I', 'Seven families.', 'Ten: quay, pier, crib, float, finger, gangway, slipway, riprap, dolphin and catwalk, with granite ashlar, concrete decks, concrete pontoons and drum floats among the styles, 25 presets in all.'],
+    ['J', 'Boarding steps no body could make.', 'A float berth is a 0.34\u20130.45 m step, and v9.2\u2019s board puts the left hand on the edge it steps onto: below 0.549 m the tall adults cannot reach it (0.20 m short at 0.34), so stepping off a boat onto a float failed every preset. Measured over the 375 creator bodies, boardDown fits every step from 0.06 to 1.30 m. A step down is now boardDown, a step up of 0.549\u20130.724 board, a lower one boardDown played backward, a higher one onto a hull goes over the boarding step. Every berth publishes both directions, and every step up to 1.30 m fits every creator body.'],
+    ['K', 'Dolphins moored nothing; a gangway toe sat near the edge.', 'Mooring and breasting dolphins now carry their bollards (breasting ones their panels) as ties, the tanker berth takes the four dolphins\u2019 lines, and every berth lists its ties and its ladder. The fishing harbour\u2019s float moves 0.5 m toward its gangway, whose rollers were 0.12 m inside the deck at chart datum; every gangway publishes its toe margin at datum and at highest water.'],
+    ['L', 'Harbours were a fixed list.', 'define(id, def) registers a harbour from any modules. snap(a, socket, b, socket) sets a module on another\u2019s socket and marks the join on both (end wall, rail return and a pile row dropped, or a span opened in a side) and matches deck height, freeboard and float group; gangwayFrom() hangs a gangway off a fixed socket and says where its float goes. The Cove wharf is built that way.'],
+    ['M', 'Berths sat on the beach.', 'A berth read the deepest water under its whole module, so on a sloping harbour the crib face (bed 0.57 m above datum) was given a sloop that never floats there. A face now keeps berths only where the bed at the berth line is at least 1 m under highest water, is cut where the depth crosses what each class needs, and gives the deep end to the biggest hulls (the pier head takes a Cape Islander). Each berth publishes the bed under its hull, whether it dries and the tide it floats from; a drying hull sits on the bed in BOARD.'],
+  ];
+  static CON = [
+    ['frame', 'WharfRig2.frame(key, {dir, tide, frame, wind, sea, season, stage, variant}): G-buffer (material band, normal, position, depth, part, layer, group), sky visibility, snow bytes. key = family | preset | harbour:<id>.'],
+    ['light', 'relight(frame, sky) with any WeatherSky.at(); view(frame, ch) for lit unlit normal ao sun height depth parts mat wet snow sub light detail layer.'],
+    ['water', 'view "sub" is the depth under the tide per pixel; draw the sea over it. contact(frame) is the waterline mask for the foam lace. No water pixel is baked.'],
+    ['shade', 'castShadow(frame, sky, {z}) levels 1 canopy \u00b7 2 partial \u00b7 3 full for TerrainLight6\u2019s lv, or shadeAt(frame, sky, x, y, z) per point.'],
+    ['floats', 'seaMotion is the water\u2019s own three components; rockFor(frame, group, yaw) gives a figure standing on a float its roll and pitch for CharacterIso9.render.'],
+    ['snow', 'frame.snow: snowed = round(cover \u00d7 254) \u2265 byte, 255 never \u2014 TreeMaps4\u2019s contract.'],
+    ['sheets', 'sheet(key, o, ch, sky): the 16-frame loop as 4 \u00d7 4; sheetSpec checks the 2048 cap. The pivot is the model origin at chart datum.'],
+    ['gameplay', 'WharfRig2Kit.gameplay(key, o): WALK HOLES BLOCKERS CLIMB TIE BOARD BERTHS FENDERS FLOAT SOCKETS WATER SNOW SHADOW SORT CHAR, plus FIXTURES VERBS CHAR_FIT CHAR_REQUESTS.'],
+    ['stage', 'WharfStage2.Stage: a PxKit8 floor from the bed, TerrainLight6 on it, each screen column taking the first surface on its ray, the structure and the figures composited over it. The engine\u2019s compositor does the same.'],
+    ['harbours', 'WharfRig2Kit.define(id, {tideRange, bed, mods | layout, gangs}) \u2192 \u2018harbour:id\u2019; snap(a, socketA, b, socketB, {slide}); gangwayFrom(a, socket, {freeboard}) \u2192 {hinge, u, L, land, edgeAt, reach}; sockOf(m) lists a module\u2019s sockets.'],
+    ['boarding', 'BOARD[].aboard / .ashore: WharfVerbs2.stepPlan(dz) \u2014 boardDown down to 1.30 m; board up 0.549\u20130.724; boardDown reversed below that; the boarding step above it; else the ladder.'],
+  ];
+  renderVals() {
+    const s = this.state, WS = window.WeatherSky, WV = window.WharfVerbs2, K = window.WharfRig2Kit, gp = this.gp, harb = this.harbour();
+    const seg = (items, cur, key) => items.map((it, i) => { const [val, label] = Array.isArray(it) ? it : [it, String(it).toUpperCase()], a = val === cur; return { label, fg: a ? '#0b1418' : '#aab6b4', bg: a ? '#8fd6a0' : '#0e1a1b', border: i ? '1px solid #26413c' : 'none', onClick: () => this.setState({ [key]: val }) }; });
+    const presets = (WS ? WS.PRESETS : []).map(p => ({ label: p.name, fg: s.preset === p.key ? '#0b1418' : '#cfd6cc', bg: s.preset === p.key ? '#c9a86a' : '#101d1e', onClick: () => this.applyPreset(p.key) }));
+    const sceneBtns = Component.SCENES.map(([k, label], i) => { const a = s.scene === k; return { label, fg: a ? '#0b1418' : i ? '#cfd6cc' : '#e8d9b8', bg: a ? '#8fd6a0' : '#101d1e', bd: a ? '#8fd6a0' : i ? '#26413c' : '#6a4f2c', onClick: () => { if (!s.busy) this.setState({ scene: k, verb: null }); } }; });
+    const W2 = window.WharfRig2, pre = W2 && W2.PRESETS[s.scene], fam = W2 && (pre ? pre.family : null), H = K && harb ? K.HARBOURS[s.scene.slice(8)] : null;
+    const sceneNote = H ? H.note : fam && W2.FAMILIES[fam] ? W2.FAMILIES[fam].label + ' \u2014 ' + W2.FAMILIES[fam].note + '.' : '';
+    const sky = this.ready && WS ? this.sky() : null, R = this.stg ? this.stg.S.R : 1.8, fps = Math.max(4, Math.min(12, this.props.fps ?? 8));
+    const SL = [['time', 'TIME OF DAY', 4.5, 22.75, 0.05], ['cloud', 'CLOUD', 0, 1, 0.01], ['rain', 'RAIN', 0, 1, 0.01], ['fog', 'FOG', 0, 1, 0.01], ['snow', 'SNOW COVER', 0, 1, 0.01], ['wind', 'WIND', 0, 1, 0.01], ['gust', 'GUSTS', 0, 1, 0.01], ['tideF', 'TIDE', 0, 1, 0.01]];
+    const sliders = SL.map(([k, label, min, max, step]) => ({ label, min, max, step, value: s[k], text: k === 'time' ? (WS ? WS.hhmm(s[k]) : '') : k === 'tideF' ? (s[k] * R).toFixed(2) + ' m' : Math.round(s[k] * 100) + '%', onInput: (e) => this.setState(k === 'tideF' ? { tideF: +e.target.value } : { [k]: +e.target.value, preset: '' }) }));
+    const segRows = [{ label: 'SEASON', btns: seg(['summer', 'autumn', 'winter'], s.season, 'season') }, { label: 'AGE', btns: seg(['new', 'seasoned', 'weathered', 'derelict'], s.stage, 'stage') }, { label: 'VARIANT', btns: seg([[0, '0'], [1, '1'], [2, '2'], [3, '3']], s.variant, 'variant') }];
+    const CH = [['lit', 'LIT'], ['unlit', 'UNLIT'], ['normal', 'NORMAL'], ['ao', 'SKY AO'], ['sun', 'SUN'], ['snow', 'SNOW MAP'], ['sub', 'UNDER WATER'], ['parts', 'PARTS'], ['layer', 'LAYERS']];
+    const tg = (label, on, fn) => ({ label, fg: on ? '#0b1418' : '#cfd6cc', bg: on ? '#7fc7d9' : '#152522', onClick: fn });
+    const toggles = [tg(s.play ? 'PAUSE' : 'PLAY', false, () => this.setState({ play: !s.play })), tg('FIGURES', s.figures, () => this.setState({ figures: !s.figures })), tg('GAMEPLAY', s.overlay, () => this.setState({ overlay: !s.overlay }))];
+    if (!harb) toggles.push(tg('TURN \u21bb ' + ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][s.camDir], false, () => { if (!s.busy) this.setState({ camDir: (s.camDir + 1) % 8 }); }));
+    const fit = WV ? WV.fitReport() : [], fmtR = (r) => r.range ? r.range[0] + '\u2013' + r.range[1] : '';
+    const fitRows = fit.map((r, i) => ({ what: r.fixture + ' \u00b7 ' + r.what, value: String(r.value), range: fmtR(r), ok: r.ok ? '\u2713' : '\u2717', okc: r.ok ? '#8fd6a0' : '#e0604c', border: i ? '1px solid #21322f' : 'none' }));
+    const V = gp ? gp.VERBS : [], counts = {}; V.forEach(v => { counts[v.verb] = (counts[v.verb] || 0) + 1; });
+    const cur = s.verb && counts[s.verb] ? s.verb : Object.keys(counts)[0] || null;
+    const verbChips = Object.keys(counts).map(k => { const a = k === cur; return { label: k + ' \u00d7' + counts[k], fg: a ? '#0b1418' : '#cfd6cc', bg: a ? '#7fc7d9' : '#0e1a1b', bd: a ? '#7fc7d9' : '#26413c', onClick: () => this.setState({ verb: k }) }; });
+    const ex = cur ? V.find(v => v.verb === cur) : null, num = (v) => Array.isArray(v) ? v.join(' / ') : v;
+    const stepText = (q) => q.join ? 'blend ' + q.ms + ' ms to the ladder station' + (q.request ? ' (' + q.request + ' asked of the rig)' : '') : q.chain ? q.chain : q.verb ? 'then ' + q.verb : q.clip + (q.reverse ? ' reversed' : '') + (q.loop ? ' \u00b7 loop' : q.once ? ' \u00b7 once' : '') + (q.opts ? ' \u00b7 ' + Object.entries(q.opts).map(([k, v]) => k + ' ' + num(v)).join(', ') : '') + (q.turnTo != null ? ' \u00b7 turn to ' + q.turnTo + '\u00b0' : '') + (q.rootMotion ? ' \u00b7 root ' + q.rootMotion[2] + ' m/s' : '') + (q.advance ? ' \u00b7 advance ' + (q.advance.m != null ? q.advance.m + ' m' : q.advance) : '') + (q.speed ? ' \u00b7 ' + q.speed + ' m/s' : '') + (q.until ? ' \u00b7 until ' + q.until : '') + (q.note ? ' \u2014 ' + q.note : '') + (q.request && !q.join ? ' (' + q.request + ' asked)' : '');
+    const verbSteps = ex ? [{ n: '\u00b7', t: 'stand at ' + (ex.stand ? ex.stand.join(', ') : '\u2014') + (ex.yaw != null ? ' facing ' + ex.yaw + '\u00b0' : '') + (typeof ex.rides === 'number' ? ' \u00b7 rides float ' + ex.rides : '') + (ex.step != null ? ' \u00b7 step ' + ex.step + ' m' : '') }].concat((ex.seq || []).map((q, i) => ({ n: String(i + 1), t: stepText(q) }))).concat(ex.fits && ex.fits.length ? [{ n: '=', t: ex.fits.map(f => f.param + ' ' + f.value + (f.range ? ' in ' + f.range.join('\u2013') : '') + (f.ok ? ' \u2713' : ' \u2717 outside the all-body fit')).join(' \u00b7 ') }] : []) : [];
+    const CLS = window.WharfPlates2 ? window.WharfPlates2.CLS : {}, C5 = W2 ? W2.CLASSES : {};
+    const classKeys = Object.keys(C5).map(k => ({ k, col: CLS[k], t: C5[k].label + ' \u2264 ' + C5[k].maxLoa + ' m' }));
+    const ft = K ? K.fleetTable() : [], hdr = { label: 'HULL', cls: 'CL', loa: 'LOA \u00d7 BEAM \u00d7 DRAFT', slot: 'SLOT', need: 'DEPTH', at: 'BERTHS AT', moor: 'MOOR \u00b7 FENDER', fg: '#6b807c', cc: '#6b807c', border: 'none' };
+    const fleetRows = [hdr].concat(ft.map(r => ({ label: r.label, cls: r.cls, cc: CLS[r.cls], fg: '#cfd6cc', loa: r.loa + ' \u00d7 ' + r.beam + ' \u00d7 ' + r.draft, slot: r.slot + ' m', need: r.needDepth + ' m', at: r.at.join(' \u00b7 '), moor: r.moor + ' \u00b7 ' + r.fender, border: '1px solid #21322f' })));
+    const files = [['wharfRig2.js', 'wharfRig2.js'], ['wharfRig2.geo.js', 'wharfRig2.geo.js'], ['wharfRig2.fam.js', 'wharfRig2.fam.js'], ['wharfRig2.verbs.js', 'wharfRig2.verbs.js'], ['wharfRig2.kit.js', 'wharfRig2.kit.js'], ['wharfStage2.js', 'wharfStage2.js']].map(([href, name]) => ({ href, name }));
+    return {
+      heroRef: this.heroRef, ovRef: this.ovRef, berthRef: this.berthRef, presets, sceneBtns, sceneNote, sliders, segRows, toggles,
+      channelBtns: seg(CH, s.ch, 'ch'), zoomBtns: seg([[1, '1\u00d7'], [2, '2\u00d7'], [3, '3\u00d7']], s.zoom, 'zoom'),
+      clock: sky ? sky.clock : '', skyName: sky ? sky.name.toUpperCase() : '', busy: s.busy, status: s.status,
+      frameTag: 'FRAME ' + (this.fi + 1) + ' / 16 \u00b7 ' + fps + ' FPS \u00b7 LOOP ' + s.loop + '/16 \u00b7 TIDE ' + (s.tideF * R).toFixed(2) + ' M',
+      channelNote: Component.NOTES[s.ch] || '', infoRows: s.info ? s.info.rows : [],
+      dlFrame: () => { const cv = this.heroRef.current; if (cv) cv.toBlob(b => this.save(b, s.scene.replace(':', '-') + '_' + (sky ? sky.clock.replace(':', '') : '') + '.png')); },
+      dlGameplay: () => { if (this.gp) this.save(new Blob([JSON.stringify(this.gp, null, 1)], { type: 'application/json' }), 'wharfRig2.' + s.scene.replace(':', '-') + '.gameplay.json'); },
+      files, fitRows, verbTotal: V.length + ' IN ' + Object.keys(counts).length + ' KINDS', verbChips, verbTitle: ex ? ex.verb + ' \u00b7 ' + (ex.fixture || ex.ladder || ex.tie || ex.berth || ex.gangway || '') : 'Load a scene to see its verbs', verbSteps,
+      requests: WV ? WV.REQUESTS : [], classKeys, fleetRows,
+      findings: Component.FIND.map(([k, t, d]) => ({ k, t, d })), contract: Component.CON.map(([k, v], i) => ({ k, v, border: i ? '1px solid #21322f' : 'none' })),
+      stillOpen: 'The figures are painted by v9.2\u2019s own fixed key, not relit by this sky. No hull sits in a berth here: berths are published and drawn as footprints (GAMEPLAY). The commercial quay (144 m) and the tanker jetty are too big for a live stage at 32 px/m and are shown as plans. Ladder on and off, the step back onto a hull, walking a slope and a low step up are blends or reversed clips until the character rig has clips for them. The first loop of a harbour takes several seconds to fill; relighting is per pixel on the CPU.',
+    };
+  }
+}
+</script>
+</body>
+</html>
