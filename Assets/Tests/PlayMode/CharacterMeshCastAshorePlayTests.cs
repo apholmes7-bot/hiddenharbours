@@ -57,6 +57,8 @@ namespace HiddenHarbours.Tests.PlayMode
         private const float SkipperHeadingDegrees = 135f;
         private const int SettleFrames = 3;
         private const float YawToleranceDegrees = 0.01f;
+        private const float WalkBandMiddle = 0.5f;
+        private const float RunPastThreshold = 1.5f;
 
         private readonly HashSet<GameObject> _residentBefore = new HashSet<GameObject>();
         private readonly List<Object> _spawned = new();
@@ -142,6 +144,66 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"{villagers.Count} villagers; {outOfDoors} out of doors drew as their meshes, " +
                 $"{villagers.Count - outOfDoors} sheltered drew neither picture; facet registry: " +
                 $"{IsoFacetHullRegistry.Count} hull(s), {IsoFacetHullRegistry.FigureCount} figure id(s).");
+        }
+
+        /// <summary>
+        /// ⭐ <b>In every state her day uses.</b> Each of the six, brought out of doors, is held at an idling, a
+        /// walking and a running speed inside her own art def's bands. Her sprite draws the gait its own sheets
+        /// have at that speed (run, else walk, else idle), and her skin's state map turns that gait into her
+        /// mesh's state. At each speed she draws as her mesh, sprite forced off, in exactly the state the map
+        /// names. A gait her skin has no clip for draws the map's fallback, and this case names it; a state her
+        /// skin does not mesh would refuse her to her sprite, and fails.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator EveryVillagerAshore_IsTheirMesh_IdlingWalkingAndRunning()
+        {
+            yield return LoadTheIsland();
+            AssertTheCastIsInstalled();
+            UseSwitches(meshCast: true, ashore: true);
+            yield return AtNoon();
+
+            List<IsoCharacterSprite> villagers = Villagers();
+            foreach (IsoCharacterSprite villager in villagers) BringHerOut(villager);
+            var problems = new List<string>();
+            var drawn = new List<string>();
+            try
+            {
+                foreach (CharacterGait gait in new[] { CharacterGait.Idle, CharacterGait.Walk, CharacterGait.Run })
+                {
+                    foreach (IsoCharacterSprite villager in villagers) villager.HoldSpeed(SpeedFor(villager.Visual, gait));
+                    yield return Settle();
+
+                    foreach (IsoCharacterSprite villager in villagers)
+                    {
+                        List<string> mine = MeshProblemsOf(villager).ToList();
+                        problems.AddRange(mine.Select(p => $"held at a {gait} speed: {p}"));
+                        if (mine.Count > 0) continue;
+
+                        CharacterSkinDef skin = villager.Visual.Skin;
+                        IsoCharacterFigureRenderer figure = villager.GetComponent<CharacterFigurePresenter>().AshoreFigure;
+                        bool resolves = CharacterSkinStateMap.Resolve(skin, villager.Stance, villager.Gait,
+                                                                      out string wanted, out bool fellBack);
+                        if (!resolves)
+                            problems.Add($"{Who(villager)} held at a {gait} speed: her sprite draws {villager.Gait}, " +
+                                         $"'{skin.Id}' resolves no state for it, and she still drew as her mesh");
+                        else if (figure.DrawnStateKey != wanted)
+                            problems.Add($"{Who(villager)} held at a {gait} speed: her sprite draws {villager.Gait}, " +
+                                         $"'{skin.Id}' maps it to '{wanted}', and her mesh shows '{figure.DrawnStateKey}'");
+                        drawn.Add($"{villager.name} at a {gait} speed: sprite {villager.Gait}, mesh " +
+                                  $"'{figure.DrawnStateKey}'{(fellBack ? " (the map's fallback: the skin has no clip for it)" : "")}");
+                    }
+                }
+            }
+            finally
+            {
+                foreach (IsoCharacterSprite villager in villagers)
+                    if (villager != null) villager.ReleaseSpeed();
+            }
+
+            Assert.IsEmpty(problems,
+                $"{problems.Count} problem(s) across {villagers.Count} villagers held idling, walking and running on " +
+                "St Peters with both switches ON:\n  " + string.Join("\n  ", problems));
+            TestContext.WriteLine(string.Join("\n", drawn));
         }
 
         [UnityTest]
@@ -490,6 +552,22 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(routine, $"harness: '{villager.name}' has no VillagerRoutine");
             routine.enabled = false;
             Assert.IsTrue(Shows(villager), $"harness: '{villager.name}' is still hidden with her routine switched off");
+        }
+
+        /// <summary>A speed inside the band her art def draws <paramref name="gait"/> for
+        /// (<see cref="IsoCharacterMath.GaitFor"/>): standing, halfway through the walking band, and half as fast
+        /// again as the running threshold.</summary>
+        private static float SpeedFor(CharacterVisualDef visual, CharacterGait gait)
+        {
+            float walk = Mathf.Max(0f, visual.WalkSpeedThreshold);
+            float run = Mathf.Max(walk, visual.RunSpeedThreshold);
+            Assert.Greater(walk, 0f, $"harness: '{visual.name}' walks from a standstill, so she has no idle speed");
+            switch (gait)
+            {
+                case CharacterGait.Walk: return run > walk ? (walk + run) * WalkBandMiddle : walk;
+                case CharacterGait.Run: return Mathf.Max(run, walk) * RunPastThreshold;
+                default: return 0f;
+            }
         }
 
         private static void AssertTheSkipperAboardIsTheirMesh(MooredBoat moored, BoatOwnerDef owner, CharacterSkinDef skin)
