@@ -303,6 +303,18 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void AshoreNeverDrawsAndBuildsNothing()
+        {
+            CharacterFigurePresenter presenter = Attach();
+
+            presenter.PoseFigure(_stand, aboard: false);
+
+            AssertSprite(presenter, CharacterFigurePresenter.Refusal.Ashore);
+            Assert.IsNull(presenter.Figure);
+            Assert.AreEqual(0, _hull.PosedMesh.childCount);
+        }
+
+        [Test]
         public void APlainStandAshoreNeverDrawsAndBuildsNothing()
         {
             UseFreshIdPool();

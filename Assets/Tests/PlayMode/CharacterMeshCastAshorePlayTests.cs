@@ -101,7 +101,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 if (o != null) Object.Destroy(o);
             _spawned.Clear();
 
-            var clean = SceneManager.CreateScene(CleanupSceneName);
+            // A case that loads no region (the adder's) leaves the last teardown's scene standing: use it again.
+            Scene clean = SceneManager.GetSceneByName(CleanupSceneName);
+            if (!clean.IsValid()) clean = SceneManager.CreateScene(CleanupSceneName);
             SceneManager.SetActiveScene(clean);
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
