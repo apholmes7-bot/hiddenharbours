@@ -277,6 +277,8 @@ amendment. Treat the boat-feel change as a **first-class outcome to be verified 
 
 **(7) #8 — Reflections: a filtered renderer list into an RT, wave-warped by the water shader.** — **SHIPPED (P5, 2026-07-29).** Built as decided; `design/water-rendering.md` §26 is the live spec. Two things the decision text could not have known, both recorded there: the mirror axis had to be **published per renderer** (the SpriteRenderer identity-matrix trap — every sprite, not an edge case), and the pre/post-grade split for night-lit sources needs **no flag channel**, because premultiplied output makes "rgb exceeds coverage" mean exactly "compensated light content".
 
+2026-09-28 (R2): current-frame hull input adds a conditional water-depth draw and one transient depth target per camera; see [current-frame hull reflections](../design/hull-reflection-current-frame.md).
+
 ADR 0010's eighth addendum **rejected** reflections. That rejection is revisited here on a **new fact**, which is
 the only thing that justifies reopening an ADR. It read: a reflection pass "would need a second camera + render
 target wired into the 2D URP renderer (**unverifiable here**) and a second draw of the scene."

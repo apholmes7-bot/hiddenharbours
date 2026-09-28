@@ -4473,7 +4473,7 @@ Shader "HiddenHarbours/Water"
                 return OUT;
             }
 
-            half4 frag(Varyings IN) : SV_Target
+            half4 frag(Varyings IN, const bool depthOnly) : SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(IN);
                 float t = _Time.y;
@@ -4834,6 +4834,8 @@ Shader "HiddenHarbours/Water"
                     : 0.0;                                  // the surf block's own reach gate (l.4613)
                 edgeSwash = lerp(edgeSwash, boreEdgeShift, boreEdgeBlend);
                 clip(depth + edgeSwash + 1e-4);
+                // Both displaced passes share every coverage decision; depth never reads reflections.
+                if (depthOnly) return 0;
 
                 float dt = saturate((depth - _ShallowDepth) / max(_DeepDepth - _ShallowDepth, 1e-3));
                 // Posterize the depth ramp into N bands for the pixel read (0 bands = smooth).
@@ -5917,6 +5919,74 @@ Shader "HiddenHarbours/Water"
 
                 return col;
             }
+
+            half4 fragColour(Varyings IN) : SV_Target
+            {
+                return frag(IN, false);
+            }
+
+            Varyings vertDisplaced(Attributes IN)
+            {
+                Varyings OUT;
+                UNITY_SETUP_INSTANCE_ID(IN);
+                UNITY_TRANSFER_INSTANCE_ID(IN, OUT);
+                VertexPositionInputs pos = GetVertexPositionInputs(IN.positionOS);
+                float3 ws = pos.positionWS;
+                float2 ground = ws.xy;                       // the UNDISPLACED ground position
+
+                float vHeight;
+                float2 vSlope;
+                float vCrest;
+                float vPrimCos;
+                float vFreqScale = max(_OceanSwellScale, 1e-4) / WAVE_LEGACY_SCALE_REF;
+                // The fetch envelope marched with the EXPLICIT-LOD seabed sampler — the vertex stage has no
+                // derivatives. _HeightTex carries no mips, so LOD 0 IS the texture and this reads the same
+                // elevations the fragment does: the displaced surface rides the lee the fragment draws.
+                float vFetchEnv = FetchEnvelope01Lod(ground);
+                WaveFieldSample(ground, vFreqScale, vFetchEnv, vHeight, vSlope, vCrest, vPrimCos);
+
+                float stillDepth = _WaterLevel - SeabedElevationLod(ground);
+                float fade = ShoreFade01(stillDepth, _ShoreFadeBand);
+                float lift = vHeight * _WaveExaggeration * fade;   // UNCHANGED, operation for operation
+
+                // ⭐ THE WAKE LIFT (water PR F, row 27) — the hull's own wave train, in the SAME frame the
+                // swell displaces, added to the SAME height. Exactly 0.0 at either dial's passthrough and
+                // for every hull at rest, so the sea a dial-0 plate photographs is bit-identical.
+                //   * NOT multiplied by _WaveExaggeration: exaggeration means "draw the simulated sea
+                //     taller than it is", and this train has no simulated twin to be taller than. The dial
+                //     is in DRAWN metres, which is what makes an elevation plate readable.
+                //   * DOES carry `fade`, so the train dies at the walkable waterline exactly as the swell
+                //     does. Anything else would tear the coast that ShoreFade01 exists to keep whole.
+                lift += WakeLiftHeight(ground) * fade;
+
+                ws.y += lift;
+                ws.z += (ground.y - _HeightWorldMin.y) * _WaterIsoDepth.x - lift * _WaterIsoDepth.y;
+
+                OUT.positionCS = TransformWorldToHClip(ws);
+                OUT.uv = IN.uv;
+                OUT.worldXY = ground;   // frag paints AND clips at the ground position — the lift
+                return OUT;             // moves pixels, never the waterline contour.
+            }
+
+            Texture2D<float> _HHHullGuardTex;
+
+            void ClipHullInterior(Varyings IN)
+            {
+                if (_HHHullGuardTex.Load(int3(int2(IN.positionCS.xy), 0)) > 0.5)
+                    discard;
+            }
+
+            half4 fragDisplaced(Varyings IN) : SV_Target
+            {
+                ClipHullInterior(IN);
+                return frag(IN, false);
+            }
+
+            half4 fragDisplacedDepth(Varyings IN) : SV_Target
+            {
+                ClipHullInterior(IN);
+                return frag(IN, true);
+            }
         ENDHLSL
 
         Pass
@@ -5925,7 +5995,7 @@ Shader "HiddenHarbours/Water"
             Tags { "LightMode" = "Universal2D" }
             HLSLPROGRAM
             #pragma vertex vert
-            #pragma fragment frag
+            #pragma fragment fragColour
             // multi_compile (not shader_feature) so the height-map branch is ALWAYS compiled — WaterSurface
             // toggles _USE_HEIGHTTEX at runtime after baking, and a shader_feature variant absent from the
             // build would silently fall back to the off (uniform-deep) path.
@@ -6012,48 +6082,6 @@ Shader "HiddenHarbours/Water"
             // water itself this ordering is already correct. The y reference is the height map's
             // world-rect min (_HeightWorldMin) — ONE constant for the whole sea, so chunked meshes
             // share a continuous depth ramp with no seams at chunk borders.
-            Varyings vertDisplaced(Attributes IN)
-            {
-                Varyings OUT;
-                UNITY_SETUP_INSTANCE_ID(IN);
-                UNITY_TRANSFER_INSTANCE_ID(IN, OUT);
-                VertexPositionInputs pos = GetVertexPositionInputs(IN.positionOS);
-                float3 ws = pos.positionWS;
-                float2 ground = ws.xy;                       // the UNDISPLACED ground position
-
-                float vHeight;
-                float2 vSlope;
-                float vCrest;
-                float vPrimCos;
-                float vFreqScale = max(_OceanSwellScale, 1e-4) / WAVE_LEGACY_SCALE_REF;
-                // The fetch envelope marched with the EXPLICIT-LOD seabed sampler — the vertex stage has no
-                // derivatives. _HeightTex carries no mips, so LOD 0 IS the texture and this reads the same
-                // elevations the fragment does: the displaced surface rides the lee the fragment draws.
-                float vFetchEnv = FetchEnvelope01Lod(ground);
-                WaveFieldSample(ground, vFreqScale, vFetchEnv, vHeight, vSlope, vCrest, vPrimCos);
-
-                float stillDepth = _WaterLevel - SeabedElevationLod(ground);
-                float fade = ShoreFade01(stillDepth, _ShoreFadeBand);
-                float lift = vHeight * _WaveExaggeration * fade;   // UNCHANGED, operation for operation
-
-                // ⭐ THE WAKE LIFT (water PR F, row 27) — the hull's own wave train, in the SAME frame the
-                // swell displaces, added to the SAME height. Exactly 0.0 at either dial's passthrough and
-                // for every hull at rest, so the sea a dial-0 plate photographs is bit-identical.
-                //   * NOT multiplied by _WaveExaggeration: exaggeration means "draw the simulated sea
-                //     taller than it is", and this train has no simulated twin to be taller than. The dial
-                //     is in DRAWN metres, which is what makes an elevation plate readable.
-                //   * DOES carry `fade`, so the train dies at the walkable waterline exactly as the swell
-                //     does. Anything else would tear the coast that ShoreFade01 exists to keep whole.
-                lift += WakeLiftHeight(ground) * fade;
-
-                ws.y += lift;
-                ws.z += (ground.y - _HeightWorldMin.y) * _WaterIsoDepth.x - lift * _WaterIsoDepth.y;
-
-                OUT.positionCS = TransformWorldToHClip(ws);
-                OUT.uv = IN.uv;
-                OUT.worldXY = ground;   // frag paints AND clips at the ground position — the lift
-                return OUT;             // moves pixels, never the waterline contour.
-            }
 
             // ---- THE INTERIOR MASK (ADR 0023) -----------------------------------------------
             // The sea may not draw inside a boat. IsoFacetHullFeature's guard pass has already
@@ -6073,14 +6101,29 @@ Shader "HiddenHarbours/Water"
             // ⚠️ Reads a GLOBAL bound by the feature (and to a 1x1 BLACK fallback by
             // IsoFacetHullRegistry before it has ever run). Unbound, a sampler returns Unity's grey
             // placeholder ~0.5 and this test becomes a coin flip on whether the whole sea vanishes.
-            Texture2D<float> _HHHullGuardTex;
+            ENDHLSL
+        }
 
-            half4 fragDisplaced (Varyings IN) : SV_Target
-            {
-                if (_HHHullGuardTex.Load(int3(int2(IN.positionCS.xy), 0)) > 0.5)
-                    discard;
-                return frag(IN);
-            }
+        // Depth has the same displacement and coverage, but no water colour/reflection work.
+        Pass
+        {
+            Name "HHWaterDepth"
+            Tags { "LightMode" = "HHWaterDepth" }
+            ZWrite On
+            ZTest LEqual
+            ColorMask 0
+            HLSLPROGRAM
+            #pragma vertex vertDisplaced
+            #pragma fragment fragDisplacedDepth
+            #pragma multi_compile_local _ _USE_HEIGHTTEX
+            #pragma shader_feature_local _ _USE_SURFACETEX
+            #pragma shader_feature_local _ _USE_FOAMTEX
+            #pragma shader_feature_local _ _USE_CAUSTICTEX
+            #pragma shader_feature_local _ _USE_SPARKLETEX
+            #pragma shader_feature_local _ _USE_DEPTHRAMP
+            #pragma shader_feature_local _ _USE_WHITECAPTEX
+            #pragma shader_feature_local _ _USE_SEABEDTEX
+            #pragma multi_compile_instancing
             ENDHLSL
         }
     }

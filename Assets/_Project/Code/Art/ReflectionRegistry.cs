@@ -95,6 +95,12 @@ namespace HiddenHarbours.Art
         /// half-mirror across the entire sea on the first frame of every scene. Same lesson, same
         /// shape, as the interior guard's black 1×1.</para>
         /// </summary>
+        internal static void BindIdle()
+        {
+            EnsureFallbackBound();
+            Shader.SetGlobalTexture(ReflectionShaderIds.ReflectTex, s_ClearFallback);
+        }
+
         static void EnsureFallbackBound()
         {
             if (s_ClearFallback != null) return;
