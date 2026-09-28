@@ -39,7 +39,13 @@ Your calls are numbered here as the Art desk put them to the owner.
 11. The four landmark trees stay left to the woods, as drawn.
 12. The life-ring moves off the spring high-tide line. The lane that builds the east end picks where: the deck's north edge, or the top of the slip.
 
-Calls 3 to 12 need nothing redrawn.
+**The Alder Fall: all as drawn** (pass 6, section 9 of your NOTES.md)
+13. The fall is 1.8 m high.
+14. The flow follows the weather: it rises 6 hours after rain and falls back over 36 hours.
+15. The ground round the fall is eased. The terrain lane builds that.
+16. The alder beside it moves 1.6 m west.
+
+Calls 3 to 16 need nothing redrawn.
 
 ## 3. First, Ginny's cottage: a detail pass
 
