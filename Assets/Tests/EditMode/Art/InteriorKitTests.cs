@@ -34,6 +34,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
         static string RigSource(string fileName) =>
             File.ReadAllText(Path.Combine(RepoRoot, "docs", "art", "rigs", fileName));
 
+        /// <summary>The room rig the kit bakes since the village return (drop 14, #898), under
+        /// <c>docs/art/rigs/</c> — RigCatalog's <c>interior</c>.</summary>
+        const string InteriorRig = "village-return/houses-kit/Art/interiorIsoRig.js";
+
         // =============================================================================
         //  identity
         // =============================================================================
@@ -86,7 +90,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void EveryDialledKeyIsAKeyTheRigActuallyReads()
         {
-            AssertKeysResolve(RigSource("interiorIsoRig.js"), InteriorKit.RoomOptionKeys, "interiorIsoRig");
+            AssertKeysResolve(RigSource(InteriorRig), InteriorKit.RoomOptionKeys, "interiorIsoRig");
             AssertKeysResolve(RigSource("interiorPropRig.js"), InteriorKit.PropOptionKeys, "interiorPropRig");
         }
 
@@ -118,7 +122,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // The negative control on the grep itself. `winD` is the rig's INTERNAL field name and
             // appears in the source; it does nothing as an option. If the grep below passed it, the
             // whole defence above would be decorative.
-            string source = RigSource("interiorIsoRig.js");
+            string source = RigSource(InteriorRig);
             StringAssert.Contains("winD", source, "the internal field really is spelled this way");
             Assert.IsFalse(ResolvesKey(source, "winD"),
                            "…and it is never READ as an option — which is what the grep must see");
@@ -189,58 +193,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// metres without a JS engine.</summary>
         static (double Wd, double Ln) Footprint(double size) => (6 + size * 2.4, 7 + size * 4.2);
 
-        // =============================================================================
-        //  ⭐ the shell has to DRAW its door where the room opens
-        // =============================================================================
-
-        [Test]
-        public void EveryRoomsShellDrawsItsDoorOnTheGableTheRoomOpensOnto()
-        {
-            // 🔴 houseIsoRig.anchors() returns the +Y gable centre for EVERY shape and porch, and a
-            // room's doorway registers to that anchor. Measured 2026-08-12: three of this village's
-            // four houses drew their door somewhere else entirely — the school's and the saltbox's on
-            // the +X eave wall (90° out), the farmhouse's on its ell wing (1.21 m across and 4.17 m
-            // beyond the room's footprint). Every one of them still drew beautifully; the only symptom
-            // was a visible door you cannot walk through and a gap in a blank wall that you can.
-            foreach (var room in InteriorKit.RoomSet)
-            {
-                var exterior = VillageBuildingKit.FindBuild(room.Key);
-                Assert.IsNotNull(exterior, $"'{room.Key}' has no shell");
-
-                bool ok = VillageBuildingKit.DrawsDoorOnGable(exterior.Value, out string why);
-                Assert.IsTrue(ok,
-                              $"'{room.Key}' has a baked room, but its shell does not draw its door on " +
-                              $"the gable the room opens onto.\n  {why}\n\nThe room's doorway is cut " +
-                              "where anchors() claims the door is, so this ships a house whose visible " +
-                              "door is solid wall and whose walk-in gap is blank clapboard. Re-dial the " +
-                              "shell (porch 'front'/'wrap', shape not 'ell'/'cape', no bay) or drop the " +
-                              "room.");
-            }
-        }
-
-        [Test]
-        public void TheRigStillRoutesItsDoorTheWayTheGableRuleAssumes()
-        {
-            // The negative control on the rule above. DrawsDoorOnGable mirrors four lines of
-            // houseIsoRig; if art-director re-routes the door, the mirror goes quietly stale and the
-            // guard starts approving builds it should reject. So assert the rig still says what the
-            // mirror was written against — a re-route then fails HERE, pointing at the predicate.
-            string source = RigSource("houseIsoRig.js");
-
-            StringAssert.Contains("const eaveDoor = isCape || (!hasPorch && b.shape!=='ell')", source,
-                                  "houseIsoRig no longer routes the eave door the way " +
-                                  "VillageBuildingKit.DrawsDoorOnGable mirrors it");
-            StringAssert.Contains("const gableDoor = hasPorch && b.shape!=='ell'", source,
-                                  "houseIsoRig no longer routes the gable door the way " +
-                                  "VillageBuildingKit.DrawsDoorOnGable mirrors it");
-            StringAssert.Contains("const bayFrontOn = !!bayKind && b.shape!=='ell'", source,
-                                  "houseIsoRig no longer cancels the porch on a bay — which is the " +
-                                  "least obvious clause in the rule and the one worth pinning");
-            StringAssert.Contains("door:pj(0,b.Ln/2,b.fH+1.0)", source,
-                                  "houseIsoRig's door ANCHOR is no longer the unconditional +Y gable " +
-                                  "centre. If it now follows where the door is drawn, that is good news " +
-                                  "— delete DrawsDoorOnGable and register rooms to the honest anchor.");
-        }
+        // The shell-draws-its-door-on-the-gable pair retired with the village return (#898, R2):
+        // the returned house's door anchor follows the door it draws, and each room registers against
+        // its own shell's anchor, so the bake's registration probe refuses a shell whose door the room
+        // cannot open onto (VillageReturnIntakeTests.TheReturnedRigsRefuseASizeOnlyShell).
 
         [Test]
         public void DoorModelMetres_FallsBackToTheHOUSEFamilysWall_NotToZero()

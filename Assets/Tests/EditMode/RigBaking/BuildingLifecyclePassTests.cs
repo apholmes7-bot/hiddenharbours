@@ -50,6 +50,16 @@ namespace HiddenHarbours.Tests.RigBaking
             "if(LC && LC.active(opts)){ const r=LC.apply(faces, MATS, b, opts); faces=r.faces; b=r.b; }";
 
         /// <summary>
+        /// The same hook on ONE line, in the returned house's and shopfront's second entry point
+        /// (drop 14, #898): <c>liveModel(opts)</c>, which builds the model <c>CoastalPass.light</c>
+        /// lights. Each entry point consults the pass once, so this is not the double hook
+        /// <see cref="AllThreeHostRigs_CarryTheHook_Verbatim"/> guards against, and the strip removes it
+        /// with the other two.
+        /// </summary>
+        const string HookOneLine =
+            "const LC=root.BuildingLifecycle; if(LC&&LC.active(opts)){ const r=LC.apply(faces,MATS,b,opts); faces=r.faces; b=r.b; }";
+
+        /// <summary>
         /// sha256 of <c>buildingLifecycleRig.js</c> with line endings normalised to LF — the drop's own
         /// bytes, as received on <c>feat/building-lifecycle-drop</c>.
         ///
@@ -402,8 +412,9 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// The rig source with the two hook lines removed and the <c>let</c> they needed put back to
-        /// <c>const</c> — i.e. the file exactly as it stood before the adoption.
+        /// The rig source with the hook removed — its two lines, and the one-line copy in the returned
+        /// rigs' <c>liveModel</c> (<see cref="HookOneLine"/>) — and the <c>let</c> they needed put back
+        /// to <c>const</c> — i.e. the file exactly as it stood before the adoption.
         ///
         /// <para>Done on the decoded string in memory, never via a file: these rigs carry multi-byte
         /// UTF-8 and a PowerShell round-trip mangles it.</para>
@@ -411,7 +422,8 @@ namespace HiddenHarbours.Tests.RigBaking
         static string WithoutTheHook(string src, string rigKey)
         {
             var kept = src.Split('\n')
-                          .Where(line => !line.Contains(HookLine1) && !line.Contains(HookLine2));
+                          .Where(line => !line.Contains(HookLine1) && !line.Contains(HookLine2) &&
+                                         !line.Contains(HookOneLine));
             string stripped = string.Join("\n", kept);
 
             // The hook needs `b` and `faces` to be reassignable; the pre-hook file declared them

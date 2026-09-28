@@ -14,11 +14,12 @@ namespace HiddenHarbours.Tests.RigBaking
     /// The intake guard for Claude Design's village return (drop 14, 2026-09-26), landed as delivered in
     /// <c>docs/art/rigs/village-return/</c> BESIDE today's rigs.
     ///
-    /// <para>Nothing the game bakes installs the returned house or room yet: <c>house</c> and
-    /// <c>interior</c> switch in the same commit as the re-bake (RigCatalog.CoastalHeritage.cs says why).
-    /// So these tests stage the two catalog entries that switch will write, and measure what it rests on
-    /// before anyone relies on it — the companion's and the manors' load order, the storey reader, the
-    /// room-under-shell registration, the classic look, and the landed bytes. Like
+    /// <para>Phase A staged the returned house and room beside today's; Phase B (#898) switched the
+    /// catalog to them in the same commit as the re-bake (RigCatalog.CoastalHeritage.cs says why). These
+    /// tests measure what the switch rests on — the companion's and the manors' load order, the storey
+    /// reader and the rises the contract now holds, the room-under-shell registration at offset 0, the
+    /// classic look against main's own rigs (kept in <c>docs/art/rigs/</c> for exactly this), the
+    /// building probe's reading of the general store's eave door, and the landed bytes. Like
     /// <see cref="InteriorRigBakeTests"/>, they need no graphics device, only ClearScript, so CI runs the
     /// lot.</para>
     /// </summary>
@@ -31,29 +32,23 @@ namespace HiddenHarbours.Tests.RigBaking
         const int Shown = 20;
 
         /// <summary>
-        /// The returned house as <c>house</c> will name it: the lifecycle pass as today, and the
-        /// companion, which the house reads for its palette and its light. The lifecycle pass is the
-        /// catalog's own copy; the kit's is byte-identical to it.
+        /// Today's house before the switch: main's <c>houseIsoRig.js</c> after the lifecycle pass, as
+        /// <c>house</c> named it until #898. It stays in <c>docs/art/rigs/</c> as the classic pin's
+        /// reference.
         /// </summary>
-        static readonly RigEntry ReturnedHouse = new RigEntry(
-            Art + "/houseIsoRig.js", House, AzimuthConvention.CounterClockwise,
-            new[] { "buildingLifecycle", "coastalPass" });
+        static readonly RigEntry TodaysHouse = new RigEntry(
+            "docs/art/rigs/houseIsoRig.js", House, AzimuthConvention.CounterClockwise,
+            new[] { "buildingLifecycle" });
 
-        /// <summary>
-        /// The returned room as <c>interior</c> will name it. It reads the companion, and — for its
-        /// lights, its dressing and, when a room is given its shell, its doorway — the HOUSE. While
-        /// <c>house</c> still names today's rig, a "house" prerequisite here would install the wrong
-        /// one, so <see cref="ReturnedHost"/> installs the returned house first instead.
-        /// </summary>
-        static readonly RigEntry ReturnedInterior = new RigEntry(
-            Art + "/interiorIsoRig.js", Interior, AzimuthConvention.CounterClockwise,
-            new[] { "coastalPass" });
+        /// <summary>Today's room before the switch: main's <c>interiorIsoRig.js</c>, no prerequisites.</summary>
+        static readonly RigEntry TodaysInterior = new RigEntry(
+            "docs/art/rigs/interiorIsoRig.js", Interior, AzimuthConvention.CounterClockwise);
 
         /// <summary>
         /// Floor-to-floor rise of the four shipped rooms on the returned rig, in metres — measured at
-        /// intake on Node and V8, identical with the companion on, off and not loaded. Today's contract
-        /// holds 3.1–3.5 m for the same rooms, read off the old rig's anchor; these are what the re-bake
-        /// will write.
+        /// intake on Node and V8, identical with the companion on, off and not loaded. The contract held
+        /// 3.1–3.5 m for the same rooms before the switch, read off the old rig's anchor; these are what
+        /// the re-bake wrote.
         /// </summary>
         static readonly (string Key, double Rise)[] ReturnedRises =
         {
@@ -65,8 +60,8 @@ namespace HiddenHarbours.Tests.RigBaking
             IRigScriptHost host = RigScriptHostFactory.Create();
             try
             {
-                RigCatalog.Install(host, ReturnedHouse);
-                RigCatalog.Install(host, ReturnedInterior);
+                RigCatalog.Install(host, RigCatalog.Get("house"));
+                RigCatalog.Install(host, RigCatalog.Get("interior"));
                 return host;
             }
             catch
@@ -81,8 +76,8 @@ namespace HiddenHarbours.Tests.RigBaking
             IRigScriptHost host = RigScriptHostFactory.Create();
             try
             {
-                RigCatalog.Install(host, RigCatalog.Get("house"));
-                RigCatalog.Install(host, RigCatalog.Get("interior"));
+                RigCatalog.Install(host, TodaysHouse);
+                RigCatalog.Install(host, TodaysInterior);
                 return host;
             }
             catch
@@ -171,31 +166,43 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void TheStoreyReaderStillReadsTodaysRoomsAsTheContractHoldsThem()
+        public void TheContractHoldsTheReturnedRises_AsTheReaderTakesThem()
         {
             InteriorKit.Contract contract = InteriorKit.Load();
             Assert.IsNotNull(contract, $"no contract at {InteriorKit.ContractPath}");
 
-            RigEntry interior = RigCatalog.Get("interior");
-            using IRigScriptHost host = TodaysHost();
+            using IRigScriptHost host = ReturnedHost();
             var failures = new List<string>();
-            foreach (InteriorKit.Build room in InteriorKit.RoomSet)
+            foreach ((string key, double rise) in ReturnedRises)
             {
-                InteriorKit.Entry entry = contract.rooms?.FirstOrDefault(e => e.key == room.Key);
+                InteriorKit.Entry entry = contract.rooms?.FirstOrDefault(e => e.key == key);
                 if (entry == null)
                 {
-                    failures.Add($"{room.Key}: not in the contract");
+                    failures.Add($"{key}: not in the contract");
                     continue;
                 }
-                double read = InteriorRigBaker.StoreyRiseMetres(host, interior.GlobalName,
-                                                                InteriorBakeMenu.OptionsLiteralFor(room));
-                if (Math.Abs((float)read - entry.storeyHeightMetres) > 1e-6f)
-                    failures.Add($"{room.Key}: the reader gives {read:F4} m, the contract holds " +
-                                 $"{entry.storeyHeightMetres:F4} m");
+                double read = InteriorRigBaker.StoreyRiseMetres(host, Interior, InteriorBakeMenu.OptionsLiteralFor(Room(key)));
+                if (Math.Abs((float)read - entry.storeyHeightMetres) > 1e-6f || Math.Abs(read - rise) > 1e-6)
+                    failures.Add($"{key}: the reader gives {read:F4} m, the contract holds " +
+                                 $"{entry.storeyHeightMetres:F4} m, the intake measured {rise:F2} m");
             }
             AssertNone(failures,
-                "a rig without dims() falls back to anchors().storeyZ, which is what the contract was " +
-                "written from — so today's sheets and contract stand until the re-bake");
+                "the re-bake writes each room's rise through the storey reader, off the rig the catalog names");
+        }
+
+        [Test]
+        public void TodaysRigsReadTheirRoomsOffTheAnchor_AsTheOldContractHeldThem()
+        {
+            // The reader's fallback, kept honest: a rig with no dims() reads anchors().storeyZ, which is
+            // what main's contract was written from (3.02–3.48 m) before the switch.
+            using IRigScriptHost host = TodaysHost();
+            foreach (InteriorKit.Build room in InteriorKit.RoomSet)
+            {
+                string opts = InteriorBakeMenu.OptionsLiteralFor(room);
+                double read = InteriorRigBaker.StoreyRiseMetres(host, Interior, opts);
+                Assert.AreEqual(host.EvaluateNumber($"{Interior}.anchors(0,{opts}).storeyZ"), read, 1e-9, room.Key);
+                Assert.That(read, Is.InRange(3.0, 3.5), room.Key);
+            }
         }
 
         // =============================================================================
@@ -223,20 +230,17 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void TodaysRoomsRegisterAtTheContractsOffsetAgainstTheirOwnShells()
+        public void TodaysRigsRegisteredEveryRoomAtOffsetFour()
         {
-            InteriorKit.Contract contract = InteriorKit.Load();
-            Assert.IsNotNull(contract, $"no contract at {InteriorKit.ContractPath}");
-
+            // The number the switch retires, measured on main's rigs against each room's own shell: the
+            // offset main's contract carried. The returned rigs measure 0 (below), and the re-bake wrote it.
             using IRigScriptHost host = TodaysHost();
-            string exterior = RigCatalog.Get("house").GlobalName, interior = RigCatalog.Get("interior").GlobalName;
             foreach (InteriorKit.Build room in InteriorKit.RoomSet)
             {
                 InteriorRigAzimuthProbe.Registration reg = InteriorRigAzimuthProbe.MeasureRegistration(
-                    host, exterior, InteriorBakeMenu.ExteriorOptionsFor(room.Key),
-                    interior, InteriorBakeMenu.OptionsLiteralFor(room), InteriorKit.Facings);
-                Assert.AreEqual(contract.exteriorFacingOffset, reg.FacingOffset,
-                                $"{room.Key}: the contract's offset is the one its own shell measures\n" + reg.Report);
+                    host, House, InteriorBakeMenu.ExteriorOptionsFor(room.Key),
+                    Interior, InteriorBakeMenu.OptionsLiteralFor(room), InteriorKit.Facings);
+                Assert.AreEqual(4, reg.FacingOffset, $"{room.Key}\n" + reg.Report);
             }
         }
 
@@ -262,6 +266,10 @@ namespace HiddenHarbours.Tests.RigBaking
                     Assert.AreEqual(+1, reg.InteriorGable, room.Key);
                 }
             }
+
+            InteriorKit.Contract contract = InteriorKit.Load();
+            Assert.IsNotNull(contract, $"no contract at {InteriorKit.ContractPath}");
+            Assert.AreEqual(0, contract.exteriorFacingOffset, "and the re-bake wrote the offset it measured");
         }
 
         [Test]
@@ -337,7 +345,7 @@ namespace HiddenHarbours.Tests.RigBaking
                                            "the pin covers every village house the kit bakes today");
 
             using IRigScriptHost host = RigScriptHostFactory.Create();
-            RigCatalog.Install(host, ReturnedHouse);
+            RigCatalog.Install(host, RigCatalog.Get("house"));
             var failures = new List<string>();
             using (SHA256 sha = SHA256.Create())
             {
@@ -357,6 +365,83 @@ namespace HiddenHarbours.Tests.RigBaking
             }
             AssertNone(failures,
                 "the returned house with {classic:true, coastalPass:false} no longer draws today's pixels");
+        }
+
+        // =============================================================================
+        //  the building probe: the general store's door is on an eave now
+        // =============================================================================
+
+        [Test]
+        public void TheGeneralStoresEaveDoorIsReadFromItsLoop_AsTheCatalogDeclares()
+        {
+            VillageBuildingKit.Build? store = VillageBuildingKit.FindBuild("generalStore");
+            Assert.IsNotNull(store, "the general store left the kit");
+
+            RigEntry house = RigCatalog.Get("house");
+            using IRigScriptHost host = RigScriptHostFactory.Create();
+            RigGeometry geo = RigCatalog.Install(host, house);
+            string opts = VillageBuildingBakeMenu.BaseOptionsLiteralFor(store.Value, House);
+
+            Assert.AreEqual("+X", BuildingRigAzimuthProbe.DoorWall(host, House, opts),
+                            "the returned rig routes the general store's door (front porch + bay) onto the " +
+                            "+X eave — accepted by the owner's ruling of 09-27; the house is not placed");
+
+            BuildingRigAzimuthProbe.Result probe = BuildingRigAzimuthProbe.Measure(
+                host, House, opts, geo.Width, geo.Height, geo.PivotX);
+            Assert.Less(Math.Abs(probe.DoorOffsetPx), BuildingRigAzimuthProbe.MinDoorOffsetPx,
+                        "at a quarter turn the eave door faces the camera or away, on the pivot — the side " +
+                        "reading has nothing to give, which is why the loop answers\n" + probe.Report);
+            Assert.AreEqual(house.DeclaredConvention, probe.Convention, probe.Report);
+            StringAssert.Contains("eave", probe.Report, "the report names the reading that answered");
+        }
+
+        [Test]
+        public void EveryDoorTheProbeCanReadCirclesThePivotTheWayItsSideSays()
+        {
+            // The loop reading's calibration, re-measured: on every building whose door the SIDE reading
+            // can read, a counter-clockwise side is a negative loop. Main's house, the returned house and
+            // the wharf buildings; the general store's eave door is the one the side cannot read.
+            var rigs = new (string Label, RigEntry Entry, string RigKey)[]
+            {
+                ("main's house", TodaysHouse, "house"),
+                ("the returned house", RigCatalog.Get("house"), "house"),
+                ("the wharf", RigCatalog.Get("wharfBuilding"), "wharfBuilding"),
+            };
+
+            var failures = new List<string>();
+            int read = 0, eave = 0;
+            foreach ((string label, RigEntry entry, string rigKey) in rigs)
+            {
+                using IRigScriptHost host = RigScriptHostFactory.Create();
+                RigGeometry geo = RigCatalog.Install(host, entry);
+                string g = entry.GlobalName;
+                // Every build in the kit, M1 and lifecycle: a lifecycle build is probed on its bare
+                // building (BuildingBakeRequest.UnderlyingOptsJs), which is what BaseOptionsLiteralFor is.
+                foreach (VillageBuildingKit.Build b in VillageBuildingKit.AllBuilds.Where(b => b.RigKey == rigKey))
+                {
+                    string opts = VillageBuildingBakeMenu.BaseOptionsLiteralFor(b, g);
+                    double side = host.EvaluateNumber($"{g}.anchors(2,{opts}).door.x") - geo.PivotX;
+                    double loop = BuildingRigAzimuthProbe.DoorLoopAreaPx2(host, g, opts);
+
+                    if (Math.Abs(loop) < BuildingRigAzimuthProbe.MinDoorLoopAreaPx2)
+                        failures.Add($"{label} {b.Key}: the door sweeps only {loop:F0} px² around the pivot");
+                    if (Math.Abs(side) < BuildingRigAzimuthProbe.MinDoorOffsetPx)
+                    {
+                        eave++;
+                        continue;
+                    }
+                    read++;
+                    if ((side < 0) != (loop < 0))
+                        failures.Add($"{label} {b.Key}: the side reads {side:+0.0;-0.0} px but the loop " +
+                                     $"{loop:+0;-0} px²");
+                }
+            }
+
+            AssertNone(failures, "the door's loop no longer agrees with its side — the loop reading's sign " +
+                                 "is calibrated on these builds, so BuildingRigAzimuthProbe's eave path is unproven");
+            Assert.AreEqual(13, read, "the calibration was measured on 13 builds whose side the probe reads " +
+                                      "(5 on main's house, 4 on the returned, 4 wharf); a new build re-opens it");
+            Assert.AreEqual(1, eave, "and exactly one door the side cannot read: the general store's");
         }
 
         // =============================================================================

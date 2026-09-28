@@ -2,11 +2,10 @@
 
 Landed 2026-09-26 by the art-pipeline lane: Phase A of the village return intake (handoff
 `HANDOFF-2026-09-26-village-return-14-intake.md`). This folder is the drop **as delivered**, less the
-files named below. Nothing in any rig was edited. The game still bakes and draws today's rigs and sheets:
-`house` and `interior` in `RigCatalog` still name `docs/art/rigs/houseIsoRig.js` and
-`docs/art/rigs/interiorIsoRig.js`. The returned rigs are switched in Phase B (below), in the same commit as
-the re-bake. The only wiring that lands now is three catalog keys, `coastalPass`, `manorIso` and
-`manorUnitIso`, carried from #853.
+files named below. Nothing in any rig was edited. Phase A wired only three catalog keys, `coastalPass`,
+`manorIso` and `manorUnitIso`, carried from #853. Phase B (below) switched the game onto the returned rigs
+in the same PR, in the same commit as the re-bake: `house`, `interior`, `shopfront`, `shopInterior` and
+`yardIso` in `RigCatalog` now name this folder's copies.
 
 | | |
 |---|---|
@@ -96,24 +95,56 @@ Phases 2 and 3 changed the room plan and cut the walls at the sill on purpose (`
 `WeatherSky`, a `time` gives the clock's picture (REF_SKY or NIGHT_SKY, switched by the clock). No build's
 options carry `time`, `sky` or `night`, so the bake carries **REF_SKY**.
 
-## Phase B: the switch (not in this PR)
+## Phase B: the switch
 
-1. `house` → `village-return/houses-kit/Art/houseIsoRig.js`, prerequisites `buildingLifecycle`,
-   `coastalPass`.
-2. `interior` → `village-return/houses-kit/Art/interiorIsoRig.js`, prerequisites `house`, `coastalPass`.
-   The returned room reads `HouseIso.entrance(shell)` and `HouseIso.BODY`.
-3. Each room registers against its own shell. `Interiors.json`'s `exteriorFacingOffset` goes from 4 to 0,
-   and the rooms' `storeyHeightMetres` take the measured rises. `Buildings.json`, `Interiors.json` and
-   `shops.contract.json` are regenerated through the bakers only.
-4. Retired with the switch (each named with its production subject in the PR):
-   - `InteriorKitTests.EveryRoomsShellDrawsItsDoorOnTheGableTheRoomOpensOnto`;
-   - `TheRigStillRoutesItsDoorTheWayTheGableRuleAssumes`, whose subject is
+The owner ruled on Phase A's report on 2026-09-27: R2 accepted; light option L2, houses first; re-bake the
+5 houses, the 4 rooms, the 10 yard pieces and the 4 shopfronts; the rooms now.
+
+1. **The rigs.** `house` → `village-return/houses-kit/Art/houseIsoRig.js`, prerequisites
+   `buildingLifecycle`, `coastalPass`. `interior` → `village-return/houses-kit/Art/interiorIsoRig.js`,
+   prerequisites `house`, `coastalPass`; the returned room reads `HouseIso.entrance(shell)` and
+   `HouseIso.BODY`. `shopfront` and `shopInterior` → `village-return/shop-building-kit/`; `yardIso` →
+   `village-return/yard-landscaping-kit/`. Sprite names and counts did not change. The four wharf sheets
+   did not move. The props, the shop levels and the counter were not re-baked. `Buildings.json`,
+   `Interiors.json` and `shops.contract.json` were regenerated through their bakers only.
+2. **R2: each room under its own shell, at offset 0.** The returned room draws its doorway on the gable
+   its house's door is on, so `InteriorRigAzimuthProbe` measures offset 0 for each room against its own
+   shell. `Interiors.json` carries `exteriorFacingOffset: 0`, and `shops.contract.json` carries
+   `shellFacingOffset: 0`. `storeyHeightMetres` takes each rig's measured rise: sageCottage 2.65, school
+   2.59, redSaltbox 2.74, whiteFarmhouse 2.92.
+3. **The furniture turned with the doorway.** `StPetersInteriors`' plans were laid out for a doorway on
+   `−Y`. A half-turn about the room's centre keeps every piece where it was relative to the door: every
+   coordinate is negated, every facing turns by 4, and the pillows swap ends. The door-lane and
+   bedroom-side tests now read which end the door is on from the bake
+   (`InteriorCatalog.DoorModelMetres`) rather than assuming `−Y`.
+4. **The placed rooms.** St Peters cannot be rebuilt, so its five placed rooms were re-pointed by hand in
+   the scene YAML. Each room's sprite moves four facings on, to the cell that registers under its house at
+   offset 0. Nothing else in the scene moved. Ginny's upstairs keeps today's lift of 3.1025 m; a room
+   stood from scratch uses the contract's 2.65 m.
+5. **L2, the lit houses.** The five house builds bake three sheets beside the albedo:
+   - `_mask`, in the trees' order (R key, G back rim, B depth, A coverage);
+   - `_normal`;
+   - `_emit`, a new one-byte sheet (R8) for the emitters.
+
+   The emit term is part of the shared light law, in `SpriteLightResponse.hlsl` and its twin
+   `SpriteLightMath.cs`. With no emitter sheet bound, every sprite draws as before. The placed houses in
+   St Peters and Nine Mile Creek were patched by hand to `LitVillageBuilding.mat` with a
+   `SpriteLightBinder`, the same binding `VillageBuildingCatalog.Configure` gives a freshly placed house.
+   There are no per-frame ground pools, no occupancy and no second shader pass. Every other sheet was
+   re-baked albedo-only.
+6. **The general store's door.** The returned `generalStore` build draws its door on the `+X` eave. It is
+   not placed anywhere (St Peters' store is the shop rig's), and the owner accepted it. At a quarter turn
+   the door lands on the pivot, so its side gives no answer. `BuildingRigAzimuthProbe` now reads such a
+   door from the loop it traces around the pivot, but only when the rig itself reports the door on an
+   eave.
+7. **Retired with the switch.** Each is named with its production subject in the PR:
+   - `InteriorKitTests.EveryRoomsShellDrawsItsDoorOnTheGableTheRoomOpensOnto` and
+     `TheRigStillRoutesItsDoorTheWayTheGableRuleAssumes`, whose subject is
      `VillageBuildingKit.DrawsDoorOnGable`;
    - the offset-4 and door-gable pins in `InteriorRigBakeTests`;
-   - the `test_export.py` rigSource pins.
-5. The house build `generalStore` is not placed anywhere; St Peters' store is the shop rig's. The returned
-   rig draws its door on the +X eave, so `BuildingRigAzimuthProbe` would refuse its bake. It finds the door
-   on the pivot at a quarter turn. Its re-bake needs a decision.
+   - `test_export.py`'s `test_the_interior_sits_a_half_turn_from_its_building`. The scene exporter is
+     retired, and #900 took its CI job off main; the file stays, so its offset-4 pin is retired here. No
+     package was run or committed.
 
 ## Line endings
 

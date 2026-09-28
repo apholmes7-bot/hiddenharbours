@@ -21,12 +21,13 @@ namespace HiddenHarbours.Tools.RigBaking
         /// carried here with the drop-14 sources: the two manor rigs are byte-identical to #853's once
         /// line endings are normalised; <c>coastalPass.js</c> is the new 3.2.0 and was re-measured.</para>
         ///
-        /// <para>⚠️ <b>NOTHING THE GAME BAKES INSTALLS THESE YET.</b> The drop is landed beside today's
-        /// rigs (<c>docs/art/rigs/village-return/</c>), and <c>house</c> and <c>interior</c> still name
-        /// today's sources with today's prerequisites. They switch to the returned rigs, and gain the
-        /// companion as a prerequisite, in the same commit as the re-bake — so the game draws today's
-        /// sheets until the sheets that match the new sources exist. The manors are the v3 return's:
-        /// they have no bake menu and no placement, only these keys.</para>
+        /// <para>⭐ <b>THE SWITCH (#898, Phase B).</b> The drop was landed beside today's rigs
+        /// (<c>docs/art/rigs/village-return/</c>); <c>house</c>, <c>interior</c>, <c>shopfront</c>,
+        /// <c>shopInterior</c> and <c>yardIso</c> switched to the returned sources in the same commit as
+        /// the re-bake, and all but <c>shopInterior</c> name the companion as a prerequisite, so no sheet
+        /// is drawn from a source it was not baked from. Today's <c>houseIsoRig.js</c> and
+        /// <c>interiorIsoRig.js</c> stay in <c>docs/art/rigs/</c> as the classic pin's reference. The
+        /// manors are the v3 return's: they have no bake menu and no placement, only these keys.</para>
         /// </summary>
         [RigContribution]
         static IEnumerable<KeyValuePair<string, RigEntry>> CoastalHeritageRigs() =>

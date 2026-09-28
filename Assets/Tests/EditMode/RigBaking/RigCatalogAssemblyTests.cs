@@ -212,10 +212,12 @@ namespace HiddenHarbours.Tests.RigBaking
             // of a registered global's source is the drift the no-edit rule exists to prevent.
             new Snapshot("gasStation", "docs/art/rigs/gas-station-rig/rig/gasStationRig.js",
                          "StationIso", AzimuthConvention.Clockwise, "deckIsoSolid", "fuel"),
-            new Snapshot("house", "docs/art/rigs/houseIsoRig.js",
-                         "HouseIso", AzimuthConvention.CounterClockwise, "buildingLifecycle"),
-            new Snapshot("interior", "docs/art/rigs/interiorIsoRig.js",
-                         "InteriorIso", AzimuthConvention.CounterClockwise),
+            // The village return (drop 14, #898): the returned house after the lifecycle pass and the
+            // companion, and the returned room after the house it opens its doorway from.
+            new Snapshot("house", "docs/art/rigs/village-return/houses-kit/Art/houseIsoRig.js",
+                         "HouseIso", AzimuthConvention.CounterClockwise, "buildingLifecycle", "coastalPass"),
+            new Snapshot("interior", "docs/art/rigs/village-return/houses-kit/Art/interiorIsoRig.js",
+                         "InteriorIso", AzimuthConvention.CounterClockwise, "house", "coastalPass"),
             new Snapshot("interiorProp", "docs/art/rigs/interiorPropRig.js",
                          "PropIso", AzimuthConvention.CounterClockwise),
             new Snapshot("lobsterBoat", "docs/art/rigs/lobsterBoatIsoRig.js",
@@ -269,11 +271,11 @@ namespace HiddenHarbours.Tests.RigBaking
                          "ShipyardIso", AzimuthConvention.CounterClockwise),
             new Snapshot("shopBuilding", "docs/art/rigs/shop-building-kit/shopBuildingRig.js",
                          "ShopBuilding", AzimuthConvention.CounterClockwise, "shopInterior", "shopfront"),
-            new Snapshot("shopInterior", "docs/art/rigs/shop-building-kit/shopInteriorRig.js",
+            new Snapshot("shopInterior", "docs/art/rigs/village-return/shop-building-kit/shopInteriorRig.js",
                          "ShopInterior", AzimuthConvention.CounterClockwise),
-            new Snapshot("shopfront", "docs/art/rigs/shop-building-kit/shopfrontRig.js",
+            new Snapshot("shopfront", "docs/art/rigs/village-return/shop-building-kit/shopfrontRig.js",
                          "Shopfront", AzimuthConvention.CounterClockwise,
-                         "buildingLifecycle", "shopInterior"),
+                         "buildingLifecycle", "shopInterior", "coastalPass"),
             new Snapshot("shoreFinds", "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
                          "ShoreFinds", AzimuthConvention.CounterClockwise),
             // Added by the CLAM SPADE kit (#805). The rig itself is not new — shovelIsoRig.js has
@@ -359,8 +361,8 @@ namespace HiddenHarbours.Tests.RigBaking
             // ships eight good cells in reverse order — every fence in both regions facing inward with
             // no error anywhere. YardRegistrationProbe re-measures at every bake and refuses on a
             // disagreement with this line.
-            new Snapshot("yardIso", "docs/art/rigs/yard-landscaping-kit/yardIsoRig.js",
-                         "YardIso", AzimuthConvention.CounterClockwise),
+            new Snapshot("yardIso", "docs/art/rigs/village-return/yard-landscaping-kit/yardIsoRig.js",
+                         "YardIso", AzimuthConvention.CounterClockwise, "coastalPass"),
         };
 
         // ---- the registration table ------------------------------------------------------------
