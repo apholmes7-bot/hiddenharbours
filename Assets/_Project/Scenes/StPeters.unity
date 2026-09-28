@@ -178287,7 +178287,7 @@ MonoBehaviour:
   _heightMin: -4
   _heightMax: 6
   _paintedHeightTex: {fileID: 0}
-  _seabedTexture: {fileID: 0}
+  _seabedTexture: {fileID: 2800000, guid: 4f2c5d2a7b42a5e4bbd474103eb31267, type: 3}
   _previewInEditMode: 1
   _previewTideLevel: 0.5
   _weatherPaletteEnabled: 1
