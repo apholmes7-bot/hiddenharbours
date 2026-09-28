@@ -27,10 +27,23 @@ namespace HiddenHarbours.Tests.Art.EditMode
         readonly List<RTHandle> _handles = new List<RTHandle>();
         IsoFacetHullFeature.HullPass _pass;
         Material _resolve;
+        object _recordingPool;
+        FieldInfo _epoch;
+        object _previousEpoch;
+        int _recordingIndex;
 
         [SetUp]
         public void SetUp()
         {
+            // Core pools pass objects across graph instances. Isolate each case from idle objects
+            // left by other fixtures, without constructing any graph default/GPU resources.
+            _recordingPool = Activator.CreateInstance(typeof(RenderGraphObjectPool), true);
+            Call(_recordingPool, "Cleanup");
+            _epoch = typeof(TextureHandle).Assembly.GetType("UnityEngine.Rendering.RenderGraphModule.ResourceHandle")
+                .GetField("s_CurrentValidBit", BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.That(_epoch, Is.Not.Null);
+            _previousEpoch = _epoch.GetValue(null);
+            _recordingIndex = 0;
             var shader = Shader.Find("Hidden/HiddenHarbours/IsoFacetResolve");
             Assert.That(shader, Is.Not.Null);
             _resolve = new Material(shader);
@@ -41,13 +54,23 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [TearDown]
         public void TearDown()
         {
-            _pass?.Dispose();
-            // Production disposal must release the wrappers, including both cameras after resize.
-            foreach (var handle in _handles)
-                Assert.That(handle.rt, Is.Null, "Persistent target wrapper leaked by HullPass.Dispose");
-            foreach (var obj in _objects) Object.DestroyImmediate(obj);
-            _objects.Clear();
-            _handles.Clear();
+            try
+            {
+                _pass?.Dispose();
+                // Production disposal must release the wrappers, including both cameras after resize.
+                foreach (var handle in _handles)
+                    Assert.That(handle.rt, Is.Null, "Persistent target wrapper leaked by HullPass.Dispose");
+            }
+            finally
+            {
+                foreach (var obj in _objects) Object.DestroyImmediate(obj);
+                _objects.Clear();
+                _handles.Clear();
+                // Match the managed pool cleanup in RenderGraph.CleanupResourcesAndGraph. Discard
+                // our cached pass handles BEFORE restoring the epoch of any outside recorder.
+                if (_recordingPool != null) Call(_recordingPool, "Cleanup");
+                if (_previousEpoch != null) _epoch.SetValue(null, _previousEpoch);
+            }
         }
 
         void AllocateUncreatedTarget(ref RTHandle handle, RenderTextureDescriptor desc, string name)
@@ -84,7 +107,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             _pass.DrawReflections = reflections;
             _pass.DrawGuard = guard;
             _pass.DrawFoam = false; // No foam allocation/history or scene services in this fixture.
-            var recorded = new RecordedGraph();
+            var recorded = new RecordedGraph(_recordingIndex++);
             try
             {
                 using var frame = new ContextContainer();
@@ -118,6 +141,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             if (!reflections) AssertIdleBinding();
             var camera = Camera(1920, 1080, new Vector3(5, 11, -10));
+            // Exercise pooled pass reuse with different resource indices inside EVERY case;
+            // no case relies on a preceding NUnit case to expose a missing epoch transition.
+            using (Record(camera, 1920, 1080, guard: !guard)) { }
             using var graph = Record(camera, 1920, 1080, hulls, water, reflections, guard);
             Assert.That(graph.Find("HH Hull Keyline Resolve") != null, Is.EqualTo(hulls));
             Assert.That(graph.Find("HH Object Reflections") != null, Is.EqualTo(reflections));
@@ -177,7 +203,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.That(depth.Layers.Single(), Is.EqualTo(DisplacedWaterRegistry.RenderingLayer));
                 Assert.That(depth.Colours, Is.Empty, "Depth pass must not shade a colour attachment");
                 Assert.That(depth.ExplicitReads.Any(r => Index(r) == reflect.Colours.Single()), Is.False);
-                Assert.That(depth.ExplicitReads.Count, Is.EqualTo(guard ? 1 : 0));
+                var expectedReads = new List<int> { depth.Depth };
+                if (guard) expectedReads.Add(graph.Find("HH Hull Interior Guard").Colours.Single());
+                Assert.That(depth.ExplicitReads.Select(Index), Is.EquivalentTo(expectedReads),
+                    "Depth prepass reads exactly its depth attachment and optional current guard");
+                Assert.That((int)Get(depth.ExplicitReads.Single(r => Index(r) == depth.Depth), "version"),
+                    Is.Zero, "Depth prepass reads the initially clear depth version");
                 graph.AssertReadsLatest(facets, depth, depth.Depth, "Hull must depth-test against current water");
                 Assert.That(colour.Depth, Is.Not.EqualTo(facets.Depth),
                     "Late water must not use hull-contaminated depth");
@@ -357,7 +388,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             readonly PropertyInfo _validity;
             readonly object _previousValidity;
 
-            internal RecordedGraph()
+            internal RecordedGraph(int executionIndex)
             {
                 // Do not call new RenderGraph or BeginRecording: their default resources create a
                 // shadow RT and execute its clear. Initialize ONLY their managed recording state.
@@ -374,8 +405,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Set(Graph, "m_Resources", _resources);
                 var state = Field(typeof(RenderGraph), "m_RenderGraphState");
                 state.SetValue(Graph, Enum.Parse(state.FieldType, "RecordingGraph"));
-                // The descriptor/handle epoch is already valid. Do not change ResourceHandle's
-                // process-wide epoch; distinct graphs have distinct registries even with equal indices.
+                // BeginRecording calls this CPU-only step before initializing its GPU defaults.
+                // Clear() intentionally retains pooled attachment slots: a new epoch makes their
+                // old handles invalid. Distinct registries alone do NOT invalidate those handles.
+                Call(_resources, "BeginRenderGraph", executionIndex);
                 _validity = typeof(RenderGraph).GetProperty("enableValidityChecks", BindingFlags.Static | BindingFlags.NonPublic);
                 Assert.That(_validity, Is.Not.Null);
                 _previousValidity = _validity.GetValue(null);
