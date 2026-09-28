@@ -78,23 +78,57 @@ namespace HiddenHarbours.Art.Editor
 
             public string Species => Entry.species;
 
-            /// <summary>The ALBEDO sheet's stem — also the prefab name and the sprite-name prefix.</summary>
+            /// <summary>
+            /// The season whose ALBEDO this placement draws. On pass 3 that is always its own season.
+            /// On pass 4 a season can borrow: an evergreen autumn is summer outright, so it has no
+            /// autumn sheet at all, and asking for one would place an empty tree. The contract's
+            /// season row says which (<see cref="TreeKitCatalog.SeasonRow.albedo"/>).
+            /// </summary>
+            public string AlbedoSeason => BorrowedSeason(row => row.albedo);
+
+            /// <summary>The season whose mask, normal, wind, phase and snow sheets this placement
+            /// draws. A deciduous autumn keeps summer's maps and bakes only its own colour, so its
+            /// light sheets are summer's (<see cref="TreeKitCatalog.SeasonRow.maps"/>).</summary>
+            public string MapsSeason => BorrowedSeason(row => row.maps);
+
+            private string BorrowedSeason(Func<TreeKitCatalog.SeasonRow, string> pick)
+            {
+                if (!TreeKitCatalog.HasPass4(Entry)) return Season;
+                var row = TreeKitCatalog.SeasonRowFor(Entry, Season);
+                string borrowed = row != null ? pick(row) : null;
+                return string.IsNullOrEmpty(borrowed) ? Season : borrowed;
+            }
+
+            /// <summary>The placement's own stem: the prefab name. It names the placed SEASON even
+            /// when that season borrows its sheets, so an evergreen's summer and autumn prefabs never
+            /// share a file.</summary>
             public string Stem =>
                 TreeKitCatalog.StemFor(Entry.species, Entry.stage, Season, TreeKitCatalog.Channel.Albedo);
 
+            /// <summary>The stem of the albedo sheet this placement actually draws: the sprite-name
+            /// prefix. The same as <see cref="Stem"/> on pass 3 and for every season that owns its
+            /// colour.</summary>
+            public string AlbedoStem =>
+                TreeKitCatalog.StemFor(Entry.species, Entry.stage, AlbedoSeason, TreeKitCatalog.Channel.Albedo);
+
             public string SheetPath =>
-                TreeKitCatalog.SheetPath(Entry.species, Entry.stage, Season, TreeKitCatalog.Channel.Albedo);
+                TreeKitCatalog.SheetPath(Entry.species, Entry.stage, AlbedoSeason, TreeKitCatalog.Channel.Albedo);
 
             /// <summary>The MASK sheet (R key · G rim · B depth · A coverage). Bound as a TEXTURE, not
             /// placed as a sprite: <c>HiddenHarboursTreeWind</c> samples it at the albedo's uv through
             /// the albedo's mesh, because the rig's 1 px keyline ring exists here but not in the
             /// normal, and giving either its own sprite loses the ring.</summary>
             public string MaskSheetPath =>
-                TreeKitCatalog.SheetPath(Entry.species, Entry.stage, Season, TreeKitCatalog.Channel.Mask);
+                TreeKitCatalog.SheetPath(Entry.species, Entry.stage, MapsSeason, TreeKitCatalog.Channel.Mask);
 
             /// <summary>The view-space NORMAL sheet. Same rule as the mask.</summary>
             public string NormalSheetPath =>
-                TreeKitCatalog.SheetPath(Entry.species, Entry.stage, Season, TreeKitCatalog.Channel.Normal);
+                TreeKitCatalog.SheetPath(Entry.species, Entry.stage, MapsSeason, TreeKitCatalog.Channel.Normal);
+
+            /// <summary>One of pass 4's three data sheets (<c>_wind</c>, <c>_phase</c>, <c>_snow</c>),
+            /// from the season this placement draws its maps from.</summary>
+            public string MapSheetPath(TreeKitCatalog.Channel channel) =>
+                TreeKitCatalog.SheetPath(Entry.species, Entry.stage, MapsSeason, channel);
 
             /// <summary>For a tool dropdown and the scene hierarchy: "Red Spruce — 5.7 m". The
             /// height is the number the owner is being asked to judge, so it is in the label.</summary>
@@ -151,7 +185,8 @@ namespace HiddenHarbours.Art.Editor
         public static Sprite LoadVariant(Placement placement, int variant)
         {
             if (!placement.IsValid || variant < 0) return null;
-            string stem = placement.Stem;
+            // The sheet's own stem, which is the placement's unless its season borrows the colour.
+            string stem = placement.AlbedoStem;
             string exact = $"{stem}_v{variant}";
             string firstFrame = $"{exact}_f0";
 
@@ -178,6 +213,48 @@ namespace HiddenHarbours.Art.Editor
             if (!placement.IsValid) return (null, null);
             return (AssetDatabase.LoadAssetAtPath<Texture2D>(placement.MaskSheetPath),
                     AssetDatabase.LoadAssetAtPath<Texture2D>(placement.NormalSheetPath));
+        }
+
+        /// <summary>
+        /// This tree's pass-4 WIND MAPS and the numbers that go with them, all read from the bake:
+        /// the three data sheets from the season it draws its maps from, the shared palette, the
+        /// species' wind response (<see cref="TreeKitCatalog.WindBlock"/>), its gap row and its cell.
+        /// None of it is typed here (rule 6).
+        ///
+        /// <para>Returns an INCOMPLETE set (<c>default</c>) for a pass-3 contract or a season with no
+        /// row, and <see cref="TreeTrunkAnchor"/> then leaves <c>_TreeMaps</c> at 0: the tree draws
+        /// exactly as a pass-3 tree does. A missing sheet leaves its field null, which does the
+        /// same, so a half-baked set is never drawn.</para>
+        /// </summary>
+        public static TreeWindMaps LoadWindMaps(Placement placement)
+        {
+            if (!placement.IsValid || !TreeKitCatalog.HasPass4(placement.Entry)) return default;
+            var row = TreeKitCatalog.SeasonRowFor(placement.Entry, placement.Season);
+            if (row == null) return default;
+
+            var e = placement.Entry;
+            var w = e.wind;
+            return new TreeWindMaps
+            {
+                Wind = AssetDatabase.LoadAssetAtPath<Texture2D>(
+                    placement.MapSheetPath(TreeKitCatalog.Channel.Wind)),
+                Phase = AssetDatabase.LoadAssetAtPath<Texture2D>(
+                    placement.MapSheetPath(TreeKitCatalog.Channel.Phase)),
+                Snow = AssetDatabase.LoadAssetAtPath<Texture2D>(
+                    placement.MapSheetPath(TreeKitCatalog.Channel.Snow)),
+                Palette = AssetDatabase.LoadAssetAtPath<Texture2D>(TreeKitCatalog.PalettePath),
+                BendPx = w.bendPx,
+                LimbPx = w.limbPx,
+                Bob = w.bob,
+                Flutter = w.flutter,
+                ShimmerCalm = TreeKitCatalog.ShimmerCalm(w),
+                Conifer = w.conifer,
+                PaletteRow = row.paletteRow,
+                CellW = e.cellW,
+                CellH = e.cellH,
+                SheetW = e.sheetW,
+                SheetH = e.sheetH,
+            };
         }
 
         /// <summary>Every variant of a species, in order, with any that failed to load dropped.</summary>
@@ -266,6 +343,11 @@ namespace HiddenHarbours.Art.Editor
             // in a banked scene lit up on the next load. Keep binding them here for the same reason.
             var (mask, normal) = LoadLightSheets(placement);
             anchor.SetLightSheets(mask, normal);
+
+            // Pass 4's wind maps, on the same block again. A pass-3 contract hands back an
+            // incomplete set, so _TreeMaps stays 0 and the tree sways the way it always has; the
+            // switch to pass 4 is a re-bake and a re-run of this, never a hand edit of a tree.
+            anchor.SetWindMaps(LoadWindMaps(placement));
 
             // (ADR 0027 #8) A tree standing at the water's edge REFLECTS in it. Added HERE and not
             // in the prefab builder because this method is the ONE place an Acadian tree is

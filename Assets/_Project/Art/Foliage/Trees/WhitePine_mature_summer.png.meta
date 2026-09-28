@@ -57,7 +57,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 9
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 32
@@ -127,10 +127,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 269
-        height: 442
+        width: 379
+        height: 441
       alignment: 9
-      pivot: {x: 0.49814126, y: 0.027149322}
+      pivot: {x: 0.5013193, y: 0.027210884}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: WhitePine_mature_summer_v1
       rect:
         serializedVersion: 2
-        x: 269
+        x: 379
         y: 0
-        width: 269
-        height: 442
+        width: 379
+        height: 441
       alignment: 9
-      pivot: {x: 0.49814126, y: 0.027149322}
+      pivot: {x: 0.5013193, y: 0.027210884}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: WhitePine_mature_summer_v2
       rect:
         serializedVersion: 2
-        x: 538
+        x: 758
         y: 0
-        width: 269
-        height: 442
+        width: 379
+        height: 441
       alignment: 9
-      pivot: {x: 0.49814126, y: 0.027149322}
+      pivot: {x: 0.5013193, y: 0.027210884}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: WhitePine_mature_summer_v3
       rect:
         serializedVersion: 2
-        x: 807
+        x: 1137
         y: 0
-        width: 269
-        height: 442
+        width: 379
+        height: 441
       alignment: 9
-      pivot: {x: 0.49814126, y: 0.027149322}
+      pivot: {x: 0.5013193, y: 0.027210884}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

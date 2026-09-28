@@ -25,6 +25,12 @@ namespace HiddenHarbours.Core
         /// length ruling, not a regression.</para></summary>
         public const float DefaultSecondsPerDay = 1800f;
 
+        /// <summary>The canon season length (vision-and-pillars §5.8, 28 days) — the fallback for a
+        /// consumer that reads the calendar with no config wired, the sibling of
+        /// <see cref="DefaultSecondsPerDay"/>. The tree snow reads the season length through
+        /// <c>GameServices.DaysPerSeason</c>, so a literal 28 there would be a second copy.</summary>
+        public const int DefaultDaysPerSeason = 28;
+
         /// <summary>The ruled default for <see cref="InteriorRockScale"/> (ADR 0038 proposal 1) — read
         /// by <c>GameServices.InteriorRockScale</c> when no config is wired, so a test rig and a scene
         /// with no GameConfig draw the same cabin the shipped asset does.</summary>
@@ -103,7 +109,7 @@ namespace HiddenHarbours.Core
                  "rot, routines, the moon — because they are all clocked in in-game hours.")]
         public float SecondsPerDay = DefaultSecondsPerDay;
         [Min(1)] public int DaysPerWeek = 7;
-        [Min(1)] public int DaysPerSeason = 28;
+        [Min(1)] public int DaysPerSeason = DefaultDaysPerSeason;
         [Tooltip("Which weekday is Market Day at Nine Mile Creek (0 = Monday).")]
         public int MarketDayIndex = 4; // Friday
 
@@ -729,6 +735,12 @@ namespace HiddenHarbours.Core
                  "— the foliage skips the lookup entirely), 1 is a flat opaque cutout of her shape " +
                  "with no leaf detail left in it. 0.55 is the shipped read.")]
         public float FoliageSilhouetteStrength = DefaultFoliageSilhouetteStrength;
+
+        [Header("Foliage snow (tree snow by the calendar, recomputed and never saved)")]
+        [Tooltip("When the snow comes to the trees and when it leaves, in days of the calendar. The trees " +
+                 "wear the cover for the day the clock is on; nothing about it is saved, so a load shows " +
+                 "that day's snow. Ground, roof and shrub snow are later work and are not driven by this yet.")]
+        public FoliageSnowSettings FoliageSnow = FoliageSnowSettings.Default;
 
         [Header("Depth drop (Rod Fishing v2 — the weighted rig's fall + the slack bottom tell)")]
         [Tooltip("The depth-fishing game's tunables (drop a weighted rig, count the fall, feel the floor): " +

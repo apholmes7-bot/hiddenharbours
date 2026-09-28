@@ -57,7 +57,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 9
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 32
@@ -127,10 +127,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 111
-        height: 266
+        width: 207
+        height: 269
       alignment: 9
-      pivot: {x: 0.4954955, y: 0.030075189}
+      pivot: {x: 0.49758455, y: 0.029739777}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: Tamarack_mature_summer_mask_v1
       rect:
         serializedVersion: 2
-        x: 111
+        x: 207
         y: 0
-        width: 111
-        height: 266
+        width: 207
+        height: 269
       alignment: 9
-      pivot: {x: 0.4954955, y: 0.030075189}
+      pivot: {x: 0.49758455, y: 0.029739777}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: Tamarack_mature_summer_mask_v2
       rect:
         serializedVersion: 2
-        x: 222
+        x: 414
         y: 0
-        width: 111
-        height: 266
+        width: 207
+        height: 269
       alignment: 9
-      pivot: {x: 0.4954955, y: 0.030075189}
+      pivot: {x: 0.49758455, y: 0.029739777}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: Tamarack_mature_summer_mask_v3
       rect:
         serializedVersion: 2
-        x: 333
+        x: 621
         y: 0
-        width: 111
-        height: 266
+        width: 207
+        height: 269
       alignment: 9
-      pivot: {x: 0.4954955, y: 0.030075189}
+      pivot: {x: 0.49758455, y: 0.029739777}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

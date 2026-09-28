@@ -145,15 +145,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.IsNotNull(sr.sprite,
                     $"'{p.Stem}' has no sprite — the sheets import spriteMode Multiple, so a plain " +
                     "LoadAssetAtPath<Sprite> on them silently returns null.");
-                Assert.AreEqual($"{p.Stem}_v0", sr.sprite.name,
+                // AlbedoStem, not Stem: on pass 4 a season can borrow another's colour (an
+                // evergreen autumn IS summer), and the sprite is named for the sheet it came from.
+                // The two are the same stem for every season that owns its albedo, pass 3 included.
+                Assert.AreEqual($"{p.AlbedoStem}_v0", sr.sprite.name,
                     $"'{p.Stem}' should show drawn variant 0 of its albedo sheet.");
 
                 string texture = sr.sprite.texture.name;
-                Assert.IsFalse(texture.EndsWith(TreeKitCatalog.MaskSuffix) ||
-                               texture.EndsWith(TreeKitCatalog.NormalSuffix),
-                    $"'{p.Stem}' is showing the '{texture}' sheet. The mask and normal are DATA " +
-                    "channels for a lighting shader nothing has written yet — placed as a sprite " +
-                    "they render as noise.");
+                Assert.AreEqual(TreeKitCatalog.Channel.Albedo, TreeKitCatalog.ChannelOf(texture),
+                    $"'{p.Stem}' is showing the '{texture}' sheet. The mask, the normal and pass 4's " +
+                    "wind, phase and snow sheets are DATA channels the shader samples beside the " +
+                    "albedo — placed as a sprite they render as noise.");
             }
         }
 
