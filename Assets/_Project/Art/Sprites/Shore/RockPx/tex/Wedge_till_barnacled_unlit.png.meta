@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: f6129edd74dda5c4c9945daa6fcd76ce
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2510692378375125321
+    second: Wedge_till_barnacled_unlit_0
+  - first:
+      213: -5547218391473489259
+    second: Wedge_till_barnacled_unlit_1
+  - first:
+      213: 6224920136945465763
+    second: Wedge_till_barnacled_unlit_2
+  - first:
+      213: -262148303797897232
+    second: Wedge_till_barnacled_unlit_3
+  - first:
+      213: 8286119827059856072
+    second: Wedge_till_barnacled_unlit_4
+  - first:
+      213: 5567004561469981731
+    second: Wedge_till_barnacled_unlit_5
+  - first:
+      213: -5438692150638399559
+    second: Wedge_till_barnacled_unlit_6
+  - first:
+      213: 8155465226827230279
+    second: Wedge_till_barnacled_unlit_7
+  - first:
+      213: -5530715568145461184
+    second: Wedge_till_barnacled_unlit_8
+  - first:
+      213: -3043988055985182833
+    second: Wedge_till_barnacled_unlit_9
+  - first:
+      213: 2580706110609844693
+    second: Wedge_till_barnacled_unlit_10
+  - first:
+      213: -5804021198699023319
+    second: Wedge_till_barnacled_unlit_11
+  - first:
+      213: -7615574228715199917
+    second: Wedge_till_barnacled_unlit_12
+  - first:
+      213: 3923788549642317534
+    second: Wedge_till_barnacled_unlit_13
+  - first:
+      213: -3757685099252716315
+    second: Wedge_till_barnacled_unlit_14
+  - first:
+      213: -374832465766635829
+    second: Wedge_till_barnacled_unlit_15
+  - first:
+      213: 4372759793852077420
+    second: Wedge_till_barnacled_unlit_16
+  - first:
+      213: 161396909427255429
+    second: Wedge_till_barnacled_unlit_17
+  - first:
+      213: 1827838217836909213
+    second: Wedge_till_barnacled_unlit_18
+  - first:
+      213: 2969300268127449385
+    second: Wedge_till_barnacled_unlit_19
+  - first:
+      213: -7110185595337862858
+    second: Wedge_till_barnacled_unlit_20
+  - first:
+      213: 7903601788916911941
+    second: Wedge_till_barnacled_unlit_21
+  - first:
+      213: 1944434522198186086
+    second: Wedge_till_barnacled_unlit_22
+  - first:
+      213: -4323351866203783881
+    second: Wedge_till_barnacled_unlit_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 595e65c840447554e9b6bd57b2a66a67
+      internalID: 176498792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d709087bec5db1d41ad96da9b9b63e71
+      internalID: -690456039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05c236a266c8a9a4d8f6381d3622cadb
+      internalID: -1510489804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c128d1f70aeb56645bb5a20795a909f7
+      internalID: -757525748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1338cc20659ae74fb6ff2bde8250753
+      internalID: 1700566985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 26dc7b2b5ced76141a581943638ad517
+      internalID: -641860132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86ff1aa7212e40044bd81aa0f643d244
+      internalID: -433595775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a77b71da56c6d84fa122ac6caf86497
+      internalID: 1069025749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5f44ffdb86db474c9fe8ac307cd3c80
+      internalID: 1664023937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3aa07cf1b92bff468b25371db4cbae3
+      internalID: 1501811444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 02cd697b93103d243ac8f9dbf216e261
+      internalID: 742364289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dfc42483576d8b549b93b3b42bcdf0e8
+      internalID: 1433175539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07fa8c4e2abc5054d99939089512b301
+      internalID: 1175641810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8857b3e9ab8cf7d498e38b60bc491117
+      internalID: 873789452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80284d9891a80ed43a5a72dfbf91f281
+      internalID: 1710551805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab0cd5ebd919048498dac364ce0aaf06
+      internalID: 1026096078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 056a7edc48041cd4f9533202b4f049b0
+      internalID: -1426441068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18c11753d67eec246ab2459a58274d52
+      internalID: 1806548491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca6fd655fd4566647ac257bc928c7f4e
+      internalID: -2042409335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a21a7f6f90458bb4392c0a927c51b53e
+      internalID: 1007177419
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79c33be40162c5c4ca6484148e208c07
+      internalID: 1198494431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ee1f3b93e1adef4989e01ffc0219d1d
+      internalID: -1879110725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82fd487c9dcabed4b848e70ed9755b43
+      internalID: 1694710275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_till_barnacled_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ef6a4fe8a458924fa6c7d872fa58033
+      internalID: -1874346895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 063cf54572c5b9c4aa4338de5d5a3d83
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Wedge_till_barnacled_unlit_c0_r0: 176498792
+      Wedge_till_barnacled_unlit_c0_r1: 1664023937
+      Wedge_till_barnacled_unlit_c0_r2: -1426441068
+      Wedge_till_barnacled_unlit_c1_r0: -690456039
+      Wedge_till_barnacled_unlit_c1_r1: 1501811444
+      Wedge_till_barnacled_unlit_c1_r2: 1806548491
+      Wedge_till_barnacled_unlit_c2_r0: -1510489804
+      Wedge_till_barnacled_unlit_c2_r1: 742364289
+      Wedge_till_barnacled_unlit_c2_r2: -2042409335
+      Wedge_till_barnacled_unlit_c3_r0: -757525748
+      Wedge_till_barnacled_unlit_c3_r1: 1433175539
+      Wedge_till_barnacled_unlit_c3_r2: 1007177419
+      Wedge_till_barnacled_unlit_c4_r0: 1700566985
+      Wedge_till_barnacled_unlit_c4_r1: 1175641810
+      Wedge_till_barnacled_unlit_c4_r2: 1198494431
+      Wedge_till_barnacled_unlit_c5_r0: -641860132
+      Wedge_till_barnacled_unlit_c5_r1: 873789452
+      Wedge_till_barnacled_unlit_c5_r2: -1879110725
+      Wedge_till_barnacled_unlit_c6_r0: -433595775
+      Wedge_till_barnacled_unlit_c6_r1: 1710551805
+      Wedge_till_barnacled_unlit_c6_r2: 1694710275
+      Wedge_till_barnacled_unlit_c7_r0: 1069025749
+      Wedge_till_barnacled_unlit_c7_r1: 1026096078
+      Wedge_till_barnacled_unlit_c7_r2: -1874346895
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

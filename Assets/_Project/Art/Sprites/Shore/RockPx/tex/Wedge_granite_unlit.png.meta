@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 446db9504394b7e48a2b0a7cc1745e5a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4158987990294798636
+    second: Wedge_granite_unlit_0
+  - first:
+      213: 5284614178433096410
+    second: Wedge_granite_unlit_1
+  - first:
+      213: 1346202557574604807
+    second: Wedge_granite_unlit_2
+  - first:
+      213: 477910025620607580
+    second: Wedge_granite_unlit_3
+  - first:
+      213: -1999907914973727631
+    second: Wedge_granite_unlit_4
+  - first:
+      213: -8136317038996679394
+    second: Wedge_granite_unlit_5
+  - first:
+      213: 1186770136236815312
+    second: Wedge_granite_unlit_6
+  - first:
+      213: 5115408232506216879
+    second: Wedge_granite_unlit_7
+  - first:
+      213: -4726621406596169422
+    second: Wedge_granite_unlit_8
+  - first:
+      213: -2115701266072393643
+    second: Wedge_granite_unlit_9
+  - first:
+      213: -5715669828247899718
+    second: Wedge_granite_unlit_10
+  - first:
+      213: -3944058602196221353
+    second: Wedge_granite_unlit_11
+  - first:
+      213: 1823749987131765460
+    second: Wedge_granite_unlit_12
+  - first:
+      213: 2174919984168184832
+    second: Wedge_granite_unlit_13
+  - first:
+      213: 1281198603521922122
+    second: Wedge_granite_unlit_14
+  - first:
+      213: 8642710732478041870
+    second: Wedge_granite_unlit_15
+  - first:
+      213: -3977773549476891741
+    second: Wedge_granite_unlit_16
+  - first:
+      213: -9096124909965618153
+    second: Wedge_granite_unlit_17
+  - first:
+      213: 7202448734150645800
+    second: Wedge_granite_unlit_18
+  - first:
+      213: 1571278758264540644
+    second: Wedge_granite_unlit_19
+  - first:
+      213: -906670245578640
+    second: Wedge_granite_unlit_20
+  - first:
+      213: -7720712756359920095
+    second: Wedge_granite_unlit_21
+  - first:
+      213: -1954576491089165651
+    second: Wedge_granite_unlit_22
+  - first:
+      213: 1460473938988744917
+    second: Wedge_granite_unlit_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a81f3069d243e2d4fb82e84649467b4a
+      internalID: -1751312072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86cb535a480548b4080aed3438768a30
+      internalID: 1189634479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5ab62159c18d854b88c1dcfb52f5871
+      internalID: -882434466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd4ca28932861cf418f5982906edb9a9
+      internalID: 917820858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7cf76d9156f321c42ad4112e13100529
+      internalID: -1592097723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e02b477df792c949b3e7d735b628479
+      internalID: -132217272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c99fe4320e98524db862b4e087d947d
+      internalID: 709701542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f3facb92abed7e8499f5df6907360768
+      internalID: -989477876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08a3447aa69a135409db5745b984d525
+      internalID: -744379823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8301db0f3494d904bb01495e894f5a7a
+      internalID: -417334260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6336f00d978d7c440b3a6d5e6d500782
+      internalID: -1932472711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef38cbe7f984d2c48a5ad7346cdcb9cb
+      internalID: -2032443409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d248a234937a7654784856a6c4091c16
+      internalID: -1343139449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 926446a4760fefa4aa8f9af0898dc302
+      internalID: 984677368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71209f533bf354848be66769cf7898f9
+      internalID: -1137056644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f8a6c35393be334181ff57c5472d8cc
+      internalID: 499031034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db3777462bc90b647803d2b692d02c97
+      internalID: 2054948001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fcb53b2d4b9caf742981eba807a8e97d
+      internalID: -1714677643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f404c75c229d8ea44b66a94c3a484dac
+      internalID: -443330458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: daebcaa3191f38641849fdae39f99d12
+      internalID: 1849816886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d54c84033cf8fe479a601ecae7d17d0
+      internalID: 1515301626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45e33d0377171e443b892f8a387f4340
+      internalID: -1690948137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 38f42064533bb83448d92d09a659de9a
+      internalID: -1317508356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_granite_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bac5de35f37e06c4581afd8cec6ec852
+      internalID: -75207649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: dd33ddd89eb809a41998bfd3ad4f2c23
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Wedge_granite_unlit_c0_r0: -1751312072
+      Wedge_granite_unlit_c0_r1: -744379823
+      Wedge_granite_unlit_c0_r2: 2054948001
+      Wedge_granite_unlit_c1_r0: 1189634479
+      Wedge_granite_unlit_c1_r1: -417334260
+      Wedge_granite_unlit_c1_r2: -1714677643
+      Wedge_granite_unlit_c2_r0: -882434466
+      Wedge_granite_unlit_c2_r1: -1932472711
+      Wedge_granite_unlit_c2_r2: -443330458
+      Wedge_granite_unlit_c3_r0: 917820858
+      Wedge_granite_unlit_c3_r1: -2032443409
+      Wedge_granite_unlit_c3_r2: 1849816886
+      Wedge_granite_unlit_c4_r0: -1592097723
+      Wedge_granite_unlit_c4_r1: -1343139449
+      Wedge_granite_unlit_c4_r2: 1515301626
+      Wedge_granite_unlit_c5_r0: -132217272
+      Wedge_granite_unlit_c5_r1: 984677368
+      Wedge_granite_unlit_c5_r2: -1690948137
+      Wedge_granite_unlit_c6_r0: 709701542
+      Wedge_granite_unlit_c6_r1: -1137056644
+      Wedge_granite_unlit_c6_r2: -1317508356
+      Wedge_granite_unlit_c7_r0: -989477876
+      Wedge_granite_unlit_c7_r1: 499031034
+      Wedge_granite_unlit_c7_r2: -75207649
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

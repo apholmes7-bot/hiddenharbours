@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: e4ea9996a34ace249a76f0acb1f213de
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 9157923729237414992
+    second: Wedge_basalt_barnacled_mask_0
+  - first:
+      213: 2445504241151539708
+    second: Wedge_basalt_barnacled_mask_1
+  - first:
+      213: -8074512174086446284
+    second: Wedge_basalt_barnacled_mask_2
+  - first:
+      213: 675810145236490346
+    second: Wedge_basalt_barnacled_mask_3
+  - first:
+      213: -1203567245433605462
+    second: Wedge_basalt_barnacled_mask_4
+  - first:
+      213: 2342684570695679346
+    second: Wedge_basalt_barnacled_mask_5
+  - first:
+      213: -7150584429241165714
+    second: Wedge_basalt_barnacled_mask_6
+  - first:
+      213: -6844651153493988376
+    second: Wedge_basalt_barnacled_mask_7
+  - first:
+      213: -6528063968292660416
+    second: Wedge_basalt_barnacled_mask_8
+  - first:
+      213: -3877204371140091903
+    second: Wedge_basalt_barnacled_mask_9
+  - first:
+      213: 5290920472203365058
+    second: Wedge_basalt_barnacled_mask_10
+  - first:
+      213: 8151177817567798945
+    second: Wedge_basalt_barnacled_mask_11
+  - first:
+      213: 2228733500708308906
+    second: Wedge_basalt_barnacled_mask_12
+  - first:
+      213: -4281548721426467570
+    second: Wedge_basalt_barnacled_mask_13
+  - first:
+      213: 3768547567359725149
+    second: Wedge_basalt_barnacled_mask_14
+  - first:
+      213: -4977300313973621475
+    second: Wedge_basalt_barnacled_mask_15
+  - first:
+      213: -1031302895287582276
+    second: Wedge_basalt_barnacled_mask_16
+  - first:
+      213: 5470546698894844278
+    second: Wedge_basalt_barnacled_mask_17
+  - first:
+      213: -354345567529944016
+    second: Wedge_basalt_barnacled_mask_18
+  - first:
+      213: -8441170669135208874
+    second: Wedge_basalt_barnacled_mask_19
+  - first:
+      213: -5737432534117589068
+    second: Wedge_basalt_barnacled_mask_20
+  - first:
+      213: -1019262133442743203
+    second: Wedge_basalt_barnacled_mask_21
+  - first:
+      213: -6781597676216143022
+    second: Wedge_basalt_barnacled_mask_22
+  - first:
+      213: -5257284195169979628
+    second: Wedge_basalt_barnacled_mask_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 216d291821f557341b096d55d7b27a86
+      internalID: -882864408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db713b2a1bc81f341874436e809689ad
+      internalID: 699953661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08d55696bc09258469e8a1e0ba46ef49
+      internalID: 1296265518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b7136d2fa5b8d94b8b469969e62ad78
+      internalID: 2037496414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05dc111610b2af542870fb229eb14f6f
+      internalID: 903749434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f6e21cc468e0df459b3d27f5d24218e
+      internalID: -762596913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 518b405021e67594ca12ffcfc35c3696
+      internalID: -1449510221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1dbb1e890cb0e047a71e875c39e0f20
+      internalID: -1829906227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0fce7c69ff763aa438b29a10fbbf0313
+      internalID: 951425599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 627b6c2bab757fa43b6c718b56a6777a
+      internalID: -671118482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c5bfeef1152b0e40aeb5214aac8f9ca
+      internalID: -1260215159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ed3c208475b7eb45a080f45c7d9b28f
+      internalID: 929446172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1dbe81755ac961843b42731b295bbed0
+      internalID: 1996289533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 779f813b329dce0489cb9c0859e73bdf
+      internalID: 742109765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a2bb32e107cf394d917b6249219fae1
+      internalID: -68288295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5a2a4ab40140ac4e861712a4299971b
+      internalID: -1252461681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58d736aa9c40ec145a94c0656dddd4cc
+      internalID: 281729727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa971b9157b0a0b4489067faa90504b2
+      internalID: 1513058105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2e337bdca76e184dbad019fb4ac2a2d
+      internalID: 932959170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bbd9c4d610e5794ca0b134da67e5d2d
+      internalID: 185106427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45400d06d14717644a6a2275cfc51e3d
+      internalID: 2081328977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 392978b68b707274b97c097ed8de12ee
+      internalID: 506235317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40d00545308d7c84cb40f53c20670223
+      internalID: 1627514121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_basalt_barnacled_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f9222f0fce4227438960fcd7db5b248
+      internalID: -757523620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 7423adef0620f874585905bd6d77aedb
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Wedge_basalt_barnacled_mask_c0_r0: -882864408
+      Wedge_basalt_barnacled_mask_c0_r1: 951425599
+      Wedge_basalt_barnacled_mask_c0_r2: 281729727
+      Wedge_basalt_barnacled_mask_c1_r0: 699953661
+      Wedge_basalt_barnacled_mask_c1_r1: -671118482
+      Wedge_basalt_barnacled_mask_c1_r2: 1513058105
+      Wedge_basalt_barnacled_mask_c2_r0: 1296265518
+      Wedge_basalt_barnacled_mask_c2_r1: -1260215159
+      Wedge_basalt_barnacled_mask_c2_r2: 932959170
+      Wedge_basalt_barnacled_mask_c3_r0: 2037496414
+      Wedge_basalt_barnacled_mask_c3_r1: 929446172
+      Wedge_basalt_barnacled_mask_c3_r2: 185106427
+      Wedge_basalt_barnacled_mask_c4_r0: 903749434
+      Wedge_basalt_barnacled_mask_c4_r1: 1996289533
+      Wedge_basalt_barnacled_mask_c4_r2: 2081328977
+      Wedge_basalt_barnacled_mask_c5_r0: -762596913
+      Wedge_basalt_barnacled_mask_c5_r1: 742109765
+      Wedge_basalt_barnacled_mask_c5_r2: 506235317
+      Wedge_basalt_barnacled_mask_c6_r0: -1449510221
+      Wedge_basalt_barnacled_mask_c6_r1: -68288295
+      Wedge_basalt_barnacled_mask_c6_r2: 1627514121
+      Wedge_basalt_barnacled_mask_c7_r0: -1829906227
+      Wedge_basalt_barnacled_mask_c7_r1: -1252461681
+      Wedge_basalt_barnacled_mask_c7_r2: -757523620
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

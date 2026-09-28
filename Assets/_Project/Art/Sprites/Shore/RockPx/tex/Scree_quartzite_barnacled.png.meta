@@ -1,0 +1,775 @@
+fileFormatVersion: 2
+guid: 9012a7a6ff776b743adfcefd1a7b7029
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 429705634145085806
+    second: Scree_quartzite_barnacled_0
+  - first:
+      213: -3431050166496970122
+    second: Scree_quartzite_barnacled_1
+  - first:
+      213: -4424743069951848745
+    second: Scree_quartzite_barnacled_2
+  - first:
+      213: 460597501697298996
+    second: Scree_quartzite_barnacled_3
+  - first:
+      213: -7440920083262136431
+    second: Scree_quartzite_barnacled_4
+  - first:
+      213: -7081951450629664285
+    second: Scree_quartzite_barnacled_5
+  - first:
+      213: 7854835132567221190
+    second: Scree_quartzite_barnacled_6
+  - first:
+      213: -832552628370073469
+    second: Scree_quartzite_barnacled_7
+  - first:
+      213: -8860817409562839780
+    second: Scree_quartzite_barnacled_8
+  - first:
+      213: -7622988430967423569
+    second: Scree_quartzite_barnacled_9
+  - first:
+      213: 762679987515982011
+    second: Scree_quartzite_barnacled_10
+  - first:
+      213: 2121185700224097613
+    second: Scree_quartzite_barnacled_11
+  - first:
+      213: -116965019316907456
+    second: Scree_quartzite_barnacled_12
+  - first:
+      213: -4532874915980108417
+    second: Scree_quartzite_barnacled_13
+  - first:
+      213: -4749205611662733670
+    second: Scree_quartzite_barnacled_14
+  - first:
+      213: 70520205128566099
+    second: Scree_quartzite_barnacled_15
+  - first:
+      213: 7160403681318503150
+    second: Scree_quartzite_barnacled_16
+  - first:
+      213: -2326318123636509408
+    second: Scree_quartzite_barnacled_17
+  - first:
+      213: 5811383158919728714
+    second: Scree_quartzite_barnacled_18
+  - first:
+      213: -5544370119982483099
+    second: Scree_quartzite_barnacled_19
+  - first:
+      213: -142328222388903485
+    second: Scree_quartzite_barnacled_20
+  - first:
+      213: -2763356382317367637
+    second: Scree_quartzite_barnacled_21
+  - first:
+      213: -8203494110860236919
+    second: Scree_quartzite_barnacled_22
+  - first:
+      213: -7846433215253772015
+    second: Scree_quartzite_barnacled_23
+  - first:
+      213: 5238697783952125633
+    second: Scree_quartzite_barnacled_24
+  - first:
+      213: -2424590568387971921
+    second: Scree_quartzite_barnacled_25
+  - first:
+      213: -4592747078744335312
+    second: Scree_quartzite_barnacled_26
+  - first:
+      213: -8604679662978850955
+    second: Scree_quartzite_barnacled_27
+  - first:
+      213: 2573397417059923649
+    second: Scree_quartzite_barnacled_28
+  - first:
+      213: 8303037515200580851
+    second: Scree_quartzite_barnacled_29
+  - first:
+      213: -2512745708246689518
+    second: Scree_quartzite_barnacled_30
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30f75dce08969dd4ab79fff9f29a1ce0
+      internalID: -1579100830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c84158a6f45c93c479f6c4ea885c029a
+      internalID: 509303080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc17f19a6a43b75468e084eab4e366b1
+      internalID: 1910498812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b78864b6c379c3643a6d513916d80a81
+      internalID: 81780693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e748b5c2e0f61734b97560db6edb96c0
+      internalID: -1728266031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6434559f4df455c4680a465a5ab68adb
+      internalID: -1975098975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 230d7e63ea7010f44876d52696586f4f
+      internalID: 257447801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 008694fa7d72c0846bb9eded0054afb4
+      internalID: -1138720583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b3cedb9685b42546ab21d9a8aa17228
+      internalID: 321297872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: edb557f5da8b363449513e809e1f5ec7
+      internalID: 2084718294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41444b3857177d14db3121242e873aa0
+      internalID: -205340574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f6f2e091c8be6647802e196ac73aff9
+      internalID: -2094901827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f040f298f9106c42bfcc75dd94e58dc
+      internalID: 1345845339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0778adc20cdb0114993216a1ac518abe
+      internalID: -1417278113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11b6a87885e355c43bd0e8fa0b19965b
+      internalID: 492671610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7146e7e1b2549b5429827269480d8868
+      internalID: -704928914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a6d778e9dbb3bf4fb4c929c91d52223
+      internalID: -796644149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6494894fa35eb104fbfb2988a1d6a396
+      internalID: -968492731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37bd074b5c6898f468586e5a5b7193e5
+      internalID: 1269662281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a689d6b19d7686442bba0e6d4b737968
+      internalID: 299217373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a449c560fa669d47aa5ec73f8b80bc9
+      internalID: 972049779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b8163693f867984d88e18ea11777dd2
+      internalID: -2098766726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0dbfe9f0a0ffcb478517f8855e62d7f
+      internalID: -775705140
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_quartzite_barnacled_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93dd4be84d62fa545ac5df891e40695b
+      internalID: -1817452775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 515f348d0022ea04ea076bf639e52ee5
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Scree_quartzite_barnacled_c0_r0: -1579100830
+      Scree_quartzite_barnacled_c0_r1: 321297872
+      Scree_quartzite_barnacled_c0_r2: -796644149
+      Scree_quartzite_barnacled_c1_r0: 509303080
+      Scree_quartzite_barnacled_c1_r1: 2084718294
+      Scree_quartzite_barnacled_c1_r2: -968492731
+      Scree_quartzite_barnacled_c2_r0: 1910498812
+      Scree_quartzite_barnacled_c2_r1: -205340574
+      Scree_quartzite_barnacled_c2_r2: 1269662281
+      Scree_quartzite_barnacled_c3_r0: 81780693
+      Scree_quartzite_barnacled_c3_r1: -2094901827
+      Scree_quartzite_barnacled_c3_r2: 299217373
+      Scree_quartzite_barnacled_c4_r0: -1728266031
+      Scree_quartzite_barnacled_c4_r1: 1345845339
+      Scree_quartzite_barnacled_c4_r2: 972049779
+      Scree_quartzite_barnacled_c5_r0: -1975098975
+      Scree_quartzite_barnacled_c5_r1: -1417278113
+      Scree_quartzite_barnacled_c5_r2: -2098766726
+      Scree_quartzite_barnacled_c6_r0: 257447801
+      Scree_quartzite_barnacled_c6_r1: 492671610
+      Scree_quartzite_barnacled_c6_r2: -775705140
+      Scree_quartzite_barnacled_c7_r0: -1138720583
+      Scree_quartzite_barnacled_c7_r1: -704928914
+      Scree_quartzite_barnacled_c7_r2: -1817452775
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

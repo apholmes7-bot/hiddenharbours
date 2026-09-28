@@ -1,0 +1,799 @@
+fileFormatVersion: 2
+guid: 28e831a7965e0614c90929882a600b92
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3169498930818667403
+    second: Apron_till_barnacled_unlit_0
+  - first:
+      213: 6059165715080536146
+    second: Apron_till_barnacled_unlit_1
+  - first:
+      213: -2357555281777257858
+    second: Apron_till_barnacled_unlit_2
+  - first:
+      213: -7551171333585773490
+    second: Apron_till_barnacled_unlit_3
+  - first:
+      213: -4107022695702124235
+    second: Apron_till_barnacled_unlit_4
+  - first:
+      213: -6517039609891150080
+    second: Apron_till_barnacled_unlit_5
+  - first:
+      213: 4100566226906565301
+    second: Apron_till_barnacled_unlit_6
+  - first:
+      213: -79614131579346529
+    second: Apron_till_barnacled_unlit_7
+  - first:
+      213: 8221320548419051370
+    second: Apron_till_barnacled_unlit_8
+  - first:
+      213: 8447307144032398955
+    second: Apron_till_barnacled_unlit_9
+  - first:
+      213: 7891388524266164978
+    second: Apron_till_barnacled_unlit_10
+  - first:
+      213: -7822520457657379288
+    second: Apron_till_barnacled_unlit_11
+  - first:
+      213: -659089459426708098
+    second: Apron_till_barnacled_unlit_12
+  - first:
+      213: 1516295706559392281
+    second: Apron_till_barnacled_unlit_13
+  - first:
+      213: 1845637334362650707
+    second: Apron_till_barnacled_unlit_14
+  - first:
+      213: 8614404860254711856
+    second: Apron_till_barnacled_unlit_15
+  - first:
+      213: -7777397097814771658
+    second: Apron_till_barnacled_unlit_16
+  - first:
+      213: 4327158511374999623
+    second: Apron_till_barnacled_unlit_17
+  - first:
+      213: -5602284609273320323
+    second: Apron_till_barnacled_unlit_18
+  - first:
+      213: 8629808939160423539
+    second: Apron_till_barnacled_unlit_19
+  - first:
+      213: -4025709863745302763
+    second: Apron_till_barnacled_unlit_20
+  - first:
+      213: -5039522986147068055
+    second: Apron_till_barnacled_unlit_21
+  - first:
+      213: -1948782971199924903
+    second: Apron_till_barnacled_unlit_22
+  - first:
+      213: 8611264173009766667
+    second: Apron_till_barnacled_unlit_23
+  - first:
+      213: -2782318332696744517
+    second: Apron_till_barnacled_unlit_24
+  - first:
+      213: 5351628417048845014
+    second: Apron_till_barnacled_unlit_25
+  - first:
+      213: -698476294228462401
+    second: Apron_till_barnacled_unlit_26
+  - first:
+      213: -959316089499336867
+    second: Apron_till_barnacled_unlit_27
+  - first:
+      213: -718297933513925710
+    second: Apron_till_barnacled_unlit_28
+  - first:
+      213: 8603247193438886700
+    second: Apron_till_barnacled_unlit_29
+  - first:
+      213: -2345627005811766246
+    second: Apron_till_barnacled_unlit_30
+  - first:
+      213: -5812938901616016620
+    second: Apron_till_barnacled_unlit_31
+  - first:
+      213: -354057138799228956
+    second: Apron_till_barnacled_unlit_32
+  - first:
+      213: 930853421739515097
+    second: Apron_till_barnacled_unlit_33
+  - first:
+      213: 1873079561486982499
+    second: Apron_till_barnacled_unlit_34
+  - first:
+      213: 8644921975426694076
+    second: Apron_till_barnacled_unlit_35
+  - first:
+      213: 3505694484781264510
+    second: Apron_till_barnacled_unlit_36
+  - first:
+      213: -6109501929994312143
+    second: Apron_till_barnacled_unlit_37
+  - first:
+      213: 854896360405502925
+    second: Apron_till_barnacled_unlit_38
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ced7a59cedc9f2479f05b6f48789173
+      internalID: -890151193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95bfcdac9b162c64694848a6fc73ac40
+      internalID: 1116421277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea56bf70ef67bdd44b0d3188deeebf9c
+      internalID: 1529954145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b833a4061071e743801c134c86c3f0d
+      internalID: -317839672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 404fc69fba023f64eb9c8650af52545a
+      internalID: 1545512755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f83475d8c4e92dd44861b150b12f4424
+      internalID: 1544741120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0f1ebc16b35e9b40b32849b7870ed64
+      internalID: -1190573587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3152f2d29e5ffec4dabcb494753ecd73
+      internalID: 1473474424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59dd54d7efbee804eb1a90783dc8c401
+      internalID: -1637122006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e033d1156980a24449614ed8773b0824
+      internalID: 1887139027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4b5e713a7586fc47be943fe3af679d7
+      internalID: -1184596186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd0db2a06ef3dd3498d676c25c02a352
+      internalID: 5759959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 188c1dc42950c5b44a7b5db3a8571910
+      internalID: 1884229825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09bb32cc208d7d5409be9307ce816fe9
+      internalID: 1378621086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 641c085fb801f814e9ee7dad6c91c8f1
+      internalID: 1865204885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 092cadc99d20cc1438faa8f360f4014d
+      internalID: -955742600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3446548f98ab1a4ea9d7313917ea6b9
+      internalID: -1734336798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39d4c6753e029094eaee59a9768aece2
+      internalID: -553004859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 351de4b989f52304cbd48bb2a4ec1ec7
+      internalID: -1751877607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e56b99099a7e07d429db2b57441ed467
+      internalID: 1129047609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 919705aa48c68d1468d59ae572e1b8f0
+      internalID: 632393832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f2ae01269e37534fa201f46dc3018f6
+      internalID: -2010294071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 028bf493978f08246a66a04ef9c790ce
+      internalID: -1728587304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_till_barnacled_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d58a953e2b9e2b04584aa9141fdaddc0
+      internalID: -78392717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 625efeac4c6d4154db58589909d3cb40
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Apron_till_barnacled_unlit_c0_r0: -890151193
+      Apron_till_barnacled_unlit_c0_r1: -1637122006
+      Apron_till_barnacled_unlit_c0_r2: -1734336798
+      Apron_till_barnacled_unlit_c1_r0: 1116421277
+      Apron_till_barnacled_unlit_c1_r1: 1887139027
+      Apron_till_barnacled_unlit_c1_r2: -553004859
+      Apron_till_barnacled_unlit_c2_r0: 1529954145
+      Apron_till_barnacled_unlit_c2_r1: -1184596186
+      Apron_till_barnacled_unlit_c2_r2: -1751877607
+      Apron_till_barnacled_unlit_c3_r0: -317839672
+      Apron_till_barnacled_unlit_c3_r1: 5759959
+      Apron_till_barnacled_unlit_c3_r2: 1129047609
+      Apron_till_barnacled_unlit_c4_r0: 1545512755
+      Apron_till_barnacled_unlit_c4_r1: 1884229825
+      Apron_till_barnacled_unlit_c4_r2: 632393832
+      Apron_till_barnacled_unlit_c5_r0: 1544741120
+      Apron_till_barnacled_unlit_c5_r1: 1378621086
+      Apron_till_barnacled_unlit_c5_r2: -2010294071
+      Apron_till_barnacled_unlit_c6_r0: -1190573587
+      Apron_till_barnacled_unlit_c6_r1: 1865204885
+      Apron_till_barnacled_unlit_c6_r2: -1728587304
+      Apron_till_barnacled_unlit_c7_r0: 1473474424
+      Apron_till_barnacled_unlit_c7_r1: -955742600
+      Apron_till_barnacled_unlit_c7_r2: -78392717
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

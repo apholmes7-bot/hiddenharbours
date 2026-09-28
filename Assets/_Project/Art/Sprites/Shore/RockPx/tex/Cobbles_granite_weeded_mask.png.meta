@@ -1,0 +1,835 @@
+fileFormatVersion: 2
+guid: 0e84d25b266430447bb448b81f9bc3fa
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4246136520586612360
+    second: Cobbles_granite_weeded_mask_0
+  - first:
+      213: 7185720871190103135
+    second: Cobbles_granite_weeded_mask_1
+  - first:
+      213: 8454643650897095122
+    second: Cobbles_granite_weeded_mask_2
+  - first:
+      213: 6004582151959256954
+    second: Cobbles_granite_weeded_mask_3
+  - first:
+      213: 620195615019823386
+    second: Cobbles_granite_weeded_mask_4
+  - first:
+      213: 5756103346505153444
+    second: Cobbles_granite_weeded_mask_5
+  - first:
+      213: -2690460093605791608
+    second: Cobbles_granite_weeded_mask_6
+  - first:
+      213: -2501826373927438133
+    second: Cobbles_granite_weeded_mask_7
+  - first:
+      213: 1063855781836203084
+    second: Cobbles_granite_weeded_mask_8
+  - first:
+      213: 4149941932680509998
+    second: Cobbles_granite_weeded_mask_9
+  - first:
+      213: 615249170783122149
+    second: Cobbles_granite_weeded_mask_10
+  - first:
+      213: -7439040017597100434
+    second: Cobbles_granite_weeded_mask_11
+  - first:
+      213: 2913529321879785630
+    second: Cobbles_granite_weeded_mask_12
+  - first:
+      213: 8096352182394711136
+    second: Cobbles_granite_weeded_mask_13
+  - first:
+      213: -3732800935020015790
+    second: Cobbles_granite_weeded_mask_14
+  - first:
+      213: -6910182571781141737
+    second: Cobbles_granite_weeded_mask_15
+  - first:
+      213: -2601776470178357200
+    second: Cobbles_granite_weeded_mask_16
+  - first:
+      213: -7929208584675639492
+    second: Cobbles_granite_weeded_mask_17
+  - first:
+      213: -6589110663697626813
+    second: Cobbles_granite_weeded_mask_18
+  - first:
+      213: 5072708015601785873
+    second: Cobbles_granite_weeded_mask_19
+  - first:
+      213: -440556693739618068
+    second: Cobbles_granite_weeded_mask_20
+  - first:
+      213: 6268506857832646600
+    second: Cobbles_granite_weeded_mask_21
+  - first:
+      213: -1963717335671613579
+    second: Cobbles_granite_weeded_mask_22
+  - first:
+      213: 5461691100270813681
+    second: Cobbles_granite_weeded_mask_23
+  - first:
+      213: 4774802424433166764
+    second: Cobbles_granite_weeded_mask_24
+  - first:
+      213: -3394698696331179014
+    second: Cobbles_granite_weeded_mask_25
+  - first:
+      213: -6529691249505521337
+    second: Cobbles_granite_weeded_mask_26
+  - first:
+      213: -1389892262935704080
+    second: Cobbles_granite_weeded_mask_27
+  - first:
+      213: -3677547772321596121
+    second: Cobbles_granite_weeded_mask_28
+  - first:
+      213: -8026623544969314949
+    second: Cobbles_granite_weeded_mask_29
+  - first:
+      213: 6570279969839447088
+    second: Cobbles_granite_weeded_mask_30
+  - first:
+      213: -6583169784413929425
+    second: Cobbles_granite_weeded_mask_31
+  - first:
+      213: 5352501919982779834
+    second: Cobbles_granite_weeded_mask_32
+  - first:
+      213: -4665437404186445723
+    second: Cobbles_granite_weeded_mask_33
+  - first:
+      213: 5364465945135348480
+    second: Cobbles_granite_weeded_mask_34
+  - first:
+      213: 2486843909949341846
+    second: Cobbles_granite_weeded_mask_35
+  - first:
+      213: -1964501235897478959
+    second: Cobbles_granite_weeded_mask_36
+  - first:
+      213: 8345754937557344738
+    second: Cobbles_granite_weeded_mask_37
+  - first:
+      213: -9165642414478368075
+    second: Cobbles_granite_weeded_mask_38
+  - first:
+      213: -8282924708416124267
+    second: Cobbles_granite_weeded_mask_39
+  - first:
+      213: 2004886740311706774
+    second: Cobbles_granite_weeded_mask_40
+  - first:
+      213: -1283892019069518060
+    second: Cobbles_granite_weeded_mask_41
+  - first:
+      213: -1572308878739703723
+    second: Cobbles_granite_weeded_mask_42
+  - first:
+      213: -8787657312540796574
+    second: Cobbles_granite_weeded_mask_43
+  - first:
+      213: 402095724645614076
+    second: Cobbles_granite_weeded_mask_44
+  - first:
+      213: 7029525277007916344
+    second: Cobbles_granite_weeded_mask_45
+  - first:
+      213: 5721221828771691972
+    second: Cobbles_granite_weeded_mask_46
+  - first:
+      213: -6913868633589628746
+    second: Cobbles_granite_weeded_mask_47
+  - first:
+      213: 4464601241451113682
+    second: Cobbles_granite_weeded_mask_48
+  - first:
+      213: 3751480175035239525
+    second: Cobbles_granite_weeded_mask_49
+  - first:
+      213: -3525823632817448520
+    second: Cobbles_granite_weeded_mask_50
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c9a9bf8ae2c5c9b44bdc85b05d561e9d
+      internalID: 1515655491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0fec3c96e9426a748bdba3f74f3b1b27
+      internalID: 1876583266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e178d0f0ca4a3884bac38d3786e33be1
+      internalID: 1993911325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7fab6beeae4eb9c438aaa8727832a767
+      internalID: 997975569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d901dac8e60a1144c9331e4e63b8eb8d
+      internalID: -2047602307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6daa01771516d3e46828fe7408cb286b
+      internalID: -1915578751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 682f3cc4dcbcc5145a85acff303b20ee
+      internalID: -773246439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa9e2e1eb6ca17348b69c214cd023614
+      internalID: 1233673292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68d192f9ce1a78d4a9b8a00d2f09ae61
+      internalID: 1920293714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fb15f6b51fd89c4a900bea3ffac62c2
+      internalID: 266853262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6440c786d24b1e4b8d4f07e99a180a0
+      internalID: -932483103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5719f4ffa8131242831c79926819325
+      internalID: -26447960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9cafe66ddf6f19f40bccbc9c0faceb8c
+      internalID: 1508102600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3451502b8193c74aac3a32c8b483bc3
+      internalID: 211798533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75736e4e85eaf95489756b70233533e4
+      internalID: -436979343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9fe6e72f29365554b988b71290cc0d47
+      internalID: -1828951527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93daa29573664cd42bc8d5da9155d06c
+      internalID: -1666786143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2b5dc5892e88484da5d5b2aa25a8942
+      internalID: 915485676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ad19816dd2bd964891ffb634eb870cc
+      internalID: 833712224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0c4799b86f49eb4186e439fd147d4df
+      internalID: 618363119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91e3635c8a1c37e4697ca62055323df1
+      internalID: 1087186118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f1e2f8ce29d71f4e840bae7e2c9e326
+      internalID: 82580621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23f073d4636a9c2469dd8d7e921e1fd8
+      internalID: -1701980805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8cb2a2a99935f0144be914598f520527
+      internalID: -2112059315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d10de574c94ae4d48b14831f162899b9
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cobbles_granite_weeded_mask_c0_r0: 1515655491
+      Cobbles_granite_weeded_mask_c0_r1: 1920293714
+      Cobbles_granite_weeded_mask_c0_r2: -1666786143
+      Cobbles_granite_weeded_mask_c1_r0: 1876583266
+      Cobbles_granite_weeded_mask_c1_r1: 266853262
+      Cobbles_granite_weeded_mask_c1_r2: 915485676
+      Cobbles_granite_weeded_mask_c2_r0: 1993911325
+      Cobbles_granite_weeded_mask_c2_r1: -932483103
+      Cobbles_granite_weeded_mask_c2_r2: 833712224
+      Cobbles_granite_weeded_mask_c3_r0: 997975569
+      Cobbles_granite_weeded_mask_c3_r1: -26447960
+      Cobbles_granite_weeded_mask_c3_r2: 618363119
+      Cobbles_granite_weeded_mask_c4_r0: -2047602307
+      Cobbles_granite_weeded_mask_c4_r1: 1508102600
+      Cobbles_granite_weeded_mask_c4_r2: 1087186118
+      Cobbles_granite_weeded_mask_c5_r0: -1915578751
+      Cobbles_granite_weeded_mask_c5_r1: 211798533
+      Cobbles_granite_weeded_mask_c5_r2: 82580621
+      Cobbles_granite_weeded_mask_c6_r0: -773246439
+      Cobbles_granite_weeded_mask_c6_r1: -436979343
+      Cobbles_granite_weeded_mask_c6_r2: -1701980805
+      Cobbles_granite_weeded_mask_c7_r0: 1233673292
+      Cobbles_granite_weeded_mask_c7_r1: -1828951527
+      Cobbles_granite_weeded_mask_c7_r2: -2112059315
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
