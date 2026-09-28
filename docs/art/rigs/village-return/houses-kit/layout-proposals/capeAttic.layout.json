@@ -1,0 +1,393 @@
+{
+  "schema": "coastal-cottage-layout/2",
+  "preset": "capeAttic",
+  "options": {
+    "type": "cape",
+    "storey": "upper",
+    "size": 0.5,
+    "floor": "wideBoard",
+    "wall": "board",
+    "paper": "greyShingle",
+    "wainscot": false,
+    "dormers": 3,
+    "beams": true,
+    "weather": 0.38
+  },
+  "renderSignatureSha256": "d5d1c69503756a6c3adc1ee2353de33df22e42e5e827e8260935d4f7b9327a4c",
+  "derivedFromRigSha256": "02521fff604ab32b6e2980036daae4c38915216646f9574ede5956404812e940",
+  "dependencyHashes": {
+    "Art/manorIsoRig.js": "eb59dcbfae10a47ae72d9e5193b789dcee4e5c1b8cb7b3d827d6db9f28dd1241",
+    "Art/interiorPropRig.js": "a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6",
+    "Art/manorUnitIsoRig.js": "d8bfad68a876f491a642b8aaeb5c7df65cc741c931e7ba2d8a9e3f561cecaf7b",
+    "Art/houseIsoRig.js": "fa73cf987cbf482ada6b3e585210b049137d49d5520220a3f1f08034cc512c90",
+    "Art/interiorIsoRig.js": "02521fff604ab32b6e2980036daae4c38915216646f9574ede5956404812e940",
+    "Art/wharfBuildingRig.js": "76dbecb0e1ccadfbcacc66b9ec5787d2ebff8112b7d5976668fa953a08ed8163",
+    "Art/coastalPass.js": "041b0bc32040c10a1bafc57da1d3f19e76047285c2b802861cff67caca5b166d"
+  },
+  "props": [
+    {
+      "id": "bed",
+      "name": "bed",
+      "face": "S",
+      "x": -2.135,
+      "y": -1.56,
+      "z": 0,
+      "options": {
+        "variant": 1,
+        "wood": "pine",
+        "fabric": "blue",
+        "fabric2": "cream"
+      },
+      "verb": "sleep",
+      "rect": {
+        "x0": -2.645,
+        "x1": -1.625,
+        "y0": -2.585,
+        "y1": -0.535
+      },
+      "height": 0.95
+    },
+    {
+      "id": "washstand",
+      "name": "washstand",
+      "face": "W",
+      "x": 3.06,
+      "y": -3.46,
+      "z": 0,
+      "options": {
+        "wood": "oak"
+      },
+      "verb": "wash",
+      "rect": {
+        "x0": 2.82,
+        "x1": 3.3,
+        "y0": -3.87,
+        "y1": -3.05
+      },
+      "height": 1.06
+    },
+    {
+      "id": "dresser",
+      "name": "dresser",
+      "face": "W",
+      "x": 3.05,
+      "y": -0.47,
+      "z": 0,
+      "options": {
+        "wood": "oak"
+      },
+      "verb": "store",
+      "rect": {
+        "x0": 2.8,
+        "x1": 3.3,
+        "y0": -0.97,
+        "y1": 0.03
+      },
+      "height": 0.95
+    },
+    {
+      "id": "bed2",
+      "name": "bed",
+      "face": "N",
+      "x": -1.62,
+      "y": 3.23,
+      "z": 0,
+      "options": {
+        "variant": 1,
+        "wood": "pine",
+        "fabric": "red",
+        "fabric2": "cream"
+      },
+      "verb": "sleep",
+      "rect": {
+        "x0": -2.13,
+        "x1": -1.11,
+        "y0": 2.205,
+        "y1": 4.255
+      },
+      "height": 0.95
+    },
+    {
+      "id": "bed3",
+      "name": "bed",
+      "face": "N",
+      "x": 1.62,
+      "y": 3.23,
+      "z": 0,
+      "options": {
+        "variant": 1,
+        "wood": "pine",
+        "fabric": "green",
+        "fabric2": "cream"
+      },
+      "verb": "sleep",
+      "rect": {
+        "x0": 1.11,
+        "x1": 2.13,
+        "y0": 2.205,
+        "y1": 4.255
+      },
+      "height": 0.95
+    },
+    {
+      "id": "chest",
+      "name": "seaChest",
+      "face": "S",
+      "x": 2.81,
+      "y": 0.88,
+      "z": 0,
+      "options": {
+        "wood": "oak"
+      },
+      "verb": "store",
+      "rect": {
+        "x0": 2.36,
+        "x1": 3.26,
+        "y0": 0.63,
+        "y1": 1.13
+      },
+      "height": 0.5
+    }
+  ],
+  "blockers": [
+    {
+      "kind": "well",
+      "x0": -0.96,
+      "x1": 0.21,
+      "y0": -3.25,
+      "y1": 0.13
+    },
+    {
+      "kind": "partition",
+      "x0": -3.6,
+      "x1": 0.46,
+      "y0": 0.37,
+      "y1": 0.49
+    },
+    {
+      "kind": "partition",
+      "x0": 1.46,
+      "x1": 3.6,
+      "y0": 0.37,
+      "y1": 0.49
+    },
+    {
+      "kind": "bed",
+      "id": "bed",
+      "x0": -2.645,
+      "x1": -1.625,
+      "y0": -2.585,
+      "y1": -0.535
+    },
+    {
+      "kind": "washstand",
+      "id": "washstand",
+      "x0": 2.82,
+      "x1": 3.3,
+      "y0": -3.87,
+      "y1": -3.05
+    },
+    {
+      "kind": "dresser",
+      "id": "dresser",
+      "x0": 2.8,
+      "x1": 3.3,
+      "y0": -0.97,
+      "y1": 0.03
+    },
+    {
+      "kind": "bed",
+      "id": "bed2",
+      "x0": -2.13,
+      "x1": -1.11,
+      "y0": 2.205,
+      "y1": 4.255
+    },
+    {
+      "kind": "bed",
+      "id": "bed3",
+      "x0": 1.11,
+      "x1": 2.13,
+      "y0": 2.205,
+      "y1": 4.255
+    },
+    {
+      "kind": "seaChest",
+      "id": "chest",
+      "x0": 2.36,
+      "x1": 3.26,
+      "y0": 0.63,
+      "y1": 1.13
+    }
+  ],
+  "routes": [
+    {
+      "x0": 0.51,
+      "x1": 1.41,
+      "y0": -0.37,
+      "y1": 1.23
+    },
+    {
+      "x0": 0.31,
+      "x1": 1.21,
+      "y0": -4.27,
+      "y1": 1.03
+    },
+    {
+      "x0": -0.9,
+      "x1": 0.15,
+      "y0": -4.27,
+      "y1": -3.25
+    }
+  ],
+  "approaches": [
+    {
+      "id": "bed",
+      "verb": "sleep",
+      "target": {
+        "x": -2.135,
+        "y": -1.56,
+        "z": 0
+      },
+      "approach": {
+        "x": -2.135,
+        "y": -0.135,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "washstand",
+      "verb": "wash",
+      "target": {
+        "x": 3.06,
+        "y": -3.46,
+        "z": 0
+      },
+      "approach": {
+        "x": 2.42,
+        "y": -3.46,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "dresser",
+      "verb": "store",
+      "target": {
+        "x": 3.05,
+        "y": -0.47,
+        "z": 0
+      },
+      "approach": {
+        "x": 2.4,
+        "y": -0.47,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "bed2",
+      "verb": "sleep",
+      "target": {
+        "x": -1.62,
+        "y": 3.23,
+        "z": 0
+      },
+      "approach": {
+        "x": -1.62,
+        "y": 1.805,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "bed3",
+      "verb": "sleep",
+      "target": {
+        "x": 1.62,
+        "y": 3.23,
+        "z": 0
+      },
+      "approach": {
+        "x": 1.62,
+        "y": 1.805,
+        "z": 0,
+        "radius": 0.28
+      }
+    },
+    {
+      "id": "chest",
+      "verb": "store",
+      "target": {
+        "x": 2.81,
+        "y": 0.88,
+        "z": 0
+      },
+      "approach": {
+        "x": 2.81,
+        "y": 1.53,
+        "z": 0,
+        "radius": 0.28
+      }
+    }
+  ],
+  "rejected": [],
+  "stair": {
+    "id": "cottage_stair",
+    "axis": "y",
+    "ascending": "negativeY",
+    "x0": -0.9,
+    "x1": 0.15,
+    "y0": -3.25,
+    "y1": 0.65,
+    "steps": 15,
+    "going": 0.26,
+    "riser": 0.186667,
+    "floorRise": 2.8,
+    "slabThickness": 0.24,
+    "headroom": 2,
+    "opening": {
+      "x0": -0.96,
+      "x1": 0.21,
+      "y0": -3.25,
+      "y1": 0.13
+    },
+    "topLanding": {
+      "x0": -0.9,
+      "x1": 0.15,
+      "y0": -4.27,
+      "y1": -3.25
+    },
+    "bottomLanding": {
+      "x0": -0.9,
+      "x1": 0.15,
+      "y0": 0.65,
+      "y1": 1.67
+    },
+    "bottom": {
+      "x": -0.375,
+      "y": 1.17,
+      "z": 0
+    },
+    "top": {
+      "x": -0.375,
+      "y": -3.77,
+      "z": 2.8
+    }
+  },
+  "stairAccess": {
+    "bottom": null,
+    "top": true
+  },
+  "navigation": {
+    "radius": 0.28,
+    "gridStep": 0.12,
+    "reachableCells": 1790,
+    "start": {
+      "x": -0.43,
+      "y": -3.78
+    }
+  },
+  "note": "Interior-local metres. Pair floors using identical type, size, shape and pitch. Stair top z is relative to the ground floor; upper sprite floor z is zero. Navigation checks floor approaches; Unity locomotion and door animation remain integration work."
+}

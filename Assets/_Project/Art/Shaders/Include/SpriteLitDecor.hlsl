@@ -73,6 +73,11 @@ TEXTURE2D(_LightNormal);
 SAMPLER(sampler_LightNormal);
 TEXTURE2D(_LightRimGate);
 SAMPLER(sampler_LightRimGate);
+// OPTIONAL, and read ONLY by SpriteLitDecorEmit below: the rig's own night glow, one byte per texel
+// (SpriteLightResponse.hlsl's EMITTER section). The village houses bake one (drop 14, L2); no other
+// family does, and a consumer that never calls the emit never samples it.
+TEXTURE2D(_LightEmit);
+SAMPLER(sampler_LightEmit);
 
 // =================================================================================================
 // the globals — the SAME inputs the tree always took (one lighting model, more consumers)
@@ -239,6 +244,59 @@ float3 SpriteLitDecorResponse(float2 uv, float2 rootWS, SpriteLitDecorParams p)
     }
 
     return sunAdd + lampAdd;
+}
+
+// =================================================================================================
+// THE EMIT — a rig's own night glow, from its emitter sheet (village return drop 14, L2)
+// =================================================================================================
+//
+// A lit window is not a surface catching a light, so it is not a third path through the response
+// above: it is the rig's own glow, baked, switched on by the dark. The maths is SpriteLightEmit in
+// SpriteLightResponse.hlsl, twinned by SpriteLightMath.EmitResponse; this is its assembly.
+//
+// 🔴 OPT IN, AND OFF IS EXACTLY TODAY. A consumer that bakes an emitter sheet pastes
+// SPRITE_LIT_DECOR_EMIT_ROWS inside its UnityPerMaterial next to the rows above, and calls this ONLY
+// behind its _LightEmitChannels flag, which SpriteLightBinding writes 1 only when a sheet is bound. That
+// is a UNIFORM branch: every fragment of a draw takes the same side, so an unbound sprite pays one scalar
+// compare and adds nothing. A consumer that does not opt in (the tree, the plants, the shrubs) pastes no
+// rows and makes no call, so its compiled layout and its every pixel are what they were.
+//
+// ⚠️ THE MASK IS NOT READ HERE. The glow is its own sheet; the mask order in SpriteLightResponse.hlsl's
+// header is untouched by it.
+#define SPRITE_LIT_DECOR_EMIT_ROWS \
+    float  _LightEmitChannels; \
+    float4 _EmitColor; \
+    float  _EmitStrength; \
+    float  _EmitGateThreshold; \
+    float  _EmitGateSoftness; \
+    float  _EmitGateNoCycle;
+
+struct SpriteLitDecorEmitParams
+{
+    float3 color;
+    float  strength;
+    float  gateThreshold;
+    float  gateSoftness;
+    float  gateNoCycle;
+};
+
+#define SPRITE_LIT_DECOR_EMIT_PARAMS(e) \
+    SpriteLitDecorEmitParams e; \
+    e.color         = _EmitColor.rgb; \
+    e.strength      = _EmitStrength; \
+    e.gateThreshold = _EmitGateThreshold; \
+    e.gateSoftness  = _EmitGateSoftness; \
+    e.gateNoCycle   = _EmitGateNoCycle;
+
+// Returns the ADDITIVE rgb of the glow, already compensated for the day/night overlay, because a lit
+// window must survive the night exactly as the boat lamp does (HDR stays ON). Sampled at the ALBEDO's
+// uv, like every other sheet: the emitter sheet is baked at the albedo's dimensions and cell layout.
+float3 SpriteLitDecorEmit(float2 uv, SpriteLitDecorEmitParams e)
+{
+    float texel = SAMPLE_TEXTURE2D(_LightEmit, sampler_LightEmit, uv).r;
+    float gate = SpriteLightNightGate(_DayNightTint.rgb, e.gateThreshold, e.gateSoftness, e.gateNoCycle);
+    float3 glow = e.color * (max(0.0, e.strength) * SpriteLightEmit(texel, gate));
+    return SpriteLightCompensateForDayNight(glow, _DayNightTint.rgb);
 }
 
 // ================================================================================================

@@ -1990,6 +1990,37 @@ wired by each region's builder.
 > enable, unconditionally, so "no bake" means coverage 0 and composites nothing. Same lesson, same
 > shape, as the interior guard's black 1×1 and the reflection target's clear one. Pinned by a test.
 
+### 17.10 Played-region shallows: S1 activation (2026-09-28)
+
+S1 explicitly serializes the seabed toggle/keyword, the existing six absorption bands and
+the existing (1, 0.18, 0.08) extinction ratio on all eight water presets. Their turbidity
+values are unchanged. Runtime mood blending already pushes turbidity through the surface
+property block; the separate editor "Apply water preset" action copies the entire material,
+including keywords. A preset that omitted the toggle could therefore disable the bottom.
+
+The texture remains per-surface. Neither the preset nor the shared Water.mat receives a
+region's bake. ShallowsActivationTests checks preset copying, region isolation and the real
+displaced-chunk copy path. It also contains committed-region acceptance cases for St Peters
+and Nine Mile Creek, using the WaterSurface script identity rather than scene line numbers.
+
+Both regions now bind a 1520 x 1520 seabed colour bake made with the explicit-terrain
+SeabedBakeTool overload. Each source is the active terrain component in its committed
+scene: TidalTerrain in St Peters, MainlandTidalTerrain in Nine Mile Creek. Their world
+rectangles are unchanged (St Peters: minimum -380,-260, size 760,520; NMC: -380,-280,
+size 760,560). The two scene changes are only WaterSurface._seabedTexture references:
+StPeters.unity line 178290 and NineMileCreek.unity line 420982 on base 45a09dd6.
+St Peters keeps GUID 4f2c5d2a7b42a5e4bbd474103eb31267; NMC uses
+6c34e797a389d8947b0468d83edd9f95. Both imports are sRGB RGBA32, uncompressed,
+point-filtered and clamped, without mips or NPOT scaling. All 14 ShallowsActivationTests
+cases passed in Unity 6000.5.0f1. Scene export was retired by #900; no exporter output
+is part of this change.
+
+The colour bake's 1520 samples span at most 0.5 m on the long axis and cost 8.8135 MiB per
+RGBA32 texture without mips. This does not fix register row 31's height-resolution clamp.
+Do not change depth, height textures, clip, walkability or the retired scalar-alpha path.
+Six bands remain the baseline until a separate owner ruling. Ground/seabed continuity
+against TerrainLight6 still requires plates; any conditional S1b colour matching is outside S1.
+
 ## 18. Current drift lines — the tide's SET reads on the surface (Arc C water visuals)
 
 Faint foam **streaks aligned with the tidal current** so the player can **read which way the sea is setting**
