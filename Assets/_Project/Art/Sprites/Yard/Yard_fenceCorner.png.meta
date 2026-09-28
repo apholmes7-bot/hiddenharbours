@@ -139,10 +139,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 42
-        height: 49
+        width: 40
+        height: 47
       alignment: 9
-      pivot: {x: 0.5, y: 0.2857143}
+      pivot: {x: 0.5, y: 0.27659574}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: Yard_fenceCorner_d1
       rect:
         serializedVersion: 2
-        x: 42
+        x: 40
         y: 0
-        width: 42
-        height: 49
+        width: 40
+        height: 47
       alignment: 9
-      pivot: {x: 0.5, y: 0.2857143}
+      pivot: {x: 0.5, y: 0.27659574}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: Yard_fenceCorner_d2
       rect:
         serializedVersion: 2
-        x: 84
+        x: 80
         y: 0
-        width: 42
-        height: 49
+        width: 40
+        height: 47
       alignment: 9
-      pivot: {x: 0.5, y: 0.2857143}
+      pivot: {x: 0.5, y: 0.27659574}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: Yard_fenceCorner_d3
       rect:
         serializedVersion: 2
-        x: 126
+        x: 120
         y: 0
-        width: 42
-        height: 49
+        width: 40
+        height: 47
       alignment: 9
-      pivot: {x: 0.5, y: 0.2857143}
+      pivot: {x: 0.5, y: 0.27659574}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: Yard_fenceCorner_d4
       rect:
         serializedVersion: 2
-        x: 168
+        x: 160
         y: 0
-        width: 42
-        height: 49
+        width: 40
+        height: 47
       alignment: 9
-      pivot: {x: 0.5, y: 0.2857143}
+      pivot: {x: 0.5, y: 0.27659574}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: Yard_fenceCorner_d5
       rect:
         serializedVersion: 2
-        x: 210
+        x: 200
         y: 0
-        width: 42
-        height: 49
+        width: 40
+        height: 47
       alignment: 9
-      pivot: {x: 0.5, y: 0.2857143}
+      pivot: {x: 0.5, y: 0.27659574}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: Yard_fenceCorner_d6
       rect:
         serializedVersion: 2
-        x: 252
+        x: 240
         y: 0
-        width: 42
-        height: 49
+        width: 40
+        height: 47
       alignment: 9
-      pivot: {x: 0.5, y: 0.2857143}
+      pivot: {x: 0.5, y: 0.27659574}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: Yard_fenceCorner_d7
       rect:
         serializedVersion: 2
-        x: 294
+        x: 280
         y: 0
-        width: 42
-        height: 49
+        width: 40
+        height: 47
       alignment: 9
-      pivot: {x: 0.5, y: 0.2857143}
+      pivot: {x: 0.5, y: 0.27659574}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

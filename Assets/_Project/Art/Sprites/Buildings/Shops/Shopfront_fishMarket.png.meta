@@ -139,10 +139,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 510
-        height: 404
+        width: 508
+        height: 402
       alignment: 9
-      pivot: {x: 0.5, y: 0.4059406}
+      pivot: {x: 0.5, y: 0.40547264}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: Shopfront_fishMarket_d1
       rect:
         serializedVersion: 2
-        x: 510
+        x: 508
         y: 0
-        width: 510
-        height: 404
+        width: 508
+        height: 402
       alignment: 9
-      pivot: {x: 0.5, y: 0.4059406}
+      pivot: {x: 0.5, y: 0.40547264}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: Shopfront_fishMarket_d2
       rect:
         serializedVersion: 2
-        x: 1020
+        x: 1016
         y: 0
-        width: 510
-        height: 404
+        width: 508
+        height: 402
       alignment: 9
-      pivot: {x: 0.5, y: 0.4059406}
+      pivot: {x: 0.5, y: 0.40547264}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: Shopfront_fishMarket_d3
       rect:
         serializedVersion: 2
-        x: 1530
+        x: 1524
         y: 0
-        width: 510
-        height: 404
+        width: 508
+        height: 402
       alignment: 9
-      pivot: {x: 0.5, y: 0.4059406}
+      pivot: {x: 0.5, y: 0.40547264}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: Shopfront_fishMarket_d4
       rect:
         serializedVersion: 2
-        x: 2040
+        x: 2032
         y: 0
-        width: 510
-        height: 404
+        width: 508
+        height: 402
       alignment: 9
-      pivot: {x: 0.5, y: 0.4059406}
+      pivot: {x: 0.5, y: 0.40547264}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: Shopfront_fishMarket_d5
       rect:
         serializedVersion: 2
-        x: 2550
+        x: 2540
         y: 0
-        width: 510
-        height: 404
+        width: 508
+        height: 402
       alignment: 9
-      pivot: {x: 0.5, y: 0.4059406}
+      pivot: {x: 0.5, y: 0.40547264}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: Shopfront_fishMarket_d6
       rect:
         serializedVersion: 2
-        x: 3060
+        x: 3048
         y: 0
-        width: 510
-        height: 404
+        width: 508
+        height: 402
       alignment: 9
-      pivot: {x: 0.5, y: 0.4059406}
+      pivot: {x: 0.5, y: 0.40547264}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: Shopfront_fishMarket_d7
       rect:
         serializedVersion: 2
-        x: 3570
+        x: 3556
         y: 0
-        width: 510
-        height: 404
+        width: 508
+        height: 402
       alignment: 9
-      pivot: {x: 0.5, y: 0.4059406}
+      pivot: {x: 0.5, y: 0.40547264}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

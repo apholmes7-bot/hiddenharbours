@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: LitVillageBuilding
+  m_Shader: {fileID: 4800000, guid: 4fe9773925dd472fa23c3530e0a90746, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _LightMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LightNormal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LightEmit:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LightRimGate:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AlphaClip: 0.01
+    - _EmitGateNoCycle: 0
+    - _EmitGateSoftness: 0.3
+    - _EmitGateThreshold: 0.35
+    - _EmitStrength: 1.3910133
+    - _KeyRelight: 0.75
+    - _LampElevation: 0.12
+    - _LampKeyStrength: 0.18
+    - _LampRimStrength: 0.9
+    - _LightChannels: 0
+    - _LightDepthBias: 0.45
+    - _LightEmitChannels: 0
+    - _LightFrontBand: 0.6
+    - _LightResponse: 1
+    - _RimSteerAmount: 0.8
+    - _SunKeyStrength: 0.16
+    - _SunRimStrength: 0.28
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmitColor: {r: 1, g: 0.7764706, b: 0.4509804, a: 1}
+    - _LightRimGateChannel: {r: 0, g: 0, b: 0, a: 0}
+    - _SpriteRootWS: {r: 0, g: 0, b: 0, a: 0}
+    - _SunKeyColor: {r: 0.9098039, g: 0.6901961, b: 0.41960785, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

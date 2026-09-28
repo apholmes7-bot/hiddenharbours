@@ -130,6 +130,42 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// ⭐ <b>WHERE A DECK POINT IS DRAWN THIS FRAME</b>, in world metres: the hull picture's own
+        /// origin, plus the point projected through the attitude the hull APPLIED, plus the heave she
+        /// applied. The same sum <c>MeshHullDriver.TryGetWakePose</c> draws her transom with, for any
+        /// point on her.
+        ///
+        /// <para><b>Why a placement and not a <see cref="MirrorHull"/> difference.</b> A body on the deck
+        /// is already stood at the level point by the deck walk, so only what the rock added is missing.
+        /// A thing bolted to her has no walk: it is placed from scratch every frame, and the level
+        /// placement leaves out the rock, the heave AND the wave's bob of the picture (which moves the
+        /// picture's origin, not the boat's). On the lobster boat at her hump the level placement parted
+        /// her stern gear from the drawn hull by 51 px at the default camera.</para>
+        ///
+        /// <para>Every input is READ off the presenter — <c>IBoatHullPresenter.Visual</c>'s position and
+        /// its <c>Applied*</c> — never recomputed, under the same one-sea-one-sample law as
+        /// <see cref="MirrorHull"/>. False on any non-finite input, so the caller keeps its level
+        /// placement rather than drawing at NaN.</para>
+        /// </summary>
+        public static bool TryDrawnPoint(Vector2 pictureOrigin, Vector3 deckLocalMeters,
+                                         float drawnHeadingDegrees, float rollDegrees, float pitchDegrees,
+                                         float heaveMeters, float bakeElevationDegrees, out Vector2 world)
+        {
+            world = default;
+            if (!IsFinite(pictureOrigin.x) || !IsFinite(pictureOrigin.y) ||
+                !IsFinite(deckLocalMeters.x) || !IsFinite(deckLocalMeters.y) || !IsFinite(deckLocalMeters.z) ||
+                !IsFinite(drawnHeadingDegrees) || !IsFinite(rollDegrees) || !IsFinite(pitchDegrees) ||
+                !IsFinite(heaveMeters) || !IsFinite(bakeElevationDegrees))
+                return false;
+
+            world = pictureOrigin
+                  + Project(deckLocalMeters, -drawnHeadingDegrees * Mathf.Deg2Rad, rollDegrees * Mathf.Deg2Rad,
+                            pitchDegrees * Mathf.Deg2Rad, bakeElevationDegrees * Mathf.Deg2Rad)
+                  + Vector2.up * heaveMeters;
+            return true;
+        }
+
+        /// <summary>
         /// Project a boat-local point (METRES; +X starboard, +Y bow, +Z up — the rigs' own axes) through the rig
         /// camera, returning its screen offset from the cell pivot in METRES (Unity axes: +X right, +Y up).
         ///
