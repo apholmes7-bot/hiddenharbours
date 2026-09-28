@@ -14,6 +14,7 @@ namespace HiddenHarbours.Art.Editor
         public const string RelightRecipePath = TerrainTexArrayBuilder.TexDir + "/TerrainRelight.hhterrain";
         public const string DetailName = "TerrainDetail256";
         public const string RampName = "TerrainRelightRamp";
+        // AddObjectToAsset identifiers. Unity renames the main object to the recipe filename.
         public static readonly string[] RelightNames =
             { "TerrainRelightNormal", "TerrainRelightLight", "TerrainRelightDetail" };
 
@@ -39,7 +40,9 @@ namespace HiddenHarbours.Art.Editor
             var arrays = new Texture2DArray[RelightNames.Length];
             for (int a = 0; a < arrays.Length; a++)
             {
-                arrays[a] = Named<Texture2DArray>(objects, RelightNames[a], recipePath);
+                // Normal is the main object; its displayed name is TerrainRelight, not its identifier.
+                arrays[a] = a == 0 ? Main<Texture2DArray>(objects, recipePath)
+                    : Named<Texture2DArray>(objects, RelightNames[a], recipePath);
                 RequireArray(arrays[a], false, true, recipePath);
             }
             var ramp = Named<Texture2D>(objects, RampName, recipePath);
@@ -61,6 +64,13 @@ namespace HiddenHarbours.Art.Editor
                     if ((entry.flags & ImportLogFlags.Error) != 0)
                         throw Fault(path, entry.message);
             return AssetDatabase.LoadAllAssetsAtPath(path);
+        }
+
+        static T Main<T>(Object[] objects, string path) where T : Object
+        {
+            T[] matches = objects.OfType<T>().Where(obj => AssetDatabase.IsMainAsset(obj)).ToArray();
+            if (matches.Length != 1) throw Fault(path, "expected exactly one main " + typeof(T).Name + ".");
+            return matches[0];
         }
 
         static T Named<T>(Object[] objects, string name, string path) where T : Object

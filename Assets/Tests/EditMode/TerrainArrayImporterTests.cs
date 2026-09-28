@@ -39,7 +39,10 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(63, detail.depth, "The shipped slice ABI must be deliberately amended when the kit grows.");
             CollectionAssert.AreEquivalent(new[] { TerrainArrayAssets.DetailName },
                 Textures(TerrainArrayAssets.DetailRecipePath).Select(t => t.name).ToArray());
-            CollectionAssert.AreEquivalent(new[] { "TerrainRelightNormal", "TerrainRelightLight", "TerrainRelightDetail",
+            Assert.IsTrue(AssetDatabase.IsMainAsset(relight.Normal), "Normal must be the recipe's main object.");
+            Assert.AreEqual(Path.GetFileNameWithoutExtension(TerrainArrayAssets.RelightRecipePath), relight.Normal.name,
+                "Unity gives the main object the recipe filename, independently of its AddObjectToAsset identifier.");
+            CollectionAssert.AreEquivalent(new[] { relight.Normal.name, "TerrainRelightLight", "TerrainRelightDetail",
                     "TerrainRelightRamp" }, Textures(TerrainArrayAssets.RelightRecipePath).Select(t => t.name).ToArray());
             Assert.AreEqual(81, relight.Ramp.width);
             Assert.AreEqual(detail.depth, relight.Ramp.height);
@@ -174,6 +177,10 @@ namespace HiddenHarbours.Tests.EditMode
                 default: Assert.Fail("Unhandled input case " + kind); break;
             }
             ExpectError(path);
+            if (kind == "LfsPointer" || kind == "CorruptPng" || kind == "SixteenBitPng" || kind == "PalettedPng")
+                LogAssert.Expect(LogType.Error, new Regex("Could not create asset from " + Regex.Escape(path)));
+            // Unity then discovers the changed source and imports its dependant recipe again.
+            ExpectError(path);
             // Direct source dependency: recipe import reads the file, not its old TextureImporter artifact.
             AssetDatabase.ImportAsset(fixture.RelightPath, Sync | ImportAssetOptions.ForceUpdate);
             AssertRefused(fixture.RelightPath, path);
@@ -197,6 +204,8 @@ namespace HiddenHarbours.Tests.EditMode
             }
             if (kind != "MissingManifest")
                 File.WriteAllText(fixture.ManifestPath, JsonUtility.ToJson(manifest), new UTF8Encoding(false));
+            ExpectError(fixture.ManifestPath);
+            // The explicit recipe import and subsequent source refresh each report this refusal.
             ExpectError(fixture.ManifestPath);
             AssetDatabase.ImportAsset(fixture.RelightPath, Sync | ImportAssetOptions.ForceUpdate);
             string error = AssertRefused(fixture.RelightPath, fixture.ManifestPath);

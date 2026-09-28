@@ -318790,7 +318790,7 @@ MonoBehaviour:
   _heightTexture: {fileID: 2800000, guid: ab42f9132549aa2429142611b844387b, type: 3}
   _heightMin: -6
   _heightMax: 6
-  _detailArray256: {fileID: 18700000, guid: 9eb63aa02acc68540b3b7a835b4d8d47, type: 2}
+  _detailArray256: {fileID: 2729896900585281598, guid: 9eb63aa02acc68540b3b7a835b4d8d47, type: 3}
   _detailArray512: {fileID: 18700000, guid: 8c0da9ac9cc7ea640b61f54b9647b3ce, type: 2}
   _splatA: {fileID: 2800000, guid: a31416d1aa4b69343a8f0d487303b499, type: 3}
   _splatB: {fileID: 2800000, guid: 795408be8d25be440a2b5ae1c93f2cd9, type: 3}
