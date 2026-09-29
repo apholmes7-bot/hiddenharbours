@@ -238,6 +238,33 @@ namespace HiddenHarbours.App
         // that behaviour exactly.
         private Vector3 _lastAppliedPos;
 
+        // ---- the helm's footprint (ADR 0050) ------------------------------------------------------
+        //
+        // While the helm's UI covers a FULL-WIDTH band along the bottom of the screen (the Core seam,
+        // HelmFootprint — never UI, rule 4), the boat's place on screen eases UP by a share of the
+        // band's height (GameConfig.HelmFootprint.CameraBandShare, 0.5 ruled), so the sea she is
+        // heading into is not under the band. It is an offset added WITH the look-ahead in the follow:
+        // before the feel, the snap and the clamp, so the grid still holds it and a region's edge
+        // still wins. It is turned into metres by the framing on screen that frame. Zero for a card
+        // (the ruling moves the camera for the band only) and whenever nothing is covered, hide-all
+        // included. Presentation only, never saved (rule 5); with nothing covered the follow is the
+        // one that shipped, bit-exact.
+        private float _bandWeight;       // the ease's linear clock, 0..1 (smoothstepped where it is used)
+        private float _bandShiftPx;      // the full shift the ease is heading to, or leaving from — screen px
+        private float _bandShiftMeters;  // this frame's offset, metres: the goal stands this far below her
+
+        /// <summary>This frame's band offset, metres: how far the follow's goal stands below the target
+        /// so the boat sits higher on screen while the helm covers a full-width band (ADR 0050). 0 for
+        /// a card and for nothing covered. Read-only, for tests and tools.</summary>
+        public float BandShiftMeters => _bandShiftMeters;
+
+        /// <summary>
+        /// Test seam: the screen, in pixels, the band offset is converted at. Zero on an axis (the
+        /// default) reads the live camera's — an EditMode camera's pixel size is whatever the runner
+        /// allocated, so a fixture that asserts the conversion at a named screen pins it here.
+        /// </summary>
+        public Vector2Int ScreenPixelsOverride { get; set; }
+
         // framing-tween state (an upgrade zoom-out / a deck zoom step)
         private bool _tweening;
         private float _tweenElapsed;
@@ -421,6 +448,11 @@ namespace HiddenHarbours.App
         /// no asset is wired — the same null-tolerant read as <see cref="ZoomSettings"/>.</summary>
         private static JuiceSettings FeelSettings
             => GameServices.Config != null ? GameServices.Config.Juice : JuiceSettings.Default;
+
+        /// <summary>The band offset's two dials (ADR 0050), live from the config asset with the shipped
+        /// defaults when none is wired — the same null-tolerant read as <see cref="FeelSettings"/>.</summary>
+        private static HelmFootprintSettings FootprintSettings
+            => GameServices.Config != null ? GameServices.Config.HelmFootprint : HelmFootprintSettings.Default;
 
         /// <summary>The mode the layer reasons about: an un-declared camera is a WALKING camera (see
         /// <see cref="CameraZoomPolicy.FramingOnScreen"/> for the dead path that rule exists for).</summary>
@@ -1097,6 +1129,85 @@ namespace HiddenHarbours.App
             return net + velocity * (Mathf.Clamp01(lagCompensation) * FollowLagSeconds(smooth, dt));
         }
 
+        // ---- the helm's footprint: the band offset (ADR 0050) --------------------------------------
+
+        /// <summary>
+        /// The whole shift a covered area asks of the camera, in SCREEN pixels: <paramref name="share"/>
+        /// of a full-width band's height (0.5 ruled — the boat's place on screen rises by half the band),
+        /// and 0 for a card or for nothing covered. Pure.
+        /// </summary>
+        public static float BandShiftTargetPx(in HelmFootprintArea covered, float share)
+            => covered.SpansFullWidth ? covered.FullWidthHeightPx * Mathf.Clamp01(share) : 0f;
+
+        /// <summary>One step of the ease's linear clock toward 1 (a band is up) or 0 (none is): a whole
+        /// ease takes <paramref name="easeSeconds"/>, and 0 or less is a cut. Pure.</summary>
+        public static float EaseBandWeight(float weight, bool bandUp, float dt, float easeSeconds)
+        {
+            float target = bandUp ? 1f : 0f;
+            if (!(easeSeconds > 0f)) return target;
+            return Mathf.MoveTowards(weight, target, Mathf.Max(0f, dt) / easeSeconds);
+        }
+
+        /// <summary>The shift at a point on the ease, screen px — smoothstepped, so it leaves and arrives
+        /// without a kick. 0 at the clock's start, the whole shift at its end. Pure.</summary>
+        public static float BandShiftPx(float weight, float fullShiftPx)
+            => weight <= 0f ? 0f : Mathf.SmoothStep(0f, 1f, weight) * fullShiftPx;
+
+        /// <summary>
+        /// Metres one SCREEN pixel covers for the framing on screen. With the Pixel Perfect Camera on it
+        /// is <c>1/(zoom·ppu)</c> for the integer zoom it picks for this screen against its reference
+        /// (it sets the ortho itself when it renders, so the camera's own number can be a frame stale);
+        /// with it off — the feel, a tween, a downscale step — it is the camera's ortho over the
+        /// screen's height. 0 for a screen with no height. Pure.
+        /// </summary>
+        public static float MetersPerScreenPixel(bool pixelPerfect, int screenWidthPx, int screenHeightPx,
+                                                 int refWidthPx, int refHeightPx, int ppu,
+                                                 float orthographicSize)
+        {
+            if (screenHeightPx <= 0) return 0f;
+            if (pixelPerfect)
+                return 1f / (PixelPerfectZoom(screenWidthPx, screenHeightPx, refWidthPx, refHeightPx)
+                             * Mathf.Max(1, ppu));
+            return 2f * orthographicSize / screenHeightPx;
+        }
+
+        /// <summary>
+        /// This frame's band offset, metres. Reads the Core seam, steps the ease by
+        /// <paramref name="dt"/> (the follow's own clock), and turns the smoothstepped pixels into
+        /// metres by the framing on screen. A band going away keeps its pixels while it eases out, so
+        /// it leaves as smoothly as it came. Exactly 0 from the start and once an ease out has ended —
+        /// a follow that never sees a band is the one that shipped. No allocation (rule 7).
+        /// </summary>
+        private float TickBandShift(float dt)
+        {
+            HelmFootprintArea covered = HelmFootprint.Current;
+            HelmFootprintSettings s = FootprintSettings;
+            float targetPx = BandShiftTargetPx(in covered, s.CameraBandShare);
+            bool up = targetPx > 0f;
+            if (!up && _bandWeight <= 0f) { _bandShiftPx = 0f; return 0f; }
+            if (up) _bandShiftPx = targetPx;
+            _bandWeight = EaseBandWeight(_bandWeight, up, dt, s.CameraEaseSeconds);
+            if (_bandWeight <= 0f) { _bandShiftPx = 0f; return 0f; }
+            return BandShiftPx(_bandWeight, _bandShiftPx) * MetersPerScreenPixelNow();
+        }
+
+        /// <summary><see cref="MetersPerScreenPixel"/> for this camera now: its screen (or the test
+        /// seam's), its Pixel Perfect Camera's state and reference, its ortho.</summary>
+        private float MetersPerScreenPixelNow()
+        {
+            if (_cam == null) _cam = GetComponent<Camera>();
+            if (_cam == null) return 0f;
+            if (_ppc == null) _ppc = GetComponent<PixelPerfectCamera>();
+            Vector2Int screen = ScreenPixelsOverride;
+            int w = screen.x > 0 ? screen.x : _cam.pixelWidth;
+            int h = screen.y > 0 ? screen.y : _cam.pixelHeight;
+            bool pixelPerfect = _ppc != null && _ppc.enabled;
+            return MetersPerScreenPixel(pixelPerfect, w, h,
+                                        pixelPerfect ? _ppc.refResolutionX : 0,
+                                        pixelPerfect ? _ppc.refResolutionY : 0,
+                                        CurrentPpu(), _cam.orthographicSize);
+        }
+
         private void FollowTarget(float dt)
         {
             if (Target == null) return;
@@ -1127,6 +1238,11 @@ namespace HiddenHarbours.App
                                       1f - Mathf.Exp(-_lookaheadSmooth * dt));
 
             Vector3 goal = tp + (Vector3)_lookahead;
+            // ADR 0050: with a full-width helm band up, the goal stands below her by the band's shift,
+            // so she sits higher on screen — added with the look-ahead, ahead of the feel, the snap
+            // and the clamp. Exactly 0, and the old goal untouched, whenever no band is covered.
+            _bandShiftMeters = TickBandShift(dt);
+            if (_bandShiftMeters != 0f) goal.y -= _bandShiftMeters;
             goal.z = transform.position.z; // keep the camera's depth
 
             // Integrate on the filter's OWN position and publish a copy of it — see _smoothPos.

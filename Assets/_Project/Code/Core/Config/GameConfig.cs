@@ -253,6 +253,17 @@ namespace HiddenHarbours.Core
                  "surface-bolted ride bit-for-bit; that is the A/B.")]
         public HullWeightSettings HullWeight = HullWeightSettings.Default;
 
+        [Header("Hull trim (the bow answers her speed — owner 2026-09-21)")]
+        [Tooltip("World-wide policy for how a hull TRIMS (owner 2026-09-21: \"Also i want trim " +
+                 "added to the boats depending on speed and deacceleration\"). Her bow rises as she " +
+                 "climbs her own bow wave toward hull speed (HumpFroude), a planing hull settles once " +
+                 "she is over it (PlaningFroude), the bow squats up when the throttle opens and dips " +
+                 "briefly when she slows. How MUCH is per hull — each BoatHullDef's Trim* fields; this " +
+                 "block holds where the hump sits and the limits and lag a hull that authors none " +
+                 "inherits. Enabled off (or a hull whose Trim* values are all 0) draws her pitch " +
+                 "exactly as before trim existed; that is the A/B.")]
+        public HullTrimSettings HullTrim = HullTrimSettings.Default;
+
         [Header("Ground tackle (dropping the hook)")]
         [Tooltip("World-wide ANCHORING policy: the dinghy-class rode a hull carries when her own Def " +
                  "does not say (BoatHullDef.RodeMeters = 0), the swing-circle floor, the firm-limit trio " +
@@ -458,6 +469,14 @@ namespace HiddenHarbours.Core
                  "the scale clamps. Presentation only — where a player parks a window is transient " +
                  "session state, never saved.")]
         public BoatUiWindowSettings BoatUiWindows = BoatUiWindowSettings.Default;
+
+        [Header("Helm footprint (the camera answers a full-width helm band — ADR 0050)")]
+        [Tooltip("How the camera answers a helm band that spans the whole width of the screen: the " +
+                 "share of the band's height the boat's place on screen rises by (0.5 = half, the " +
+                 "ruling: the boat sits centred in the sea the band leaves), and how long the move " +
+                 "takes to ease in and out. A card never moves the camera. Presentation only — " +
+                 "never saved.")]
+        public HelmFootprintSettings HelmFootprint = HelmFootprintSettings.Default;
 
         [Header("The strike (owner drop §10.2 — \"pull back and press maybe?\": BOTH candidates, tunable)")]
         [Tooltip("Which gesture sets the hook on the true take, and how hard the pull-back must be. " +
@@ -693,24 +712,56 @@ namespace HiddenHarbours.Core
         /// "yes make everyone a mesh now"</b> (ADR 0044, amendment 2026-09-17): the cast follows the
         /// player onto skinned meshes, with the sprite as the fallback for anything that cannot draw.
         ///
-        /// <para>⚠ What ON reaches TODAY is narrower than the ruling, and on purpose (option (b) of the
-        /// same amendment): a cast member draws as a mesh only while standing on a FACET hull — a
-        /// moored boat's skipper — because the facet pass is only recorded while a mesh hull is on
-        /// screen. Villagers ashore are not wired at all and draw their sprites exactly as before.
-        /// A character whose art def names no <see cref="CharacterSkinDef"/>, or whose def lists the
-        /// state it is in nowhere in <see cref="CharacterSkinDef.MeshStates"/>, keeps its sprite
-        /// whatever this says.</para>
+        /// <para>What ON reaches: a moored boat's skipper standing on a FACET hull, and, while
+        /// <see cref="MeshCastAshore"/> is ON as well, every villager on her own feet ashore, under a
+        /// facet id of her own (ADR 0044, amendment 2026-09-27). With Mesh Cast Ashore OFF the
+        /// villagers draw their sprites exactly as before. A character whose art def names no
+        /// <see cref="CharacterSkinDef"/>, or whose def lists the state it is in nowhere in
+        /// <see cref="CharacterSkinDef.MeshStates"/>, keeps its sprite whatever this says.</para>
         /// </summary>
         public const bool DefaultMeshCast = true;
 
         [Tooltip("Draw the CAST (everyone but the player) as skinned meshes through the iso facet " +
                  "pass where they can be drawn that way? ON is the shipped look (owner ruling " +
-                 "2026-09-17). Today that is a moored boat's skipper standing on a mesh hull; " +
-                 "villagers ashore stay sprites, because the facet pass is only recorded while a " +
-                 "mesh hull is on screen. The same debts as the player's switch apply: about half " +
-                 "a fidelity step off the inked art and no eyes, brows or mouth. Read live — flip " +
-                 "it with the game running. Turn it OFF and every cast sprite is back exactly.")]
+                 "2026-09-17). That is a moored boat's skipper standing on a mesh hull and, while " +
+                 "Mesh Cast Ashore is ON too, every villager on her own feet ashore. The same debts " +
+                 "as the player's switch apply: about half a fidelity step off the inked art and no " +
+                 "eyes, brows or mouth. Read live — flip it with the game running. Turn it OFF and " +
+                 "every cast sprite is back exactly.")]
         public bool MeshCast = DefaultMeshCast;
+
+        /// <summary>
+        /// Code default for <see cref="MeshCastAshore"/>: <b>OFF</b>. The shipped
+        /// <c>GameConfig.asset</c> turns it <b>ON</b>, by the owner's ruling of 2026-09-27
+        /// (decision 1: ON once the plates are accepted, OFF one switch away). A config built fresh
+        /// in code still starts OFF.
+        ///
+        /// <para>ON, and only while <see cref="MeshCast"/> is ON too, draws every VILLAGER on her own
+        /// feet ashore as her skinned mesh, through the facet pass under a facet id of her own (ADR
+        /// 0044, amendment 2026-09-27; the ashore frame is #861's, as the player's). She faces where
+        /// her sprite faces, sorts exactly as her sprite, and her idle is moved off her neighbours' by
+        /// her NpcDef id. Sheltered indoors she is hidden in both pictures and keeps her id. A clip or
+        /// work animation that suspends her sprite, or a state her skin does not mesh, hands the draw
+        /// back to her sprite.</para>
+        ///
+        /// <para>When the region has used every facet id she is refused one: she keeps her WHOLE
+        /// sprite and the id registry logs its one warning for that ask. She asks again only when a
+        /// switch is turned off and on again or she is enabled again, never per frame. Once granted,
+        /// she keeps her id while both switches stay on.</para>
+        ///
+        /// <para>OFF: every villager's sprite, byte for byte as before this switch existed — no ashore
+        /// figure built, no id taken, the sprite untouched.</para>
+        /// </summary>
+        public const bool DefaultMeshCastAshore = false;
+
+        [Tooltip("Draw the VILLAGERS as their skinned meshes ashore? Needs Mesh Cast ON too. ON in " +
+                 "the shipped config (owner ruling 2026-09-27, on the plates), OFF in a fresh one. " +
+                 "A villager is the mesh while she is out on her own feet: indoors she is hidden in " +
+                 "both pictures, and a clip or a state her skin does not mesh hands her back to the " +
+                 "sprite. When the region has run out of facet ids she keeps her whole sprite and " +
+                 "does not ask again until a switch is turned off and on. Read live. Turn it OFF and " +
+                 "every villager's sprite is back exactly, down to the byte.")]
+        public bool MeshCastAshore = DefaultMeshCastAshore;
 
         [Header("Foliage silhouette (the fisher read through dense woods)")]
         [Tooltip("Let the player read through foliage that draws in front of her? ON is the shipped " +
@@ -1135,6 +1186,35 @@ namespace HiddenHarbours.Core
             CompactScale = 0.55f,
             MinScale = 0.35f,
             MaxScale = 3f,
+        };
+    }
+
+    /// <summary>
+    /// Owner tuning for how the <b>camera answers the helm's footprint</b>
+    /// (<see cref="GameConfig.HelmFootprint"/> — ADR 0050). While the helm's UI covers a band across the
+    /// whole width of the screen (<see cref="HelmFootprint"/>), the boat's place on screen eases up by
+    /// <see cref="CameraBandShare"/> of the band's height, so the sea the band leaves is centred on the
+    /// boat. A card never moves the camera, and nothing covered means no move at all.
+    ///
+    /// <para>Presentation only (rule 5): recomputed every frame, never saved.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct HelmFootprintSettings
+    {
+        [Tooltip("The share of a full-width helm band's height the boat's place on screen rises by. " +
+                 "0.5 (the ruling) centres the boat in the sea above the band; 0 turns the move off.")]
+        [Range(0f, 1f)] public float CameraBandShare;
+
+        [Tooltip("Seconds the camera takes to ease the boat up when a full-width band comes up, and " +
+                 "back down when it goes. 0 = at once.")]
+        [Min(0f)] public float CameraEaseSeconds;
+
+        /// <summary>Half the band (the ruling), eased over 0.4 s — the camera's own framing-tween
+        /// time, so the two moves read as one hand on the camera.</summary>
+        public static HelmFootprintSettings Default => new HelmFootprintSettings
+        {
+            CameraBandShare = 0.5f,
+            CameraEaseSeconds = 0.4f,
         };
     }
 

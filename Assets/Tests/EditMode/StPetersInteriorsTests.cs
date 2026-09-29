@@ -189,6 +189,16 @@ namespace HiddenHarbours.Tests.EditMode
                 (float halfWidth, float halfLength) = HalfFootprint(room);
                 var furnishings = StPetersInteriors.FurnishingsFor(room.Key);
 
+                // Which END the door is on is read from the bake, with the call the stander makes: the
+                // returned room rig of drop 14 draws it on +y, the rig before it drew it on −y, and the
+                // tables turned with it (#898). A room missing from the contract would fall back to −y
+                // quietly, so that is a failure here rather than a guess.
+                InteriorCatalog.Placement baked = InteriorCatalog.FindRoom(room.Key);
+                Assert.IsTrue(baked.IsValid,
+                              $"'{room.Key}' is not in the interiors contract, so which end its doorway " +
+                              "is on cannot be read");
+                float doorEnd = InteriorCatalog.DoorModelMetres(baked).y >= 0f ? 1f : -1f;
+
                 foreach (var f in furnishings)
                 {
                     Assert.Less(Mathf.Abs(f.RoomMetres.x), halfWidth - wall,
@@ -202,7 +212,7 @@ namespace HiddenHarbours.Tests.EditMode
                     // and its collider closes the ONE gap in the house — you would be locked out of
                     // your own cottage by a chair.
                     bool inDoorLane = Mathf.Abs(f.RoomMetres.x) < halfDoor + 0.5f &&
-                                      f.RoomMetres.y < -halfLength + 2.0f;
+                                      f.RoomMetres.y * doorEnd > halfLength - 2.0f;
                     Assert.IsFalse(inDoorLane,
                                    $"'{room.Key}': '{f.PropKey}' at {f.RoomMetres} is parked in the " +
                                    "doorway");

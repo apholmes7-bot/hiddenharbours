@@ -1357,40 +1357,9 @@ class FacingTests(unittest.TestCase):
                 bearing, (360.0 / entity["x-facings"]) * entity["facingIndex"] % 360.0, places=4)
         self.assertGreater(named, 0, "no facing was named at all")
 
-    def test_the_interior_sits_a_half_turn_from_its_building(self):
-        """A cross-check the kit states and this export never uses: `Interiors.json` declares
-        `exteriorFacingOffset: 4`, because `interiorIsoRig` puts its door on the OTHER gable.
-
-        If the bearing table were mirrored, the two would not stay a half-turn apart — so this
-        is a second, independent witness that the step direction is right, and it comes from the
-        art contract rather than from anything in `hhexport`.
-        """
-        by_path = {e.get("x-path"): e for e in self.doc["entities"]}
-        with open(os.path.join(REPO, "Assets/_Project/Art/Sprites/Interiors/Interiors.json"),
-                  encoding="utf-8") as handle:
-            offset = json.load(handle)["exteriorFacingOffset"]
-        pairs = 0
-        for path, interior in by_path.items():
-            if not path.endswith("/Interior") or interior.get("facingIndex") is None:
-                continue
-            building = by_path.get(path[: -len("/Interior")])
-            if not building or building.get("facingIndex") is None:
-                continue
-            # The offset is the INTERIOR rig measured against houseIsoRig — Interiors.json says
-            # so, and the reason it is 4 is that houseIsoRig puts its door on +y and
-            # interiorIsoRig on -y. The shop shells are a different exterior with a different
-            # answer: shops.contract.json declares its own `shellFacingOffset`, and it is 0.
-            # Applying the house number to a shopfront would be asserting the wrong contract.
-            if building.get("rigSource") != "docs/art/rigs/houseIsoRig.js":
-                continue
-            facings = interior["x-facings"]
-            self.assertEqual(interior["facingIndex"],
-                             (building["facingIndex"] + offset) % facings, path)
-            self.assertEqual(
-                self._error(interior["x-facingBearingDeg"], building["x-facingBearingDeg"]),
-                180.0, f"{path} is not a half-turn from its building")
-            pairs += 1
-        self.assertGreater(pairs, 0, "no building/interior pair to cross-check")
+    # test_the_interior_sits_a_half_turn_from_its_building retired with the village return (#898,
+    # R2): the returned room opens on the gable its house's door is on, and Interiors.json's
+    # exteriorFacingOffset is 0, measured.
 
 
 class ContractOptsTests(unittest.TestCase):

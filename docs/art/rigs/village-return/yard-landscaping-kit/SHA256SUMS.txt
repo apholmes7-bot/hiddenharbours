@@ -1,0 +1,10 @@
+caa24a4edf22b1327f72608f68cd0bd1b746c132a21a4d7a7daf193fd46fcf0d  yardIsoRig.js
+0206a8bab6de9f9d20a7495c6bc953d8607303463a82455abb9e9bf76726f7d1  gameplay/yardIsoRig.gameplay.json
+30e5c5f0687e42ca968e15a5b4c08e2d43014987bb4211acad0208f2ce5db725  yardLots.js
+dae02f9535d388790f4c6eaae9ec00d7aa73febea2dd6405a9052c93210ef9a0  outbuildingIsoRig.js
+bf9faa4b6647fecdacdf689df9d7ce34eb0967ad0132760386f3fde10010a862  lots-phase5.json
+
+# yardIsoRig.js is the return's rig (phases 4 and 5 of hh-village-return); main's Art/yardIsoRig.js is untouched.
+# yardLots.js, outbuildingIsoRig.js and lots-phase5.json are new in this return.
+# The sidecar's derivedFromRigSha256 must equal the rig hash above; if it does not,
+# the rig moved and the sidecar must be regenerated (harness.html -> DOWNLOAD SIDECAR).

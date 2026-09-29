@@ -9,6 +9,8 @@
   **Amended 2026-09-17 by the cast (`feat/cast-to-mesh`):** §7 records the owner's ruling that the
   cast follows the player onto skinned meshes, and closes §5 items 1, 3 and 4. Item 2 stays with the
   water lane.
+  **Amended 2026-09-27 by villagers ashore (`feat/villagers-ashore-meshes`):** §8 records the owner's
+  rulings that the villagers ashore draw as meshes. It supersedes §7.3's option (b) for villagers only.
 - **Date:** 2026-09-09
 - **Decision owner:** the owner ruled the scope; `lead-architect` ratifies the record.
   **`art-pipeline`** owns the facet look, **`tools-editor`** owns the baking, **`gameplay-systems`**
@@ -538,6 +540,9 @@ guard holds. The second column is the same extractor with the face layer held ba
 
 ### 7.3 Ashore is still gated, so the owner ruled option (b)
 
+> **Superseded for villagers by §8 (2026-09-27).** The gate below is gone and the villagers are wired.
+> The moored skipper and the arrival's staging stand as written.
+
 When the owner ruled, §3.7's gate 1 stood: **a mesh character drew through the facet path only in a
 frame that also carried a registered mesh hull.** Aboard, the hull under the figure is that hull.
 Ashore, a figure would have drawn only while some mesh hull happened to be on screen, and not at all
@@ -599,6 +604,8 @@ are its PR 2, after this one. Under option (b):
 - **`GameConfig.MeshCast`** is the cast's switch, and it ships **ON** under the ruling. It is read
   live, so it flips with the game running, and OFF gives every cast sprite back exactly.
   `GameConfig.MeshCharacter` still governs the player alone (§5 item 4).
+- **`GameConfig.MeshCastAshore`** (added by §8) is the villagers' switch. It needs `MeshCast` ON too,
+  and OFF gives every villager's sprite back exactly (§8.5).
 - **`MeshStates` is authored once, when a Def is created.** `CharacterSkinAssetBaker.BakeCastCli`
   bakes the player first, as a refresh that re-proves the path, then the nine cast presets. A Def it
   CREATES gets the four states the player's committed Def switched on, `idle`, `walk`, `run` and
@@ -643,6 +650,9 @@ are its PR 2, after this one. Under option (b):
   their sprite exactly as today, with no presenter or figure on any of them. One skinned def is a mesh
   aboard and a sprite ashore, in the same world.
 
+§8.6 retires both `CharacterMeshCastAshorePlayTests` pins by name and renames the presenter's ashore
+case.
+
 ### 7.7 Debts carried, not taken
 
 The cast inherits the player's debts. This amendment takes none of them:
@@ -652,3 +662,143 @@ The cast inherits the player's debts. This amendment takes none of them:
   for Claude Design;
 - the shader look pass (43–57 % off the inked art), a separate handoff;
 - the shin-clamp re-bake.
+
+## 8. Amendment 2026-09-27: villagers ashore draw as meshes
+
+### 8.1 The rulings
+
+§7.1 quotes the owner's first ruling, verbatim: **"yes make everyone a mesh now."** Its second,
+**"GO for Phase B, option (b). Villagers stay sprites ashore."**, held the villagers back while ashore
+was gated (§7.3). That gate is gone. The ashore charter's PR 1 (#861) lets a figure hold a facet id with
+no hull under her, and `IsoFacetHullFeature` records the pass while `Count > 0 || FigureCount > 0`.
+
+On 2026-09-27 the owner moved this item up and ruled its two decisions, verbatim:
+
+- 20:19:50Z, answering the Art desk's three questions: **"1. Yes 2. Yes 3. Yes"**.
+- 21:36:31Z, answering this charter's two decisions: **"1. Yes 2. Yes"**. Decision 1: the villagers ship
+  ON once the owner accepts the plates, faceless before CHARACTER PR 2a if need be. Decision 2: this
+  lands before #877 Phase B and does not wait for it.
+
+**This amendment supersedes §7.3's option (b) for villagers only.** The eight villagers who live ashore,
+St Peters' six and Nine Mile Creek's two, draw as their skinned meshes. The rest of option (b) stands: a
+moored skipper is wired as §7.4 says, and the arrival keeps its staging (§8.4).
+
+### 8.2 The wiring
+
+- **The seam gains one interface in Core.** `ICharacterFigureAshoreStand : ICharacterFigureStand` adds
+  `FigureKey`, a stable name for the person standing (a villager's `NpcDef.Id`). Its hull members answer
+  null and zero and are never read ashore. The change is additive: every existing stand compiles and
+  behaves as before (rule 4).
+- **World publishes and never learns what draws it.** `NpcFigureStand` (World) is a villager's stand, as
+  `MooredBoat` is a skipper's. It names her own `IsoCharacterSprite` and her key, and asks
+  `CharacterFigurePresentation.Service` for a figure once, in its `Awake`.
+- **`Interactable.Awake` adds the stand** to a host that names an `NpcDef` and carries an
+  `IsoCharacterSprite`. A thing (NedsLetter: an NpcDef and no body) gets nothing. A host that already
+  carries a figure or a stand is left alone. It is `Awake`, not `Start`: her routine switches the
+  Interactable off while she is sheltered, and `Awake` still runs on a disabled component of an active
+  GameObject. Edit-time builders run no `Awake`, so no scene serialises a stand and the exporter does
+  not re-run.
+- **Art draws, through the presenter it already has.** `CharacterFigurePresenter.PoseFigure` sends an
+  ashore stand with no hull to `PoseAshore`, the twin of the player's
+  (`DeckRiderMeshPresenter.PoseAshore`). A plain stand with no hull still refuses with `Ashore`,
+  exactly as before. Her figure, `MeshCastFigureAshore`, is a child of her sprite at its pivot, on her
+  sprite's layer, and draws through `IsoCharacterFigureRenderer.EnterAshore`.
+- **The gates, in order:** both switches, read first, so a switch turned off while she is indoors still
+  gives her id back; no sprite renderer; a sprite disabled (her shelter) or hidden elsewhere; no
+  character; a suspended character; no skin; an unusable skin; no clip for the state; the state not in
+  `MeshStates`; a refusal already given (`FacetIdRefused`); the figure refused; the clip vanished; the
+  pose refused. `NotAFacetHull` and `SpriteRestaged` are aboard's alone. She stands on no hull, and her
+  sprite is re-sorted every frame by design, so her figure copies that sort instead of refusing it.
+- **The same-frame sort.** `YSortSprite` writes her sprite's order at execution order 0, and the
+  figure's own copy, also at 0, may run before it. The presenter runs at 100 and writes the ashore
+  properties again after it poses her, so her overlay ends every frame sorted exactly as her sprite.
+- **Her facing** is her sprite's compass heading through the skin's measured azimuth sign, as the
+  player's is.
+- **Her shelter and her talk are untouched.** Her routine owns `SpriteRenderer.enabled` and the
+  Interactable's `enabled`. The presenter reads the first and writes neither. It writes only
+  `forceRenderingOff`, and gives it back whenever it stops.
+
+### 8.3 The facet id: the player's policy
+
+- **Held, not churned.** She takes one figure id at her first draw with both switches on, and keeps it
+  while she is sheltered or suspended, so a door costs nothing. A switch turned off, the presenter
+  disabled or destroyed, or a re-configure gives it back.
+- **No release by region and no reserve.** Hulls register in `OnEnable`, before `SetActiveScene`, so a
+  release on region change would free nothing for Nine Mile Creek's hulls. It would also leave St
+  Peters' villagers as sprites after a round trip. The #877 note rejected release by view (its
+  option 4.2).
+- **Refused honestly at exhaustion.** A figure never takes the overflow id 255
+  (`IsoFacetIdPool.TakeFigureId`). Refused, she keeps her whole sprite and builds nothing, and the
+  registry logs its one warning for that ask. She is not asked again per frame, only when a switch is
+  turned off and on again or her presenter is enabled again.
+- **The budget, as the #877 note measured it.** St Peters fits today: 104 + the player + six villagers
+  = 111 of 255. Cold Nine Mile Creek is exhausted by its 33 hulls at load, so **its two villagers are
+  refused until #877 Phase B lands**: two warnings, two sprites. After #877 B the worst case in play is
+  127 of 255, with the cast at Nine Mile Creek.
+
+### 8.4 What stays as it was
+
+- **The arrival keeps its staging.** Its skipper is a `MooredBoat` skipper with no `Interactable`, so the
+  adder never reaches her. The aboard path still hands the draw back to her sprite (`SpriteRestaged`)
+  while the arrival lifts her sort over the cabin room.
+- **Aboard is unchanged.** An aboard stand never builds an ashore figure, and §8.5's phase is ashore's
+  alone, so every aboard plate stays byte-equal.
+
+### 8.5 The phase and the switch
+
+- **The phase, ashore only.** The seed passed to `CharacterSkinPose.FrameFor` mixes the world seed with
+  the FNV-1a of her key through MurmurHash3's 32-bit finalizer
+  (`CharacterFigurePresenter.AshorePhaseSeed`). The key is hashed once, in `Configure`. The finalizer is
+  the point. The phase is FNV-1a modulo a small
+  frame count, often a power of two, and FNV's low bits see only its input's low bits, so a plain XOR
+  would lock two villagers whose keys agree there in step on every seed. Two villagers idling side by
+  side are not in step, and the same villager is the same on every run, from (worldSeed, gameTime)
+  (rule 5). No key gives the world seed itself, which is the phase aboard.
+- **`GameConfig.MeshCastAshore` is the villagers' switch.** It needs `MeshCast` ON too, as
+  `MeshCharacterAshore` needs `MeshCharacter`. `DefaultMeshCastAshore` is false. The shipped
+  `GameConfig.asset` sets it ON under decision 1, and the owner accepts the plates before this merges.
+  With either switch OFF every villager's sprite comes back byte for byte: no ashore figure, no facet id
+  and no child object. It is read live.
+
+### 8.6 Guards added by this amendment
+
+**EditMode**, in `CharacterFigurePresenterTests` beside §7.6's cases. `AshoreNeverDrawsAndBuildsNothing`
+is renamed `APlainStandAshoreNeverDrawsAndBuildsNothing`, and now runs with both switches on.
+
+- `AnAshoreStandDrawsHerOwnFigureAndItsOverlayTakesHerSpritesSortInTheSameFrame`.
+- `APlainStandAshoreNeverDrawsAndBuildsNothing`.
+- `AtExhaustionSheKeepsHerWholeSpriteBuildsNothingAndIsNotAskedAgain`: one warning over thirty poses.
+- `ShelterHidesHerFigureAndKeepsHerIdAndSheComesOutWithTheSameOne`.
+- `TheAshoreSwitchOffGivesHerSpriteBackAndHerIdBack`,
+  `TheCastSwitchOffGivesHerSpriteBackAndHerIdBackWithTheAshoreSwitchStillOn` and
+  `ASwitchTurnedOffWhileSheIsIndoorsStillGivesHerIdBack`.
+- `TwoVillagersOfOneSkinPoseDifferentIdleFramesAtOneMomentAndOneKeyPosesTheSameFrameTwice` and
+  `ThePhaseMixIsPinned`.
+- `PosingAVillagerAshoreEveryFrameAllocatesNothingAfterWarmUp`: the GC.Alloc recorder with a positive
+  control, and the thread's allocation counter where the runtime keeps one.
+
+**PlayMode**, in `CharacterMeshCastAshorePlayTests`, rewritten. Its two option (b) pins retire by name:
+`EveryVillagerAshore_DrawsTheirSpriteExactlyAsToday_WithTheCastSwitchOn` ("villagers are not wired")
+and `TheSameSkinnedDef_IsAMeshAboard_AndTheSpriteAshore_InOneWorld` (a villager's `Ashore` refusal).
+In their place:
+
+- `EveryVillagerAshore_IsTheirMesh_WithMeshCastAndMeshCastAshoreOn` and
+  `EveryVillagerAshore_DrawsTheirSpriteExactlyAsToday_WithMeshCastAshoreOff`, on St Peters at noon.
+- `TheSameSkinnedDef_IsAMeshAboard_AndAMeshAshore_InOneWorld` and
+  `TheSameSkinnedDef_IsAMeshAboard_AndTheSpriteAshore_WithMeshCastAshoreOff`.
+- The adder: `TheAdder_StandsAVillagerOnAwake_WithHerInteractableSwitchedOff`,
+  `TheAdder_GivesAThingWithNoBody_Nothing` and `TheAdder_LeavesAHostThatAlreadyCarriesAFigure_Alone`.
+  They are PlayMode because the Art EditMode assembly references no World, and EditMode runs no
+  `Awake`.
+
+**The plates** (`VillagersAshorePlatePlayTests`: St Peters, and Nine Mile Creek's two refused) are shot
+on a granted editor slot and join this PR before it leaves draft.
+
+### 8.7 Not in this amendment
+
+- **Blink and look** come through CHARACTER PR 2a's seam. If 2a puts a figure identity on the seam, a
+  villager answers that one, and there is no second key scheme.
+- **The facet-id budget** is #877 Phase B's (lazy blocks for hulls, ADR 0045). This amendment touches
+  none of its files.
+- **No scene, builder or prefab changes.**
+- **§7.7's debts** are still carried.

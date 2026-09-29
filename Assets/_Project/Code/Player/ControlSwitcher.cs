@@ -1210,10 +1210,11 @@ namespace HiddenHarbours.Player
 
         /// <summary>Aboard → OnDeck: step back from the helm onto the deck. Steering goes dead and the
         /// boat is brought to rest (throttle dropped — nobody's at the tiller); the player reappears at
-        /// the helm spot and can walk the deck / work the gear / step ashore.</summary>
+        /// the helm spot and can walk the deck / work the gear / step ashore. She has not moved, so the
+        /// bow she was carrying settles on her own lag rather than snapping level (boats §2.7.3).</summary>
         private void LeaveHelm()
         {
-            if (_boatController != null) { _boatController.enabled = false; _boatController.Stop(); }
+            if (_boatController != null) { _boatController.enabled = false; _boatController.Stop(levelAtOnce: false); }
             if (_boatInput != null) _boatInput.enabled = false;
 
             ApplyPlayerFor(ControlMode.OnDeck);

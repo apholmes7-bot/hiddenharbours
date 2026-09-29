@@ -6,10 +6,23 @@
   "rig": {
     "key": "yardIso",
     "global": "YardIso",
-    "source": "docs/art/rigs/yard-landscaping-kit/yardIsoRig.js",
-    "sha256": "d2ab2a906f4f099e3054643034a936327ae547fc5ea375b3198cc8f503d23706",
+    "source": "docs/art/rigs/village-return/yard-landscaping-kit/yardIsoRig.js",
+    "sha256": "caa24a4edf22b1327f72608f68cd0bd1b746c132a21a4d7a7daf193fd46fcf0d",
     "convention": "CounterClockwise",
-    "prerequisites": []
+    "prerequisites": [
+      {
+        "key": "interiorProp",
+        "global": "PropIso",
+        "source": "docs/art/rigs/interiorPropRig.js",
+        "sha256": "a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6"
+      },
+      {
+        "key": "coastalPass",
+        "global": "CoastalPass",
+        "source": "docs/art/rigs/village-return/houses-kit/Art/coastalPass.js",
+        "sha256": "041b0bc32040c10a1bafc57da1d3f19e76047285c2b802861cff67caca5b166d"
+      }
+    ]
   },
   "call": {
     "fn": "render",
@@ -59,14 +72,14 @@
     "nativeH": 540,
     "nativePivotX": 235,
     "nativePivotY": 442,
-    "cropX": 188,
-    "cropY": 384,
-    "cellW": 94,
-    "cellH": 88,
-    "pivotX": 47,
-    "pivotY": 58,
-    "sheetW": 752,
-    "sheetH": 88
+    "cropX": 189,
+    "cropY": 385,
+    "cellW": 92,
+    "cellH": 86,
+    "pivotX": 46,
+    "pivotY": 57,
+    "sheetW": 736,
+    "sheetH": 86
   },
-  "sheetSha256": "635c4f3eaea274e1e5dd3b3bc9c9abf5f73de4a90ff092edb5ea64fbb8cf4972"
+  "sheetSha256": "f6a07f37e2e32b9876f78c64d943e03969b70a693a8238f85a16696b0674582c"
 }

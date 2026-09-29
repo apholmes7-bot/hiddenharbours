@@ -30,9 +30,11 @@ namespace HiddenHarbours.Tests.World.EditMode
         /// <summary>sageCottage: 6.6 × 8.05 m of floor, and its storeys 3.1025 m apart. The last is the
         /// number this whole branch turns on — <c>interiorIsoRig</c> resolves
         /// <c>roomH = min(2.55 + size·0.85, wallH − 0.6) = 2.7625</c> at <c>size 0.25</c> and declares
-        /// <c>storeyZ = roomH + 0.34</c> of joists, which the bake writes into the interiors contract as
-        /// <c>storeyHeightMetres</c>. Restated here, NOT read from the contract: a test that asked the
-        /// same file the code asks would agree with it however wrong both were.</summary>
+        /// <c>storeyZ = roomH + 0.34</c> of joists. That is the room rig before the village return, and
+        /// Ginny's placed cottage still stands its upstairs at it; the returned rig of drop 14 measures a
+        /// 2.65 m rise, which the interiors contract carries as <c>storeyHeightMetres</c> since #898.
+        /// Restated here, NOT read from the contract: a test that asked the same file the code asks would
+        /// agree with it however wrong both were.</summary>
         const float CottageWidth = 6.6f;
         const float CottageLength = 8.05f;
         const float CottageStoreyHeightMetres = 3.1025f;

@@ -1,0 +1,131 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_boilerStack
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: structure.stp_cannery_boiler_stack
+  DisplayName: Boiler house and stack
+  RigKey: boilerStack
+  SceneId: keyscene.stp_cannery
+  BakedOptionsJson: '{"stackH":14,"decay":"derelict","lit":0}'
+  Layer: raised
+  Walk: behind
+  Mount: ground
+  BoundsMin: {x: -2.25, y: -1.8, z: 0}
+  BoundsMax: {x: 2.2, y: 1.9, z: 13.9}
+  Frames:
+  - Sprite: {fileID: 8600933105915693696, guid: 8717eeed740e82246b32314047ec668f, type: 3}
+    RigDir: 0
+    ShowFaces: N
+    BearingDeg: 0
+    CameraSees: its back
+    NativeSize: {x: 150, y: 388}
+    NativePivot: {x: 75, y: 349}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 72, y: 346}
+  - Sprite: {fileID: -1095667392138514821, guid: 8717eeed740e82246b32314047ec668f, type: 3}
+    RigDir: 7
+    ShowFaces: NE
+    BearingDeg: 45
+    CameraSees: its back
+    NativeSize: {x: 185, y: 422}
+    NativePivot: {x: 95, y: 363}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 92, y: 359}
+  - Sprite: {fileID: 3853427588421509283, guid: 8717eeed740e82246b32314047ec668f, type: 3}
+    RigDir: 6
+    ShowFaces: E
+    BearingDeg: 90
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 126, y: 414}
+    NativePivot: {x: 61, y: 367}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 58, y: 364}
+  - Sprite: {fileID: 8261912329996580426, guid: 8717eeed740e82246b32314047ec668f, type: 3}
+    RigDir: 5
+    ShowFaces: SE
+    BearingDeg: 135
+    CameraSees: the show face
+    NativeSize: {x: 190, y: 426}
+    NativePivot: {x: 92, y: 367}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 88, y: 363}
+  - Sprite: {fileID: -5135729649689095747, guid: 8717eeed740e82246b32314047ec668f, type: 3}
+    RigDir: 4
+    ShowFaces: S
+    BearingDeg: 180
+    CameraSees: the show face
+    NativeSize: {x: 150, y: 399}
+    NativePivot: {x: 74, y: 359}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 70, y: 356}
+  - Sprite: {fileID: 1821534976934846597, guid: 8717eeed740e82246b32314047ec668f, type: 3}
+    RigDir: 3
+    ShowFaces: SW
+    BearingDeg: 225
+    CameraSees: the show face
+    NativeSize: {x: 185, y: 406}
+    NativePivot: {x: 89, y: 347}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 86, y: 343}
+  - Sprite: {fileID: -6005649430912246738, guid: 8717eeed740e82246b32314047ec668f, type: 3}
+    RigDir: 2
+    ShowFaces: W
+    BearingDeg: 270
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 126, y: 380}
+    NativePivot: {x: 64, y: 333}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 61, y: 329}
+  - Sprite: {fileID: -1507574196, guid: 8717eeed740e82246b32314047ec668f, type: 3}
+    RigDir: 1
+    ShowFaces: NW
+    BearingDeg: 315
+    CameraSees: its back
+    NativeSize: {x: 190, y: 399}
+    NativePivot: {x: 97, y: 339}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 94, y: 336}
+  CellSize: {x: 182, y: 418}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -2.1, y: 1.7}
+    - {x: 2.1, y: 1.7}
+    - {x: 2.1, y: -1.7}
+    - {x: -2.1, y: -1.7}
+  Anchors:
+  - Name: door
+    Position: {x: 0.85, y: 1.75, z: 0}
+  - Name: flue
+    Position: {x: -1.05, y: -0.25, z: 13.1}
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 1
+  Light:
+    Emitters:
+    - window
+    When: 'restored only: a runtime overlay (the backlog makes windows and smoke
+      overlays)'
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []

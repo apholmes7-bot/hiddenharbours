@@ -1,0 +1,21 @@
+{
+  "sourceRevision": "7d35d6ef418218ee0dcaafb8047d1b8684ba87e0",
+  "provenance": "Read from committed native arrays before migration; verified against LFS OIDs. Mip hashes concatenate bottom-up RGBA bytes in slice order. Ramp hashes little-endian float bits. Never regenerate expected values from the importer under test.",
+  "detailMipSha256": [
+    "961ab6866cf14bd5d9e4d1e8bb4007e9022cdb59824475242b3e7ebeb462b404",
+    "f7631c533f7a7a075bd35157990efa9dc098dec1a30d4d74371e7ed788d61299",
+    "9832f9abc6ef0a95015aeb6498cc1a010f8104b7d6cc2fad7d7cc7d071c1afab",
+    "eb6d9cc46aa809469ad6830001cdfdceb702f89e32f68a252a0dd746f6baa87f",
+    "ce2452c28807dbd48bbbe35fcb2d3b6d5138aa33e7ba9b8ea1aeaee734567a22",
+    "e91343ec702572d5942651ba62819178ac2392f3ad2bb9956ffaa95d88ba0cff",
+    "ce33ce805ea70d46306fb9924c2acde91f646b6a649e1cd34c3564d13335295f",
+    "04d31e1b605e3df42c327149122512c24a84f8ac773200c0179ffe0e2515534a",
+    "e6b483edafcb071e8aebdf8a1964f6444e0240e7777d05e9eb4fa21d9c607f20"
+  ],
+  "relightSha256": [
+    "b79ac70ac08f86bdccfd52fdca9ca4e989de3579855cff81e656fa7d21efb3bd",
+    "78ae4650e1398ccd50369deba8c86046633056eaa1643557187229dc489e7503",
+    "c42ad4ef39ff1c07bbc22cbac75332d081307c6269299067d8fd697d967aa1ec"
+  ],
+  "rampSha256": "52a2c107e7c236a792b56b6a4a9c69466e76429b893891370eb17e13794e27f9"
+}

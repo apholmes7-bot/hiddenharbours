@@ -143,6 +143,9 @@ Shader "HiddenHarbours/Water"
         //                        marching-contour read (0 = smooth). Mirrors _DepthBands / _SpecBands.
         _SwellReadStrength ("Swell read contrast (0 = off, ~0.35 = legible)", Range(0,1)) = 0.35
         _SwellReadBands    ("Swell read posterize bands (0 = smooth)", Float) = 0
+        // W1 owner policy, held still across moods. ToggleUI adds no keyword/variant.
+        // Off retains the absolute read; on bounds it by the positive colour already beneath it.
+        [ToggleUI] _SwellReadRelative ("Swell read relative contrast (experimental; 0 = today's look)", Float) = 0
 
         [Header(Swell FACE SHADING (lit face   shaded back   the modelled wave))]
         // The owner's "better looking waves" ask (2026-07-08). The shared wave field's ANALYTIC slope
@@ -1153,6 +1156,7 @@ Shader "HiddenHarbours/Water"
             // Its own sampler, so the read keeps the map's import filter: codes are filtered, THEN
             // decoded, as PaintedStillWater does on the CPU.
             #include "Assets/_Project/Art/Shaders/Include/StillWater.hlsl"
+            #include "Assets/_Project/Art/Shaders/Include/DaylightSwellRead.hlsl"
 
             // GLOBAL sun direction from the day/night cycle (Shader.SetGlobalVector by DayNightController,
             // ADR 0013). NOT per-material, so it lives OUTSIDE the per-material CBUFFER (like the grass
@@ -1418,6 +1422,7 @@ Shader "HiddenHarbours/Water"
                 // Swell READ legibility (crest/trough VALUE contrast; col.rgb-only, its own gate).
                 float  _SwellReadStrength;
                 float  _SwellReadBands;
+                float  _SwellReadRelative;
                 // Swell FACE shading (lit face / shaded back off the wave field's analytic slope).
                 float  _SwellFaceShade;
                 float  _SunSideStrength;
@@ -5039,7 +5044,11 @@ Shader "HiddenHarbours/Water"
                     // _OceanSwellStrength) so the owner has ONE clear "how readable is the swell" knob.
                     // The calm gate scales the FINISHED layer (after the posterize), so on a falling sea the
                     // whole contour fades as one — the quantized steps never re-shuffle mid-melt.
-                    col.rgb += readBand * _SwellReadStrength * swellReadGate * 0.25;
+                    // The owner prices only off/on. No intermediate blend, new wave sample or light floor.
+                    if (_SwellReadRelative >= 0.5)
+                        col.rgb = HHDaylightSwellReadRelative(col.rgb, readBand, _SwellReadStrength, swellReadGate);
+                    else
+                        col.rgb += readBand * _SwellReadStrength * swellReadGate * 0.25;
                 }
 
                 // ---- SWELL FACE SHADING (owner mandate: "better looking waves"; col.rgb ONLY) -----------------
