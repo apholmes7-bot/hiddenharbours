@@ -1,6 +1,6 @@
 # Hidden Harbours: the design desk
 
-**As of 2026-09-29 13:17Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
+**As of 2026-09-29 14:02Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
 
 Read this file at the start of every session, then the brief the owner names. A ruling the owner gives you in a message wins over this file and over any brief. Some older docs still describe sprites where the owner has since ruled meshes (section 4); where they disagree, the ruling wins.
 
@@ -76,6 +76,12 @@ Read this file at the start of every session, then the brief the owner names. A 
   - Ginny's plot is redrawn with both, the camper at the game's facing.
 - 09-29, Ginny's plot, redrawn. Accepted: "the new plot looks good".
 - 09-29, St Peters' ground. On your extra places quick look the owner said "the terrain looks like the old shape", and asked: "wouldnt it be easier that these scenes are built over the exisiting terrain modifications?" So every St Peters scene now stands on terrain pass 9's ground. The Art desk sends it to you as a 16-bit texture until terrain PR 5 bakes it into the game: [briefs/BRIEF-2026-09-29-st-peters-pass9-ground.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-29-st-peters-pass9-ground.md).
+- 09-29, Nine Mile Creek's layout, on its key scenes brief ([briefs/BRIEF-2026-09-29-nmc-key-scenes.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-29-nmc-key-scenes.md), section 2):
+  - the town stands a bit north of the gas bar's junction, with a medium-sized hardware store, a restaurant and bar, a grocery store and two or three apartment buildings, built from your new multi-unit buildings, manors and shopping plazas;
+  - a new campground north of the crossing fills most of the land from the crossing to the town and the wharf;
+  - the crossing lands at Nine Mile Creek's south-east corner, on the south shore's beach, which runs the width of the region into Rice Point's;
+  - Wharf Road is paved;
+  - road kit v4 is the brief's part 3.
 
 ## 5. How work comes back
 
@@ -110,7 +116,7 @@ Each thread has, or will get, its own paste in its own conversation. This list i
 - Nine Mile Creek's key scenes (09-29). Asked of you:
   - part 1, the region's ground drawn whole (the coast, the south shore, the rivers, the roads and the lots, as numbers and as a texture) with your list of key scenes, then a stop for the owner's look;
   - part 2, the scenes the owner picks, on that ground;
-  - part 3, road kit v4, only if the owner's paste says so.
+  - part 3, road kit v4, which the owner put in on 09-29.
 
   The wharf, the gas bar, the bar and the crossing stay as drawn: [briefs/BRIEF-2026-09-29-nmc-key-scenes.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-29-nmc-key-scenes.md).
 - The channel check (09-27, on this branch): DONE the same day. Text reaches you; pictures do not (section 1). [briefs/BRIEF-2026-09-27-channel-check.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-27-channel-check.md).
