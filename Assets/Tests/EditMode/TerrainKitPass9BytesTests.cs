@@ -33,10 +33,9 @@ namespace HiddenHarbours.Tests.EditMode
 
         static string Short(string sha) => sha == null ? "(none)" : sha.Length > 12 ? sha.Substring(0, 12) : sha;
 
-        static Texture2DArray LoadArray(string path, int size)
+        static Texture2DArray RequireArray(Texture2DArray a, string path, int size)
         {
-            var a = AssetDatabase.LoadAssetAtPath<Texture2DArray>(path);
-            Assert.IsNotNull(a, $"{path} is not committed: the arrays land with their maps.");
+            Assert.IsNotNull(a, $"{path} did not import: see the source-specific import error.");
             Assert.AreEqual(Depth, a.depth, $"{path}: not one slice per material per ladder step.");
             Assert.AreEqual(size, a.width, $"{path} is not {size} px wide.");
             Assert.AreEqual(size, a.height, $"{path} is not {size} px tall.");
@@ -78,8 +77,9 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var manifest = TerrainPass9Bake.Load(out var byName, out _);
             int size = manifest.size;
-            var arrays = new Texture2DArray[RelightMaps.Length];
-            for (int a = 0; a < arrays.Length; a++) arrays[a] = LoadArray(TerrainTexArrayBuilder.RelightArrayPaths[a], size);
+            var relight = TerrainArrayAssets.LoadRelightRequired();
+            var arrays = new[] { relight.Normal, relight.Light, relight.Detail };
+            foreach (var a in arrays) RequireArray(a, a.name, size);
 
             var faults = new List<string>();
             var seen = new HashSet<string>();
@@ -123,7 +123,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var manifest = TerrainPass9Bake.Load(out var byName, out _);
             int size = manifest.size;
-            var array = LoadArray(TerrainTexArrayBuilder.Array256Path, size);
+            var array = RequireArray(TerrainArrayAssets.LoadDetailRequired(), TerrainArrayAssets.DetailRecipePath, size);
 
             var faults = new List<string>();
             foreach (var (slice, name, baked) in Slices())
@@ -145,7 +145,7 @@ namespace HiddenHarbours.Tests.EditMode
                 if (got != want)
                     faults.Add($"{name}: slice {slice} is {Short(got)}…, the bake's albedo {Short(want)}…");
             }
-            Assert.IsEmpty(faults, $"{TerrainTexArrayBuilder.Array256Path} is not the bake's albedo:\n  " + string.Join("\n  ", faults));
+            Assert.IsEmpty(faults, $"{TerrainArrayAssets.DetailRecipePath} is not the bake's albedo:\n  " + string.Join("\n  ", faults));
         }
 
         /// <summary>Row <c>slice</c> of the ramp holds the tile's palettes as sRGB bytes, five bands to a palette,
@@ -155,8 +155,8 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheRamp_HoldsEachTilesPalettesAndNumbers_FromTheBake()
         {
             TerrainPass9Bake.Load(out var byName, out _);
-            var ramp = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainTexArrayBuilder.RelightRampPath);
-            Assert.IsNotNull(ramp, $"{TerrainTexArrayBuilder.RelightRampPath} is not committed.");
+            var ramp = TerrainArrayAssets.LoadRelightRequired().Ramp;
+            Assert.IsNotNull(ramp, $"{TerrainArrayAssets.RelightRecipePath} did not import its ramp.");
             const int width = TerrainTexArrayBuilder.RelightPalettes * TerrainTexArrayBuilder.RelightBands + 1;
             Assert.AreEqual(width, ramp.width, "the ramp is not 81 texels wide");
             Assert.AreEqual(Depth, ramp.height, "the ramp is not one row per slice");

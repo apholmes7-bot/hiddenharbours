@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: ac26b0c27041df344b2a3e2003c41818
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1071240320091042161
+    second: SetPiece_trolleyLine_0
+  - first:
+      213: -5539112420125556944
+    second: SetPiece_trolleyLine_1
+  - first:
+      213: 2092928035224988202
+    second: SetPiece_trolleyLine_2
+  - first:
+      213: 7492895981216867507
+    second: SetPiece_trolleyLine_3
+  - first:
+      213: -4972453422737620070
+    second: SetPiece_trolleyLine_4
+  - first:
+      213: -188276055836539024
+    second: SetPiece_trolleyLine_5
+  - first:
+      213: 8845643306398823871
+    second: SetPiece_trolleyLine_6
+  - first:
+      213: -1657928754648862829
+    second: SetPiece_trolleyLine_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SetPiece_trolleyLine_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 265
+        width: 395
+        height: 265
+      alignment: 9
+      pivot: {x: 0.04050633, y: 0.9622642}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1713a1c356fcdde00800000000000000
+      internalID: 1071240320091042161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_trolleyLine_1
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 265
+        width: 395
+        height: 265
+      alignment: 9
+      pivot: {x: 0.12405063, y: 0.98867923}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03f3673f99e1123b0800000000000000
+      internalID: -5539112420125556944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_trolleyLine_2
+      rect:
+        serializedVersion: 2
+        x: 790
+        y: 265
+        width: 395
+        height: 265
+      alignment: 9
+      pivot: {x: 0.7822785, y: 0.9622642}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2aaa0095f29b0d10800000000000000
+      internalID: 2092928035224988202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_trolleyLine_3
+      rect:
+        serializedVersion: 2
+        x: 1185
+        y: 265
+        width: 395
+        height: 265
+      alignment: 9
+      pivot: {x: 0.99746835, y: 0.8792453}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b42263223d1cf760800000000000000
+      internalID: 7492895981216867507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_trolleyLine_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 395
+        height: 265
+      alignment: 9
+      pivot: {x: 0.6911392, y: 0.24905661}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a938c8b05fb4efab0800000000000000
+      internalID: -4972453422737620070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_trolleyLine_5
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 0
+        width: 395
+        height: 265
+      alignment: 9
+      pivot: {x: 0.05822785, y: 0.003773585}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 077c62cbceb136df0800000000000000
+      internalID: -188276055836539024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_trolleyLine_6
+      rect:
+        serializedVersion: 2
+        x: 790
+        y: 0
+        width: 395
+        height: 265
+      alignment: 9
+      pivot: {x: 0.04050633, y: 0.31698114}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb5b6bf88b902ca70800000000000000
+      internalID: 8845643306398823871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_trolleyLine_7
+      rect:
+        serializedVersion: 2
+        x: 1185
+        y: 0
+        width: 395
+        height: 265
+      alignment: 9
+      pivot: {x: 0, y: 0.9433962}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39faf3ce49addf8e0800000000000000
+      internalID: -1657928754648862829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f446abf417c6df0499aded377637f1d2
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SetPiece_trolleyLine_0: 1071240320091042161
+      SetPiece_trolleyLine_1: -5539112420125556944
+      SetPiece_trolleyLine_2: 2092928035224988202
+      SetPiece_trolleyLine_3: 7492895981216867507
+      SetPiece_trolleyLine_4: -4972453422737620070
+      SetPiece_trolleyLine_5: -188276055836539024
+      SetPiece_trolleyLine_6: 8845643306398823871
+      SetPiece_trolleyLine_7: -1657928754648862829
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
