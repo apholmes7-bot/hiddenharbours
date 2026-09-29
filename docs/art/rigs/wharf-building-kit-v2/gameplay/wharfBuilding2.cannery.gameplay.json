@@ -1,0 +1,1287 @@
+{
+ "schema": "hidden-harbours/wharf-building-gameplay@1",
+ "rig": "wharfBuildingRig2.geo.js + wharfBuildingRig2.js",
+ "exportSymbol": "WharfBuilding2",
+ "revision": "2.0",
+ "generated": "WharfBuilding2.gameplay() off the live model — do not hand-edit, regenerate",
+ "frame": {
+  "units": "metres",
+  "axes": "+x the dock wall, +y out of the show gable (the main door), +z up from the ground",
+  "origin": "the ground centre under the building (the cell pivot)",
+  "scale_px_per_m": 32,
+  "elev_deg": 40,
+  "dirs": 8,
+  "cell": [
+   1200,
+   1160
+  ],
+  "pivot": [
+   600,
+   780
+  ]
+ },
+ "build": {
+  "Wd": 9.54,
+  "Ln": 15.4,
+  "fH": 1.2,
+  "eaveZ": 6.04,
+  "ridgeZ": 9.474,
+  "loftZ": 3.84,
+  "loftKind": "mezz",
+  "wallH": 4.84,
+  "type": "processing",
+  "shape": "gable",
+  "size": 0.9,
+  "door": "rollUp",
+  "mirror": false,
+  "dock": true,
+  "preset": "cannery"
+ },
+ "PLACEMENT": {
+  "show": "+Y",
+  "entry": "+Y",
+  "dockSide": "+X",
+  "facings": [
+   {
+    "dir": 5,
+    "doorFaces": "SE",
+    "via": "door",
+    "showSide": "seen"
+   },
+   {
+    "dir": 4,
+    "doorFaces": "S",
+    "via": "door",
+    "showSide": "edge"
+   },
+   {
+    "dir": 3,
+    "doorFaces": "SW",
+    "via": "door",
+    "showSide": "hidden"
+   },
+   {
+    "dir": 6,
+    "doorFaces": "E",
+    "via": "side",
+    "showSide": "seen"
+   },
+   {
+    "dir": 2,
+    "doorFaces": "W",
+    "via": "side",
+    "showSide": "hidden"
+   }
+  ]
+ },
+ "FOOTPRINT": [
+  {
+   "id": "building",
+   "x0": -4.82,
+   "x1": 4.82,
+   "y0": -7.75,
+   "y1": 7.75,
+   "walk": false
+  },
+  {
+   "id": "apron",
+   "x0": -2.6,
+   "x1": 3.45,
+   "y0": 7.7,
+   "y1": 10.1,
+   "walk": true,
+   "z": 1.2
+  },
+  {
+   "id": "apronStair",
+   "x0": -4.28,
+   "x1": -2.6,
+   "y0": 9,
+   "y1": 10.1,
+   "walk": true
+  },
+  {
+   "id": "dock",
+   "x0": 4.79,
+   "x1": 6.77,
+   "y0": -7.3,
+   "y1": 7.3,
+   "walk": true,
+   "z": 1.2
+  },
+  {
+   "id": "dockStair",
+   "x0": 5.67,
+   "x1": 6.77,
+   "y0": 7.3,
+   "y1": 8.98,
+   "walk": true
+  },
+  {
+   "id": "hvac",
+   "x0": -6.27,
+   "x1": -4.97,
+   "y0": -3.572,
+   "y1": -1.972,
+   "walk": false
+  }
+ ],
+ "WALK": [
+  {
+   "id": "floor",
+   "z": 1.2,
+   "rect": {
+    "x0": -4.57,
+    "x1": 4.57,
+    "y0": -7.5,
+    "y1": 7.5
+   },
+   "surface": "concrete"
+  },
+  {
+   "id": "mezzanine",
+   "z": 3.84,
+   "rect": {
+    "x0": -4.57,
+    "x1": 4.57,
+    "y0": -7.5,
+    "y1": -4.5
+   },
+   "holes": [],
+   "headroom": {
+    "minM": 2,
+    "standHalfX": 4.76
+   },
+   "surface": "steel"
+  },
+  {
+   "id": "apron",
+   "z": 1.2,
+   "rect": {
+    "id": "apron",
+    "x0": -2.6,
+    "x1": 3.45,
+    "y0": 7.7,
+    "y1": 10.1,
+    "walk": true,
+    "z": 1.2
+   },
+   "surface": "concrete"
+  },
+  {
+   "id": "apronStair",
+   "z": 0,
+   "rect": {
+    "id": "apronStair",
+    "x0": -4.28,
+    "x1": -2.6,
+    "y0": 9,
+    "y1": 10.1,
+    "walk": true
+   },
+   "surface": "concrete"
+  },
+  {
+   "id": "dock",
+   "z": 1.2,
+   "rect": {
+    "id": "dock",
+    "x0": 4.79,
+    "x1": 6.77,
+    "y0": -7.3,
+    "y1": 7.3,
+    "walk": true,
+    "z": 1.2
+   },
+   "surface": "concrete"
+  },
+  {
+   "id": "dockStair",
+   "z": 0,
+   "rect": {
+    "id": "dockStair",
+    "x0": 5.67,
+    "x1": 6.77,
+    "y0": 7.3,
+    "y1": 8.98,
+    "walk": true
+   },
+   "surface": "concrete"
+  }
+ ],
+ "BLOCKERS": [
+  {
+   "id": "column",
+   "x0": -1.749,
+   "x1": -1.589,
+   "y0": -4.68,
+   "y1": -4.52,
+   "level": 0
+  },
+  {
+   "id": "column",
+   "x0": 1.59,
+   "x1": 1.75,
+   "y0": -4.68,
+   "y1": -4.52,
+   "level": 0
+  },
+  {
+   "id": "stair",
+   "x0": -4.47,
+   "x1": -3.47,
+   "y0": -4.5,
+   "y1": -1.12,
+   "level": 0
+  },
+  {
+   "id": "table0",
+   "x0": 0.6,
+   "x1": 1.5,
+   "y0": -3.6,
+   "y1": -1.8,
+   "level": 0
+  },
+  {
+   "id": "table1",
+   "x0": 0.6,
+   "x1": 1.5,
+   "y0": -1.2,
+   "y1": 0.6,
+   "level": 0
+  },
+  {
+   "id": "table2",
+   "x0": 0.6,
+   "x1": 1.5,
+   "y0": 1.2,
+   "y1": 3,
+   "level": 0
+  },
+  {
+   "id": "boxes",
+   "x0": -4.47,
+   "x1": -3.47,
+   "y0": 5.7,
+   "y1": 6.5,
+   "level": 0
+  },
+  {
+   "id": "iceBin",
+   "x0": -4.57,
+   "x1": -3.07,
+   "y0": -7.5,
+   "y1": -6.2,
+   "level": 0
+  },
+  {
+   "id": "scale",
+   "x0": 0.25,
+   "x1": 1.85,
+   "y0": -7.5,
+   "y1": -6.8,
+   "level": 0
+  },
+  {
+   "id": "hose",
+   "x0": 3.62,
+   "x1": 4.12,
+   "y0": -7.5,
+   "y1": -7.12,
+   "level": 0
+  },
+  {
+   "id": "dockPallet",
+   "x0": 5.04,
+   "x1": 6.04,
+   "y0": -6.8,
+   "y1": -6,
+   "level": 0
+  },
+  {
+   "id": "hvac",
+   "x0": -6.27,
+   "x1": -4.77,
+   "y0": -3.572,
+   "y1": -1.972,
+   "level": 0
+  },
+  {
+   "id": "desk",
+   "x0": -0.6,
+   "x1": 1,
+   "y0": -7.5,
+   "y1": -6.8,
+   "level": 1
+  },
+  {
+   "id": "cabinet",
+   "x0": 1.25,
+   "x1": 1.75,
+   "y0": -7.5,
+   "y1": -6.95,
+   "level": 1
+  }
+ ],
+ "DOORS": [
+  {
+   "id": "door",
+   "kind": "door",
+   "verb": "enter",
+   "also": [
+    "leave"
+   ],
+   "clip": "walk",
+   "at": [
+    0,
+    7.7,
+    1.2
+   ],
+   "stand": [
+    -5.78,
+    9.55
+   ],
+   "standZ": 0,
+   "level": 0,
+   "doorKind": "rollUp",
+   "opens": "the curtain rolls up into the hood",
+   "clearWidth": 3.4,
+   "clearHeight": 3.4,
+   "entry": {
+    "kind": "apron",
+    "stair": "apronStair",
+    "zTop": 1.2
+   },
+   "seq": [
+    {
+     "verb": "climbStair",
+     "stair": "apronStair"
+    }
+   ],
+   "path": [
+    [
+     -5.78,
+     9.55,
+     0
+    ],
+    [
+     -4.58,
+     9.55,
+     0
+    ],
+    [
+     -2.1,
+     9.55,
+     1.2
+    ],
+    [
+     0,
+     8.4,
+     1.2
+    ],
+    [
+     0,
+     6.7,
+     1.2
+    ]
+   ],
+   "fits": true,
+   "faceYaw": 107.748,
+   "reachable": true
+  },
+  {
+   "id": "personnel",
+   "kind": "door",
+   "verb": "enter",
+   "also": [
+    "leave"
+   ],
+   "clip": "walk",
+   "at": [
+    2.7,
+    7.7,
+    1.2
+   ],
+   "stand": [
+    2.7,
+    8.6
+   ],
+   "standZ": 1.2,
+   "level": 0,
+   "doorKind": "personnel",
+   "clearWidth": 0.9,
+   "clearHeight": 2.1,
+   "fits": true,
+   "note": "onto the apron beside the roll-up",
+   "faceYaw": 180,
+   "reachable": true
+  }
+ ],
+ "CLIMB": [],
+ "STAIRS": [
+  {
+   "id": "mezzStair",
+   "kind": "stair",
+   "verb": "climbStair",
+   "also": [
+    "descendStair"
+   ],
+   "clip": "walk",
+   "n": 14,
+   "riser": 0.189,
+   "going": 0.26,
+   "width": 1,
+   "pitchDeg": 35.952,
+   "outside": false,
+   "at": [
+    -3.97,
+    -1.12,
+    1.2
+   ],
+   "stand": [
+    -3.97,
+    -0.57
+   ],
+   "standZ": 1.2,
+   "level": 0,
+   "faceYaw": -180,
+   "top": {
+    "stand": [
+     -3.97,
+     -5.05
+    ],
+    "z": 3.84,
+    "level": 1
+   },
+   "headroomOpening": null,
+   "seq": [
+    {
+     "clip": "walk",
+     "loop": true,
+     "rootMotion": {
+      "from": [
+       -3.97,
+       -1.12,
+       1.2
+      ],
+      "to": [
+       -3.97,
+       -4.5,
+       3.84
+      ],
+      "rate": 0.727
+     },
+     "request": "stairWalk",
+     "note": "root z linear along the pitch line; the feet float at most ±2.3 px"
+    }
+   ],
+   "exact": {
+    "up": [
+     {
+      "clip": "boardDown",
+      "once": true,
+      "reverse": true,
+      "opts": {
+       "railZ": 0.189
+      },
+      "repeat": 14,
+      "advance": 0.26
+     }
+    ],
+    "down": [
+     {
+      "clip": "boardDown",
+      "once": true,
+      "opts": {
+       "railZ": 0.189
+      },
+      "repeat": 14,
+      "advance": 0.26
+     }
+    ],
+    "note": "one riser per clip: fits every creator body (0.06–1.30)"
+   },
+   "fits": true,
+   "reachable": true,
+   "topReachable": true
+  },
+  {
+   "id": "apronStair",
+   "kind": "stair",
+   "verb": "climbStair",
+   "also": [
+    "descendStair"
+   ],
+   "clip": "walk",
+   "n": 7,
+   "riser": 0.171,
+   "going": 0.28,
+   "width": 1.1,
+   "pitchDeg": 31.477,
+   "outside": true,
+   "at": [
+    -4.28,
+    9.55,
+    0
+   ],
+   "stand": [
+    -4.78,
+    9.55
+   ],
+   "standZ": 0,
+   "level": 0,
+   "faceYaw": 90,
+   "top": {
+    "stand": [
+     -2.05,
+     9.55
+    ],
+    "z": 1.2,
+    "level": 0
+   },
+   "headroomOpening": null,
+   "seq": [
+    {
+     "clip": "walk",
+     "loop": true,
+     "rootMotion": {
+      "from": [
+       -4.28,
+       9.55,
+       0
+      ],
+      "to": [
+       -2.6,
+       9.55,
+       1.2
+      ],
+      "rate": 0.727
+     },
+     "request": "stairWalk",
+     "note": "root z linear along the pitch line; the feet float at most ±2.1 px"
+    }
+   ],
+   "exact": {
+    "up": [
+     {
+      "clip": "boardDown",
+      "once": true,
+      "reverse": true,
+      "opts": {
+       "railZ": 0.171
+      },
+      "repeat": 7,
+      "advance": 0.28
+     }
+    ],
+    "down": [
+     {
+      "clip": "boardDown",
+      "once": true,
+      "opts": {
+       "railZ": 0.171
+      },
+      "repeat": 7,
+      "advance": 0.28
+     }
+    ],
+    "note": "one riser per clip: fits every creator body (0.06–1.30)"
+   },
+   "fits": true,
+   "reachable": true,
+   "topReachable": true
+  },
+  {
+   "id": "dockStair",
+   "kind": "stair",
+   "verb": "climbStair",
+   "also": [
+    "descendStair"
+   ],
+   "clip": "walk",
+   "n": 7,
+   "riser": 0.171,
+   "going": 0.28,
+   "width": 1.1,
+   "pitchDeg": 31.477,
+   "outside": true,
+   "at": [
+    6.22,
+    8.98,
+    0
+   ],
+   "stand": [
+    6.22,
+    9.48
+   ],
+   "standZ": 0,
+   "level": 0,
+   "faceYaw": -180,
+   "top": {
+    "stand": [
+     6.22,
+     6.75
+    ],
+    "z": 1.2,
+    "level": 0
+   },
+   "headroomOpening": null,
+   "seq": [
+    {
+     "clip": "walk",
+     "loop": true,
+     "rootMotion": {
+      "from": [
+       6.22,
+       8.98,
+       0
+      ],
+      "to": [
+       6.22,
+       7.3,
+       1.2
+      ],
+      "rate": 0.727
+     },
+     "request": "stairWalk",
+     "note": "root z linear along the pitch line; the feet float at most ±2.1 px"
+    }
+   ],
+   "exact": {
+    "up": [
+     {
+      "clip": "boardDown",
+      "once": true,
+      "reverse": true,
+      "opts": {
+       "railZ": 0.171
+      },
+      "repeat": 7,
+      "advance": 0.28
+     }
+    ],
+    "down": [
+     {
+      "clip": "boardDown",
+      "once": true,
+      "opts": {
+       "railZ": 0.171
+      },
+      "repeat": 7,
+      "advance": 0.28
+     }
+    ],
+    "note": "one riser per clip: fits every creator body (0.06–1.30)"
+   },
+   "fits": true,
+   "reachable": true,
+   "topReachable": true
+  }
+ ],
+ "STATIONS": [
+  {
+   "kind": "fixture",
+   "standZ": 3.84,
+   "level": 1,
+   "id": "desk",
+   "verb": "tally",
+   "clip": "bench",
+   "fixture": "bench",
+   "fixtureZ": 0.8,
+   "at": [
+    0.2,
+    -7.15,
+    4.64
+   ],
+   "stand": [
+    0.2,
+    -6.38
+   ],
+   "note": "the tally desk over the floor; standing, as v9.2 has no seated clip",
+   "opts": {
+    "workZ": 0.8
+   },
+   "fits": true,
+   "fit": [
+    0.643,
+    0.853
+   ],
+   "faceYaw": 180,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 3.84,
+   "level": 1,
+   "id": "cabinet",
+   "verb": "fileTally",
+   "clip": "reach",
+   "fixture": "rest",
+   "fixtureZ": 0.95,
+   "at": [
+    1.5,
+    -6.94,
+    4.79
+   ],
+   "stand": [
+    1.5,
+    -6.42
+   ],
+   "opts": {
+    "lift": 0.95
+   },
+   "fits": true,
+   "fit": [
+    0,
+    1.012
+   ],
+   "faceYaw": 180,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 1.2,
+   "level": 0,
+   "id": "table0W",
+   "verb": "fillet",
+   "clip": "chop",
+   "fixture": "knife",
+   "fixtureZ": 0.72,
+   "at": [
+    0.8,
+    -2.7,
+    1.92
+   ],
+   "stand": [
+    0.17,
+    -2.7
+   ],
+   "opts": {
+    "workZ": 0.72
+   },
+   "fits": true,
+   "fit": [
+    0.598,
+    0.76
+   ],
+   "faceYaw": 90,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 1.2,
+   "level": 0,
+   "id": "table0E",
+   "verb": "fillet",
+   "clip": "chop",
+   "fixture": "knife",
+   "fixtureZ": 0.72,
+   "at": [
+    1.3,
+    -2.7,
+    1.92
+   ],
+   "stand": [
+    1.93,
+    -2.7
+   ],
+   "opts": {
+    "workZ": 0.72
+   },
+   "fits": true,
+   "fit": [
+    0.598,
+    0.76
+   ],
+   "faceYaw": -90,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 1.2,
+   "level": 0,
+   "id": "table1W",
+   "verb": "fillet",
+   "clip": "chop",
+   "fixture": "knife",
+   "fixtureZ": 0.72,
+   "at": [
+    0.8,
+    -0.3,
+    1.92
+   ],
+   "stand": [
+    0.17,
+    -0.3
+   ],
+   "opts": {
+    "workZ": 0.72
+   },
+   "fits": true,
+   "fit": [
+    0.598,
+    0.76
+   ],
+   "faceYaw": 90,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 1.2,
+   "level": 0,
+   "id": "table1E",
+   "verb": "fillet",
+   "clip": "chop",
+   "fixture": "knife",
+   "fixtureZ": 0.72,
+   "at": [
+    1.3,
+    -0.3,
+    1.92
+   ],
+   "stand": [
+    1.93,
+    -0.3
+   ],
+   "opts": {
+    "workZ": 0.72
+   },
+   "fits": true,
+   "fit": [
+    0.598,
+    0.76
+   ],
+   "faceYaw": -90,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 1.2,
+   "level": 0,
+   "id": "table2W",
+   "verb": "fillet",
+   "clip": "chop",
+   "fixture": "knife",
+   "fixtureZ": 0.72,
+   "at": [
+    0.8,
+    2.1,
+    1.92
+   ],
+   "stand": [
+    0.17,
+    2.1
+   ],
+   "opts": {
+    "workZ": 0.72
+   },
+   "fits": true,
+   "fit": [
+    0.598,
+    0.76
+   ],
+   "faceYaw": 90,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 1.2,
+   "level": 0,
+   "id": "table2E",
+   "verb": "fillet",
+   "clip": "chop",
+   "fixture": "knife",
+   "fixtureZ": 0.72,
+   "at": [
+    1.3,
+    2.1,
+    1.92
+   ],
+   "stand": [
+    1.93,
+    2.1
+   ],
+   "opts": {
+    "workZ": 0.72
+   },
+   "fits": true,
+   "fit": [
+    0.598,
+    0.76
+   ],
+   "faceYaw": -90,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 1.2,
+   "level": 0,
+   "id": "boxes",
+   "verb": "stackBox",
+   "clip": "place",
+   "also": [
+    "lift"
+   ],
+   "fixture": "load",
+   "fixtureZ": 0.94,
+   "at": [
+    -3.47,
+    6.1,
+    2.14
+   ],
+   "stand": [
+    -2.95,
+    6.1
+   ],
+   "note": "fish boxes, three on a pallet; carry one as the tray (CARRIES.tray)",
+   "opts": {
+    "workZ": 0.94
+   },
+   "fits": true,
+   "fit": [
+    0.718,
+    0.978
+   ],
+   "faceYaw": -90,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 1.2,
+   "level": 0,
+   "id": "iceBin",
+   "verb": "shovelIce",
+   "clip": "dig",
+   "fixture": null,
+   "at": [
+    -3.82,
+    -6.5,
+    1.5
+   ],
+   "stand": [
+    -3.82,
+    -5.65
+   ],
+   "note": "flake ice behind a 0.3 m board, so the dig clip works at the floor",
+   "opts": {},
+   "fits": true,
+   "faceYaw": 180,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 1.2,
+   "level": 0,
+   "id": "scale",
+   "verb": "weigh",
+   "clip": "place",
+   "also": [
+    "lift"
+   ],
+   "fixture": "load",
+   "fixtureZ": 0.85,
+   "at": [
+    0.8,
+    -7.15,
+    2.05
+   ],
+   "stand": [
+    0.8,
+    -6.38
+   ],
+   "opts": {
+    "workZ": 0.85
+   },
+   "fits": true,
+   "fit": [
+    0.718,
+    0.978
+   ],
+   "faceYaw": 180,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 1.2,
+   "level": 0,
+   "id": "hose",
+   "verb": "hoseDown",
+   "clip": "reach",
+   "fixture": "rest",
+   "fixtureZ": 1,
+   "at": [
+    3.87,
+    -7.2,
+    2.2
+   ],
+   "stand": [
+    3.87,
+    -6.6
+   ],
+   "opts": {
+    "lift": 1
+   },
+   "fits": true,
+   "fit": [
+    0,
+    1.012
+   ],
+   "faceYaw": 180,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 1.2,
+   "level": 0,
+   "id": "dockPallet",
+   "verb": "loadOut",
+   "clip": "place",
+   "also": [
+    "lift"
+   ],
+   "fixture": "load",
+   "fixtureZ": 0.94,
+   "at": [
+    5.54,
+    -6,
+    2.14
+   ],
+   "stand": [
+    5.54,
+    -5.45
+   ],
+   "note": "totes for the truck, stacked three high on a pallet on the dock",
+   "opts": {
+    "workZ": 0.94
+   },
+   "fits": true,
+   "fit": [
+    0.718,
+    0.978
+   ],
+   "faceYaw": 180,
+   "reachable": true
+  },
+  {
+   "kind": "hoist",
+   "standZ": 1.2,
+   "level": 0,
+   "id": "boom",
+   "verb": "hoistTote",
+   "clip": "haul",
+   "fixture": null,
+   "at": [
+    2.624,
+    10.8,
+    2.55
+   ],
+   "stand": [
+    2.624,
+    10.3
+   ],
+   "note": "tail the whip: the boom lifts totes from the boats onto the apron through the gap in the rail",
+   "opts": {},
+   "fits": true,
+   "faceYaw": 0,
+   "reachable": true
+  }
+ ],
+ "APPROACH": [
+  -5.78,
+  9.55
+ ],
+ "LIGHTS": {
+  "schedule": {
+   "name": "plant",
+   "hours": [
+    [
+     5,
+     17.5
+    ]
+   ]
+  },
+  "lamps": [
+   {
+    "id": "front",
+    "kind": "pack",
+    "m": [
+     -2.2,
+     7.95,
+     3.95
+    ],
+    "pool": {
+     "m": [
+      -2.2,
+      9.5
+     ],
+     "r": 4.2
+    },
+    "colour": "#ffb765",
+    "burns": "dusk to dawn"
+   },
+   {
+    "id": "bay0",
+    "kind": "pack",
+    "m": [
+     5.02,
+     -4.812,
+     3.96
+    ],
+    "pool": {
+     "m": [
+      6.37,
+      -4.812
+     ],
+     "r": 3.6
+    },
+    "colour": "#ffb765",
+    "burns": "dusk to dawn"
+   },
+   {
+    "id": "bay1",
+    "kind": "pack",
+    "m": [
+     5.02,
+     0,
+     3.96
+    ],
+    "pool": {
+     "m": [
+      6.37,
+      0
+     ],
+     "r": 3.6
+    },
+    "colour": "#ffb765",
+    "burns": "dusk to dawn"
+   },
+   {
+    "id": "bay2",
+    "kind": "pack",
+    "m": [
+     5.02,
+     4.813,
+     3.96
+    ],
+    "pool": {
+     "m": [
+      6.37,
+      4.813
+     ],
+     "r": 3.6
+    },
+    "colour": "#ffb765",
+    "burns": "dusk to dawn"
+   }
+  ],
+  "windows": "emitters win:<ground|loft|office>:n glow with the room while it is in use after dark",
+  "fire": null
+ },
+ "SMOKE": [
+  [
+   -1.752,
+   -2.567,
+   10.714
+  ],
+  [
+   -1.752,
+   2.567,
+   10.714
+  ]
+ ],
+ "SIGN": {
+  "x": 0,
+  "y": 7.77,
+  "z0": 5.24,
+  "z1": 6.24,
+  "w": 4.4
+ },
+ "CHAR": {
+  "rig": "characterIsoRig9.js",
+  "revision": "9.2",
+  "radiusMax": 0.229,
+  "footprintMax": [
+   0.458,
+   0.37
+  ],
+  "fits": {
+   "bench": [
+    0.643,
+    0.853
+   ],
+   "knife": [
+    0.598,
+    0.76
+   ],
+   "load": [
+    0.718,
+    0.978
+   ],
+   "rest": [
+    0,
+    1.012
+   ],
+   "rail": [
+    0.549,
+    0.724
+   ],
+   "rung": [
+    0.211,
+    0.273
+   ],
+   "stepDown": [
+    0.06,
+    1.3
+   ],
+   "stepUp": [
+    0.549,
+    0.724
+   ],
+   "stepUpNoGrip": [
+    0.06,
+    1.3
+   ]
+  },
+  "rung": 0.24,
+  "standoff": 0.275,
+  "ladderRate": 0.436,
+  "topOut": 0.72,
+  "topAdvance": 0.6,
+  "walk": 0.727,
+  "clearDoor": 0.758,
+  "headroom": 2,
+  "stair": {
+   "riserMax": 0.19,
+   "goingMin": 0.26,
+   "widthMin": 0.9,
+   "outsideRiserMax": 0.2
+  }
+ },
+ "CHAR_REQUESTS": [
+  {
+   "clip": "stairWalk",
+   "why": "v9.2 walk plants on a level; a flight of 0.17–0.19 m risers wants a stepped stride",
+   "now": "walk at 0.727 m/s along the flight, root z linear from the bottom nosing to the top: the feet float at most ± riser / 2 (2.1–2.3 px). Exact for every creator body instead: boardDown per riser (played backward going up), 0.57 s a riser"
+  },
+  {
+   "clip": "walkSlope",
+   "why": "the gear ramps at the wide doors are 16–17°",
+   "now": "walk at 0.727 m/s, root z linear from the foot to the sill (as the wharf gangways)"
+  },
+  {
+   "clip": "ladderOn / ladderOff",
+   "why": "v9.2 has the ladder loop and no way on or off it at the top",
+   "now": "up: board at railZ 0.72 from the top station (three rungs down), the root advanced 0.60 m onto the loft over t 0.28–0.88. Down: blend 300 ms from idle 0.55 m back from the hatch edge to ladderDown u 0 at the top station"
+  },
+  {
+   "clip": "sit",
+   "why": "nets are mended and tallies kept sitting",
+   "now": "the bench clip at the bench height (0.80), standing"
+  },
+  {
+   "clip": "carry box",
+   "why": "a fish box goes in two hands",
+   "now": "the tray carry (CARRIES.tray) over walk, idle, board and boardDown"
+  }
+ ]
+}

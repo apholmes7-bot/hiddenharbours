@@ -278,3 +278,10 @@ docs/art/rigs/wharf-rig-kit-v2/**/*.json              text eol=lf
 docs/art/rigs/wharf-rig-kit-v2/**/*.txt               text eol=lf
 docs/art/rigs/wharf-rig-kit-v2/**/*.md                text eol=lf
 docs/art/rigs/wharf-rig-kit-v2/**/*.html              text eol=lf
+
+# Wharf buildings pass 2 (drop 13): preserve SHA256SUMS without overriding the boards' LFS -text.
+docs/art/rigs/wharf-building-kit-v2/**/*.js           text eol=lf
+docs/art/rigs/wharf-building-kit-v2/**/*.json         text eol=lf
+docs/art/rigs/wharf-building-kit-v2/**/*.txt          text eol=lf
+docs/art/rigs/wharf-building-kit-v2/**/*.md           text eol=lf
+docs/art/rigs/wharf-building-kit-v2/**/*.html         text eol=lf
