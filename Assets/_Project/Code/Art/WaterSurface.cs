@@ -363,6 +363,7 @@ namespace HiddenHarbours.Art
             "_SpecAmount", "_SpecSharpness", "_SpecSwellBias",
             // caustics (+ the Arc C day gate, so a FoggySmother preset can kill the sun-dapple)
             "_CausticAmount", "_CausticScale", "_CausticDepth", "_CausticTexStrength", "_CausticDayGate",
+            "_CausticCurvatureBlend", "_CausticCurvatureStep", "_CausticCurvatureGain",
             // seabed absorption (ADR 0027 #7) — ONE turbidity scalar in 1/m, so the weather blend
             // makes a MURKY sea a DERIVED state (Water_StirredBrown is no longer a hand-picked
             // colour: it is high sigma over the same painted ramp). Supersedes the retired
