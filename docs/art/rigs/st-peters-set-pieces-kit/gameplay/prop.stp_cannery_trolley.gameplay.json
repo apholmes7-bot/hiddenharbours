@@ -1,0 +1,186 @@
+{
+ "schema": "hidden-harbours/st-peters-set-piece@1",
+ "generatedBy": "StPetersSetPieces 1.0.0",
+ "key": "trolley",
+ "id": "prop.stp_cannery_trolley",
+ "name": "Derelict trolley",
+ "defType": "SetPieceDef",
+ "scene": "keyscene.stp_cannery",
+ "units": "metres, the piece's own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -0.752,
+   0.752
+  ],
+  "y": [
+   -0.5,
+   0.5
+  ],
+  "z": [
+   0,
+   0.723
+  ]
+ },
+ "layer": "raised",
+ "walk": "behind",
+ "mount": "ground",
+ "colliders": [
+  {
+   "type": "polygon",
+   "blocks": "walk",
+   "pts": [
+    [
+     -0.75,
+     0.5
+    ],
+    [
+     0.75,
+     0.5
+    ],
+    [
+     0.75,
+     -0.5
+    ],
+    [
+     -0.75,
+     -0.5
+    ]
+   ]
+  }
+ ],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 56,
+   "h": 36,
+   "pivot": [
+    28,
+    26
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 64,
+   "h": 49,
+   "pivot": [
+    32,
+    32
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 39,
+   "h": 48,
+   "pivot": [
+    19,
+    33
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 64,
+   "h": 49,
+   "pivot": [
+    31,
+    32
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 56,
+   "h": 38,
+   "pivot": [
+    28,
+    26
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 64,
+   "h": 48,
+   "pivot": [
+    31,
+    31
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 40,
+   "h": 45,
+   "pivot": [
+    20,
+    28
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 64,
+   "h": 47,
+   "pivot": [
+    32,
+    31
+   ]
+  }
+ ],
+ "anchors": {
+  "words": [],
+  "px": {}
+ },
+ "options": {
+  "decay": "derelict",
+  "load": "box"
+ },
+ "light": null,
+ "animated": null,
+ "notes": "Sits on the trolley line; its long axis runs along the rails."
+}

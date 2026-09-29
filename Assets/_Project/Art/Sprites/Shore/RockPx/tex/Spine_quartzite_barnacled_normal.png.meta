@@ -1,0 +1,925 @@
+fileFormatVersion: 2
+guid: c3096a7fc88a3f041ac636b6204291e5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8074017707766620650
+    second: Spine_quartzite_barnacled_normal_0
+  - first:
+      213: 4550810808142104506
+    second: Spine_quartzite_barnacled_normal_1
+  - first:
+      213: -3291392300057761842
+    second: Spine_quartzite_barnacled_normal_2
+  - first:
+      213: -7383580932739029630
+    second: Spine_quartzite_barnacled_normal_3
+  - first:
+      213: -7805104389960846366
+    second: Spine_quartzite_barnacled_normal_4
+  - first:
+      213: -7625711218350073376
+    second: Spine_quartzite_barnacled_normal_5
+  - first:
+      213: 6276718891126530998
+    second: Spine_quartzite_barnacled_normal_6
+  - first:
+      213: 6301407621096368689
+    second: Spine_quartzite_barnacled_normal_7
+  - first:
+      213: -7115172780779297315
+    second: Spine_quartzite_barnacled_normal_8
+  - first:
+      213: -1252605711598891249
+    second: Spine_quartzite_barnacled_normal_9
+  - first:
+      213: -1593125085464057345
+    second: Spine_quartzite_barnacled_normal_10
+  - first:
+      213: -4537237981304199042
+    second: Spine_quartzite_barnacled_normal_11
+  - first:
+      213: -7920477276296659344
+    second: Spine_quartzite_barnacled_normal_12
+  - first:
+      213: 3895885389153937161
+    second: Spine_quartzite_barnacled_normal_13
+  - first:
+      213: 2612904767356109940
+    second: Spine_quartzite_barnacled_normal_14
+  - first:
+      213: 1154982612995320217
+    second: Spine_quartzite_barnacled_normal_15
+  - first:
+      213: 4185949830659283468
+    second: Spine_quartzite_barnacled_normal_16
+  - first:
+      213: -6493967946892936065
+    second: Spine_quartzite_barnacled_normal_17
+  - first:
+      213: -1364857565210344383
+    second: Spine_quartzite_barnacled_normal_18
+  - first:
+      213: 4109541744562717956
+    second: Spine_quartzite_barnacled_normal_19
+  - first:
+      213: 5980154921301680596
+    second: Spine_quartzite_barnacled_normal_20
+  - first:
+      213: 3389835575285195788
+    second: Spine_quartzite_barnacled_normal_21
+  - first:
+      213: 8944034126400985138
+    second: Spine_quartzite_barnacled_normal_22
+  - first:
+      213: 42868004556363801
+    second: Spine_quartzite_barnacled_normal_23
+  - first:
+      213: 3800217769136804980
+    second: Spine_quartzite_barnacled_normal_24
+  - first:
+      213: -4490001816415732286
+    second: Spine_quartzite_barnacled_normal_25
+  - first:
+      213: -715070179610934038
+    second: Spine_quartzite_barnacled_normal_26
+  - first:
+      213: -986500200314737269
+    second: Spine_quartzite_barnacled_normal_27
+  - first:
+      213: -2605105545316997887
+    second: Spine_quartzite_barnacled_normal_28
+  - first:
+      213: 8558994543483029052
+    second: Spine_quartzite_barnacled_normal_29
+  - first:
+      213: -711380251445703053
+    second: Spine_quartzite_barnacled_normal_30
+  - first:
+      213: -464788408251240498
+    second: Spine_quartzite_barnacled_normal_31
+  - first:
+      213: -6217293015685199826
+    second: Spine_quartzite_barnacled_normal_32
+  - first:
+      213: 6642509253694579639
+    second: Spine_quartzite_barnacled_normal_33
+  - first:
+      213: -3341051680524052352
+    second: Spine_quartzite_barnacled_normal_34
+  - first:
+      213: 8370403123389984223
+    second: Spine_quartzite_barnacled_normal_35
+  - first:
+      213: -8532400506627892082
+    second: Spine_quartzite_barnacled_normal_36
+  - first:
+      213: 5165426245496724433
+    second: Spine_quartzite_barnacled_normal_37
+  - first:
+      213: 7347961797390246852
+    second: Spine_quartzite_barnacled_normal_38
+  - first:
+      213: 2447990855479294868
+    second: Spine_quartzite_barnacled_normal_39
+  - first:
+      213: 3345482778202415912
+    second: Spine_quartzite_barnacled_normal_40
+  - first:
+      213: -832737197339256678
+    second: Spine_quartzite_barnacled_normal_41
+  - first:
+      213: 6685948092591369905
+    second: Spine_quartzite_barnacled_normal_42
+  - first:
+      213: -8664747999140793297
+    second: Spine_quartzite_barnacled_normal_43
+  - first:
+      213: -7598033337261342343
+    second: Spine_quartzite_barnacled_normal_44
+  - first:
+      213: 425684038658264765
+    second: Spine_quartzite_barnacled_normal_45
+  - first:
+      213: 7415079123430716315
+    second: Spine_quartzite_barnacled_normal_46
+  - first:
+      213: 8745249553643476973
+    second: Spine_quartzite_barnacled_normal_47
+  - first:
+      213: 2277362172607475124
+    second: Spine_quartzite_barnacled_normal_48
+  - first:
+      213: -5670978162951383674
+    second: Spine_quartzite_barnacled_normal_49
+  - first:
+      213: 4325942318301067879
+    second: Spine_quartzite_barnacled_normal_50
+  - first:
+      213: -227452139850012272
+    second: Spine_quartzite_barnacled_normal_51
+  - first:
+      213: 6227740354474523096
+    second: Spine_quartzite_barnacled_normal_52
+  - first:
+      213: 3973035992582923183
+    second: Spine_quartzite_barnacled_normal_53
+  - first:
+      213: -5137299645350855033
+    second: Spine_quartzite_barnacled_normal_54
+  - first:
+      213: 3876008529787918933
+    second: Spine_quartzite_barnacled_normal_55
+  - first:
+      213: -4609382709459176472
+    second: Spine_quartzite_barnacled_normal_56
+  - first:
+      213: -2209983914409069607
+    second: Spine_quartzite_barnacled_normal_57
+  - first:
+      213: -1357196093394660941
+    second: Spine_quartzite_barnacled_normal_58
+  - first:
+      213: 5205108890126913509
+    second: Spine_quartzite_barnacled_normal_59
+  - first:
+      213: 8805500983834884784
+    second: Spine_quartzite_barnacled_normal_60
+  - first:
+      213: 3188927882263026931
+    second: Spine_quartzite_barnacled_normal_61
+  - first:
+      213: 1624060313880770889
+    second: Spine_quartzite_barnacled_normal_62
+  - first:
+      213: -7350599382493705427
+    second: Spine_quartzite_barnacled_normal_63
+  - first:
+      213: -6203309464597166267
+    second: Spine_quartzite_barnacled_normal_64
+  - first:
+      213: 6138673325733007195
+    second: Spine_quartzite_barnacled_normal_65
+  - first:
+      213: -8259558718684747199
+    second: Spine_quartzite_barnacled_normal_66
+  - first:
+      213: -2832942105648553751
+    second: Spine_quartzite_barnacled_normal_67
+  - first:
+      213: 7654999690935209458
+    second: Spine_quartzite_barnacled_normal_68
+  - first:
+      213: 636811925357784476
+    second: Spine_quartzite_barnacled_normal_69
+  - first:
+      213: -2401158288883028435
+    second: Spine_quartzite_barnacled_normal_70
+  - first:
+      213: -1429154265532100350
+    second: Spine_quartzite_barnacled_normal_71
+  - first:
+      213: 6304446820833520089
+    second: Spine_quartzite_barnacled_normal_72
+  - first:
+      213: 6001312500715355444
+    second: Spine_quartzite_barnacled_normal_73
+  - first:
+      213: 8664734548434837028
+    second: Spine_quartzite_barnacled_normal_74
+  - first:
+      213: -1103837233464130330
+    second: Spine_quartzite_barnacled_normal_75
+  - first:
+      213: 5869197409378275313
+    second: Spine_quartzite_barnacled_normal_76
+  - first:
+      213: -4633172262666299507
+    second: Spine_quartzite_barnacled_normal_77
+  - first:
+      213: -8628965383947187164
+    second: Spine_quartzite_barnacled_normal_78
+  - first:
+      213: -1966239883740653945
+    second: Spine_quartzite_barnacled_normal_79
+  - first:
+      213: 3150895510411454387
+    second: Spine_quartzite_barnacled_normal_80
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc55cb7f70d4cb44b8fc81541b2d238a
+      internalID: 353709365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db9198c43731b544eb63909899bc7527
+      internalID: -439942219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fccad3174c9aae6409de1d1adb37ad93
+      internalID: 515199410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b1cfda747954e642b43da0909e04063
+      internalID: -1574163555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce551318805b35c42ab71d0478c11dc4
+      internalID: 50192777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae29e8301c40eef42a3a823d4720705b
+      internalID: 1010304597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b9df1d6f20f5ec44aa6f6cb574c3067
+      internalID: -93552140
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c097ef7d7eb62346ad79d4012bab752
+      internalID: -193554920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2da22ef6f58654a4d9f66e659ebf5efb
+      internalID: -1878638699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e47bccbf9cd55af4d85446ab54c833cb
+      internalID: -1961814429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e87ee71090ef424db599c673f564fd8
+      internalID: -1217068430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f706e21fe0b458c468da5a5b1fd2c1e4
+      internalID: -1289221598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0dff10af31e4cf544b480fe9000044f0
+      internalID: 109844983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d711e6cbbea040342b962d40fb01e99d
+      internalID: 1978613351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a5a6eaadc6d5144489cd162cd63a572
+      internalID: -736434699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f57fcfffea18e24418d2eadf58e4f5e2
+      internalID: 1698218621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cbce54bf4865e743b93ce8031b94e08
+      internalID: 860477647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0c1fcca2e82fc34488d1523b76f755e
+      internalID: -1161796497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c6ecfb943014f14f9246eefbaed5397
+      internalID: 2019524088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 845e7e9b27d2a2b468234d0988b326ec
+      internalID: -1292709620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f1284264452dff47ad27f9a2d29f54a
+      internalID: -1443593466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a4ae73d2023454499a1d3fa241677ff
+      internalID: -1499728753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 703a04fb687b962429e5fd6cd9bdd179
+      internalID: 508670642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f766319351a55649b0e426341b004f6
+      internalID: -735522253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 10fbb63c898832447b5054714567c6c4
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Spine_quartzite_barnacled_normal_c0_r0: 353709365
+      Spine_quartzite_barnacled_normal_c0_r1: -1878638699
+      Spine_quartzite_barnacled_normal_c0_r2: 860477647
+      Spine_quartzite_barnacled_normal_c1_r0: -439942219
+      Spine_quartzite_barnacled_normal_c1_r1: -1961814429
+      Spine_quartzite_barnacled_normal_c1_r2: -1161796497
+      Spine_quartzite_barnacled_normal_c2_r0: 515199410
+      Spine_quartzite_barnacled_normal_c2_r1: -1217068430
+      Spine_quartzite_barnacled_normal_c2_r2: 2019524088
+      Spine_quartzite_barnacled_normal_c3_r0: -1574163555
+      Spine_quartzite_barnacled_normal_c3_r1: -1289221598
+      Spine_quartzite_barnacled_normal_c3_r2: -1292709620
+      Spine_quartzite_barnacled_normal_c4_r0: 50192777
+      Spine_quartzite_barnacled_normal_c4_r1: 109844983
+      Spine_quartzite_barnacled_normal_c4_r2: -1443593466
+      Spine_quartzite_barnacled_normal_c5_r0: 1010304597
+      Spine_quartzite_barnacled_normal_c5_r1: 1978613351
+      Spine_quartzite_barnacled_normal_c5_r2: -1499728753
+      Spine_quartzite_barnacled_normal_c6_r0: -93552140
+      Spine_quartzite_barnacled_normal_c6_r1: -736434699
+      Spine_quartzite_barnacled_normal_c6_r2: 508670642
+      Spine_quartzite_barnacled_normal_c7_r0: -193554920
+      Spine_quartzite_barnacled_normal_c7_r1: 1698218621
+      Spine_quartzite_barnacled_normal_c7_r2: -735522253
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

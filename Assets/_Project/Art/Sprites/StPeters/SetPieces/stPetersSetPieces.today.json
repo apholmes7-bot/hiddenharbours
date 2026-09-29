@@ -1,0 +1,2132 @@
+{
+ "schema": "hidden-harbours/st-peters-set-pieces-today@1",
+ "note": "The options each St Peters set piece is baked at: the TODAY variant of the two key scenes in the 2026-09-27 return, transcribed from the scene files named below. Restored variants are listed under leftOut and are not baked. Each gameplay block is StPetersSetPieces.gameplay(key, options) exactly; the bake asserts the kit still writes it.",
+ "kit": {
+  "folder": "docs/art/rigs/st-peters-set-pieces-kit",
+  "global": "StPetersSetPieces",
+  "version": "1.0.0",
+  "scripts": [
+   {
+    "path": "lib/weatherSky.js",
+    "sha256Lf": "38300697d5fe685b4800b2a5252aa3c9f0fbcb08bad40e80f6ce3aee1e9c7062"
+   },
+   {
+    "path": "lib/coastalPass.js",
+    "sha256Lf": "041b0bc32040c10a1bafc57da1d3f19e76047285c2b802861cff67caca5b166d"
+   },
+   {
+    "path": "stPetersSetPieces.js",
+    "sha256Lf": "4b6df7c1033703c533e3ad570b548dfdfa779a63cf46f8b59fa2db46b12b1b9f"
+   }
+  ]
+ },
+ "scenes": [
+  {
+   "id": "keyscene.stp_landing",
+   "file": "scenes/keyscene.stp_landing/scene.json",
+   "bytes": 16028,
+   "sha256": "3596eea12d4d30ea81b4d7420409b67298c1677d7df8c49a49cc299bc9b3a997"
+  },
+  {
+   "id": "keyscene.stp_cannery",
+   "file": "scenes/keyscene.stp_cannery/scene.json",
+   "bytes": 16331,
+   "sha256": "c8bc29eb8ab6487ef5b47305d420bfaf5c2136fba0bafc62b07f2c9cc4a0b738"
+  }
+ ],
+ "bake": {
+  "sky": {
+   "time": 14,
+   "cloud": 0.1,
+   "wind": 0.3
+  },
+  "lit": 0,
+  "outline": false,
+  "facings": 8,
+  "importSizeCap": 2048
+ },
+ "leftOut": [
+  {
+   "id": "structure.stp_cannery_boiler_stack_restored",
+   "key": "boilerStack",
+   "scene": "keyscene.stp_cannery",
+   "sceneEntry": 3,
+   "variants": [
+    "restored"
+   ],
+   "options": {
+    "decay": "restored",
+    "stackH": 14
+   }
+  },
+  {
+   "id": "structure.stp_cannery_trolley_line_restored",
+   "key": "trolleyLine",
+   "scene": "keyscene.stp_cannery",
+   "sceneEntry": 5,
+   "variants": [
+    "restored"
+   ],
+   "options": {
+    "path": [
+     [
+      0,
+      0
+     ],
+     [
+      4.01,
+      -4.17
+     ],
+     [
+      6.41,
+      -7.17
+     ],
+     [
+      8.01,
+      -9.27
+     ]
+    ],
+    "decay": "restored"
+   }
+  },
+  {
+   "id": "prop.stp_cannery_trolley_restored",
+   "key": "trolley",
+   "scene": "keyscene.stp_cannery",
+   "sceneEntry": 7,
+   "variants": [
+    "restored"
+   ],
+   "options": {
+    "decay": "restored"
+   }
+  },
+  {
+   "id": "prop.stp_cannery_conveyor_restored",
+   "key": "conveyor",
+   "scene": "keyscene.stp_cannery",
+   "sceneEntry": 9,
+   "variants": [
+    "restored"
+   ],
+   "options": {
+    "decay": "restored"
+   }
+  }
+ ],
+ "pieces": [
+  {
+   "key": "slipTideBoard",
+   "id": "prop.stp_slip_tide_board",
+   "scene": "keyscene.stp_landing",
+   "sceneEntry": 0,
+   "options": {
+    "foot": -1.97,
+    "datum": -2.2,
+    "top": 2.6
+   },
+   "gameplay": {
+    "schema": "hidden-harbours/st-peters-set-piece@1",
+    "generatedBy": "StPetersSetPieces 1.0.0",
+    "key": "slipTideBoard",
+    "id": "prop.stp_slip_tide_board",
+    "name": "Slip tide board",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.stp_landing",
+    "units": "metres, the piece's own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+    "bounds": {
+     "x": [
+      -0.19,
+      0.32
+     ],
+     "y": [
+      -0.19,
+      0.204
+     ],
+     "z": [
+      0,
+      4.98
+     ]
+    },
+    "layer": "raised",
+    "walk": "behind",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -0.2,
+        0.22
+       ],
+       [
+        0.2,
+        0.22
+       ],
+       [
+        0.2,
+        -0.2
+       ],
+       [
+        -0.2,
+        -0.2
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "N",
+      "bearingDeg": 0,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 1,
+      "showFaces": "NW",
+      "bearingDeg": 315,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 2,
+      "showFaces": "W",
+      "bearingDeg": 270,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 3,
+      "showFaces": "SW",
+      "bearingDeg": 225,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 4,
+      "showFaces": "S",
+      "bearingDeg": 180,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 5,
+      "showFaces": "SE",
+      "bearingDeg": 135,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 6,
+      "showFaces": "E",
+      "bearingDeg": 90,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 7,
+      "showFaces": "NE",
+      "bearingDeg": 45,
+      "cameraSees": "its back"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 24,
+      "h": 137,
+      "pivot": [
+       10,
+       129
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 25,
+      "h": 140,
+      "pivot": [
+       12,
+       131
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 20,
+      "h": 137,
+      "pivot": [
+       10,
+       129
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 28,
+      "h": 140,
+      "pivot": [
+       15,
+       131
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 24,
+      "h": 137,
+      "pivot": [
+       14,
+       129
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 25,
+      "h": 140,
+      "pivot": [
+       12,
+       131
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 20,
+      "h": 137,
+      "pivot": [
+       10,
+       129
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 28,
+      "h": 140,
+      "pivot": [
+       12,
+       131
+      ]
+     }
+    ],
+    "anchors": {
+     "marks": [
+      {
+       "z": -1.7,
+       "overDatum": 0.5,
+       "at": [
+        0,
+        0.20400000000000001,
+        0.2699999999999998
+       ],
+       "label": null,
+       "kind": "half",
+       "px": [
+        14,
+        126.6
+       ]
+      },
+      {
+       "z": -1.2,
+       "overDatum": 1,
+       "at": [
+        0.21000000000000002,
+        0.20400000000000001,
+        0.7699999999999998
+       ],
+       "label": "1",
+       "kind": "metre",
+       "px": [
+        7.3,
+        114.3
+       ]
+      },
+      {
+       "z": -0.7,
+       "overDatum": 1.5,
+       "at": [
+        0,
+        0.20400000000000001,
+        1.2699999999999998
+       ],
+       "label": null,
+       "kind": "half",
+       "px": [
+        14,
+        102.1
+       ]
+      },
+      {
+       "z": -0.2,
+       "overDatum": 2,
+       "at": [
+        0.21000000000000002,
+        0.20400000000000001,
+        1.7699999999999998
+       ],
+       "label": "2",
+       "kind": "metre",
+       "px": [
+        7.3,
+        89.8
+       ]
+      },
+      {
+       "z": 0.3,
+       "overDatum": 2.5,
+       "at": [
+        0,
+        0.20400000000000001,
+        2.2699999999999996
+       ],
+       "label": null,
+       "kind": "half",
+       "px": [
+        14,
+        77.6
+       ]
+      },
+      {
+       "z": 0.8,
+       "overDatum": 3,
+       "at": [
+        0.21000000000000002,
+        0.20400000000000001,
+        2.7699999999999996
+       ],
+       "label": "3",
+       "kind": "metre",
+       "px": [
+        7.3,
+        65.3
+       ]
+      },
+      {
+       "z": 1.3,
+       "overDatum": 3.5,
+       "at": [
+        0,
+        0.20400000000000001,
+        3.2699999999999996
+       ],
+       "label": null,
+       "kind": "half",
+       "px": [
+        14,
+        53
+       ]
+      },
+      {
+       "z": 1.8,
+       "overDatum": 4,
+       "at": [
+        0.21000000000000002,
+        0.20400000000000001,
+        3.7699999999999996
+       ],
+       "label": "4",
+       "kind": "metre",
+       "px": [
+        7.3,
+        40.8
+       ]
+      },
+      {
+       "z": 2.3,
+       "overDatum": 4.5,
+       "at": [
+        0,
+        0.20400000000000001,
+        4.27
+       ],
+       "label": null,
+       "kind": "half",
+       "px": [
+        14,
+        28.5
+       ]
+      },
+      {
+       "z": 2.2,
+       "overDatum": 4.4,
+       "at": [
+        0.24,
+        0.20400000000000001,
+        4.18
+       ],
+       "label": null,
+       "kind": "spring high",
+       "px": [
+        6.3,
+        30.7
+       ]
+      }
+     ],
+     "top": [
+      0,
+      0,
+      4.9799999999999995
+     ],
+     "words": [
+      {
+       "id": "words.gauge_1",
+       "text": "1",
+       "at": [
+        0.21000000000000002,
+        0.20400000000000001,
+        0.7699999999999998
+       ],
+       "size": 0.12,
+       "note": "the game draws the numeral beside the red metre mark",
+       "atPx": [
+        7.3,
+        114.3
+       ]
+      },
+      {
+       "id": "words.gauge_2",
+       "text": "2",
+       "at": [
+        0.21000000000000002,
+        0.20400000000000001,
+        1.7699999999999998
+       ],
+       "size": 0.12,
+       "note": "the game draws the numeral beside the red metre mark",
+       "atPx": [
+        7.3,
+        89.8
+       ]
+      },
+      {
+       "id": "words.gauge_3",
+       "text": "3",
+       "at": [
+        0.21000000000000002,
+        0.20400000000000001,
+        2.7699999999999996
+       ],
+       "size": 0.12,
+       "note": "the game draws the numeral beside the red metre mark",
+       "atPx": [
+        7.3,
+        65.3
+       ]
+      },
+      {
+       "id": "words.gauge_4",
+       "text": "4",
+       "at": [
+        0.21000000000000002,
+        0.20400000000000001,
+        3.7699999999999996
+       ],
+       "size": 0.12,
+       "note": "the game draws the numeral beside the red metre mark",
+       "atPx": [
+        7.3,
+        40.8
+       ]
+      }
+     ],
+     "px": {
+      "top": [
+       14,
+       6.9
+      ]
+     }
+    },
+    "options": {
+     "foot": -1.97,
+     "datum": -2.2,
+     "top": 2.6,
+     "growth": 1
+    },
+    "light": null,
+    "animated": null,
+    "notes": "Reads metres over chart datum (-2.20, the spring low): whole metres red with numerals as data, the spring high (+2.20, 4.4) a red flag. opts.foot is the ground it stands on."
+   }
+  },
+  {
+   "key": "harbourVane",
+   "id": "prop.stp_harbour_vane",
+   "scene": "keyscene.stp_landing",
+   "sceneEntry": 1,
+   "options": {},
+   "gameplay": {
+    "schema": "hidden-harbours/st-peters-set-piece@1",
+    "generatedBy": "StPetersSetPieces 1.0.0",
+    "key": "harbourVane",
+    "id": "prop.stp_harbour_vane",
+    "name": "Harbour vane",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.stp_landing",
+    "units": "metres, the piece's own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+    "bounds": {
+     "x": [
+      -0.465,
+      0.485
+     ],
+     "y": [
+      -0.455,
+      0.455
+     ],
+     "z": [
+      0,
+      5.16
+     ]
+    },
+    "layer": "raised",
+    "walk": "behind",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -0.42,
+        -0.42
+       ],
+       [
+        0.42,
+        -0.42
+       ],
+       [
+        0.42,
+        0.42
+       ],
+       [
+        -0.42,
+        0.42
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "N",
+      "bearingDeg": 0,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 1,
+      "showFaces": "NW",
+      "bearingDeg": 315,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 2,
+      "showFaces": "W",
+      "bearingDeg": 270,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 3,
+      "showFaces": "SW",
+      "bearingDeg": 225,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 4,
+      "showFaces": "S",
+      "bearingDeg": 180,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 5,
+      "showFaces": "SE",
+      "bearingDeg": 135,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 6,
+      "showFaces": "E",
+      "bearingDeg": 90,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 7,
+      "showFaces": "NE",
+      "bearingDeg": 45,
+      "cameraSees": "its back"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 38,
+      "h": 143,
+      "pivot": [
+       18,
+       130
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 46,
+      "h": 153,
+      "pivot": [
+       23,
+       137
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 37,
+      "h": 153,
+      "pivot": [
+       18,
+       140
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 46,
+      "h": 153,
+      "pivot": [
+       23,
+       137
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 38,
+      "h": 143,
+      "pivot": [
+       19,
+       130
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 46,
+      "h": 150,
+      "pivot": [
+       23,
+       134
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 37,
+      "h": 149,
+      "pivot": [
+       18,
+       136
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 46,
+      "h": 150,
+      "pivot": [
+       23,
+       134
+      ]
+     }
+    ],
+    "anchors": {
+     "top": [
+      0,
+      0,
+      5.199999999999999
+     ],
+     "vaneHeadingDeg": 270,
+     "words": [],
+     "px": {
+      "top": [
+       19,
+       2.5
+      ]
+     }
+    },
+    "options": {
+     "height": 4.6,
+     "windFromDeg": 270
+    },
+    "light": null,
+    "animated": {
+     "part": "vane.cod",
+     "input": "windFromDeg",
+     "source": "the game wind model (world seed, game time)",
+     "steps": 16
+    },
+    "notes": "The cod turns: windFromDeg (world compass, the wind it points into) comes from the game wind model; 16 headings (22.5 deg). Placed at dir 0 so its arms and its cod are true to the compass."
+   }
+  },
+  {
+   "key": "boilerStack",
+   "id": "structure.stp_cannery_boiler_stack",
+   "scene": "keyscene.stp_cannery",
+   "sceneEntry": 2,
+   "options": {
+    "decay": "derelict",
+    "stackH": 14
+   },
+   "gameplay": {
+    "schema": "hidden-harbours/st-peters-set-piece@1",
+    "generatedBy": "StPetersSetPieces 1.0.0",
+    "key": "boilerStack",
+    "id": "structure.stp_cannery_boiler_stack",
+    "name": "Boiler house and stack",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.stp_cannery",
+    "units": "metres, the piece's own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+    "bounds": {
+     "x": [
+      -2.25,
+      2.2
+     ],
+     "y": [
+      -1.8,
+      1.9
+     ],
+     "z": [
+      0,
+      13.9
+     ]
+    },
+    "layer": "raised",
+    "walk": "behind",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -2.1,
+        1.7
+       ],
+       [
+        2.1,
+        1.7
+       ],
+       [
+        2.1,
+        -1.7
+       ],
+       [
+        -2.1,
+        -1.7
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "N",
+      "bearingDeg": 0,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 1,
+      "showFaces": "NW",
+      "bearingDeg": 315,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 2,
+      "showFaces": "W",
+      "bearingDeg": 270,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 3,
+      "showFaces": "SW",
+      "bearingDeg": 225,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 4,
+      "showFaces": "S",
+      "bearingDeg": 180,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 5,
+      "showFaces": "SE",
+      "bearingDeg": 135,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 6,
+      "showFaces": "E",
+      "bearingDeg": 90,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 7,
+      "showFaces": "NE",
+      "bearingDeg": 45,
+      "cameraSees": "its back"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 150,
+      "h": 388,
+      "pivot": [
+       75,
+       349
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 190,
+      "h": 399,
+      "pivot": [
+       97,
+       339
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 126,
+      "h": 380,
+      "pivot": [
+       64,
+       333
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 185,
+      "h": 406,
+      "pivot": [
+       89,
+       347
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 150,
+      "h": 399,
+      "pivot": [
+       74,
+       359
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 190,
+      "h": 426,
+      "pivot": [
+       92,
+       367
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 126,
+      "h": 414,
+      "pivot": [
+       61,
+       367
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 185,
+      "h": 422,
+      "pivot": [
+       95,
+       363
+      ]
+     }
+    ],
+    "anchors": {
+     "flue": [
+      -1.05,
+      -0.25,
+      13.1
+     ],
+     "door": [
+      0.85,
+      1.75,
+      0
+     ],
+     "words": [],
+     "px": {
+      "flue": [
+       107.6,
+       32.7
+      ],
+      "door": [
+       46.8,
+       395
+      ]
+     }
+    },
+    "options": {
+     "stackH": 14,
+     "decay": "derelict",
+     "lit": 0
+    },
+    "light": {
+     "emitters": [
+      "window"
+     ],
+     "when": "restored only: a runtime overlay (the backlog makes windows and smoke overlays)"
+    },
+    "animated": null,
+    "notes": "Derelict (default) or restored. Restored, the flue anchor is where the smoke plume (fx.stp_cannery_smoke) rises: a runtime overlay."
+   }
+  },
+  {
+   "key": "trolleyLine",
+   "id": "structure.stp_cannery_trolley_line",
+   "scene": "keyscene.stp_cannery",
+   "sceneEntry": 4,
+   "options": {
+    "path": [
+     [
+      0,
+      0
+     ],
+     [
+      4.01,
+      -4.17
+     ],
+     [
+      6.41,
+      -7.17
+     ],
+     [
+      8.01,
+      -9.27
+     ]
+    ],
+    "decay": "derelict"
+   },
+   "gameplay": {
+    "schema": "hidden-harbours/st-peters-set-piece@1",
+    "generatedBy": "StPetersSetPieces 1.0.0",
+    "key": "trolleyLine",
+    "id": "structure.stp_cannery_trolley_line",
+    "name": "Trolley line",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.stp_cannery",
+    "units": "metres, the piece's own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+    "bounds": {
+     "x": [
+      -0.511,
+      8.542
+     ],
+     "y": [
+      -9.676,
+      0.491
+     ],
+     "z": [
+      0,
+      0.465
+     ]
+    },
+    "layer": "floor",
+    "walk": "on",
+    "mount": "ground",
+    "colliders": [],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "N",
+      "bearingDeg": 0,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 1,
+      "showFaces": "NW",
+      "bearingDeg": 315,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 2,
+      "showFaces": "W",
+      "bearingDeg": 270,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 3,
+      "showFaces": "SW",
+      "bearingDeg": 225,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 4,
+      "showFaces": "S",
+      "bearingDeg": 180,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 5,
+      "showFaces": "SE",
+      "bearingDeg": 135,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 6,
+      "showFaces": "E",
+      "bearingDeg": 90,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 7,
+      "showFaces": "NE",
+      "bearingDeg": 45,
+      "cameraSees": "its back"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 297,
+      "h": 217,
+      "pivot": [
+       20,
+       14
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 402,
+      "h": 54,
+      "pivot": [
+       4,
+       18
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 333,
+      "h": 199,
+      "pivot": [
+       19,
+       185
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 80,
+      "h": 271,
+      "pivot": [
+       26,
+       267
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 297,
+      "h": 217,
+      "pivot": [
+       277,
+       203
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 402,
+      "h": 54,
+      "pivot": [
+       397,
+       36
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 333,
+      "h": 194,
+      "pivot": [
+       313,
+       14
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 80,
+      "h": 263,
+      "pivot": [
+       53,
+       6
+      ]
+     }
+    ],
+    "anchors": {
+     "path": [
+      [
+       0,
+       0
+      ],
+      [
+       4.01,
+       -4.17
+      ],
+      [
+       6.41,
+       -7.17
+      ],
+      [
+       8.01,
+       -9.27
+      ]
+     ],
+     "words": [],
+     "px": {}
+    },
+    "options": {
+     "path": [
+      [
+       0,
+       0
+      ],
+      [
+       4.01,
+       -4.17
+      ],
+      [
+       6.41,
+       -7.17
+      ],
+      [
+       8.01,
+       -9.27
+      ]
+     ],
+     "gauge": 0.6,
+     "decay": "derelict",
+     "seed": 7
+    },
+    "light": null,
+    "animated": null,
+    "notes": "A floor piece, walked on; the path is in the piece's own metres from its origin (the cannery door end)."
+   }
+  },
+  {
+   "key": "trolley",
+   "id": "prop.stp_cannery_trolley",
+   "scene": "keyscene.stp_cannery",
+   "sceneEntry": 6,
+   "options": {
+    "decay": "derelict"
+   },
+   "gameplay": {
+    "schema": "hidden-harbours/st-peters-set-piece@1",
+    "generatedBy": "StPetersSetPieces 1.0.0",
+    "key": "trolley",
+    "id": "prop.stp_cannery_trolley",
+    "name": "Derelict trolley",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.stp_cannery",
+    "units": "metres, the piece's own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+    "bounds": {
+     "x": [
+      -0.752,
+      0.752
+     ],
+     "y": [
+      -0.5,
+      0.5
+     ],
+     "z": [
+      0,
+      0.723
+     ]
+    },
+    "layer": "raised",
+    "walk": "behind",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -0.75,
+        0.5
+       ],
+       [
+        0.75,
+        0.5
+       ],
+       [
+        0.75,
+        -0.5
+       ],
+       [
+        -0.75,
+        -0.5
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "N",
+      "bearingDeg": 0,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 1,
+      "showFaces": "NW",
+      "bearingDeg": 315,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 2,
+      "showFaces": "W",
+      "bearingDeg": 270,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 3,
+      "showFaces": "SW",
+      "bearingDeg": 225,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 4,
+      "showFaces": "S",
+      "bearingDeg": 180,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 5,
+      "showFaces": "SE",
+      "bearingDeg": 135,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 6,
+      "showFaces": "E",
+      "bearingDeg": 90,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 7,
+      "showFaces": "NE",
+      "bearingDeg": 45,
+      "cameraSees": "its back"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 56,
+      "h": 36,
+      "pivot": [
+       28,
+       26
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 64,
+      "h": 49,
+      "pivot": [
+       32,
+       32
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 39,
+      "h": 48,
+      "pivot": [
+       19,
+       33
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 64,
+      "h": 49,
+      "pivot": [
+       31,
+       32
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 56,
+      "h": 38,
+      "pivot": [
+       28,
+       26
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 64,
+      "h": 48,
+      "pivot": [
+       31,
+       31
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 40,
+      "h": 45,
+      "pivot": [
+       20,
+       28
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 64,
+      "h": 47,
+      "pivot": [
+       32,
+       31
+      ]
+     }
+    ],
+    "anchors": {
+     "words": [],
+     "px": {}
+    },
+    "options": {
+     "decay": "derelict",
+     "load": "box"
+    },
+    "light": null,
+    "animated": null,
+    "notes": "Sits on the trolley line; its long axis runs along the rails."
+   }
+  },
+  {
+   "key": "conveyor",
+   "id": "prop.stp_cannery_conveyor",
+   "scene": "keyscene.stp_cannery",
+   "sceneEntry": 8,
+   "options": {
+    "decay": "derelict"
+   },
+   "gameplay": {
+    "schema": "hidden-harbours/st-peters-set-piece@1",
+    "generatedBy": "StPetersSetPieces 1.0.0",
+    "key": "conveyor",
+    "id": "prop.stp_cannery_conveyor",
+    "name": "Conveyor frame",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.stp_cannery",
+    "units": "metres, the piece's own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+    "bounds": {
+     "x": [
+      -3.116,
+      3.116
+     ],
+     "y": [
+      -0.496,
+      0.496
+     ],
+     "z": [
+      0,
+      2.947
+     ]
+    },
+    "layer": "raised",
+    "walk": "under",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -3.1,
+        0.55
+       ],
+       [
+        -2.3,
+        0.55
+       ],
+       [
+        -2.3,
+        -0.55
+       ],
+       [
+        -3.1,
+        -0.55
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -0.4,
+        0.55
+       ],
+       [
+        0.4,
+        0.55
+       ],
+       [
+        0.4,
+        -0.55
+       ],
+       [
+        -0.4,
+        -0.55
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        2.3,
+        0.55
+       ],
+       [
+        3.1,
+        0.55
+       ],
+       [
+        3.1,
+        -0.55
+       ],
+       [
+        2.3,
+        -0.55
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "N",
+      "bearingDeg": 0,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 1,
+      "showFaces": "NW",
+      "bearingDeg": 315,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 2,
+      "showFaces": "W",
+      "bearingDeg": 270,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 3,
+      "showFaces": "SW",
+      "bearingDeg": 225,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 4,
+      "showFaces": "S",
+      "bearingDeg": 180,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 5,
+      "showFaces": "SE",
+      "bearingDeg": 135,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 6,
+      "showFaces": "E",
+      "bearingDeg": 90,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 7,
+      "showFaces": "NE",
+      "bearingDeg": 45,
+      "cameraSees": "its back"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 207,
+      "h": 99,
+      "pivot": [
+       103,
+       84
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 167,
+      "h": 181,
+      "pivot": [
+       83,
+       127
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 39,
+      "h": 205,
+      "pivot": [
+       19,
+       139
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 167,
+      "h": 181,
+      "pivot": [
+       83,
+       127
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 207,
+      "h": 99,
+      "pivot": [
+       103,
+       84
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 167,
+      "h": 131,
+      "pivot": [
+       83,
+       76
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 39,
+      "h": 155,
+      "pivot": [
+       19,
+       88
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 167,
+      "h": 131,
+      "pivot": [
+       83,
+       76
+      ]
+     }
+    ],
+    "anchors": {
+     "top": [
+      3.1,
+      0,
+      2.9
+     ],
+     "foot": [
+      -3.1,
+      0,
+      0.8
+     ],
+     "words": [],
+     "px": {
+      "top": [
+       3.8,
+       12.9
+      ],
+      "foot": [
+       202.2,
+       64.4
+      ]
+     }
+    },
+    "options": {
+     "length": 6.2,
+     "z0": 0.8,
+     "z1": 2.9,
+     "decay": "derelict",
+     "seed": 3
+    },
+    "light": null,
+    "animated": null,
+    "notes": "The legs are three colliders; a walker passes under the frame between them."
+   }
+  },
+  {
+   "key": "fallenSign",
+   "id": "prop.stp_cannery_fallen_sign",
+   "scene": "keyscene.stp_cannery",
+   "sceneEntry": 10,
+   "options": {},
+   "gameplay": {
+    "schema": "hidden-harbours/st-peters-set-piece@1",
+    "generatedBy": "StPetersSetPieces 1.0.0",
+    "key": "fallenSign",
+    "id": "prop.stp_cannery_fallen_sign",
+    "name": "Fallen company sign",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.stp_cannery",
+    "units": "metres, the piece's own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+    "bounds": {
+     "x": [
+      -2.5,
+      2.5
+     ],
+     "y": [
+      -0.624,
+      0.112
+     ],
+     "z": [
+      0,
+      1.493
+     ]
+    },
+    "layer": "raised",
+    "walk": "behind",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -2.6,
+        0.45
+       ],
+       [
+        2.6,
+        0.45
+       ],
+       [
+        2.6,
+        -0.45
+       ],
+       [
+        -2.6,
+        -0.45
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "N",
+      "bearingDeg": 0,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 1,
+      "showFaces": "NW",
+      "bearingDeg": 315,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 2,
+      "showFaces": "W",
+      "bearingDeg": 270,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 3,
+      "showFaces": "SW",
+      "bearingDeg": 225,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 4,
+      "showFaces": "S",
+      "bearingDeg": 180,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 5,
+      "showFaces": "SE",
+      "bearingDeg": 135,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 6,
+      "showFaces": "E",
+      "bearingDeg": 90,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 7,
+      "showFaces": "NE",
+      "bearingDeg": 45,
+      "cameraSees": "its back"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 167,
+      "h": 45,
+      "pivot": [
+       83,
+       31
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 135,
+      "h": 109,
+      "pivot": [
+       63,
+       70
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 31,
+      "h": 146,
+      "pivot": [
+       7,
+       92
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 135,
+      "h": 125,
+      "pivot": [
+       63,
+       84
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 167,
+      "h": 56,
+      "pivot": [
+       83,
+       50
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 135,
+      "h": 99,
+      "pivot": [
+       72,
+       67
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 31,
+      "h": 123,
+      "pivot": [
+       23,
+       75
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 135,
+      "h": 95,
+      "pivot": [
+       71,
+       54
+      ]
+     }
+    ],
+    "anchors": {
+     "words": [
+      {
+       "id": "words.cannery_sign",
+       "text": "ST PETERS PACKING CO.",
+       "corners": [
+        [
+         -2.38,
+         0.030275780735523394,
+         0.16374541479950408
+        ],
+        [
+         2.38,
+         0.030275780735523394,
+         0.8015854147995041
+        ],
+        [
+         2.38,
+         -0.3822591832459632,
+         1.3794391190299031
+        ],
+        [
+         -2.38,
+         -0.3822591832459632,
+         0.7415991190299032
+        ]
+       ],
+       "note": "the company name, lettered by the game on the board plane; the owner renames places later",
+       "cornersPx": [
+        [
+         159.2,
+         46.6
+        ],
+        [
+         6.8,
+         31
+        ],
+        [
+         6.8,
+         8.3
+        ],
+        [
+         159.2,
+         24
+        ]
+       ]
+      }
+     ],
+     "px": {}
+    },
+    "options": {
+     "length": 5,
+     "height": 0.95,
+     "lean": 0.62,
+     "text": "ST PETERS PACKING CO."
+    },
+    "light": null,
+    "animated": null,
+    "notes": "The board plane's four corners are in anchors().words; the game letters it. Default string: ST PETERS PACKING CO."
+   }
+  },
+  {
+   "key": "doorNotice",
+   "id": "prop.stp_cannery_door_notice",
+   "scene": "keyscene.stp_cannery",
+   "sceneEntry": 11,
+   "options": {},
+   "gameplay": {
+    "schema": "hidden-harbours/st-peters-set-piece@1",
+    "generatedBy": "StPetersSetPieces 1.0.0",
+    "key": "doorNotice",
+    "id": "prop.stp_cannery_door_notice",
+    "name": "Padlock and notice",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.stp_cannery",
+    "units": "metres, the piece's own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+    "bounds": {
+     "x": [
+      -0.435,
+      1.77
+     ],
+     "y": [
+      0.03,
+      0.11
+     ],
+     "z": [
+      0,
+      1.88
+     ]
+    },
+    "layer": "raised",
+    "walk": "behind",
+    "mount": "wall",
+    "colliders": [],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "N",
+      "bearingDeg": 0,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 1,
+      "showFaces": "NW",
+      "bearingDeg": 315,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 2,
+      "showFaces": "W",
+      "bearingDeg": 270,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 3,
+      "showFaces": "SW",
+      "bearingDeg": 225,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 4,
+      "showFaces": "S",
+      "bearingDeg": 180,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 5,
+      "showFaces": "SE",
+      "bearingDeg": 135,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 6,
+      "showFaces": "E",
+      "bearingDeg": 90,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 7,
+      "showFaces": "NE",
+      "bearingDeg": 45,
+      "cameraSees": "its back"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 78,
+      "h": 34,
+      "pivot": [
+       17,
+       51
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 58,
+      "h": 61,
+      "pivot": [
+       15,
+       76
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 10,
+      "h": 72,
+      "pivot": [
+       7,
+       86
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 58,
+      "h": 62,
+      "pivot": [
+       45,
+       75
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 78,
+      "h": 35,
+      "pivot": [
+       60,
+       49
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 58,
+      "h": 40,
+      "pivot": [
+       43,
+       39
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 10,
+      "h": 53,
+      "pivot": [
+       3,
+       42
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 58,
+      "h": 40,
+      "pivot": [
+       13,
+       41
+      ]
+     }
+    ],
+    "anchors": {
+     "words": [
+      {
+       "id": "words.cannery_notice",
+       "text": "NOTICE",
+       "body": "notice.cannery_for_sale",
+       "corners": [
+        [
+         1.28,
+         0.064,
+         1.25
+        ],
+        [
+         1.74,
+         0.064,
+         1.25
+        ],
+        [
+         1.74,
+         0.064,
+         1.85
+        ],
+        [
+         1.28,
+         0.064,
+         1.85
+        ]
+       ],
+       "note": "the purchase hook; its heading and body are strings the game draws",
+       "cornersPx": [
+        [
+         19,
+         19.7
+        ],
+        [
+         4.3,
+         19.7
+        ],
+        [
+         4.3,
+         5
+        ],
+        [
+         19,
+         5
+        ]
+       ]
+      }
+     ],
+     "interact": [
+      1.51,
+      0.63,
+      0
+     ],
+     "lock": [
+      0,
+      0.08,
+      0.8799999999999999
+     ],
+     "px": {
+      "interact": [
+       11.7,
+       62
+      ],
+      "lock": [
+       60,
+       29.1
+      ]
+     }
+    },
+    "options": {
+     "text": "NOTICE",
+     "body": "notice.cannery_for_sale",
+     "span": 2.2
+    },
+    "light": null,
+    "animated": null,
+    "notes": "Mount at the cannery's door anchor, at the door's own facing. interact is where a player stands to read it."
+   }
+  }
+ ]
+}

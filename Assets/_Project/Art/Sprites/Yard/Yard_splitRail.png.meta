@@ -139,10 +139,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 106
-        height: 91
+        width: 104
+        height: 89
       alignment: 9
-      pivot: {x: 0.5, y: 0.35164836}
+      pivot: {x: 0.5, y: 0.3483146}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: Yard_splitRail_d1
       rect:
         serializedVersion: 2
-        x: 106
+        x: 104
         y: 0
-        width: 106
-        height: 91
+        width: 104
+        height: 89
       alignment: 9
-      pivot: {x: 0.5, y: 0.35164836}
+      pivot: {x: 0.5, y: 0.3483146}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: Yard_splitRail_d2
       rect:
         serializedVersion: 2
-        x: 212
+        x: 208
         y: 0
-        width: 106
-        height: 91
+        width: 104
+        height: 89
       alignment: 9
-      pivot: {x: 0.5, y: 0.35164836}
+      pivot: {x: 0.5, y: 0.3483146}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: Yard_splitRail_d3
       rect:
         serializedVersion: 2
-        x: 318
+        x: 312
         y: 0
-        width: 106
-        height: 91
+        width: 104
+        height: 89
       alignment: 9
-      pivot: {x: 0.5, y: 0.35164836}
+      pivot: {x: 0.5, y: 0.3483146}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: Yard_splitRail_d4
       rect:
         serializedVersion: 2
-        x: 424
+        x: 416
         y: 0
-        width: 106
-        height: 91
+        width: 104
+        height: 89
       alignment: 9
-      pivot: {x: 0.5, y: 0.35164836}
+      pivot: {x: 0.5, y: 0.3483146}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: Yard_splitRail_d5
       rect:
         serializedVersion: 2
-        x: 530
+        x: 520
         y: 0
-        width: 106
-        height: 91
+        width: 104
+        height: 89
       alignment: 9
-      pivot: {x: 0.5, y: 0.35164836}
+      pivot: {x: 0.5, y: 0.3483146}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: Yard_splitRail_d6
       rect:
         serializedVersion: 2
-        x: 636
+        x: 624
         y: 0
-        width: 106
-        height: 91
+        width: 104
+        height: 89
       alignment: 9
-      pivot: {x: 0.5, y: 0.35164836}
+      pivot: {x: 0.5, y: 0.3483146}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: Yard_splitRail_d7
       rect:
         serializedVersion: 2
-        x: 742
+        x: 728
         y: 0
-        width: 106
-        height: 91
+        width: 104
+        height: 89
       alignment: 9
-      pivot: {x: 0.5, y: 0.35164836}
+      pivot: {x: 0.5, y: 0.3483146}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

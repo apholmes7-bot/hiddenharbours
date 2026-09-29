@@ -83,6 +83,10 @@ namespace HiddenHarbours.UI
         private static Rect _dashCard;
         private static HelmFit _dashFit;
 
+        // True while what the Core footprint seam says is this host's statement (ADR 0050). Only an
+        // owner clears it, so a host with no card up never stomps on anybody else's.
+        private bool _footprintOwned;
+
         /// <summary>Which card the overlay shows right now (test seam).</summary>
         public enum HelmCardKind { None, Tiller, Lever, Dash }
 
@@ -111,6 +115,31 @@ namespace HiddenHarbours.UI
             card = _dashCard;
             fit = _dashFit;
             return _dashLive;
+        }
+
+        /// <summary>
+        /// What the helm card covers, as the Core footprint seam states it (ADR 0050): the card's
+        /// WINDOW — the card plus the title strip above it, which shows on hover and while dragging and
+        /// is all that is left of a BAR-collapsed card. Nothing when the window gave the card no room.
+        ///
+        /// <para>The strip is counted even while it is hidden: an overlay parked on the card's top edge
+        /// would otherwise be under the strip the moment the pointer reached the card, and the window
+        /// layout already treats card and strip as one thing to fit.</para>
+        /// </summary>
+        public static HelmFootprintArea FootprintOf(Rect card, float titleBarPx)
+        {
+            if (!(card.width > 0f)) return HelmFootprintArea.None;
+            return HelmFootprintArea.OfCard(new Rect(card.x, card.y, card.width,
+                                                     card.height + Mathf.Max(0f, titleBarPx)));
+        }
+
+        // Say what the helm covers, as this host. Change-detected in Core, so a card at rest costs one
+        // struct compare a frame.
+        private void PublishFootprint(in HelmFootprintArea area)
+        {
+            if (area.IsNone && !_footprintOwned) return;
+            _footprintOwned = !area.IsNone;
+            HelmFootprint.Publish(in area);
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -161,8 +190,12 @@ namespace HiddenHarbours.UI
                 HelmInstrumentExpansion.Collapse();
                 _window.StandDown();   // same reasoning for the window's chrome publication + session
             }
+            PublishFootprint(HelmFootprintArea.None);   // and for the footprint (a no-op unless ours)
             if (_texture != null) Destroy(_texture);
         }
+
+        // A disabled host draws nothing, so it covers nothing.
+        private void OnDisable() => PublishFootprint(HelmFootprintArea.None);
 
         private void Update()
         {
@@ -183,6 +216,7 @@ namespace HiddenHarbours.UI
                 _shownStyle = HelmControlStyle.None;
                 CardKind = HelmCardKind.None;
                 _window.StandDown();
+                PublishFootprint(HelmFootprintArea.None);
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
                 return;
             }
@@ -197,6 +231,7 @@ namespace HiddenHarbours.UI
                 _shownStyle = HelmControlStyle.None;
                 CardKind = HelmCardKind.None;
                 _window.StandDown();
+                PublishFootprint(HelmFootprintArea.None);   // hide-all covers nothing
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
                 return;
             }
@@ -249,6 +284,7 @@ namespace HiddenHarbours.UI
                 _dashCard = dashCard;
                 _dashFit = fit;
                 _dashLive = cardVisible;
+                PublishFootprint(FootprintOf(dashCard, GameServices.BoatUiWindowing.TitleBarPx));
 
                 // An EXPANDED instrument owns the pointer outright (S4.5), chrome included: its card
                 // sorts over the dash, so a bar the player cannot see must not swallow its clicks.
@@ -276,6 +312,7 @@ namespace HiddenHarbours.UI
             card = _window.Apply(card, Screen.width, Screen.height, HudBandLayout.ReservedTopPx());
             bool visible = _window.CardVisible;
             if (_image.enabled != visible) _image.enabled = visible;
+            PublishFootprint(FootprintOf(card, GameServices.BoatUiWindowing.TitleBarPx));
 
             LayoutCard(style, card, rigW, rigH, helm.Steer);
             if (visible) Repaint(style, helm);

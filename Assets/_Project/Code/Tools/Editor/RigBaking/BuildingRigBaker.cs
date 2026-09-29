@@ -105,10 +105,21 @@ namespace HiddenHarbours.Tools.RigBaking
         /// not actionable on its own.</summary>
         public readonly string LayerReason;
 
+        /// <summary>
+        /// <b>Bake the L2 light channels beside the albedo</b> (village return, drop 14): the rig's own
+        /// G-buffer packed by <see cref="BuildingLightChannels"/> into <c>&lt;base&gt;_mask.png</c> (the
+        /// trees' order: R key, G back rim, B depth, A coverage), <c>&lt;base&gt;_normal.png</c> and
+        /// <c>&lt;base&gt;_emit.png</c> (R8: the emitter byte), each on the albedo's own grid, crop and
+        /// flip. Only a rig that lights through <c>CoastalPass.light</c> can: the capture refuses any
+        /// other (<see cref="BuildingLightFrame"/>).
+        /// </summary>
+        public readonly bool BakeLightChannels;
+
         public BuildingBakeRequest(string rigKey, string optsJs, string label, string outputFolder,
                                    string baseName, int facings = 8, bool isPreset = false,
                                    bool requireDistinctFromDefault = false, int maxSheetDimension = 0,
-                                   string underlyingOptsJs = null, string layerReason = null)
+                                   string underlyingOptsJs = null, string layerReason = null,
+                                   bool bakeLightChannels = false)
         {
             RigKey = rigKey; OptsJs = optsJs; Label = label; OutputFolder = outputFolder;
             BaseName = baseName; Facings = facings; IsPreset = isPreset;
@@ -116,6 +127,7 @@ namespace HiddenHarbours.Tools.RigBaking
             MaxSheetDimension = maxSheetDimension;
             UnderlyingOptsJs = underlyingOptsJs;
             LayerReason = layerReason;
+            BakeLightChannels = bakeLightChannels;
         }
 
         /// <summary>
@@ -127,12 +139,13 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         public static BuildingBakeRequest FromPreset(string rigKey, string preset, string globalName,
                                                      string outputFolder, string baseName, int facings = 8,
-                                                     int maxSheetDimension = 0)
+                                                     int maxSheetDimension = 0, bool bakeLightChannels = false)
             => new BuildingBakeRequest(
                 rigKey,
                 $"Object.assign({{}},{globalName}.PRESETS['{preset.Replace("'", "\\'")}'])",
                 preset, outputFolder, baseName, facings, isPreset: true,
-                requireDistinctFromDefault: true, maxSheetDimension: maxSheetDimension);
+                requireDistinctFromDefault: true, maxSheetDimension: maxSheetDimension,
+                bakeLightChannels: bakeLightChannels);
 
         /// <summary>
         /// Bake a hand-dialled build (the Building Studio's "Bake this build", or a kit's committed
@@ -145,13 +158,15 @@ namespace HiddenHarbours.Tools.RigBaking
                                                       bool requireDistinctFromDefault = false,
                                                       int maxSheetDimension = 0,
                                                       string underlyingOptsJs = null,
-                                                      string layerReason = null)
+                                                      string layerReason = null,
+                                                      bool bakeLightChannels = false)
             => new BuildingBakeRequest(rigKey, optsJs, label, outputFolder, baseName, facings,
                                        isPreset: false,
                                        requireDistinctFromDefault: requireDistinctFromDefault,
                                        maxSheetDimension: maxSheetDimension,
                                        underlyingOptsJs: underlyingOptsJs,
-                                       layerReason: layerReason);
+                                       layerReason: layerReason,
+                                       bakeLightChannels: bakeLightChannels);
     }
 
     public sealed class BuildingBakeResult
@@ -199,6 +214,28 @@ namespace HiddenHarbours.Tools.RigBaking
 
         public long RuntimeBytesRgba32 => (long)SheetWidth * SheetHeight * 4;
 
+        /// <summary>The L2 light channels, when the request asked for them
+        /// (<see cref="BuildingBakeRequest.BakeLightChannels"/>): project-relative paths, or null.</summary>
+        public string MaskAssetPath, NormalAssetPath, EmitAssetPath;
+
+        /// <summary>The three channel PNGs' sizes on disk.</summary>
+        public long MaskPngBytes, NormalPngBytes, EmitPngBytes;
+
+        /// <summary>Texels whose emitter byte is not 0, over all facings, and the highest LEVEL
+        /// written (0..31).</summary>
+        public int GlowTexels, MaxGlowLevel;
+
+        /// <summary>Time spent reading the G-buffers and packing them.</summary>
+        public double LightMilliseconds;
+
+        /// <summary>True when the three channel sheets were written.</summary>
+        public bool HasLightChannels => MaskAssetPath != null;
+
+        /// <summary>What the channel sheets cost in memory: two RGBA32 sheets and one R8, each the
+        /// albedo's size.</summary>
+        public long LightChannelRuntimeBytes =>
+            HasLightChannels ? (long)SheetWidth * SheetHeight * (4 + 4 + 1) : 0;
+
         /// <summary>What the same bake would have cost uncropped — the number that justifies the crop.</summary>
         public long UncroppedBytesRgba32 =>
             (long)(Columns * NativeCellWidth) * (Rows * NativeCellHeight) * 4;
@@ -237,6 +274,16 @@ namespace HiddenHarbours.Tools.RigBaking
         public double PivotX, PivotY;
 
         public double RenderMilliseconds;
+
+        /// <summary>
+        /// The L2 channels of each facing, NATIVE cell like <see cref="Cells"/> — or null when the
+        /// request did not ask for them. Packed from the same facing's albedo, which the packer
+        /// checks covers the same pixels, so the union crop cuts all four sheets alike.
+        /// </summary>
+        public BuildingLightChannels.Channels[] Light;
+
+        /// <summary>Time spent reading the G-buffers and packing them.</summary>
+        public double LightMilliseconds;
 
         /// <summary>
         /// One facing, cropped — RGBA, top-left-origin rows, <see cref="CellWidth"/>×<see cref="CellHeight"/>.
@@ -371,6 +418,9 @@ namespace HiddenHarbours.Tools.RigBaking
                 UnityEngine.Object.DestroyImmediate(tex);
             }
 
+            if (set.Light != null)
+                WriteLightChannels(set, req, result, cols, pw, ph);
+
             result.SidecarPath = WriteSidecar(host, g, optsJs, req, result, set.Probe);
 
             result.RenderMilliseconds = set.RenderMilliseconds;
@@ -444,7 +494,14 @@ namespace HiddenHarbours.Tools.RigBaking
             // 45 MB for the length of one bake — cheap next to re-running the rasteriser, which is the
             // expensive half (the rig z-buffers and dithers every face in JS).
             var renderClock = new Stopwatch();
+            var lightClock = new Stopwatch();
             var cells = new byte[req.Facings][];
+            BuildingLightChannels.Channels[] light = null;
+            if (req.BakeLightChannels)
+            {
+                light = new BuildingLightChannels.Channels[req.Facings];
+                BuildingLightFrame.Install(host);
+            }
 
             for (int cell = 0; cell < req.Facings; cell++)
             {
@@ -459,6 +516,16 @@ namespace HiddenHarbours.Tools.RigBaking
                     throw new InvalidOperationException(
                         $"Cell {cell} came back {cells[cell].Length} bytes, expected " +
                         $"{geo.Width * geo.Height * 4} for {geo.Width}×{geo.Height} RGBA.");
+
+                // The L2 channels of THIS facing, from the same dir and options: the rig's light frame
+                // and night glow, packed against the albedo just drawn (which refuses any pixel the two
+                // disagree on, so the crop below cuts all four sheets alike).
+                if (light == null) continue;
+                lightClock.Start();
+                BuildingLightChannels.GBuffer frame = BuildingLightFrame.Capture(
+                    host, g, d, optsJs, geo.Width, geo.Height, $"{req.Label} facing {cell}");
+                light[cell] = BuildingLightChannels.Pack(frame, cells[cell]);
+                lightClock.Stop();
             }
 
             UnionAlphaBounds(cells, geo.Width, geo.Height,
@@ -493,7 +560,93 @@ namespace HiddenHarbours.Tools.RigBaking
                 PivotX = geo.PivotX - xMin,
                 PivotY = geo.PivotY - yMin,
                 RenderMilliseconds = renderClock.Elapsed.TotalMilliseconds,
+                Light = light,
+                LightMilliseconds = lightClock.Elapsed.TotalMilliseconds,
             };
+        }
+
+        // ---- the L2 light channels -----------------------------------------------------------------
+
+        /// <summary>The channel sheets' stem suffixes, beside the albedo's <c>&lt;base&gt;.png</c>.
+        /// <c>ArtImportPipeline.IsDataChannel</c> reads the same three, so a first import already treats
+        /// them as numbers.</summary>
+        public const string MaskSuffix = "_mask", NormalSuffix = "_normal", EmitSuffix = "_emit";
+
+        /// <summary>
+        /// Pack each facing's channels through the albedo's own <see cref="BlitCropped"/> — same grid,
+        /// same crop, same flip — and write the three sheets. The mask and the normal are RGBA32 written
+        /// as they are (the bytes are numbers; the importer reads them linear). The emitter sheet is R8:
+        /// the byte alone, written with <c>SetPixelData</c> so nothing widens or narrows it.
+        /// </summary>
+        static void WriteLightChannels(BuildingCellSet set, in BuildingBakeRequest req, BuildingBakeResult result,
+                                       int cols, int pw, int ph)
+        {
+            var geo = set.Geometry;
+            int cw = set.CellWidth, ch = set.CellHeight;
+            var mask = new Color32[pw * ph];
+            var normal = new Color32[pw * ph];
+            var emit = new Color32[pw * ph];
+            for (int cell = 0; cell < req.Facings; cell++)
+            {
+                BuildingLightChannels.Channels c = set.Light[cell];
+                int col = cell % cols, row = cell / cols;
+                BlitCropped(c.Mask, geo.Width, geo.Height, set.CropX, set.CropY, cw, ch, mask, pw, ph, col, row);
+                BlitCropped(c.Normal, geo.Width, geo.Height, set.CropX, set.CropY, cw, ch, normal, pw, ph, col, row);
+                BlitCropped(c.Emit, geo.Width, geo.Height, set.CropX, set.CropY, cw, ch, emit, pw, ph, col, row);
+                result.GlowTexels += c.GlowTexels;
+                result.MaxGlowLevel = Mathf.Max(result.MaxGlowLevel, c.MaxLevel);
+            }
+
+            result.MaskAssetPath = $"{req.OutputFolder}/{req.BaseName}{MaskSuffix}.png";
+            result.NormalAssetPath = $"{req.OutputFolder}/{req.BaseName}{NormalSuffix}.png";
+            result.EmitAssetPath = $"{req.OutputFolder}/{req.BaseName}{EmitSuffix}.png";
+            result.MaskPngBytes = WritePng(result.MaskAssetPath, EncodeRgba32(mask, pw, ph));
+            result.NormalPngBytes = WritePng(result.NormalAssetPath, EncodeRgba32(normal, pw, ph));
+
+            var bytes = new byte[pw * ph];
+            for (int i = 0; i < bytes.Length; i++) bytes[i] = emit[i].r;
+            result.EmitPngBytes = WritePng(result.EmitAssetPath, EncodeR8(bytes, pw, ph));
+            result.LightMilliseconds = set.LightMilliseconds;
+        }
+
+        static long WritePng(string assetPath, byte[] png)
+        {
+            File.WriteAllBytes(Path.Combine(RigCatalog.RepoRoot, assetPath), png);
+            return png.Length;
+        }
+
+        static byte[] EncodeRgba32(Color32[] pixels, int w, int h)
+        {
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, mipChain: false, linear: true);
+            try
+            {
+                tex.SetPixels32(pixels);
+                tex.Apply(false, false);
+                return tex.EncodeToPNG();
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(tex);
+            }
+        }
+
+        /// <summary>One byte a texel, bottom row first, as an 8-bit grayscale PNG — the R16 height
+        /// maps' route (<c>PaintedHeightPng</c>) at eight bits.</summary>
+        public static byte[] EncodeR8(byte[] bytes, int w, int h)
+        {
+            if (bytes == null || bytes.Length != w * h)
+                throw new ArgumentException($"an R8 sheet needs exactly {w}×{h} bytes.", nameof(bytes));
+            var tex = new Texture2D(w, h, TextureFormat.R8, mipChain: false, linear: true);
+            try
+            {
+                tex.SetPixelData(bytes, 0);
+                tex.Apply(false, false);
+                return tex.EncodeToPNG();
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(tex);
+            }
         }
 
         // ---- the crop ------------------------------------------------------------------------------

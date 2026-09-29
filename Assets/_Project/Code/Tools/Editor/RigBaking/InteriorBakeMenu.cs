@@ -144,6 +144,75 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
+        /// Bake the ROOMS and write the contract, carrying every prop row from the committed contract
+        /// unchanged. The village return (drop 14, #898) re-dressed the rooms; the props draw from
+        /// <c>interiorProp</c>, which it did not touch, so their sheets and rows stand (the owner's
+        /// ruling of 09-27: the props do not re-bake).
+        ///
+        /// <para>Writes NOTHING unless every room bakes: carrying half a kit on top of a partial bake
+        /// would leave a contract that matches neither the sheets on disk nor the one it replaced. The
+        /// facing offset is measured again over the new rooms, exactly as <see cref="BakeAll"/> does.</para>
+        /// </summary>
+        public static string BakeRooms(out int failed)
+        {
+            InteriorKit.Contract existing = InteriorKit.Load();
+            if (existing?.props == null || existing.props.Length == 0)
+                throw new InvalidOperationException(
+                    $"[interiors] The rooms-only bake carries the props from '{InteriorKit.ContractPath}', " +
+                    "and it holds none. Run the full bake (rooms + props) instead.");
+
+            failed = 0;
+            var log = new StringBuilder();
+            var rooms = new List<InteriorKit.Entry>();
+            int ppu = 0;
+            string convention = "";
+            long png = 0;
+            int widest = 0, tallest = 0;
+
+            log.AppendLine("  rooms:");
+            foreach (var build in InteriorKit.RoomSet)
+            {
+                try
+                {
+                    InteriorBakeResult r = InteriorRigBaker.Bake(RequestFor(build));
+                    rooms.Add(ToEntry(build, r));
+                    ppu = r.PixelsPerMetre;
+                    convention = r.Convention.ToString();
+                    png += r.PngBytes;
+                    widest = Mathf.Max(widest, r.SheetWidth);
+                    tallest = Mathf.Max(tallest, r.SheetHeight);
+                    log.AppendLine(InteriorRigBaker.Describe(r));
+                }
+                catch (Exception e)
+                {
+                    failed++;
+                    log.AppendLine($"  ✗ {build.Key}: {e.Message}");
+                    Debug.LogError($"[interiors] room '{build.Key}' FAILED:\n{e}");
+                }
+            }
+
+            log.AppendLine();
+            if (failed > 0)
+            {
+                log.AppendLine($"  NO contract written — {failed} room(s) failed, so the committed contract " +
+                               "stands as it was.");
+                return log.ToString();
+            }
+            if (ppu != existing.ppu)
+                throw new InvalidOperationException(
+                    $"[interiors] The rooms baked at {ppu} px/m but the carried props were baked at " +
+                    $"{existing.ppu}: one contract cannot hold both. Run the full bake instead.");
+
+            string contractPath = WriteContract(rooms, new List<InteriorKit.Entry>(existing.props), ppu, convention, out int offset);
+            log.AppendLine($"  contract: {contractPath} — {rooms.Count} room(s) baked, {existing.props.Length} " +
+                           $"prop(s) carried unchanged, interior facing = exterior facing + {offset} (MEASURED).");
+            log.AppendLine($"  budget: biggest room sheet {widest}×{tallest} px against the " +
+                           $"{InteriorKit.ImportSizeCap} px import cap; {png / 1024.0 / 1024.0:F2} MiB of room PNG " +
+                           "on disk.");
+            return log.ToString();
+        }
+
+        /// <summary>
         /// The bake request for a build — the ONE place the kit's preset/dialled split turns into an
         /// options expression. Pure and static (no JS engine), so a test can assert what a build asks
         /// the rig to draw without baking it.
@@ -169,16 +238,39 @@ namespace HiddenHarbours.Tools.RigBaking
                     // InteriorRigBakeTests checks every key in the set against the rig's own list.
                     requireDistinctFromDefault: false);
 
+            // A room is registered against the shell it stands inside, with that shell's own options
+            // (InteriorRigBaker.ExteriorOptsFor says why) — the same lookup the contract's
+            // registration uses, so the per-room bake and the contract cannot measure different doors.
             if (build.IsPreset)
                 return InteriorBakeRequest.RoomPreset(
                     build.Preset, RigCatalog.Get("interior").GlobalName,
                     RoomsFolder, InteriorKit.RoomStemFor(build.Key), InteriorKit.Facings,
-                    InteriorKit.ImportSizeCap);
+                    InteriorKit.ImportSizeCap)
+                    .WithExterior(ExteriorOptionsFor(build.Key));
 
             return InteriorBakeRequest.Room(
                 OptionsLiteralFor(build), build.Label,
                 RoomsFolder, InteriorKit.RoomStemFor(build.Key), InteriorKit.Facings,
-                InteriorKit.ImportSizeCap);
+                InteriorKit.ImportSizeCap)
+                .WithExterior(ExteriorOptionsFor(build.Key));
+        }
+
+        /// <summary>
+        /// The options literal of the village shell a room stands inside — the shell's own build,
+        /// through the building kit's own serialiser, as a finished house (every room's shell is one;
+        /// no lifecycle state is layered on) — or null when the room has no shell in
+        /// <see cref="VillageBuildingKit"/>. Pure and static, like <see cref="RequestFor"/>.
+        /// </summary>
+        public static string ExteriorOptionsFor(string roomKey)
+        {
+            string exteriorKey = InteriorKit.ExteriorKeyFor(roomKey);
+            if (exteriorKey == null) return null;
+
+            var exterior = VillageBuildingKit.FindBuild(exteriorKey);
+            if (exterior == null) return null;
+
+            return VillageBuildingBakeMenu.BaseOptionsLiteralFor(
+                exterior.Value, RigCatalog.Get(exterior.Value.RigKey).GlobalName);
         }
 
         /// <summary>The dialled options as the JS literal <c>render()</c> takes, through the same
@@ -291,9 +383,11 @@ namespace HiddenHarbours.Tools.RigBaking
                     "MEASURED at bake time. The room rig shares houseIsoRig's camBasis/projVert — " +
                     "checked per facing by InteriorRigAzimuthProbe.ProjectionsAgree, not read off a " +
                     "header — so it turns the same way and the correction is already applied to the " +
-                    "sheet: cell i genuinely depicts +45*i. ⚠️ Do NOT run BuildingRigAzimuthProbe on " +
-                    "this rig: it infers handedness from which side the DOOR lands on and assumes the " +
-                    "door is on the +Y gable, which is true of the exterior rigs and false here.",
+                    "sheet: cell i genuinely depicts +45*i. Each room is registered against its OWN " +
+                    "shell's door anchor, which since the village return follows the door as drawn; the " +
+                    "offset below is measured, never carried. ⚠️ Measure a room with " +
+                    "InteriorRigAzimuthProbe, never BuildingRigAzimuthProbe: that probe infers " +
+                    "handedness from which side the DOOR lands on at a quarter turn.",
                 pivotNote =
                     "pivotX/pivotY are the FLOOR CENTRE - the middle of the room's footprint - in " +
                     "cropped-cell px from the cell's TOP-LEFT. Unity wants (pivotX/cellW, " +
@@ -338,19 +432,13 @@ namespace HiddenHarbours.Tools.RigBaking
 
             foreach (var room in rooms)
             {
+                string exteriorOpts = ExteriorOptionsFor(room.key);
+                if (exteriorOpts == null) continue;
                 string exteriorKey = InteriorKit.ExteriorKeyFor(room.key);
-                if (exteriorKey == null) continue;
-
-                var exterior = VillageBuildingKit.FindBuild(exteriorKey);
-                if (exterior == null) continue;
 
                 using IRigScriptHost host = RigScriptHostFactory.Create();
                 RigCatalog.Install(host, houseRig);
                 RigCatalog.Install(host, interiorRig);
-
-                string exteriorOpts = exterior.Value.IsPreset
-                    ? $"Object.assign({{}},{houseRig.GlobalName}.PRESETS['{exterior.Value.Preset}'])"
-                    : VillageBuildingBakeMenu.OptionsLiteralFor(exterior.Value);
 
                 InteriorRigAzimuthProbe.Registration reg = InteriorRigAzimuthProbe.MeasureRegistration(
                     host, houseRig.GlobalName, exteriorOpts,
@@ -411,6 +499,31 @@ namespace HiddenHarbours.Tools.RigBaking
             catch (Exception e)
             {
                 Debug.LogError($"[interiors] batch bake threw: {e}");
+                EditorApplication.Exit(1);
+            }
+        }
+
+        /// <summary>
+        /// Headless entry point for <see cref="BakeRooms"/>. Exits non-zero if any room fails or the
+        /// bake throws.
+        /// </summary>
+        public static void BakeRoomsFromCommandLine()
+        {
+            try
+            {
+                string report = BakeRooms(out int failed);
+                AssetDatabase.Refresh();
+                Debug.Log($"[interiors] (batch) rooms-only bake report:\n{report}");
+
+                if (failed > 0)
+                {
+                    Debug.LogError($"[interiors] {failed} room(s) failed.");
+                    EditorApplication.Exit(1);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[interiors] rooms-only batch bake threw: {e}");
                 EditorApplication.Exit(1);
             }
         }

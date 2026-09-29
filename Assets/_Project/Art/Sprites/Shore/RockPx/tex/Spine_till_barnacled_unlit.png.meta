@@ -1,0 +1,925 @@
+fileFormatVersion: 2
+guid: e50206ec128e61f409dcbc2cacd94b2f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5675403168659988676
+    second: Spine_till_barnacled_unlit_0
+  - first:
+      213: 6813398141526289462
+    second: Spine_till_barnacled_unlit_1
+  - first:
+      213: 7503242332967346894
+    second: Spine_till_barnacled_unlit_2
+  - first:
+      213: 3057744032524445951
+    second: Spine_till_barnacled_unlit_3
+  - first:
+      213: 824005854794582266
+    second: Spine_till_barnacled_unlit_4
+  - first:
+      213: 7276806695458639266
+    second: Spine_till_barnacled_unlit_5
+  - first:
+      213: 9154012793080461560
+    second: Spine_till_barnacled_unlit_6
+  - first:
+      213: 2444639521739613523
+    second: Spine_till_barnacled_unlit_7
+  - first:
+      213: 6214137791116719461
+    second: Spine_till_barnacled_unlit_8
+  - first:
+      213: 4115762771133920589
+    second: Spine_till_barnacled_unlit_9
+  - first:
+      213: 3626384972954448790
+    second: Spine_till_barnacled_unlit_10
+  - first:
+      213: 7565330059629541641
+    second: Spine_till_barnacled_unlit_11
+  - first:
+      213: -7976341954863991573
+    second: Spine_till_barnacled_unlit_12
+  - first:
+      213: -3682895298432441672
+    second: Spine_till_barnacled_unlit_13
+  - first:
+      213: 5207492733594431961
+    second: Spine_till_barnacled_unlit_14
+  - first:
+      213: -4560545743108372015
+    second: Spine_till_barnacled_unlit_15
+  - first:
+      213: 2052877846938730054
+    second: Spine_till_barnacled_unlit_16
+  - first:
+      213: 4412284547631825426
+    second: Spine_till_barnacled_unlit_17
+  - first:
+      213: -5554043039532531506
+    second: Spine_till_barnacled_unlit_18
+  - first:
+      213: 6907518689487423403
+    second: Spine_till_barnacled_unlit_19
+  - first:
+      213: 6600171874834240
+    second: Spine_till_barnacled_unlit_20
+  - first:
+      213: -5873975568601985669
+    second: Spine_till_barnacled_unlit_21
+  - first:
+      213: 7010168017438990977
+    second: Spine_till_barnacled_unlit_22
+  - first:
+      213: -8045271108299466812
+    second: Spine_till_barnacled_unlit_23
+  - first:
+      213: -5323153673990973556
+    second: Spine_till_barnacled_unlit_24
+  - first:
+      213: 7718119680411613738
+    second: Spine_till_barnacled_unlit_25
+  - first:
+      213: -7630540209570872182
+    second: Spine_till_barnacled_unlit_26
+  - first:
+      213: -5268450148271495822
+    second: Spine_till_barnacled_unlit_27
+  - first:
+      213: -664946245354226923
+    second: Spine_till_barnacled_unlit_28
+  - first:
+      213: 3170159440050779285
+    second: Spine_till_barnacled_unlit_29
+  - first:
+      213: -7795452909313229739
+    second: Spine_till_barnacled_unlit_30
+  - first:
+      213: 5550325882917579826
+    second: Spine_till_barnacled_unlit_31
+  - first:
+      213: -5058591547315785345
+    second: Spine_till_barnacled_unlit_32
+  - first:
+      213: -3439297360353679056
+    second: Spine_till_barnacled_unlit_33
+  - first:
+      213: 505191289914450296
+    second: Spine_till_barnacled_unlit_34
+  - first:
+      213: -8439383422022354348
+    second: Spine_till_barnacled_unlit_35
+  - first:
+      213: 446821223351887952
+    second: Spine_till_barnacled_unlit_36
+  - first:
+      213: -2299371015270521470
+    second: Spine_till_barnacled_unlit_37
+  - first:
+      213: -8594432821305744020
+    second: Spine_till_barnacled_unlit_38
+  - first:
+      213: -4007503715351800173
+    second: Spine_till_barnacled_unlit_39
+  - first:
+      213: -4302961623261833166
+    second: Spine_till_barnacled_unlit_40
+  - first:
+      213: -2638134793163338682
+    second: Spine_till_barnacled_unlit_41
+  - first:
+      213: -3448559314999789507
+    second: Spine_till_barnacled_unlit_42
+  - first:
+      213: -5296035531491863995
+    second: Spine_till_barnacled_unlit_43
+  - first:
+      213: -8602388219993534891
+    second: Spine_till_barnacled_unlit_44
+  - first:
+      213: 7013101019349596326
+    second: Spine_till_barnacled_unlit_45
+  - first:
+      213: -5985633599554664346
+    second: Spine_till_barnacled_unlit_46
+  - first:
+      213: -165154626266763790
+    second: Spine_till_barnacled_unlit_47
+  - first:
+      213: -6731884176643717506
+    second: Spine_till_barnacled_unlit_48
+  - first:
+      213: -678695147799046741
+    second: Spine_till_barnacled_unlit_49
+  - first:
+      213: 5217478260361297638
+    second: Spine_till_barnacled_unlit_50
+  - first:
+      213: 4832850739010389354
+    second: Spine_till_barnacled_unlit_51
+  - first:
+      213: 866775846562771748
+    second: Spine_till_barnacled_unlit_52
+  - first:
+      213: 8680818096497776763
+    second: Spine_till_barnacled_unlit_53
+  - first:
+      213: 8215660608666739742
+    second: Spine_till_barnacled_unlit_54
+  - first:
+      213: 5147620945526743525
+    second: Spine_till_barnacled_unlit_55
+  - first:
+      213: -7555666264105528371
+    second: Spine_till_barnacled_unlit_56
+  - first:
+      213: 2731966323701982183
+    second: Spine_till_barnacled_unlit_57
+  - first:
+      213: 3070615948438719497
+    second: Spine_till_barnacled_unlit_58
+  - first:
+      213: -1659832945660101744
+    second: Spine_till_barnacled_unlit_59
+  - first:
+      213: -776942045130175494
+    second: Spine_till_barnacled_unlit_60
+  - first:
+      213: -2987613645673323333
+    second: Spine_till_barnacled_unlit_61
+  - first:
+      213: -7084879207233465175
+    second: Spine_till_barnacled_unlit_62
+  - first:
+      213: 4062498970847280036
+    second: Spine_till_barnacled_unlit_63
+  - first:
+      213: -8029334547179130714
+    second: Spine_till_barnacled_unlit_64
+  - first:
+      213: 8753662747770077178
+    second: Spine_till_barnacled_unlit_65
+  - first:
+      213: -8130145056111614379
+    second: Spine_till_barnacled_unlit_66
+  - first:
+      213: -8252750912340489512
+    second: Spine_till_barnacled_unlit_67
+  - first:
+      213: -9024171624023846468
+    second: Spine_till_barnacled_unlit_68
+  - first:
+      213: -4391756070104430679
+    second: Spine_till_barnacled_unlit_69
+  - first:
+      213: -359627386068168195
+    second: Spine_till_barnacled_unlit_70
+  - first:
+      213: -7220382871809170055
+    second: Spine_till_barnacled_unlit_71
+  - first:
+      213: 7194486517325100686
+    second: Spine_till_barnacled_unlit_72
+  - first:
+      213: 1172775649472508529
+    second: Spine_till_barnacled_unlit_73
+  - first:
+      213: -5324921234427330847
+    second: Spine_till_barnacled_unlit_74
+  - first:
+      213: 3531696605460130406
+    second: Spine_till_barnacled_unlit_75
+  - first:
+      213: 4601051954063279617
+    second: Spine_till_barnacled_unlit_76
+  - first:
+      213: 8557911619807671361
+    second: Spine_till_barnacled_unlit_77
+  - first:
+      213: -2947461557302658111
+    second: Spine_till_barnacled_unlit_78
+  - first:
+      213: -4315905809576753882
+    second: Spine_till_barnacled_unlit_79
+  - first:
+      213: 4932405211396422277
+    second: Spine_till_barnacled_unlit_80
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29886ac5c386c5b46a377b82bf9b57d8
+      internalID: 441541987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 593bc8e3a9440654783d07e1a73089df
+      internalID: 2098486546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b36e4de4fb9141844b79e3067dca62b2
+      internalID: 1826743603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d911ff09ca65e81499b850bf5e3c417d
+      internalID: 2071293645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2246729e9a6d2f84a90d490caeb71450
+      internalID: 1462910307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5932e8e6584f746438b557814c82e67b
+      internalID: 1610214943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99db96b80558e7f43a817db72a837351
+      internalID: -1643800536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8dc743f4673b93449dcbefb9f3e689a
+      internalID: -1978133306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c76080b9d128f584e84fd068fb948c05
+      internalID: 1338273736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6b9ce006f849de4cbf837ac1598265a
+      internalID: -2016219660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3eb35885388483144a908a7680cd17b7
+      internalID: 1549869784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ab7ae8d75b1d4742a11074615a8f26c
+      internalID: 1976898505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51afece185be1b74b990bd47b8f70bc2
+      internalID: 1799956445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa673061f7be3d44394f6457fa193ddb
+      internalID: 780584412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: efd0b56a999f1894abbd55b49847c74a
+      internalID: 1609690556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c79d45277c7dcc3469b0ad8bb6a642ee
+      internalID: 198738606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24046894176974f4a8e71482b9bb4c9d
+      internalID: 1979002618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3bc2229946996ba4194059072166db37
+      internalID: -610359652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e72d2cb5eb5d314384c7b6117fc30c9
+      internalID: -308540245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43680501f91c0d0438cb49032611475f
+      internalID: 148758958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 690ea7ecdb29e694eb5f35049ef5ecb1
+      internalID: -723663668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 387743413d38c6d4eb00cb394b2e8b2f
+      internalID: 1796785062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c49f31ca857603345ad4b46da28b7d76
+      internalID: 1506138743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_barnacled_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fdf1283cfce03b44491322fe7765177f
+      internalID: -386149649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 963dffa6f32afc141a76e8d7edd2fcf0
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Spine_till_barnacled_unlit_c0_r0: 441541987
+      Spine_till_barnacled_unlit_c0_r1: 1338273736
+      Spine_till_barnacled_unlit_c0_r2: 1979002618
+      Spine_till_barnacled_unlit_c1_r0: 2098486546
+      Spine_till_barnacled_unlit_c1_r1: -2016219660
+      Spine_till_barnacled_unlit_c1_r2: -610359652
+      Spine_till_barnacled_unlit_c2_r0: 1826743603
+      Spine_till_barnacled_unlit_c2_r1: 1549869784
+      Spine_till_barnacled_unlit_c2_r2: -308540245
+      Spine_till_barnacled_unlit_c3_r0: 2071293645
+      Spine_till_barnacled_unlit_c3_r1: 1976898505
+      Spine_till_barnacled_unlit_c3_r2: 148758958
+      Spine_till_barnacled_unlit_c4_r0: 1462910307
+      Spine_till_barnacled_unlit_c4_r1: 1799956445
+      Spine_till_barnacled_unlit_c4_r2: -723663668
+      Spine_till_barnacled_unlit_c5_r0: 1610214943
+      Spine_till_barnacled_unlit_c5_r1: 780584412
+      Spine_till_barnacled_unlit_c5_r2: 1796785062
+      Spine_till_barnacled_unlit_c6_r0: -1643800536
+      Spine_till_barnacled_unlit_c6_r1: 1609690556
+      Spine_till_barnacled_unlit_c6_r2: 1506138743
+      Spine_till_barnacled_unlit_c7_r0: -1978133306
+      Spine_till_barnacled_unlit_c7_r1: 198738606
+      Spine_till_barnacled_unlit_c7_r2: -386149649
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -352,4 +352,60 @@ float3 SpriteLightCompensateForDayNight(float3 additive, float3 tint)
     return additive / max(tint, SPRITE_LIGHT_DN_COMP_MIN_CHANNEL);
 }
 
+// =================================================================================================
+// the EMITTER sheet — a rig's own night glow (village return drop 14, L2: owner ruling 2026-09-27)
+// =================================================================================================
+//
+// The village rigs (CoastalPass 3.2's light module) mark some faces as EMITTERS: a window's glass, a
+// porch lantern, the glass in a door. At night they draw those in their OWN warm light rather than the
+// sky's. The L2 bake writes that glow into a sheet of its own, one byte per texel (R8; data, so sRGB
+// OFF and uncompressed), because the mask's four channels are spoken for and the order above does not
+// move for it:
+//
+//        bits 0..4  LEVEL   0..31  the glow the rig draws there with every light in the house full on;
+//                                  31 = the top of its warm ramp, 0 = not an emitter
+//        bits 5..7  SOURCE  0..7   which light feeds it: 0 none, 1 kitchen, 2 parlour, 3 upper,
+//                                  4 hall, 5 porch
+//
+// 🔴 THE SOURCE IS RESERVED. L2 lights every emitter at its baked level, gated only by the dark: there
+// is no occupancy (L3 was not ruled). The source rides the byte so that a later occupancy step can scale
+// each room by its own level WITHOUT a re-bake. Nothing here reads it except its decode, which the twin
+// tests pin so that a level never leaks into a source or back.
+//
+// The byte is recovered with floor() on an exact integer rather than an integer shift, so this and the
+// headless twin (SpriteLightMath.EmitLevel / EmitSource / Emit) run the same float arithmetic: 255 times
+// a UNORM8 texel is within far less than half a step of its byte, and dividing by 32 is exact.
+#define SPRITE_LIGHT_EMIT_SOURCE_STRIDE 32.0   // 2^5: the SOURCE sits above the LEVEL's five bits
+#define SPRITE_LIGHT_EMIT_LEVEL_MAX     31.0   // the LEVEL's top step
+
+// The texel's byte, 0..255, recovered exactly from the UNORM8 the sampler returns.
+float SpriteLightEmitByte(float texel)
+{
+    return floor(saturate(texel) * 255.0 + 0.5);
+}
+
+// The LEVEL, 0..1: the low five bits over their top step.
+float SpriteLightEmitLevel(float texel)
+{
+    float b = SpriteLightEmitByte(texel);
+    return (b - SPRITE_LIGHT_EMIT_SOURCE_STRIDE * floor(b / SPRITE_LIGHT_EMIT_SOURCE_STRIDE)) / SPRITE_LIGHT_EMIT_LEVEL_MAX;
+}
+
+// The SOURCE, 0..7: the high three bits. RESERVED (see above).
+float SpriteLightEmitSource(float texel)
+{
+    return floor(SpriteLightEmitByte(texel) / SPRITE_LIGHT_EMIT_SOURCE_STRIDE);
+}
+
+// THE EMIT TERM: how much of its glow an emitter texel shows now, 0..1, before colour and strength. It
+// is the baked level times the night gate. The consumer passes SpriteLightNightGate, the same gate the
+// boat lamp takes, so a lit window and a lamp come on together. The term is additive and must SURVIVE
+// the night, so the consumer compensates it for the day/night overlay (SpriteLightCompensateForDayNight)
+// exactly as it does the lamp. A texel of 0 (no emitter, or the unbound sheet's black fallback) is 0 at
+// any gate.
+float SpriteLightEmit(float texel, float gate)
+{
+    return SpriteLightEmitLevel(texel) * saturate(gate);
+}
+
 #endif // HIDDEN_HARBOURS_SPRITE_LIGHT_RESPONSE_INCLUDED

@@ -139,10 +139,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 46
-        height: 62
+        width: 44
+        height: 60
       alignment: 9
-      pivot: {x: 0.5, y: 0.24193548}
+      pivot: {x: 0.5, y: 0.23333333}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: Yard_picketGate_d1
       rect:
         serializedVersion: 2
-        x: 46
+        x: 44
         y: 0
-        width: 46
-        height: 62
+        width: 44
+        height: 60
       alignment: 9
-      pivot: {x: 0.5, y: 0.24193548}
+      pivot: {x: 0.5, y: 0.23333333}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: Yard_picketGate_d2
       rect:
         serializedVersion: 2
-        x: 92
+        x: 88
         y: 0
-        width: 46
-        height: 62
+        width: 44
+        height: 60
       alignment: 9
-      pivot: {x: 0.5, y: 0.24193548}
+      pivot: {x: 0.5, y: 0.23333333}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: Yard_picketGate_d3
       rect:
         serializedVersion: 2
-        x: 138
+        x: 132
         y: 0
-        width: 46
-        height: 62
+        width: 44
+        height: 60
       alignment: 9
-      pivot: {x: 0.5, y: 0.24193548}
+      pivot: {x: 0.5, y: 0.23333333}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: Yard_picketGate_d4
       rect:
         serializedVersion: 2
-        x: 184
+        x: 176
         y: 0
-        width: 46
-        height: 62
+        width: 44
+        height: 60
       alignment: 9
-      pivot: {x: 0.5, y: 0.24193548}
+      pivot: {x: 0.5, y: 0.23333333}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: Yard_picketGate_d5
       rect:
         serializedVersion: 2
-        x: 230
+        x: 220
         y: 0
-        width: 46
-        height: 62
+        width: 44
+        height: 60
       alignment: 9
-      pivot: {x: 0.5, y: 0.24193548}
+      pivot: {x: 0.5, y: 0.23333333}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: Yard_picketGate_d6
       rect:
         serializedVersion: 2
-        x: 276
+        x: 264
         y: 0
-        width: 46
-        height: 62
+        width: 44
+        height: 60
       alignment: 9
-      pivot: {x: 0.5, y: 0.24193548}
+      pivot: {x: 0.5, y: 0.23333333}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: Yard_picketGate_d7
       rect:
         serializedVersion: 2
-        x: 322
+        x: 308
         y: 0
-        width: 46
-        height: 62
+        width: 44
+        height: 60
       alignment: 9
-      pivot: {x: 0.5, y: 0.24193548}
+      pivot: {x: 0.5, y: 0.23333333}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

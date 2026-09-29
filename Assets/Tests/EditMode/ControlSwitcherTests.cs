@@ -232,6 +232,37 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(ControlMode.OnDeck, _modeEvents[0].Mode);
         }
 
+        [Test]
+        public void LeaveHelm_UnderWay_ParksHer_ButLetsHerDrawnTrimEaseLevel()
+        {
+            // Her drawn bow is MeshHullDriver's; it snaps level only when her rest serial moves
+            // (boats-and-navigation.md §2.7.3). Letting go of the tiller must park her without moving it.
+            var (sw, _, boat, _, playerGo, boatGo) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
+            sw.TryInteract();                                       // board → deck
+            playerGo.transform.position = sw.HelmWorldPosition;
+            sw.TryInteract();                                       // take the helm
+            Assert.AreEqual(ControlMode.Aboard, sw.Mode);
+            var rb = boatGo.GetComponent<Rigidbody2D>();
+            boat.SetControl(1f, 0.5f);
+            rb.linearVelocity = new Vector2(0f, 3f);                // full ahead, with way on
+            Assert.AreEqual(new Vector2(0f, 3f), rb.linearVelocity, "precondition: she has way on");
+            int serial = boat.TrimRestSerial;
+
+            bool ok = sw.TryInteract();                             // step back from the tiller
+
+            Assert.IsTrue(ok);
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
+            Assert.AreEqual(Vector2.zero, rb.linearVelocity, "nobody at the tiller: she is brought to rest");
+            Assert.AreEqual(0f, boat.Throttle, "…the throttle dropped");
+            Assert.AreEqual(0f, boat.Steer, "…and the helm let go");
+            Assert.AreEqual(0f, boat.TrimTargetDegrees, "she asks for level");
+            Assert.AreEqual(serial, boat.TrimRestSerial,
+                "…but her drawn bow is not put there at once: it settles on her lag");
+
+            boat.Stop();   // a stop that moves her or starts her fresh does move it, in this same rig
+            Assert.AreEqual(serial + 1, boat.TrimRestSerial, "harness: her rest serial is live here");
+        }
+
         // ---- disembark happens FROM THE DECK, under the standable-step-off rules --------------
 
         [Test]
