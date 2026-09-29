@@ -47,6 +47,10 @@ namespace HiddenHarbours.World
         private int _builtScreenW = -1, _builtScreenH = -1;
         private bool _overflowReported;
 
+        // The helm footprint the note is placed for (ADR 0050). A change re-places it; it never
+        // rebuilds it — the note's size does not depend on where it stands.
+        private HelmFootprintArea _placedFor;
+
         /// <summary>The line currently on the note, or null when nothing is showing.</summary>
         public string Text => _text;
 
@@ -76,8 +80,24 @@ namespace HiddenHarbours.World
             // A window resize re-fits the note. Read here rather than off a resize callback because
             // Screen is the only honest source and this is two int compares.
             if (!IsShowing) return;
-            if (Screen.width == _builtScreenW && Screen.height == _builtScreenH) return;
+            if (Screen.width == _builtScreenW && Screen.height == _builtScreenH)
+            {
+                // What the helm covers is read off the Core seam, never the helm's classes (rule 4).
+                if (HelmFootprint.Current != _placedFor) Place();
+                return;
+            }
             Rebuild();
+        }
+
+        /// <summary>Stand the note in its corner, kept out of what the helm's UI covers. Nothing
+        /// covered: the corner, exactly as it was built before the seam existed.</summary>
+        private void Place()
+        {
+            HelmFootprintArea covered = HelmFootprint.Current;
+            QuestPanelFit fit = Fit;
+            _noteRect.anchoredPosition = QuestPanelLayout.AnchoredPosition(in fit, in covered,
+                                                                           _builtScreenW, _builtScreenH);
+            _placedFor = covered;
         }
 
         private void OnDestroy()
@@ -111,7 +131,7 @@ namespace HiddenHarbours.World
 
             _noteRect.sizeDelta = new Vector2(fit.WidthPx, fit.HeightPx);
             _noteRect.localScale = Vector3.one * fit.Scale;
-            _noteRect.anchoredPosition = QuestPanelLayout.AnchoredPosition(in fit);
+            Place();
 
             // The leaf itself, then its printed furniture, then her hand on top of it.
             AddPiece(_noteRect, "Leaf", _stock, 0, 0, fit.WidthPx, fit.HeightPx, NotebookInk.Paper);

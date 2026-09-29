@@ -470,6 +470,14 @@ namespace HiddenHarbours.Core
                  "session state, never saved.")]
         public BoatUiWindowSettings BoatUiWindows = BoatUiWindowSettings.Default;
 
+        [Header("Helm footprint (the camera answers a full-width helm band — ADR 0050)")]
+        [Tooltip("How the camera answers a helm band that spans the whole width of the screen: the " +
+                 "share of the band's height the boat's place on screen rises by (0.5 = half, the " +
+                 "ruling: the boat sits centred in the sea the band leaves), and how long the move " +
+                 "takes to ease in and out. A card never moves the camera. Presentation only — " +
+                 "never saved.")]
+        public HelmFootprintSettings HelmFootprint = HelmFootprintSettings.Default;
+
         [Header("The strike (owner drop §10.2 — \"pull back and press maybe?\": BOTH candidates, tunable)")]
         [Tooltip("Which gesture sets the hook on the true take, and how hard the pull-back must be. " +
                  "BOTH candidates ship ON so the owner picks in play — turn one off to feel the other " +
@@ -1178,6 +1186,35 @@ namespace HiddenHarbours.Core
             CompactScale = 0.55f,
             MinScale = 0.35f,
             MaxScale = 3f,
+        };
+    }
+
+    /// <summary>
+    /// Owner tuning for how the <b>camera answers the helm's footprint</b>
+    /// (<see cref="GameConfig.HelmFootprint"/> — ADR 0050). While the helm's UI covers a band across the
+    /// whole width of the screen (<see cref="HelmFootprint"/>), the boat's place on screen eases up by
+    /// <see cref="CameraBandShare"/> of the band's height, so the sea the band leaves is centred on the
+    /// boat. A card never moves the camera, and nothing covered means no move at all.
+    ///
+    /// <para>Presentation only (rule 5): recomputed every frame, never saved.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct HelmFootprintSettings
+    {
+        [Tooltip("The share of a full-width helm band's height the boat's place on screen rises by. " +
+                 "0.5 (the ruling) centres the boat in the sea above the band; 0 turns the move off.")]
+        [Range(0f, 1f)] public float CameraBandShare;
+
+        [Tooltip("Seconds the camera takes to ease the boat up when a full-width band comes up, and " +
+                 "back down when it goes. 0 = at once.")]
+        [Min(0f)] public float CameraEaseSeconds;
+
+        /// <summary>Half the band (the ruling), eased over 0.4 s — the camera's own framing-tween
+        /// time, so the two moves read as one hand on the camera.</summary>
+        public static HelmFootprintSettings Default => new HelmFootprintSettings
+        {
+            CameraBandShare = 0.5f,
+            CameraEaseSeconds = 0.4f,
         };
     }
 

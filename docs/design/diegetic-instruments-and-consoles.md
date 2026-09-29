@@ -222,9 +222,15 @@ switches, swing the lever, tap the sounder to swap depth↔fish).
 > Shipped alongside it: the always-on HUD **yields the helm** (`HelmHudSuppression`) — the VS-19 nav
 > cluster hides where the dash carries a compass and moves clear where it does not — and the dash and any
 > expanded instrument now size themselves **below the HUD band** instead of under it (`HudBandLayout`).
-> ⚠ Four bottom-centre hint overlays in the **Player** and **World** modules still overlap the dash and
+> ~~⚠ Four bottom-centre hint overlays in the **Player** and **World** modules still overlap the dash and
 > could not be fixed from the UI lane (rule 4); see the S4.5 PR for the measurements and the Core seam
-> they would need.
+> they would need.~~ **✅ FIXED (2026-09-28, [ADR 0050](../adr/0050-helm-footprint-seam.md))** — the
+> Core seam is `HelmFootprint`: the helm host says what its card covers (the card and its title strip),
+> and every overlay keeps out of it through Core. Three of the four had already stopped drawing their
+> own (the helm hint and the interact prompt into the interact popup, 2026-08-19; the onboarding banner
+> into the quest note, 2026-08-22). The dev toast, the popup and the note step above a card that
+> reaches them; the nav cluster steps beside it (the tiller's card too) and above it only if it still
+> meets it. With nothing covered, all of them stand where they did.
 
 **Design (M2/M3, ui-ux):**
 - **Host:** a screen-space uGUI window with a `RawImage` over a C#-filled `Texture2D` (`FilterMode.Point`),
