@@ -1,6 +1,7 @@
 # Hidden Harbours — The Helm Audit (helms you can read, switches that work, a helm for every hull)
 
-> **Status: RULED 2026-09-25 (D1–D6). D2's (a) and (b) were answered the same day, at 13:30:33Z (§3.4).** This doc
+> **Status: RULED 2026-09-25 (D1–D6). D2's (a) and (b) were answered the same day, at 13:30:33Z (§3.4). D1 was
+> replaced on 2026-09-28 at 23:47:49Z: every helm with a wheel becomes one band along the bottom edge (§0, §2.3).** This doc
 > is the design of record for the helms pass. It holds what the 2026-09-24 audit found (ui-ux, arithmetic over the
 > code and Data at `3fa9b606`, no Unity) and the owner's rulings on it. **Every build it names is chartered
 > separately, later; this doc builds nothing.**
@@ -35,11 +36,11 @@ switches should do something. The audit found four problems:
 
 ---
 
-## 0. The rulings (2026-09-25)
+## 0. The rulings (2026-09-25; D1 replaced 2026-09-28)
 
 | # | The owner's ruling | What it means here |
 |---|---|---|
-| **D1** | *"O4, the strip (360x72 on dashes, 320x72 on consoles, whole-number scale, bottom centre), plus O5 (U or a tap of pad View cycles the size, holding View hides all, the grip mark, the first-time hint, 24 px buttons). The size is not remembered. O7 stays in reserve."* | §2. The small card becomes a purpose-drawn strip, and the window controls become findable. There is no save data and no camera change. |
+| **D1** | 2026-09-25, the record (replaced below): *"O4, the strip (360x72 on dashes, 320x72 on consoles, whole-number scale, bottom centre), plus O5 (U or a tap of pad View cycles the size, holding View hides all, the grip mark, the first-time hint, 24 px buttons). The size is not remembered. O7 stays in reserve."*<br><br>**2026-09-28, the ruling that replaced it.** The owner's idea, at 23:33:25Z: *"do you think the helms would look better if they helm was cut in half veritically ie seeing only top of steering wheel but make it full screen width? more width to display things, the resizing seems like it would get annoying for players and movement, its not a design game its meant to be digetic"*<br>The Planner's two questions: *"1. Should the fixed dash replace D1 on every helm with a wheel? (a) Yes, as above (recommended), or (b) keep D1 as ruled."* *"2. How tall should it be at normal scale? (a) 144 px (recommended), (b) 120 px (11% at 1080p, 17% at 720p; tighter for the instruments), or (c) 192 px (18% and 27%; more of the wheel)."*<br>The owner's answer, at 23:47:49Z: *"yes for both recommendations"*. Both take (a). | §2. On every helm with a wheel, the dash becomes one **band** fixed along the bottom edge of the screen: the full width, 144 rig px tall at the whole-number scale, the top of the wheel in the middle and the instruments in one row (§2.3). While it shows, the camera eases up by half the band (O7, now used). Nothing is dragged, resized, collapsed or cycled, and there is no focus. M, or holding the pad's View, hides it all; one instrument is raised at a time on a click. The tiller keeps its ×1 card, fixed; the dory stays bare. Kept from 09-25: holding View hides all, nothing is saved, the whole-number scale and the bottom placement. D4 is reopened for the layout only: the dashes' parts are revised as before, and their layout becomes the band. |
 | **D2** | *"P1 is the first build, as you proposed, with the L bug (spotlight plus every ice-box lid) fixed in it. Its Core interface needs lead-architect's approval. P2 and P3 come later. (a) Nav lights: ____. (b) The dory's searchlight: ____. Write this into the design doc; the build is its own charter later."* The blanks, answered at 13:30:33Z: *"Claude design will add spotlights, decklights, navigation lights, underwater lights, cabin lights, with a cabin glow through windows if cabin lights are on. We will do a lighting pass on each hull and then will reconfigure helms to reflect the latest hull design and features"* | §3. P1 wires what already exists and caps the decor. **(a) Nav lights and (b) the dory's searchlight come from Claude Design, in a lighting pass on each hull. That pass comes first; the helms are reconfigured after it** (§3.4). |
 | **D3** | *"your milestone order: wheelhouse for the dragger and trawlers (M3), ship's bridge (M4), RIB console with a twin option, flybridge, the heavier punt tiller, Sloop 88. The dory stays bare."* | §4. Six new helms in that order. The Sloop 30 gets nothing in this pass. |
 | **D4** | *"revise, don't redesign. Finish the brief in the PR; I send it to Claude Design myself."* | §5. The brief is [`../art/briefs/helms-pass.md`](../art/briefs/helms-pass.md). The owner sends it. |
@@ -50,8 +51,8 @@ switches should do something. The audit found four problems:
 
 | Lane | Work |
 |---|---|
-| ui-ux | the strip host (§2.3), the P1 wiring on the UI side (§3.2), the C# port of the revised rigs, and the wind needle's fix ([`sail-controls.md`](sail-controls.md) §K1) |
-| lead-architect | the Core switch seam (§3.2); the ADR 0043 ledger rows for M, U, View and the pad |
+| ui-ux | the band host, the retirement of the helm's window chrome, drag, resize, collapse tiers and focus, the tiller's fixed card, and M in the bindings asset (§2.3; the helm dash band charter of 2026-09-29, H2); the P1 wiring on the UI side (§3.2), the C# port of the revised rigs, and the wind needle's fix ([`sail-controls.md`](sail-controls.md) §K1) |
+| lead-architect | the Core seam for what the helm covers at the bottom of the screen, the overlays kept clear of it and the camera's ease (§2.3; the helm dash band charter, H1); the Core switch seam (§3.2); review of the ADR 0043 ledger rows for M, View and the pad |
 | art-director and Claude Design | the rigs, through the brief |
 | gameplay-systems | the sail work ([`sail-controls.md`](sail-controls.md)) |
 
@@ -71,7 +72,7 @@ Every number names its frame.
   - *cape* is `helm.cape_islander`, *novi* is `helm.novi`, *console* is `helm.console_skiff` and *sport* is `helm.sport_skiff`.
   - *tiller* is any engine hull with no `Helm` def.
   - *lever* is the lone lever card; no hull uses it.
-- **Window states**
+- **Window states** (the record: the states the audit measured on today's cards; the band retires them on the dashes, and the tiller's card is fixed at ×1)
   - *small*: as shipped. Dashes ×0.5 and the tiller ×1 (`GameConfig.cs` :1028-1029).
   - *focused*: dashes ×1.5, clamped under the top HUD band; the tiller and lever ×2.
   - *Compact*: ×0.55. *floor*: the 0.35 `MinScale`. *Bar*: the 18 px title strip alone.
@@ -84,9 +85,9 @@ Every number names its frame.
 
 ---
 
-## 2. D1 · The view: a strip, and window controls you can find
+## 2. D1 · The view: a band along the bottom edge
 
-### 2.1 What the audit found
+### 2.1 What the audit found (the record: today's cards, as measured 2026-09-24)
 
 - **The card hides the sea you steer into** (arith, cape, small, CapeIslander).
 
@@ -103,13 +104,16 @@ Every number names its frame.
   - At 720p the small card overlaps the Skybridge's own stern by 212 px.
   - Steaming south at full ahead, the Skybridge and the tanker get 0.00 s of warning at 720p.
 - **Its labels break at that size** (px, the glyph law in §2.4). Only 6 of the Cape's 35 labels stay intact when small, and none at Compact, the floor or Bar.
-- **Focusing fixes the labels but not the sea.** Focused at 1080p, all 35 labels read (k 1.339), but the card fills 68% of the screen height.
+- **Focusing fixes the labels but not the sea** (the record: today's focus, which the band retires). Focused at 1080p, all 35 labels read (k 1.339), but the card fills 68% of the screen height.
 - **The window controls are hard to find.**
-  - They show only on mouse hover, and every target is under 24 px: the strip is 18 px, the buttons 22×18 and the grip 14×14 (`BoatUiWindowChrome.cs` :12-16, `GameConfig.cs` :1132-1134).
+  - They show only on mouse hover, and every target is under 24 px: the title strip is 18 px (the record: today's window chrome, which the band retires on the helm), the buttons 22×18 and the grip 14×14 (`BoatUiWindowChrome.cs` :12-16, `GameConfig.cs` :1132-1134).
   - M (hide all) has no hint, no pad path and no row in the ADR 0043 ledger.
   - On a gamepad, only the throttle, neutral and steer do anything.
 
 ### 2.2 The options, measured (arith, cape, CapeIslander; labels intact out of 35)
+
+The table is the record of what was measured on 2026-09-24. D1 ruled O4 on it on 2026-09-25; the band replaced O4 on
+2026-09-28 (§2.3).
 
 | Option | 720p run · S | 1080p run · S | Labels intact | Ruling it touches |
 |---|---|---|---|---|
@@ -118,59 +122,73 @@ Every number names its frame.
 | O1c Bar | 5.0% · 1.33 s | 3.3% · 1.85 s | 0 | — |
 | O1d a corner | 0% | 0% | 6 | overrides the 08-03 bottom-centre ruling |
 | O3 Bar while steering | 5.0% · 1.33 s | 3.3% · 1.85 s | 0 while steering | — (the pad has no hover) |
-| **O4 strip, 72 tall (ruled)** | **20.0% · 2.09 s** | **13.3% · 2.36 s** | **all** | — |
-| O4 strip, two rows (96 tall; not ruled) | 26.7% · 1.87 s | 17.8% · 2.21 s | all | — |
-| O5 as an always-on chrome strip | 82.8% · 0.03 s | 55.2% · 0.98 s | 6 | — |
+| **O4 strip, 72 tall (ruled 09-25; replaced 09-28, the record)** | **20.0% · 2.09 s** | **13.3% · 2.36 s** | **all** | — |
+| O4 strip, two rows (96 tall; not ruled; the record) | 26.7% · 1.87 s | 17.8% · 2.21 s | all | — |
+| O5 as an always-on chrome strip (the record) | 82.8% · 0.03 s | 55.2% · 0.98 s | 6 | — |
 | O6 a saved layout | as O0 | as O0 | 6 | new save data |
-| O7 the camera shift | in reserve (ruled) | — | — | — |
+| O7 the camera shift | used, at half the band (ruled 09-28; in reserve 09-25) | — | — | — |
 
-- At 4K the ruled strip is drawn ×2: 13.3% · 2.40 s.
-- The strip overlaps nothing at any resolution: no toast, popup or quest note.
+- The record: at 4K the ruled strip was drawn ×2: 13.3% · 2.40 s.
+- The record: the strip overlapped nothing at any resolution: no toast, popup or quest note. The band does: a
+  full-width band sits over the four bottom-centre overlays #416 left, the interact popup and the quest note. They keep
+  clear of it through the Core seam (§2.3).
+- **The band (ruled 09-28), not measured here.** 144·k tall, with the camera eased up 72·k px, it leaves the same clear
+  sea below the boat that O4 left: H/2 − 72·k, the Cape's 2.09 s at 720p and 2.36 s at 1080p, full ahead in a calm sea.
+  That is the Planner's arithmetic; the build (H1) re-derives and asserts it.
 
 ### 2.3 The ruling, as a spec for the build
 
-**O4, the strip.** When the card isn't focused, the host draws a strip in place of the whole dash.
-- **Sizes:** 360×72 rig px on the pilot dashes (Cape, Novi) and 320×72 on the skiff consoles (console, sport). Each new helm in §4 gets one too; the tillers don't.
-- **Scale:** whole-number only, k = max(1, H div 1080). That's ×1 on every screen from 1280×720 to 3440×1440, and ×2 at 4K.
-- **Place:** bottom centre, as ruled 2026-08-03 (`GameConfig.cs` :998, :1024).
-- **One row, 72 tall.** If one row can't hold a strip, the designer says so. There is no two-row fallback without a ruling.
+**The band (D1, ruled 2026-09-28).** It replaced O4's strip and O5's window controls (ruled 2026-09-25; §0 keeps
+their words as the record).
+- **Where:** on every helm with a wheel: today the Cape, Novi, console and sport dashes, and each new wheel helm in
+  §4's order. The dash is drawn as one band fixed along the bottom edge of the screen.
+- **Size:** the full width, 144 rig px tall.
+- **Scale:** whole-number only, k = max(1, H div 1080). That's ×1 on every screen from 1280×720 to 3440×1440, and ×2
+  at 4K. The band is 20% of the height at 720p, 18% at 800p, 13.3% at 1080p and 4K, and 10% at 1440p and UW.
+- **Place:** bottom-anchored and centred, as ruled 2026-08-03 (`GameConfig.cs` :998, :1024); it spans the width.
+- **Any width from 1280 to 3440 rig px, from fixed pieces:** the end caps, the instrument housings and the wheel's top
+  arc in the middle, with a plain panel between them that the host repeats. A detail is never stretched. Everything
+  the band carries fits in 1280 rig px.
+- **One row, 144 tall.** If one row can't hold a band, the designer says so. There is no taller band without a ruling.
 - **What it carries:**
+  - the wheel's top arc, in the middle, which steers as the wheel does today;
   - the drive (the throttle detent and the gear, as a letter with a position cue);
   - the tach and fuel;
-  - depth on the pilot strips, and a heading on the skiff strips (their dome compass hides the HUD compass, `UI/HelmHudSuppression.cs` :71-78);
+  - depth on the pilot dashes, and a heading on the skiff dashes (their dome compass hides the HUD compass,
+    `UI/HelmHudSuppression.cs` :71-78);
   - the live switches as lit and unlit pips, never colour alone;
-  - a night state.
+  - each brow instrument, flush in the row, each a click target;
+  - a night state, with the banks lit.
 
-  The art is the brief's §2.1.
-- **The focus** shows the full dash, at a whole-number scale where one fits: ×1 at 1080p, which is 51% of the height with 35 of 35 labels intact.
-- **The tiller** keeps its ×1 card.
+  The art is the brief's §2.1 and §2.2. There is no grip and no title bar.
+- **Nothing is dragged, resized, collapsed or cycled, and there is no focus.** D1's U is not bound.
+- **One instrument is raised at a time** (`HelmInstrumentExpansion`): a click on its flush face raises its card above
+  the band, and a second click, Esc or a click away lowers it. A raised card is placed, not dragged. It sits between
+  the band's top and the top HUD band.
+- **M hides and restores it all**, as today. Holding the pad's **View** does the same once ADR 0043 PR 2 fills the
+  Gamepad scheme. M goes into the bindings asset.
+- **The tiller keeps its card at ×1** (×2 at 4K), fixed at bottom centre: no drag, no resize, no focus. **The dory
+  stays bare.**
+- **O7, the camera shift, is used, at half the band.** While the band shows, the camera eases up by 72·k px, so the sea
+  ahead of the bow is what O4's strip left (§2.2). It does not move for the tiller's card.
+- **Nothing is saved:** no save data and no PlayerPrefs.
 
-**O5, window controls you can find.**
-- **U**, or a tap of the pad's **View**, cycles the helm card's size. The exact cycle with the strip in place is settled in the build's charter; the lean is strip → focus → Bar.
-- **Holding View hides all**, like M.
-- **A grip mark** is drawn into the strip's art. The rig exports it as `GRIP`.
-- **A one-line hint** shows on the first hover of each launch: "drag to move · U to resize · M to hide".
-- **24 px targets** when the chrome shows: `TitleBarPx` 18 → 24, `ChromeButtonPx` 22 → 24, and `GripPx` 14 → 24 as a hit area (`GameConfig.cs` :1132-1134). These are Inspector values (rule 6).
-
-**The size is not remembered.**
-- No save data and no PlayerPrefs.
-- The layout stays transient, as ruled at `GameConfig.cs` :1094-1096. It survives region and save loads within a launch, and resets at the next launch.
-
-**O7 (moving the boat up the screen) stays in reserve.** With O4 there's nothing for it to fix: at 720p the strip's top is 88 px from the bottom.
-
-**Who builds it:**
+**Who builds it** (the helm dash band charter of 2026-09-29):
 
 | Lane | Work |
 |---|---|
-| art-director and Claude Design | the strips and their hit geometry (the brief §2.1) |
-| ui-ux | the small-state renderer, U and View, the hint and the 24 px chrome |
-| lead-architect | the ADR 0043 rows for U, View and M |
+| lead-architect (H1) | the one Core seam for what the helm covers at the bottom of the screen; the four overlays #416 could not move, the interact popup, the quest note and the nav cluster kept clear of it; the camera's ease |
+| ui-ux (H2) | the band host in greybox from the rigs already ported, published into H1's seam; the tiller's fixed card; the retirement of the helm's window chrome, drag, resize, collapse tiers and focus; M in the bindings asset; the band's plates |
+| art-director and Claude Design (H3) | the band's art and hit geometry (the brief §2.1), after the lighting pass on each hull (D2) and the owner's send (D4) |
 
-There's no Core seam.
+The seam is the one #416 asked for (`diegetic-instruments-and-consoles.md` §5 :225-227).
 
-**Open (not blocking): the 720p focus.**
-- At 720p the full dash can't be both whole-number and under the top band, so the focus keeps ×0.883, and 6 of 35 labels.
-- A ×1 focus would cover the band's bottom 64 px, and the band's deepest label ends at 196 of its 220 px (`UI/HudBandLayout.cs` :43-45).
+**Open (not blocking): 720p.**
+- The record (D1 of 09-25): at 720p the full dash couldn't be both whole-number and under the top band, so its focus
+  kept ×0.883, and 6 of 35 labels. A ×1 focus would cover the band's bottom 64 px, and the band's deepest label ends
+  at 196 of its 220 px (`UI/HudBandLayout.cs` :43-45). The band retires that focus.
+- What stays open: a raised instrument card at 720p. Where no whole-number scale fits between the band's top and the
+  top HUD band, it keeps the scale it uses today.
 - The brief's s2 floor holds at either scale.
 
 ### 2.4 Legibility: the glyph law, and what the revision must meet
@@ -179,7 +197,7 @@ There's no Core seam.
 - A glyph keeps every stroke at every sub-pixel phase only when c ≥ 1.
 - Below 0.8, no phase keeps all five rows. Below 0.667, no phase keeps all three columns.
 
-**Labels intact at every phase** (px):
+**Labels intact at every phase** (px; the record: today's cards in their measured states, small and focused, which the band retires on the dashes):
 
 | Card | Labels | small | Compact, floor | focused 1080p | focused 720p |
 |---|---|---|---|---|---|
@@ -203,13 +221,13 @@ There's no Core seam.
   | The key's RUN angle | 1.13 (Cape), 1.07 (Novi) |
 
   The Cape's tilting rocker, which has a shape cue, is the model to copy.
-- **Hit targets** (focused at 720p): the pilot ANCH is 49.5×15.9 px and the skiff ANCH 20.9×39.9 px. Both fail 24 px.
+- **Hit targets** (focused at 720p; the record: today's focus): the pilot ANCH is 49.5×15.9 px and the skiff ANCH 20.9×39.9 px. Both fail 24 px.
 
 **What the revision must meet** (the brief's §1, the legibility floor):
-1. Text at s2 or larger, and live strip readouts at s3. At ×1, s2 is 10 px and s3 is 15 px, which is 16.6′ and 25.0′ of arc on a 14" 720p laptop at 50 cm.
+1. Text at s2 or larger, and live band readouts at s3. At ×1, s2 is 10 px and s3 is 15 px, which is 16.6′ and 25.0′ of arc on a 14" 720p laptop at 50 cm.
 2. 4.5:1 for text and 3:1 between a control's states, by day and by night.
 3. Never colour alone.
-4. Targets of 24 screen px or more at the smallest scale the control is used at: 28 rig px on the Cape and Novi, 26 on the console and sport, 24 on the tiller and the strips.
+4. Targets of 24 screen px or more at the smallest scale the control is used at: 28 rig px on the Cape and Novi, 26 on the console and sport, 24 on the tiller and the bands.
 5. Live looks live. A switch that is fitted but not wired yet is drawn as a blank `cap`.
 6. The banks light at night.
 
@@ -274,7 +292,8 @@ The rigs need new art for the caps and the new states (the brief §2.2). The P1 
 | HORN | B: hold for a long blast, tap for a short one | L3, held |
 | Engine (the key or the pull-cord) | C: tap to run or stop, hold to crank | R3, held |
 
-- On the pad, the d-pad ←/→ moves a switch cursor on the focused card, and A flips the switch.
+- On the pad, the d-pad ←/→ moves a switch cursor along the band's switches, and A flips the switch. (The record: proposed on
+  2026-09-25 as a cursor "on the focused card"; the band has no focus.)
 - LT and RT are reserved for the sloops' sheets ([`sail-controls.md`](sail-controls.md) §7).
 - Every pad button is a proposal until ADR 0043 PR 2 binds the Gamepad scheme.
 
@@ -387,7 +406,8 @@ M1 pilots only tiller cards (DoryOutboard, Punt, PuntUpgraded). No dash is seen 
 - **The dory stays bare.** She gets held things, not a card (§3.6).
 - **The Sloop 30 gets nothing in this pass.** Her small engine panel waits on the engine run state (P2).
 - **No lobster "open helm".** The Novi fits all 19.
-- Each new helm is a full card plus a strip (§2.3), except the punt tiller, which keeps the tiller's ×1 card.
+- Each new wheel helm is a band (§2.3), and the punt tiller a card: it keeps the tiller's ×1 card. (The record: on
+  2026-09-25 this read "a full card plus a strip"; the band replaced it on 2026-09-28.)
 - The file names, globals and canvases are pinned in the brief (§2.3, §3.9), so no two jobs edit the same file. The punt tiller is a new rig beside the tiller, not an edit of it.
 
 ---
@@ -397,7 +417,7 @@ M1 pilots only tiller cards (DoryOutboard, Punt, PuntUpgraded). No dash is seen 
 - The brief is [`../art/briefs/helms-pass.md`](../art/briefs/helms-pass.md). It's finished in the same PR as this doc, and the owner sends it.
 - **A revision, not a redesign.** Each rig keeps its file name, global, exported names, canvas line and anchors. The sport fisher v3 came back as a redesign and couldn't be taken in.
 - **It travels as eight zips, one per job** (at most 500 entries each). Each carries the brief, this doc, its rigs, a README and a node checker:
-  1. the strips;
+  1. the bands;
   2. the revision of the five helms;
   3. to 8. the six new helms, in D3's order.
 - **The checker** loads each rig in a `vm` with a recording 2D-context shim. It checks three things, the first two by value over the drawing trace:
@@ -439,7 +459,7 @@ The Sloop 88's helm card is sixth in D3's order (§4.2).
 
 ## 8. What else the audit measured (the full tables are in the evidence)
 
-- **The card's rect** (arith; cape and novi 600×548 rig px, console and sport 600×510, tiller 120×244):
+- **The card's rect** (the record: today's cards, small and focused, as measured; arith; cape and novi 600×548 rig px, console and sport 600×510, tiller 120×244):
 
   | Card | small at 720p | small at 1080p | focused |
   |---|---|---|---|
@@ -459,7 +479,8 @@ The Sloop 88's helm card is sixth in D3's order (§4.2).
   - her anchor line (`Boats/BoatAnchor.cs` :316-323).
 - **Input paths** (arith):
   - Only the throttle, neutral and steer have a pad path.
-  - The anchor, the spotlight, focus, the brow, every window verb and rowing have none.
+  - The anchor, the spotlight, focus, the brow, every window verb and rowing have none (the record: today's card; the band
+    retires focus and the window verbs).
   - There's no mouse steer on the tiller card.
 
 ---
@@ -494,20 +515,19 @@ The sail corrections (A6-1 to A6-8) are in [`sail-controls.md`](sail-controls.md
 
 These run on the owner's slot. None of them is guessed above.
 
-1. **The view:**
-   - the pixel phase the small card actually lands on;
-   - captures at 720p, 1080p and 1440p, small and focused, by day and by night;
-   - the flush brow;
-   - the speed pull-back and camera shake under the card;
-   - the wind readout's clipped rect (`HudController.cs` :1000-1001);
-   - that a reload keeps the layout within a launch and resets it on relaunch;
-   - the strip's pixels at each screen, once it's drawn.
+1. **The view.** The record: on 2026-09-25 this item measured the small card, the focus and the strip (their pixel
+   phase; captures at 720p, 1080p and 1440p, small and focused; the strip's pixels at each screen) and the window
+   layout kept within a launch. The band made those moot on 2026-09-28. The band's plates are the helm dash band
+   charter's (H2): the band on the Cape, Novi, console and sport at 720p, 1080p, 1440p, UW and 4K, by day and by night;
+   the flush brow in it; the camera shift under the look-ahead, the speed pull-back and the shake; the overlays clear
+   of the band; the tiller's card with the nav cluster clear of it. What stands here:
+   - the wind readout's clipped rect (`HudController.cs` :1000-1001).
 2. **The switches:**
    - which lamps draw when she's anchored at night;
    - whether L lights a beam on the dory (D2 (b));
    - `BoatLamps` after a re-skin;
    - whether leaving the helm parks her.
 3. **Play:**
-   - whether an M1 player fishes from the helm with the card up;
-   - how the anchor line really draws under the card.
+   - whether an M1 player fishes from the helm with the tiller's card up;
+   - how the anchor line really draws under the tiller's card and the band.
 4. **The sloops:** [`sail-controls.md`](sail-controls.md) §12.
