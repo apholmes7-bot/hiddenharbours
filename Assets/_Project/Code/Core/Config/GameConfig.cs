@@ -704,24 +704,56 @@ namespace HiddenHarbours.Core
         /// "yes make everyone a mesh now"</b> (ADR 0044, amendment 2026-09-17): the cast follows the
         /// player onto skinned meshes, with the sprite as the fallback for anything that cannot draw.
         ///
-        /// <para>⚠ What ON reaches TODAY is narrower than the ruling, and on purpose (option (b) of the
-        /// same amendment): a cast member draws as a mesh only while standing on a FACET hull — a
-        /// moored boat's skipper — because the facet pass is only recorded while a mesh hull is on
-        /// screen. Villagers ashore are not wired at all and draw their sprites exactly as before.
-        /// A character whose art def names no <see cref="CharacterSkinDef"/>, or whose def lists the
-        /// state it is in nowhere in <see cref="CharacterSkinDef.MeshStates"/>, keeps its sprite
-        /// whatever this says.</para>
+        /// <para>What ON reaches: a moored boat's skipper standing on a FACET hull, and, while
+        /// <see cref="MeshCastAshore"/> is ON as well, every villager on her own feet ashore, under a
+        /// facet id of her own (ADR 0044, amendment 2026-09-27). With Mesh Cast Ashore OFF the
+        /// villagers draw their sprites exactly as before. A character whose art def names no
+        /// <see cref="CharacterSkinDef"/>, or whose def lists the state it is in nowhere in
+        /// <see cref="CharacterSkinDef.MeshStates"/>, keeps its sprite whatever this says.</para>
         /// </summary>
         public const bool DefaultMeshCast = true;
 
         [Tooltip("Draw the CAST (everyone but the player) as skinned meshes through the iso facet " +
                  "pass where they can be drawn that way? ON is the shipped look (owner ruling " +
-                 "2026-09-17). Today that is a moored boat's skipper standing on a mesh hull; " +
-                 "villagers ashore stay sprites, because the facet pass is only recorded while a " +
-                 "mesh hull is on screen. The same debts as the player's switch apply: about half " +
-                 "a fidelity step off the inked art and no eyes, brows or mouth. Read live — flip " +
-                 "it with the game running. Turn it OFF and every cast sprite is back exactly.")]
+                 "2026-09-17). That is a moored boat's skipper standing on a mesh hull and, while " +
+                 "Mesh Cast Ashore is ON too, every villager on her own feet ashore. The same debts " +
+                 "as the player's switch apply: about half a fidelity step off the inked art and no " +
+                 "eyes, brows or mouth. Read live — flip it with the game running. Turn it OFF and " +
+                 "every cast sprite is back exactly.")]
         public bool MeshCast = DefaultMeshCast;
+
+        /// <summary>
+        /// Code default for <see cref="MeshCastAshore"/>: <b>OFF</b>. The shipped
+        /// <c>GameConfig.asset</c> turns it <b>ON</b>, by the owner's ruling of 2026-09-27
+        /// (decision 1: ON once the plates are accepted, OFF one switch away). A config built fresh
+        /// in code still starts OFF.
+        ///
+        /// <para>ON, and only while <see cref="MeshCast"/> is ON too, draws every VILLAGER on her own
+        /// feet ashore as her skinned mesh, through the facet pass under a facet id of her own (ADR
+        /// 0044, amendment 2026-09-27; the ashore frame is #861's, as the player's). She faces where
+        /// her sprite faces, sorts exactly as her sprite, and her idle is moved off her neighbours' by
+        /// her NpcDef id. Sheltered indoors she is hidden in both pictures and keeps her id. A clip or
+        /// work animation that suspends her sprite, or a state her skin does not mesh, hands the draw
+        /// back to her sprite.</para>
+        ///
+        /// <para>When the region has used every facet id she is refused one: she keeps her WHOLE
+        /// sprite and the id registry logs its one warning for that ask. She asks again only when a
+        /// switch is turned off and on again or she is enabled again, never per frame. Once granted,
+        /// she keeps her id while both switches stay on.</para>
+        ///
+        /// <para>OFF: every villager's sprite, byte for byte as before this switch existed — no ashore
+        /// figure built, no id taken, the sprite untouched.</para>
+        /// </summary>
+        public const bool DefaultMeshCastAshore = false;
+
+        [Tooltip("Draw the VILLAGERS as their skinned meshes ashore? Needs Mesh Cast ON too. ON in " +
+                 "the shipped config (owner ruling 2026-09-27, on the plates), OFF in a fresh one. " +
+                 "A villager is the mesh while she is out on her own feet: indoors she is hidden in " +
+                 "both pictures, and a clip or a state her skin does not mesh hands her back to the " +
+                 "sprite. When the region has run out of facet ids she keeps her whole sprite and " +
+                 "does not ask again until a switch is turned off and on. Read live. Turn it OFF and " +
+                 "every villager's sprite is back exactly, down to the byte.")]
+        public bool MeshCastAshore = DefaultMeshCastAshore;
 
         [Header("Foliage silhouette (the fisher read through dense woods)")]
         [Tooltip("Let the player read through foliage that draws in front of her? ON is the shipped " +
