@@ -71,32 +71,45 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// The face a v9 def binds is, on every preset, one group per slot, each the slot's rest group
-        /// and the group the preset rests on (<see cref="CharacterSkinExtractor.DefaultFaceGroups9"/>
-        /// refuses any other), and the rig draws every one of those groups on that preset's figure,
-        /// so the bound face is never missing a feature.
+        /// Since character PR 2a a v9 def binds EVERY face group of rig 9's <c>GROUP_ORDER</c> and
+        /// draws one per slot per frame. So on every preset the rig's own bind mesh must hold faces for
+        /// every one of those groups — a group with none is a state no clip, blink or glance could
+        /// ever show — and the face it rests on must be one group per slot, each slot's first
+        /// (<see cref="CharacterSkinExtractor.DefaultFaceGroups9"/> refuses any other). The group
+        /// count is the rig's, never a number written here.
         /// </summary>
         [Test]
-        public void V9_TheBoundFaceIsTheRigsRestFaceOnEveryPreset()
+        public void V9_EveryPresetDrawsEveryFaceGroupAndRestsOnTheRigsRestFace()
         {
             IRigScriptHost host = V9Host;
             string g = CharacterSkinExtractor.V9GlobalName;
             int slots = (int)host.EvaluateNumber($"Object.keys({g}.FACE_SLOTS).length");
+            int declared = (int)host.EvaluateNumber($"{g}.GROUP_ORDER.length");
             Assert.Greater(slots, 0, "Rig 9 declares no face slot.");
+            string[] order = CharacterSkinExtractor.FaceGroupOrder9(host);
+            Assert.AreEqual(declared, order.Length,
+                $"Rig 9's GROUP_ORDER holds {declared} groups and the bake reads {order.Length}.");
+            var counts = new StringBuilder();
 
             foreach (string preset in CharacterSkinExtractor.Presets9(host))
             {
-                string[] groups = CharacterSkinExtractor.DefaultFaceGroups9(host, preset);
-                Assert.AreEqual(slots, groups.Length,
-                    $"{preset}: the rig has {slots} face slots and the def binds {groups.Length} groups.");
-                foreach (string group in groups)
+                string[] rest = CharacterSkinExtractor.DefaultFaceGroups9(host, preset);
+                Assert.AreEqual(slots, rest.Length,
+                    $"{preset}: the rig has {slots} face slots and the preset rests on {rest.Length} groups.");
+                CollectionAssert.IsSubsetOf(rest, order,
+                    $"{preset}: the rest face [{string.Join(", ", rest)}] is not among the bound groups.");
+                int least = int.MaxValue; string leastAt = "";
+                foreach (string group in order)
                 {
                     int drawn = (int)host.EvaluateNumber(
                         $"{g}.bindMesh('{preset}').filter(function(f){{return f.group==='{group}';}}).length");
                     Assert.Greater(drawn, 0,
-                        $"{preset}: the rest group '{group}' draws no face, so the bound face lacks it.");
+                        $"{preset}: the face group '{group}' draws no face, so the def could never show it.");
+                    if (drawn < least) { least = drawn; leastAt = group; }
                 }
+                counts.Append($" {preset} (fewest {least}, {leastAt})");
             }
+            Debug.Log($"[CharacterFaceCompositionTests] v9: every preset binds all {order.Length} face groups:{counts}");
         }
     }
 }

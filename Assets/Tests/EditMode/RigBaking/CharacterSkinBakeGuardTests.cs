@@ -588,8 +588,9 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <see cref="CharacterSkinAssetBaker.LiveRig"/> names. Since the character intake's Phase B
         /// (2026-09-26) that is rig 9, so the composed side is
         /// <see cref="CharacterSkinAssetBaker.ComposeV9"/> for the player, held to its own tolerance
-        /// (<see cref="CharacterSkinExtractor.V9Tolerance"/>), and the face is rig 9's own rest face
-        /// (<see cref="CharacterSkinExtractor.DefaultFaceMeshJs9"/>), not the pass-06 layers above.</para>
+        /// (<see cref="CharacterSkinExtractor.V9Tolerance"/>), and the face is rig 9's whole face,
+        /// every face group bound since character PR 2a (<see cref="CharacterSkinExtractor.FaceMeshJs9"/>),
+        /// not the pass-06 layers above.</para>
         /// </summary>
         [Test]
         public void TheCommittedBindMeshIsTheFaceTheChainComposesToday()

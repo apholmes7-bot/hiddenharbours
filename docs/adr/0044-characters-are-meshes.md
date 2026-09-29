@@ -9,6 +9,9 @@
   **Amended 2026-09-17 by the cast (`feat/cast-to-mesh`):** §7 records the owner's ruling that the
   cast follows the player onto skinned meshes, and closes §5 items 1, 3 and 4. Item 2 stays with the
   water lane.
+  **Amended 2026-09-28 by character PR 2a (`feat/character-rig9-plays-in-full`):** §8 records how a
+  rig 9 figure plays what #889 left undrawn: the face, the blink, the look, the wheel, the oars, the
+  carry clips and the rig's own ink.
 - **Date:** 2026-09-09
 - **Decision owner:** the owner ruled the scope; `lead-architect` ratifies the record.
   **`art-pipeline`** owns the facet look, **`tools-editor`** owns the baking, **`gameplay-systems`**
@@ -652,3 +655,141 @@ The cast inherits the player's debts. This amendment takes none of them:
   for Claude Design;
 - the shader look pass (43–57 % off the inked art), a separate handoff;
 - the shin-clamp re-bake.
+
+## 8. Amendment 2026-09-28: rig 9 plays in full (character PR 2a)
+
+### 8.1 What this adds
+
+#889 put rig 9's ten defs on screen. It read the face, the blink, the look, the helm and oars clips,
+the carry clips and the rig's own shading, and drew none of them (its findings 1, 2, 3, 5 and 7).
+This amendment draws them, under the charter `HANDOFF-2026-09-27-character-pr2.md` §4 and the owner's
+ruling 8 (the engine plays the blink and the gaze). It serves **P1** (a figure that turns and blinks
+on a moving deck reads as a person, not a cut-out) and **P3** (a skipper or, once item 8 lands, a
+villager who looks up as the player passes is the living coast). Nothing ships as JS: every value
+below is read from `characterIsoRig9.js` at bake, in V8 (ADR 0021), into the def.
+
+### 8.2 The face: one mesh, one draw, three numbers
+
+- **Every def binds all 13 of the rig's face groups** (`GROUP_ORDER`, `CharacterSkinDef.FaceGroups`)
+  in its one bind mesh. Each face corner carries its group, the role the cull reads and whether the
+  head snap moves it (`TEXCOORD1`, free on a figure because a figure never carries a room's level tag).
+- **A clip carries a face track** (`SkinClip.Face`: eyes, brows and mouth per frame), read from the
+  rig's clips at bake. A clip without one shows `RestFace`. The rig's tool track is carried as data
+  beside it (`SkinClip.Tool`); the baked bone keys already park the tool bones (`ParkedParts`).
+- **Which face shows is one uniform per figure** (`_HHFigureFace`, the group per slot). The vertex
+  stage collapses every face corner whose group is not showing, outside the clip volume. A face change
+  is never a mesh edit, never a second draw call and never an allocation.
+- **Composition, in the rig's order** (`CharacterFigureFace`): the frame's own groups, then the gaze
+  (it replaces `eyes.open` only), then the blink (unless the frame's own eyes are one the blink
+  skips).
+- **The cost** (triangles, vertices, bones, memory per def, the frame cost of ten figures) is measured
+  on the editor slot and recorded in the PR. Binding the whole face raises the materials a def paints
+  (the fisher 19 to 21; the most is 25 of the 32 `V9RampSlots`).
+
+### 8.3 The blink and the look
+
+- **Read at bake, per def:** the blink's steps, interval, double chance and gap and the eyes it
+  skips; the look's bones, split, yaw and pitch limits, head share, eye threshold and gaze groups.
+  Each preset carries the rig's `BLINK` and `LOOK`; a guard reads them back from the rig.
+- **The blink** (`CharacterFigureBlink`) runs on the clock the clips play on, over any clip. The first
+  blink falls uniformly in a first interval; each wait is uniform in the rig's interval; a double
+  follows by the rig's chance after its gap, and never a third. Its generator is seeded from the def
+  id and the figure's stable key (FNV-1a into splitmix32), so the same figure blinks the same way on
+  every run. It never touches `UnityEngine.Random`, and no simulation system reads it (rule 5).
+- **The key is the stand's one identity** (`ICharacterFigureIdentity`, Core). `MooredBoat` answers its
+  owner id. A stand with none, and the player, key the empty string.
+- **The look** (`CharacterFigureLook`) is the rig's `lookAt` ported to C#, rounding as the rig
+  rounds. It goes onto the neck and head locals after the clip and before the deck rock
+  (`CharacterSkinPose.ApplyTurn`). It is sampled on the clip's beat (a new clip or a new frame) and
+  held between beats, so a figure re-skins at its clip's rate however its target moves (rule 7).
+- **Who looks at whom is a Core seam** (`CharacterLookTargets`, `ICharacterLookTargetSource`). By
+  default it answers the published player. The presenter keeps an answer only within
+  `GameConfig.CharacterLookRadiusMetres` on the figure's own ground, and aims at
+  `GameConfig.CharacterLookTargetHeightMetres` (1.31 m, the player's head at rest). The player's own
+  presenter never asks: the player looks at nothing (charter §8 item 2). Item 8 attaches a villager by
+  giving its ashore stand the same identity interface; Art references no Player or NPC class (rule 4).
+- **The bars.** A guard holds the port to the rig's own `lookAt`, run in V8 over a grid of targets,
+  within 0.002°, and the golden check (share 1, targets 2 m away, inside the limits) to within 0.005°
+  of the rig's own aim on every target, under each preset's bar in the kit's `golden-report.json`:
+  1.70° for eight presets and 2.40° for the skipper and nan. README §5 says 1.7° for all; the
+  difference is reported to art-director, not decided here. The measured gaps are in the PR.
+
+### 8.4 The wheel, the oars and the loads
+
+- **`CharacterSkinStateMap.CarryKey`** is Core's twin of the bake's `CharacterState(anim, null,
+  carry).Key` (`anim_carry`). A guard holds the two equal over every carry clip of the ten defs.
+- **Helm and Oars are carries.** Helm plays `idle_helm` and `walk_helm`; Oars plays `idle_oars` and
+  `walk_oars`. All ten defs carry all four, so no def falls back. A def that lacks one (every rig 7
+  def) draws the free gait clip and says so (`FellBackToGait`). A run at either asks for the free
+  `run`, by design: neither the rig nor the sprite bakes a stance run, so nothing falls back there.
+- **A held thing names its carry through data** (`CharacterCarryPoseDef`, one Def,
+  `Resources/CharacterCarryPoses.asset`, id `carrypose.character`): a carriable's def id to a carry
+  stance, the right hand first. It maps `container.bucket` to `buckets`. The game has no carriable
+  that is a tray or a pot yet, so those two stay unmapped and listed. A carry applies to the free
+  stance alone. `CarryAnchorTableDef` (the sprite's hand-prop overlays) stays a separate table.
+
+### 8.5 The rig's own ink
+
+Under `ToneRule.V9`, inside `#ifdef HH_FIGURE`, from fields baked from the rig's `SHADING` and `ROLE`:
+
+- **the face cull by role:** a face draws only while it faces the camera past its role's threshold
+  (near, far, side and the mouth's), at the rig's floor;
+- **the head snap:** the head's faces move together so that the head's mid point sits on a pixel
+  centre, on the screen only (depth, tone and cull are the unsnapped face's, as in the rig);
+- **the edge:** a figure pixel drops one ramp step across a depth break of more than 0.12 m;
+- **the keyline:** an empty pixel beside the figure takes `#101a19` mixed 22% toward its nearest
+  figure neighbour.
+
+The keyline goes on empty pixels only, never over a hull or deck pixel. A hull writes the ink flag's
+alpha as 1, as it always has, and with no figure inked the resolve is the program it was. So no hull
+pixel moves, and `_RampMeta[16]` is unchanged. The edge and the mix are one value per frame (the ten
+defs share the rig's `SHADING`); a def with its own would need per-figure storage. **The "backface
+rescue"** #889 named is not a rig 9 term: rig 9 culls body faces at the floor alone, and nothing is
+drawn for it. The bake's comparison with the rig's own render (`RenderTruth9`) covers what is drawn,
+with the snap on; the match is in the PR.
+
+### 8.6 The switches
+
+All ON by default and read live, so the owner can turn one off in a playtest without code:
+`GameConfig.CharacterBlink`, `CharacterHeadLook`, `CharacterEyeLook` (the owner's "maybe" of 09-24)
+and `MeshFigureKeyline` (the ink). OFF gives exactly the picture before this amendment for that part.
+`CharacterLookRadiusMetres` (5 m) and `CharacterLookTargetHeightMetres` (1.31 m) tune the look.
+
+### 8.7 Guards added by this amendment
+
+**EditMode** (no editor; CI runs them):
+
+- **`CharacterSkinBakeGuardTests` (V9 life, 9).** Every preset binds every face group; every clip
+  carries the rig's face and tool tracks; the blink, the look and the ink are the rig's; the look
+  port and the turn match the rig in V8; the golden check; every preset's ink matches the rig's own
+  render. The bar is always the rig's, read in V8 or from the kit.
+- **`CharacterSkinCarryStateTests` (4).** The key twin over every carry clip; the wheel and the oars
+  as the rig's carries; every committed def plays them; every mapped carriable asks for a carry the
+  rig has and every def plays.
+- **`CharacterFigureBlinkTests` (9), `CharacterFigureFaceTests` (6), `CharacterFigureLookTests` (10),
+  `CharacterLookTargetsTests` (5), `CharacterCarryPoseDefTests` (4).** The Core arithmetic on
+  synthetic values: seeding, the first wait, the double and never a third, no draw from
+  `UnityEngine.Random`; the composition order; the clamp, the split and the rounding; the seam's
+  default and a source; the table's rows.
+- **`IsoCharacterFigureLifeTests` (13).** A default life draws exactly the clip; a blink reaches the
+  face uniform and never re-skins; the look turns only the head and is held between beats; the frame
+  path allocates nothing; the ink and its registry follow the switch and the figure's visibility.
+- **`CharacterSkinStateMapTests` (15, rewritten)** and **`CharacterFigurePresenterTests` (+2):** the
+  wheel and the oars through the map and their fall-backs; the stand's identity keys the life, and a
+  skipper looks at a player within the radius and not past it.
+
+**PlayMode:**
+
+- **`DeckRiderMeshPresenterPlayTests` (+3).** At the wheel and the oars the player draws the rig's
+  own clips; a def without them draws the free gait and says so; her own figure never asks the look
+  seam.
+- **`CharacterMeshCastAboardPlayTests` (+1).** A moored skipper blinks on their own clock and looks at
+  a player nearby, not at one past the radius. **Red until the ten defs are re-baked on the editor
+  slot, by design.**
+
+### 8.8 What this amendment leaves alone
+
+The presets and their looks, anchors and pose heights, the sprite fallback, and villagers ashore
+(the Planner's item 8; `CharacterMeshCastAshorePlayTests` is unchanged). Of §7.7, the helm and oars
+clips are closed for rig 9 defs: rig 9 bakes them and this amendment draws them. The rest of §7.7
+stands.

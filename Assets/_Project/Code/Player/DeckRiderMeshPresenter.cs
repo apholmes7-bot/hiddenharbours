@@ -55,17 +55,20 @@ namespace HiddenHarbours.Player
     /// stand point that publication is already built from
     /// (<see cref="DeckRiderVisual.DeckStandRigLocal"/>).</para>
     ///
+    /// <para><b>What rig 9 plays on her</b> (character PR 2a, ADR 0044 §8): the clip's own face and
+    /// the rig's blink (<see cref="CharacterFigureLife"/>, keyed by no identity: she is the one player);
+    /// the wheel and the oars in the rig's <c>helm</c> and <c>oars</c> clips, and a carried load in its
+    /// carry clip, the load's pose read from data (<see cref="CharacterCarryPoseDef"/>) through the
+    /// state map; and rig 9's ink in the facet pass (<see cref="GameConfig.MeshFigureKeyline"/>). She
+    /// LOOKS at nothing, by design: the cast looks at her.</para>
+    ///
     /// <para><b>⚠ What she will NOT look like yet.</b> These debts are stated, not paid:</para>
     /// <list type="bullet">
-    ///   <item><b>The look.</b> The facet shader is the boat's, and against the inked art the figure
-    ///   measures 43–57% off. That is the shader look pass, not this one.</item>
-    ///   <item><b>The face.</b> The sprite's face is a raster stamp the mesh does not carry: she has
-    ///   no eyes, brows or mouth. Nothing here invents them.</item>
-    ///   <item><b>The counter-lean and the head look.</b> Rig 7 never exported the additive bone
-    ///   table its brief promised (§2.5) — its only rock surface bakes the lean into frames and the
-    ///   extractor passes no options, so every baked clip is the zero-rock pose. Deriving those
-    ///   rotations in C# would be authoring look in code. The whole-body rock stays the live hull
-    ///   transform it already is; the additive layer is owed upstream to <c>art-director</c>.</item>
+    ///   <item><b>The counter-lean.</b> Rig 7 never exported the additive bone table its brief
+    ///   promised (§2.5) — its only rock surface bakes the lean into frames and the extractor passes
+    ///   no options, so every baked clip is the zero-rock pose. Deriving those rotations in C# would
+    ///   be authoring look in code. The whole-body rock stays the live hull transform it already is;
+    ///   the additive layer is owed upstream to <c>art-director</c>.</item>
     ///   <item><b>Ashore, her shadow and her outline are the sprite's</b> (the owner's ruling of
     ///   2026-09-19, decision 6): a mesh shadow ashore is not this lane.</item>
     /// </list>
@@ -113,6 +116,12 @@ namespace HiddenHarbours.Player
         private string _stateKey;
         private double _stateStartSeconds;
 
+        // Character PR 2a: her blink (one schedule, aboard and ashore alike) and the carry-pose table,
+        // loaded once on first ask (a missing table carries nothing).
+        private readonly CharacterFigureLife _life = new CharacterFigureLife();
+        private CharacterCarryPoseDef _carryPoses;
+        private bool _carryPosesLoaded;
+
         // Ashore. A figure of her own under her body, the body it is hiding (and only while it is),
         // and the latch that decides when the id pool may be asked again.
         private IsoCharacterFigureRenderer _ashoreFigure;
@@ -153,11 +162,10 @@ namespace HiddenHarbours.Player
         /// <summary>True when the clip the state map ASKED the def for was not in it and a shorter one
         /// stood in — i.e. the BAKE came up short.
         ///
-        /// <para>⚠ This does NOT flag the helm/oars divergence. Helm and Oars map to the GAIT key
-        /// before the def is ever consulted (there is no <c>helm</c> clip to miss), so the def carried
-        /// exactly what was asked for and nothing fell back — while the sprite path, whose FisherIso def
-        /// DOES carry helm and oars sheets, draws a different pose entirely. That divergence is a
-        /// stated debt of this PR, not something this flag reports.</para></summary>
+        /// <para>Since character PR 2a, Helm and Oars ask for the rig's own clips (<c>idle_helm</c>,
+        /// <c>walk_helm</c>, <c>idle_oars</c>, <c>walk_oars</c>) and a carried load for its carry clip, so a
+        /// def that lacks one reads true here. A run at the wheel or the oars reads false: no stance bakes
+        /// a run, on the rig or the sprite, so the map asks for the free <c>run</c> by design.</para></summary>
         public bool FellBackToGait { get; private set; }
 
         /// <summary>Where the aboard figure was placed, in the hull's posed-mesh local metres.</summary>
@@ -278,7 +286,7 @@ namespace HiddenHarbours.Player
             // its own baked `balance` clip however well the bake covered it. Reading the request keeps
             // both paths on ONE authority, one step earlier — DeckRiderVisual wrote it itself, this
             // frame, in StateContext.
-            if (!CharacterSkinStateMap.Resolve(skin, character.Stance, character.Gait,
+            if (!CharacterSkinStateMap.Resolve(skin, character.Stance, character.Gait, CarryNow(),
                                                out string stateKey, out bool fellBack))
             {
                 Stop($"no clip for stance {character.Stance} / gait {character.Gait}");
@@ -315,7 +323,8 @@ namespace HiddenHarbours.Player
                         ? 0
                         : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
 
-            if (!_figure.SetPose(stateKey, frame)) { Stop($"could not pose '{stateKey}' frame {frame}"); return; }
+            IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, now, _figure, looks: false);
+            if (!_figure.SetPose(stateKey, frame, life)) { Stop($"could not pose '{stateKey}' frame {frame}"); return; }
 
             Place(stand, skin);
             _figure.Visible = true;
@@ -375,7 +384,7 @@ namespace HiddenHarbours.Player
             if (character == null) { HoldSprite("no IsoCharacterSprite to read stance and gait from"); return; }
 
             // Stance as REQUESTED, exactly as aboard (see there).
-            if (!CharacterSkinStateMap.Resolve(skin, character.Stance, character.Gait,
+            if (!CharacterSkinStateMap.Resolve(skin, character.Stance, character.Gait, CarryNow(),
                                                out string stateKey, out bool fellBack))
             {
                 HoldSprite($"no clip for stance {character.Stance} / gait {character.Gait}");
@@ -432,7 +441,8 @@ namespace HiddenHarbours.Player
             int frame = SabotageHoldFrameZero
                         ? 0
                         : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
-            if (!_ashoreFigure.SetPose(stateKey, frame)) { HoldSprite($"could not pose '{stateKey}' frame {frame}"); return; }
+            IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, now, _ashoreFigure, looks: false);
+            if (!_ashoreFigure.SetPose(stateKey, frame, life)) { HoldSprite($"could not pose '{stateKey}' frame {frame}"); return; }
 
             // Her facing: the sprite's own compass heading, through the def's MEASURED azimuth sign. The
             // ashore frame is a hull frame at heading 0, where a deck bearing and a compass heading are
@@ -593,6 +603,24 @@ namespace HiddenHarbours.Player
             IsoCharacterSprite character = stand.FigureCharacter;
             CharacterVisualDef visual = character != null ? character.Visual : null;
             return visual != null ? visual.Skin : null;
+        }
+
+        /// <summary>
+        /// The carry stance for what her hands hold (character PR 2a): the held thing says what it is,
+        /// and the table (<see cref="CharacterCarryPoseDef"/>, one asset under Resources) says which of
+        /// the rig's carry poses that asks for — never a literal here. Null for empty hands, for a
+        /// thing with no row, or with no table; the state map then plays the free body.
+        /// Allocation-free after the one load.
+        /// </summary>
+        private string CarryNow()
+        {
+            if (!_carryPosesLoaded)
+            {
+                _carryPoses = Resources.Load<CharacterCarryPoseDef>(CharacterCarryPoseDef.ResourcesPath);
+                _carryPosesLoaded = true;
+            }
+            ICarrier hands = GameServices.Hands;
+            return _carryPoses != null && hands != null ? _carryPoses.CarryFor(hands) : null;
         }
 
         /// <summary>

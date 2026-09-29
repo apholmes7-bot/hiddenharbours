@@ -43,11 +43,11 @@ namespace HiddenHarbours.Core
         /// back.</para>
         ///
         /// <para><b>In shipped play this fence never fires, and that is the point.</b>
-        /// <see cref="CharacterSkinStateMap"/> can only ever name four clips — <c>idle</c>,
-        /// <c>walk</c>, <c>run</c>, <c>balance</c> — and all four sit in the 1.19 m population, so no
-        /// mount clip is reachable from this presenter at all. The fence is defence in depth for the
-        /// PR that adds a mount transition, which reaches the poisoned frames on its first frame of
-        /// work.</para>
+        /// <see cref="CharacterSkinStateMap"/> names the free-body clips (<c>idle</c>, <c>walk</c>,
+        /// <c>run</c>, <c>balance</c>), the helm and oars clips and the carry clips — none of them a
+        /// mount clip, so no mount clip is reachable from a presenter at all. The fence is defence in
+        /// depth for the PR that adds a mount transition, which reaches the poisoned frames on its
+        /// first frame of work.</para>
         /// </summary>
         public const float FenceMetres = 8f;
 
@@ -201,6 +201,18 @@ namespace HiddenHarbours.Core
                                                CharacterSkinDef.Bone[] bones, Matrix4x4[] bindposes,
                                                Matrix4x4[] world, Matrix4x4[] skin)
         {
+            ComposeWorld(clip, frame, bones, world);
+            FinishSkin(world, bindposes, skin);
+        }
+
+        /// <summary>
+        /// The first half of <see cref="ComposeSkinMatrices"/>: one frame's bone locals composed into
+        /// figure-space matrices, <c>world[b] = parent &lt; 0 ? local : world[parent] * local</c>. What
+        /// the look measures from (<see cref="LookAtFrame"/>) before it turns anything.
+        /// </summary>
+        public static void ComposeWorld(in CharacterSkinDef.SkinClip clip, int frame,
+                                        CharacterSkinDef.Bone[] bones, Matrix4x4[] world)
+        {
             int n = bones.Length;
             for (int b = 0; b < n; b++)
             {
@@ -211,7 +223,132 @@ namespace HiddenHarbours.Core
                 // defensive tidiness: a def that broke that order would otherwise read a matrix this
                 // pass has not written yet, and the figure would fold up in a way no test names.
                 world[b] = p < 0 || p >= b ? local : world[p] * local;
-                skin[b] = world[b] * bindposes[b];
+            }
+        }
+
+        /// <summary>The second half of <see cref="ComposeSkinMatrices"/>:
+        /// <c>skin[b] = world[b] * bindpose[b]</c>.</summary>
+        public static void FinishSkin(Matrix4x4[] world, Matrix4x4[] bindposes, Matrix4x4[] skin)
+        {
+            for (int b = 0; b < world.Length; b++) skin[b] = world[b] * bindposes[b];
+        }
+
+        /// <summary>
+        /// <b>The look, applied (rig 9 README §5).</b> Re-composes <paramref name="world"/> from
+        /// <paramref name="neck"/> on with the neck's and the head's clip locals post-multiplied by
+        /// their share of the turn — <c>neck.local = clip.neck.local × E(0.4·turn)</c>,
+        /// <c>head.local = clip.head.local × E(0.6·turn)</c> (<see cref="CharacterFigureLook.TurnOf"/>)
+        /// — after the clip and before any rock. A parent precedes its child, so every bone the turn
+        /// moves comes after the neck; bones after it that the neck does not carry re-compose to the
+        /// values they had.
+        /// </summary>
+        public static void ApplyTurn(in CharacterSkinDef.SkinClip clip, int frame,
+                                     CharacterSkinDef.Bone[] bones, Matrix4x4[] world,
+                                     int neck, Quaternion neckTurn, int head, Quaternion headTurn)
+        {
+            int n = bones.Length;
+            if (neck < 0 || neck >= n) return;
+            for (int b = neck; b < n; b++)
+            {
+                CharacterSkinDef.BoneKey k = clip.KeyOf(frame, b, n);
+                Quaternion r = b == neck ? k.Rotation * neckTurn : b == head ? k.Rotation * headTurn : k.Rotation;
+                var local = Matrix4x4.TRS(k.Position, r, Vector3.one);
+                int p = bones[b].Parent;
+                world[b] = p < 0 || p >= b ? local : world[p] * local;
+            }
+        }
+
+        /// <summary>
+        /// The rig's <c>lookAt</c> on a composed frame (<see cref="ComposeWorld"/>, not yet turned): the
+        /// chest and head world matrices of <paramref name="world"/>, the def's head mid point, and a
+        /// target in the figure's own frame. <paramref name="share"/> is the head's share (the def's
+        /// <see cref="CharacterSkinDef.LookHeadShare"/> in play).
+        /// </summary>
+        public static CharacterFigureLook.Result LookAtFrame(CharacterSkinDef def, Matrix4x4[] world,
+                                                             Vector3 target, double share)
+        {
+            Matrix4x4 chest = world[def.LookChestBone], head = world[def.LookHeadBone];
+            return CharacterFigureLook.LookAt(
+                CharacterFigureLook.Rot.Of(chest), CharacterFigureLook.Rot.Of(head),
+                new CharacterFigureLook.Vec(head.m03, head.m13, head.m23),
+                CharacterFigureLook.Vec.Of(def.HeadMid), CharacterFigureLook.Vec.Of(target),
+                share, CharacterFigureLook.Limits.Of(def));
+        }
+
+        /// <summary>The head's mid point in the figure's frame on a composed frame — the point the head
+        /// snap rounds: <c>fkp(W[head], headMid)</c>.</summary>
+        public static Vector3 HeadPoint(CharacterSkinDef def, Matrix4x4[] world) =>
+            world[def.LookHeadBone].MultiplyPoint3x4(def.HeadMid);
+
+        // ---------------------------------------------------------------- faces
+
+        /// <summary>
+        /// Recover the bind mesh's FACES from its triangles. The bake emits one vertex per face corner,
+        /// faces in order, each fanned from its first corner — <c>(s, s+t, s+t+1)</c> — so a face is a
+        /// run of consecutive vertices. False, with nothing written, when the triangles are not exactly
+        /// that shape; the caller then keeps the skinned per-vertex normals.
+        /// </summary>
+        public static bool TryFaceRuns(int[] triangles, int vertexCount, out int[] starts, out int[] counts)
+        {
+            starts = counts = null;
+            if (triangles == null || triangles.Length == 0 || triangles.Length % 3 != 0 || vertexCount <= 0)
+                return false;
+
+            int faces = 0, prev = -1;
+            for (int t = 0; t < triangles.Length; t += 3)
+                if (triangles[t] != prev) { faces++; prev = triangles[t]; }
+
+            var s = new int[faces];
+            var c = new int[faces];
+            int f = -1;
+            prev = -1;
+            int expectNext = 0;
+            for (int t = 0; t < triangles.Length; t += 3)
+            {
+                int a = triangles[t], b = triangles[t + 1], d = triangles[t + 2];
+                if (a != prev)
+                {
+                    // A new face starts exactly where the previous one ended.
+                    if (a != expectNext) return false;
+                    f++;
+                    s[f] = a;
+                    c[f] = 2;
+                    prev = a;
+                }
+                if (b != a + c[f] - 1 || d != b + 1) return false;
+                c[f]++;
+                expectNext = a + c[f];
+            }
+            if (expectNext != vertexCount) return false;
+            starts = s;
+            counts = c;
+            return true;
+        }
+
+        /// <summary>
+        /// <b>The rig's own normal:</b> per face, the Newell normal of its posed corners, normalised,
+        /// written to every corner (paint, l.945: <c>nx += (a.y − c.y)(a.z + c.z)</c> and its turns).
+        /// For a face on one bone it equals the skinned bind normal to float precision; for a face whose
+        /// corners ride two bones (the hems) it is the normal the rig actually shades, which the skinned
+        /// bind normal is not. Rotation-equivariant, so object space is as good as the rig's view frame.
+        /// </summary>
+        public static void NewellNormals(int[] starts, int[] counts, Vector3[] verts, Vector3[] norms)
+        {
+            for (int f = 0; f < starts.Length; f++)
+            {
+                int s = starts[f], n = counts[f];
+                double nx = 0, ny = 0, nz = 0;
+                for (int i = 0; i < n; i++)
+                {
+                    Vector3 a = verts[s + i], c = verts[s + (i + 1) % n];
+                    nx += ((double)a.y - c.y) * ((double)a.z + c.z);
+                    ny += ((double)a.z - c.z) * ((double)a.x + c.x);
+                    nz += ((double)a.x - c.x) * ((double)a.y + c.y);
+                }
+                double m = Math.Sqrt(nx * nx + ny * ny + nz * nz);
+                if (!(m > 0)) m = 1;
+                var nn = new Vector3((float)(nx / m), (float)(ny / m), (float)(nz / m));
+                for (int i = 0; i < n; i++) norms[s + i] = nn;
             }
         }
 

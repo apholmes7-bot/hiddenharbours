@@ -304,6 +304,12 @@ MonoBehaviour:
   HullKeylineFlood: 0
   BoatLegacyCabinGlow: 0
   PixelGridSnap: 1
+  CharacterBlink: 1
+  CharacterHeadLook: 1
+  CharacterEyeLook: 1
+  CharacterLookRadiusMetres: 5
+  CharacterLookTargetHeightMetres: 1.31
+  MeshFigureKeyline: 1
   MeshCharacter: 1
   MeshCharacterAshore: 1
   MeshCast: 1

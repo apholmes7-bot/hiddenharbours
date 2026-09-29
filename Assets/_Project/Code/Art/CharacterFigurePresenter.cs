@@ -40,6 +40,13 @@ namespace HiddenHarbours.Art
     /// the sorting the sprite had when the figure was attached is remembered, and while it differs the
     /// sprite keeps the draw. That is a READ of somebody else's decision, not a second opinion about it.</para>
     ///
+    /// <para><b>Between the clip's keys: the rig's blink and look</b> (character PR 2a). A
+    /// <see cref="CharacterFigureLife"/> per figure, keyed by the stand's one stable identity
+    /// (<see cref="ICharacterFigureIdentity"/>; a moored boat answers with her owner's id): the skipper
+    /// blinks on her own seeded schedule and looks at whoever the Core seam names
+    /// (<see cref="CharacterLookTargets"/>; the player, by default) within the configured radius.
+    /// Presentation only, and each part behind its own GameConfig switch.</para>
+    ///
     /// <para><b>Budget (rule 7).</b> No allocation per frame: the refusal is an enum and its words are
     /// only built when somebody reads them; the hull lookup and the def's usability are cached per
     /// reference; the posed mesh is built once per (hull, skin) and hidden rather than destroyed when a
@@ -94,6 +101,7 @@ namespace HiddenHarbours.Art
         private CharacterSkinDef _configured;
         private string _stateKey;
         private double _stateStartSeconds;
+        private readonly CharacterFigureLife _life = new CharacterFigureLife();
 
         private Transform _hullVisual;                 // the stand's hull transform last looked up
         private IsoFacetHullRenderer _hullCandidate;   // ... and what was on it
@@ -148,6 +156,9 @@ namespace HiddenHarbours.Art
 
         /// <summary>The yaw applied about the rig's up axis, in degrees.</summary>
         public float FigureYawDegrees { get; private set; }
+
+        /// <summary>The figure's blink and look (character PR 2a) — read by a test.</summary>
+        public CharacterFigureLife FigureLife => _life;
 
         /// <summary>Which gate shut this frame; <see cref="Refusal.None"/> while the mesh draws.</summary>
         public Refusal WhyNot => _refusal;
@@ -323,7 +334,11 @@ namespace HiddenHarbours.Art
             int seed = GameServices.Environment != null ? GameServices.Environment.WorldSeed : 0;
             int frame = CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
 
-            if (!_figure.SetPose(stateKey, frame))
+            // Stood BEFORE it is posed: the look reads where the figure stands this frame.
+            Place(stand, skin);
+            string figureKey = stand is ICharacterFigureIdentity identity ? identity.FigureKey : string.Empty;
+            IsoCharacterFigureRenderer.Life life = _life.Step(skin, figureKey, now, _figure, looks: true);
+            if (!_figure.SetPose(stateKey, frame, life))
             {
                 _refusalKey = stateKey;
                 _refusalFrame = frame;
@@ -331,7 +346,6 @@ namespace HiddenHarbours.Art
                 return;
             }
 
-            Place(stand, skin);
             _figure.Visible = true;
             sprite.forceRenderingOff = true;
             _hidSprite = true;

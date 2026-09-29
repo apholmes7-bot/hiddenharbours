@@ -25626,6 +25626,13 @@ MonoBehaviour:
   - walk
   - run
   - balance
+  - idle_helm
+  - walk_helm
+  - idle_oars
+  - walk_oars
+  - idle_buckets
+  - walk_buckets
+  - run_buckets
 --- !u!43 &8262397903095255338
 Mesh:
   m_ObjectHideFlags: 0

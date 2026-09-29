@@ -617,38 +617,98 @@ namespace HiddenHarbours.Core
         public static readonly Color DefaultFoliageSilhouetteTint = new Color(0.94f, 0.90f, 0.82f, 1f);
 
         /// <summary>
+        /// Ship default for <see cref="CharacterBlink"/> — <b>ON</b> (character PR 2a). A rig 9
+        /// figure blinks on its own clock, as the rig's <c>BLINK</c> says: half, shut, half, then
+        /// its clip's own eyes again, every 2.4–6 s, and 15% of blinks followed by a second. Each
+        /// figure's clock is seeded from its own stable identity, so a crowd never blinks together
+        /// and the same figure blinks the same on every run. Nothing the simulation reads comes
+        /// from that seed. OFF: the eyes are the clip's, frame by frame.
+        /// </summary>
+        public const bool DefaultCharacterBlink = true;
+
+        /// <summary>Ship default for <see cref="CharacterHeadLook"/> — <b>ON</b> (character PR 2a):
+        /// a figure turns its neck and head toward what it looks at, as the rig's <c>LOOK</c>
+        /// says (yaw −60..60°, pitch −15..20°, split 0.4 neck / 0.6 head).</summary>
+        public const bool DefaultCharacterHeadLook = true;
+
+        /// <summary>Ship default for <see cref="CharacterEyeLook"/> — <b>ON</b> (character PR 2a):
+        /// past 8° of turn the head leaves undone, the open eyes look left or right
+        /// (<c>eyes.left</c> / <c>eyes.right</c>).</summary>
+        public const bool DefaultCharacterEyeLook = true;
+
+        /// <summary>Ship default for <see cref="CharacterLookRadiusMetres"/>: 5 m on the figure's
+        /// own ground, in the rig's metres.</summary>
+        public const float DefaultCharacterLookRadiusMetres = 5f;
+
+        /// <summary>Ship default for <see cref="CharacterLookTargetHeightMetres"/>: the player's
+        /// head point at rest — rig 9's fisher, <c>head × headMid</c> on idle's first frame, is
+        /// 1.3135 m above the ground in the rig's metres.</summary>
+        public const float DefaultCharacterLookTargetHeightMetres = 1.31f;
+
+        /// <summary>
+        /// Ship default for <see cref="MeshFigureKeyline"/> — <b>ON</b> (character PR 2a): a rig 9
+        /// figure is outlined as the rig outlines it. The ring of pixels just outside her takes
+        /// the rig's keyline ink, <c>#101a19</c>, with 22% of her nearest edge colour mixed in,
+        /// and inside her a pixel across a depth break of more than 0.12 m drops one tone. OFF:
+        /// the figure draws with the hull's rules, as before this PR.
+        /// </summary>
+        public const bool DefaultMeshFigureKeyline = true;
+
+        [Header("Figure life (rig 9: blink, look, the figure's own ink)")]
+        [Tooltip("Let rig 9 figures blink? Each figure keeps its own clock, seeded from who it is, " +
+                 "so a crowd never blinks together. OFF: the eyes are exactly the clip's. Read live.")]
+        public bool CharacterBlink = DefaultCharacterBlink;
+
+        [Tooltip("Let a figure turn its neck and head toward what it looks at (a moored skipper or " +
+                 "a villager toward the player, within the radius below)? The player herself looks " +
+                 "at nothing. OFF: the head is exactly the clip's. Read live.")]
+        public bool CharacterHeadLook = DefaultCharacterHeadLook;
+
+        [Tooltip("Let the eyes finish a look the head leaves undone (eyes.left / eyes.right past 8 " +
+                 "degrees)? OFF: the eyes stay the clip's. Read live.")]
+        public bool CharacterEyeLook = DefaultCharacterEyeLook;
+
+        [Tooltip("How near, in the figure's own metres on its own ground, the player has to be before " +
+                 "a figure looks at her. Read live.")]
+        [Min(0f)]
+        public float CharacterLookRadiusMetres = DefaultCharacterLookRadiusMetres;
+
+        [Tooltip("How high above the player's feet a figure aims its look, in the figure's metres. " +
+                 "1.31 is the player's head at rest.")]
+        [Min(0f)]
+        public float CharacterLookTargetHeightMetres = DefaultCharacterLookTargetHeightMetres;
+
+        [Tooltip("Outline rig 9 figures as the rig does: the ring just outside the figure takes the " +
+                 "keyline ink with a little of the figure's nearest colour mixed in, and a pixel " +
+                 "across a depth break inside the figure drops one tone. The ring goes on EMPTY " +
+                 "pixels only (sea, sky, ground the facet pass does not draw), never over a deck or " +
+                 "hull pixel, so no boat pixel moves. OFF draws the figure with the hull's rules, " +
+                 "exactly as before. Read live.")]
+        public bool MeshFigureKeyline = DefaultMeshFigureKeyline;
+
+        /// <summary>
         /// Ship default — <b>ON</b>, by the owner's 2026-09-12 ruling ("ship it on"), taken with
         /// the look debt below written down and accepted: he wants her in play before the shader
         /// pass lands. ON draws her as ONE skinned mesh while she is ABOARD a mesh hull; ashore she
         /// needs <see cref="MeshCharacterAshore"/> as well. OFF is still exactly the sprite, down
         /// to the byte — this stayed a switch, not a fork.
         ///
-        /// <para>The debt the ruling accepts: the mesh is measured 43–57% off the inked art
-        /// (per-material gain alone is 53.61% of that gap) and she carries no face at all,
-        /// because the face is a raster stamp the mesh has no geometry for.</para>
-        ///
-        /// <para>⚠ And the POSE debt, which is the one a playtest finds first: rig 7 baked
-        /// <c>idle</c>, <c>walk</c>, <c>run</c> and <c>balance</c> — no helm clip and no oars
-        /// clip. Walking the deck she is right (<c>balance</c>). At the helm or at the oars
-        /// <c>CharacterSkinStateMap.StateKeyFor</c> asks for the GAIT key before the stance is
-        /// ever consulted, so she draws a standing <c>idle</c> — while the sprite she replaced
-        /// draws a seated helm pose and a rowing pose from FisherIso's own sheets. That is a
-        /// step BACK on those two stances, and <c>FellBackToGait</c> does not flag it, because
-        /// nothing fell back. The fix is an ANIMS row, not a pose invented in the presenter.</para>
+        /// <para>The debt the ruling accepted was rig 7's: a mesh measured 43–57% off the inked art,
+        /// with no face and no helm or oars clip. Rig 9 bakes the cast since the character intake's
+        /// Phase B (2026-09-26), and character PR 2a plays it in full: the face with its blink and
+        /// look, the helm and oars clips through <c>CharacterSkinStateMap</c>, the carry clips, and
+        /// the rig's own ink (<see cref="MeshFigureKeyline"/>).</para>
         /// </summary>
         public const bool DefaultMeshCharacter = true;
 
         [Header("Mesh characters (ADR 0044 d — the skinned player, behind a switch)")]
         [Tooltip("Draw the player as ONE SKINNED MESH through the iso facet pass while she is ABOARD, " +
                  "instead of as a sprite? ON is the shipped look and the default (owner ruling " +
-                 "2026-09-12), and it ships with known debt: the mesh is about half a fidelity " +
-                 "step off the inked art until the shader look pass lands, and she has no eyes, " +
-                 "brows or mouth, because the face is a raster stamp that lives on the sprite and " +
-                 "not in the geometry. Rig 7 baked no helm and no oars clip either, so at the " +
-                 "wheel and at the oars she stands in a plain idle where the sprite sat and " +
-                 "rowed. ASHORE this switch alone does nothing: she draws as a mesh on land only " +
-                 "while Mesh Character Ashore is ON as well, which the shipped config turns ON. " +
-                 "Turn this OFF and the sprite is back exactly, down to the byte, aboard and ashore.")]
+                 "2026-09-12). She is rig 9's figure: her face blinks, she plays the rig's helm, " +
+                 "oars and carry clips, and she is inked as the rig inks her. ASHORE this switch " +
+                 "alone does nothing: she draws as a mesh on land only while Mesh Character Ashore " +
+                 "is ON as well, which the shipped config turns ON. Turn this OFF and the sprite is " +
+                 "back exactly, down to the byte, aboard and ashore.")]
         public bool MeshCharacter = DefaultMeshCharacter;
 
         /// <summary>
@@ -707,8 +767,8 @@ namespace HiddenHarbours.Core
                  "pass where they can be drawn that way? ON is the shipped look (owner ruling " +
                  "2026-09-17). Today that is a moored boat's skipper standing on a mesh hull; " +
                  "villagers ashore stay sprites, because the facet pass is only recorded while a " +
-                 "mesh hull is on screen. The same debts as the player's switch apply: about half " +
-                 "a fidelity step off the inked art and no eyes, brows or mouth. Read live — flip " +
+                 "mesh hull is on screen. A rig 9 skipper plays the rig's face, blink and look, and " +
+                 "is inked as the rig inks (the figure life switches above). Read live — flip " +
                  "it with the game running. Turn it OFF and every cast sprite is back exactly.")]
         public bool MeshCast = DefaultMeshCast;
 

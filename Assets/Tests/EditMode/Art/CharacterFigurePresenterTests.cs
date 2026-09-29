@@ -58,6 +58,21 @@ namespace HiddenHarbours.Tests.Art.EditMode
             public float FigureDeckBearingDegrees => Bearing;
         }
 
+        private sealed class NamedStand : ICharacterFigureStand, ICharacterFigureIdentity
+        {
+            public IsoCharacterSprite Character;
+            public Transform Hull;
+            public Vector3 Point;
+            public float Bearing;
+            public string Key;
+
+            public IsoCharacterSprite FigureCharacter => Character;
+            public Transform FigureHull => Hull;
+            public Vector3 FigureStandRigMetres => Point;
+            public float FigureDeckBearingDegrees => Bearing;
+            public string FigureKey => Key;
+        }
+
         private sealed class FakeService : ICharacterFigurePresentationService
         {
             public ICharacterFigure Attach(GameObject host, ICharacterFigureStand stand) => null;
@@ -328,6 +343,71 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             AssertSprite(presenter, CharacterFigurePresenter.Refusal.NotAFacetHull);
             Assert.IsTrue(presenter.Figure == null, "the figure went with its hull and must not be kept");
+        }
+
+        // =================================================================== the figure's life (character PR 2a)
+
+        [Test]
+        public void TheStandsOwnIdentityKeysTheFiguresLife_AndNoIdentityKeysNothing()
+        {
+            CharacterFigurePresenter presenter = Attach();
+            presenter.PoseFigure(_stand, aboard: true);
+            AssertDraws(presenter);
+            Assert.AreEqual(string.Empty, presenter.FigureLife.Key, "a stand with no identity keyed a life");
+
+            var named = new NamedStand
+            {
+                Character = _character, Hull = _hullGo.transform, Point = StandPoint, Bearing = StandBearing,
+                Key = "npc.test_skipper",
+            };
+            presenter.PoseFigure(named, aboard: true);
+            AssertDraws(presenter);
+            Assert.AreEqual("npc.test_skipper", presenter.FigureLife.Key,
+                            "the figure's life must be keyed by the stand's one identity, never a key of its own");
+            Assert.AreEqual(CharacterFigureBlink.SeedFor(_skin.Id, "npc.test_skipper"), presenter.FigureLife.Blink.Seed,
+                            "the blink must be seeded by the def and that identity");
+        }
+
+        [Test]
+        public void ASkipperWithALook_LooksAtThePublishedPlayerNearby_AndNotAtOneFarOff()
+        {
+            _skin.LookChestBone = 1;
+            _skin.LookNeckBone = 2;
+            _skin.LookHeadBone = 2;
+            _skin.LookSplitNeck = 0.4f;
+            _skin.LookSplitHead = 0.6f;
+            _skin.LookYawLimits = new Vector2(-60f, 60f);
+            _skin.LookPitchLimits = new Vector2(-30f, 30f);
+            _skin.LookHeadShare = 0.7f;
+            _skin.LookEyesBeyondDeg = 8f;
+            Assert.IsTrue(_skin.HasLook && _skin.IsUsable(), "harness: the skin must carry a look and stay usable");
+
+            // Where the figure will stand: the stand's rig point under the hull's posed mesh, yawed by the
+            // bearing (the first test above holds the presenter to exactly this).
+            Matrix4x4 figureWorld = _hull.PosedMesh.localToWorldMatrix *
+                                    Matrix4x4.TRS(StandPoint, Quaternion.AngleAxis(-StandBearing, Vector3.forward), Vector3.one);
+            GameObject player = Track(new GameObject("TestPlayer"));
+            player.transform.position = figureWorld.MultiplyPoint3x4(new Vector3(0.8f, 1.5f, 0f));
+            GameServices.PlayerTransform = player.transform;
+            try
+            {
+                CharacterFigurePresenter presenter = Attach();
+                presenter.PoseFigure(_stand, aboard: true);
+                AssertDraws(presenter);
+                Assert.Greater(presenter.Figure.DrawnLookYaw, 0.0,
+                               "the skipper did not turn toward a player a step ahead and to her right");
+
+                player.transform.position = figureWorld.MultiplyPoint3x4(new Vector3(20f, 1.5f, 0f));
+                presenter.Configure(_stand);   // a fresh figure, so the look is sampled again
+                presenter.PoseFigure(_stand, aboard: true);
+                AssertDraws(presenter);
+                Assert.AreEqual(0.0, presenter.Figure.DrawnLookYaw, "the skipper turned toward a player past the radius");
+                Assert.AreEqual(CharacterFigureLook.GazeOpen, presenter.Figure.DrawnGaze);
+            }
+            finally
+            {
+                GameServices.PlayerTransform = null;
+            }
         }
 
         // =================================================================== the seam's service
