@@ -6,10 +6,12 @@ From the Art desk, for the owner. First read [STATE.md](https://github.com/aphol
 
 The owner, on 09-29: "we created key scenes for St. Peters, now i want key scenes for NMC".
 
-The owner also asked whether Nine Mile Creek's ground comes first: "does NMC need this to happen first before we create more key scenes? also should the current key scenes be integrated into a NMC terrain pass?" The Art desk's answer was yes to both: the ground first, with the scenes you have drawn kept as fixed points. The owner said: "yes lets go on nmc brief". So this brief has two parts, with a stop between them:
-- **Part 1: the ground.** Design Nine Mile Creek's whole region the way terrain pass 9 redesigned St Peters: the coast, the south shore, the rivers, the roads and the lots. Send the heights as numbers and as a texture. Add your list of the key scenes worth drawing. **Then stop.** The owner looks at it and rules.
+The owner also asked whether Nine Mile Creek's ground comes first: "does NMC need this to happen first before we create more key scenes? also should the current key scenes be integrated into a NMC terrain pass?" The Art desk's answer was yes to both: the ground first, with the scenes you have drawn kept as fixed points. The owner said: "yes lets go on nmc brief". So this brief has three parts:
+- **Part 1: the ground.** Design Nine Mile Creek's whole region the way terrain pass 9 redesigned St Peters: the coast, the south shore, the rivers, the roads and the lots. Send the heights as numbers and as a texture. Add your list of the key scenes worth drawing. The owner looks at it and rules.
 - **Part 2: the key scenes,** drawn on the ground the owner rules, the St Peters way.
-- **Part 3: road kit v4,** only if the owner's paste says "Part 3 is on." (section 6).
+- **Part 3: road kit v4** (section 6). The owner put it in on 09-29: "Yes part 3 add on".
+
+**The order:** part 1, then part 3, which does not wait for the owner's look. **Then stop:** part 2 starts from the owner's rulings on part 1.
 
 **Why the ground comes first.** St Peters taught us this on 09-29 (STATE.md section 4): scenes drawn on today's ground look old once the ground changes. Most of Nine Mile Creek's best scenes will sit where its ground changes most.
 
@@ -49,6 +51,17 @@ The owner attaches two zips:
 
 ## 2. What the ground must hold: the owner's rulings
 
+**The layout (09-29, the owner on this brief):** "the town should be a bit north of the gas bar intersection, claude design has new multiunit buildings, manors, shopping plazas. The town should have a medium sized hardware store, a restaurant/bar, a grocery store, 2-3 apartment buildings, the NMC st peters crossing should have a new campground to its north, this fills most of the space between NMC and its crossing, the crossing connects to the SE corner of NMC, the crossing should connect to a beach on NMC south shore, this beach runs the width of the scene and connects to the rice point region." And: "Wharf road will be paved".
+
+So:
+- **The town** stands a bit north of the gas bar's junction at (−178, 92). It has a medium-sized hardware store, a restaurant and bar, a grocery store, and two or three apartment buildings. Build it from your new multi-unit buildings, manors and shopping plazas.
+- **A new campground** lies north of the crossing. It fills most of the land from the crossing north to the town and the wharf.
+- **The crossing** lands at Nine Mile Creek's south-east corner, on a beach on the south shore.
+- **The south shore's beach** runs the width of the region, and on into Rice Point's region.
+- **Wharf Road is paved,** as your gas bar draws it.
+
+**The Art desk's reading of the corner.** The landing stays at (60, −150), and the bar keeps its line (section 3). The landing becomes the corner where the east coast, running north, meets the south shore, running west. If the ground argues for another reading, draw it as a second picture, with everything it moves.
+
 **The overhaul (09-26):** "NMC gets the same overhaul terrain pass St. Peter’s got. With several rivers for fishing river fish."
 
 **The south shore (09-26):** "we need to add more south shore to it", and "Yes with houses on south shore".
@@ -87,7 +100,7 @@ Draw these as they stand, and design the ground round them.
 
 **Open for part 1:**
 - your brook and your lane (`road.nmc.stream_lane`);
-- the town's lots and lanes, which this ground may move (the town river asks it to);
+- the town's plan north of the junction: where each building goes, and which of today's lots stay (the town river asks the town to move for it too);
 - the harbourmaster's and the General Store's old town lots, which both businesses have left, for the wharf office and the gas bar.
 
 ## 4. Part 1: what to send
@@ -107,7 +120,7 @@ There, the terrain lane wrote the plan from your kit. Here you draw the ground y
    - **Each river or stream:** its line, width, bed height along it, bank slopes, its mouth, how far the tide runs up it, and its water level along it where it runs above the tide.
    - **Each pond or lagoon** (the barachois, the marsh pool and any new one): its outline, its bed, and its water level if it holds water above the tide.
    - **Each road:** its line, width and surface (paved, gravel, dirt or lane), and where it leaves the region. The boardwalks, bridges and paths too.
-   - **The lots:** the town's, moved or new; the south shore's houses; the waterfront lots; the fields, hedgerows, wood lots and marsh.
+   - **The lots:** the town's, each with its building; the campground, with its pitches, roads and buildings; the south shore's houses; the waterfront lots; the fields, hedgerows, wood lots and marsh.
    - **For everything the game has today,** its old and new place, under the builder's name for it (such as `HarbourmasterPos`).
    - Ids in your SCHEMA.md's style, such as `stream.nmc_junction_brook`. List any new prefix there.
 2. **`ground/NineMileCreekSeabed_HeightTex_plan.png`: the heights as a texture.**
@@ -119,7 +132,7 @@ There, the terrain lane wrote the plan from your kit. Here you draw the ground y
    - a north-up plan of the whole region, with every section, river, road, lot and fixed point labelled, like pass 9's `plan-island.png` in the second zip;
    - today against the plan, as `pictures/change.png` in the second zip shows St Peters;
    - flood maps at spring low, mean and spring high, with the dry ground in each caption;
-   - a few views as the game frames them, in TerrainLight6: the south shore and its houses; the town river and its boardwalks; the creek north of the wharf; the weather face looking across the bar to St Peters; and the edges where the roads leave.
+   - a few views as the game frames them, in TerrainLight6: the landing and the south shore's beach; the campground; the town and its river's boardwalks; the creek north of the wharf; the weather face looking across the bar to St Peters; and the edges where the roads and the beach leave.
 4. **`NOTES-part1.md`:**
    - the idea, in a paragraph;
    - what moves from today and why, old and new, in metres;
@@ -130,11 +143,11 @@ There, the terrain lane wrote the plan from your kit. Here you draw the ground y
    - plan.json against the texture, at named points: every fixed point in section 3, each river's mouth and head, each lot;
    - that the region stays 760 × 560 m around the origin.
 
-**Then stop.** Part 2 starts from the owner's rulings on part 1.
+**Then send part 3** (section 6), which does not wait for the owner's look. **Stop before part 2:** it starts from the owner's rulings on part 1.
 
 ## 5. Part 2: the key scenes
 
-Draw the scenes the owner picks from your list, on the ground the owner rules, the St Peters way. Follow the shape of section 5 of `README-FIRST.md` in the St Peters key scenes package (`HH-st-peters-key-scenes-2026-09-27.zip`). If this conversation cannot see that package, say so, and the owner will attach it.
+Draw the scenes the owner picks from your list, on the ground the owner rules, the St Peters way. The town's buildings come from your new multi-unit buildings, manors and shopping plazas, and the roads from road kit v4. Follow the shape of section 5 of `README-FIRST.md` in the St Peters key scenes package (`HH-st-peters-key-scenes-2026-09-27.zip`). If this conversation cannot see that package, say so, and the owner will attach it.
 - a `scene.json` per scene, in your SCHEMA.md's KeySceneDef, in region metres with `units`;
 - PNG boards at the clocks, tides and weather each scene names;
 - NOTES: the idea, what each scene asks of the game, the owner's calls with your leans, and the budgets;
@@ -143,14 +156,16 @@ Draw the scenes the owner picks from your list, on the ground the owner rules, t
 
 **The package's rules** (its section 4) stand here too, with one exception: rule 10, materials and power, is St Peters' own. Nine Mile Creek is the working coast, so its materials follow [the wharf doc](https://github.com/apholmes7-bot/hiddenharbours/blob/404e3911dff3cadd8e4f2511aa6b04e3a61d8575/docs/design/nine-mile-creek-wharf.md) and your wharf return, with the gas bar and the wharf's lamps.
 
-## 6. Part 3: road kit v4 (only if the owner's paste says "Part 3 is on.")
+## 6. Part 3: road kit v4
+
+The owner put it in on 09-29: "Yes part 3 add on".
 
 **Why.**
 - The game's road work for Nine Mile Creek waits on it. The owner ruled on 09-28: "1. wait for road rig 4".
 - Your gas bar loads `export/road-path-kit-v4/roadPathRig4.js` from your project, but the game has only [road kit v3](https://github.com/apholmes7-bot/hiddenharbours/tree/404e3911dff3cadd8e4f2511aa6b04e3a61d8575/docs/art/rigs/road-path-kit-v3).
 - Your village return's notes name what v4 adds: the classes walk, footpath and lane (ruts and a grass crown).
 
-**What to send:** its own zip, before part 2 if you can, holding:
+**What to send:** its own zip, after part 1 and before part 2, holding:
 - the kit's source and every rig, each with its gameplay sidecar;
 - a README that lists every change from v3, old and new;
 - a checker and SHA256SUMS.
@@ -163,7 +178,9 @@ These are the owner's calls. Give each one with your lean:
 - the south shore's line, and where its houses stand;
 - the rivers: how many, where each runs, where the player fishes them, and how the town river, the creek north of the wharf and the northern waterway fit together;
 - where each road leaves the region, and whether the road to Rice Point is the through-road carried on;
-- each road's surface where your scenes and the game differ: your gas bar draws Wharf Road paved, and the game's is gravel;
+- the campground: its pitches, its buildings, and how the bar road and the shore path serve it;
+- the town: where each of its buildings stands, and which of today's town lots stay (the tavern, the chandlery, the parish hall, the three houses and the boat shed);
+- whether the gas bar's `GROCERY  COFFEE  ICE` board stays, now that the town has a grocery store;
 - any move of the town's lots and lanes;
 - ground above +6 m or below −6 m;
 - the key scenes for part 2;
