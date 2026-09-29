@@ -345,11 +345,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 673
-        width: 840
-        height: 673
+        y: 681
+        width: 892
+        height: 681
       alignment: 9
-      pivot: {x: 0.5, y: 0.39970282}
+      pivot: {x: 0.5, y: 0.40969163}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -366,12 +366,12 @@ TextureImporter:
       name: Village_stPetersCannery_d1
       rect:
         serializedVersion: 2
-        x: 840
-        y: 673
-        width: 840
-        height: 673
+        x: 892
+        y: 681
+        width: 892
+        height: 681
       alignment: 9
-      pivot: {x: 0.5, y: 0.39970282}
+      pivot: {x: 0.5, y: 0.40969163}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -388,12 +388,12 @@ TextureImporter:
       name: Village_stPetersCannery_d2
       rect:
         serializedVersion: 2
-        x: 1680
-        y: 673
-        width: 840
-        height: 673
+        x: 1784
+        y: 681
+        width: 892
+        height: 681
       alignment: 9
-      pivot: {x: 0.5, y: 0.39970282}
+      pivot: {x: 0.5, y: 0.40969163}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -410,12 +410,12 @@ TextureImporter:
       name: Village_stPetersCannery_d3
       rect:
         serializedVersion: 2
-        x: 2520
-        y: 673
-        width: 840
-        height: 673
+        x: 2676
+        y: 681
+        width: 892
+        height: 681
       alignment: 9
-      pivot: {x: 0.5, y: 0.39970282}
+      pivot: {x: 0.5, y: 0.40969163}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -434,10 +434,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 840
-        height: 673
+        width: 892
+        height: 681
       alignment: 9
-      pivot: {x: 0.5, y: 0.39970282}
+      pivot: {x: 0.5, y: 0.40969163}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -454,12 +454,12 @@ TextureImporter:
       name: Village_stPetersCannery_d5
       rect:
         serializedVersion: 2
-        x: 840
+        x: 892
         y: 0
-        width: 840
-        height: 673
+        width: 892
+        height: 681
       alignment: 9
-      pivot: {x: 0.5, y: 0.39970282}
+      pivot: {x: 0.5, y: 0.40969163}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -476,12 +476,12 @@ TextureImporter:
       name: Village_stPetersCannery_d6
       rect:
         serializedVersion: 2
-        x: 1680
+        x: 1784
         y: 0
-        width: 840
-        height: 673
+        width: 892
+        height: 681
       alignment: 9
-      pivot: {x: 0.5, y: 0.39970282}
+      pivot: {x: 0.5, y: 0.40969163}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -498,12 +498,12 @@ TextureImporter:
       name: Village_stPetersCannery_d7
       rect:
         serializedVersion: 2
-        x: 2520
+        x: 2676
         y: 0
-        width: 840
-        height: 673
+        width: 892
+        height: 681
       alignment: 9
-      pivot: {x: 0.5, y: 0.39970282}
+      pivot: {x: 0.5, y: 0.40969163}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

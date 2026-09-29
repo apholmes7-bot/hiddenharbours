@@ -405,7 +405,7 @@ namespace HiddenHarbours.Tests.RigBaking
             {
                 ("main's house", TodaysHouse, "house"),
                 ("the returned house", RigCatalog.Get("house"), "house"),
-                ("the wharf", RigCatalog.Get("wharfBuilding"), "wharfBuilding"),
+                ("the wharf", RigCatalog.Get("wharfBuilding2"), "wharfBuilding2"),
             };
 
             var failures = new List<string>();

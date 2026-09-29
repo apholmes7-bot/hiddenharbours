@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using HiddenHarbours.Art.Editor;
 using HiddenHarbours.Tools.RigBaking;
 using NUnit.Framework;
@@ -15,10 +16,11 @@ namespace HiddenHarbours.Tests.RigBaking
     /// <summary>
     /// The wharf buildings pass 2 intake (drop 13, in <c>docs/art/rigs/wharf-building-kit-v2/</c>: all of it
     /// but the one byte-identical library that already has a home on main, see <see cref="LandedElsewhere"/>).
-    /// Pass 2 is a NEW catalog key beside pass 1, and nothing bakes from it yet: pass 1 still bakes the
-    /// four placed sheets until the owner rules a re-bake. So this fixture pins two things at once —
-    /// that pass 2 arrives as delivered and loads the way its README says, and that its arrival moves
-    /// none of the pixels the game draws today.
+    /// Pass 2 is a NEW catalog key beside pass 1 (which still bakes <c>BuildingBakeMenu</c>'s packer proof),
+    /// and since Phase B it bakes the four placed sheets: the owner ruled the re-bake, in albedo (#910).
+    /// So this fixture pins two things at once — that pass 2 arrives as delivered and loads the way its
+    /// README says, and that the four sheets the game places are pass 2's bake, pixel for pixel, under
+    /// the sprite names St Peters draws them by.
     /// </summary>
     public class WharfBuildingPass2IntakeTests
     {
@@ -245,28 +247,44 @@ namespace HiddenHarbours.Tests.RigBaking
             }
         }
 
-        // ---- pass 1: the game's pixels ---------------------------------------------------------
+        // ---- the four placed sheets: pass 2's bake ---------------------------------------------
+
+        const string StPetersScene = "Assets/_Project/Scenes/StPeters.unity";
+
+        /// <summary>The kit's builds drawn by pass 2, in key order: the four placed wharf buildings.</summary>
+        static VillageBuildingKit.Build[] PassTwoBuilds() => VillageBuildingKit.AllBuilds
+            .Where(b => b.RigKey == "wharfBuilding2").OrderBy(b => b.Key, StringComparer.Ordinal).ToArray();
 
         [Test]
-        public void PassOnesFourPlacedSheets_DrawTheirCommittedPixels_WithPassTwoLoaded()
+        public void TheFourPlacedSheets_ArePassTwosBake_PixelForPixel()
         {
+            VillageBuildingKit.Build[] builds = PassTwoBuilds();
+            CollectionAssert.AreEqual(new[] { "ginnyLeanTo", "ginnyNetStore", "ginnyWoodshed", "stPetersCannery" },
+                builds.Select(b => b.Key).ToArray(), "the kit's builds pass 2 draws");
             VillageBuildingKit.Contract contract = VillageBuildingKit.Load();
             Assert.IsNotNull(contract, VillageBuildingKit.ContractPath);
-            VillageBuildingKit.Entry[] placed = contract.buildings.Where(e => e.rigGlobal == "WharfBuilding")
-                .OrderBy(e => e.key, StringComparer.Ordinal).ToArray();
-            CollectionAssert.AreEqual(new[] { "ginnyLeanTo", "ginnyNetStore", "ginnyWoodshed", "stPetersCannery" },
-                placed.Select(e => e.key).ToArray(), "the sheets pass 1 bakes today");
+            CollectionAssert.IsEmpty(contract.buildings.Where(e => e.rig == "wharfBuilding").Select(e => e.key),
+                "a contract row still drawn by pass 1: the re-bake did not reach it");
 
-            // Pass 2's chain FIRST, then pass 1 over it: pass 1 then runs in a host that already holds
-            // every library pass 2 brought, which is the harder of the two orders.
+            // Pass 1's chain FIRST, then pass 2 over it. The baker's host holds pass 2 alone, so a sheet that
+            // matches here also proves the two rigs' globals do not collide (Phase A proved the other order).
             using IRigScriptHost host = RigScriptHostFactory.Create();
-            RigCatalog.InstallModule(host, RigCatalog.Get("wharfBuilding2"));
-            RigGeometry geo = RigCatalog.Install(host, RigCatalog.Get("wharfBuilding"));
-            Assert.That(host.EvaluateBool($"typeof CoastalPass === 'object' && typeof {Global} === 'object'"), Is.True);
+            RigCatalog.InstallModule(host, RigCatalog.Get("wharfBuilding"));
+            RigGeometry geo = RigCatalog.Install(host, RigCatalog.Get("wharfBuilding2"));
+            Assert.That(host.EvaluateBool($"typeof WharfBuilding === 'object' && typeof {Global} === 'object'"), Is.True);
 
             var failures = new List<string>();
-            foreach (VillageBuildingKit.Entry e in placed)
+            foreach (VillageBuildingKit.Build build in builds)
             {
+                VillageBuildingKit.Entry e = VillageBuildingKit.Find(contract, build.Key);
+                Assert.IsNotNull(e, $"{build.Key} is not in {VillageBuildingKit.ContractFileName}");
+                Assert.That(e.rigGlobal, Is.EqualTo(Global), e.key);
+                Assert.That(e.optionsJs, Is.EqualTo(VillageBuildingBakeMenu.LifecycleOptionsLiteralFor(build, Global)),
+                    $"{e.key}: the contract row is not the kit's build, so its sheet is stale. Re-bake.");
+                Assert.That(e.facings, Is.EqualTo(VillageBuildingKit.Facings), e.key);
+                Assert.That(Math.Max(e.sheetW, e.sheetH), Is.LessThanOrEqualTo(e.importCap),
+                    $"{e.key} would import downscaled");
+
                 byte[] png = File.ReadAllBytes(Full(VillageBuildingKit.BuildingsRoot + e.sheet));
                 Assert.That(Encoding.ASCII.GetString(png, 0, Math.Min(png.Length, 24)),
                     Does.Not.StartWith("version https://git-lfs"), $"{e.sheet} is an LFS pointer, not a sheet");
@@ -281,7 +299,7 @@ namespace HiddenHarbours.Tests.RigBaking
                     for (int cell = 0; cell < e.facings; cell++)
                     {
                         string dir = RigBaker.DirForCell(cell, e.facings, convention).ToString("R", CultureInfo.InvariantCulture);
-                        byte[] rgba = host.EvaluateBytes($"WharfBuilding.render({dir},{e.optionsJs})");
+                        byte[] rgba = host.EvaluateBytes($"{Global}.render({dir},{e.optionsJs})");
                         Assert.That(rgba.Length, Is.EqualTo(geo.Width * geo.Height * 4), $"{e.key} cell {cell}");
                         int col = cell % e.cols, row = cell / e.cols;
                         for (int y = 0; y < geo.Height; y++)
@@ -303,7 +321,41 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
                 finally { UnityEngine.Object.DestroyImmediate(texture); }
             }
-            Assert.That(failures, Is.Empty, "pass 1 no longer draws the sheets the game places");
+            Assert.That(failures, Is.Empty, "the sheets the game places are not pass 2's bake of the kit's builds");
+        }
+
+        [Test]
+        public void TheFourPlacedSheets_KeepTheirSpriteNamesAndCount_AndEverySpriteStPetersDraws()
+        {
+            // St Peters cannot be rebuilt, so a re-bake reaches it through the names alone: the slicer keeps
+            // each sprite's id by its name, and the scene holds each sheet's sprite by that id.
+            string scene = File.ReadAllText(Full(StPetersScene));
+            var failures = new List<string>();
+            foreach (VillageBuildingKit.Build build in PassTwoBuilds())
+            {
+                string stem = VillageBuildingKit.StemFor(build.Key);
+                string meta = Lf(VillageBuildingKit.BuildingsRoot + stem + ".png.meta");
+                string guid = Regex.Match(meta, @"^guid: ([0-9a-f]{32})$", RegexOptions.Multiline).Groups[1].Value;
+                Assert.That(guid, Has.Length.EqualTo(32), $"{stem}.png.meta has no guid");
+
+                string[] names = Enumerable.Range(0, VillageBuildingKit.Facings)
+                    .Select(f => VillageBuildingKit.SpriteNameFor(build.Key, f)).ToArray();
+                string[] sliced = Regex.Matches(meta, $@"^\s+name: ({Regex.Escape(stem)}_\S+)$", RegexOptions.Multiline)
+                    .Cast<Match>().Select(m => m.Groups[1].Value).ToArray();
+                CollectionAssert.AreEqual(names, sliced, $"{stem}: the sprites sliced from the sheet");
+
+                Dictionary<string, string> nameOfId = Regex
+                    .Matches(meta, $@"^\s+({Regex.Escape(stem)}_\S+): (-?\d+)$", RegexOptions.Multiline)
+                    .Cast<Match>().ToDictionary(m => m.Groups[2].Value, m => m.Groups[1].Value);
+                CollectionAssert.AreEquivalent(names, nameOfId.Values, $"{stem}: the name-to-file-id table");
+
+                MatchCollection held = Regex.Matches(scene, $@"m_Sprite: {{fileID: (-?\d+), guid: {guid}, type: 3}}");
+                if (held.Count == 0) failures.Add($"St Peters draws nothing from {stem}");
+                foreach (Match m in held)
+                    if (!nameOfId.ContainsKey(m.Groups[1].Value))
+                        failures.Add($"St Peters holds {stem}'s sprite {m.Groups[1].Value}, which the sheet no longer has");
+            }
+            Assert.That(failures, Is.Empty, "St Peters draws a placed wharf building by a sprite the re-bake lost");
         }
     }
 }
