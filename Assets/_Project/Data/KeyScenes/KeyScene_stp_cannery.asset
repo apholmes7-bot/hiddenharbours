@@ -1,0 +1,154 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_stp_cannery
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.stp_cannery
+  DisplayName: The cannery
+  RegionId: region.st_peters
+  Source: art-desk return 2 part 1 (key-scenes-r2-part1-ne-light-2026-09-28), scenes/keyscene.stp_cannery/scene.json, 16567 bytes, sha256 4bd06e2bdc14c4b8f21652e4c9c036308570182289a4e4ee3665c5583e8968d9
+  Pieces:
+  - Id: structure.stp_cannery_boiler_stack
+    Kit: stPetersSetPieces
+    Piece: boilerStack
+    State: 
+    At: {x: 173.32, y: 22.15}
+    Z: 6
+    StandsOn: ground
+    Dir: 7
+    HasSortY: 1
+    SortY: 16.4
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: decay
+      Value: derelict
+    - Key: stackH
+      Value: 14
+  - Id: structure.stp_cannery_trolley_line
+    Kit: stPetersSetPieces
+    Piece: trolleyLine
+    State: 
+    At: {x: 175.59, y: 9.57}
+    Z: 6
+    StandsOn: ground
+    Dir: 0
+    HasSortY: 1
+    SortY: 12
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: path
+      Value: '[[0,0],[4.01,-4.17],[6.41,-7.17],[8.01,-9.27]]'
+    - Key: decay
+      Value: derelict
+  - Id: prop.stp_cannery_trolley
+    Kit: stPetersSetPieces
+    Piece: trolley
+    State: 
+    At: {x: 178, y: 6.9}
+    Z: 6
+    StandsOn: ground
+    Dir: 7
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: decay
+      Value: derelict
+  - Id: prop.stp_cannery_conveyor
+    Kit: stPetersSetPieces
+    Piece: conveyor
+    State: 
+    At: {x: 168.3, y: 9.21}
+    Z: 6
+    StandsOn: ground
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: decay
+      Value: derelict
+  - Id: prop.stp_cannery_fallen_sign
+    Kit: stPetersSetPieces
+    Piece: fallenSign
+    State: 
+    At: {x: 166.6, y: 5.4}
+    Z: 6
+    StandsOn: ground
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words:
+    - words.cannery_sign
+    Options: []
+  - Id: prop.stp_cannery_net_rack
+    Kit: wharfDecor
+    Piece: netFrame
+    State: 
+    At: {x: 180.2, y: 12.6}
+    Z: 6
+    StandsOn: ground
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: weather
+      Value: 1
+    - Key: variant
+      Value: 1
+  - Id: prop.stp_cannery_broken_boxes
+    Kit: wharfDecor
+    Piece: crateStack
+    State: 
+    At: {x: 172.6, y: 8.4}
+    Z: 6
+    StandsOn: ground
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: weather
+      Value: 1
+    - Key: variant
+      Value: 2
+  - Id: prop.stp_cannery_drum
+    Kit: wharfDecor
+    Piece: oilDrum
+    State: 
+    At: {x: 163.9, y: 9.6}
+    Z: 6
+    StandsOn: ground
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: weather
+      Value: 1

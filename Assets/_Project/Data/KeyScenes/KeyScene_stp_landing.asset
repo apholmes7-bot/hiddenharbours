@@ -1,0 +1,227 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_stp_landing
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.stp_landing
+  DisplayName: The Landing
+  RegionId: region.st_peters
+  Source: art-desk return 2 part 1 (key-scenes-r2-part1-ne-light-2026-09-28), scenes/keyscene.stp_landing/scene.json, 16389 bytes, sha256 ea9004c8fd232d1502e88acc5f8d0e83e942b65e52f02a2f82a45685cce6d28d
+  Pieces:
+  - Id: prop.stp_slip_tide_board
+    Kit: stPetersSetPieces
+    Piece: slipTideBoard
+    State: 
+    At: {x: 200.9, y: -3.62}
+    Z: -1.75
+    StandsOn: ground
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: foot
+      Value: -1.75
+    - Key: datum
+      Value: -2.2
+    - Key: top
+      Value: 2.6
+  - Id: prop.stp_harbour_vane
+    Kit: stPetersSetPieces
+    Piece: harbourVane
+    State: 
+    At: {x: 183.6, y: -4.4}
+    Z: 5.96
+    StandsOn: ground
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options: []
+  - Id: prop.stp_landing_traps
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 187.3, y: 2.05}
+    Z: 5.35
+    StandsOn: deck
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: len
+      Value: 0.5
+    - Key: weather
+      Value: 0.35
+  - Id: prop.stp_landing_totes
+    Kit: wharfDecor
+    Piece: toteStack
+    State: 
+    At: {x: 190.1, y: 2.2}
+    Z: 5.35
+    StandsOn: deck
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+  - Id: prop.stp_landing_cart
+    Kit: wharfDecor
+    Piece: dockCart
+    State: 
+    At: {x: 193.2, y: 1.5}
+    Z: 5.35
+    StandsOn: deck
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: loaded
+      Value: true
+  - Id: prop.stp_landing_bait_barrel
+    Kit: wharfDecor
+    Piece: baitBarrel
+    State: 
+    At: {x: 205.9, y: 2}
+    Z: 5.35
+    StandsOn: deck
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options: []
+  - Id: prop.stp_landing_rope
+    Kit: wharfDecor
+    Piece: ropeCoil
+    State: 
+    At: {x: 206.5, y: -2}
+    Z: 5.35
+    StandsOn: deck
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options: []
+  - Id: prop.stp_strand_bench
+    Kit: wharfDecor
+    Piece: bench
+    State: 
+    At: {x: 186, y: 17.2}
+    Z: 6
+    StandsOn: ground
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options: []
+  - Id: prop.stp_wrack_driftwood
+    Kit: shoreFinds
+    Piece: Driftwood
+    State: bleached
+    At: {x: 198.45, y: 12.4}
+    Z: 2.39
+    StandsOn: ground
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: state
+      Value: bleached
+  - Id: prop.stp_wrack_plank
+    Kit: shoreFinds
+    Piece: DriftPlank
+    State: dry
+    At: {x: 197.1, y: 16.4}
+    Z: 2.41
+    StandsOn: ground
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: state
+      Value: dry
+  - Id: prop.stp_wrack_float
+    Kit: shoreFinds
+    Piece: NetFloat
+    State: dry
+    At: {x: 198.95, y: 10.4}
+    Z: 2.42
+    StandsOn: ground
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: state
+      Value: dry
+  - Id: prop.stp_wrack_rope
+    Kit: shoreFinds
+    Piece: RopeScrap
+    State: dry
+    At: {x: 196.2, y: 18.6}
+    Z: 2.41
+    StandsOn: ground
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: state
+      Value: dry
+  - Id: prop.stp_wrack_lath
+    Kit: shoreFinds
+    Piece: TrapLath
+    State: bleached
+    At: {x: 197.9, y: 14.3}
+    Z: 2.38
+    StandsOn: ground
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Variants:
+    - today
+    Words: []
+    Options:
+    - Key: state
+      Value: bleached
