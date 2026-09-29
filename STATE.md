@@ -1,6 +1,6 @@
 # Hidden Harbours: the design desk
 
-**As of 2026-09-29 12:56Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
+**As of 2026-09-29 13:17Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
 
 Read this file at the start of every session, then the brief the owner names. A ruling the owner gives you in a message wins over this file and over any brief. Some older docs still describe sprites where the owner has since ruled meshes (section 4); where they disagree, the ruling wins.
 
@@ -107,6 +107,12 @@ Each thread has, or will get, its own paste in its own conversation. This list i
   - Your scene return, in three parts, arrived on 09-28. It passed on real Node, 42 of 42, over the three parts together.
   - The gas bar's name stays open.
   - The build is being planned for the game.
+- Nine Mile Creek's key scenes (09-29). Asked of you:
+  - part 1, the region's ground drawn whole (the coast, the south shore, the rivers, the roads and the lots, as numbers and as a texture) with your list of key scenes, then a stop for the owner's look;
+  - part 2, the scenes the owner picks, on that ground;
+  - part 3, road kit v4, only if the owner's paste says so.
+
+  The wharf, the gas bar, the bar and the crossing stay as drawn: [briefs/BRIEF-2026-09-29-nmc-key-scenes.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-29-nmc-key-scenes.md).
 - The channel check (09-27, on this branch): DONE the same day. Text reaches you; pictures do not (section 1). [briefs/BRIEF-2026-09-27-channel-check.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-27-channel-check.md).
 
 ## 7. Landed in the game from you
