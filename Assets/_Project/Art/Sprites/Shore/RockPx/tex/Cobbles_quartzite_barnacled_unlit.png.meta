@@ -1,0 +1,841 @@
+fileFormatVersion: 2
+guid: 034c48ad95152244b91a0ad08be5898e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7877855308807096399
+    second: Cobbles_quartzite_barnacled_unlit_0
+  - first:
+      213: -2396922170432861621
+    second: Cobbles_quartzite_barnacled_unlit_1
+  - first:
+      213: 6365604998833808621
+    second: Cobbles_quartzite_barnacled_unlit_2
+  - first:
+      213: 8030109220413785656
+    second: Cobbles_quartzite_barnacled_unlit_3
+  - first:
+      213: 1841164972091277781
+    second: Cobbles_quartzite_barnacled_unlit_4
+  - first:
+      213: -3198217930802195071
+    second: Cobbles_quartzite_barnacled_unlit_5
+  - first:
+      213: -2168745568608470233
+    second: Cobbles_quartzite_barnacled_unlit_6
+  - first:
+      213: -7094137496095023520
+    second: Cobbles_quartzite_barnacled_unlit_7
+  - first:
+      213: -2916201273307241335
+    second: Cobbles_quartzite_barnacled_unlit_8
+  - first:
+      213: 796823560794619574
+    second: Cobbles_quartzite_barnacled_unlit_9
+  - first:
+      213: -3941297956776898949
+    second: Cobbles_quartzite_barnacled_unlit_10
+  - first:
+      213: 7424386573645394868
+    second: Cobbles_quartzite_barnacled_unlit_11
+  - first:
+      213: -3251792308763236427
+    second: Cobbles_quartzite_barnacled_unlit_12
+  - first:
+      213: -943585121730507397
+    second: Cobbles_quartzite_barnacled_unlit_13
+  - first:
+      213: 7562904075495990218
+    second: Cobbles_quartzite_barnacled_unlit_14
+  - first:
+      213: -5766902948332710603
+    second: Cobbles_quartzite_barnacled_unlit_15
+  - first:
+      213: -7368077200627049420
+    second: Cobbles_quartzite_barnacled_unlit_16
+  - first:
+      213: 4371578956339095408
+    second: Cobbles_quartzite_barnacled_unlit_17
+  - first:
+      213: -2140379321729019865
+    second: Cobbles_quartzite_barnacled_unlit_18
+  - first:
+      213: -3746731037855031796
+    second: Cobbles_quartzite_barnacled_unlit_19
+  - first:
+      213: 6691818727339749715
+    second: Cobbles_quartzite_barnacled_unlit_20
+  - first:
+      213: 5237488635541134081
+    second: Cobbles_quartzite_barnacled_unlit_21
+  - first:
+      213: -9207398166020648308
+    second: Cobbles_quartzite_barnacled_unlit_22
+  - first:
+      213: 5887496399936239606
+    second: Cobbles_quartzite_barnacled_unlit_23
+  - first:
+      213: 7895419565669627548
+    second: Cobbles_quartzite_barnacled_unlit_24
+  - first:
+      213: -994272369007939142
+    second: Cobbles_quartzite_barnacled_unlit_25
+  - first:
+      213: -6208622471818887705
+    second: Cobbles_quartzite_barnacled_unlit_26
+  - first:
+      213: -670936143797640382
+    second: Cobbles_quartzite_barnacled_unlit_27
+  - first:
+      213: -3725087344789498414
+    second: Cobbles_quartzite_barnacled_unlit_28
+  - first:
+      213: 9033034787131970476
+    second: Cobbles_quartzite_barnacled_unlit_29
+  - first:
+      213: -4355251666817226984
+    second: Cobbles_quartzite_barnacled_unlit_30
+  - first:
+      213: 3719553060075915137
+    second: Cobbles_quartzite_barnacled_unlit_31
+  - first:
+      213: 352498130055063011
+    second: Cobbles_quartzite_barnacled_unlit_32
+  - first:
+      213: -4295328045244016545
+    second: Cobbles_quartzite_barnacled_unlit_33
+  - first:
+      213: -7084171405338029334
+    second: Cobbles_quartzite_barnacled_unlit_34
+  - first:
+      213: -3275469692277108787
+    second: Cobbles_quartzite_barnacled_unlit_35
+  - first:
+      213: 149206964388394808
+    second: Cobbles_quartzite_barnacled_unlit_36
+  - first:
+      213: 5980089782476830106
+    second: Cobbles_quartzite_barnacled_unlit_37
+  - first:
+      213: -3692970932245301192
+    second: Cobbles_quartzite_barnacled_unlit_38
+  - first:
+      213: 386399641836095171
+    second: Cobbles_quartzite_barnacled_unlit_39
+  - first:
+      213: -7227127206363100589
+    second: Cobbles_quartzite_barnacled_unlit_40
+  - first:
+      213: -1301963740637893693
+    second: Cobbles_quartzite_barnacled_unlit_41
+  - first:
+      213: -5718621840006602531
+    second: Cobbles_quartzite_barnacled_unlit_42
+  - first:
+      213: -4679627013701768675
+    second: Cobbles_quartzite_barnacled_unlit_43
+  - first:
+      213: -6809674130801594543
+    second: Cobbles_quartzite_barnacled_unlit_44
+  - first:
+      213: -602826515847570299
+    second: Cobbles_quartzite_barnacled_unlit_45
+  - first:
+      213: -8952834181252906510
+    second: Cobbles_quartzite_barnacled_unlit_46
+  - first:
+      213: 1217805948996061105
+    second: Cobbles_quartzite_barnacled_unlit_47
+  - first:
+      213: -5333648068417140740
+    second: Cobbles_quartzite_barnacled_unlit_48
+  - first:
+      213: 2430251646642161592
+    second: Cobbles_quartzite_barnacled_unlit_49
+  - first:
+      213: 7830449428350074660
+    second: Cobbles_quartzite_barnacled_unlit_50
+  - first:
+      213: -4165108244242549825
+    second: Cobbles_quartzite_barnacled_unlit_51
+  - first:
+      213: 1913602625466641653
+    second: Cobbles_quartzite_barnacled_unlit_52
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e130a17a15bcb35428734e7ee97bb65d
+      internalID: 333793995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b93e7eeaa2eb38948bb0ab5c82f144cf
+      internalID: -2037302371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0706e4e398153349919c02509c88952
+      internalID: -1186647451
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45bbcbd1a9d92a7429316be0fec1cebb
+      internalID: -581390549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be1193fb059536a40bcb3ccfc72a5682
+      internalID: -32469029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c52b38a27babc148a5643eded337b4a
+      internalID: 2043542756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0584c24d22b1c44d9a3a6e8ac930f16
+      internalID: -1822222036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 20493550882370d46a39204ee64b0fdf
+      internalID: -1329362894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a716f4e7efc288e42bf42cc621b10a8b
+      internalID: 147908868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47b8601ae3985514e83956e02d3f70bc
+      internalID: -90896322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6205bc48e6097324ba290cc6d6d2033b
+      internalID: 1929980354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f3ce7ea5fea80b3459038ab7e19d775b
+      internalID: -1143090053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc6890808d9a701448e6808eefc4a0fb
+      internalID: -1307139555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6411036293258f44968a727a78a31c2
+      internalID: 969704495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aaed65d3da4d0be46a74d4fd302bf771
+      internalID: 1309929506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75afb6dd02f784f41879026b6d65a316
+      internalID: 1234764832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9da4bee6281855d41a8e25f2dba27b5a
+      internalID: -1985136497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68dbffd071057814ba27a1bac06bbc67
+      internalID: 483061594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73513cad4b9fdb148995efc66fb2969a
+      internalID: 1334193305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b52d67176d9c47488551e093458c7cb
+      internalID: -1053425123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c07f4ee8f48f37b41acd5c51dce1795c
+      internalID: 1605505619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19d945e88df19994eaa0613810e17d45
+      internalID: 2045583650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6d6318764b95b44aa74755f8fe9ccc8
+      internalID: -244221587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3bc58fccac7a0d8499306552d7c71958
+      internalID: -1207407267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: fc42b327cbfecf94db6d5f9ff733f852
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cobbles_quartzite_barnacled_unlit_c0_r0: 333793995
+      Cobbles_quartzite_barnacled_unlit_c0_r1: 147908868
+      Cobbles_quartzite_barnacled_unlit_c0_r2: -1985136497
+      Cobbles_quartzite_barnacled_unlit_c1_r0: -2037302371
+      Cobbles_quartzite_barnacled_unlit_c1_r1: -90896322
+      Cobbles_quartzite_barnacled_unlit_c1_r2: 483061594
+      Cobbles_quartzite_barnacled_unlit_c2_r0: -1186647451
+      Cobbles_quartzite_barnacled_unlit_c2_r1: 1929980354
+      Cobbles_quartzite_barnacled_unlit_c2_r2: 1334193305
+      Cobbles_quartzite_barnacled_unlit_c3_r0: -581390549
+      Cobbles_quartzite_barnacled_unlit_c3_r1: -1143090053
+      Cobbles_quartzite_barnacled_unlit_c3_r2: -1053425123
+      Cobbles_quartzite_barnacled_unlit_c4_r0: -32469029
+      Cobbles_quartzite_barnacled_unlit_c4_r1: -1307139555
+      Cobbles_quartzite_barnacled_unlit_c4_r2: 1605505619
+      Cobbles_quartzite_barnacled_unlit_c5_r0: 2043542756
+      Cobbles_quartzite_barnacled_unlit_c5_r1: 969704495
+      Cobbles_quartzite_barnacled_unlit_c5_r2: 2045583650
+      Cobbles_quartzite_barnacled_unlit_c6_r0: -1822222036
+      Cobbles_quartzite_barnacled_unlit_c6_r1: 1309929506
+      Cobbles_quartzite_barnacled_unlit_c6_r2: -244221587
+      Cobbles_quartzite_barnacled_unlit_c7_r0: -1329362894
+      Cobbles_quartzite_barnacled_unlit_c7_r1: 1234764832
+      Cobbles_quartzite_barnacled_unlit_c7_r2: -1207407267
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,925 @@
+fileFormatVersion: 2
+guid: 9dabcbf2c17924a46868e9640d33c9f6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8451991197675955592
+    second: Spine_granite_barnacled_mask_0
+  - first:
+      213: -1291663823292964959
+    second: Spine_granite_barnacled_mask_1
+  - first:
+      213: -8447055035037968854
+    second: Spine_granite_barnacled_mask_2
+  - first:
+      213: -5928630932067904761
+    second: Spine_granite_barnacled_mask_3
+  - first:
+      213: 6222098332613837021
+    second: Spine_granite_barnacled_mask_4
+  - first:
+      213: -5188725089416345109
+    second: Spine_granite_barnacled_mask_5
+  - first:
+      213: 7411559574500910793
+    second: Spine_granite_barnacled_mask_6
+  - first:
+      213: -5609697315533878506
+    second: Spine_granite_barnacled_mask_7
+  - first:
+      213: 7394081100355553059
+    second: Spine_granite_barnacled_mask_8
+  - first:
+      213: 734151306078756888
+    second: Spine_granite_barnacled_mask_9
+  - first:
+      213: -20392513149235604
+    second: Spine_granite_barnacled_mask_10
+  - first:
+      213: -2170776135741236780
+    second: Spine_granite_barnacled_mask_11
+  - first:
+      213: 5944876112026893029
+    second: Spine_granite_barnacled_mask_12
+  - first:
+      213: 7007449431940199996
+    second: Spine_granite_barnacled_mask_13
+  - first:
+      213: -1283596218644933905
+    second: Spine_granite_barnacled_mask_14
+  - first:
+      213: -5044188008206042879
+    second: Spine_granite_barnacled_mask_15
+  - first:
+      213: 2291545602614723303
+    second: Spine_granite_barnacled_mask_16
+  - first:
+      213: 1581772417330046892
+    second: Spine_granite_barnacled_mask_17
+  - first:
+      213: -378845902840480335
+    second: Spine_granite_barnacled_mask_18
+  - first:
+      213: -6711114029082767737
+    second: Spine_granite_barnacled_mask_19
+  - first:
+      213: 2955809102814303046
+    second: Spine_granite_barnacled_mask_20
+  - first:
+      213: -5960636340644369606
+    second: Spine_granite_barnacled_mask_21
+  - first:
+      213: 1508275997064799356
+    second: Spine_granite_barnacled_mask_22
+  - first:
+      213: -1657653750344727353
+    second: Spine_granite_barnacled_mask_23
+  - first:
+      213: 8544871857626782825
+    second: Spine_granite_barnacled_mask_24
+  - first:
+      213: -2551905815003692269
+    second: Spine_granite_barnacled_mask_25
+  - first:
+      213: -283694714401767032
+    second: Spine_granite_barnacled_mask_26
+  - first:
+      213: 752656698133938837
+    second: Spine_granite_barnacled_mask_27
+  - first:
+      213: 4143082693789718292
+    second: Spine_granite_barnacled_mask_28
+  - first:
+      213: -8648920203129256343
+    second: Spine_granite_barnacled_mask_29
+  - first:
+      213: -4842804736489133136
+    second: Spine_granite_barnacled_mask_30
+  - first:
+      213: 3178423017960901339
+    second: Spine_granite_barnacled_mask_31
+  - first:
+      213: -8840618313423357100
+    second: Spine_granite_barnacled_mask_32
+  - first:
+      213: 535107783879114027
+    second: Spine_granite_barnacled_mask_33
+  - first:
+      213: 4030350942748362342
+    second: Spine_granite_barnacled_mask_34
+  - first:
+      213: 4225807367773083064
+    second: Spine_granite_barnacled_mask_35
+  - first:
+      213: 2987772586997141943
+    second: Spine_granite_barnacled_mask_36
+  - first:
+      213: -8597561781143766472
+    second: Spine_granite_barnacled_mask_37
+  - first:
+      213: 2335599831000734029
+    second: Spine_granite_barnacled_mask_38
+  - first:
+      213: 2330917858243730700
+    second: Spine_granite_barnacled_mask_39
+  - first:
+      213: -7993736054328397597
+    second: Spine_granite_barnacled_mask_40
+  - first:
+      213: -2938128104700421855
+    second: Spine_granite_barnacled_mask_41
+  - first:
+      213: 6147071088990499795
+    second: Spine_granite_barnacled_mask_42
+  - first:
+      213: -5657292898959837274
+    second: Spine_granite_barnacled_mask_43
+  - first:
+      213: -8103943311545851282
+    second: Spine_granite_barnacled_mask_44
+  - first:
+      213: 92460395634430495
+    second: Spine_granite_barnacled_mask_45
+  - first:
+      213: -8217597681106843612
+    second: Spine_granite_barnacled_mask_46
+  - first:
+      213: -2914322582917510687
+    second: Spine_granite_barnacled_mask_47
+  - first:
+      213: -8199557373432000241
+    second: Spine_granite_barnacled_mask_48
+  - first:
+      213: 8650241715504733362
+    second: Spine_granite_barnacled_mask_49
+  - first:
+      213: 1783429121557983251
+    second: Spine_granite_barnacled_mask_50
+  - first:
+      213: 6438452710961248696
+    second: Spine_granite_barnacled_mask_51
+  - first:
+      213: -1907616383903747010
+    second: Spine_granite_barnacled_mask_52
+  - first:
+      213: 7970873964019525726
+    second: Spine_granite_barnacled_mask_53
+  - first:
+      213: -4279136481096718290
+    second: Spine_granite_barnacled_mask_54
+  - first:
+      213: -6902396593445308957
+    second: Spine_granite_barnacled_mask_55
+  - first:
+      213: 5614974182988886939
+    second: Spine_granite_barnacled_mask_56
+  - first:
+      213: -4301357116914651550
+    second: Spine_granite_barnacled_mask_57
+  - first:
+      213: -4883972961934018075
+    second: Spine_granite_barnacled_mask_58
+  - first:
+      213: -5969163274399723626
+    second: Spine_granite_barnacled_mask_59
+  - first:
+      213: -2161482131153057005
+    second: Spine_granite_barnacled_mask_60
+  - first:
+      213: 3644208486428691526
+    second: Spine_granite_barnacled_mask_61
+  - first:
+      213: 4056041250518827005
+    second: Spine_granite_barnacled_mask_62
+  - first:
+      213: 6815545779224155391
+    second: Spine_granite_barnacled_mask_63
+  - first:
+      213: 4670781965125912944
+    second: Spine_granite_barnacled_mask_64
+  - first:
+      213: 2124784015919716735
+    second: Spine_granite_barnacled_mask_65
+  - first:
+      213: 1259107965073666675
+    second: Spine_granite_barnacled_mask_66
+  - first:
+      213: -1674323309150435544
+    second: Spine_granite_barnacled_mask_67
+  - first:
+      213: -2991425412359476463
+    second: Spine_granite_barnacled_mask_68
+  - first:
+      213: 3221075055506966485
+    second: Spine_granite_barnacled_mask_69
+  - first:
+      213: 7655583824902313609
+    second: Spine_granite_barnacled_mask_70
+  - first:
+      213: -2942782851646191667
+    second: Spine_granite_barnacled_mask_71
+  - first:
+      213: 6048437143289679154
+    second: Spine_granite_barnacled_mask_72
+  - first:
+      213: -5360582293870068356
+    second: Spine_granite_barnacled_mask_73
+  - first:
+      213: 9147383401338069075
+    second: Spine_granite_barnacled_mask_74
+  - first:
+      213: -5404236325722120408
+    second: Spine_granite_barnacled_mask_75
+  - first:
+      213: -6670948389047979283
+    second: Spine_granite_barnacled_mask_76
+  - first:
+      213: -5525577212735547542
+    second: Spine_granite_barnacled_mask_77
+  - first:
+      213: -2774102369576699544
+    second: Spine_granite_barnacled_mask_78
+  - first:
+      213: 6555824821162275057
+    second: Spine_granite_barnacled_mask_79
+  - first:
+      213: -3586775557646476671
+    second: Spine_granite_barnacled_mask_80
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0005ab762989674993916f82eed0a95
+      internalID: -198676137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ee4db4a8a1a1cb44b7d1a655a994e8f
+      internalID: 977964823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5e6dd36bf15bed44a383d0513b97bb8
+      internalID: -1009210712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bee4410056ce12b4abb5436d03874e71
+      internalID: -135682840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cd0e8a891a46294593d61655eea5c59
+      internalID: 1731696949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9dcd922c0506cc94c83871a33d41f6b9
+      internalID: 1563202410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 20326dcde12363a4e9fe019cbefad76b
+      internalID: 754412361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d38f3f520e508b4d833fb6e6996ef19
+      internalID: 2114329521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72f43126824eb474a8bd80c38de62693
+      internalID: 571915329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24d5c27bdb588534abea27e599523dd1
+      internalID: -249117804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d955b56fd4f99894fac14d2b33efa749
+      internalID: -1072982468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c11df46ecb9afb4d9cd78dd1a6c62b3
+      internalID: 792978072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 681c69e89bb70fd4785e2c686fc89435
+      internalID: -978240406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84ae88087d5d33e4daa57d2a77ae2bab
+      internalID: 81109425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c8b60807bcca2a47928d35aa117d1a9
+      internalID: -2035131108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50567afeeb02b334483a363130ab79cc
+      internalID: -310099576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48febc6807396224fbf9ae49a9a87f50
+      internalID: 976159445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb96498f74cb63945869271bb3e75752
+      internalID: -914952077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 880dc9e4780d5df47a708532078f9aad
+      internalID: -911167036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a66417ea4fd58714aa880eccec9a50ca
+      internalID: 915660394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf628f3e68482ff45ad8989b1ffe9a76
+      internalID: 1200642225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7753708be07272c46aba195d5a99904c
+      internalID: -1272803170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b497ccdc720b2064187e4c7c38ca6e3b
+      internalID: -611551178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_barnacled_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c45d347dc356ee947910ca34f98e7c5b
+      internalID: -1479070060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5ba849ff6229a6448868e69407950f34
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Spine_granite_barnacled_mask_c0_r0: -198676137
+      Spine_granite_barnacled_mask_c0_r1: 571915329
+      Spine_granite_barnacled_mask_c0_r2: 976159445
+      Spine_granite_barnacled_mask_c1_r0: 977964823
+      Spine_granite_barnacled_mask_c1_r1: -249117804
+      Spine_granite_barnacled_mask_c1_r2: -914952077
+      Spine_granite_barnacled_mask_c2_r0: -1009210712
+      Spine_granite_barnacled_mask_c2_r1: -1072982468
+      Spine_granite_barnacled_mask_c2_r2: -911167036
+      Spine_granite_barnacled_mask_c3_r0: -135682840
+      Spine_granite_barnacled_mask_c3_r1: 792978072
+      Spine_granite_barnacled_mask_c3_r2: 915660394
+      Spine_granite_barnacled_mask_c4_r0: 1731696949
+      Spine_granite_barnacled_mask_c4_r1: -978240406
+      Spine_granite_barnacled_mask_c4_r2: 1200642225
+      Spine_granite_barnacled_mask_c5_r0: 1563202410
+      Spine_granite_barnacled_mask_c5_r1: 81109425
+      Spine_granite_barnacled_mask_c5_r2: -1272803170
+      Spine_granite_barnacled_mask_c6_r0: 754412361
+      Spine_granite_barnacled_mask_c6_r1: -2035131108
+      Spine_granite_barnacled_mask_c6_r2: -611551178
+      Spine_granite_barnacled_mask_c7_r0: 2114329521
+      Spine_granite_barnacled_mask_c7_r1: -310099576
+      Spine_granite_barnacled_mask_c7_r2: -1479070060
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

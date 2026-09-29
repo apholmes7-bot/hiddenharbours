@@ -17,8 +17,8 @@ namespace HiddenHarbours.World
     /// kit's own coordinates — form, stone, dress, variant, mirror and tide state — and the editor
     /// step resolves them through the kit's catalog (<c>RockPxCatalog</c>) to the sheet's cell
     /// <c>&lt;stem&gt;_c&lt;col&gt;_r&lt;row&gt;</c>. A <c>Sprite</c> field would serialize the
-    /// Rock Px sprite's GUID, and the kit's <c>.meta</c> files are not committed, so that GUID
-    /// would resolve only in the checkout that wrote it. The coordinates hold no GUID, read like
+    /// Rock Px sprite's GUID, which lives in the kit's <c>.meta</c> files, not in the kit, and
+    /// changes whenever those files are generated anew. The coordinates hold no GUID, read like
     /// the plan's table, and a typo fails in the catalog's own check.</para>
     ///
     /// <para>Plain data, no behaviour: the World module holds it and the App editor step reads it.

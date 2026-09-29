@@ -1,0 +1,799 @@
+fileFormatVersion: 2
+guid: 8ab8db07e4cd53740b9412b19b419c81
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6784700326107528325
+    second: Apron_sandstone_barnacled_normal_0
+  - first:
+      213: -9208778942532940471
+    second: Apron_sandstone_barnacled_normal_1
+  - first:
+      213: -9203615336412647930
+    second: Apron_sandstone_barnacled_normal_2
+  - first:
+      213: -9210137975292660548
+    second: Apron_sandstone_barnacled_normal_3
+  - first:
+      213: 6526813084261298271
+    second: Apron_sandstone_barnacled_normal_4
+  - first:
+      213: -7751192318140362393
+    second: Apron_sandstone_barnacled_normal_5
+  - first:
+      213: -3167927593024822105
+    second: Apron_sandstone_barnacled_normal_6
+  - first:
+      213: -4950573604891105833
+    second: Apron_sandstone_barnacled_normal_7
+  - first:
+      213: -5308642595982383924
+    second: Apron_sandstone_barnacled_normal_8
+  - first:
+      213: 7245034203333904291
+    second: Apron_sandstone_barnacled_normal_9
+  - first:
+      213: 5688858753799356672
+    second: Apron_sandstone_barnacled_normal_10
+  - first:
+      213: 3425809078332784334
+    second: Apron_sandstone_barnacled_normal_11
+  - first:
+      213: -4937287796403947065
+    second: Apron_sandstone_barnacled_normal_12
+  - first:
+      213: -4697819799881422423
+    second: Apron_sandstone_barnacled_normal_13
+  - first:
+      213: -2152168870957754819
+    second: Apron_sandstone_barnacled_normal_14
+  - first:
+      213: -7688950471247685506
+    second: Apron_sandstone_barnacled_normal_15
+  - first:
+      213: -1252361113293434337
+    second: Apron_sandstone_barnacled_normal_16
+  - first:
+      213: -172332861194359955
+    second: Apron_sandstone_barnacled_normal_17
+  - first:
+      213: 1054690402892635749
+    second: Apron_sandstone_barnacled_normal_18
+  - first:
+      213: -3629833494041157494
+    second: Apron_sandstone_barnacled_normal_19
+  - first:
+      213: -1861302043760302863
+    second: Apron_sandstone_barnacled_normal_20
+  - first:
+      213: 6488209354227183118
+    second: Apron_sandstone_barnacled_normal_21
+  - first:
+      213: -7161890246162999480
+    second: Apron_sandstone_barnacled_normal_22
+  - first:
+      213: -4691829917690256801
+    second: Apron_sandstone_barnacled_normal_23
+  - first:
+      213: -4386649087820797348
+    second: Apron_sandstone_barnacled_normal_24
+  - first:
+      213: -6752125656989378155
+    second: Apron_sandstone_barnacled_normal_25
+  - first:
+      213: 6323284993071968636
+    second: Apron_sandstone_barnacled_normal_26
+  - first:
+      213: -8849410202215742029
+    second: Apron_sandstone_barnacled_normal_27
+  - first:
+      213: 6359743898669274941
+    second: Apron_sandstone_barnacled_normal_28
+  - first:
+      213: -5739703042807243498
+    second: Apron_sandstone_barnacled_normal_29
+  - first:
+      213: 1904400393230067107
+    second: Apron_sandstone_barnacled_normal_30
+  - first:
+      213: -4330249251967846702
+    second: Apron_sandstone_barnacled_normal_31
+  - first:
+      213: -4619873781892473618
+    second: Apron_sandstone_barnacled_normal_32
+  - first:
+      213: 7764349387995390893
+    second: Apron_sandstone_barnacled_normal_33
+  - first:
+      213: -8471028481473142238
+    second: Apron_sandstone_barnacled_normal_34
+  - first:
+      213: -7204343555664501776
+    second: Apron_sandstone_barnacled_normal_35
+  - first:
+      213: 8759688579022714437
+    second: Apron_sandstone_barnacled_normal_36
+  - first:
+      213: 1962601315495501230
+    second: Apron_sandstone_barnacled_normal_37
+  - first:
+      213: 523217416235729763
+    second: Apron_sandstone_barnacled_normal_38
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d132cc979ff0ac428b3148e1bef67fc
+      internalID: 1772042157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d3a7901082304f458464b8586e0b0a1
+      internalID: 1807778000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 791a65a8b1ce30b428d3a77135f31ff1
+      internalID: 441918489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c4ca436ad6ca98478889fedcdc1ba24
+      internalID: -1373418652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59ecca7dbd84e154abcd5d7ff138e25f
+      internalID: -432595577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a86fff2abb6656f4ca879fb54b375edd
+      internalID: 219640449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79dd34c1e4034ed4a8c80e1e9d91c157
+      internalID: -464368522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a727bb3923f09b045a407207f18337af
+      internalID: 431866878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fae51f43f0b98a94c96142aa8c4ddcbe
+      internalID: 1088765608
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 315c38d83b5538146bd690e22917d087
+      internalID: 1578511560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d80c36617249c042b7858337b57ccf8
+      internalID: -464460118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 110a8d51e05b055458e13d559d6438b8
+      internalID: -371539885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ef0912d0d66a9a40bede6438e6bd460
+      internalID: -810249472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4900efc15d2b13946baf42a1c85e3426
+      internalID: -779925213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a63c12cc67f846e418d43d2c642b40ab
+      internalID: -1232837113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d35b4d4cb0d8a5741a81417903741b31
+      internalID: 1344801279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ad143be3b668424c9c686996fde652c
+      internalID: 1877246884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 792644ae0e4c7c04cb8975a2d642a7e9
+      internalID: 1086269498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbff3dce7c1b42f40aed791382846b1e
+      internalID: 891078448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8ad5731f2d260040b1a0c3141c366bb
+      internalID: 215184452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5cb9237ac945c8d4687446fb0b73b0a8
+      internalID: 687360067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5763254ab78197e4ebfdf30fc09237d5
+      internalID: 1360372480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5abead8ef81889d43b1f75c0c03e4bbd
+      internalID: -470014355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84596907f77b1f34ba6bdcaf3bc40d48
+      internalID: 260256627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 12a4ca9fb312d4d4db7ac274fdeadf36
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Apron_sandstone_barnacled_normal_c0_r0: 1772042157
+      Apron_sandstone_barnacled_normal_c0_r1: 1088765608
+      Apron_sandstone_barnacled_normal_c0_r2: 1877246884
+      Apron_sandstone_barnacled_normal_c1_r0: 1807778000
+      Apron_sandstone_barnacled_normal_c1_r1: 1578511560
+      Apron_sandstone_barnacled_normal_c1_r2: 1086269498
+      Apron_sandstone_barnacled_normal_c2_r0: 441918489
+      Apron_sandstone_barnacled_normal_c2_r1: -464460118
+      Apron_sandstone_barnacled_normal_c2_r2: 891078448
+      Apron_sandstone_barnacled_normal_c3_r0: -1373418652
+      Apron_sandstone_barnacled_normal_c3_r1: -371539885
+      Apron_sandstone_barnacled_normal_c3_r2: 215184452
+      Apron_sandstone_barnacled_normal_c4_r0: -432595577
+      Apron_sandstone_barnacled_normal_c4_r1: -810249472
+      Apron_sandstone_barnacled_normal_c4_r2: 687360067
+      Apron_sandstone_barnacled_normal_c5_r0: 219640449
+      Apron_sandstone_barnacled_normal_c5_r1: -779925213
+      Apron_sandstone_barnacled_normal_c5_r2: 1360372480
+      Apron_sandstone_barnacled_normal_c6_r0: -464368522
+      Apron_sandstone_barnacled_normal_c6_r1: -1232837113
+      Apron_sandstone_barnacled_normal_c6_r2: -470014355
+      Apron_sandstone_barnacled_normal_c7_r0: 431866878
+      Apron_sandstone_barnacled_normal_c7_r1: 1344801279
+      Apron_sandstone_barnacled_normal_c7_r2: 260256627
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
