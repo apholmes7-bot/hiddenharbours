@@ -10,7 +10,7 @@ namespace HiddenHarbours.Art
     /// these: <see cref="SpriteLightBinder"/> (the drop-on for any decor renderer) and
     /// <see cref="TreeTrunkAnchor"/> (which also owns the tree's <c>_TrunkAnchor</c> and so cannot simply
     /// be replaced by the binder without moving a second, unrelated property). Two components writing the
-    /// same six properties from two copies of the same careful code is how the mask and the normal end up
+    /// same properties from two copies of the same careful code is how the mask and the normal end up
     /// bound by one and cleared by the other. This is that code, once.</para>
     ///
     /// <para><b>⚠️ THE TWO TRAPS, both already paid for elsewhere in this project.</b>
@@ -78,12 +78,27 @@ namespace HiddenHarbours.Art
         /// </summary>
         public const string RootProperty = "_SpriteRootWS";
 
+        /// <summary>
+        /// The emitter sheet: a rig's own night glow, one byte per texel (low five bits the level, high
+        /// three a RESERVED source; <c>SpriteLightResponse.hlsl</c>'s EMITTER section). <b>OPTIONAL</b>,
+        /// and today only the village houses bake one (drop 14, L2). Read only by a shader that opts in
+        /// (<c>HiddenHarbours/LitSprite</c>); the tree shader never samples it.
+        /// </summary>
+        public const string EmitProperty = "_LightEmit";
+
+        /// <summary>Set to 1 only when an EMITTER sheet is bound, and written on every apply, so a
+        /// renderer that loses its sheet also loses its glow. At 0 the shader never computes the glow,
+        /// which is what keeps every sprite without an emitter sheet drawing exactly as it did.</summary>
+        public const string EmitChannelsProperty = "_LightEmitChannels";
+
         internal static readonly int MaskId = Shader.PropertyToID(MaskProperty);
         internal static readonly int NormalId = Shader.PropertyToID(NormalProperty);
         internal static readonly int RimGateId = Shader.PropertyToID(RimGateProperty);
         internal static readonly int RimGateChannelId = Shader.PropertyToID(RimGateChannelProperty);
         internal static readonly int ChannelsId = Shader.PropertyToID(ChannelsProperty);
         internal static readonly int RootId = Shader.PropertyToID(RootProperty);
+        internal static readonly int EmitId = Shader.PropertyToID(EmitProperty);
+        internal static readonly int EmitChannelsId = Shader.PropertyToID(EmitChannelsProperty);
 
         /// <summary>No gate bound: every pixel may rim. This is the tree, and it is the default.</summary>
         public static readonly Vector4 RimGateNone = Vector4.zero;
@@ -108,13 +123,23 @@ namespace HiddenHarbours.Art
         /// <param name="root">Where this sprite stands, in world space.</param>
         public static void Apply(
             SpriteRenderer renderer, MaterialPropertyBlock block,
-            Texture2D mask, Texture2D normal, Texture2D rimGate, Vector4 rimGateChannel, Vector3 root)
+            Texture2D mask, Texture2D normal, Texture2D rimGate, Vector4 rimGateChannel, Vector3 root) =>
+            Apply(renderer, block, mask, normal, rimGate, rimGateChannel, root, emit: null);
+
+        /// <summary>
+        /// The same publish with the rig's EMITTER sheet as well (<see cref="EmitProperty"/>), or null
+        /// for none, which is exactly the overload above.
+        /// </summary>
+        public static void Apply(
+            SpriteRenderer renderer, MaterialPropertyBlock block,
+            Texture2D mask, Texture2D normal, Texture2D rimGate, Vector4 rimGateChannel, Vector3 root,
+            Texture2D emit)
         {
             if (renderer == null || block == null) return;
 
             // GET first, then modify, then SET — see the class doc, trap 1.
             renderer.GetPropertyBlock(block);
-            Fill(block, mask, normal, rimGate, rimGateChannel, root);
+            Fill(block, mask, normal, rimGate, rimGateChannel, root, emit);
             renderer.SetPropertyBlock(block);
         }
 
@@ -129,7 +154,17 @@ namespace HiddenHarbours.Art
         /// </summary>
         public static void Fill(
             MaterialPropertyBlock block,
-            Texture2D mask, Texture2D normal, Texture2D rimGate, Vector4 rimGateChannel, Vector3 root)
+            Texture2D mask, Texture2D normal, Texture2D rimGate, Vector4 rimGateChannel, Vector3 root) =>
+            Fill(block, mask, normal, rimGate, rimGateChannel, root, emit: null);
+
+        /// <summary>
+        /// The same write with the rig's EMITTER sheet as well (<see cref="EmitProperty"/>), or null for
+        /// none, which is exactly the overload above.
+        /// </summary>
+        public static void Fill(
+            MaterialPropertyBlock block,
+            Texture2D mask, Texture2D normal, Texture2D rimGate, Vector4 rimGateChannel, Vector3 root,
+            Texture2D emit)
         {
             if (block == null) return;
 
@@ -137,6 +172,7 @@ namespace HiddenHarbours.Art
             if (mask != null) block.SetTexture(MaskId, mask);
             if (normal != null) block.SetTexture(NormalId, normal);
             if (rimGate != null) block.SetTexture(RimGateId, rimGate);
+            if (emit != null) block.SetTexture(EmitId, emit);
 
             // The response runs on the LIGHT SHEET alone. A normal is a bonus, not a prerequisite —
             // demanding both is what would have kept the plants and shrubs unlit forever.
@@ -152,6 +188,10 @@ namespace HiddenHarbours.Art
             // Where this sprite stands. w = 1 says "published", which is what lets the shader tell a real
             // stand position from the (0,0,0,0) a material default would hand it.
             block.SetVector(RootId, new Vector4(root.x, root.y, 0f, 1f));
+
+            // The glow runs on its OWN flag, written every time: 1 only with an emitter sheet bound. A
+            // renderer with none publishes 0 and the shader never computes a glow for it.
+            block.SetFloat(EmitChannelsId, emit != null ? 1f : 0f);
         }
 
         /// <summary>
@@ -183,6 +223,19 @@ namespace HiddenHarbours.Art
 
         /// <summary>The texture this renderer will hand <see cref="RimGateProperty"/>, or null.</summary>
         public static Texture RimGateOn(SpriteRenderer renderer) => TextureOn(renderer, RimGateId);
+
+        /// <summary>The texture this renderer will hand <see cref="EmitProperty"/>, or null.</summary>
+        public static Texture EmitOn(SpriteRenderer renderer) => TextureOn(renderer, EmitId);
+
+        /// <summary>The <see cref="EmitChannelsProperty"/> flag this renderer will hand the shader: 1 when
+        /// an emitter sheet reached it, 0 when none did, <paramref name="fallback"/> when nothing
+        /// published at all.</summary>
+        public static float EmitChannelsOn(SpriteRenderer renderer, float fallback = -1f)
+        {
+            var block = BlockOn(renderer);
+            if (block == null) return fallback;
+            return block.HasFloat(EmitChannelsId) ? block.GetFloat(EmitChannelsId) : fallback;
+        }
 
         /// <summary>The one-hot channel selector this renderer will hand the shader, or zero.</summary>
         public static Vector4 RimGateChannelOn(SpriteRenderer renderer)

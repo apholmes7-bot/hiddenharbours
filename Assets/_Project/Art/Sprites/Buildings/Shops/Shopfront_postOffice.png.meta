@@ -139,10 +139,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 498
-        height: 477
+        width: 496
+        height: 475
       alignment: 9
-      pivot: {x: 0.5, y: 0.33542976}
+      pivot: {x: 0.5, y: 0.33473685}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: Shopfront_postOffice_d1
       rect:
         serializedVersion: 2
-        x: 498
+        x: 496
         y: 0
-        width: 498
-        height: 477
+        width: 496
+        height: 475
       alignment: 9
-      pivot: {x: 0.5, y: 0.33542976}
+      pivot: {x: 0.5, y: 0.33473685}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: Shopfront_postOffice_d2
       rect:
         serializedVersion: 2
-        x: 996
+        x: 992
         y: 0
-        width: 498
-        height: 477
+        width: 496
+        height: 475
       alignment: 9
-      pivot: {x: 0.5, y: 0.33542976}
+      pivot: {x: 0.5, y: 0.33473685}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: Shopfront_postOffice_d3
       rect:
         serializedVersion: 2
-        x: 1494
+        x: 1488
         y: 0
-        width: 498
-        height: 477
+        width: 496
+        height: 475
       alignment: 9
-      pivot: {x: 0.5, y: 0.33542976}
+      pivot: {x: 0.5, y: 0.33473685}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: Shopfront_postOffice_d4
       rect:
         serializedVersion: 2
-        x: 1992
+        x: 1984
         y: 0
-        width: 498
-        height: 477
+        width: 496
+        height: 475
       alignment: 9
-      pivot: {x: 0.5, y: 0.33542976}
+      pivot: {x: 0.5, y: 0.33473685}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: Shopfront_postOffice_d5
       rect:
         serializedVersion: 2
-        x: 2490
+        x: 2480
         y: 0
-        width: 498
-        height: 477
+        width: 496
+        height: 475
       alignment: 9
-      pivot: {x: 0.5, y: 0.33542976}
+      pivot: {x: 0.5, y: 0.33473685}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: Shopfront_postOffice_d6
       rect:
         serializedVersion: 2
-        x: 2988
+        x: 2976
         y: 0
-        width: 498
-        height: 477
+        width: 496
+        height: 475
       alignment: 9
-      pivot: {x: 0.5, y: 0.33542976}
+      pivot: {x: 0.5, y: 0.33473685}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: Shopfront_postOffice_d7
       rect:
         serializedVersion: 2
-        x: 3486
+        x: 3472
         y: 0
-        width: 498
-        height: 477
+        width: 496
+        height: 475
       alignment: 9
-      pivot: {x: 0.5, y: 0.33542976}
+      pivot: {x: 0.5, y: 0.33473685}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

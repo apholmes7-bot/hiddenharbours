@@ -82,9 +82,14 @@ from a tile besides the contract, so a shader can relight from the maps alone; `
 header defines each one. `TerrainRelight.json` holds, per tile, its palettes (16 at most, five bands
 each), its height range and its largest pond depth, and a sha256 over each map's raw RGBA.
 
-The maps are not kept here. `Art/Editor/TerrainTexArrayBuilder.cs` packs them into the splat
-shader's arrays, and they are committed under `Assets/_Project/Art/Terrain/` together with those
-arrays: a map committed without its array would leave the two out of step.
+The maps and manifest are committed under `Assets/_Project/Art/Terrain/`. Two small
+`.hhterrain` recipes import the splat shader's packed textures into Unity's Library automatically
+(ADR 0047). The five packed native assets are no longer committed. `TerrainArrayImporter` calls
+the CPU packer in `TerrainTexArrayBuilder`; `TerrainArrayAssets` loads its named outputs.
+Changing a source PNG or manifest rebuilds the dependent recipe. The Art menus
+`Reimport Terrain Texture Arrays` and `Reimport Terrain Relight Arrays` force those imports.
+Sources must be 256-square non-interlaced 8-bit RGB/RGBA PNGs without colour-management chunks.
+An invalid source is an import error naming its path; stale outputs are refused by the loader.
 `TerrainKitPass9BytesTests` holds each array slice and each ramp row to the manifest, and
 `TerrainKitAlbedoBytesTests` holds the live albedo PNGs to it.
 

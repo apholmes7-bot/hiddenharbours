@@ -32,9 +32,17 @@ namespace HiddenHarbours.Tools.RigBaking
                 // hook after build(b) that reads root.BuildingLifecycle and NO-OPS when it is absent
                 // — so without the declaration a phase/decay bake silently renders the finished
                 // house. Loading it changes nothing for a finished build: measured byte-identical.
-                ["house"] = new RigEntry($"{RigFolder}/houseIsoRig.js", "HouseIso",
+                //
+                // ⭐ THE VILLAGE RETURN (drop 14, switched with the re-bake in #898). The returned house
+                // draws the coastal-heritage look and lights through CoastalPass.light, so the companion
+                // is its second prerequisite; with it absent the rig draws the classic look (measured:
+                // with {classic:true, coastalPass:false} it draws today's five houses pixel for pixel,
+                // VillageReturnIntakeTests). Its door ANCHOR now follows the door it draws, which is why
+                // a room registers against its own shell (InteriorRigBaker.ExteriorOptsFor). The
+                // companion names interiorProp and never house: house names IT.
+                ["house"] = new RigEntry($"{VillageReturnFolder}/houses-kit/Art/houseIsoRig.js", "HouseIso",
                                          AzimuthConvention.CounterClockwise,
-                                         new[] { "buildingLifecycle" }),
+                                         new[] { "buildingLifecycle", "coastalPass" }),
 
                 // The net-shed / storage-barn / fish-plant family — the wharf's working buildings.
                 // Same story as the house, one size worse: the 1200×1160 cell is sized to hold the

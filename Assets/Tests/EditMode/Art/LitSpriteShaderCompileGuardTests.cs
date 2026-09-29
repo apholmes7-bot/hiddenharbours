@@ -27,8 +27,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
         const string LitShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursLitSprite.shader";
         const string ShorePlantMaterialPath = "Assets/_Project/Art/Materials/LitShorePlant.mat";
         const string ShrubMaterialPath = "Assets/_Project/Art/Materials/LitShrub.mat";
+        const string VillageHouseMaterialPath = "Assets/_Project/Art/Materials/LitVillageBuilding.mat";
 
-        static readonly string[] ShippedMaterials = { ShorePlantMaterialPath, ShrubMaterialPath };
+        static readonly string[] ShippedMaterials =
+            { ShorePlantMaterialPath, ShrubMaterialPath, VillageHouseMaterialPath };
 
         [Test]
         public void LitSpriteShader_CompilesEveryShippedVariant_NoShaderErrors()

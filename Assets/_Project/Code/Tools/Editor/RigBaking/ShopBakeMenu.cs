@@ -153,6 +153,86 @@ namespace HiddenHarbours.Tools.RigBaking
             return log.ToString();
         }
 
+        /// <summary>
+        /// Bake the SHELLS and write the contract, carrying every level row from the committed contract
+        /// unchanged. The village return (drop 14, #898) re-dressed the shopfronts; the levels draw from
+        /// <c>shopBuilding</c> and the returned <c>shopInterior</c>, whose baked renders it did not change
+        /// (the owner's ruling of 09-27: the shop levels do not re-bake).
+        ///
+        /// <para>Writes NOTHING unless every shell bakes. The shells are then checked against the carried
+        /// levels in the frame that ships (<see cref="AssertBakedCellsRegister"/>) and the facing offset
+        /// is measured again, exactly as <see cref="BakeAll"/> does.</para>
+        /// </summary>
+        public static string BakeShells(out int failed)
+        {
+            ShopKit.Contract existing = ShopKit.Load();
+            if (existing?.levels == null || existing.levels.Length == 0)
+                throw new InvalidOperationException(
+                    $"[shops] The shells-only bake carries the levels from '{ShopKit.ContractPath}', and it " +
+                    "holds none. Run the full bake (shells + interiors) instead.");
+
+            failed = 0;
+            var log = new StringBuilder();
+            var shells = new List<ShopKit.Entry>();
+            int ppu = 0;
+            string convention = "";
+            long png = 0;
+            int widest = 0, tallest = 0;
+
+            foreach (var build in ShopKit.ShopSet)
+            {
+                log.AppendLine($"  {build.Key} ({build.Label}):");
+                try
+                {
+                    AssertPresetSize(build);
+
+                    var req = BuildingBakeRequest.FromPreset(
+                        "shopfront", build.Preset, RigCatalog.Get("shopfront").GlobalName,
+                        ShopsFolder, ShopKit.ShellStemFor(build.Key),
+                        ShopKit.Facings, ShopKit.ImportSizeCap);
+
+                    BuildingBakeResult r = BuildingRigBaker.Bake(req);
+                    shells.Add(ShellEntry(build, r));
+                    ppu = r.PixelsPerMetre;
+                    convention = r.MeasuredConvention.ToString();
+                    png += r.PngBytes;
+                    widest = Mathf.Max(widest, r.SheetWidth); tallest = Mathf.Max(tallest, r.SheetHeight);
+                    log.AppendLine($"    ✓ shell: {r.CellWidth}×{r.CellHeight} cell → {r.Columns}×{r.Rows} " +
+                                   $"sheet {r.SheetWidth}×{r.SheetHeight}, pivot ({r.PivotX:F1},{r.PivotY:F1}), " +
+                                   $"{r.FootprintWidthMeters:F2}×{r.FootprintLengthMeters:F2} m, " +
+                                   $"{r.PngBytes / 1024.0:F0} KiB");
+                }
+                catch (Exception e)
+                {
+                    failed++;
+                    log.AppendLine($"    ✗ shell: {e.Message}");
+                    Debug.LogError($"[shops] shell '{build.Key}' FAILED:\n{e}");
+                }
+            }
+
+            log.AppendLine();
+            if (failed > 0)
+            {
+                log.AppendLine($"  NO contract written — {failed} shell(s) failed, so the committed contract " +
+                               "stands as it was.");
+                return log.ToString();
+            }
+            if (ppu != existing.ppu)
+                throw new InvalidOperationException(
+                    $"[shops] The shells baked at {ppu} px/m but the carried levels were baked at " +
+                    $"{existing.ppu}: one contract cannot hold both. Run the full bake instead.");
+
+            var levels = new List<ShopKit.Entry>(existing.levels);
+            AssertBakedCellsRegister(shells, levels, log);
+
+            string path = WriteContract(shells, levels, ppu, convention, out int offset);
+            log.AppendLine($"  contract: {path} — {shells.Count} shell(s) baked, {levels.Count} level(s) " +
+                           $"carried unchanged, level facing = shell facing + {offset} (MEASURED).");
+            log.AppendLine($"  budget: widest shell sheet {widest}×{tallest} px; " +
+                           $"{png / 1024.0 / 1024.0:F2} MiB of shell PNG on disk.");
+            return log.ToString();
+        }
+
         // =================================================================================
         //  the guards
         // =================================================================================
@@ -425,10 +505,9 @@ namespace HiddenHarbours.Tools.RigBaking
                 conventionNote =
                     "MEASURED at bake time. All three shop rigs share one camBasis/projVert — checked per " +
                     "facing by ShopRegistrationProbe.ProjectionsAgree, not read off a header — and all " +
-                    "three put the street door on the +Y gable. ⚠️ That last part is why this kit's " +
-                    "offset is NOT the house family's 4: interiorIsoRig puts its door on −Y, so a cottage " +
-                    "room stands a half-turn from its shell. A shop room does not. Do not carry a number " +
-                    "between the two kits.",
+                    "three put the street door on the +Y gable, so a shop room registers under its " +
+                    "shell at the same facing. Each kit measures its own offset at every bake. Do not " +
+                    "carry a number between the two kits.",
                 pivotNote =
                     "pivotX/pivotY are the GROUND CENTRE of the footprint, in cropped-cell px from the " +
                     "cell's TOP-LEFT. Unity wants (pivotX/cellW, (cellH−pivotY)/cellH), which is NOT " +
@@ -500,6 +579,31 @@ namespace HiddenHarbours.Tools.RigBaking
             catch (Exception e)
             {
                 Debug.LogError($"[shops] batch bake threw: {e}");
+                EditorApplication.Exit(1);
+            }
+        }
+
+        /// <summary>
+        /// Headless entry point for <see cref="BakeShells"/>. Exits non-zero if any shell fails or the
+        /// bake throws.
+        /// </summary>
+        public static void BakeShellsFromCommandLine()
+        {
+            try
+            {
+                string report = BakeShells(out int failed);
+                AssetDatabase.Refresh();
+                Debug.Log($"[shops] (batch) shells-only bake report:\n{report}");
+
+                if (failed > 0)
+                {
+                    Debug.LogError($"[shops] {failed} shell(s) failed.");
+                    EditorApplication.Exit(1);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[shops] shells-only batch bake threw: {e}");
                 EditorApplication.Exit(1);
             }
         }
