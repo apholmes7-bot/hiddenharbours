@@ -333,8 +333,10 @@ namespace HiddenHarbours.Tests.PlayMode
             IsoCharacterFigureRenderer figure = presenter.Figure;
             Assert.AreEqual(owner.Id, presenter.FigureLife.Key,
                 "the skipper's life must be keyed by their boat's one identity, the owner id");
-            Assert.AreEqual(CharacterFigureBlink.SeedFor(skin.Id, owner.Id), presenter.FigureLife.Blink.Seed,
-                "the skipper's blink must be seeded by their skin and that identity");
+            Assert.AreEqual(CharacterFigurePresenter.KeyHash(owner.Id), presenter.FigureLife.KeyHash,
+                "the skipper's life must be handed the ONE hash of that identity, the one the presenter took");
+            Assert.AreEqual(CharacterFigureBlink.SeedFor(skin.Id, CharacterFigurePresenter.KeyHash(owner.Id)),
+                presenter.FigureLife.Blink.Seed, "the skipper's blink must be seeded by their skin and that one hash");
             Assert.IsTrue(skin.TryGetClip(presenter.DrawnStateKey, out CharacterSkinDef.SkinClip clip),
                 $"harness: '{skin.Id}' has no clip '{presenter.DrawnStateKey}'");
 

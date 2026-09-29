@@ -10,8 +10,8 @@ namespace HiddenHarbours.Core
     /// is a number of its own.</para>
     ///
     /// <para><b>Seeded, never global.</b> The draws come from a PRNG seeded by
-    /// <see cref="SeedFor"/> — the def id and the figure's stable key — so the same figure blinks the
-    /// same way on every run, and two skippers of one def still blink apart. It never touches
+    /// <see cref="SeedFor"/> — the def id and the ONE hash of the figure's key — so the same figure blinks
+    /// the same way on every run, and two skippers of one def still blink apart. It never touches
     /// <c>UnityEngine.Random</c>, and no simulation system reads it: it is presentation only
     /// (rule 5).</para>
     ///
@@ -40,16 +40,21 @@ namespace HiddenHarbours.Core
         public uint Seed { get; private set; }
 
         /// <summary>
-        /// The seed for one figure: FNV-1a over the def id, a separator and the figure's stable key
-        /// (<see cref="ICharacterFigureIdentity.FigureKey"/>; empty for a figure with none). Hashed
-        /// character by character, so no string is built.
+        /// The seed for one figure: FNV-1a over the def id, a separator and the four bytes of
+        /// <paramref name="keyHash"/>, low byte first. <paramref name="keyHash"/> is the ONE hash the
+        /// figure's presenter took of its key (<see cref="ICharacterFigureIdentity.FigureKey"/>; ADR 0044
+        /// §9), the one that also moves a villager's idle phase, and 0 for a figure with none. Hashed
+        /// character by character and byte by byte, so no string is built.
         /// </summary>
-        public static uint SeedFor(string defId, string figureKey)
+        public static uint SeedFor(string defId, uint keyHash)
         {
-            uint h = FnvOffset;
-            h = Mix(h, defId);
-            h = unchecked((h ^ '|') * FnvPrime);
-            return Mix(h, figureKey);
+            uint h = Mix(FnvOffset, defId);
+            unchecked
+            {
+                h = (h ^ '|') * FnvPrime;
+                for (int shift = 0; shift < 32; shift += 8) h = (h ^ ((keyHash >> shift) & 0xFFu)) * FnvPrime;
+            }
+            return h;
         }
 
         static uint Mix(uint h, string s)

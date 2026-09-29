@@ -13,7 +13,8 @@
   rulings that the villagers ashore draw as meshes. It supersedes §7.3's option (b) for villagers only.
   **Amended 2026-09-28 by character PR 2a (`feat/character-rig9-plays-in-full`):** §9 records how a
   rig 9 figure plays what #889 left undrawn: the face, the blink, the look, the wheel, the oars, the
-  carry clips and the rig's own ink.
+  carry clips and the rig's own ink, on a skipper aboard and a villager ashore alike, keyed by one
+  identity and one hash (§9.3).
 - **Date:** 2026-09-09
 - **Decision owner:** the owner ruled the scope; `lead-architect` ratifies the record.
   **`art-pipeline`** owns the facet look, **`tools-editor`** owns the baking, **`gameplay-systems`**
@@ -814,8 +815,8 @@ on a granted editor slot and join this PR before it leaves draft.
 the carry clips and the rig's own shading, and drew none of them (its findings 1, 2, 3, 5 and 7).
 This amendment draws them, under the charter `HANDOFF-2026-09-27-character-pr2.md` §4 and the owner's
 ruling 8 (the engine plays the blink and the gaze). It serves **P1** (a figure that turns and blinks
-on a moving deck reads as a person, not a cut-out) and **P3** (a skipper or, once item 8 lands, a
-villager who looks up as the player passes is the living coast). Nothing ships as JS: every value
+on a moving deck reads as a person, not a cut-out) and **P3** (a skipper aboard, or a villager
+ashore (§8), who looks up as the player passes is the living coast). Nothing ships as JS: every value
 below is read from `characterIsoRig9.js` at bake, in V8 (ADR 0021), into the def.
 
 ### 9.2 The face: one mesh, one draw, three numbers
@@ -844,10 +845,17 @@ below is read from `characterIsoRig9.js` at bake, in V8 (ADR 0021), into the def
 - **The blink** (`CharacterFigureBlink`) runs on the clock the clips play on, over any clip. The first
   blink falls uniformly in a first interval; each wait is uniform in the rig's interval; a double
   follows by the rig's chance after its gap, and never a third. Its generator is seeded from the def
-  id and the figure's stable key (FNV-1a into splitmix32), so the same figure blinks the same way on
-  every run. It never touches `UnityEngine.Random`, and no simulation system reads it (rule 5).
-- **The key is the stand's one identity** (`ICharacterFigureIdentity`, Core). `MooredBoat` answers its
-  owner id. A stand with none, and the player, key the empty string.
+  id and the one hash of the figure's key (FNV-1a into splitmix32), so the same figure blinks the same
+  way on every run. It never touches `UnityEngine.Random`, and no simulation system reads it (rule 5).
+- **One key, one hash.** The key is the stand's one identity, `ICharacterFigureIdentity.FigureKey`
+  (Core, beside §8's seam). `MooredBoat` answers its owner id and `NpcFigureStand` her `NpcDef` id; a
+  stand with none, and the player, key the empty string. §8.2's `ICharacterFigureAshoreStand` no longer
+  declares a key of its own: it inherits this one, so every stand, test double and pin of §8 compiles
+  and reads as before. The presenter reads the key once, in `Configure`, and hashes it once with §8.5's
+  FNV-1a (`CharacterFigurePresenter.KeyHash`). That one hash moves a villager's idle phase (§8.5,
+  unchanged: `ThePhaseMixIsPinned` is untouched) and seeds every figure's blink
+  (`CharacterFigureBlink.SeedFor(defId, keyHash)`); the key itself names the figure to the look seam.
+  This is §8.7's reading: the villager answers 2a's identity, and there is no second key scheme.
 - **The look** (`CharacterFigureLook`) is the rig's `lookAt` ported to C#, rounding as the rig
   rounds. It goes onto the neck and head locals after the clip and before the deck rock
   (`CharacterSkinPose.ApplyTurn`). It is sampled on the clip's beat (a new clip or a new frame) and
@@ -856,8 +864,9 @@ below is read from `characterIsoRig9.js` at bake, in V8 (ADR 0021), into the def
   default it answers the published player. The presenter keeps an answer only within
   `GameConfig.CharacterLookRadiusMetres` on the figure's own ground, and aims at
   `GameConfig.CharacterLookTargetHeightMetres` (1.31 m, the player's head at rest). The player's own
-  presenter never asks: the player looks at nothing (charter §8 item 2). Item 8 attaches a villager by
-  giving its ashore stand the same identity interface; Art references no Player or NPC class (rule 4).
+  presenter never asks: the player looks at nothing (charter §8 item 2). A villager ashore (§8) plays
+  the same life as a skipper aboard: `PoseAshore` steps it after her facing is written, so the look
+  reads her own ground as it lies that frame. Art references no Player or NPC class (rule 4).
 - **The bars.** A guard holds the port to the rig's own `lookAt`, run in V8 over a grid of targets,
   within 0.002°, and the golden check (share 1, targets 2 m away, inside the limits) to within 0.005°
   of the rig's own aim on every target, under each preset's bar in the kit's `golden-report.json`:
@@ -924,9 +933,11 @@ and `MeshFigureKeyline` (the ink). OFF gives exactly the picture before this ame
 - **`IsoCharacterFigureLifeTests` (13).** A default life draws exactly the clip; a blink reaches the
   face uniform and never re-skins; the look turns only the head and is held between beats; the frame
   path allocates nothing; the ink and its registry follow the switch and the figure's visibility.
-- **`CharacterSkinStateMapTests` (15, rewritten)** and **`CharacterFigurePresenterTests` (+2):** the
-  wheel and the oars through the map and their fall-backs; the stand's identity keys the life, and a
-  skipper looks at a player within the radius and not past it.
+- **`CharacterSkinStateMapTests` (15, rewritten)** and **`CharacterFigurePresenterTests` (+4):** the
+  wheel and the oars through the map and their fall-backs; the stand's identity keys the life, read and
+  hashed once at the attach; a skipper looks at a player within the radius and not past it; a villager
+  ashore is handed the hash her idle phase is moved by and her phase does not move; she looks at a
+  player nearby and not past the radius, and allocates nothing while she looks.
 
 **PlayMode:**
 
@@ -939,7 +950,8 @@ and `MeshFigureKeyline` (the ink). OFF gives exactly the picture before this ame
 
 ### 9.8 What this amendment leaves alone
 
-The presets and their looks, anchors and pose heights, the sprite fallback, and villagers ashore
-(the Planner's item 8; `CharacterMeshCastAshorePlayTests` is unchanged). Of §7.7, the helm and oars
-clips are closed for rig 9 defs: rig 9 bakes them and this amendment draws them. The rest of §7.7
-stands.
+The presets and their looks, anchors and pose heights, the sprite fallback, and §8's villagers ashore
+apart from their life: her figure, her facet id, her phase, her switch and §8.6's guards
+(`ThePhaseMixIsPinned` and `CharacterMeshCastAshorePlayTests` among them) are unchanged. Of §7.7, the
+helm and oars clips are closed for rig 9 defs: rig 9 bakes them and this amendment draws them. The
+rest of §7.7 stands.

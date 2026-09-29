@@ -39,6 +39,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private const int ChestBone = 1, NeckBone = 2, HeadBone = 3;
         private const float Edge = 0.2f, Mix = 0.3f;
 
+        // A figure's key and the ONE hash its presenter takes of it (ADR 0044 §9): the life is handed both.
+        private const string SkipperKey = "npc.skipper";
+        private static readonly uint SkipperHash = CharacterFigurePresenter.KeyHash(SkipperKey);
+
         private static readonly Vector3 RightTarget = new Vector3(3f, 1f, 1.3f);
         private static readonly Vector3 LeftTarget = new Vector3(-3f, 1f, 1.3f);
 
@@ -390,11 +394,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             double now = 0d;
             int frame = 0;
+            uint hash = CharacterFigurePresenter.KeyHash("npc.test_skipper");
             void Tick()
             {
                 now += 1.0 / 60.0;
                 frame = (int)(now * 6.0) % 2;
-                IsoCharacterFigureRenderer.Life l = life.Step(def, "npc.test_skipper", now, figure, looks: true);
+                IsoCharacterFigureRenderer.Life l = life.Step(def, "npc.test_skipper", hash, now, figure, looks: true);
                 figure.SetPose("idle", frame, l);
             }
 
@@ -490,16 +495,24 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             CharacterSkinDef def = MakeDef();
             var life = new CharacterFigureLife();
-            life.Step(def, "npc.skipper_a", 0d, null, looks: false);
+            uint a = CharacterFigurePresenter.KeyHash("npc.skipper_a");
+            uint b = CharacterFigurePresenter.KeyHash("npc.skipper_b");
+            life.Step(def, "npc.skipper_a", a, 0d, null, looks: false);
             Assert.AreEqual("npc.skipper_a", life.Key);
-            Assert.AreEqual(CharacterFigureBlink.SeedFor(def.Id, "npc.skipper_a"), life.Blink.Seed);
+            Assert.AreEqual(a, life.KeyHash);
+            Assert.AreEqual(CharacterFigureBlink.SeedFor(def.Id, a), life.Blink.Seed);
 
-            life.Step(def, "npc.skipper_b", 0d, null, looks: false);
-            Assert.AreEqual(CharacterFigureBlink.SeedFor(def.Id, "npc.skipper_b"), life.Blink.Seed, "A new key did not re-seed.");
+            life.Step(def, "npc.skipper_b", b, 0d, null, looks: false);
+            Assert.AreEqual(CharacterFigureBlink.SeedFor(def.Id, b), life.Blink.Seed, "A new key did not re-seed.");
 
-            life.Step(def, null, 0d, null, looks: false);
+            // The seed is the hash it is HANDED: the life takes no hash of its own (the one is the presenter's).
+            life.Step(def, "npc.skipper_b", a, 0d, null, looks: false);
+            Assert.AreEqual(CharacterFigureBlink.SeedFor(def.Id, a), life.Blink.Seed,
+                            "The blink was seeded by a hash of its own, not the one it was handed.");
+
+            life.Step(def, null, 0u, 0d, null, looks: false);
             Assert.AreEqual(string.Empty, life.Key);
-            Assert.AreEqual(CharacterFigureBlink.SeedFor(def.Id, string.Empty), life.Blink.Seed);
+            Assert.AreEqual(CharacterFigureBlink.SeedFor(def.Id, 0u), life.Blink.Seed);
         }
 
         [Test]
@@ -509,13 +522,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var life = new CharacterFigureLife();
             bool blinked = false;
             for (double t = 0; t < 10 && !blinked; t += 0.01)
-                blinked = life.Step(def, "npc.skipper", t, null, looks: false).BlinkEyes != CharacterSkinDef.NoFaceGroup;
+                blinked = life.Step(def, SkipperKey, SkipperHash, t, null, looks: false).BlinkEyes != CharacterSkinDef.NoFaceGroup;
             Assert.IsTrue(blinked, "harness: ten seconds without a blink");
 
             _config.CharacterBlink = false;
             var quiet = new CharacterFigureLife();
             for (double t = 0; t < 10; t += 0.01)
-                Assert.AreEqual(CharacterSkinDef.NoFaceGroup, quiet.Step(def, "npc.skipper", t, null, looks: false).BlinkEyes,
+                Assert.AreEqual(CharacterSkinDef.NoFaceGroup, quiet.Step(def, SkipperKey, SkipperHash, t, null, looks: false).BlinkEyes,
                     "The blink played with its switch off.");
         }
 
@@ -530,14 +543,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
             _config.CharacterLookRadiusMetres = 3f;
             _config.CharacterLookTargetHeightMetres = 1.25f;
 
-            IsoCharacterFigureRenderer.Life l = life.Step(def, "npc.skipper", 0d, figure, looks: true);
-            Assert.AreEqual("npc.skipper", spy.Key);
+            IsoCharacterFigureRenderer.Life l = life.Step(def, SkipperKey, SkipperHash, 0d, figure, looks: true);
+            Assert.AreEqual(SkipperKey, spy.Key);
             Assert.IsTrue(l.HasTarget);
             Assert.AreEqual(new Vector3(1f, 2f, 1.25f), l.Target, "The target is the ground point raised to the aim height.");
             Assert.IsTrue(l.HeadLook && l.EyeLook);
 
             spy.Answer = new Vector3(3f, 1f, 0f);
-            Assert.IsFalse(life.Step(def, "npc.skipper", 0d, figure, looks: true).HasTarget,
+            Assert.IsFalse(life.Step(def, SkipperKey, SkipperHash, 0d, figure, looks: true).HasTarget,
                 "A target past the radius was kept.");
         }
 
@@ -550,20 +563,20 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var spy = new Spy { Answer = new Vector3(1f, 1f, 0f) };
             CharacterLookTargets.Source = spy;
 
-            Assert.IsFalse(life.Step(def, "player", 0d, figure, looks: false).HasTarget);
+            Assert.IsFalse(life.Step(def, "player", CharacterFigurePresenter.KeyHash("player"), 0d, figure, looks: false).HasTarget);
             Assert.AreEqual(0, spy.Asked, "The player's own figure asked for something to look at.");
 
             _config.CharacterHeadLook = false;
-            IsoCharacterFigureRenderer.Life eyesOnly = life.Step(def, "npc.skipper", 0d, figure, looks: true);
+            IsoCharacterFigureRenderer.Life eyesOnly = life.Step(def, SkipperKey, SkipperHash, 0d, figure, looks: true);
             Assert.IsTrue(eyesOnly.HasTarget && !eyesOnly.HeadLook && eyesOnly.EyeLook);
 
             _config.CharacterEyeLook = false;
             int asked = spy.Asked;
-            Assert.IsFalse(life.Step(def, "npc.skipper", 0d, figure, looks: true).HasTarget);
+            Assert.IsFalse(life.Step(def, SkipperKey, SkipperHash, 0d, figure, looks: true).HasTarget);
             Assert.AreEqual(asked, spy.Asked, "Both halves off, and the seam was still asked.");
 
             _config.CharacterHeadLook = true;
-            IsoCharacterFigureRenderer.Life headOnly = life.Step(def, "npc.skipper", 0d, figure, looks: true);
+            IsoCharacterFigureRenderer.Life headOnly = life.Step(def, SkipperKey, SkipperHash, 0d, figure, looks: true);
             Assert.IsTrue(headOnly.HasTarget && headOnly.HeadLook && !headOnly.EyeLook);
         }
     }

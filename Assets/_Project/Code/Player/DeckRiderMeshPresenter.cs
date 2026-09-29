@@ -116,8 +116,9 @@ namespace HiddenHarbours.Player
         private string _stateKey;
         private double _stateStartSeconds;
 
-        // Character PR 2a: her blink (one schedule, aboard and ashore alike) and the carry-pose table,
-        // loaded once on first ask (a missing table carries nothing).
+        // Character PR 2a: her blink (one schedule, aboard and ashore alike, seeded by her skin alone: she
+        // has no key, hash 0) and the carry-pose table, loaded once on first ask (a missing table carries
+        // nothing).
         private readonly CharacterFigureLife _life = new CharacterFigureLife();
         private CharacterCarryPoseDef _carryPoses;
         private bool _carryPosesLoaded;
@@ -323,7 +324,7 @@ namespace HiddenHarbours.Player
                         ? 0
                         : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
 
-            IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, now, _figure, looks: false);
+            IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _figure, looks: false);
             if (!_figure.SetPose(stateKey, frame, life)) { Stop($"could not pose '{stateKey}' frame {frame}"); return; }
 
             Place(stand, skin);
@@ -441,7 +442,7 @@ namespace HiddenHarbours.Player
             int frame = SabotageHoldFrameZero
                         ? 0
                         : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
-            IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, now, _ashoreFigure, looks: false);
+            IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _ashoreFigure, looks: false);
             if (!_ashoreFigure.SetPose(stateKey, frame, life)) { HoldSprite($"could not pose '{stateKey}' frame {frame}"); return; }
 
             // Her facing: the sprite's own compass heading, through the def's MEASURED azimuth sign. The

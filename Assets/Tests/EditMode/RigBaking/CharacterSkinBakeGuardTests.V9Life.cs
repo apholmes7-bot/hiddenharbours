@@ -295,7 +295,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
                 // The schedule plays the rig's own four-frame blink clip, sampled at each frame's middle.
                 var blink = new CharacterFigureBlink();
-                blink.Reset(def, CharacterFigureBlink.SeedFor(def.Id, "guard"));
+                blink.Reset(def, CharacterFigureBlink.SeedFor(def.Id, 0u));   // a figure with no key of its own
                 blink.EyesAt(0d);
                 double start = blink.NextStart;
                 Assert.That(start, Is.InRange(0d, (double)def.BlinkIntervalSeconds.y),

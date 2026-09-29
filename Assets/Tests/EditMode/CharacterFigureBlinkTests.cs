@@ -20,6 +20,14 @@ namespace HiddenHarbours.Tests.EditMode
         const int Open = 1, Half = 2, Shut = 3;
         const float StepA = 0.05f, StepB = 0.1f, WaitLo = 1f, WaitHi = 3f, Gap = 0.2f;
 
+        // Two figures' key hashes. A blink is seeded by the ONE hash its presenter took of the figure's key
+        // (ADR 0044 §9); these two are that hash of npc.test_a and npc.test_b, as
+        // CharacterFigurePresenterTests.ThePhaseMixIsPinned pins them.
+        const uint HashA = 0x9944F2BAu, HashB = 0x9844F127u;
+
+        /// <summary>Figure <paramref name="k"/> of a crowd: a hash of its own, spread as a hash spreads.</summary>
+        static uint CrowdHash(int k) => unchecked((uint)(k + 1) * 2654435761u);
+
         readonly List<Object> _made = new List<Object>();
 
         [TearDown]
@@ -73,7 +81,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheSameSeedBlinksTheSameWay()
         {
             CharacterSkinDef def = Def(0.3f);
-            uint seed = CharacterFigureBlink.SeedFor(def.Id, "npc.harbour_master");
+            uint seed = CharacterFigureBlink.SeedFor(def.Id, HashA);
             var a = new CharacterFigureBlink();
             var b = new CharacterFigureBlink();
             a.Reset(def, seed);
@@ -87,8 +95,8 @@ namespace HiddenHarbours.Tests.EditMode
         public void TwoFiguresOfOneDefBlinkApart()
         {
             CharacterSkinDef def = Def(0.3f);
-            uint sa = CharacterFigureBlink.SeedFor(def.Id, "npc.skipper_a");
-            uint sb = CharacterFigureBlink.SeedFor(def.Id, "npc.skipper_b");
+            uint sa = CharacterFigureBlink.SeedFor(def.Id, HashA);
+            uint sb = CharacterFigureBlink.SeedFor(def.Id, HashB);
             Assert.AreNotEqual(sa, sb, "Two figures of one def share a seed.");
             var a = new CharacterFigureBlink();
             var b = new CharacterFigureBlink();
@@ -101,12 +109,20 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheSeedHashesTheDefAndTheKeyApart()
         {
-            Assert.AreEqual(CharacterFigureBlink.SeedFor("skin.fisher", "a"), CharacterFigureBlink.SeedFor("skin.fisher", "a"));
-            Assert.AreNotEqual(CharacterFigureBlink.SeedFor("ab", "c"), CharacterFigureBlink.SeedFor("a", "bc"),
-                "The def id and the figure key run together.");
-            Assert.AreNotEqual(CharacterFigureBlink.SeedFor("skin.fisher", "a"), CharacterFigureBlink.SeedFor("skin.nan", "a"),
+            Assert.AreEqual(CharacterFigureBlink.SeedFor("skin.fisher", HashA), CharacterFigureBlink.SeedFor("skin.fisher", HashA));
+            Assert.AreNotEqual(CharacterFigureBlink.SeedFor("skin.fisher", HashA), CharacterFigureBlink.SeedFor("skin.fisher", HashB),
+                "Two figure keys give one def the same seed.");
+            Assert.AreNotEqual(CharacterFigureBlink.SeedFor("skin.fisher", HashA), CharacterFigureBlink.SeedFor("skin.nan", HashA),
                 "Two defs give one figure key the same seed.");
-            Assert.DoesNotThrow(() => CharacterFigureBlink.SeedFor(null, null));
+            // Every byte of the hash is read, not only the low one.
+            for (int shift = 0; shift < 32; shift += 8)
+                Assert.AreNotEqual(CharacterFigureBlink.SeedFor("skin.fisher", 0u), CharacterFigureBlink.SeedFor("skin.fisher", 1u << shift),
+                    $"The hash's byte at bit {shift} is not read.");
+            // Pinned, so the same person blinks the same way on every run and machine: FNV-1a over the def
+            // id's chars, '|', then the hash's four bytes, low byte first.
+            Assert.AreEqual(0x07687BCEu, CharacterFigureBlink.SeedFor("skin.fisher", HashA));
+            Assert.AreEqual(0xC10C79ADu, CharacterFigureBlink.SeedFor("skin.fisher", 0u), "No key: the def id and four zero bytes.");
+            Assert.DoesNotThrow(() => CharacterFigureBlink.SeedFor(null, 0u));
         }
 
         [Test]
@@ -117,7 +133,7 @@ namespace HiddenHarbours.Tests.EditMode
             double lo = double.MaxValue, hi = double.MinValue;
             for (int k = 0; k < 400; k++)
             {
-                blink.Reset(def, CharacterFigureBlink.SeedFor(def.Id, "figure " + k));
+                blink.Reset(def, CharacterFigureBlink.SeedFor(def.Id, CrowdHash(k)));
                 const double t0 = 100.0;
                 blink.EyesAt(t0);
                 double first = blink.NextStart - t0;
@@ -134,7 +150,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             CharacterSkinDef def = Def(0.5f);
             var blink = new CharacterFigureBlink();
-            blink.Reset(def, CharacterFigureBlink.SeedFor(def.Id, "npc.packer"));
+            blink.Reset(def, CharacterFigureBlink.SeedFor(def.Id, HashB));
             List<double> starts = Starts(blink, 0, 900, 1.0 / 120.0);
             Assert.Greater(starts.Count, 200, "Too few blinks to judge the waits by.");
 
@@ -201,7 +217,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheScheduleNeverDrawsFromUnityRandom()
         {
             CharacterSkinDef def = Def(0.3f);
-            uint seed = CharacterFigureBlink.SeedFor(def.Id, "npc.nan");
+            uint seed = CharacterFigureBlink.SeedFor(def.Id, HashA);
             Random.State saved = Random.state;
             try
             {
