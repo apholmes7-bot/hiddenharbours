@@ -165,7 +165,7 @@ namespace HiddenHarbours.Art
         /// <para>⚠ <paramref name="array512"/> is IGNORED. The 512-class array retired with the px
         /// flip (2026-09-17, owner ruling A2); the parameter stays only so the two region builders —
         /// exporter-tracked, left untouched on purpose — compile as they are. Drop it at their next
-        /// legitimate edit (<c>TerrainTexArrayBuilder.Array512Path</c> carries the same debt).</para></summary>
+        /// API cleanup; callers now pass null and load detail through TerrainArrayAssets.</para></summary>
         public void ConfigureDetail(Texture2DArray array256, Texture2DArray array512)
         {
             _detailArray256 = array256;

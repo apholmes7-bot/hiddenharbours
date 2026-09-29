@@ -144,15 +144,15 @@ namespace HiddenHarbours.App.Editor
             if (skies == null) return Refuse(why);
             RelightTile[] tiles = LoadPalettes(out why);
             if (tiles == null) return Refuse(why);
+            var relight = TerrainArrayAssets.LoadRelightRequired();
             var arrays = new Arrays
             {
-                Detail = AssetDatabase.LoadAssetAtPath<Texture2DArray>(TerrainTexArrayBuilder.Array256Path),
-                Normal = AssetDatabase.LoadAssetAtPath<Texture2DArray>(TerrainTexArrayBuilder.RelightArrayPaths[0]),
-                Light = AssetDatabase.LoadAssetAtPath<Texture2DArray>(TerrainTexArrayBuilder.RelightArrayPaths[1]),
-                Marks = AssetDatabase.LoadAssetAtPath<Texture2DArray>(TerrainTexArrayBuilder.RelightArrayPaths[2]),
-                Ramp = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainTexArrayBuilder.RelightRampPath),
+                Detail = TerrainArrayAssets.LoadDetailRequired(),
+                Normal = relight.Normal,
+                Light = relight.Light,
+                Marks = relight.Detail,
+                Ramp = relight.Ramp,
             };
-            if (arrays.Detail == null) return Refuse($"no detail array at {TerrainTexArrayBuilder.Array256Path}.");
 
             Scene previous = SceneManager.GetActiveScene();
             bool additive = previous.IsValid() && !string.IsNullOrEmpty(previous.path);

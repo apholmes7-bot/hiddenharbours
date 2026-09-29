@@ -1605,12 +1605,8 @@ namespace HiddenHarbours.App.Editor
                 // The terrain material kit (ADR 0028 PR 2): pack the detail arrays (derived, GUID-
                 // stable) and wire them plus any painted splat maps. Both no-op safely when the kit
                 // or the paint is absent — the shader falls back to flat band colours / bands-only.
-                HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Build();
                 splat.ConfigureDetail(
-                    AssetDatabase.LoadAssetAtPath<Texture2DArray>(
-                        HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Array256Path),
-                    AssetDatabase.LoadAssetAtPath<Texture2DArray>(
-                        HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Array512Path));
+                    HiddenHarbours.Art.Editor.TerrainArrayAssets.LoadDetailRequired(), null);
                 // Paths from TerrainSplatAssets, not literals here: the map count grew from three
                 // to four with kit v2 and to five with kit v3's reef beds, and a second spelling of
                 // the same filenames is exactly the duplicate that wires null in silence once the
