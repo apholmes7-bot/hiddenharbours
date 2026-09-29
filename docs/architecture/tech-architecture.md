@@ -242,6 +242,21 @@ never referencing Fishing. The contract's rules:
 Guarded by `Assets/Tests/EditMode/FishingV2ContractTests.cs` (frozen ints, additive-struct,
 Def invariants).
 
+### 4.5 The helm's footprint (overlays and the camera keep clear of the helm without referencing UI) — ADR 0050
+
+**`Core.HelmFootprint` + `Core.HelmFootprintArea` + `Core.HelmFootprintChanged`** — one statement of
+what the helm's UI covers at the bottom of the screen, in screen pixels (bottom-left origin): nothing,
+a full-width band's height, or a card's rect. The helm host (`UI/HelmOverlayHost`) publishes today's
+card, its window and title strip included, and says nothing with no helm in her hand, under hide-all
+or with the window hidden; H2's band publishes `FullWidthBand(144·k)`. The readers keep clear through
+Core only: the dev toast (`Player`), the interact popup and the HUD's nav cluster (`UI`), the quest note
+(`World`), each via the shared `LiftToClear` (a band raises the floor; a card lifts only what reaches
+it, above it, or beside it first for the nav cluster); and the camera (`App/CameraFollow`), which eases
+the boat up by `GameConfig.HelmFootprint.CameraBandShare` of a full-width band (0.5, ruled), in metres
+by the framing on screen, added with the look-ahead ahead of the feel, the snap and the clamp, and
+never for a card. Change-detected, so a quiet frame is a struct compare. Presentation state: unsaved
+(rule 5), nothing published headless, so every reader stands where it did.
+
 ## 5. Boat & entity architecture (composition)
 
 **Character clothing interchange (CW-01, 2026-09-13).** Core now defines the version-1

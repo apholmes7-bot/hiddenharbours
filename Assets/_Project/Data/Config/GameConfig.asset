@@ -223,6 +223,9 @@ MonoBehaviour:
     CompactScale: 0.55
     MinScale: 0.35
     MaxScale: 3
+  HelmFootprint:
+    CameraBandShare: 0.5
+    CameraEaseSeconds: 0.4
   Strike:
     PressStrikes: 1
     PullBackStrikes: 1

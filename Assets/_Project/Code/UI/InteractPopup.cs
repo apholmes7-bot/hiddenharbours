@@ -83,6 +83,11 @@ namespace HiddenHarbours.UI
         private bool _shown;
         private string _painted;
 
+        // What the panel is placed FOR: the helm's footprint and the screen (ADR 0050). Re-placed only
+        // on a change, so a quiet frame costs a struct compare and two int compares.
+        private HelmFootprintArea _placedFor;
+        private int _placedW = -1, _placedH = -1;
+
         private void Awake()
         {
             // A popup stood up by hand (a test, a review scene) claims the slot if nothing has yet, so the
@@ -128,6 +133,25 @@ namespace HiddenHarbours.UI
             InteractOfferChanged live = InteractOffer.Current;
             if (!live.SameAs(_offer)) _offer = live;
             Apply();
+            Place();
+        }
+
+        /// <summary>
+        /// Keep the panel out of what the helm's UI covers (ADR 0050) — read from the Core footprint
+        /// seam, never from the helm's own classes. Belt and braces: the helm and the cab already
+        /// suppress the popup (<see cref="Suppressed"/>), so this only matters where an offer stands
+        /// beside a helm card. Nothing covered puts it exactly where it was built.
+        /// </summary>
+        private void Place()
+        {
+            if (_panel == null) return;
+            HelmFootprintArea covered = HelmFootprint.Current;
+            int w = Screen.width, h = Screen.height;
+            if (covered == _placedFor && w == _placedW && h == _placedH) return;
+            _placedFor = covered;
+            _placedW = w;
+            _placedH = h;
+            _panel.anchoredPosition = InteractPopupLayout.PanelAnchoredPosition(in covered, w, h);
         }
 
         /// <summary>
