@@ -46,7 +46,7 @@ namespace HiddenHarbours.App.Editor
     /// lines of per-object dressing restated here (a rock's name, a hole's id and order, a mark's
     /// phase share) are held to the builder's own code by <c>StPetersLayerRefreshTests</c>.</para>
     /// </summary>
-    public static class StPetersLayerRefresh
+    public static partial class StPetersLayerRefresh
     {
         // =====================================================================================
         //  names and tolerances
@@ -506,9 +506,14 @@ namespace HiddenHarbours.App.Editor
                         throw new Refusal($"{Step}: {op.Name} would write a blank line.");
                 }
 
-                HashSet<long> mine = before.SubtreeOf(RootGameObject);
+                // A root the scene does not hold yet is one this patch ADDS: none of it is in the scene before,
+                // and the one document outside it the patch may touch is the scene's SceneRoots list, which a
+                // new root must join (RootsEditOf).
+                bool newRoot = !before.Contains(RootGameObject);
+                HashSet<long> mine = newRoot ? new HashSet<long>() : before.SubtreeOf(RootGameObject);
+                long rootsEdit = newRoot ? RootsEditOf(before) : 0;
                 foreach (Op op in _ops)
-                    if (op.Kind != OpKind.Add && !mine.Contains(op.FileId))
+                    if (op.Kind != OpKind.Add && op.FileId != rootsEdit && !mine.Contains(op.FileId))
                         throw new Refusal($"{Step}: {op.Name} (&{op.FileId}) is outside the '{Root}' root.");
 
                 SceneYaml after = Apply(before);
@@ -536,6 +541,35 @@ namespace HiddenHarbours.App.Editor
                 }
                 _sealed = true;
                 return this;
+            }
+
+            /// <summary>
+            /// A NEW root's one edit outside it: the scene's SceneRoots list, which must list the root's
+            /// transform once more, at its end, and change nothing else. The patch must add the root's
+            /// GameObject under the root's name, and its transform at the top of the hierarchy. Returns the
+            /// SceneRoots document's fileID.
+            /// </summary>
+            long RootsEditOf(SceneYaml before)
+            {
+                Op go = _ops.FirstOrDefault(o => o.Kind == OpKind.Add && o.FileId == RootGameObject)
+                        ?? throw new Refusal($"{Step}: the scene holds no '{Root}' (&{RootGameObject}), and the patch does not add it.");
+                var goDoc = new Doc(go.After);
+                if (goDoc.ClassId != GameObjectClass || goDoc.Field("m_Name") != Root)
+                    throw new Refusal($"{Step}: &{RootGameObject} is not a GameObject named '{Root}'.");
+                List<long> comps = goDoc.FieldRefs("m_Component");
+                Op tr = _ops.FirstOrDefault(o => o.Kind == OpKind.Add && comps.Contains(o.FileId) &&
+                                                 new Doc(o.After).ClassId == TransformClass)
+                        ?? throw new Refusal($"{Step}: the new root '{Root}' adds no transform.");
+                if (new Doc(tr.After).FieldRef("m_Father") != 0)
+                    throw new Refusal($"{Step}: the new root '{Root}' is not at the top of the hierarchy.");
+
+                Doc list = SceneRootsOf(before);
+                List<Op> edits = _ops.Where(o => o.FileId == list.FileId).ToList();
+                if (edits.Count != 1 || edits[0].Kind != OpKind.Edit)
+                    throw new Refusal($"{Step}: the new root '{Root}' must join the scene's SceneRoots list by one named edit.");
+                if (edits[0].Before != list.Text || edits[0].After != WithRootListed(list.Text, tr.FileId))
+                    throw new Refusal($"{Step}: {edits[0].Name} does more than list '{Root}' among the scene's roots.");
+                return list.FileId;
             }
 
             public string Summary()
@@ -590,6 +624,14 @@ namespace HiddenHarbours.App.Editor
             readonly HashSet<long> _taken;
 
             public IdAllocator(SceneYaml scene) { _taken = new HashSet<long>(scene.Docs.Select(d => d.FileId)); }
+
+            /// <summary>An allocator that may hand back the ids in <paramref name="reusable"/>: a step that writes
+            /// its own root whole draws the same ids on every plan, so a second plan finds its documents where
+            /// the first left them.</summary>
+            public IdAllocator(SceneYaml scene, ICollection<long> reusable)
+            {
+                _taken = new HashSet<long>(scene.Docs.Select(d => d.FileId).Where(id => !reusable.Contains(id)));
+            }
 
             public long Next(string key)
             {
@@ -743,6 +785,30 @@ namespace HiddenHarbours.App.Editor
                     map.TryGetValue(long.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture), out long n)
                         ? $"{{fileID: {n.ToString(CultureInfo.InvariantCulture)}}}"
                         : m.Value);
+            return string.Join("\n", lines);
+        }
+
+        /// <summary>The scene's one SceneRoots document: the list of its top-level transforms.</summary>
+        static Doc SceneRootsOf(SceneYaml scene)
+        {
+            List<Doc> hits = scene.Docs.Where(d => d.ClassId == SceneRootsClass).ToList();
+            if (hits.Count != 1) throw new Refusal($"the scene holds {hits.Count} SceneRoots documents; a new root needs exactly one.");
+            return hits[0];
+        }
+
+        /// <summary>A SceneRoots document with one more root listed at the end of <c>m_Roots</c>. Refuses a
+        /// root that is listed already.</summary>
+        static string WithRootListed(string rootsDoc, long rootTransform)
+        {
+            var lines = new List<string>(rootsDoc.Split('\n'));
+            int at = lines.FindIndex(l => l == "  m_Roots:" || l == "  m_Roots: []");
+            if (at < 0) throw new Refusal("the SceneRoots document has no m_Roots.");
+            string entry = $"  - {{fileID: {rootTransform.ToString(CultureInfo.InvariantCulture)}}}";
+            int end = at + 1;
+            for (; end < lines.Count && lines[end].StartsWith("  - ", StringComparison.Ordinal); end++)
+                if (lines[end] == entry) throw new Refusal($"&{rootTransform} is listed among the scene's roots already.");
+            lines[at] = "  m_Roots:";
+            lines.Insert(end, entry);
             return string.Join("\n", lines);
         }
 
