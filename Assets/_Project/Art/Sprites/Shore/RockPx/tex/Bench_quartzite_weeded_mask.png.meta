@@ -1,0 +1,769 @@
+fileFormatVersion: 2
+guid: b457edf57b53dae47acf371506267fdf
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3022279481037167559
+    second: Bench_quartzite_weeded_mask_0
+  - first:
+      213: 3961494412763121881
+    second: Bench_quartzite_weeded_mask_1
+  - first:
+      213: -6903889693785626735
+    second: Bench_quartzite_weeded_mask_2
+  - first:
+      213: -2016967156615643292
+    second: Bench_quartzite_weeded_mask_3
+  - first:
+      213: -1617495789658883897
+    second: Bench_quartzite_weeded_mask_4
+  - first:
+      213: -2095724754114957479
+    second: Bench_quartzite_weeded_mask_5
+  - first:
+      213: -7753733560648860398
+    second: Bench_quartzite_weeded_mask_6
+  - first:
+      213: 3804783396925723557
+    second: Bench_quartzite_weeded_mask_7
+  - first:
+      213: 3023783020458834862
+    second: Bench_quartzite_weeded_mask_8
+  - first:
+      213: -5757637854809163615
+    second: Bench_quartzite_weeded_mask_9
+  - first:
+      213: 216462382298145236
+    second: Bench_quartzite_weeded_mask_10
+  - first:
+      213: -7854652299523853750
+    second: Bench_quartzite_weeded_mask_11
+  - first:
+      213: -600112296213604701
+    second: Bench_quartzite_weeded_mask_12
+  - first:
+      213: -8441506355758632929
+    second: Bench_quartzite_weeded_mask_13
+  - first:
+      213: 4784050464534743835
+    second: Bench_quartzite_weeded_mask_14
+  - first:
+      213: 3066767518896772673
+    second: Bench_quartzite_weeded_mask_15
+  - first:
+      213: 1954087436608935443
+    second: Bench_quartzite_weeded_mask_16
+  - first:
+      213: -2631443540997917487
+    second: Bench_quartzite_weeded_mask_17
+  - first:
+      213: -8422537811563374447
+    second: Bench_quartzite_weeded_mask_18
+  - first:
+      213: 4690503396466741272
+    second: Bench_quartzite_weeded_mask_19
+  - first:
+      213: -5676018215027993874
+    second: Bench_quartzite_weeded_mask_20
+  - first:
+      213: -1446379500135845801
+    second: Bench_quartzite_weeded_mask_21
+  - first:
+      213: -6226522281798221239
+    second: Bench_quartzite_weeded_mask_22
+  - first:
+      213: -7551256686308183883
+    second: Bench_quartzite_weeded_mask_23
+  - first:
+      213: 3605128455994866604
+    second: Bench_quartzite_weeded_mask_24
+  - first:
+      213: -8804790748604212042
+    second: Bench_quartzite_weeded_mask_25
+  - first:
+      213: -4515407623229558258
+    second: Bench_quartzite_weeded_mask_26
+  - first:
+      213: 8590023715203155354
+    second: Bench_quartzite_weeded_mask_27
+  - first:
+      213: 7903224290718462088
+    second: Bench_quartzite_weeded_mask_28
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf011afaed334de49b6b398787de6c83
+      internalID: 1314320335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73ae95f8c29a9594fbf29d88419b3166
+      internalID: 513716512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1514481b6d3cb2746afe1486a61a6476
+      internalID: 609949247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08b99d4267965214399704dcef0ba989
+      internalID: -1168916617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91a537f3153cf3742aaeb8f76a269c19
+      internalID: -1634119096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c4ec993db0df264f8c827066c561ba4
+      internalID: -1921699230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8ec132a51c44024e8ac388a0ceaa70d
+      internalID: -2030920843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7359144c8fb0cdc49a08b7587ba78006
+      internalID: -1067311983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb473491d5b5fcf4885c30391f312142
+      internalID: 1066026298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0ddc4f19d5b08d4893639a3364d0020
+      internalID: -1633722980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ad1d85354345854497745a46364c3ce
+      internalID: -1926822724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d01a675296d00ef418d3e722033221c1
+      internalID: -1424103811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d9da8259c43f474fbd247fc6de52256
+      internalID: -206159279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7fb224ec79723e64d83ac2c26328f750
+      internalID: 1799689563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e55a7f30e6133348aaa78f551cf3b80
+      internalID: 1067588148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ac4bdbd1474bf84c9f1c4a0cd492653
+      internalID: 479786576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe2da6059e1fe3f40823ae1e81817d4b
+      internalID: 1312752450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d27f794cd716f9458eee970c7998504
+      internalID: 339306236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0638e369fe950f488e8fe4041a0d1e6
+      internalID: -699359649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 640458a8bc981984ea7e89cd2feab6a4
+      internalID: 535171217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ae90c4aa2baf4241a861eae4d4155ae
+      internalID: 175787497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10b6bea8d93850446a6c18bb7ee7a5cf
+      internalID: -429476583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89c1ba7ce1ddf3547ae7fd07ca7d7aa0
+      internalID: -473905383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_weeded_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7b1dc883af76494f8c0d3e7281ecc63
+      internalID: 937291931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 6792f77b5fe9517478036f52c3e0e3bd
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Bench_quartzite_weeded_mask_c0_r0: 1314320335
+      Bench_quartzite_weeded_mask_c0_r1: 1066026298
+      Bench_quartzite_weeded_mask_c0_r2: 1312752450
+      Bench_quartzite_weeded_mask_c1_r0: 513716512
+      Bench_quartzite_weeded_mask_c1_r1: -1633722980
+      Bench_quartzite_weeded_mask_c1_r2: 339306236
+      Bench_quartzite_weeded_mask_c2_r0: 609949247
+      Bench_quartzite_weeded_mask_c2_r1: -1926822724
+      Bench_quartzite_weeded_mask_c2_r2: -699359649
+      Bench_quartzite_weeded_mask_c3_r0: -1168916617
+      Bench_quartzite_weeded_mask_c3_r1: -1424103811
+      Bench_quartzite_weeded_mask_c3_r2: 535171217
+      Bench_quartzite_weeded_mask_c4_r0: -1634119096
+      Bench_quartzite_weeded_mask_c4_r1: -206159279
+      Bench_quartzite_weeded_mask_c4_r2: 175787497
+      Bench_quartzite_weeded_mask_c5_r0: -1921699230
+      Bench_quartzite_weeded_mask_c5_r1: 1799689563
+      Bench_quartzite_weeded_mask_c5_r2: -429476583
+      Bench_quartzite_weeded_mask_c6_r0: -2030920843
+      Bench_quartzite_weeded_mask_c6_r1: 1067588148
+      Bench_quartzite_weeded_mask_c6_r2: -473905383
+      Bench_quartzite_weeded_mask_c7_r0: -1067311983
+      Bench_quartzite_weeded_mask_c7_r1: 479786576
+      Bench_quartzite_weeded_mask_c7_r2: 937291931
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

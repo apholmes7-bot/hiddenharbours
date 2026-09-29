@@ -1532,12 +1532,8 @@ namespace HiddenHarbours.App.Editor
             // The terrain material kit: pack the detail arrays (derived, GUID-stable) and wire them plus
             // any painted splat maps. Both no-op safely when the kit or the paint is absent — the shader
             // falls back to flat band colours / bands-only.
-            HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Build();
             splat.ConfigureDetail(
-                AssetDatabase.LoadAssetAtPath<Texture2DArray>(
-                    HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Array256Path),
-                AssetDatabase.LoadAssetAtPath<Texture2DArray>(
-                    HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Array512Path));
+                HiddenHarbours.Art.Editor.TerrainArrayAssets.LoadDetailRequired(), null);
 
             // Paths from TerrainSplatAssets with THIS region's stem, never literals here — the stem
             // overloads (#522) are what keep a second painted region off the island's maps.

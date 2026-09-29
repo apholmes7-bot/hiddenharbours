@@ -1,0 +1,344 @@
+fileFormatVersion: 2
+guid: eccc6afc2f9abec469841859765785b4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3915320352474366103
+    second: Village_generalStore_mask_0
+  - first:
+      213: 4042223674105544899
+    second: Village_generalStore_mask_1
+  - first:
+      213: 4479555160283602744
+    second: Village_generalStore_mask_2
+  - first:
+      213: -1702370888018537246
+    second: Village_generalStore_mask_3
+  - first:
+      213: -4105191861149585124
+    second: Village_generalStore_mask_4
+  - first:
+      213: 3124374697768811397
+    second: Village_generalStore_mask_5
+  - first:
+      213: 7917407314192377305
+    second: Village_generalStore_mask_6
+  - first:
+      213: -6447290216514676826
+    second: Village_generalStore_mask_7
+  - first:
+      213: -6160485518606328036
+    second: Village_generalStore_mask_8
+  - first:
+      213: 4062745457082635454
+    second: Village_generalStore_mask_9
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Village_generalStore_mask_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 429
+        width: 412
+        height: 429
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3053613}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78534d431333e914182f9d6ac904f3f9
+      internalID: 2089113499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_generalStore_mask_d1
+      rect:
+        serializedVersion: 2
+        x: 412
+        y: 429
+        width: 412
+        height: 429
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3053613}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 539db129b45bd7c4d83aa4851edd370f
+      internalID: -1887702574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_generalStore_mask_d2
+      rect:
+        serializedVersion: 2
+        x: 824
+        y: 429
+        width: 412
+        height: 429
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3053613}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7090db56c88b01d42a77787b4fb143ec
+      internalID: -2142284607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_generalStore_mask_d3
+      rect:
+        serializedVersion: 2
+        x: 1236
+        y: 429
+        width: 412
+        height: 429
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3053613}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0fbf2eda2c2a8eb469602dc72fc31e6c
+      internalID: 10666974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_generalStore_mask_d4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 412
+        height: 429
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3053613}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 02fec7d49d6331a4181fee5f4c754093
+      internalID: -1665500144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_generalStore_mask_d5
+      rect:
+        serializedVersion: 2
+        x: 412
+        y: 0
+        width: 412
+        height: 429
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3053613}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c7234ab4e89007429bb0759a1a8ebe6
+      internalID: 510026073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_generalStore_mask_d6
+      rect:
+        serializedVersion: 2
+        x: 824
+        y: 0
+        width: 412
+        height: 429
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3053613}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c052c75272ae0494784fabe01542b442
+      internalID: 192872521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_generalStore_mask_d7
+      rect:
+        serializedVersion: 2
+        x: 1236
+        y: 0
+        width: 412
+        height: 429
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3053613}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba734249a8184ba4aa4d16208b5d31f8
+      internalID: -969998857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 0412435daca329a4983912b01bd13b97
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Village_generalStore_mask_d0: 2089113499
+      Village_generalStore_mask_d1: -1887702574
+      Village_generalStore_mask_d2: -2142284607
+      Village_generalStore_mask_d3: 10666974
+      Village_generalStore_mask_d4: -1665500144
+      Village_generalStore_mask_d5: 510026073
+      Village_generalStore_mask_d6: 192872521
+      Village_generalStore_mask_d7: -969998857
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

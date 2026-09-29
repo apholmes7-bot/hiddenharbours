@@ -609,7 +609,8 @@ namespace HiddenHarbours.Art
                     // between would otherwise overwrite the first camera's slots).
                     // Deposits/freshness, like decay, apply once per camera frame. A same-frame
                     // re-render must not inject the still-pending registry capsules a second time.
-                    int injected = repeatedRender ? 0 : FoamInjectionRegistry.CollectInjections(_foamInjections);
+                    int injected = repeatedRender ? 0 : FoamInjectionRegistry.CollectInjections(
+                        _foamInjections, new Rect(state.Origin, new Vector2(extent, extent)), cameraData.camera);
                     for (int i = 0; i < FoamBuffer.MaxInjectors; i++)
                     {
                         if (i < injected)

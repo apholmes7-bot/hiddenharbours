@@ -1,0 +1,841 @@
+fileFormatVersion: 2
+guid: 2ef6e2f51642d8c48bfa9d3801acb571
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8652596358233336700
+    second: Cobbles_quartzite_mask_0
+  - first:
+      213: 2963561438512208391
+    second: Cobbles_quartzite_mask_1
+  - first:
+      213: 1920928840487626853
+    second: Cobbles_quartzite_mask_2
+  - first:
+      213: 5607554094794941250
+    second: Cobbles_quartzite_mask_3
+  - first:
+      213: 5101753137288298529
+    second: Cobbles_quartzite_mask_4
+  - first:
+      213: 3427015591328892598
+    second: Cobbles_quartzite_mask_5
+  - first:
+      213: -1139697619083517661
+    second: Cobbles_quartzite_mask_6
+  - first:
+      213: 1561113376707215394
+    second: Cobbles_quartzite_mask_7
+  - first:
+      213: -3715347372065157037
+    second: Cobbles_quartzite_mask_8
+  - first:
+      213: -6666276451279950153
+    second: Cobbles_quartzite_mask_9
+  - first:
+      213: 4460207636672222482
+    second: Cobbles_quartzite_mask_10
+  - first:
+      213: -8750776754710166480
+    second: Cobbles_quartzite_mask_11
+  - first:
+      213: -8227875240698115136
+    second: Cobbles_quartzite_mask_12
+  - first:
+      213: 5116968418208462573
+    second: Cobbles_quartzite_mask_13
+  - first:
+      213: -523784562239628130
+    second: Cobbles_quartzite_mask_14
+  - first:
+      213: -3721190917064665885
+    second: Cobbles_quartzite_mask_15
+  - first:
+      213: 7058524073916245548
+    second: Cobbles_quartzite_mask_16
+  - first:
+      213: -8946961701025522983
+    second: Cobbles_quartzite_mask_17
+  - first:
+      213: -8066125238775209811
+    second: Cobbles_quartzite_mask_18
+  - first:
+      213: -746462464275080241
+    second: Cobbles_quartzite_mask_19
+  - first:
+      213: 6330009398127350107
+    second: Cobbles_quartzite_mask_20
+  - first:
+      213: -2417048598597020435
+    second: Cobbles_quartzite_mask_21
+  - first:
+      213: 5681801245397851815
+    second: Cobbles_quartzite_mask_22
+  - first:
+      213: -6336529341639064749
+    second: Cobbles_quartzite_mask_23
+  - first:
+      213: 8097514506881769991
+    second: Cobbles_quartzite_mask_24
+  - first:
+      213: 272304869657024626
+    second: Cobbles_quartzite_mask_25
+  - first:
+      213: -2390722525359824420
+    second: Cobbles_quartzite_mask_26
+  - first:
+      213: -6894454722326820772
+    second: Cobbles_quartzite_mask_27
+  - first:
+      213: 3292422968988881090
+    second: Cobbles_quartzite_mask_28
+  - first:
+      213: -3002599488057248750
+    second: Cobbles_quartzite_mask_29
+  - first:
+      213: 4062382691414501219
+    second: Cobbles_quartzite_mask_30
+  - first:
+      213: 7086493017411144282
+    second: Cobbles_quartzite_mask_31
+  - first:
+      213: 8970842585058297833
+    second: Cobbles_quartzite_mask_32
+  - first:
+      213: 8660596396871464998
+    second: Cobbles_quartzite_mask_33
+  - first:
+      213: -7281992389456478213
+    second: Cobbles_quartzite_mask_34
+  - first:
+      213: 2936808649532500411
+    second: Cobbles_quartzite_mask_35
+  - first:
+      213: 3604552350238259509
+    second: Cobbles_quartzite_mask_36
+  - first:
+      213: -7703705303303295918
+    second: Cobbles_quartzite_mask_37
+  - first:
+      213: -2138281469617696511
+    second: Cobbles_quartzite_mask_38
+  - first:
+      213: -4720923490211819037
+    second: Cobbles_quartzite_mask_39
+  - first:
+      213: -5383819290728313652
+    second: Cobbles_quartzite_mask_40
+  - first:
+      213: 6301534016186681976
+    second: Cobbles_quartzite_mask_41
+  - first:
+      213: 3054690475740825110
+    second: Cobbles_quartzite_mask_42
+  - first:
+      213: -3714679383603002182
+    second: Cobbles_quartzite_mask_43
+  - first:
+      213: -379169131870330962
+    second: Cobbles_quartzite_mask_44
+  - first:
+      213: 3376632446350485991
+    second: Cobbles_quartzite_mask_45
+  - first:
+      213: -7285496659681260671
+    second: Cobbles_quartzite_mask_46
+  - first:
+      213: -2735324957838704963
+    second: Cobbles_quartzite_mask_47
+  - first:
+      213: -6786167588570916239
+    second: Cobbles_quartzite_mask_48
+  - first:
+      213: 5549298604727423566
+    second: Cobbles_quartzite_mask_49
+  - first:
+      213: 8189044158364279575
+    second: Cobbles_quartzite_mask_50
+  - first:
+      213: -194340178546015162
+    second: Cobbles_quartzite_mask_51
+  - first:
+      213: 8730359037529613961
+    second: Cobbles_quartzite_mask_52
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5dfb7db826276ab499f0eeb0be96f2d4
+      internalID: -1772602147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1496f379bd5f3744886add3107473845
+      internalID: 1678546158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c9600e6914ff5694e940f46ef45abec9
+      internalID: -686108636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec9d10d773f3ecd45bcaff17352ccb79
+      internalID: 721764171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b15682993c6e914aa93caa2f5b0b49b
+      internalID: 404505164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28094c5c210edd9408e9ca28f51527f3
+      internalID: -1976555753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 782b10be5e6a6e74ba6e3ab3cac98f85
+      internalID: 913589637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 197f705870108d44da96cf53eaf8d050
+      internalID: 1884221085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1f9c15cc021c394198f0e4a8b31c36c
+      internalID: 418537299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f2b4b156579c6043b9d6fe080dd2ef9
+      internalID: -1491502162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: faffb903e45e8804e8aff1a662a2f767
+      internalID: -685569475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e4eb519c27250c4ea261d2c386b7b6c
+      internalID: -2096633603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a93f8cd7452b7cf46b989558f8fbbc4a
+      internalID: -1356444009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28c8ac55a8ff1ea41852bb3ab24cc7de
+      internalID: -2137733962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f27888062b025834e92baf5d94ab4297
+      internalID: -993027858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3149373b23a3baa498ff6318ee280232
+      internalID: -1958969082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6163d6da2ca2d7445b1f6f1c8301d369
+      internalID: -297727107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea210e9207c80b1498e6ae65a80889ed
+      internalID: -1403732815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2814fb74acc9d8d4383637601b0af192
+      internalID: -248185786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f745e270edae774fa315720ea209024
+      internalID: 179713467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77a704ee3683b4242b8d1f14a2fb1495
+      internalID: 224251160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f1181cef0f4faf40a2c06708609e450
+      internalID: -1775564564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9ae997c7ae067345afdd3e70dba4f82
+      internalID: 671552184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4fd1d8eea0ccfb4496c3fa74db11cd6
+      internalID: 1057526056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 1e4f2dda1f891f04fa98cdd0b8395ea8
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cobbles_quartzite_mask_c0_r0: -1772602147
+      Cobbles_quartzite_mask_c0_r1: 418537299
+      Cobbles_quartzite_mask_c0_r2: -297727107
+      Cobbles_quartzite_mask_c1_r0: 1678546158
+      Cobbles_quartzite_mask_c1_r1: -1491502162
+      Cobbles_quartzite_mask_c1_r2: -1403732815
+      Cobbles_quartzite_mask_c2_r0: -686108636
+      Cobbles_quartzite_mask_c2_r1: -685569475
+      Cobbles_quartzite_mask_c2_r2: -248185786
+      Cobbles_quartzite_mask_c3_r0: 721764171
+      Cobbles_quartzite_mask_c3_r1: -2096633603
+      Cobbles_quartzite_mask_c3_r2: 179713467
+      Cobbles_quartzite_mask_c4_r0: 404505164
+      Cobbles_quartzite_mask_c4_r1: -1356444009
+      Cobbles_quartzite_mask_c4_r2: 224251160
+      Cobbles_quartzite_mask_c5_r0: -1976555753
+      Cobbles_quartzite_mask_c5_r1: -2137733962
+      Cobbles_quartzite_mask_c5_r2: -1775564564
+      Cobbles_quartzite_mask_c6_r0: 913589637
+      Cobbles_quartzite_mask_c6_r1: -993027858
+      Cobbles_quartzite_mask_c6_r2: 671552184
+      Cobbles_quartzite_mask_c7_r0: 1884221085
+      Cobbles_quartzite_mask_c7_r1: -1958969082
+      Cobbles_quartzite_mask_c7_r2: 1057526056
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

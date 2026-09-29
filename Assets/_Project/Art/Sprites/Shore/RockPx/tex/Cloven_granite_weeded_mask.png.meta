@@ -1,0 +1,772 @@
+fileFormatVersion: 2
+guid: 38bbeed73c549184fb8ad62862cfda78
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 9178291842207692640
+    second: Cloven_granite_weeded_mask_0
+  - first:
+      213: -5788248371319432012
+    second: Cloven_granite_weeded_mask_1
+  - first:
+      213: -7431603466818553996
+    second: Cloven_granite_weeded_mask_2
+  - first:
+      213: 6671887057126381803
+    second: Cloven_granite_weeded_mask_3
+  - first:
+      213: 3502996909668437489
+    second: Cloven_granite_weeded_mask_4
+  - first:
+      213: 7394523973284658556
+    second: Cloven_granite_weeded_mask_5
+  - first:
+      213: 8011307286611384441
+    second: Cloven_granite_weeded_mask_6
+  - first:
+      213: 9099739439411507784
+    second: Cloven_granite_weeded_mask_7
+  - first:
+      213: -2019433492113591992
+    second: Cloven_granite_weeded_mask_8
+  - first:
+      213: 3641778783196772160
+    second: Cloven_granite_weeded_mask_9
+  - first:
+      213: -570178438237422675
+    second: Cloven_granite_weeded_mask_10
+  - first:
+      213: -2913189589227202239
+    second: Cloven_granite_weeded_mask_11
+  - first:
+      213: -7522595880754305831
+    second: Cloven_granite_weeded_mask_12
+  - first:
+      213: 2429730717976875998
+    second: Cloven_granite_weeded_mask_13
+  - first:
+      213: 4616327610538030901
+    second: Cloven_granite_weeded_mask_14
+  - first:
+      213: -2620904026842446882
+    second: Cloven_granite_weeded_mask_15
+  - first:
+      213: -4753695692005963337
+    second: Cloven_granite_weeded_mask_16
+  - first:
+      213: 7047506856939304516
+    second: Cloven_granite_weeded_mask_17
+  - first:
+      213: -5213748559160308954
+    second: Cloven_granite_weeded_mask_18
+  - first:
+      213: -5520143738874573404
+    second: Cloven_granite_weeded_mask_19
+  - first:
+      213: -8133743252887101486
+    second: Cloven_granite_weeded_mask_20
+  - first:
+      213: -3248473368031173688
+    second: Cloven_granite_weeded_mask_21
+  - first:
+      213: -7061706522979412130
+    second: Cloven_granite_weeded_mask_22
+  - first:
+      213: 5313768984594405972
+    second: Cloven_granite_weeded_mask_23
+  - first:
+      213: 6742622227923097649
+    second: Cloven_granite_weeded_mask_24
+  - first:
+      213: -7220296111181190440
+    second: Cloven_granite_weeded_mask_25
+  - first:
+      213: -1760246406605203832
+    second: Cloven_granite_weeded_mask_26
+  - first:
+      213: 1719104531830113706
+    second: Cloven_granite_weeded_mask_27
+  - first:
+      213: 1768247340056099796
+    second: Cloven_granite_weeded_mask_28
+  - first:
+      213: -1195288385258491782
+    second: Cloven_granite_weeded_mask_29
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6176554e5ab7b7143b62ad75da8d0ef8
+      internalID: -197832079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a715d64cdee28ca43963de9a78958542
+      internalID: -382063673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4489e91af29f90a45aae7d891662f5e1
+      internalID: 1995269395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2307f63c0d4de74c96b98970e681610
+      internalID: 1040229660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82f8934a836d56b41b56b9ae53225b65
+      internalID: -1344890504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f1f567225366bc429871a6e47dec4a5
+      internalID: -1294267832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 689930206f4e3b0428e8491e42527471
+      internalID: 80598710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5bdd3bd2d8e8d94b841b5fada71c974
+      internalID: -1968942493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9e3d8ec3f512e545b0f5996812a7d3c
+      internalID: 1098156745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92eb767b1509c0d4c823cca81856e475
+      internalID: 1794392473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11cd62cb2632a2c428168d3ea3829b8d
+      internalID: -192742713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ded9123e109c63a49a611455600c4238
+      internalID: -1411876405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f395d628b947a1e4d95f05ee8054d3e3
+      internalID: -1650858727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab0d6a6e1233f844a85976f3d34e57c7
+      internalID: 1537084580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a47f9ee7bc842f41b616a54817cbf9a
+      internalID: -367440489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d627ebd28e943224a86805f485937f08
+      internalID: -357630237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6928ee39264171a4e99e9db7a854f9a8
+      internalID: 367340960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 300d869533d412642a14ce64516e9a76
+      internalID: 1125584891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16b7e1a23c2a5eb45a3c3ca842899eb1
+      internalID: -63780493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9747022cf5c791544bfef486b010e298
+      internalID: -957109435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50a4758b69286fe469adb8372d6ecbbc
+      internalID: -2070093301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1047e7f93bf9ef64b8bad01a9e956408
+      internalID: -166975328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2898ad908a414084e919201673a233c0
+      internalID: 1115631411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_granite_weeded_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e5ca2f2a1720cb4f89f117d1069deab
+      internalID: 2108518424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 2bda9a2d9ddbc9141a88bd1761a8ca76
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cloven_granite_weeded_mask_c0_r0: -197832079
+      Cloven_granite_weeded_mask_c0_r1: 1098156745
+      Cloven_granite_weeded_mask_c0_r2: 367340960
+      Cloven_granite_weeded_mask_c1_r0: -382063673
+      Cloven_granite_weeded_mask_c1_r1: 1794392473
+      Cloven_granite_weeded_mask_c1_r2: 1125584891
+      Cloven_granite_weeded_mask_c2_r0: 1995269395
+      Cloven_granite_weeded_mask_c2_r1: -192742713
+      Cloven_granite_weeded_mask_c2_r2: -63780493
+      Cloven_granite_weeded_mask_c3_r0: 1040229660
+      Cloven_granite_weeded_mask_c3_r1: -1411876405
+      Cloven_granite_weeded_mask_c3_r2: -957109435
+      Cloven_granite_weeded_mask_c4_r0: -1344890504
+      Cloven_granite_weeded_mask_c4_r1: -1650858727
+      Cloven_granite_weeded_mask_c4_r2: -2070093301
+      Cloven_granite_weeded_mask_c5_r0: -1294267832
+      Cloven_granite_weeded_mask_c5_r1: 1537084580
+      Cloven_granite_weeded_mask_c5_r2: -166975328
+      Cloven_granite_weeded_mask_c6_r0: 80598710
+      Cloven_granite_weeded_mask_c6_r1: -367440489
+      Cloven_granite_weeded_mask_c6_r2: 1115631411
+      Cloven_granite_weeded_mask_c7_r0: -1968942493
+      Cloven_granite_weeded_mask_c7_r1: -357630237
+      Cloven_granite_weeded_mask_c7_r2: 2108518424
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

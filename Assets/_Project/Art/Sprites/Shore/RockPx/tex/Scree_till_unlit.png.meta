@@ -1,0 +1,775 @@
+fileFormatVersion: 2
+guid: 433328bb81375ad4cbdba33d998ed2c8
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 50006430985031261
+    second: Scree_till_unlit_0
+  - first:
+      213: -6010489699056852699
+    second: Scree_till_unlit_1
+  - first:
+      213: -663487995572714142
+    second: Scree_till_unlit_2
+  - first:
+      213: 3521943961661936337
+    second: Scree_till_unlit_3
+  - first:
+      213: 5748969202506371427
+    second: Scree_till_unlit_4
+  - first:
+      213: -1402645899254741127
+    second: Scree_till_unlit_5
+  - first:
+      213: -3630916494452697036
+    second: Scree_till_unlit_6
+  - first:
+      213: -4062796814980568903
+    second: Scree_till_unlit_7
+  - first:
+      213: -4389756294985102404
+    second: Scree_till_unlit_8
+  - first:
+      213: -9182032265547126029
+    second: Scree_till_unlit_9
+  - first:
+      213: 6846608300888338686
+    second: Scree_till_unlit_10
+  - first:
+      213: -1815764766173221120
+    second: Scree_till_unlit_11
+  - first:
+      213: 8231823206510145036
+    second: Scree_till_unlit_12
+  - first:
+      213: -6083128994896137148
+    second: Scree_till_unlit_13
+  - first:
+      213: 7402736957926957025
+    second: Scree_till_unlit_14
+  - first:
+      213: -4121616354174672224
+    second: Scree_till_unlit_15
+  - first:
+      213: 806781914981769519
+    second: Scree_till_unlit_16
+  - first:
+      213: 5329365405777820627
+    second: Scree_till_unlit_17
+  - first:
+      213: -5730531956794733175
+    second: Scree_till_unlit_18
+  - first:
+      213: 4888212146458582579
+    second: Scree_till_unlit_19
+  - first:
+      213: 9197577249548643251
+    second: Scree_till_unlit_20
+  - first:
+      213: 461783354201386465
+    second: Scree_till_unlit_21
+  - first:
+      213: -2337247574172712353
+    second: Scree_till_unlit_22
+  - first:
+      213: 4654740300982433066
+    second: Scree_till_unlit_23
+  - first:
+      213: -6740700405225138046
+    second: Scree_till_unlit_24
+  - first:
+      213: -5273420778301042377
+    second: Scree_till_unlit_25
+  - first:
+      213: -3502195566975809719
+    second: Scree_till_unlit_26
+  - first:
+      213: -7836247998888063789
+    second: Scree_till_unlit_27
+  - first:
+      213: 8971752538155454604
+    second: Scree_till_unlit_28
+  - first:
+      213: 7104613524909986760
+    second: Scree_till_unlit_29
+  - first:
+      213: -3351483364238949994
+    second: Scree_till_unlit_30
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Scree_till_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fe30c02d5b939245b16946f4db2c4d9
+      internalID: 1511762756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84e7cb0beb2aa9b408b25b28fbcd6ea3
+      internalID: -1430642759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e368e0976135e3a48b44c2aab16afe08
+      internalID: 296834867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 383dfd8f1404e384798b62c2782c9964
+      internalID: 667458658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 189d0a71d4c1c05438cf6b30cb804c0e
+      internalID: -89066789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2d446a80ac2f2445aac772a14751edf
+      internalID: 1772175988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba1869c74942b514db3f37ade806d5e1
+      internalID: -2126463276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7c3d4dbaf8712442b8ea74315d624a3
+      internalID: 1772345933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f1cdf16dba1bf8418831252a282324d
+      internalID: -1375982818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6b73d5f0e0691f4ba2e4ca922feca0d
+      internalID: -1245932566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65afb9ab07ace904ba7467cf65d800f8
+      internalID: 739397135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5f39be72233c0d499a8856f29833823
+      internalID: -224329401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76e03fcffb231e643883db93db457822
+      internalID: -136965002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f772259e668909a45be2095685f317e9
+      internalID: 1664247052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 780d20e782830eb48ace055618e790e1
+      internalID: -630401806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f069298fcb0b45428ef0a0f913948af
+      internalID: -2089580892
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de3d6ea04502e284c89a612f5c22e6b0
+      internalID: -1849435660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0efdfd72c1bf3e14e8ed560593fadc7e
+      internalID: -1760395037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d275235fa76c9724795cea8ccd343050
+      internalID: 1036918236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9b13c0c675f19741bdefd3bf4b9e1ca
+      internalID: 1903390239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2cae0a9464a8da4b85915095b7c35ad
+      internalID: 2037154671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71b0f4773d4e40840bb2fc0f65fd9fc9
+      internalID: -97237794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58a67564fdf51944086e6e0e3791368d
+      internalID: -1848267587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2a66c3dc5b01ac458090d9300d663b9
+      internalID: 726634884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e917ba1359d8bf345a5fef0094d0d17a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Scree_till_unlit_c0_r0: 1511762756
+      Scree_till_unlit_c0_r1: -1375982818
+      Scree_till_unlit_c0_r2: -1849435660
+      Scree_till_unlit_c1_r0: -1430642759
+      Scree_till_unlit_c1_r1: -1245932566
+      Scree_till_unlit_c1_r2: -1760395037
+      Scree_till_unlit_c2_r0: 296834867
+      Scree_till_unlit_c2_r1: 739397135
+      Scree_till_unlit_c2_r2: 1036918236
+      Scree_till_unlit_c3_r0: 667458658
+      Scree_till_unlit_c3_r1: -224329401
+      Scree_till_unlit_c3_r2: 1903390239
+      Scree_till_unlit_c4_r0: -89066789
+      Scree_till_unlit_c4_r1: -136965002
+      Scree_till_unlit_c4_r2: 2037154671
+      Scree_till_unlit_c5_r0: 1772175988
+      Scree_till_unlit_c5_r1: 1664247052
+      Scree_till_unlit_c5_r2: -97237794
+      Scree_till_unlit_c6_r0: -2126463276
+      Scree_till_unlit_c6_r1: -630401806
+      Scree_till_unlit_c6_r2: -1848267587
+      Scree_till_unlit_c7_r0: 1772345933
+      Scree_till_unlit_c7_r1: -2089580892
+      Scree_till_unlit_c7_r2: 726634884
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

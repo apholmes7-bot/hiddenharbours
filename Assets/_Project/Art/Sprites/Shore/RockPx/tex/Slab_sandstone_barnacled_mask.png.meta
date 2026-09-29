@@ -1,0 +1,781 @@
+fileFormatVersion: 2
+guid: 88c73a5e984ac674e878b41a8b3d5879
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2537626361351640544
+    second: Slab_sandstone_barnacled_mask_0
+  - first:
+      213: 5573301370954207880
+    second: Slab_sandstone_barnacled_mask_1
+  - first:
+      213: -574463507353143681
+    second: Slab_sandstone_barnacled_mask_2
+  - first:
+      213: 5000433509744906273
+    second: Slab_sandstone_barnacled_mask_3
+  - first:
+      213: 2984587653932719998
+    second: Slab_sandstone_barnacled_mask_4
+  - first:
+      213: -6845849833996698520
+    second: Slab_sandstone_barnacled_mask_5
+  - first:
+      213: 5715351480369834061
+    second: Slab_sandstone_barnacled_mask_6
+  - first:
+      213: -3714063087020005215
+    second: Slab_sandstone_barnacled_mask_7
+  - first:
+      213: 377646755357225817
+    second: Slab_sandstone_barnacled_mask_8
+  - first:
+      213: 6414559502974017436
+    second: Slab_sandstone_barnacled_mask_9
+  - first:
+      213: 1973218839201958261
+    second: Slab_sandstone_barnacled_mask_10
+  - first:
+      213: -2793269914011476301
+    second: Slab_sandstone_barnacled_mask_11
+  - first:
+      213: 9031763117198207231
+    second: Slab_sandstone_barnacled_mask_12
+  - first:
+      213: 1942973811076737584
+    second: Slab_sandstone_barnacled_mask_13
+  - first:
+      213: -6402022446368561244
+    second: Slab_sandstone_barnacled_mask_14
+  - first:
+      213: -7194039328483538910
+    second: Slab_sandstone_barnacled_mask_15
+  - first:
+      213: 760061945530543925
+    second: Slab_sandstone_barnacled_mask_16
+  - first:
+      213: -3495078834467852933
+    second: Slab_sandstone_barnacled_mask_17
+  - first:
+      213: -2047884805640405182
+    second: Slab_sandstone_barnacled_mask_18
+  - first:
+      213: -8034799798172910510
+    second: Slab_sandstone_barnacled_mask_19
+  - first:
+      213: 7756525765106869650
+    second: Slab_sandstone_barnacled_mask_20
+  - first:
+      213: -8468884760567558088
+    second: Slab_sandstone_barnacled_mask_21
+  - first:
+      213: 5802128543482918552
+    second: Slab_sandstone_barnacled_mask_22
+  - first:
+      213: 605936542130773415
+    second: Slab_sandstone_barnacled_mask_23
+  - first:
+      213: 3084797564482333628
+    second: Slab_sandstone_barnacled_mask_24
+  - first:
+      213: -5037725667142249874
+    second: Slab_sandstone_barnacled_mask_25
+  - first:
+      213: -7019549255096207846
+    second: Slab_sandstone_barnacled_mask_26
+  - first:
+      213: 4301806826560378109
+    second: Slab_sandstone_barnacled_mask_27
+  - first:
+      213: -2247960436265129468
+    second: Slab_sandstone_barnacled_mask_28
+  - first:
+      213: 5073347168402600582
+    second: Slab_sandstone_barnacled_mask_29
+  - first:
+      213: 6895745719643919441
+    second: Slab_sandstone_barnacled_mask_30
+  - first:
+      213: -9072701103899875941
+    second: Slab_sandstone_barnacled_mask_31
+  - first:
+      213: 5367358440150167824
+    second: Slab_sandstone_barnacled_mask_32
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23fe89cb81b8cc04289226235da68394
+      internalID: -114350819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 909593eff15808441b7a4d2900f93961
+      internalID: -1376545353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 584662794b55af543aee22432d8a55ef
+      internalID: 37138424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8122720b55d730c4a9b937d5ecbb8dfc
+      internalID: -1586085831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 336f0a05ebe21b242b8137bc17e01178
+      internalID: 1126604170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12718cebde0c58b4c98f5db85ae1910e
+      internalID: 2066638601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 752ea9d15336fcf4b9bcf0c08fcc7ec0
+      internalID: 1292146241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 785bacecba9133f45b98c72cff9450b2
+      internalID: -41408066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27e8ed63b08a6e243835a8f94d201992
+      internalID: 1104612258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 437503f32e44eb9449338d33cbb38f1b
+      internalID: 312057838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c56e718b9f203f84d89ff8c7fdc0ee29
+      internalID: 1672122995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cde45ed56bb9cf24abe452e26e40fb6e
+      internalID: -1655368274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15b252a106da2464fb5f68ddfabfd5d4
+      internalID: 537837313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25701d214ed25784a87628c661f88ed5
+      internalID: 89473242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e5b791c002202348b064a68901a142d
+      internalID: -510561036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec09ec9ce352aa540999eb53770e5375
+      internalID: -1476338001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5923bf5894b6024284e13e109802cdc
+      internalID: -1704692508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da854f4b7180b4846b04cb73c84e1c6f
+      internalID: 124703292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7349539e4f1770242a69ea7df5a7c807
+      internalID: 773567618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47bdc1933cc70ec41ad8cb94699fc8c1
+      internalID: 1222417540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2727e568a4b81ec4a9870c1efefbf565
+      internalID: -1290348355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 26ab9943c1df98d408a9940db1c842ec
+      internalID: 2085551437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b84730ce964e46a42997317923786449
+      internalID: -440052674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_barnacled_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89999ee105351d24b9f5f8c0f2f7f351
+      internalID: -794918248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 58e1070bf94414742a51a58242d0f865
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Slab_sandstone_barnacled_mask_c0_r0: -114350819
+      Slab_sandstone_barnacled_mask_c0_r1: 1104612258
+      Slab_sandstone_barnacled_mask_c0_r2: -1704692508
+      Slab_sandstone_barnacled_mask_c1_r0: -1376545353
+      Slab_sandstone_barnacled_mask_c1_r1: 312057838
+      Slab_sandstone_barnacled_mask_c1_r2: 124703292
+      Slab_sandstone_barnacled_mask_c2_r0: 37138424
+      Slab_sandstone_barnacled_mask_c2_r1: 1672122995
+      Slab_sandstone_barnacled_mask_c2_r2: 773567618
+      Slab_sandstone_barnacled_mask_c3_r0: -1586085831
+      Slab_sandstone_barnacled_mask_c3_r1: -1655368274
+      Slab_sandstone_barnacled_mask_c3_r2: 1222417540
+      Slab_sandstone_barnacled_mask_c4_r0: 1126604170
+      Slab_sandstone_barnacled_mask_c4_r1: 537837313
+      Slab_sandstone_barnacled_mask_c4_r2: -1290348355
+      Slab_sandstone_barnacled_mask_c5_r0: 2066638601
+      Slab_sandstone_barnacled_mask_c5_r1: 89473242
+      Slab_sandstone_barnacled_mask_c5_r2: 2085551437
+      Slab_sandstone_barnacled_mask_c6_r0: 1292146241
+      Slab_sandstone_barnacled_mask_c6_r1: -510561036
+      Slab_sandstone_barnacled_mask_c6_r2: -440052674
+      Slab_sandstone_barnacled_mask_c7_r0: -41408066
+      Slab_sandstone_barnacled_mask_c7_r1: -1476338001
+      Slab_sandstone_barnacled_mask_c7_r2: -794918248
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

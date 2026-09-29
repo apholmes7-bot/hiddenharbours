@@ -49,6 +49,20 @@ namespace HiddenHarbours.Player
         private int[] _order;       // pre-allocated restack scratch (rule 7 — no per-message GC)
         private int _next;          // round-robin cursor into the pool
 
+        // How far (reference units) the whole stack stands above its authored place to keep out of
+        // what the helm's UI covers (ADR 0050), and the footprint + screen that was worked out for.
+        // 0 with nothing covered: the authored place, bit-exact.
+        private float _lift;
+        private HelmFootprintArea _liftFor;
+        private int _liftW = -1, _liftH = -1;
+
+        /// <summary>The stack's current lift, reference units (test seam).</summary>
+        public float Lift => _lift;
+
+        // The canvas this draws on, and each toast line's box — reference units.
+        private const float RefW = 1280f, RefH = 720f, MatchWidthOrHeight = 0.5f;
+        private const float EntryWidth = 640f, EntryHeight = 44f;
+
         private void Awake() => BuildPool();
 
         private void OnEnable()
@@ -91,6 +105,7 @@ namespace HiddenHarbours.Player
         private void Update()
         {
             if (_pool == null) return;
+            RefreshLift();
             float dt = Time.unscaledDeltaTime;
             float lifetime = _visibleSeconds + _fadeSeconds;
             for (int i = 0; i < _pool.Length; i++)
@@ -139,7 +154,65 @@ namespace HiddenHarbours.Player
         {
             if (e.Text == null) return;
             var rt = (RectTransform)e.Text.transform;
-            rt.anchoredPosition = new Vector2(0f, _baseY + slotFromBottom * _lineSpacing);
+            rt.anchoredPosition = new Vector2(0f, SlotY(_baseY, _lift, slotFromBottom, _lineSpacing));
+        }
+
+        // ---- keeping out of what the helm covers (ADR 0050) -----------------------------------------
+
+        // Re-read the Core footprint seam (never the helm's own classes — rule 4) and restack on a
+        // change only: a quiet frame is a struct compare and two int compares.
+        private void RefreshLift()
+        {
+            HelmFootprintArea covered = HelmFootprint.Current;
+            int w = Screen.width, h = Screen.height;
+            if (covered == _liftFor && w == _liftW && h == _liftH) return;
+            _liftFor = covered;
+            _liftW = w;
+            _liftH = h;
+            float lift = LiftRef(in covered, w, h, _baseY, _lineSpacing, _pool.Length);
+            if (lift == _lift) return;
+            _lift = lift;
+            Restack();
+        }
+
+        /// <summary>A toast line's anchored y (reference units): its slot above the stack's base, the
+        /// whole stack raised by <paramref name="lift"/>. With no lift, the authored place exactly.</summary>
+        public static float SlotY(float baseY, float lift, int slotFromBottom, float lineSpacing)
+            => lift > 0f ? baseY + lift + slotFromBottom * lineSpacing
+                         : baseY + slotFromBottom * lineSpacing;
+
+        /// <summary>
+        /// How far (reference units) the stack rises to keep out of what the helm's UI covers: above a
+        /// full-width band (the band becomes the edge the stack stood on), above a card that reaches any
+        /// of its <paramref name="slots"/> lines. Exactly 0 with nothing covered.
+        /// </summary>
+        public static float LiftRef(in HelmFootprintArea covered, float screenW, float screenH,
+                                    float baseY, float lineSpacing, int slots)
+        {
+            if (covered.IsNone) return 0f;
+            float px = covered.LiftToClear(StackScreenRect(screenW, screenH, baseY, lineSpacing, slots), 0f);
+            return px > 0f ? px / CanvasScale(screenW, screenH) : 0f;
+        }
+
+        /// <summary>The column every toast line can occupy, in SCREEN pixels (bottom-left origin):
+        /// centred, from the lowest line's foot to the top of the highest of
+        /// <paramref name="slots"/>.</summary>
+        public static Rect StackScreenRect(float screenW, float screenH, float baseY, float lineSpacing,
+                                           int slots)
+        {
+            float s = CanvasScale(screenW, screenH);
+            float bottom = baseY * s;
+            float top = (baseY + Mathf.Max(0, slots - 1) * lineSpacing + EntryHeight) * s;
+            float w = EntryWidth * s;
+            return new Rect(screenW * 0.5f - w * 0.5f, bottom, w, top - bottom);
+        }
+
+        // The canvas scaler's own factor for this canvas (ScaleWithScreenSize, 1280×720, match 0.5).
+        private static float CanvasScale(float screenW, float screenH)
+        {
+            if (!(screenW > 0f) || !(screenH > 0f)) return 1f;
+            return Mathf.Pow(screenW / RefW, 1f - MatchWidthOrHeight)
+                 * Mathf.Pow(screenH / RefH, MatchWidthOrHeight);
         }
 
         // ---- the pre-allocated pool (built once; nothing is created per message) ----------------
@@ -153,8 +226,8 @@ namespace HiddenHarbours.Player
             canvas.sortingOrder = 96;   // just above the ControlSwitcher hint (95)
             var scaler = canvasGo.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1280f, 720f);
-            scaler.matchWidthOrHeight = 0.5f;
+            scaler.referenceResolution = new Vector2(RefW, RefH);
+            scaler.matchWidthOrHeight = MatchWidthOrHeight;
 
             _pool = new Entry[Mathf.Max(1, _maxMessages)];
             _order = new int[_pool.Length];
@@ -167,7 +240,7 @@ namespace HiddenHarbours.Player
                 rt.anchorMax = new Vector2(0.5f, 0f);
                 rt.pivot = new Vector2(0.5f, 0f);
                 rt.anchoredPosition = new Vector2(0f, _baseY + i * _lineSpacing);
-                rt.sizeDelta = new Vector2(640f, 44f);
+                rt.sizeDelta = new Vector2(EntryWidth, EntryHeight);
 
                 var text = go.GetComponent<Text>();
                 text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");

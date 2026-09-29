@@ -13,8 +13,9 @@ namespace HiddenHarbours.Core
     /// all three are PIXELS: reading them back would mean sampling a sprite the room is drawn from at
     /// eight facings, in eight different silhouettes, against a quilt of the same fabric. The rig knows
     /// the answer for free (<c>interiorPropRig.js</c> draws the pillow at the <c>−Y</c> end and says so
-    /// in its own comment), so the answer is carried, not recovered. This is the same line
-    /// <c>VillageBuildingKit.DrawsDoorOnGable</c> holds for a doorway.</para>
+    /// in its own comment), so the answer is carried, not recovered. This is the same line the house
+    /// rig's door anchor holds for a doorway since the village return: the rig says where it drew
+    /// it.</para>
     ///
     /// <para><b>The frame is whoever is asking.</b> A side is meaningless without one: the interior-prop
     /// def states the pillow in the PROP's own model frame (what the rig drew), and a placed bed states

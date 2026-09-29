@@ -23,9 +23,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 // three project identically to 0.0000 px at every facing, and all three turn the same
                 // way as houseIsoRig and the fleet.
                 //
-                // ⭐ ALL THREE PUT THE DOOR ON +Y — which is why this family does NOT inherit the
-                // interiorIsoRig trap two entries up. THAT rig's door is on −Y, so a room stands a
-                // half-turn from its shell and the offset must be measured and carried. The shop kit's
+                // ⭐ ALL THREE PUT THE DOOR ON +Y — which is why this family never had the trap the
+                // house kit's room had until the village return: interiorIsoRig's doorway was on −Y,
+                // so a cottage room stood a half-turn from its shell (offset 4; the returned room opens
+                // on +Y and measures 0). Either way the offset is measured and carried. The shop kit's
                 // room is the shopfront seen from inside (its own README: "the +Y wall is the street
                 // elevation from the inside"), so shell and room register at the SAME facing.
                 // ShopRegistrationProbe measures that at bake time and writes the working into the
@@ -42,7 +43,13 @@ namespace HiddenHarbours.Tools.RigBaking
                 //   · shopBuildingRig's README says it "throws without ShopInterior". It does NOT — it
                 //     installs cleanly and fails later, at render. Do not lean on that guard.
                 // Declaring the dependency here is what stops every caller having to remember it.
-                ["shopInterior"] = new RigEntry($"{RigFolder}/shop-building-kit/shopInteriorRig.js",
+                //
+                // ⭐ THE VILLAGE RETURN (drop 14, #898): shopfront and shopInterior name the returned
+                // rigs; shopBuilding's file is byte-identical in both folders and stays where the carried
+                // levels' contract rows name it. The returned room goes live on CoastalPass.light only
+                // for cutaway:'section' or live:true, which no baked level asks for — so the levels and
+                // the counter draw as they did (measured 0 of 8 cells changed) and do not re-bake.
+                ["shopInterior"] = new RigEntry($"{VillageReturnFolder}/shop-building-kit/shopInteriorRig.js",
                                                 "ShopInterior", AzimuthConvention.CounterClockwise),
 
                 // ⭐ buildingLifecycle FIRST, then the room. Both are load-order-sensitive for
@@ -50,9 +57,13 @@ namespace HiddenHarbours.Tools.RigBaking
                 // build(b) (absent → a derelict bake silently renders the finished shop), and the
                 // room owns the 0.5 m cell snap the shell reads back. Order within the array is the
                 // depth-first install order, so it is the order they must arrive in.
-                ["shopfront"] = new RigEntry($"{RigFolder}/shop-building-kit/shopfrontRig.js",
+                //
+                // The companion is the third prerequisite (drop 14): the returned shopfront draws the
+                // new look and lights through CoastalPass.light whenever it is loaded and the build is
+                // not {classic:true}. It is read at render time, so it may arrive after the room.
+                ["shopfront"] = new RigEntry($"{VillageReturnFolder}/shop-building-kit/shopfrontRig.js",
                                              "Shopfront", AzimuthConvention.CounterClockwise,
-                                             new[] { "buildingLifecycle", "shopInterior" }),
+                                             new[] { "buildingLifecycle", "shopInterior", "coastalPass" }),
 
                 // Depth-first in this order installs shopInterior, then shopfront, then this — the whole
                 // kit in one host, the only configuration in which every number above is right. NOT a

@@ -857,7 +857,9 @@ The handoff's §4 is the starting point. This session corrects it in three ways:
 - `docs/art/rigs/terrain/materials.json`: adds `path`.
 - `docs/art/rigs/terrain/edges.json`: adds the rut strip.
 - `Art/Terrain/`: per material, the contract's `_normal`, `_light` and `_detail` at the three ladder steps; and the albedo, re-baked from `terrainLight5`'s unlit.
-- `Art/Editor/TerrainTexArrayBuilder.cs`: the new arrays.
+- `Art/Editor/TerrainTexArrayBuilder.cs`: the packing contract. Under ADR 0047,
+  `TerrainArrayImporter.cs` imports two `.hhterrain` recipes into Library, and
+  `TerrainArrayAssets.cs` loads the named textures; packed arrays are not committed.
 - `Art/Shaders/HiddenHarboursTerrainSplat.shader`: `terrainLight5`'s relight in HLSL, `_SplatF`, and the ladder kept.
 - `Code/Art/TerrainLight5.cs`: the line-for-line C# twin.
 - `Code/Art/TerrainSplatSurface.cs`: binds `_SplatF`.
@@ -867,10 +869,10 @@ The handoff's §4 is the starting point. This session corrects it in three ways:
 **Tests added:**
 - `TerrainLight5TwinTests` (TerrainLight5): the twin equals the rig at sampled G-buffer texels.
 - `TerrainSplatPathSlotTests` (TerrainSplatSurface, TerrainSplatBrush): `_SplatF` is bound, and the brush paints slot 20.
-- `TerrainKitPass9BytesTests` (TerrainTexArrayBuilder): the new arrays equal the rig's bake, byte for byte.
+- `TerrainKitPass9BytesTests` (TerrainArrayImporter/TerrainArrayAssets): imported arrays equal the rig's bake, byte for byte.
 
 **Tests changed:**
-- `TerrainKitAlbedoBytesTests` (TerrainTexArrayBuilder): the albedo now comes from `terrainLight5`'s unlit.
+- `TerrainKitAlbedoBytesTests` (source PNGs): the albedo now comes from `terrainLight5`'s unlit.
 - `TerrainSplatBandPinTests` (StPetersShoreMap, TerrainTexArrayBuilder): the slot count goes from 20 to 21.
 - `TerrainSplatBrushTests` (TerrainSplatBrush): the path slot.
 - `StPetersSplatGroundTests` (TerrainSplatSurface): the new binding.
