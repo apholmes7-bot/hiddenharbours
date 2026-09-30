@@ -1,0 +1,925 @@
+fileFormatVersion: 2
+guid: b175175f1b340b4439711a071e4c9227
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3068880311646271667
+    second: Spine_quartzite_weeded_0
+  - first:
+      213: 8212476935876245639
+    second: Spine_quartzite_weeded_1
+  - first:
+      213: 2812827093616544564
+    second: Spine_quartzite_weeded_2
+  - first:
+      213: -3291441794530534988
+    second: Spine_quartzite_weeded_3
+  - first:
+      213: 6622477414406048525
+    second: Spine_quartzite_weeded_4
+  - first:
+      213: 7369859722757335911
+    second: Spine_quartzite_weeded_5
+  - first:
+      213: 5687057767378176103
+    second: Spine_quartzite_weeded_6
+  - first:
+      213: 8880472616296918876
+    second: Spine_quartzite_weeded_7
+  - first:
+      213: -161226550214506517
+    second: Spine_quartzite_weeded_8
+  - first:
+      213: 5893633004723396969
+    second: Spine_quartzite_weeded_9
+  - first:
+      213: -3514312873840974069
+    second: Spine_quartzite_weeded_10
+  - first:
+      213: 8693188873883346497
+    second: Spine_quartzite_weeded_11
+  - first:
+      213: 2452789112589552337
+    second: Spine_quartzite_weeded_12
+  - first:
+      213: 1530424886453792268
+    second: Spine_quartzite_weeded_13
+  - first:
+      213: -2855382378675125082
+    second: Spine_quartzite_weeded_14
+  - first:
+      213: 4382058222740978843
+    second: Spine_quartzite_weeded_15
+  - first:
+      213: -3976085636078251886
+    second: Spine_quartzite_weeded_16
+  - first:
+      213: 2459453907409323929
+    second: Spine_quartzite_weeded_17
+  - first:
+      213: -1809083358976836996
+    second: Spine_quartzite_weeded_18
+  - first:
+      213: -2912631729120104521
+    second: Spine_quartzite_weeded_19
+  - first:
+      213: -4366056955467277404
+    second: Spine_quartzite_weeded_20
+  - first:
+      213: 6989169850674895082
+    second: Spine_quartzite_weeded_21
+  - first:
+      213: -2621077839879886560
+    second: Spine_quartzite_weeded_22
+  - first:
+      213: -9126852829023432662
+    second: Spine_quartzite_weeded_23
+  - first:
+      213: 621100851693166728
+    second: Spine_quartzite_weeded_24
+  - first:
+      213: 8064848205439644722
+    second: Spine_quartzite_weeded_25
+  - first:
+      213: 6118108516391153188
+    second: Spine_quartzite_weeded_26
+  - first:
+      213: -1063902849364020830
+    second: Spine_quartzite_weeded_27
+  - first:
+      213: 1810316590614755151
+    second: Spine_quartzite_weeded_28
+  - first:
+      213: 1204069258335084418
+    second: Spine_quartzite_weeded_29
+  - first:
+      213: -1782671199583484964
+    second: Spine_quartzite_weeded_30
+  - first:
+      213: -5742904173232927500
+    second: Spine_quartzite_weeded_31
+  - first:
+      213: 3746450418835900317
+    second: Spine_quartzite_weeded_32
+  - first:
+      213: 464759149435065733
+    second: Spine_quartzite_weeded_33
+  - first:
+      213: -5139713270204357811
+    second: Spine_quartzite_weeded_34
+  - first:
+      213: 5874895190413198523
+    second: Spine_quartzite_weeded_35
+  - first:
+      213: -2013927945509336167
+    second: Spine_quartzite_weeded_36
+  - first:
+      213: 2631526475647167345
+    second: Spine_quartzite_weeded_37
+  - first:
+      213: -9139451713840179703
+    second: Spine_quartzite_weeded_38
+  - first:
+      213: 6230906359555176975
+    second: Spine_quartzite_weeded_39
+  - first:
+      213: 3907166656007014935
+    second: Spine_quartzite_weeded_40
+  - first:
+      213: -8352471699011145431
+    second: Spine_quartzite_weeded_41
+  - first:
+      213: 376557626443457537
+    second: Spine_quartzite_weeded_42
+  - first:
+      213: 1170456444421296456
+    second: Spine_quartzite_weeded_43
+  - first:
+      213: 7932401667166696556
+    second: Spine_quartzite_weeded_44
+  - first:
+      213: 8011846265100283644
+    second: Spine_quartzite_weeded_45
+  - first:
+      213: 2088280334733154104
+    second: Spine_quartzite_weeded_46
+  - first:
+      213: 8026074386658747265
+    second: Spine_quartzite_weeded_47
+  - first:
+      213: 329405807113668766
+    second: Spine_quartzite_weeded_48
+  - first:
+      213: -581498265240227077
+    second: Spine_quartzite_weeded_49
+  - first:
+      213: 1026432868902518839
+    second: Spine_quartzite_weeded_50
+  - first:
+      213: 7555669174137053991
+    second: Spine_quartzite_weeded_51
+  - first:
+      213: -6389332638689914435
+    second: Spine_quartzite_weeded_52
+  - first:
+      213: 7151284306519930429
+    second: Spine_quartzite_weeded_53
+  - first:
+      213: -2586934422742660613
+    second: Spine_quartzite_weeded_54
+  - first:
+      213: 2177098961241839717
+    second: Spine_quartzite_weeded_55
+  - first:
+      213: -7509946621286512584
+    second: Spine_quartzite_weeded_56
+  - first:
+      213: -8569369828617247672
+    second: Spine_quartzite_weeded_57
+  - first:
+      213: 4757636260152257874
+    second: Spine_quartzite_weeded_58
+  - first:
+      213: -4981535414714668305
+    second: Spine_quartzite_weeded_59
+  - first:
+      213: 488076108668537414
+    second: Spine_quartzite_weeded_60
+  - first:
+      213: -8561564935196313343
+    second: Spine_quartzite_weeded_61
+  - first:
+      213: 7446253780323550515
+    second: Spine_quartzite_weeded_62
+  - first:
+      213: -4889528448753924088
+    second: Spine_quartzite_weeded_63
+  - first:
+      213: -3090497555085756309
+    second: Spine_quartzite_weeded_64
+  - first:
+      213: 1073466979565814941
+    second: Spine_quartzite_weeded_65
+  - first:
+      213: 1122257341297879786
+    second: Spine_quartzite_weeded_66
+  - first:
+      213: -3778665486901477727
+    second: Spine_quartzite_weeded_67
+  - first:
+      213: 7667948055437174372
+    second: Spine_quartzite_weeded_68
+  - first:
+      213: -779818265935352154
+    second: Spine_quartzite_weeded_69
+  - first:
+      213: 3816901556454185635
+    second: Spine_quartzite_weeded_70
+  - first:
+      213: 7182180533441010151
+    second: Spine_quartzite_weeded_71
+  - first:
+      213: 3897926849321703694
+    second: Spine_quartzite_weeded_72
+  - first:
+      213: 2583662024355532514
+    second: Spine_quartzite_weeded_73
+  - first:
+      213: -3916238733530430184
+    second: Spine_quartzite_weeded_74
+  - first:
+      213: 392968829108466491
+    second: Spine_quartzite_weeded_75
+  - first:
+      213: -5212989115150708438
+    second: Spine_quartzite_weeded_76
+  - first:
+      213: -1900545114757512761
+    second: Spine_quartzite_weeded_77
+  - first:
+      213: 2831472418581556077
+    second: Spine_quartzite_weeded_78
+  - first:
+      213: -8291645092066752965
+    second: Spine_quartzite_weeded_79
+  - first:
+      213: 4794834296761174112
+    second: Spine_quartzite_weeded_80
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6388e27326e571444968da8afe4408cd
+      internalID: -289109577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b9fb6f9889dbb14a84ffa9c79927b22
+      internalID: 402983070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a94dcef8eca04a34b95633a0df73c256
+      internalID: 1407654646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b3dbc796ac9dea48b9cb2f88ebe46d6
+      internalID: 1794130478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97b9780b7325aba4f9cb28dfa0ab7368
+      internalID: -639204357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6dc347eed640dcb4c99828581aace55c
+      internalID: 203937966
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f31a12791ff30543a1bc61487f85f58
+      internalID: -1135274884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 38bf4653e0b40594d8ac0b32bb6e8a7a
+      internalID: 1031198083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b8c81413b3f1d94a857c758e500e026
+      internalID: -940764941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: acea2295c08754a4fa8da111c8fdfed2
+      internalID: -675744119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ca3d9a3eb2020447a6873b5505ba0ad
+      internalID: -1423252033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56ca2c98c809dd34ca8e887e2d058c3d
+      internalID: -648770189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1104dfc086dd91747825eda59f170e4e
+      internalID: -2031551289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 953a08557c6c5304d8227a9832f49f33
+      internalID: 228636872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 432df5ca8e089d841a283400d7c8b458
+      internalID: 899985060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82bc63bb1b65d954ab0c0f75fd4881d3
+      internalID: -1414895476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b0802f205747bd4496a747285cc26f3
+      internalID: -923534083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ee009b956270424c8a60d78ac908930
+      internalID: -493380898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b234bfa8848c17440b871b10249611de
+      internalID: 1727918029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 571fd77f7b5bffb44a006fb2c8a206e3
+      internalID: 1578587950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0004c2689b1effe4aa5bdffbc647aea5
+      internalID: 2043974895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8c632695e0560740affaceceeca5809
+      internalID: 727998626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 114433c287a789f49a5448c47d032e75
+      internalID: -454287617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_weeded_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aff1a91f608d8c14aab91940c90fd965
+      internalID: 1501334186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e27d0b65269795147a2e758e64eaed2d
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Spine_quartzite_weeded_c0_r0: -289109577
+      Spine_quartzite_weeded_c0_r1: -940764941
+      Spine_quartzite_weeded_c0_r2: -923534083
+      Spine_quartzite_weeded_c1_r0: 402983070
+      Spine_quartzite_weeded_c1_r1: -675744119
+      Spine_quartzite_weeded_c1_r2: -493380898
+      Spine_quartzite_weeded_c2_r0: 1407654646
+      Spine_quartzite_weeded_c2_r1: -1423252033
+      Spine_quartzite_weeded_c2_r2: 1727918029
+      Spine_quartzite_weeded_c3_r0: 1794130478
+      Spine_quartzite_weeded_c3_r1: -648770189
+      Spine_quartzite_weeded_c3_r2: 1578587950
+      Spine_quartzite_weeded_c4_r0: -639204357
+      Spine_quartzite_weeded_c4_r1: -2031551289
+      Spine_quartzite_weeded_c4_r2: 2043974895
+      Spine_quartzite_weeded_c5_r0: 203937966
+      Spine_quartzite_weeded_c5_r1: 228636872
+      Spine_quartzite_weeded_c5_r2: 727998626
+      Spine_quartzite_weeded_c6_r0: -1135274884
+      Spine_quartzite_weeded_c6_r1: 899985060
+      Spine_quartzite_weeded_c6_r2: -454287617
+      Spine_quartzite_weeded_c7_r0: 1031198083
+      Spine_quartzite_weeded_c7_r1: -1414895476
+      Spine_quartzite_weeded_c7_r2: 1501334186
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

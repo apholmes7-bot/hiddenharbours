@@ -140,6 +140,10 @@ namespace HiddenHarbours.UI
         // and anchors are touched on a transition (boarding, taking a helm) and never per frame.
         private NavClusterPlacement _navPlacement = NavClusterPlacement.Hidden;
 
+        // How far (reference units) the cluster stands above its placement's home to keep out of what
+        // the helm's UI covers (ADR 0050). 0 with nothing covered: the home, bit-exact.
+        private float _navLiftRef;
+
         // What HudVisibilityPolicy last said about the four band reads. Same discipline as the nav
         // cluster's placement: applied on a CHANGE only, so the steady state costs four bool compares.
         private bool _showTide, _showWind, _showSea, _showMoney;
@@ -499,13 +503,20 @@ namespace HiddenHarbours.UI
             // HasHelm is true of any driven motor hull — a skipper's boat carrying her in as a
             // passenger included — and suppressing her compass for somebody else's wheelhouse would
             // take her only heading read away at the one moment she cannot steer.
+            // ADR 0050: and it keeps out of whatever the helm's UI covers (the Core footprint seam) —
+            // beside a card that reaches it, the tiller's included; above a full-width band. Only the
+            // helm in her hand covers anything (the host says nothing without one), so this 4 Hz read
+            // never dodges a card the host has not yet taken back in the frame she let go of it.
             IHelmControl helm = GameServices.HelmControl;
             bool atHelm = helm != null && helm.IsPlayerHelm;
+            HelmFootprintArea covered = atHelm ? HelmFootprint.Current : HelmFootprintArea.None;
             NavClusterPlacement placement = HelmHudSuppression.NavCluster(
                 aboard: true,
                 atHelm ? helm.Style : HelmControlStyle.None,
-                atHelm ? helm.Fit : HelmFit.None);
-            SetNavPlacement(placement);
+                atHelm ? helm.Fit : HelmFit.None,
+                in covered, Screen.width, Screen.height);
+            SetNavPlacement(placement,
+                HelmHudSuppression.NavClusterLiftRef(placement, in covered, Screen.width, Screen.height));
             if (placement == NavClusterPlacement.Hidden) return;   // nothing to format into hidden labels
 
             // Compass: arrow SHAPE + degrees NUMBER + cardinal WORD (redundant coding, §8). Cross-checked
@@ -539,10 +550,11 @@ namespace HiddenHarbours.UI
         /// stacking (and so the whole cluster's reading order) is untouched: only the horizontal
         /// anchoring moves, and it moves back to the captured home exactly.</para>
         /// </summary>
-        private void SetNavPlacement(NavClusterPlacement placement)
+        private void SetNavPlacement(NavClusterPlacement placement, float liftRef = 0f)
         {
-            if (_navPlacement == placement) return;
+            if (_navPlacement == placement && _navLiftRef == liftRef) return;
             _navPlacement = placement;
+            _navLiftRef = liftRef;
 
             bool shown = placement != NavClusterPlacement.Hidden;
             if (_compassLabel != null)       _compassLabel.enabled = shown;
@@ -557,17 +569,19 @@ namespace HiddenHarbours.UI
             {
                 RectTransform rt = _navRects[i];
                 if (rt == null) continue;
+                // A lift raises every line by the same amount; with none, the home is written as-is.
+                float y = liftRef > 0f ? _navHomePos[i].y + liftRef : _navHomePos[i].y;
                 if (clear)
                 {
                     rt.anchorMin = new Vector2(0f, _navHomeAnchorMin[i].y);
-                    rt.anchorMax = new Vector2(NavClearWidth01, _navHomeAnchorMax[i].y);
-                    rt.anchoredPosition = new Vector2(NavClearMarginX, _navHomePos[i].y);
+                    rt.anchorMax = new Vector2(HelmHudSuppression.ClearWidth01, _navHomeAnchorMax[i].y);
+                    rt.anchoredPosition = new Vector2(HelmHudSuppression.ClearMarginXRef, y);
                 }
                 else
                 {
                     rt.anchorMin = _navHomeAnchorMin[i];
                     rt.anchorMax = _navHomeAnchorMax[i];
-                    rt.anchoredPosition = _navHomePos[i];
+                    rt.anchoredPosition = liftRef > 0f ? new Vector2(_navHomePos[i].x, y) : _navHomePos[i];
                 }
                 var text = rt.GetComponent<Text>();
                 if (text != null)
@@ -575,12 +589,8 @@ namespace HiddenHarbours.UI
             }
         }
 
-        // The moved cluster's box, in HUD reference units / fractions of the canvas width. 0.42 is
-        // where the SMALL dash card's left edge lands at the shipped scales (a 600-wide rig at
-        // DashSmallScale 0.5, centred), so the cluster's column stops short of it with room to spare;
-        // left-aligned text then grows rightward from the margin only as far as its own length.
-        private const float NavClearWidth01 = 0.34f;
-        private const float NavClearMarginX = 16f;
+        // The moved cluster's box (its column and margin) lives with the rest of the cluster's
+        // geometry in HelmHudSuppression, so the policy that keeps it clear reads the same numbers.
 
         /// <summary>
         /// Put the four band reads where <see cref="HudVisibilityPolicy"/> says they belong — which, in
@@ -997,17 +1007,21 @@ namespace HiddenHarbours.UI
             // Parented to the canvas root, stacked upward:
             // set-&-drift, the rose ribbon, the fixed needle, then the heading line. Redundant-coded — a
             // degrees number + a cardinal word + the ribbon/arrow SHAPE — never colour alone (§8).
+            // Where they sit is HelmHudSuppression's (one copy, shared with the rule that keeps the
+            // cluster out of what the helm covers — ADR 0050).
+            var navMin = new Vector2(HelmHudSuppression.HomeMinX01, 0f);
+            var navMax = new Vector2(HelmHudSuppression.HomeMaxX01, 0f);
             _apparentWindLabel = MakeLabel(canvasRt, "ApparentWind", TextAnchor.LowerCenter,
-                new Vector2(0.2f, 0f), new Vector2(0.8f, 0f), 0f, 40f, 28);
+                navMin, navMax, 0f, HelmHudSuppression.ApparentWindTopRef, 28);
             _setDriftLabel = MakeLabel(canvasRt, "SetDrift", TextAnchor.LowerCenter,
-                new Vector2(0.2f, 0f), new Vector2(0.8f, 0f), 0f, 70f, 28);
+                navMin, navMax, 0f, HelmHudSuppression.SetDriftTopRef, 28);
             _compassRibbonLabel = MakeLabel(canvasRt, "CompassRibbon", TextAnchor.LowerCenter,
-                new Vector2(0.2f, 0f), new Vector2(0.8f, 0f), 0f, 118f, 30);
+                navMin, navMax, 0f, HelmHudSuppression.RibbonTopRef, 30);
             _compassNeedleLabel = MakeLabel(canvasRt, "CompassNeedle", TextAnchor.LowerCenter,
-                new Vector2(0.2f, 0f), new Vector2(0.8f, 0f), 0f, 146f, 26);
+                navMin, navMax, 0f, HelmHudSuppression.NeedleTopRef, 26);
             _compassNeedleLabel.text = "▾"; // fixed needle — the ribbon's centre column (the heading) sits under it
             _compassLabel = MakeLabel(canvasRt, "Compass", TextAnchor.LowerCenter,
-                new Vector2(0.2f, 0f), new Vector2(0.8f, 0f), 0f, 188f, 34);
+                navMin, navMax, 0f, HelmHudSuppression.HeadingTopRef, 34);
 
             // Built hidden; UpdateNavReads shows them once aboard (HasActiveBoat).
             _apparentWindLabel.enabled = false;
@@ -1049,6 +1063,10 @@ namespace HiddenHarbours.UI
             }
         }
 
+        /// <summary>Every label's box height, reference units — pivoted at its top, so a label's box
+        /// hangs this far below its anchored y. The nav cluster's footprint rule reads it.</summary>
+        internal const float LabelBoxHeightRef = 56f;
+
         private static Text MakeLabel(RectTransform parent, string name, TextAnchor align,
                                       Vector2 anchorMin, Vector2 anchorMax,
                                       float x, float y, int fontSize)
@@ -1061,7 +1079,7 @@ namespace HiddenHarbours.UI
             rt.anchorMax = anchorMax;
             rt.pivot = new Vector2(0f, 1f);
             rt.anchoredPosition = new Vector2(x, y);
-            rt.sizeDelta = new Vector2(0f, 56f);
+            rt.sizeDelta = new Vector2(0f, LabelBoxHeightRef);
 
             var text = go.GetComponent<Text>();
             text.font = DefaultFont();

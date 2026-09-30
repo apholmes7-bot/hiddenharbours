@@ -68,6 +68,9 @@ Material:
     - _MirrorTiltScale: 6
     - _BeamLitStrength: 1.6
     - _CausticAmount: 0.18
+    - _CausticCurvatureBlend: 0.5
+    - _CausticCurvatureStep: 0.5
+    - _CausticCurvatureGain: 12
     - _CausticDayGate: 1
     - _CausticDepth: 1.4
     - _CausticScale: 0.9
