@@ -1,6 +1,6 @@
 # Hidden Harbours: the design desk
 
-**As of 2026-09-30 17:50Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
+**As of 2026-09-30 23:35Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
 
 Read this file at the start of every session, then the brief the owner names. A ruling the owner gives you in a message wins over this file and over any brief. Some older docs still describe sprites where the owner has since ruled meshes (section 4); where they disagree, the ruling wins.
 
@@ -109,6 +109,7 @@ Read this file at the start of every session, then the brief the owner names. A 
   - the river wood stands;
   - there is no shore path north of the wharf for now;
   - your key scenes come in your order: the town bridge, the Falls, the landing and the campground first, then the north creek and the weather face.
+- 09-30, St Peters first. The owner: "i want to start by finising up st peters as one new consolidated scene with all key scenes and seams completed so i can see it in game as soon as possible". So St Peters, as one scene on pass 9's ground, comes before Nine Mile Creek's part 2: [briefs/BRIEF-2026-09-30-st-peters-one-scene.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-30-st-peters-one-scene.md).
 
 ## 5. How work comes back
 
@@ -136,7 +137,8 @@ Each thread has, or will get, its own paste in its own conversation. This list i
   - Return 3 (Ginny's cottage, then the camper's pass 2) arrived on 09-28 and passed on real Node, 43 of 43 and 49 of 49. The owner took both, with the cottage yellow (section 4).
   - Ginny's plot, redrawn ([briefs/BRIEF-2026-09-28-ginnys-plot-redraw.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-28-ginnys-plot-redraw.md)), arrived on 09-29, and the owner accepted it (section 4).
   - Your quick look at two extra places (the lookout at the South Arm's south end, and the plank bridge over the Gap Brook) arrived on 09-29 and passed on real Node, 43 of 43. It stood on the old ground, so you redrew it on St Peters' planned ground ([briefs/BRIEF-2026-09-29-st-peters-pass9-ground.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-29-st-peters-pass9-ground.md)). That arrived on 09-29 too and passed on real Node, 43 of 43: its texture is the Art desk's, pixel for pixel, and your spot heights match here. The owner took your eight calls on it (section 4). Next: your full return for both places, on pass 9's ground, the lookout first.
-  - Your measure of what pass 9 moves under the six ruled scenes went to the terrain lane. As your notes say, each of those scenes redraws on pass 9, for what it moves, with its full return. None is asked for yet.
+  - Your measure of what pass 9 moves under the six ruled scenes went to the terrain lane. As your notes say, each of those scenes redraws on pass 9, for what it moves, with its full return. They are asked for now, all together, in the one scene below.
+  - St Peters as one scene (09-30), asked before Nine Mile Creek's part 2: [briefs/BRIEF-2026-09-30-st-peters-one-scene.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-30-st-peters-one-scene.md). It asks for the whole island on pass 9's ground, the south ring included, with every scene in it, redrawn where pass 9 moves it. The water is drawn once and every seam is finished. A quick look comes first, then the package.
 - Nine Mile Creek's wharf, an art pass (09-28). Asked of you: the wharf rearranged and redrawn with your newest kits, light and flora. Art comes first and the layout is free. It also takes your pass 6 fuel stop, re-sited on Wharf Road: [briefs/BRIEF-2026-09-28-nmc-wharf-pass.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-28-nmc-wharf-pass.md). Your quick look (revision 2) arrived on 09-28 and passed, and the owner ruled on it (section 4). The scenes were asked for in [briefs/BRIEF-2026-09-28-nmc-wharf-scene.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-28-nmc-wharf-scene.md).
   - Your scene return, in three parts, arrived on 09-28. It passed on real Node, 42 of 42, over the three parts together.
   - The gas bar's name stays open.
@@ -148,7 +150,7 @@ Each thread has, or will get, its own paste in its own conversation. This list i
 
   The wharf, the gas bar, the bar and the crossing stay as drawn: [briefs/BRIEF-2026-09-29-nmc-key-scenes.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-29-nmc-key-scenes.md).
 
-  Parts 1 and 3 arrived on 09-30 and passed on real Node, 20 of 20 and 12 of 12. Your texture decodes here to your numbers, today's map in it is the game's, and the bar and the seam are today's to the bit. The owner took your fourteen calls (section 4). Part 2 is asked now, with three points on part 1's record, in the owner's paste of 09-30. Road kit v4 reaches the game once the game's road bake can read it (the first open item in your README).
+  Parts 1 and 3 arrived on 09-30 and passed on real Node, 20 of 20 and 12 of 12. Your texture decodes here to your numbers, today's map in it is the game's, and the bar and the seam are today's to the bit. The owner took your fourteen calls (section 4). Part 2 was asked on 09-30, with three points on part 1's record, in the owner's paste. It now waits for St Peters as one scene (above). Road kit v4 reaches the game once the game's road bake can read it (the first open item in your README).
 - Character kit 9.2 (09-24). In the game since 09-26; a change in review now plays its face, blink, look-at and carry clips. Asked of you: the send-back, [briefs/BRIEF-2026-09-30-character-9-2-send-back.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-30-character-9-2-send-back.md): six fixes, the owner's question on the fisher's irises, and two things the game measured. Nothing in the game waits on it.
 - The channel check (09-27, on this branch): DONE the same day. Text reaches you; pictures do not (section 1). [briefs/BRIEF-2026-09-27-channel-check.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-27-channel-check.md).
 
