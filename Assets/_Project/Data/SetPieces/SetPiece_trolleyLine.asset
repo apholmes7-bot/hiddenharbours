@@ -1,0 +1,122 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_trolleyLine
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: structure.stp_cannery_trolley_line
+  DisplayName: Trolley line
+  RigKey: trolleyLine
+  SceneId: keyscene.stp_cannery
+  BakedOptionsJson: '{"path":[[0,0],[4.01,-4.17],[6.41,-7.17],[8.01,-9.27]],"gauge":0.6,"decay":"derelict","seed":7}'
+  Layer: floor
+  Walk: on
+  Mount: ground
+  BoundsMin: {x: -0.511, y: -9.676, z: 0}
+  BoundsMax: {x: 8.542, y: 0.491, z: 0.465}
+  Frames:
+  - Sprite: {fileID: 1071240320091042161, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
+    RigDir: 0
+    ShowFaces: N
+    BearingDeg: 0
+    CameraSees: its back
+    NativeSize: {x: 297, y: 217}
+    NativePivot: {x: 20, y: 14}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 16, y: 10}
+  - Sprite: {fileID: -5539112420125556944, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
+    RigDir: 7
+    ShowFaces: NE
+    BearingDeg: 45
+    CameraSees: its back
+    NativeSize: {x: 80, y: 263}
+    NativePivot: {x: 53, y: 6}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 49, y: 3}
+  - Sprite: {fileID: 2092928035224988202, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
+    RigDir: 6
+    ShowFaces: E
+    BearingDeg: 90
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 333, y: 194}
+    NativePivot: {x: 313, y: 14}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 309, y: 10}
+  - Sprite: {fileID: 7492895981216867507, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
+    RigDir: 5
+    ShowFaces: SE
+    BearingDeg: 135
+    CameraSees: the show face
+    NativeSize: {x: 402, y: 54}
+    NativePivot: {x: 397, y: 36}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 394, y: 32}
+  - Sprite: {fileID: -4972453422737620070, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
+    RigDir: 4
+    ShowFaces: S
+    BearingDeg: 180
+    CameraSees: the show face
+    NativeSize: {x: 297, y: 217}
+    NativePivot: {x: 277, y: 203}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 273, y: 199}
+  - Sprite: {fileID: -188276055836539024, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
+    RigDir: 3
+    ShowFaces: SW
+    BearingDeg: 225
+    CameraSees: the show face
+    NativeSize: {x: 80, y: 271}
+    NativePivot: {x: 26, y: 267}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 23, y: 264}
+  - Sprite: {fileID: 8845643306398823871, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
+    RigDir: 2
+    ShowFaces: W
+    BearingDeg: 270
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 333, y: 199}
+    NativePivot: {x: 19, y: 185}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 16, y: 181}
+  - Sprite: {fileID: -1657928754648862829, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
+    RigDir: 1
+    ShowFaces: NW
+    BearingDeg: 315
+    CameraSees: its back
+    NativeSize: {x: 402, y: 54}
+    NativePivot: {x: 4, y: 18}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 0, y: 15}
+  CellSize: {x: 395, y: 265}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors: []
+  Path:
+  - {x: 0, y: 0}
+  - {x: 4.01, y: -4.17}
+  - {x: 6.41, y: -7.17}
+  - {x: 8.01, y: -9.27}
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []

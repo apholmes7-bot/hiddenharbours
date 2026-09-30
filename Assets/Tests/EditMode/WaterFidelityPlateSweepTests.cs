@@ -3609,9 +3609,8 @@ namespace HiddenHarbours.Tests.EditMode
             splat.ConfigureSandbar(StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo,
                 StPetersBuilder.SandbarHalfWidth,
                 StPetersShoreMap.BarSpineHalfWidth, StPetersShoreMap.BarSpineFloorElevation);
-            HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Build();
             splat.ConfigureDetail(
-                AssetDatabase.LoadAssetAtPath<Texture2DArray>(HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Array256Path),
+                HiddenHarbours.Art.Editor.TerrainArrayAssets.LoadDetailRequired(),
                 null);   // the 512 array retired with the px flip (2026-09-17, owner ruling A2)
             var splatMaps = new Texture2D[TerrainSplatBrush.TextureCount];
             for (int i = 0; i < splatMaps.Length; i++)

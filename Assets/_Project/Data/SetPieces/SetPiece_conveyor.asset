@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_conveyor
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: prop.stp_cannery_conveyor
+  DisplayName: Conveyor frame
+  RigKey: conveyor
+  SceneId: keyscene.stp_cannery
+  BakedOptionsJson: '{"length":6.2,"z0":0.8,"z1":2.9,"decay":"derelict","seed":3}'
+  Layer: raised
+  Walk: under
+  Mount: ground
+  BoundsMin: {x: -3.116, y: -0.496, z: 0}
+  BoundsMax: {x: 3.116, y: 0.496, z: 2.947}
+  Frames:
+  - Sprite: {fileID: -7107170858423174967, guid: 0e068e32c3ee4c148838a44b41b453e3, type: 3}
+    RigDir: 0
+    ShowFaces: N
+    BearingDeg: 0
+    CameraSees: its back
+    NativeSize: {x: 207, y: 99}
+    NativePivot: {x: 103, y: 84}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 100, y: 81}
+  - Sprite: {fileID: 2791390035506470311, guid: 0e068e32c3ee4c148838a44b41b453e3, type: 3}
+    RigDir: 7
+    ShowFaces: NE
+    BearingDeg: 45
+    CameraSees: its back
+    NativeSize: {x: 167, y: 131}
+    NativePivot: {x: 83, y: 76}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 80, y: 72}
+  - Sprite: {fileID: -2636277936065488792, guid: 0e068e32c3ee4c148838a44b41b453e3, type: 3}
+    RigDir: 6
+    ShowFaces: E
+    BearingDeg: 90
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 39, y: 155}
+    NativePivot: {x: 19, y: 88}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 16, y: 85}
+  - Sprite: {fileID: -5532052068307936223, guid: 0e068e32c3ee4c148838a44b41b453e3, type: 3}
+    RigDir: 5
+    ShowFaces: SE
+    BearingDeg: 135
+    CameraSees: the show face
+    NativeSize: {x: 167, y: 131}
+    NativePivot: {x: 83, y: 76}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 80, y: 72}
+  - Sprite: {fileID: 2988624497584224895, guid: 0e068e32c3ee4c148838a44b41b453e3, type: 3}
+    RigDir: 4
+    ShowFaces: S
+    BearingDeg: 180
+    CameraSees: the show face
+    NativeSize: {x: 207, y: 99}
+    NativePivot: {x: 103, y: 84}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 100, y: 81}
+  - Sprite: {fileID: -7046499382094223101, guid: 0e068e32c3ee4c148838a44b41b453e3, type: 3}
+    RigDir: 3
+    ShowFaces: SW
+    BearingDeg: 225
+    CameraSees: the show face
+    NativeSize: {x: 167, y: 181}
+    NativePivot: {x: 83, y: 127}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 80, y: 123}
+  - Sprite: {fileID: -6640618369647875804, guid: 0e068e32c3ee4c148838a44b41b453e3, type: 3}
+    RigDir: 2
+    ShowFaces: W
+    BearingDeg: 270
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 39, y: 205}
+    NativePivot: {x: 19, y: 139}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 16, y: 136}
+  - Sprite: {fileID: 4490128514603095408, guid: 0e068e32c3ee4c148838a44b41b453e3, type: 3}
+    RigDir: 1
+    ShowFaces: NW
+    BearingDeg: 315
+    CameraSees: its back
+    NativeSize: {x: 167, y: 181}
+    NativePivot: {x: 83, y: 127}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 80, y: 123}
+  CellSize: {x: 200, y: 198}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -3.1, y: 0.55}
+    - {x: -2.3, y: 0.55}
+    - {x: -2.3, y: -0.55}
+    - {x: -3.1, y: -0.55}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -0.4, y: 0.55}
+    - {x: 0.4, y: 0.55}
+    - {x: 0.4, y: -0.55}
+    - {x: -0.4, y: -0.55}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: 2.3, y: 0.55}
+    - {x: 3.1, y: 0.55}
+    - {x: 3.1, y: -0.55}
+    - {x: 2.3, y: -0.55}
+  Anchors:
+  - Name: foot
+    Position: {x: -3.1, y: 0, z: 0.8}
+  - Name: top
+    Position: {x: 3.1, y: 0, z: 2.9}
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []

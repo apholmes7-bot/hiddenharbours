@@ -1818,9 +1818,10 @@ dapple — and physically a flat surface focuses nothing. No new C# uniform (the
 sim-pushed data — the ADR 0027 "no new uniform" ruling; the three knobs are material properties,
 rule 6). `col.rgb` only — never `depth` / `clip()` / `_WaterLevel` / the height read / the sim
 (P1 integrity, CLAUDE.md rule 5). Cost: 4 extra `WaveFieldSample` calls inside
-`if (_CausticCurvatureBlend > 0.001)` — zero at the shipped default. Deliberately NOT added to
-`WaterSurface.MoodFloatNames` (no double-drive); whether the blend should be mood-eased is an open
-question for the owner.
+`if (_CausticCurvatureBlend > 0.001)` — zero at the shader default. C1 serializes a candidate blend
+of 0.5 on the live material and all eight presets, and carries all three curvature properties through
+`WaterSurface.MoodFloatNames` (see §17.11). This branch precedes the day-gate multiply: a night frame
+or an absent field does not by itself avoid the four taps. GPU timing is required before acceptance.
 
 | Property | Default | Effect |
 |---|---|---|
@@ -1989,6 +1990,73 @@ wired by each region's builder.
 > a black bottom across its whole shallows. `WaterSurface` therefore pushes an explicit clear 1×1 on
 > enable, unconditionally, so "no bake" means coverage 0 and composites nothing. Same lesson, same
 > shape, as the interior guard's black 1×1 and the reflection target's clear one. Pinned by a test.
+
+### 17.10 Played-region shallows: S1 activation (2026-09-28)
+
+S1 explicitly serializes the seabed toggle/keyword, the existing six absorption bands and
+the existing (1, 0.18, 0.08) extinction ratio on all eight water presets. Their turbidity
+values are unchanged. Runtime mood blending already pushes turbidity through the surface
+property block; the separate editor "Apply water preset" action copies the entire material,
+including keywords. A preset that omitted the toggle could therefore disable the bottom.
+
+The texture remains per-surface. Neither the preset nor the shared Water.mat receives a
+region's bake. ShallowsActivationTests checks preset copying, region isolation and the real
+displaced-chunk copy path. It also contains committed-region acceptance cases for St Peters
+and Nine Mile Creek, using the WaterSurface script identity rather than scene line numbers.
+
+Both regions now bind a 1520 x 1520 seabed colour bake made with the explicit-terrain
+SeabedBakeTool overload. Each source is the active terrain component in its committed
+scene: TidalTerrain in St Peters, MainlandTidalTerrain in Nine Mile Creek. Their world
+rectangles are unchanged (St Peters: minimum -380,-260, size 760,520; NMC: -380,-280,
+size 760,560). The two scene changes are only WaterSurface._seabedTexture references:
+StPeters.unity line 178290 and NineMileCreek.unity line 420982 on base 45a09dd6.
+St Peters keeps GUID 4f2c5d2a7b42a5e4bbd474103eb31267; NMC uses
+6c34e797a389d8947b0468d83edd9f95. Both imports are sRGB RGBA32, uncompressed,
+point-filtered and clamped, without mips or NPOT scaling. All 14 ShallowsActivationTests
+cases passed in Unity 6000.5.0f1. Scene export was retired by #900; no exporter output
+is part of this change.
+
+The colour bake's 1520 samples span at most 0.5 m on the long axis and cost 8.8135 MiB per
+RGBA32 texture without mips. This does not fix register row 31's height-resolution clamp.
+Do not change depth, height textures, clip, walkability or the retired scalar-alpha path.
+The owner accepted ground/seabed continuity and six bands on 2026-09-28. There is no S1b or S2.
+
+### 17.11 C1 candidate: wave-linked, daylight-gated caustics (2026-09-28)
+
+C1 activates the existing §17.6 approximation without changing the shader. Water.mat and all eight
+water presets explicitly carry curvature blend **0.5**, step **0.5 m** and gain **12**. Blend 0.5
+retains half the independent texture signal when the wave field is fully live; it is a candidate
+for the owner's plates, not a visually validated setting. Step and gain retain their shader defaults.
+Water.mat's day gate changes from 0 to **1**, matching every preset: a running day/night cycle fades
+caustics with positive sun elevation. An unset cycle retains the existing full-day fallback.
+
+The three curvature properties join the weather float-copy list so preset values reach the renderer's
+property block. All anchors currently agree, but later data edits remain effective. `_CausticShallowBias`
+stays at its effective zero and outside that list; C1 does not retune depth gates. Amount, scale, depth,
+texture strength, absorption, seabed bindings and gameplay waterline are unchanged.
+
+`CausticMath` is a plain C# arithmetic twin, not a second runtime wave or lighting driver.
+`CausticMathTests` contains 26 cases with explicit expected numbers: nine serialized-material checks,
+twelve day-gate examples, three flat/tilted-surface examples, one finite-difference numeric check and
+one blend/fallback check. `CausticMoodCopyTests` adds one Unity case for material copying and distinct
+weather-anchor values reaching the property block. The nine material cases were red on main's data
+before activation; all 26 plain cases passed offline using NUnit. All 27 new cases subsequently passed
+in Unity 6000.5.0f1 during the owner-granted C1 slot. Water/weather regressions and the shader compile
+guard passed; the separately run, known golden-hour sun-side plate test reproduced main's failure.
+
+The slot produced 56 paired gameplay-scale images in both played regions: blend 0 versus 0.5 at sun-up,
+noon, sunset and night, calm and blowing, plus caustic-amount-zero controls and night day-gate 0/1 arms.
+All 16 frame groups restored pixel-for-pixel. Calm's zero-energy fallback preserved the independent
+pattern; blowing daylight showed curvature changes, and the night gate removed the caustic add.
+The owner still decides the look. Captures and timing records remain in Evidence~/, outside commits.
+
+GPU timing on an RTX 4060 / Direct3D11 at 1920 x 1080 used the shared `HH IsoFacet Hulls` marker (six
+GPU blocks per sampled frame), with 60 measured frames per arm per region after warmup. Its median
+off/on values were 3.567/3.736 ms in St Peters and 12.219/10.820 ms in Nine Mile Creek. The latter's
+7.643-19.102 ms spread makes its negative delta inconclusive, not a speedup. This is an incremental
+shared-pass comparison, not an isolated shader timer or a 60 fps certification. The first Direct3D12
+capture attempt crashed in GPU readback; the accepted captures use Direct3D11. No shader, scene, bake,
+depth, clip, walkability or simulation change belongs to C1.
 
 ## 18. Current drift lines — the tide's SET reads on the surface (Arc C water visuals)
 

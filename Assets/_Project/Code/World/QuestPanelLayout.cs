@@ -130,5 +130,31 @@ namespace HiddenHarbours.World
         /// </summary>
         public static Vector2 AnchoredPosition(in QuestPanelFit fit)
             => new Vector2(-MarginPx * fit.Scale, MarginPx * fit.Scale);
+
+        /// <summary>
+        /// <see cref="AnchoredPosition(in QuestPanelFit)"/>, kept out of what the helm's UI covers
+        /// (ADR 0050, <see cref="HelmFootprint"/>): straight up out of its corner, its column kept,
+        /// until it clears the covered area's top by its own margin (<see cref="MarginPx"/> of its own
+        /// pixels) — above a full-width band, and above a card that reaches it. Exactly the corner with
+        /// nothing covered, and whenever the covered area does not reach it.
+        /// </summary>
+        public static Vector2 AnchoredPosition(in QuestPanelFit fit, in HelmFootprintArea covered,
+                                               float screenW, float screenH)
+        {
+            Vector2 home = AnchoredPosition(in fit);
+            if (covered.IsNone) return home;
+            float lift = covered.LiftToClear(NoteScreenRect(in fit, screenW, screenH), MarginPx * fit.Scale);
+            return lift > 0f ? new Vector2(home.x, home.y + lift) : home;
+        }
+
+        /// <summary>The note's box in SCREEN pixels (bottom-left origin) at home in its corner, on a
+        /// <paramref name="screenW"/>×<paramref name="screenH"/> screen. Its canvas is one screen pixel
+        /// per unit, so the anchored position is already in pixels.</summary>
+        public static Rect NoteScreenRect(in QuestPanelFit fit, float screenW, float screenH)
+        {
+            Vector2 a = AnchoredPosition(in fit);
+            float right = screenW + a.x;
+            return new Rect(right - fit.ScreenWidthPx, a.y, fit.ScreenWidthPx, fit.ScreenHeightPx);
+        }
     }
 }
