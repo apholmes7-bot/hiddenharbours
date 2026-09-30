@@ -53,8 +53,14 @@ namespace HiddenHarbours.Tests.RigBaking
             ("packer", 16), ("cutter", 13), ("hand", 14), ("boy", 13), ("girl", 11),
         };
 
-        /// <summary>The player's committed switch on 2026-09-17, spelled out.</summary>
-        static readonly string[] PlayerStates = { "idle", "walk", "run", "balance" };
+        /// <summary>The player's committed switch, spelled out: the four of 2026-09-17, then character
+        /// PR 2a's wheel, oars and bucket carry (2026-09-28).</summary>
+        static readonly string[] PlayerStates =
+        {
+            "idle", "walk", "run", "balance",
+            "idle_helm", "walk_helm", "idle_oars", "walk_oars",
+            "idle_buckets", "walk_buckets", "run_buckets",
+        };
 
         IRigScriptHost _host, _host9;
         readonly Dictionary<string, RigMeshData> _composed = new Dictionary<string, RigMeshData>();
@@ -219,12 +225,13 @@ namespace HiddenHarbours.Tests.RigBaking
 
             if (CharacterSkinAssetBaker.LiveRigIsV9)
             {
-                // The bake runs ComposeV9: rig 9's rest face, its table read by ReadMaterials9. What it
-                // refuses on is MaxMaterials(ToneRule.V9), counted by CharacterSkinBakeGuardTests' v9
-                // guards; the rig 7 ramp tables above do not measure it.
+                // The bake runs ComposeV9: rig 9's whole face, every face group bound since character
+                // PR 2a (FaceMeshJs9), its table read by ReadMaterials9. What it refuses on is
+                // MaxMaterials(ToneRule.V9), counted by CharacterSkinBakeGuardTests' v9 guards; the
+                // rig 7 ramp tables above do not measure it.
                 string player = CharacterRigBakeMenu.PlayerPreset;
                 string[] rig9 = CharacterSkinExtractor.ReadMaterials9(
-                        Host9, player, CharacterSkinExtractor.DefaultFaceMeshJs9(Host9, player))
+                        Host9, player, CharacterSkinExtractor.FaceMeshJs9(Host9, player))
                     .Select(m => m.Name).ToArray();
                 CollectionAssert.AreEqual(committed.Materials.Select(m => m.Name).ToArray(), rig9,
                     "rig 9's extraction here is not the one that baked the player's committed def, so the " +
@@ -259,8 +266,28 @@ namespace HiddenHarbours.Tests.RigBaking
         [Test]
         public void EveryCastStateIsAClipTheRigBakes()
         {
-            string[] anims = CharacterSkinExtractor.Anims(_host);
-            string[] missing = CharacterSkinAssetBaker.CastMeshStates.Where(s => !anims.Contains(s)).ToArray();
+            // The rig's states as the bake keys them: a plain anim by its name, a carry clip by the
+            // EDITOR's CharacterState key of the (anim, carry) the rig's own clipDef names. The bar is
+            // the live rig and the bake's key, never the state map these states are spelled with.
+            var states = new HashSet<string>(StringComparer.Ordinal);
+            if (CharacterSkinAssetBaker.LiveRigIsV9)
+            {
+                string g = CharacterSkinExtractor.V9GlobalName;
+                foreach (string name in CharacterSkinExtractor.ClipNames9(Host9))
+                {
+                    Host9.Execute($"globalThis.__hhCastDef={g}.clipDef('{name}');");
+                    string anim = Host9.EvaluateString("String(globalThis.__hhCastDef.anim||'')");
+                    string carry = Host9.EvaluateString("String(globalThis.__hhCastDef.carry||'')");
+                    states.Add(carry.Length == 0 ? anim : new CharacterState(anim, null, carry).Key);
+                }
+            }
+            else
+            {
+                states.UnionWith(CharacterSkinExtractor.Anims(_host));
+            }
+            Assert.That(states.Count, Is.GreaterThan(4), "harness: the rig's clip table did not read");
+
+            string[] missing = CharacterSkinAssetBaker.CastMeshStates.Where(s => !states.Contains(s)).ToArray();
             Assert.IsEmpty(missing,
                 $"the rig bakes no clip for [{string.Join(", ", missing)}], so every fresh cast def would " +
                 "refuse its switch and the cast bake would stop on the first NPC.");

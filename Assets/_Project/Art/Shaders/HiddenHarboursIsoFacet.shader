@@ -112,8 +112,11 @@ Shader "HiddenHarbours/IsoFacet"
         //   HH_FIGURE      a v9 character (CharacterSkinDef.ToneRule.V9). Her material is runtime-
         //                  built as well (IsoCharacterFigureRenderer.BuildMaterial), so the same
         //                  stripping argument holds. Everything it adds is inside #ifdef HH_FIGURE:
-        //                  two tables, one vertex line and one fragment block. A figure never carries
-        //                  a room and a hull never carries a v9 palette, so neither needs both.
+        //                  two tables, the tone line and rig 9's face in the vertex stage (the face
+        //                  gate, the cull by role, the head snap: character PR 2a), one fragment block
+        //                  and the ink flag in the dark target's alpha. A figure never carries a room
+        //                  and a hull never carries a v9 palette, so neither needs both — which is also
+        //                  why the face may read TEXCOORD1, the channel HH_LEVEL_GATE's tag uses.
         #pragma multi_compile_local _ HH_LEVEL_GATE HH_FIGURE
 
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
@@ -233,6 +236,17 @@ Shader "HiddenHarbours/IsoFacet"
             // renderer writes both at full length every time: Unity fixes an array's size at its first set.
             float4 _RampMetaFigure[32];     // (len, off, lo, hi)
             float4 _RampToneFigure[32];     // (gain, bias', 0, 0)
+
+            // ⭐ RIG 9'S FACE, HEAD SNAP AND INK (character PR 2a; IsoFacetFigureShaderIds names each).
+            // A v9 def binds all thirteen face groups in ONE mesh, and a face change is these uniforms:
+            // never a mesh edit, never a second draw call. A v9 def baked before the face writes
+            // _HHFigureFaceParams.y = 0, _HHFigureHead.w = 0 and _HHFigureInkOn = 0, and this variant
+            // then draws exactly the program above it did.
+            float4 _HHFigureFace;           // per draw: (eyes, brows, mouth, 0) — the group each slot shows
+            float4 _HHFigureHead;           // per draw: the head's mid point, figure frame; w = 1 while it snaps
+            float4 _HHFigureFaceMinT;       // the cull by role: (near, far, side, mouth)
+            float4 _HHFigureFaceParams;     // x = the floor every face culls at, y = 1 when the def has the face
+            float  _HHFigureInkOn;          // 1 while the rig's ink is live: the dark target's alpha flag
 #endif
 
             struct Attributes
@@ -254,6 +268,15 @@ Shader "HiddenHarbours/IsoFacet"
                 // own per-vertex uv, which paint() interpolates before calling the generator.
                 // All zero on a hull with no room, and on every hull face of a hull that has one.
                 float4 texAttr    : TEXCOORD2;
+#endif
+#ifdef HH_FIGURE
+                // RIG 9'S FACE, per face (every corner of a face carries its face's values): x = the
+                // face group, 1-based into the def's FaceGroups (0 = the body, always drawn); y = the
+                // role the cull reads (0 body, 1 near, 2 far, 3 side, 4 mouth); z = 1 when the head
+                // snap moves it. Absent on a v9 def baked before the face, whose material turns every
+                // use of it off (_HHFigureFaceParams.y = 0), so whatever the input stage fills in for a
+                // missing channel is never read.
+                float4 faceAttr   : TEXCOORD1;
 #endif
             };
 
@@ -337,6 +360,48 @@ Shader "HiddenHarbours/IsoFacet"
                 wp.z  -= (wp.y - _HullShear.y) * _HullShear.x;   // ADR 0033: the y→z shear
                 wp.z  -= v.attrs.z;              // f.db pulls the face toward the camera
                 o.positionCS = TransformWorldToHClip(wp);
+#ifdef HH_FIGURE
+                // ⭐ RIG 9'S FACE (paint and paintSolved in characterIsoRig9.js; RigPaint9 is the port
+                // a guard proves byte for byte). All thirteen face groups live in the one mesh and
+                // one draw; which of them shows, and which faces turn away, is decided HERE, per
+                // vertex, from uniforms the renderer sets with each pose. A face that does not draw
+                // is COLLAPSED: every corner of it moves to one point outside the clip volume, so it
+                // rasterises nothing in either pass (vertGuard reads this positionCS too).
+                if (_HHFigureFaceParams.y > 0.5)
+                {
+                    int g = (int)round(v.faceAttr.x);
+                    int role = (int)round(v.faceAttr.y);
+                    // THE FACE GATE: a face group draws only while it is its slot's group this frame.
+                    bool shown = g == 0 || g == (int)round(_HHFigureFace.x)
+                                        || g == (int)round(_HHFigureFace.y)
+                                        || g == (int)round(_HHFigureFace.z);
+                    // THE CULL BY ROLE: "if (toward <= max(1e-4, minT)) continue". toward from the
+                    // UN-renormalised normal: the renderer wrote each face's unit Newell normal (zero
+                    // on a face with no area, which the rig culls as toward 0), and the object matrix
+                    // is orthogonal. Body faces cull at the floor alone: rig 9 has no backface rescue.
+                    float toward = dot(mul((float3x3)unity_ObjectToWorld, v.normalOS), UNITY_MATRIX_V[2].xyz);
+                    float minT = role == 1 ? _HHFigureFaceMinT.x
+                               : role == 2 ? _HHFigureFaceMinT.y
+                               : role == 3 ? _HHFigureFaceMinT.z
+                               : role == 4 ? _HHFigureFaceMinT.w : 0.0;
+                    if (!shown || toward <= max(_HHFigureFaceParams.x, minT))
+                    {
+                        o.positionCS = float4(2.0, 2.0, 2.0, 1.0);
+                    }
+                    else if (v.faceAttr.z > 0.5 && _HHFigureHead.w > 0.5)
+                    {
+                        // THE HEAD SNAP: the head's faces move together by the screen offset that puts
+                        // the head's mid point on a pixel centre, round(s − 0.5) + 0.5 − s, which is
+                        // floor(s) + 0.5 − s. Screen only: depth, tone and the cull above are the
+                        // unsnapped face's, as in the rig. The facet targets are the camera target's
+                        // size, which is _ScreenParams; which way the target's rows run does not
+                        // matter, because a whole number of rows minus a pixel centre is a pixel centre.
+                        float4 hc = TransformWorldToHClip(mul(unity_ObjectToWorld, float4(_HHFigureHead.xyz, 1.0)).xyz);
+                        float2 px = (hc.xy / hc.w * 0.5 + 0.5) * _ScreenParams.xy;
+                        o.positionCS.xy += (floor(px) + 0.5 - px) * (2.0 / _ScreenParams.xy) * o.positionCS.w;
+                    }
+                }
+#endif
                 return o;
             }
 
@@ -521,6 +586,12 @@ Shader "HiddenHarbours/IsoFacet"
                                             : _RampTex.Load(int3(idx, m, 0)).rgb, hullId);
                 o.dark  = float4(hhInterior ? _DarkRampTexInterior.Load(int3(idx, m, 0)).rgb
                                             : _DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0);
+#elif defined(HH_FIGURE)
+                o.facet = float4(_RampTex.Load(int3(idx, m, 0)).rgb, hullId);
+                // THE INK FLAG. While rig 9's ink is live the renderer binds the one-step-down ramp
+                // here (paint's "stp[i]--") and this alpha reads 0, which is how the resolve knows the
+                // pixel is a figure's and inks it by the rig's rules. Every hull writes 1, as before.
+                o.dark  = float4(_DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0 - _HHFigureInkOn);
 #else
                 o.facet = float4(_RampTex.Load(int3(idx, m, 0)).rgb, hullId);
                 o.dark  = float4(_DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0);

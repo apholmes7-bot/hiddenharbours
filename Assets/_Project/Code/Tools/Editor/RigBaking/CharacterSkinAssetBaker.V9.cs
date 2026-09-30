@@ -23,11 +23,15 @@ namespace HiddenHarbours.Tools.RigBaking
 
         /// <summary>
         /// Compose one preset's skin def from rig 9, without touching the AssetDatabase. The bind
-        /// mesh is the preset's rest face (<see cref="CharacterSkinExtractor.DefaultFaceMeshJs9"/>);
-        /// every clip rig 9 ships is baked under its (anim, carry) key; the materials are the ones
-        /// that mesh paints, each with its own gain, bias and tone window, and the bake refuses a
-        /// figure over <see cref="CharacterSkinDef.MaxMaterials"/> for <see cref="ToneRule.V9"/>
-        /// rather than dropping the tail.
+        /// mesh is EVERY face with every face group (<see cref="CharacterSkinExtractor.FaceMeshJs9"/>,
+        /// since character PR 2a), each face carrying its group, its cull role and its head flag in
+        /// UV1; every clip rig 9 ships is baked under its (anim, carry) key with its face track and
+        /// its tool track; the materials are the ones that mesh paints, each with its own gain, bias
+        /// and tone window, and the bake refuses a figure over <see cref="CharacterSkinDef.MaxMaterials"/>
+        /// for <see cref="ToneRule.V9"/> rather than dropping the tail. The blink, the look, the face
+        /// thresholds, the head snap, the edge and the keyline mix are read off the rig (the blink and
+        /// the look checked against the committed sidecar), and the finished def is painted against
+        /// rig 9's own render (<see cref="CharacterSkinInk9"/>) and the match recorded.
         /// </summary>
         public static SkinBake ComposeV9(IRigScriptHost host, string preset,
                                          CharacterSkinDef target = null,
@@ -48,7 +52,8 @@ namespace HiddenHarbours.Tools.RigBaking
             CharacterSkinExtractor.AssertRestComposes(rigBones, tol);
 
             progress?.Invoke("bind mesh", 0.08f);
-            string meshJs = CharacterSkinExtractor.DefaultFaceMeshJs9(host, preset);
+            string[] faceGroups = CharacterSkinExtractor.FaceGroupOrder9(host);
+            string meshJs = CharacterSkinExtractor.FaceMeshJs9(host, preset);
             RigSkinning skin = CharacterSkinExtractor.ReadSkinning(
                 host, preset, CharacterSkinDef.MaxBoneInfluences, meshJs);
             CharacterSkinExtractor.MarkOwnership(rigBones, skin);
@@ -66,6 +71,9 @@ namespace HiddenHarbours.Tools.RigBaking
             }
 
             RigMeshData bind = CharacterSkinExtractor.NewData9(host, preset, $"{g}:{preset}:bind", meshJs, mats);
+            CharacterSkinExtractor.FaceThresholds9 thresholds = CharacterSkinExtractor.ReadFaceThresholds9(host, preset);
+            CharacterSkinExtractor.ResolveFaceRoles9(bind.Faces, faceGroups, thresholds, $"{g}:{preset}:bind");
+            bind.CarriesFaceAttributes = true;
             CharacterSkinExtractor.AssertBindAgrees(bind, skin, tol);
 
             progress?.Invoke("mesh", 0.14f);
@@ -80,7 +88,7 @@ namespace HiddenHarbours.Tools.RigBaking
             string[] clipNames = CharacterSkinExtractor.ClipNames9(host);
             var clips = new List<CharacterSkinDef.SkinClip>(clipNames.Length);
             var keys = new Dictionary<string, string>(StringComparer.Ordinal);
-            int totalFrames = 0;
+            int totalFrames = 0, faceClips = 0, toolClips = 0;
             float worstStepDeg = 0f; string worstStepAt = "";
             for (int i = 0; i < clipNames.Length; i++)
             {
@@ -92,9 +100,21 @@ namespace HiddenHarbours.Tools.RigBaking
                         $"Rig 9 clips '{first}' and '{clipNames[i]}' both key as '{state}'. The def " +
                         "finds a clip by its key, so one of them could never be played.");
                 keys.Add(state, clipNames[i]);
-                clips.Add(ToClip(rc, state, rigBones.Length, ref worstStepDeg, ref worstStepAt));
+                CharacterSkinDef.SkinClip sc = ToClip(rc, state, rigBones.Length, ref worstStepDeg, ref worstStepAt);
+                sc.Face = rc.Face ?? Array.Empty<byte>();
+                sc.Tool = rc.Tool ?? Array.Empty<CharacterSkinDef.ToolKey>();
+                if (sc.HasFaceTrack) faceClips++;
+                if (sc.Tool.Length > 0) toolClips++;
+                clips.Add(sc);
                 totalFrames += rc.Frames;
             }
+
+            progress?.Invoke("face, blink and look", 0.905f);
+            CharacterSkinExtractor.AssertOverlaysMatchSidecar9(host, preset);
+            CharacterSkinExtractor.Blink9 blink = CharacterSkinExtractor.ReadBlink9(host);
+            CharacterSkinExtractor.Look9 look = CharacterSkinExtractor.ReadLook9(host, preset, rigBones);
+            int[] restFace = CharacterSkinExtractor.RestFace9(host, preset, faceGroups);
+            double cullFloor = CharacterSkinExtractor.CullFloor9();
 
             progress?.Invoke("turntable sign", 0.92f);
             bool azimuthCcw = MeasureFacetSignV9(host, preset, out string signReport);
@@ -127,6 +147,31 @@ namespace HiddenHarbours.Tools.RigBaking
             def.Gain = 1f;
             def.Bias = 0f;
             def.Keyline = bind.Keyline;
+            // The figure ink, the face, the blink and the look: all the rig's, none of them
+            // re-derived (character PR 2a).
+            def.Edge = (float)CharacterSkinExtractor.V9ShadingNumber(host, "edge");
+            def.KeylineMix = (float)CharacterSkinExtractor.V9ShadingNumber(host, "keylineMix");
+            def.HeadSnap = CharacterSkinExtractor.HeadSnap9(host);
+            def.HeadMid = CharacterSkinExtractor.HeadMid9(host, preset).ToVector3();
+            def.FaceGroups = faceGroups;
+            def.RestFace = restFace;
+            def.FaceMinToward = thresholds.ToVector4();
+            def.FaceCullFloor = (float)cullFloor;
+            def.BlinkSteps = blink.Steps;
+            def.BlinkIntervalSeconds = blink.IntervalSeconds;
+            def.BlinkDoubleChance = blink.DoubleChance;
+            def.BlinkDoubleGapSeconds = blink.DoubleGapSeconds;
+            def.BlinkSkipGroups = blink.SkipGroups;
+            def.LookNeckBone = look.Neck;
+            def.LookHeadBone = look.Head;
+            def.LookChestBone = look.Chest;
+            def.LookSplitNeck = look.SplitNeck;
+            def.LookSplitHead = look.SplitHead;
+            def.LookYawLimits = look.Yaw;
+            def.LookPitchLimits = look.Pitch;
+            def.LookHeadShare = look.HeadShare;
+            def.LookEyesBeyondDeg = look.EyesBeyondDeg;
+            def.LookEyes = look.Eyes;
             def.AzimuthCounterClockwise = azimuthCcw;
             def.StepMode = CharacterSkinDef.ShadeStep.HardThreshold;
             def.HardStepThreshold = 0.55f;
@@ -166,7 +211,21 @@ namespace HiddenHarbours.Tools.RigBaking
             def.Clips = clips.ToArray();
             def.MeshStates ??= Array.Empty<string>();
             def.BindMesh = built.Mesh;
+
+            progress?.Invoke("ink", 0.97f);
+            CharacterSkinInk9.Reading[] ink = CharacterSkinInk9.MeasureAll(host, def, keys);
+            string inkReport = CharacterSkinInk9.Report(def, ink, out int inkWorst);
             sw.Stop();
+
+            var c = System.Globalization.CultureInfo.InvariantCulture;
+            string faceReport =
+                $"{faceGroups.Length} face groups bound, {built.GroupedFaces} of {built.Faces} faces in them (UV1); " +
+                $"cull by role {thresholds}, floor {cullFloor.ToString("R", c)}; rest face " +
+                $"[{string.Join(", ", RestNames(faceGroups, restFace))}]; {faceClips}/{clips.Count} clips carry a " +
+                $"face track, {toolClips} a tool track (data only); edge {def.Edge.ToString("R", c)}, keyline mix " +
+                $"{def.KeylineMix.ToString("R", c)}, head snap {(def.HeadSnap ? "on" : "off")} at " +
+                $"({def.HeadMid.x.ToString("R", c)}, {def.HeadMid.y.ToString("R", c)}, {def.HeadMid.z.ToString("R", c)}); " +
+                $"blink {blink}; look {look}";
 
             long weightBytes = (long)built.Vertices * BoneWeightBytesPerVertex;
             long bindposeBytes = (long)rigBones.Length * BindposeBytesPerBone;
@@ -184,12 +243,25 @@ namespace HiddenHarbours.Tools.RigBaking
                 WorstStepDegrees = worstStepDeg,
                 WorstStepAt = worstStepAt,
                 SignReport = signReport,
+                FaceReport = faceReport,
+                InkReport = inkReport,
+                InkWorstCluster = inkWorst,
+                InkReadings = ink,
                 BindGeometryBytes = built.BufferBytes,
                 BoneWeightBytes = weightBytes,
                 BindposeBytes = bindposeBytes,
                 ClipBytes = (long)totalFrames * rigBones.Length * BoneKeyBytes,
                 ComposeMilliseconds = sw.ElapsedMilliseconds,
             };
+        }
+
+        /// <summary>The rest face's group names, for the face report.</summary>
+        static string[] RestNames(string[] groups, int[] ids)
+        {
+            var names = new string[ids.Length];
+            for (int i = 0; i < ids.Length; i++)
+                names[i] = ids[i] >= 1 && ids[i] <= groups.Length ? groups[ids[i] - 1] : "?";
+            return names;
         }
 
         /// <summary>

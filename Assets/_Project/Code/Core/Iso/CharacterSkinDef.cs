@@ -69,11 +69,15 @@ namespace HiddenHarbours.Core
     /// which parts a clip parks so QA can see it; it is information, not a runtime switch, and a
     /// presenter must not grow one.</para>
     ///
-    /// <para>⚠️ <b>The face is a raster STAMP and this mesh does not have one.</b> Eyes, brows,
-    /// lashes, lips and iris are painted by the head rig after the polygons, on materials marked
-    /// <see cref="Material.FixedIndex"/> ≥ 0 that no face of this mesh references. Small in pixels
-    /// (0.00–2.82% measured) and large in the reading. A mesh character has no face until a
-    /// presenter re-adds one — the same debt <see cref="CharacterMeshDef"/> carries.</para>
+    /// <para>⚠️ <b>The face.</b> Rig 7's face is a raster STAMP, painted after the polygons on
+    /// materials marked <see cref="Material.FixedIndex"/> ≥ 0 that no face of this mesh references,
+    /// so a rig 7 def has no face — the same debt <see cref="CharacterMeshDef"/> carries. Rig 9's face
+    /// is polygons: thirteen groups (<see cref="FaceGroups"/>, the rig's GROUP_ORDER) in three slots,
+    /// and a v9 def binds ALL of them. Each bind-mesh face carries its group, its cull role and its
+    /// head flag in UV1; the facet shader draws the one group per slot the frame names
+    /// (<see cref="SkinClip.Face"/>, then the blink and the gaze) and collapses the rest, so a face
+    /// change is a uniform, never a mesh edit or a second draw call. A def with no
+    /// <see cref="FaceGroups"/> draws the face it was baked with and culls nothing.</para>
     ///
     /// <para>⚠️ <b>Vertices are in RIG SPACE, verbatim: +x right (curb), +y forward (nose), +z up,
     /// origin at the cell pivot on the ground.</b> No axis swap is applied anywhere in this repo's
@@ -119,6 +123,41 @@ namespace HiddenHarbours.Core
 
         /// <summary>A bone index that owns nothing / has no parent.</summary>
         public const int NoBone = -1;
+
+        /// <summary>The face slots a v9 def draws one group each of, per frame: the rig's FACE_SLOTS
+        /// order. A face track is <c>FrameCount × FaceSlots</c> group ids.</summary>
+        public const int FaceSlots = 3;
+
+        /// <summary>The eyes slot: where the blink and the gaze land.</summary>
+        public const int EyesSlot = 0;
+
+        /// <summary>The brows slot.</summary>
+        public const int BrowsSlot = 1;
+
+        /// <summary>The mouth slot.</summary>
+        public const int MouthSlot = 2;
+
+        /// <summary>The rig's FACE_SLOTS keys, in slot order — the prefix of every group name
+        /// (<c>eyes.open</c>). A guard holds this to the rig.</summary>
+        public static readonly string[] FaceSlotNames = { "eyes", "brows", "mouth" };
+
+        /// <summary>A group id that names no face group: a body face in UV1, an empty slot in a
+        /// track.</summary>
+        public const int NoFaceGroup = 0;
+
+        /// <summary>
+        /// Which cull threshold a bind-mesh face answers to — UV1.y, as a number. The rig culls a face
+        /// when its <c>toward</c> is at or below <c>max(1e-4, minT)</c>; a body face has no minT, a
+        /// face mark takes its role's (<c>ROLE.near/far/side.minT</c>) and the mouth its own literal.
+        /// </summary>
+        public enum FaceRole
+        {
+            Body = 0,
+            Near = 1,
+            Far = 2,
+            Side = 3,
+            Mouth = 4,
+        }
 
         // -----------------------------------------------------------------------------------
         // Shading — the same shape CharacterMeshDef carries, for the same measured reasons.
@@ -245,6 +284,51 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// One frame of a clip's TOOL track, verbatim from the rig's <c>tracks[k].tool</c>: whether a
+        /// tool is in hand, which kind, and how the rig aims and bends it.
+        ///
+        /// <para>⚠️ <b>Data, not drawing.</b> Nothing draws a v9 tool (the rig's README §12: the tools
+        /// are the game's props), and nothing reads this track yet. It is carried so the prop lane has
+        /// the rig's own numbers rather than a re-derivation.</para>
+        /// </summary>
+        [Serializable]
+        public struct ToolKey
+        {
+            [Tooltip("True when the rig holds a tool on this frame.")]
+            public bool Held;
+
+            [Tooltip("The rig's tool kind: 'rod', 'shovel', 'knife' or 'rest'.")]
+            public string Kind;
+
+            [Tooltip("The rig's tool pitch, degrees.")]
+            public float Pitch;
+
+            [Tooltip("The rig's tool yaw, degrees.")]
+            public float Yaw;
+
+            [Tooltip("The rig's rod bend (0 = straight).")]
+            public float Bend;
+
+            [Tooltip("The rig's tool length, metres.")]
+            public float Length;
+
+            [Tooltip("True when the rig marks this frame's tool advisory: a pose hint, not a grip.")]
+            public bool Advisory;
+        }
+
+        /// <summary>One step of the rig's <c>BLINK.steps</c>: the eyes group it shows and for how
+        /// long.</summary>
+        [Serializable]
+        public struct BlinkStep
+        {
+            [Tooltip("The eyes group this step shows, 1-based into FaceGroups.")]
+            public int Group;
+
+            [Tooltip("How long this step shows, seconds (the rig's ms / 1000).")]
+            public float Seconds;
+        }
+
+        /// <summary>
         /// One <c>ANIMS</c> row as bone animation: <see cref="FrameCount"/> frames × the def's bone
         /// count of local transforms.
         ///
@@ -253,12 +337,14 @@ namespace HiddenHarbours.Core
         /// serialize a jagged array, and frame-major because a player walks one frame's bones
         /// together.</para>
         ///
-        /// <para>⚠️ <b>The rock and the head look are IN the pose, not in a transform.</b> Rig 6's
-        /// <c>pose()</c> reads its counter-lean and the head's look direction as arguments and bakes
-        /// them into the skeleton it returns, so they arrive here as bone keys like everything else.
-        /// ADR 0024's "rock remains a transform" is false of this rig. A skinned figure therefore
-        /// gets both for free at runtime — which is an argument FOR this path, and something a
-        /// presenter must not fight by re-applying them on the object transform.</para>
+        /// <para>⚠️ <b>Rig 7 bakes the rock and the head look INTO the pose; rig 9 bakes
+        /// neither.</b> Rig 6's <c>pose()</c> reads its counter-lean and the head's look direction as
+        /// arguments and bakes them into the skeleton it returns, so on a rig 7 def they arrive as bone
+        /// keys like everything else, and a presenter must not re-apply them. Rig 9's clips are
+        /// unrocked and look straight ahead: the deck rock is the hull's live transform, the
+        /// counter-lean is the rig's separate rock table (which this def does not carry), and the look
+        /// is added at run time — <see cref="CharacterFigureLook"/>, post-multiplied onto the neck and
+        /// head locals of the frame shown.</para>
         ///
         /// <para>⚠️ <b>These are DISCRETE SAMPLES, not keyframes on a curve — STEP them, never
         /// blend them.</b> The rig's <c>solveAt(anim, u)</c> is a closed-form pose function
@@ -315,6 +401,16 @@ namespace HiddenHarbours.Core
             [Tooltip("The power axis the rig resolved this clip against ('short' / 'long').")]
             public string Power;
 
+            [Tooltip("V9 only: the FACE track — FrameCount × FaceSlots group ids, frame-major " +
+                     "(Face[frame * FaceSlots + slot]), each 1-based into the def's FaceGroups: the " +
+                     "rig's tracks[k].face, verbatim. Empty on a def with no face mechanism.")]
+            public byte[] Face;
+
+            [Tooltip("V9 only: the TOOL track, one key per frame, verbatim from the rig's " +
+                     "tracks[k].tool. Empty when the clip holds no tool on any frame. Data only: " +
+                     "nothing draws a v9 tool.")]
+            public ToolKey[] Tool;
+
             /// <summary>The key a caller looks this clip up by — <see cref="State"/> when the bake
             /// set one, else the bare anim. Deliberately identical to
             /// <see cref="CharacterMeshDef.PoseClip.StateKey"/>.</summary>
@@ -329,6 +425,18 @@ namespace HiddenHarbours.Core
             public bool KeysWellFormed(int boneCount) =>
                 Keys != null && boneCount > 0 && FrameCount > 0 &&
                 Keys.Length == FrameCount * boneCount;
+
+            /// <summary>True when this clip carries a face track.</summary>
+            public bool HasFaceTrack => Face != null && Face.Length > 0;
+
+            /// <summary>The group a slot shows on a frame, 1-based into the def's
+            /// <see cref="FaceGroups"/>, or <see cref="NoFaceGroup"/> when this clip carries no
+            /// well-formed face track or the arguments are out of range.</summary>
+            public int FaceGroupOf(int frame, int slot) =>
+                Face != null && Face.Length == FrameCount * FaceSlots &&
+                frame >= 0 && frame < FrameCount && slot >= 0 && slot < FaceSlots
+                    ? Face[frame * FaceSlots + slot]
+                    : NoFaceGroup;
         }
 
         // -----------------------------------------------------------------------------------
@@ -411,6 +519,79 @@ namespace HiddenHarbours.Core
                  "and reads LightN.")]
         public Vector3 KeyScreen;
 
+        [Header("Figure ink (v9: the rig's own paint rules, baked from its SHADING)")]
+        [Tooltip("V9 only: SHADING.edge — the depth step, in rig metres, past which the FARTHER pixel " +
+                 "of a neighbouring pair drops one tone. 0 on a def baked before the field, which then " +
+                 "takes the fleet's depth edge as before.")]
+        public float Edge;
+        [Tooltip("V9 only: SHADING.keylineMix — how far the keyline moves from Keyline toward the " +
+                 "colour of the nearest pixel it outlines (the rig's mixHex(keyline, src, mix)).")]
+        public float KeylineMix;
+        [Tooltip("V9 only: true when the rig snaps the head to the pixel grid — paintSolved's " +
+                 "snapHead, on unless a caller turns it off: every face whose first bone is the head " +
+                 "moves, in screen space, by the offset that puts the head's mid point on a pixel " +
+                 "centre (at most half a pixel each way).")]
+        public bool HeadSnap;
+        [Tooltip("V9 only: the head's mid point in the head bone's frame (the build's D.headMid), " +
+                 "metres — the point the head snap rounds, and the eye the look aims from.")]
+        public Vector3 HeadMid;
+
+        [Header("The face (v9: every group bound, one per slot drawn)")]
+        [Tooltip("V9 only: the rig's face groups in its GROUP_ORDER ('eyes.open' … 'mouth.smile'). A " +
+                 "bind-mesh face's UV1.x is 1 + its index here; 0 is the body. EMPTY on every def with " +
+                 "no face mechanism — rig 7, and v9 baked before it — which draws the face it was baked " +
+                 "with and culls nothing.")]
+        public string[] FaceGroups = Array.Empty<string>();
+        [Tooltip("V9 only: the rig's rest face, one group id per slot (eyes, brows, mouth), 1-based " +
+                 "into FaceGroups — what a clip with no face track shows.")]
+        public int[] RestFace = Array.Empty<int>();
+        [Tooltip("V9 only: the face cull by role — the 'toward' a face must BEAT to draw: x near, " +
+                 "y far, z side (the rig's ROLE[..].minT), w the mouth (the rig's literal).")]
+        public Vector4 FaceMinToward;
+        [Tooltip("V9 only: the floor every face culls at, body faces included — the 1e-4 of the " +
+                 "rig's max(1e-4, minT).")]
+        public float FaceCullFloor;
+
+        [Header("Blink (v9: the rig's BLINK, played on the figure's own clock)")]
+        [Tooltip("V9 only: the blink's steps, in order (the rig's BLINK.steps).")]
+        public BlinkStep[] BlinkSteps = Array.Empty<BlinkStep>();
+        [Tooltip("V9 only: the wait between blinks, drawn uniformly from x..y seconds (the rig's " +
+                 "BLINK.interval_ms).")]
+        public Vector2 BlinkIntervalSeconds;
+        [Tooltip("V9 only: the chance a blink is followed by a second (the rig's BLINK.doubleChance).")]
+        public float BlinkDoubleChance;
+        [Tooltip("V9 only: the gap before that second blink, seconds (the rig's BLINK.doubleGap_ms).")]
+        public float BlinkDoubleGapSeconds;
+        [Tooltip("V9 only: the eyes groups a blink leaves alone (the rig's BLINK.skipIf.eyes): sleep " +
+                 "keeps its closed eyes.")]
+        public int[] BlinkSkipGroups = Array.Empty<int>();
+
+        [Header("Look (v9: the rig's LOOK and lookAt)")]
+        [Tooltip("V9 only: the neck bone the turn splits onto (LOOK.bones[0]), or −1: no look.")]
+        public int LookNeckBone = NoBone;
+        [Tooltip("V9 only: the head bone the turn splits onto (LOOK.bones[1]), or −1: no look.")]
+        public int LookHeadBone = NoBone;
+        [Tooltip("V9 only: the bone lookAt measures the target in (the rig's chest), or −1: no look.")]
+        public int LookChestBone = NoBone;
+        [Tooltip("V9 only: the share of the turn the neck takes (LOOK.split.neck).")]
+        public float LookSplitNeck;
+        [Tooltip("V9 only: the share of the turn the head takes (LOOK.split.head).")]
+        public float LookSplitHead;
+        [Tooltip("V9 only: the turn's yaw limits, degrees (LOOK.yaw). + turns the face toward the " +
+                 "figure's right.")]
+        public Vector2 LookYawLimits;
+        [Tooltip("V9 only: the turn's pitch limits, degrees (LOOK.pitch). + tips the face down.")]
+        public Vector2 LookPitchLimits;
+        [Tooltip("V9 only: the share of the needed turn the head takes; the eyes lead with the rest " +
+                 "(LOOK.headShare).")]
+        public float LookHeadShare;
+        [Tooltip("V9 only: how far, in degrees, the eyes must lead the head before they turn " +
+                 "(LOOK.eyesBeyond_deg).")]
+        public float LookEyesBeyondDeg;
+        [Tooltip("V9 only: the gaze groups, 1-based into FaceGroups: x open, y left, z right. A gaze " +
+                 "replaces the open eyes only; half, shut and wide stay as the clip has them.")]
+        public Vector3Int LookEyes;
+
         [Header("Pose facts (MEASURED, never declared)")]
         [Tooltip("True when the mapping from heading to rig dir-units must NEGATE. Adjudicated in " +
                  "pixels at bake time against the rig's own East view, on the SILHOUETTE, with a " +
@@ -458,6 +639,54 @@ namespace HiddenHarbours.Core
                         if (b.OwnsVertex) n++;
                 return n;
             }
+        }
+
+        /// <summary>True when this def carries the face mechanism: its bind mesh holds every face group
+        /// and its clips carry face tracks.</summary>
+        public bool HasFace => FaceGroups != null && FaceGroups.Length > 0;
+
+        /// <summary>True when this def carries the rig's blink.</summary>
+        public bool HasBlink => HasFace && BlinkSteps != null && BlinkSteps.Length > 0;
+
+        /// <summary>True when this def carries the rig's look.</summary>
+        public bool HasLook =>
+            LookNeckBone >= 0 && LookHeadBone >= 0 && LookChestBone >= 0 &&
+            Bones != null && LookNeckBone < Bones.Length && LookHeadBone < Bones.Length &&
+            LookChestBone < Bones.Length;
+
+        /// <summary>True when this def carries the rig's own ink: a <see cref="ToneRule.V9"/> def with
+        /// its <see cref="Edge"/> baked. A v9 def baked before the field reads 0 there and is inked
+        /// by the hull's rules, as it was.</summary>
+        public bool HasInk => ToneRule == ToneRule.V9 && Edge > 0f;
+
+        /// <summary>True when this def snaps its head to the pixel grid: <see cref="HeadSnap"/> baked
+        /// on and a head bone to snap (<see cref="LookHeadBone"/>).</summary>
+        public bool HasHeadSnap =>
+            HeadSnap && Bones != null && LookHeadBone >= 0 && LookHeadBone < Bones.Length;
+
+        /// <summary>The group id (1-based) of a face group by its rig name, or
+        /// <see cref="NoFaceGroup"/>.</summary>
+        public int FaceGroupId(string group)
+        {
+            if (FaceGroups == null || string.IsNullOrEmpty(group)) return NoFaceGroup;
+            for (int i = 0; i < FaceGroups.Length; i++)
+                if (string.Equals(FaceGroups[i], group, StringComparison.Ordinal)) return i + 1;
+            return NoFaceGroup;
+        }
+
+        /// <summary>The slot a group id belongs to, read off its name's prefix, or −1. Configure-time
+        /// only: it compares strings.</summary>
+        public int FaceSlotOf(int groupId)
+        {
+            if (FaceGroups == null || groupId < 1 || groupId > FaceGroups.Length) return -1;
+            string g = FaceGroups[groupId - 1];
+            if (string.IsNullOrEmpty(g)) return -1;
+            int dot = g.IndexOf('.');
+            if (dot <= 0) return -1;
+            for (int s = 0; s < FaceSlotNames.Length; s++)
+                if (dot == FaceSlotNames[s].Length &&
+                    string.CompareOrdinal(g, 0, FaceSlotNames[s], 0, dot) == 0) return s;
+            return -1;
         }
 
         /// <summary>Total animation frames across every clip — the budget number, in one place.</summary>
@@ -551,6 +780,40 @@ namespace HiddenHarbours.Core
                 if (clip.FramesPerSecond <= 0f) return false;
                 if (!clip.KeysWellFormed(Bones.Length)) return false;
             }
+            return !HasFace || FaceWellFormed();
+        }
+
+        /// <summary>
+        /// The face mechanism's invariants, which fail as a WRONG FACE rather than as an error: every
+        /// group names a slot, the rest face and every face track name one group of the right slot per
+        /// slot, and the blink and gaze groups are eyes groups. Only asked of a def that
+        /// <see cref="HasFace"/>.
+        /// </summary>
+        bool FaceWellFormed()
+        {
+            int n = FaceGroups.Length;
+            if (n > byte.MaxValue) return false;
+            for (int g = 1; g <= n; g++)
+                if (FaceSlotOf(g) < 0) return false;
+            if (RestFace == null || RestFace.Length != FaceSlots) return false;
+            for (int s = 0; s < FaceSlots; s++)
+                if (FaceSlotOf(RestFace[s]) != s) return false;
+            foreach (SkinClip clip in Clips)
+            {
+                if (!clip.HasFaceTrack) continue;
+                if (clip.Face.Length != clip.FrameCount * FaceSlots) return false;
+                for (int i = 0; i < clip.Face.Length; i++)
+                    if (FaceSlotOf(clip.Face[i]) != i % FaceSlots) return false;
+            }
+            if (BlinkSteps != null)
+                foreach (BlinkStep step in BlinkSteps)
+                    if (FaceSlotOf(step.Group) != EyesSlot || step.Seconds <= 0f) return false;
+            if (BlinkSkipGroups != null)
+                foreach (int g in BlinkSkipGroups)
+                    if (FaceSlotOf(g) != EyesSlot) return false;
+            if (HasLook)
+                for (int i = 0; i < 3; i++)
+                    if (FaceSlotOf(LookEyes[i]) != EyesSlot) return false;
             return true;
         }
     }
