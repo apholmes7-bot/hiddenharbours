@@ -61,6 +61,15 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>Frame-major local transforms: [(frame * bones + bone)] → pos/rot.</summary>
         public Vector3d[] Pos;
         public double[] Rx, Ry, Rz, Rw;
+
+        /// <summary>Rig 9 only: the FACE track (<c>tracks[k].face</c>) as group ids, frame-major, one per
+        /// face slot (eyes, brows, mouth), each 1 + its index in the rig's GROUP_ORDER. Null on rig 7,
+        /// whose clips carry no face.</summary>
+        public byte[] Face;
+
+        /// <summary>Rig 9 only: the TOOL track (<c>tracks[k].tool</c>), one key per frame, or empty when
+        /// no frame carries a tool. Null on rig 7.</summary>
+        public HiddenHarbours.Core.CharacterSkinDef.ToolKey[] Tool;
     }
 
     /// <summary>

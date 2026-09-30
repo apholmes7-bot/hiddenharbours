@@ -73,6 +73,16 @@ namespace HiddenHarbours.Art
         private BoneWeight[] _weights;
         private Matrix4x4[] _bindposes, _world, _skin;
 
+        // Rig 9's face, look and ink (character PR 2a). Null / zero on a def that carries none of them,
+        // which then draws exactly as it did before them.
+        private int[] _faceStarts, _faceCounts;   // the bind mesh's faces as vertex runs: the Newell normals
+        private Texture2D _stepRampTex;           // every ramp one step down: the rig's edge drop
+        private Vector4 _faceUniform;             // (eyes, brows, mouth, 0): the one group per slot drawn
+        private double _lookYaw, _lookPitch;      // the turn sampled on the last beat, as the rig rounds it
+        private double _drawnYaw, _drawnPitch;    // ... and the turn the posed mesh carries
+        private int _gaze;
+        private bool _inkApplied, _inkJoined;
+
         // stateKey -> the fenced frame map for that clip, built once at Configure.
         private readonly Dictionary<string, int[]> _honestFrames = new Dictionary<string, int[]>();
         private readonly List<string> _fenceReport = new List<string>();
@@ -104,6 +114,7 @@ namespace HiddenHarbours.Art
             {
                 if (_meshRenderer != null) _meshRenderer.enabled = value;
                 if (_overlayRenderer != null) _overlayRenderer.enabled = value;
+                SyncInk();
             }
         }
 
@@ -119,6 +130,56 @@ namespace HiddenHarbours.Art
 
         /// <summary>Her overlay quad ashore — the renderer that competes with sprites — or null.</summary>
         public MeshRenderer AshoreOverlay => _overlayRenderer;
+
+        /// <summary>
+        /// <b>What a figure does between its clip's keys</b> (rig 9 README §4 and §5): where it looks and
+        /// whether it is mid-blink. Handed to <see cref="SetPose(string, int, in Life)"/> by the presenter,
+        /// which owns the clock, the figure's identity and the switches; the default is no look and no
+        /// blink, which draws exactly the clip.
+        /// </summary>
+        public struct Life
+        {
+            /// <summary>True when <see cref="Target"/> names something to look at.</summary>
+            public bool HasTarget;
+
+            /// <summary>The point looked at, in the figure's OWN frame (rig metres, rig axes: +x right,
+            /// +y forward, +z up, the feet at the origin), unrocked — <see cref="TryFigureGround"/> puts a
+            /// world point there.</summary>
+            public Vector3 Target;
+
+            /// <summary>Turn the neck and head (<see cref="GameConfig.CharacterHeadLook"/>).</summary>
+            public bool HeadLook;
+
+            /// <summary>Let the open eyes finish the turn (<see cref="GameConfig.CharacterEyeLook"/>).</summary>
+            public bool EyeLook;
+
+            /// <summary>The blink's eyes group at this moment (<see cref="CharacterFigureBlink.EyesAt"/>),
+            /// or <see cref="CharacterSkinDef.NoFaceGroup"/> between blinks.</summary>
+            public int BlinkEyes;
+        }
+
+        /// <summary>The face drawn by the last <see cref="SetPose(string, int, in Life)"/>: the group id
+        /// (1-based into <see cref="CharacterSkinDef.FaceGroups"/>) per slot — x eyes, y brows, z mouth.
+        /// All zero on a def with no face.</summary>
+        public Vector3Int DrawnFace => new Vector3Int((int)_faceUniform.x, (int)_faceUniform.y, (int)_faceUniform.z);
+
+        /// <summary>The look's yaw the posed mesh carries, degrees (0 with no look).</summary>
+        public double DrawnLookYaw => _drawnYaw;
+
+        /// <summary>The look's pitch the posed mesh carries, degrees (0 with no look).</summary>
+        public double DrawnLookPitch => _drawnPitch;
+
+        /// <summary>The gaze the last beat sampled: <see cref="CharacterFigureLook.GazeOpen"/>,
+        /// <see cref="CharacterFigureLook.GazeLeft"/> or <see cref="CharacterFigureLook.GazeRight"/>.</summary>
+        public int DrawnGaze => _gaze;
+
+        /// <summary>The head's mid point the snap rounds, in the figure's frame, and whether it snaps
+        /// (w = 1): what the facet shader's head snap reads.</summary>
+        public Vector4 HeadSnapPoint { get; private set; }
+
+        /// <summary>True while this figure is inked by the rig's own rules
+        /// (<see cref="GameConfig.MeshFigureKeyline"/> on and a def that <see cref="CharacterSkinDef.HasInk"/>).</summary>
+        public bool InkLive => _inkApplied;
 
         public void Configure(CharacterSkinDef def)
         {
@@ -139,6 +200,9 @@ namespace HiddenHarbours.Art
 
             DrawnStateKey = null;
             RequestedFrame = DrawnFrame = -1;
+            _lookYaw = _lookPitch = _drawnYaw = _drawnPitch = 0d;
+            _gaze = CharacterFigureLook.GazeOpen;
+            SyncInk();
         }
 
         // ---------------------------------------------------------------- the bind mesh
@@ -185,6 +249,26 @@ namespace HiddenHarbours.Art
             for (int s = 0; s < bind.subMeshCount; s++)
                 _posedMesh.SetTriangles(bind.GetTriangles(s), s, false);
             _posedMesh.bounds = bind.bounds;
+
+            ReadFaceRuns(def, bind);
+        }
+
+        /// <summary>
+        /// <b>Rig 9's faces as vertex runs, for the rig's own normal.</b> A def with the face mechanism
+        /// culls each face as the rig does, by its <c>toward</c>, and the facet shader decides that per
+        /// VERTEX: so every corner of a face must carry the face's one normal, or a face whose corners
+        /// ride two bones (a hem) would be culled at some corners and drawn at others. The posed Newell
+        /// normal (<see cref="CharacterSkinPose.NewellNormals"/>) is that normal, and it is the one the
+        /// rig shades by. A def without the face keeps the skinned normals it always had.
+        /// </summary>
+        private void ReadFaceRuns(CharacterSkinDef def, Mesh bind)
+        {
+            _faceStarts = _faceCounts = null;
+            if (!def.HasFace) return;
+            if (!CharacterSkinPose.TryFaceRuns(bind.triangles, _srcVerts.Length, out _faceStarts, out _faceCounts))
+                throw new InvalidOperationException(
+                    $"CharacterSkinDef '{def.Id}' carries rig 9's face, but its bind mesh is not one fan of " +
+                    "consecutive vertices per face, so its faces cannot be culled whole. Re-bake it.");
         }
 
         private static readonly List<Vector4> s_Uv = new List<Vector4>();
@@ -270,6 +354,21 @@ namespace HiddenHarbours.Art
                 }
             _rampTex.Apply(false, true);
             _darkRampTex.Apply(false, true);
+
+            if (!def.HasInk) return;
+
+            // THE RIG'S EDGE DROP, as a ramp: across a depth break the farther pixel shows its ramp ONE
+            // step down, and step 0 stays (paint: `if (drop && !fixed && step > 0) step--`). A fixed
+            // material is a one-colour ramp shown at step 0, so it needs no case of its own. Bound as
+            // _DarkRampTex while the ink is live (SyncInk), in place of the hull's two-step RINDEX ramp.
+            _stepRampTex = MakeRampTexture("HHCharStepRampTex", maxLen, count);
+            for (int m = 0; m < count; m++)
+                for (int i = 0; i < maxLen; i++)
+                {
+                    int k = Mathf.Min(i, ramps[m].Length - 1);
+                    _stepRampTex.SetPixel(i, m, ramps[m][Mathf.Max(0, k - 1)]);
+                }
+            _stepRampTex.Apply(false, true);
         }
 
         private static Texture2D MakeRampTexture(string name, int w, int h) =>
@@ -348,7 +447,9 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// <b>The tone rule, on this figure's OWN material.</b> V9 turns the <c>HH_FIGURE</c> variant on
-        /// and writes its two tables; rig 7 turns it off, which on a material built fresh by every
+        /// and writes its two tables and rig 9's face constants (the cull by role, the floor, the rest
+        /// face; the per-draw face and head follow every pose); rig 7 turns it off, which on a material
+        /// built fresh by every
         /// <see cref="Configure"/> is the state it already has, said out loud as the hull's
         /// <c>ApplyCutawayKeyword</c> says its own. The keyword is <c>_local</c>, so it is set on the
         /// instance and never through <c>Shader.EnableKeyword</c>, which does not reach it.
@@ -389,6 +490,21 @@ namespace HiddenHarbours.Art
             }
             _facetMaterial.SetVectorArray(IsoFacetFigureShaderIds.RampMetaFigure, meta);
             _facetMaterial.SetVectorArray(IsoFacetFigureShaderIds.RampToneFigure, tone);
+
+            // Rig 9's face: the cull by role and the floor every face culls at, and whether this def
+            // carries the face at all (y). A v9 def baked before the face writes y = 0, and the shader
+            // then gates, culls and snaps nothing: it draws exactly as it did.
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureFaceMinT, def.FaceMinToward);
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureFaceParams,
+                                     new Vector4(def.FaceCullFloor, def.HasFace ? 1f : 0f, 0f, 0f));
+            _faceUniform = Vector4.zero;
+            if (def.HasFace && def.RestFace != null && def.RestFace.Length == CharacterSkinDef.FaceSlots)
+                _faceUniform = new Vector4(def.RestFace[0], def.RestFace[1], def.RestFace[2], 0f);
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureFace, _faceUniform);
+            HeadSnapPoint = Vector4.zero;
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureHead, HeadSnapPoint);
+            _facetMaterial.SetFloat(IsoFacetFigureShaderIds.FigureInkOn, 0f);
+            _inkApplied = false;
         }
 
         private void BuildChild()
@@ -417,7 +533,28 @@ namespace HiddenHarbours.Art
         /// skipped. That matters because the clock holds a frame for its whole interval, so most
         /// render frames are repeats.</para>
         /// </summary>
-        public bool SetPose(string stateKey, int frame)
+        public bool SetPose(string stateKey, int frame) => SetPose(stateKey, frame, default);
+
+        /// <summary>
+        /// <see cref="SetPose(string, int)"/> with the figure's <see cref="Life"/>: the look and the
+        /// blink, rig 9 README §4 and §5. Steps exactly as the plain call does, and a default
+        /// <paramref name="life"/> draws exactly what it draws.
+        ///
+        /// <list type="bullet">
+        /// <item><b>The look is sampled on the clip's BEAT</b> — a new clip or a new frame asked for — and
+        /// held between beats, so a figure re-skins at its clip's rate however its target moves (rule 7).
+        /// It is the rig's <c>lookAt</c> on the frame shown, unturned and unrocked
+        /// (<see cref="CharacterSkinPose.LookAtFrame"/>), and the turn goes onto the neck and head
+        /// locals after the clip and before the rock (<see cref="CharacterSkinPose.ApplyTurn"/>). The
+        /// mesh is re-skinned only when the frame or the rounded turn changed.</item>
+        /// <item><b>The face is composed every call</b> — the frame's own groups, then the gaze, then
+        /// the blink (<see cref="CharacterFigureFace.Compose"/>) — and reaches the shader as one
+        /// uniform, so a blink never re-skins and never costs a second draw call.</item>
+        /// <item><b>The head snap</b>'s point, the head's mid point after the turn, is taken on every
+        /// re-skin.</item>
+        /// </list>
+        /// </summary>
+        public bool SetPose(string stateKey, int frame, in Life life)
         {
             if (!IsConfigured || string.IsNullOrEmpty(stateKey)) return false;
             if (!_def.TryGetClip(stateKey, out CharacterSkinDef.SkinClip clip)) return false;
@@ -427,21 +564,99 @@ namespace HiddenHarbours.Art
             int drawn = _honestFrames.TryGetValue(stateKey, out int[] map) && frame < map.Length
                         ? map[frame] : frame;
 
-            if (DrawnStateKey == stateKey && DrawnFrame == drawn)
+            bool sameClip = DrawnStateKey == stateKey;
+            bool composed = false;
+            if (!sameClip || RequestedFrame != frame) composed = SampleLook(clip, drawn, life);
+
+            if (!sameClip || DrawnFrame != drawn || _lookYaw != _drawnYaw || _lookPitch != _drawnPitch)
             {
-                RequestedFrame = frame;
-                return true;
+                if (!composed) CharacterSkinPose.ComposeWorld(clip, drawn, _def.Bones, _world);
+                if (_lookYaw != 0d || _lookPitch != 0d)
+                {
+                    var limits = CharacterFigureLook.Limits.Of(_def);
+                    CharacterSkinPose.ApplyTurn(
+                        clip, drawn, _def.Bones, _world,
+                        _def.LookNeckBone, CharacterFigureLook.TurnOf(_lookYaw, _lookPitch, _def.LookSplitNeck, limits),
+                        _def.LookHeadBone, CharacterFigureLook.TurnOf(_lookYaw, _lookPitch, _def.LookSplitHead, limits));
+                }
+                CharacterSkinPose.FinishSkin(_world, _bindposes, _skin);
+                CharacterSkinPose.Skin(_skin, _weights, _srcVerts, _srcNorms, _outVerts, _outNorms);
+                if (_faceStarts != null)
+                    CharacterSkinPose.NewellNormals(_faceStarts, _faceCounts, _outVerts, _outNorms);
+                _posedMesh.vertices = _outVerts;
+                _posedMesh.normals = _outNorms;
+                _posedMesh.RecalculateBounds();
+
+                if (_def.HasHeadSnap)
+                {
+                    Vector3 h = CharacterSkinPose.HeadPoint(_def, _world);
+                    HeadSnapPoint = new Vector4(h.x, h.y, h.z, 1f);
+                    _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureHead, HeadSnapPoint);
+                }
+
+                DrawnStateKey = stateKey;
+                DrawnFrame = drawn;
+                _drawnYaw = _lookYaw;
+                _drawnPitch = _lookPitch;
             }
-
-            CharacterSkinPose.ComposeSkinMatrices(clip, drawn, _def.Bones, _bindposes, _world, _skin);
-            CharacterSkinPose.Skin(_skin, _weights, _srcVerts, _srcNorms, _outVerts, _outNorms);
-            _posedMesh.vertices = _outVerts;
-            _posedMesh.normals = _outNorms;
-            _posedMesh.RecalculateBounds();
-
-            DrawnStateKey = stateKey;
             RequestedFrame = frame;
-            DrawnFrame = drawn;
+
+            if (_def.HasFace)
+            {
+                CharacterFigureFace.Compose(_def, clip, drawn, _gaze, life.BlinkEyes,
+                                            out int eyes, out int brows, out int mouth);
+                if (eyes != (int)_faceUniform.x || brows != (int)_faceUniform.y || mouth != (int)_faceUniform.z)
+                {
+                    _faceUniform = new Vector4(eyes, brows, mouth, 0f);
+                    _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureFace, _faceUniform);
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// One beat's look: the rig's <c>lookAt</c> on the frame about to be shown, or no turn and the
+        /// clip's own eyes when there is nothing to look at, the def carries no look, or both switches
+        /// are off. With the head's turn off the head takes no share, so the eyes alone lead (the rig's
+        /// <c>lookAt</c> with share 0). True when it left <see cref="_world"/> holding the frame's
+        /// unturned composition, which the re-skin then reuses.
+        /// </summary>
+        private bool SampleLook(in CharacterSkinDef.SkinClip clip, int drawn, in Life life)
+        {
+            _lookYaw = _lookPitch = 0d;
+            _gaze = CharacterFigureLook.GazeOpen;
+            if (!_def.HasLook || !life.HasTarget || !(life.HeadLook || life.EyeLook)) return false;
+
+            CharacterSkinPose.ComposeWorld(clip, drawn, _def.Bones, _world);
+            CharacterFigureLook.Result r = CharacterSkinPose.LookAtFrame(
+                _def, _world, life.Target, life.HeadLook ? _def.LookHeadShare : 0d);
+            if (life.HeadLook)
+            {
+                _lookYaw = r.Yaw;
+                _lookPitch = r.Pitch;
+            }
+            if (life.EyeLook) _gaze = r.Gaze;
+            return true;
+        }
+
+        /// <summary>
+        /// <b>A world point on this figure's own ground</b>, in its frame (rig metres; z = 0): the point
+        /// of the figure's ground plane that projects to <paramref name="world"/>'s screen position,
+        /// solved through the facet child's placement (heading, facing, rock and heave included). A
+        /// look target is a point on the screen plane with no depth of its own, so this TAKES IT TO
+        /// STAND ON THE FIGURE'S GROUND: a player on a quay beside a moored skipper is read at the deck's
+        /// height. False before <see cref="Configure"/>, or for a ground plane seen edge-on.
+        /// </summary>
+        public bool TryFigureGround(Vector3 world, out Vector3 ground)
+        {
+            ground = default;
+            if (_meshChild == null) return false;
+            Matrix4x4 m = _meshChild.localToWorldMatrix;
+            double a = m.m00, b = m.m01, c = m.m10, d = m.m11;
+            double det = a * d - b * c;
+            if (!(Math.Abs(det) > 1e-9)) return false;
+            double dx = world.x - m.m03, dy = world.y - m.m13;
+            ground = new Vector3((float)((d * dx - b * dy) / det), (float)((a * dy - c * dx) / det), 0f);
             return true;
         }
 
@@ -452,6 +667,35 @@ namespace HiddenHarbours.Art
             if (!IsAshore) LeaveAshore();
             if (IsAshore) WriteAshoreProperties();
             else WriteHullProperties();
+            SyncInk();
+        }
+
+        // ---------------------------------------------------------------- the rig's ink
+
+        /// <summary>
+        /// <b>The rig's own ink, read live</b> (<see cref="GameConfig.MeshFigureKeyline"/>). On, for a def
+        /// that <see cref="CharacterSkinDef.HasInk"/>: the facet pass draws this figure's dark target
+        /// from the one-step ramp and flags its pixels (dark alpha 0), and the figure joins
+        /// <see cref="IsoFacetFigureInk"/>, which tells the resolve to ink flagged pixels by the rig's
+        /// rules. Off, or a def without the ink: the RINDEX ramp and alpha 1, the hull's rules, exactly
+        /// the picture before PR 2a. Two property writes when the switch flips; nothing otherwise.
+        /// </summary>
+        private void SyncInk()
+        {
+            bool on = _def != null && _def.HasInk && _facetMaterial != null && _stepRampTex != null &&
+                      GameServices.MeshFigureKeyline;
+            if (on != _inkApplied && _facetMaterial != null)
+            {
+                _facetMaterial.SetTexture(IsoFacetShaderIds.DarkRampTex, on ? _stepRampTex : _darkRampTex);
+                _facetMaterial.SetFloat(IsoFacetFigureShaderIds.FigureInkOn, on ? 1f : 0f);
+                _inkApplied = on;
+            }
+
+            bool join = on && isActiveAndEnabled && Visible;
+            if (join == _inkJoined) return;
+            _inkJoined = join;
+            if (join) IsoFacetFigureInk.Join(this, _def.Edge, _def.KeylineMix);
+            else IsoFacetFigureInk.Leave(this);
         }
 
         // ---------------------------------------------------------------- ashore
@@ -686,19 +930,27 @@ namespace HiddenHarbours.Art
 
         // Unity forbids SetParent during hierarchy deactivation. Return the id now, but keep the
         // frame (and its posed mesh) until a safe hand-over or teardown. The caller re-enters.
-        private void OnDisable() => ReleaseAshoreId();
+        private void OnDisable()
+        {
+            ReleaseAshoreId();
+            SyncInk();   // disabled: out of the ink registry until it is enabled and shown again
+        }
 
         private void OnDestroy() => Teardown(keepDef: false);
 
         private void Teardown(bool keepDef)
         {
             ReleaseAshoreId();
+            if (_inkJoined) IsoFacetFigureInk.Leave(this);
+            _inkJoined = false;
+            _inkApplied = false;
             if (_meshChild != null) DestroySafely(_meshChild.gameObject);
             DestroyAshoreObjects();
             if (_posedMesh != null) DestroySafely(_posedMesh);
             if (_facetMaterial != null) DestroySafely(_facetMaterial);
             if (_rampTex != null) DestroySafely(_rampTex);
             if (_darkRampTex != null) DestroySafely(_darkRampTex);
+            if (_stepRampTex != null) DestroySafely(_stepRampTex);
             _meshChild = null;
             _meshRenderer = null;
             _meshFilter = null;
@@ -706,6 +958,10 @@ namespace HiddenHarbours.Art
             _facetMaterial = null;
             _rampTex = null;
             _darkRampTex = null;
+            _stepRampTex = null;
+            _faceStarts = _faceCounts = null;
+            _faceUniform = Vector4.zero;
+            HeadSnapPoint = Vector4.zero;
             if (!keepDef) { _def = null; _hull = null; _honestFrames.Clear(); _fenceReport.Clear(); }
         }
 
@@ -717,10 +973,10 @@ namespace HiddenHarbours.Art
     }
 
     /// <summary>
-    /// <b>The figure's own facet-shader names</b>: the <c>HH_FIGURE</c> keyword and the two v9 tone
-    /// tables. They live beside the figure renderer rather than in <see cref="IsoFacetShaderIds"/>,
-    /// which every hull shares, so a v9 character adds names to the shader and moves nothing a hull
-    /// reads.
+    /// <b>The figure's own facet-shader names</b>: the <c>HH_FIGURE</c> keyword, the two v9 tone
+    /// tables, and rig 9's face, head snap and ink uniforms (character PR 2a). They live beside the
+    /// figure renderer rather than in <see cref="IsoFacetShaderIds"/>, which every hull shares, so a v9
+    /// character adds names to the shader and moves nothing a hull reads.
     /// </summary>
     public static class IsoFacetFigureShaderIds
     {
@@ -734,5 +990,112 @@ namespace HiddenHarbours.Art
         /// <summary><c>float4[32]</c>, per material <c>(gain, bias', 0, 0)</c>: the effective gain and
         /// the folded bias (<see cref="IsoFacetFigureTone.FoldBias"/>).</summary>
         public static readonly int RampToneFigure = Shader.PropertyToID("_RampToneFigure");
+
+        /// <summary><c>float4</c>, per draw: the face group drawn in each slot, <c>(eyes, brows, mouth, 0)</c>,
+        /// 1-based into <see cref="CharacterSkinDef.FaceGroups"/>. A bind-mesh face whose group (UV1.x)
+        /// is none of the three collapses.</summary>
+        public static readonly int FigureFace = Shader.PropertyToID("_HHFigureFace");
+
+        /// <summary><c>float4</c>, per draw: the head's mid point in the figure's frame (xyz) and 1 in w
+        /// while the head snaps. Every face flagged as a head face (UV1.z) moves, in screen space, by the
+        /// offset that puts this point on a pixel centre.</summary>
+        public static readonly int FigureHead = Shader.PropertyToID("_HHFigureHead");
+
+        /// <summary><c>float4</c>, per material: the face cull's thresholds by role (x near, y far,
+        /// z side, w mouth — <see cref="CharacterSkinDef.FaceMinToward"/>).</summary>
+        public static readonly int FigureFaceMinT = Shader.PropertyToID("_HHFigureFaceMinT");
+
+        /// <summary><c>float4</c>, per material: x the floor every face culls at
+        /// (<see cref="CharacterSkinDef.FaceCullFloor"/>), y 1 when the def carries the face.</summary>
+        public static readonly int FigureFaceParams = Shader.PropertyToID("_HHFigureFaceParams");
+
+        /// <summary><c>float</c>, per material: 1 while the rig's ink is live for this figure, which
+        /// flags its pixels in the dark target's alpha (0 = the figure's rules).</summary>
+        public static readonly int FigureInkOn = Shader.PropertyToID("_HHFigureInkOn");
+
+        /// <summary><c>float4</c> on the RESOLVE material: <c>(edge, keylineMix, live, 0)</c> —
+        /// <see cref="IsoFacetFigureInk"/>.</summary>
+        public static readonly int FigureInk = Shader.PropertyToID("_HHFigureInk");
+    }
+
+    /// <summary>
+    /// <b>The rig's own ink, for the one resolve pass</b> (character PR 2a). The resolve is one
+    /// fullscreen pass per camera, so the figure's depth edge and keyline mix reach it as ONE uniform,
+    /// <c>_HHFigureInk = (edge, mix, live, 0)</c>, written by the feature's render func from the value
+    /// captured when the pass was recorded (<see cref="Value"/>, <see cref="Apply"/>).
+    ///
+    /// <para><b>Who is in.</b> A figure joins while its ink is live, it is enabled and it is shown, and
+    /// leaves the moment any of those stops (<c>IsoCharacterFigureRenderer.SyncInk</c>). Edge and mix
+    /// are the last live member's: every rig 9 def carries the rig's one <c>SHADING</c>, and a guard
+    /// holds each def's to it. A member destroyed without leaving (EditMode runs no <c>OnDestroy</c>
+    /// for a component that is not <c>ExecuteAlways</c>) is pruned when the value is read.</para>
+    ///
+    /// <para><b>Why live = 0 is the whole fleet unchanged.</b> With no member the resolve's figure
+    /// branch never runs. With one, a HULL pixel still reads alpha 1 in the dark target and takes the
+    /// 0.30 m rule it always took, and an empty pixel takes the figure's keyline only beside a FLAGGED
+    /// pixel — so no hull pixel reads anything new either way.</para>
+    /// </summary>
+    public static class IsoFacetFigureInk
+    {
+        private struct Member
+        {
+            public IsoCharacterFigureRenderer Figure;
+            public float Edge, Mix;
+        }
+
+        private static readonly List<Member> s_members = new List<Member>();
+
+        /// <summary>How many figures are in (after pruning).</summary>
+        public static int Count
+        {
+            get
+            {
+                Prune();
+                return s_members.Count;
+            }
+        }
+
+        /// <summary>This frame's <c>(edge, mix, live, 0)</c>: the last live member's, or zero with none.
+        /// Allocation-free.</summary>
+        public static Vector4 Value
+        {
+            get
+            {
+                Prune();
+                if (s_members.Count == 0) return Vector4.zero;
+                Member m = s_members[s_members.Count - 1];
+                return new Vector4(m.Edge, m.Mix, 1f, 0f);
+            }
+        }
+
+        /// <summary>Put a figure in (again: its numbers are refreshed and it becomes the last).</summary>
+        public static void Join(IsoCharacterFigureRenderer figure, float edge, float mix)
+        {
+            if (figure == null) return;
+            Remove(figure);
+            s_members.Add(new Member { Figure = figure, Edge = edge, Mix = mix });
+        }
+
+        /// <summary>Take a figure out. A no-op for one that is not in.</summary>
+        public static void Leave(IsoCharacterFigureRenderer figure) => Remove(figure);
+
+        /// <summary>Write <paramref name="value"/> onto the resolve material as <c>_HHFigureInk</c>.</summary>
+        public static void Apply(Material resolveMaterial, Vector4 value) =>
+            resolveMaterial.SetVector(IsoFacetFigureShaderIds.FigureInk, value);
+
+        /// <summary>Empty the registry — for tests.</summary>
+        public static void Reset() => s_members.Clear();
+
+        private static void Remove(IsoCharacterFigureRenderer figure)
+        {
+            for (int i = s_members.Count - 1; i >= 0; i--)
+                if (ReferenceEquals(s_members[i].Figure, figure)) s_members.RemoveAt(i);
+        }
+
+        private static void Prune()
+        {
+            for (int i = s_members.Count - 1; i >= 0; i--)
+                if (s_members[i].Figure == null) s_members.RemoveAt(i);
+        }
     }
 }

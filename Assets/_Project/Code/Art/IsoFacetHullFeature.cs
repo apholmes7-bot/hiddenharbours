@@ -478,6 +478,9 @@ namespace HiddenHarbours.Art
                 /// <summary>ADR 0031: this frame's keyline-gate value, applied to the material in
                 /// the render func through <see cref="IsoFacetKeylineGate.Apply"/>.</summary>
                 public bool KeylineFlood;
+                /// <summary>Character PR 2a: this frame's rig 9 ink, <c>(edge, mix, live, 0)</c> from
+                /// <see cref="IsoFacetFigureInk.Value"/>, applied in the render func the same way.</summary>
+                public Vector4 FigureInk;
             }
 
             public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
@@ -606,7 +609,8 @@ namespace HiddenHarbours.Art
                     // between would otherwise overwrite the first camera's slots).
                     // Deposits/freshness, like decay, apply once per camera frame. A same-frame
                     // re-render must not inject the still-pending registry capsules a second time.
-                    int injected = repeatedRender ? 0 : FoamInjectionRegistry.CollectInjections(_foamInjections);
+                    int injected = repeatedRender ? 0 : FoamInjectionRegistry.CollectInjections(
+                        _foamInjections, new Rect(state.Origin, new Vector2(extent, extent)), cameraData.camera);
                     for (int i = 0; i < FoamBuffer.MaxInjectors; i++)
                     {
                         if (i < injected)
@@ -936,6 +940,7 @@ namespace HiddenHarbours.Art
                     passData.Depth = depthVal;
                     passData.TexSize = new Vector4(w, h, 0, 0);
                     passData.KeylineFlood = KeylineFlood;
+                    passData.FigureInk = IsoFacetFigureInk.Value;
 
                     builder.UseTexture(facet, AccessFlags.Read);
                     builder.UseTexture(dark, AccessFlags.Read);
@@ -953,6 +958,7 @@ namespace HiddenHarbours.Art
                         data.Material.SetTexture(IsoFacetShaderIds.KeyTex, (RTHandle)data.Key);
                         data.Material.SetTexture(IsoFacetShaderIds.DepthTex, (RTHandle)data.Depth);
                         IsoFacetKeylineGate.Apply(data.Material, data.KeylineFlood);
+                        IsoFacetFigureInk.Apply(data.Material, data.FigureInk);
                         Blitter.BlitTexture(ctx.cmd, new Vector4(1f, 1f, 0f, 0f), data.Material, 0);
                     });
                 }

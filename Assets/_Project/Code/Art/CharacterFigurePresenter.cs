@@ -42,7 +42,7 @@ namespace HiddenHarbours.Art
     /// disabled or destroyed. Refused at exhaustion, she keeps her whole sprite, builds nothing, and does
     /// not ask again until a switch is turned off and on again or she is re-enabled. Her sort is copied
     /// from her sprite every frame AFTER <c>YSortSprite</c> wrote it, her facing is her sprite's heading,
-    /// and her idle phase is moved off her neighbours' by her <see cref="ICharacterFigureAshoreStand.FigureKey"/>.
+    /// and her idle phase is moved off her neighbours' by her <see cref="ICharacterFigureIdentity.FigureKey"/>.
     /// The two aboard-only gates do not apply: she stands on no hull, and her sprite is re-sorted every
     /// frame by design, so ashore the figure follows the sort instead of refusing it.</para>
     ///
@@ -52,6 +52,15 @@ namespace HiddenHarbours.Art
     /// the St Peters arrival raises its skipper over the cabin room while the player is below decks. So
     /// the sorting the sprite had when the figure was attached is remembered, and while it differs the
     /// sprite keeps the draw. That is a READ of somebody else's decision, not a second opinion about it.</para>
+    ///
+    /// <para><b>Between the clip's keys: the rig's blink and look</b> (character PR 2a). A
+    /// <see cref="CharacterFigureLife"/> per figure, keyed by the stand's ONE identity
+    /// (<see cref="ICharacterFigureIdentity.FigureKey"/>: a moored boat answers with her owner's id, a
+    /// villager with her NpcDef id), read and hashed once in <see cref="Configure"/>. That one hash moves
+    /// her idle phase ashore and seeds her blink, and the key names her to the look. The skipper aboard and
+    /// the villager ashore each blink on their own seeded schedule and look at whoever the Core seam names
+    /// (<see cref="CharacterLookTargets"/>; the player, by default) within the configured radius.
+    /// Presentation only, and each part behind its own GameConfig switch.</para>
     ///
     /// <para><b>Budget (rule 7).</b> No allocation per frame: the refusal is an enum and its words are
     /// only built when somebody reads them; the hull lookup and the def's usability are cached per
@@ -111,21 +120,26 @@ namespace HiddenHarbours.Art
         private CharacterSkinDef _configured;
         private string _stateKey;
         private double _stateStartSeconds;
+        private readonly CharacterFigureLife _life = new CharacterFigureLife();
 
-        private Transform _hullVisual;                 // the stand's hull transform last looked up
+        // Who she is (ADR 0044 §9): the stand's one key, read in Configure, and its one hash, taken there
+        // once. The hash moves her idle phase ashore and seeds her blink; the key names her to the look.
+        private string _key = string.Empty;
+        private uint _keyHash;
+
+        private Transform _hullVisual;                // the stand's hull transform last looked up
         private IsoFacetHullRenderer _hullCandidate;   // ... and what was on it
         private CharacterSkinDef _usabilityOf;
         private bool _usable;
         private CharacterSkinDef _refusedSkin;         // a def that threw building a figure: said once
 
-        // Ashore (amendment 2026-09-27): a figure of her own under her sprite, the latch that keeps a
-        // refused id from being asked for again every frame, and her phase key, hashed once in Configure.
+        // Ashore (amendment 2026-09-27): a figure of her own under her sprite, and the latch that keeps a
+        // refused id from being asked for again every frame. Her phase key is _keyHash above.
         private IsoCharacterFigureRenderer _ashoreFigure;
         private CharacterSkinDef _ashoreConfigured;
         private string _ashoreStateKey;
         private double _ashoreStateStartSeconds;
         private bool _ashoreRefused;
-        private uint _ashoreKeyHash;
 
         private Refusal _refusal = Refusal.NotPosedYet;
         private string _refusalKey;
@@ -177,6 +191,9 @@ namespace HiddenHarbours.Art
 
         /// <summary>The yaw applied about the rig's up axis, in degrees.</summary>
         public float FigureYawDegrees { get; private set; }
+
+        /// <summary>The figure's blink and look (character PR 2a) — read by a test.</summary>
+        public CharacterFigureLife FigureLife => _life;
 
         /// <summary>Which gate shut this frame; <see cref="Refusal.None"/> while the mesh draws.</summary>
         public Refusal WhyNot => _refusal;
@@ -250,9 +267,9 @@ namespace HiddenHarbours.Art
         /// <summary>
         /// Pose this figure from <paramref name="stand"/> every frame from now on. Remembers the sprite's
         /// sorting AS IT IS NOW, which is the staging the figure can stand in for — so call it after the
-        /// stand has finished placing the sprite (<c>MooredBoat</c> attaches last). An ashore stand's key
-        /// is hashed here, once; an ashore figure from an earlier stand gives its id back, and a refusal
-        /// is forgotten.
+        /// stand has finished placing the sprite (<c>MooredBoat</c> attaches last). The stand's key
+        /// (<see cref="ICharacterFigureIdentity.FigureKey"/>) is read and hashed here, once; an ashore
+        /// figure from an earlier stand gives its id back, and a refusal is forgotten.
         /// </summary>
         public void Configure(ICharacterFigureStand stand)
         {
@@ -260,7 +277,8 @@ namespace HiddenHarbours.Art
             Release();
             ReleaseAshore();
             _stand = stand;
-            _ashoreKeyHash = KeyHash(stand is ICharacterFigureAshoreStand ashore ? ashore.FigureKey : null);
+            _key = (stand is ICharacterFigureIdentity identity ? identity.FigureKey : null) ?? string.Empty;
+            _keyHash = KeyHash(_key);
             _sprite = GetComponent<SpriteRenderer>();
             _restCaptured = false;
             if (_sprite != null) CaptureRestStaging(_sprite);
@@ -387,7 +405,10 @@ namespace HiddenHarbours.Art
             int seed = GameServices.Environment != null ? GameServices.Environment.WorldSeed : 0;
             int frame = CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
 
-            if (!_figure.SetPose(stateKey, frame))
+            // Stood BEFORE it is posed: the look reads where the figure stands this frame.
+            Place(stand, skin);
+            IsoCharacterFigureRenderer.Life life = _life.Step(skin, _key, _keyHash, now, _figure, looks: true);
+            if (!_figure.SetPose(stateKey, frame, life))
             {
                 _refusalKey = stateKey;
                 _refusalFrame = frame;
@@ -395,7 +416,6 @@ namespace HiddenHarbours.Art
                 return;
             }
 
-            Place(stand, skin);
             _figure.Visible = true;
             sprite.forceRenderingOff = true;
             _hidSprite = true;
@@ -507,21 +527,25 @@ namespace HiddenHarbours.Art
             // key moves the loop's phase off her neighbours' (aboard's phase is untouched).
             double clipStart = clip.Loop ? 0d : _ashoreStateStartSeconds;
             int seed = GameServices.Environment != null ? GameServices.Environment.WorldSeed : 0;
-            int frame = CharacterSkinPose.FrameFor(clip, AshorePhaseSeed(seed, _ashoreKeyHash), now, clipStart);
-            if (!_ashoreFigure.SetPose(stateKey, frame))
+            int frame = CharacterSkinPose.FrameFor(clip, AshorePhaseSeed(seed, _keyHash), now, clipStart);
+
+            // Her facing: her sprite's own compass heading, through the def's MEASURED azimuth sign. The
+            // ashore frame is a hull frame at heading 0, where a deck bearing and a compass heading are the
+            // same number — the player's rule. Turned BEFORE she is posed, as aboard she is stood before:
+            // the look reads her own ground as it lies this frame (amendment 2026-09-28).
+            float heading = character.HeadingDegrees;
+            float yaw = skin.AzimuthCounterClockwise ? -heading : heading;
+            _ashoreFigure.SetAshoreYaw(yaw);
+
+            // Her life, by the aboard rules: the blink her one key seeds, and a look at the player nearby.
+            IsoCharacterFigureRenderer.Life life = _life.Step(skin, _key, _keyHash, now, _ashoreFigure, looks: true);
+            if (!_ashoreFigure.SetPose(stateKey, frame, life))
             {
                 _refusalKey = stateKey;
                 _refusalFrame = frame;
                 Stop(Refusal.PoseRefused);
                 return;
             }
-
-            // Her facing: her sprite's own compass heading, through the def's MEASURED azimuth sign. The
-            // ashore frame is a hull frame at heading 0, where a deck bearing and a compass heading are the
-            // same number — the player's rule.
-            float heading = character.HeadingDegrees;
-            float yaw = skin.AzimuthCounterClockwise ? -heading : heading;
-            _ashoreFigure.SetAshoreYaw(yaw);
             AshoreYawDegrees = yaw;
 
             // ⭐ THE SAME-FRAME SORT. YSortSprite wrote her sprite's order at execution order 0, and the
@@ -788,9 +812,12 @@ namespace HiddenHarbours.Art
             config != null && config.MeshCast && config.MeshCastAshore;
 
         /// <summary>
-        /// Her key as FNV-1a over its chars, hashed once in <see cref="Configure"/>. 0 for a null or empty
-        /// key, which is the phase with no offset of her own (a key that hashes to 0 is the same, one in
-        /// four billion). Pure: the same key gives the same hash in every process and on every platform.
+        /// The ONE hash of a figure's key (<see cref="ICharacterFigureIdentity.FigureKey"/>): FNV-1a over its
+        /// chars, taken once in <see cref="Configure"/>. It moves a villager's idle phase ashore
+        /// (<see cref="AshorePhaseSeed"/>) and seeds every figure's blink
+        /// (<see cref="CharacterFigureBlink.SeedFor"/>). 0 for a null or empty key, which is the phase with
+        /// no offset of her own (a key that hashes to 0 is the same, one in four billion). Pure: the same key
+        /// gives the same hash in every process and on every platform.
         /// </summary>
         internal static uint KeyHash(string key)
         {

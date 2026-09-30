@@ -463,16 +463,17 @@ globalThis.__hh9a = (function (C) {
         /// <summary>
         /// Rig 9's own posed corners for <paramref name="clipName"/> frame <paramref name="frame"/>
         /// (<c>posed(evalClip(...))</c>, the geometry its renders paint), laid out in the corner
-        /// order of the bind mesh that keeps <paramref name="restGroups"/>: x, y, z per corner.
-        /// A corner whose face group the frame does not show (a blink shuts the open eyes) is NaN,
-        /// because the def binds the rest face and the rig draws another one there.
+        /// order of the bind mesh that keeps <paramref name="boundGroups"/>: x, y, z per corner.
+        /// A corner whose face group the frame does not show (a blink shuts the open eyes) is NaN:
+        /// the rig draws another group of that slot there, and so does the engine. Since character
+        /// PR 2a a def binds every group (<see cref="FaceGroupOrder9"/>).
         /// </summary>
-        public static double[] PosedCorners9(IRigScriptHost host, string preset, string[] restGroups,
+        public static double[] PosedCorners9(IRigScriptHost host, string preset, string[] boundGroups,
                                              string clipName, int frame)
         {
             Install9Audit(host);
             var groups = new StringBuilder("[");
-            foreach (string g in restGroups) groups.Append(Js(g)).Append(',');
+            foreach (string g in boundGroups) groups.Append(Js(g)).Append(',');
             groups.Append(']');
             byte[] raw = host.EvaluateBytes(
                 $"globalThis.__hh9a.posedCorners({Js(preset)},{Js(clipName)}," +

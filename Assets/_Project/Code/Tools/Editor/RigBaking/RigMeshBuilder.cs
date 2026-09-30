@@ -10,9 +10,14 @@ namespace HiddenHarbours.Tools.RigBaking
         public Mesh Mesh;
         public int Faces, Vertices, Triangles, Materials;
         /// <summary>Vertex + index buffer bytes: pos(12) + normal(12) + uv0(16) per vertex, plus
-        /// uv1(8) on a hull that carries level tags, plus 4 bytes per index. The comparison ADR 0022
-        /// makes is against RGBA32 sheet bytes.</summary>
+        /// uv1(8) on a hull that carries level tags or uv1(16) on a rig 9 figure that carries face
+        /// attributes, plus 4 bytes per index. The comparison ADR 0022 makes is against RGBA32 sheet
+        /// bytes.</summary>
         public long BufferBytes;
+
+        /// <summary>How many faces a face group owns — 0 on every mesh that does not carry rig 9's
+        /// face attributes. Reported so a bake log SAYS the face channel was written.</summary>
+        public int GroupedFaces;
 
         /// <summary>How many faces carry a real level tag — 0 on every rig that publishes no
         /// <c>geometry()</c>. Reported so a bake log SAYS whether the cutaway channel was written,
@@ -22,7 +27,8 @@ namespace HiddenHarbours.Tools.RigBaking
         public override string ToString() =>
             $"{Faces} faces → {Triangles} tris / {Vertices} verts, {Materials} materials, " +
             $"{BufferBytes / 1024.0:F1} KB" +
-            (TaggedFaces > 0 ? $", {TaggedFaces} level-tagged" : "");
+            (TaggedFaces > 0 ? $", {TaggedFaces} level-tagged" : "") +
+            (GroupedFaces > 0 ? $", {GroupedFaces} in face groups" : "");
     }
 
     /// <summary>
@@ -86,6 +92,21 @@ namespace HiddenHarbours.Tools.RigBaking
         public const int TexUvChannel = 2;
 
         /// <summary>
+        /// UV1 on a rig 9 FIGURE: the face attributes, a Vector4 flat across the face —
+        /// <c>x = face group</c> (1 + its index in the rig's <c>GROUP_ORDER</c>; 0 on a face no group
+        /// owns), <c>y = role</c> (<see cref="HiddenHarbours.Core.CharacterSkinDef.FaceRole"/>: which of
+        /// the def's thresholds the face culls at), <c>z = 1</c> on a face the head snap moves,
+        /// <c>w = 0</c>. The facet shader's figure variant reads it to draw one group per slot and
+        /// cull each face as the rig culls it, with no second draw call.
+        ///
+        /// <para>The same channel as <see cref="LevelUvChannel"/>, and never both on one mesh: a hull
+        /// is never a figure, and <c>HH_LEVEL_GATE</c> and <c>HH_FIGURE</c> are one keyword set. Written
+        /// only when <see cref="RigMeshData.CarriesFaceAttributes"/>, so every hull, fitting and rig 7
+        /// figure keeps exactly the bytes it had.</para>
+        /// </summary>
+        public const int FaceUvChannel = 1;
+
+        /// <summary>
         /// Build the mesh. <paramref name="interior"/> is the side-blind per-FACE interior mask, in
         /// <c>data.Faces</c> order — kept for callers that predate the per-side codes; true maps to
         /// <see cref="RigMeshInteriorClassifier.SideInterior"/>.
@@ -131,7 +152,14 @@ namespace HiddenHarbours.Tools.RigBaking
             // generator — so they must interpolate here too.
             bool textured = data.CarriesInteriorGeometry;
             var texAttrs = textured ? new Vector4[vcount] : null;
-            int taggedFaces = 0;
+            bool faced = data.CarriesFaceAttributes;
+            if (faced && tagged)
+                throw new InvalidOperationException(
+                    $"{data.RigKey} carries both level tags and rig 9 face attributes. Both live in " +
+                    "TexCoord1 and the shader reads one or the other by keyword; a mesh with both would " +
+                    "have one of them silently read as the other.");
+            var faceAttrs = faced ? new Vector4[vcount] : null;
+            int taggedFaces = 0, groupedFaces = 0;
             var tris = new List<int>(data.TriangleCount * 3);
 
             int v = 0;
@@ -157,6 +185,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 // every mesh baked before rooms existed keeps the exact bytes it had.
                 var levelTag = tagged ? new Vector2(f.Level, f.Interior ? 1f : 0f) : default;
                 if (tagged) taggedFaces++;
+                var faceAttr = faced ? new Vector4(f.FaceGroup, f.FaceRole, f.Head ? 1f : 0f, 0f) : default;
+                if (faced && f.FaceGroup > 0) groupedFaces++;
 
                 int baseIndex = v;
                 for (int k = 0; k < f.V.Length; k++, v++)
@@ -165,6 +195,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     norms[v] = n;
                     attrs[v] = attr;
                     if (tagged) levels[v] = levelTag;
+                    if (faced) faceAttrs[v] = faceAttr;
                     if (textured)
                     {
                         Vector2 uv = f.Uv != null && k < f.Uv.Length ? f.Uv[k] : Vector2.zero;
@@ -192,6 +223,7 @@ namespace HiddenHarbours.Tools.RigBaking
             mesh.SetUVs(AttrUvChannel, attrs);
             if (tagged) mesh.SetUVs(LevelUvChannel, levels);
             if (textured) mesh.SetUVs(TexUvChannel, texAttrs);
+            if (faced) mesh.SetUVs(FaceUvChannel, faceAttrs);
             mesh.SetTriangles(tris, 0, calculateBounds: true);
 
             return new RigMeshBuild
@@ -202,7 +234,9 @@ namespace HiddenHarbours.Tools.RigBaking
                 Triangles = tris.Count / 3,
                 Materials = data.Materials.Count,
                 TaggedFaces = taggedFaces,
-                BufferBytes = (long)vcount * (12 + 12 + 16 + (tagged ? 8 : 0)) + (long)tris.Count * 4,
+                GroupedFaces = groupedFaces,
+                BufferBytes = (long)vcount * (12 + 12 + 16 + (tagged ? 8 : 0) + (faced ? 16 : 0)) +
+                              (long)tris.Count * 4,
             };
         }
 
