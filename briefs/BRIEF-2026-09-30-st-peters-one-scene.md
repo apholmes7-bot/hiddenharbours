@@ -13,7 +13,7 @@ St Peters as one scene: the whole island on terrain pass 9's ground, with every 
 ## 2. The ground: all of pass 9, the south ring included
 
 - **Stand the whole island on `StPetersSeabed_HeightTex_pass9.png`,** the Art desk's texture of pass 9. It came to you on 09-29 in `HH-st-peters-pass9-ground-2026-09-29.zip` ([its brief](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-29-st-peters-pass9-ground.md)). Its file sha256 starts `e3ad6b8b` and its pixels' sha256 starts `8c077ea1`. If this conversation does not have it, the owner uploads the zip again.
-- **All of it:** [part 1](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/design/st-peters-terrain-pass-9.md), and [part 2](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/design/st-peters-terrain-pass-9-part-2.md) with the crossing's layout B.
+- **All of it:** [part 1](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/design/st-peters-terrain-pass-9.md), and [part 2](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/design/st-peters-terrain-pass-9-part-2.md) with the crossing's layout B.
 - **The owner is right about the south shore.** Your region view draws the south as one cliff line with a narrow strip of shallows below it, so part 2's ring is missing. Over part 1, part 2 changes 28,014 m², by up to +3.72 m (the reef fill). The ring is:
   - the South Flats, 12,382 m², from the harbour mouth round the south to the bar root, with their drains, pools, hollows, ribs and guts. The south's ground between the tides grows from 2,363 m² to 13,988 m²;
   - its sections, from the Harbour Strand round to the bar root: the Landing, the South Arm, the East Gap, the East Ledges, the Weather Cliff, the West Gap, the West Ledges, the South-West Bluff and the Storm Beach;
@@ -49,6 +49,9 @@ Draw the island's water once, across every scene, from the ground's depth and St
 4. **The crossing meets the bar, and the bar meets Nine Mile Creek** at the seam, the bar's midpoint. The crest there stays as it is, so the two halves meet (Nine Mile Creek's part 1 keeps its half to the bit).
 5. **The east end** runs as one shore: the Landing, the cannery and the Harbour Strand.
 6. **The two extra places** sit on pass 9's South Arm and Gap Brook. At the lookout, two stones at the board's west edge changed between your returns with no line in the NOTES: list them.
+7. **Where a seam needs it, you may change the ground.** To finish a seam, you may raise or lower pass 9's ground, and widen a scene's frame, where the seam needs it.
+   - Every such change goes in the island's ground file as a new ask, with its id and its heights in ground metres, and in the NOTES with its numbers and why. A change that is only drawn never reaches the game, because the game takes its ground from that file.
+   - These still stand: the bar's crest at the Nine Mile Creek seam, nothing lowered at the Head, and the Landing's and the cannery's pieces at their ids and positions.
 
 ## 5. The scenes, all of them
 
@@ -80,4 +83,4 @@ Ids stay as they are, because they are append-only. A new piece gets a new id.
 
 The Art desk checks the zip on real Node and reads it against pass 9. Then the game takes it in: the ground through its terrain work, on the same plan with the scenes' asks, and the pieces through the path the Landing and the cannery are on now.
 
-As of 2026-09-30 23:35Z.
+As of 2026-09-30 23:56Z.
