@@ -1607,6 +1607,10 @@ namespace HiddenHarbours.App.Editor
                 // or the paint is absent — the shader falls back to flat band colours / bands-only.
                 splat.ConfigureDetail(
                     HiddenHarbours.Art.Editor.TerrainArrayAssets.LoadDetailRequired(), null);
+                // Terrain pass 9's relight (PR 5a): TerrainLight6's four maps, from the one loader that names
+                // them (ADR 0047), so a region this builder makes comes out relit under the cycle's sun.
+                var relight = HiddenHarbours.Art.Editor.TerrainArrayAssets.LoadRelightRequired();
+                splat.ConfigureRelight(relight.Normal, relight.Light, relight.Detail, relight.Ramp);
                 // Paths from TerrainSplatAssets, not literals here: the map count grew from three
                 // to four with kit v2 and to five with kit v3's reef beds, and a second spelling of
                 // the same filenames is exactly the duplicate that wires null in silence once the

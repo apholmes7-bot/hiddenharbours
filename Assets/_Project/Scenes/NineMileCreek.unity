@@ -318833,6 +318833,10 @@ MonoBehaviour:
   _splatC: {fileID: 2800000, guid: 8aaa159c8a69e1542bae179cbeb79c66, type: 3}
   _splatD: {fileID: 2800000, guid: 33003abde5dc0f94a90916013f2433c4, type: 3}
   _splatE: {fileID: 2800000, guid: 925ab1df8d96b4a4bb926dce90a843e2, type: 3}
+  _relightNormal: {fileID: -1596345207730608404, guid: 0bc404e8514fb09160f9b920f31a5dfd, type: 3}
+  _relightLight: {fileID: -6137966094195317750, guid: 0bc404e8514fb09160f9b920f31a5dfd, type: 3}
+  _relightDetail: {fileID: -505627373956257286, guid: 0bc404e8514fb09160f9b920f31a5dfd, type: 3}
+  _relightRamp: {fileID: 1993451843571538555, guid: 0bc404e8514fb09160f9b920f31a5dfd, type: 3}
   _floorPaint: -1.95
   _floorRipple: -1.7
   _floorSand: -0.4
