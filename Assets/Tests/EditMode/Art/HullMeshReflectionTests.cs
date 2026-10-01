@@ -24,7 +24,6 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// creates a GPU RT, or skips on Null Device. See docs/design/hull-reflection-mesh.md
     /// for the audited API boundary, including why even new RenderGraph() is forbidden here.
     /// </summary>
-    [NonParallelizable]
     public class HullMeshReflectionTests
     {
         const BindingFlags Members = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;

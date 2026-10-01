@@ -535,9 +535,9 @@ namespace HiddenHarbours.Art
                 TextureHandle clearReflection = default;
                 if (DrawReflections || mesh != null)
                 {
-                    RTHandle target = GetReflectTarget(cameraData.camera.GetEntityId(), w, h);
-                    if (mesh != null) mesh.Output = target;
-                    reflectTex = renderGraph.ImportTexture(target,
+                    RTHandle reflectTarget = GetReflectTarget(cameraData.camera.GetEntityId(), w, h);
+                    if (mesh != null) mesh.Output = reflectTarget;
+                    reflectTex = renderGraph.ImportTexture(reflectTarget,
                         new ImportResourceParams { clearOnFirstUse = true, clearColor = Color.clear, discardOnLastUse = false });
                 }
 
