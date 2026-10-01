@@ -175,6 +175,13 @@ declared a **prerequisite** of all three in `RigCatalog`. Adopting the hook was 
 nothing: all three hosts render **byte-identical** to their pre-hook selves on every finished build, and a
 full re-bake returned the five committed M1 village sheets byte-for-byte (`BuildingLifecyclePassTests`).
 
+Since drop 13, **`wharf-building-kit-v2/wharfBuildingRig2`** is bound too, with one difference: its hook
+sits **inside** its model build rather than after `build(b)`. The pass is declared its prerequisite the
+same way, and the same measurement holds: its seven presets with no lifecycle keys render
+**byte-identical** with the pass loaded and absent, and the decayed builds differ. The record is
+`docs/art/wharf-buildings-pass2-intake.md`. `WharfBuildingPass2IntakeTests` re-measures three presets on
+every run.
+
 > ⚠️ **An unrecognised state id is SILENTLY IGNORED.** `active()` returns true for any non-default value,
 > then `normPhase`/`normDecay` fall back to the default and hand the faces back untouched — so
 > `decay:'collapsed'` (the natural misspelling of `collapsing`) renders byte-for-byte as `finished`, with
@@ -214,6 +221,12 @@ byte-identical golden master was.
 - **`wharfBuildingRig` — still UNMEASURED.** Its listing above stays a prior until *Dev ▸ Bake Buildings
   (houses + wharf)* runs and the bake either passes or refuses. Nothing consumes it yet (the shed/barn/
   cannery family is M2).
+- **`wharf-building-kit-v2/wharfBuildingRig2` (drop 13) — counter-clockwise by this probe's reading on Node,
+  all seven presets (2026-09-28).** The silhouette cross-check passed on every preset, and the door anchor
+  at dir 2 lands exactly where pass 1's does. `WharfBuildingPass2IntakeTests` re-measures netShed,
+  gambrelBarn and cannery with the C# probe on every run. It is not baked yet: when it is, the bake probes
+  again and refuses on a mismatch. Its geometry library (`wharfBuildingRig2.geo.js`) has no rendered
+  heading and carries the `Clockwise` placeholder.
 - **🔴 `interiorIsoRig` / `interiorPropRig` — counter-clockwise, but `BuildingRigAzimuthProbe` MUST NOT
   be used on them (measured 2026-08-05).** The probe above reads which side the **door** lands on at a
   quarter turn, and the step it does not state is that it assumes the door is on the **`+Y`** gable —

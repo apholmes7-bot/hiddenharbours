@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;} a:hover{color:#a9e7dd;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;background:#2a3b43;border-radius:2px;outline:none;margin:0;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:28px 20px 64px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:1180px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:26px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Wharf Buildings &middot; Pass 2</div>
+      <div style="font-size:10.5px;letter-spacing:0.14em;color:#6f7e83;line-height:1.7;">LIVE LIGHT &middot; WEATHER &middot; DOORS THAT OPEN &middot; LOFTS, LADDERS &amp; STAIRS &middot; CHARACTER v9.2 VERBS &middot; CAMERA-FIRST</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:14px;color:#c9a86a;max-width:520px;text-align:right;line-height:1.45;text-wrap:pretty;">The net shed, the storage barn and the fish plant were the last buildings lit once from a fixed key. They now use the houses&rsquo; light under the wharves&rsquo; sky, and every door, ladder, stair and bench is built to a number the v9.2 figures can use.</div>
+  </div>
+
+  <div style="width:100%;max-width:1180px;display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+
+    <div style="flex:1 1 620px;min-width:0;display:flex;flex-direction:column;gap:10px;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;overflow:auto;max-height:780px;">
+        <div style="position:relative;width:fit-content;">
+          <canvas ref="{{ stageRef }}" width="640" height="480" style="width:640px;height:480px;"></canvas>
+          <canvas ref="{{ ovRef }}" width="640" height="480" style="position:absolute;left:0;top:0;width:640px;height:480px;pointer-events:none;"></canvas>
+        </div>
+        <div style="position:absolute;left:11px;top:9px;display:flex;flex-direction:column;gap:2px;pointer-events:none;">
+          <div style="font-family:'IM Fell English SC',serif;font-size:20px;color:#f3efe6;text-shadow:0 1px 0 #0b1216,0 0 6px rgba(11,18,22,0.8);">{{ clock }}</div>
+          <div style="font-size:10px;letter-spacing:0.12em;color:#f3efe6;text-shadow:0 1px 0 #0b1216,0 0 6px rgba(11,18,22,0.8);">{{ skyName }}</div>
+        </div>
+        <div style="position:absolute;right:11px;top:10px;font-size:10px;letter-spacing:0.1em;color:#f3efe6;text-shadow:0 1px 0 #0b1216,0 0 6px rgba(11,18,22,0.8);pointer-events:none;text-align:right;line-height:1.6;">{{ stateLine }}</div>
+        <sc-if value="{{ busy }}" hint-placeholder-val="{{ true }}">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;"><div style="font-size:11px;letter-spacing:0.12em;color:#cfd6d4;background:rgba(11,18,22,0.86);padding:9px 14px;border:1px solid #2f444c;">{{ status }}</div></div>
+        </sc-if>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <div style="font-size:9.5px;letter-spacing:0.14em;color:#6f7e83;width:62px;">FACING</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <sc-for list="{{ dirChips }}" as="c" hint-placeholder-count="8">
+            <div onClick="{{ c.onClick }}" title="{{ c.title }}" style="min-width:44px;text-align:center;padding:6px 7px;font-size:10.5px;letter-spacing:0.06em;cursor:pointer;user-select:none;color:{{ c.fg }};background:{{ c.bg }};border:1px solid {{ c.bd }};display:flex;flex-direction:column;gap:2px;"><span>{{ c.label }}</span><span style="font-size:8.5px;letter-spacing:0.04em;opacity:0.8;">{{ c.sub }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <div style="font-size:9.5px;letter-spacing:0.14em;color:#6f7e83;width:62px;">WEATHER</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;flex:1;">
+          <sc-for list="{{ skyChips }}" as="c" hint-placeholder-count="11">
+            <div onClick="{{ c.onClick }}" style="padding:5px 8px;font-size:10px;letter-spacing:0.04em;cursor:pointer;user-select:none;color:{{ c.fg }};background:{{ c.bg }};border:1px solid {{ c.bd }};">{{ c.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end;">
+        <sc-for list="{{ stageSliders }}" as="s" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#6f7e83;"><span>{{ s.name }}</span><span style="color:#c4cdcd;">{{ s.disp }}</span></div>
+            <input type="range" min="{{ s.min }}" max="{{ s.max }}" step="{{ s.step }}" value="{{ s.val }}" onInput="{{ s.onInput }}" />
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+        <sc-for list="{{ stageToggles }}" as="t" hint-placeholder-count="5">
+          <div onClick="{{ t.onClick }}" style="padding:6px 10px;font-size:10px;letter-spacing:0.07em;cursor:pointer;user-select:none;border:1px solid {{ t.bd }};color:{{ t.fg }};background:{{ t.bg }};">{{ t.label }}</div>
+        </sc-for>
+        <div style="width:10px;"></div>
+        <sc-for list="{{ channelChips }}" as="t" hint-placeholder-count="7">
+          <div onClick="{{ t.onClick }}" style="padding:6px 8px;font-size:10px;letter-spacing:0.06em;cursor:pointer;user-select:none;border:1px solid {{ t.bd }};color:{{ t.fg }};background:{{ t.bg }};">{{ t.label }}</div>
+        </sc-for>
+      </div>
+      <div style="font-size:10.5px;line-height:1.6;color:#8a979b;text-wrap:pretty;">{{ stageNote }}</div>
+    </div>
+
+    <div style="flex:0 1 380px;min-width:300px;display:flex;flex-direction:column;gap:13px;">
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Preset</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;">
+          <sc-for list="{{ presetChips }}" as="p" hint-placeholder-count="7">
+            <div onClick="{{ p.onClick }}" style="padding:6px 9px;font-size:10px;letter-spacing:0.05em;cursor:pointer;user-select:none;color:{{ p.fg }};background:{{ p.bg }};border:1px solid {{ p.bd }};">{{ p.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="border:1px solid #243137;padding:12px;display:flex;flex-direction:column;gap:11px;">
+        <sc-for list="{{ chipRows }}" as="row" hint-placeholder-count="10">
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="font-size:9px;letter-spacing:0.12em;color:#6f7e83;">{{ row.name }}</div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap;">
+              <sc-for list="{{ row.opts }}" as="p" hint-placeholder-count="4">
+                <div onClick="{{ p.onClick }}" style="padding:5px 8px;font-size:10px;letter-spacing:0.04em;cursor:pointer;user-select:none;color:{{ p.fg }};background:{{ p.bg }};border:1px solid {{ p.bd }};">{{ p.label }}</div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#6f7e83;"><span>BODY</span><span style="color:#9aa6aa;">{{ bodyName }}</span></div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;">
+            <sc-for list="{{ swatches }}" as="s" hint-placeholder-count="11">
+              <div onClick="{{ s.onClick }}" title="{{ s.name }}" style="width:25px;height:19px;cursor:pointer;background:{{ s.col }};border:{{ s.border }};"></div>
+            </sc-for>
+          </div>
+        </div>
+        <sc-for list="{{ buildSliders }}" as="s" hint-placeholder-count="8">
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#6f7e83;"><span>{{ s.name }}</span><span style="color:#c4cdcd;">{{ s.disp }}</span></div>
+            <input type="range" min="{{ s.min }}" max="{{ s.max }}" step="{{ s.step }}" value="{{ s.val }}" onInput="{{ s.onInput }}" />
+          </div>
+        </sc-for>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;">
+          <sc-for list="{{ flagToggles }}" as="t" hint-placeholder-count="8">
+            <div onClick="{{ t.onClick }}" style="padding:5px 9px;font-size:10px;letter-spacing:0.05em;cursor:pointer;user-select:none;border:1px solid {{ t.bd }};color:{{ t.fg }};background:{{ t.bg }};">{{ t.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div onClick="{{ bakeSheet }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 14px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; 8-DIR SHEET &middot; THIS BUILD, THIS SKY</div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ downloadCell }}" style="flex:1;font-size:10px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; CELL PNG</div>
+          <div onClick="{{ downloadGameplay }}" style="flex:1;font-size:10px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; GAMEPLAY JSON</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <a href="wharfBuildingRig2.geo.js" download="wharfBuildingRig2.geo.js" style="flex:1;font-size:9.5px;letter-spacing:0.06em;padding:7px 6px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; wharfBuildingRig2.geo.js</a>
+          <a href="wharfBuildingRig2.js" download="wharfBuildingRig2.js" style="flex:1;font-size:9.5px;letter-spacing:0.06em;padding:7px 6px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; wharfBuildingRig2.js</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1180px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;justify-content:space-between;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">VERBS &middot; WHAT A v9.2 FIGURE DOES HERE &middot; {{ stationCount }}</div>
+      <div style="font-size:9.5px;color:#5f6e73;">heights above the floor the figure stands on &middot; fit = the range every creator body makes (worldfit.txt) &middot; reach = from the approach on a 0.1 m grid</div>
+    </div>
+    <div style="border:1px solid #243137;display:grid;grid-template-columns:minmax(90px,1.1fr) minmax(90px,1fr) minmax(80px,0.8fr) minmax(90px,0.9fr) minmax(70px,0.5fr) minmax(56px,0.4fr) minmax(160px,2.4fr);font-size:10.5px;overflow-x:auto;">
+      <sc-for list="{{ stationRows }}" as="r" hint-placeholder-count="10">
+        <div style="padding:6px 9px;border-top:{{ r.bt }};color:{{ r.c1 }};background:{{ r.bg }};">{{ r.verb }}</div>
+        <div style="padding:6px 9px;border-top:{{ r.bt }};color:{{ r.c2 }};background:{{ r.bg }};">{{ r.clip }}</div>
+        <div style="padding:6px 9px;border-top:{{ r.bt }};color:{{ r.c2 }};background:{{ r.bg }};">{{ r.height }}</div>
+        <div style="padding:6px 9px;border-top:{{ r.bt }};color:{{ r.c3 }};background:{{ r.bg }};">{{ r.fit }}</div>
+        <div style="padding:6px 9px;border-top:{{ r.bt }};color:{{ r.c3 }};background:{{ r.bg }};">{{ r.level }}</div>
+        <div style="padding:6px 9px;border-top:{{ r.bt }};color:{{ r.okc }};background:{{ r.bg }};">{{ r.ok }}</div>
+        <div style="padding:6px 9px;border-top:{{ r.bt }};color:#8a979b;background:{{ r.bg }};text-wrap:pretty;">{{ r.note }}</div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <div onClick="{{ runChecks }}" style="font-size:10.5px;letter-spacing:0.1em;padding:8px 14px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;cursor:pointer;user-select:none;">RUN THE CHECKS ON THIS BUILD</div>
+      <div style="font-size:10.5px;color:#8a979b;">{{ checksHead }}</div>
+    </div>
+    <sc-if value="{{ hasChecks }}" hint-placeholder-val="{{ false }}">
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto auto 1fr;font-size:10.5px;">
+        <sc-for list="{{ checkRows }}" as="r" hint-placeholder-count="8">
+          <div style="padding:5px 10px;border-top:{{ r.bt }};color:{{ r.c }};">{{ r.mark }}</div>
+          <div style="padding:5px 10px;border-top:{{ r.bt }};color:#c4cdcd;">{{ r.id }}</div>
+          <div style="padding:5px 10px;border-top:{{ r.bt }};color:#8a979b;text-wrap:pretty;">{{ r.v }}</div>
+        </sc-for>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="width:100%;max-width:1180px;display:flex;flex-direction:column;gap:12px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="font-family:'IM Fell English SC',serif;font-size:20px;color:#eef3f2;">What was wrong in pass 1, and what changed</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:1px;background:#243137;border:1px solid #243137;">
+      <sc-for list="{{ flaws }}" as="f" hint-placeholder-count="18">
+        <div style="background:#0f191e;padding:11px 13px;display:flex;flex-direction:column;gap:5px;">
+          <div style="font-size:11px;color:#e0b13a;letter-spacing:0.04em;">{{ f.what }}</div>
+          <div style="font-size:11px;line-height:1.55;color:#8a979b;text-wrap:pretty;">{{ f.was }}</div>
+          <div style="font-size:11px;line-height:1.55;color:#c4cdcd;text-wrap:pretty;">{{ f.now }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1180px;display:flex;flex-direction:column;gap:14px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="font-family:'IM Fell English SC',serif;font-size:20px;color:#eef3f2;">Boards</div>
+    <sc-for list="{{ boards }}" as="b" hint-placeholder-count="6">
+      <figure style="margin:0;display:flex;flex-direction:column;gap:6px;">
+        <img src="{{ b.src }}" alt="{{ b.alt }}" style="width:100%;height:auto;display:block;image-rendering:pixelated;border:1px solid #243137;" />
+        <figcaption style="font-size:11px;line-height:1.55;color:#8a979b;text-wrap:pretty;"><span style="color:#e7eceb;">{{ b.title }}</span> &middot; {{ b.cap }}</figcaption>
+      </figure>
+    </sc-for>
+  </div>
+
+  <div style="width:100%;max-width:1180px;display:flex;flex-direction:column;gap:8px;border-top:1px solid #243137;padding-top:16px;">
+    <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">8-DIR SHEET &middot; {{ sheetNote }}</div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;padding:10px;">
+      <canvas ref="{{ sheetRef }}" width="960" height="120"></canvas>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1240,&quot;height&quot;:1800}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const sv = this._load();
+    this.ORDER = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    this.state = Object.assign({
+      preset: 'netShed', build: { type: 'shack', size: 0.2, body: 'greyShingle', siding: 'shingle', roof: 'asphaltGrey', door: 'doubleBarn', weather: 0.6, kept: 0.7 },
+      dir: 5, skyKey: 'afternoon', time: 14, cloud: 0, rain: 0, fog: 0, snow: 0, wind: 0.22, winter: false,
+      doorOpen: 0, bayOpen: 0, loftOpen: 0, section: 'off', decay: 'sound',
+      figs: true, overlay: false, smoke: true, channel: 'lit', zoom: 1,
+    }, sv, { busy: true, status: 'loading the rigs…', checks: null, sheetNote: 'press the button to bake all eight facings' });
+    this.stageRef = (n) => { if (n && n !== this._cv) { this._cv = n; this._ctx = n.getContext('2d'); } };
+    this.ovRef = (n) => { if (n && n !== this._ov) { this._ov = n; this._octx = n.getContext('2d'); } };
+    this.sheetRef = (n) => { if (n && n !== this._sh) { this._sh = n; } };
+    this._figCache = new Map(); this._t0 = performance.now();
+  }
+  _load() { try { const s = JSON.parse(localStorage.getItem('hh.wharfBuilding2') || '{}'); delete s.busy; delete s.status; delete s.checks; return s; } catch (e) { return {}; } }
+  _save() { try { const s = Object.assign({}, this.state); delete s.busy; delete s.status; delete s.checks; delete s.sheetNote; localStorage.setItem('hh.wharfBuilding2', JSON.stringify(s)); } catch (e) {} }
+
+  componentDidMount() {
+    const H = 'lib/', C9 = 'lib/';
+    const files = [H + 'interiorPropRig.js', H + 'coastalPass.js', 'lib/weatherSky.js', 'lib/buildingLifecycleRig.js', 'wharfBuildingRig2.geo.js', 'wharfBuildingRig2.js', C9 + 'characterIsoRig9.js', C9 + 'characterIsoRig9.poses.js'];
+    const ok = () => window.WharfBuilding2 && window.CoastalPass && window.CoastalPass.light && window.WeatherSky && window.CharacterIso9;
+    const load = (src) => new Promise((res) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => { this._err = src; res(); }; document.head.appendChild(s); });
+    (async () => { if (!ok()) for (const f of files) { if (this.dead) return; await load(f); }
+      if (this.dead) return; if (!ok()) { this.setState({ busy: true, status: 'could not load ' + (this._err || 'the rigs') }); return; }
+      this._ready = true; this._queue(); })();
+    this._iv = setInterval(() => this._tick(), 110);
+  }
+  componentWillUnmount() { this.dead = true; clearInterval(this._iv); clearTimeout(this._deb); clearTimeout(this._sheetT); }
+
+  _WB() { return window.WharfBuilding2; }
+  _opts() { const s = this.state, o = Object.assign({}, s.build, { doorOpen: s.doorOpen, bayOpen: s.bayOpen, loftOpen: s.loftOpen, season: s.winter ? 'winter' : 'summer', time: s.time });
+    if (s.section !== 'off') { o.cutaway = 'section'; o.storey = s.section === 'loft' ? 'loft' : 'ground'; }
+    if (s.decay !== 'sound') o.decay = s.decay; return o; }
+  _sky() { const s = this.state; return window.WeatherSky.at({ time: s.time, cloud: s.cloud, rain: s.rain, fog: s.fog, snow: s.snow, wind: s.wind }); }
+  _set(patch, rerender) { this.setState(patch, () => { this._save(); if (rerender !== false) this._queue(); }); }
+  _setB(patch) { this._set({ build: Object.assign({}, this.state.build, patch), preset: null, checks: null }); }
+  _queue() { if (!this._ready) return; clearTimeout(this._deb); this.setState({ busy: true, status: 'lighting…' }); this._deb = setTimeout(() => this._render(), 40); }
+
+  _render() {
+    const WB = this._WB(); if (!WB || this.dead) return;
+    try {
+      const s = this.state, o = this._opts(), sky = this._sky(), fkey = JSON.stringify(o) + '|' + s.dir;
+      if (fkey !== this._fkey) { this._fr = WB.frame(s.dir, o); this._fkey = fkey; this._lkey = null; }
+      const fr = this._fr, lkey = fkey + JSON.stringify(sky.time) + s.cloud + s.rain + s.fog + s.snow + s.channel;
+      if (lkey !== this._lkey) { this._px = s.channel === 'lit' ? WB.relight(fr, sky) : WB.view(fr, s.channel, sky); this._sh = WB.castShadow(fr, sky); this._lkey = lkey; }
+      this._skyNow = sky; this._compose(fr, sky); this._stations = WB.stations(o); this._foot = WB.footprint(o); this._cast();
+      this._drawOverlay(); this.setState({ busy: false, status: '' });
+    } catch (e) { console.error(e); this.setState({ busy: true, status: 'error: ' + e.message }); }
+  }
+  _compose(fr, sky) {
+    const W = fr.W, H = fr.H, cv = this._cv; if (!cv) return; if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; this._ov.width = W; this._ov.height = H; }
+    const z = this.state.zoom; for (const c of [cv, this._ov]) { c.style.width = (W * z) + 'px'; c.style.height = (H * z) + 'px'; }
+    const img = this._ctx.createImageData(W, H), d = img.data, px = this._px, sh = this._sh.lv, C = fr.C, a = this.state.dir * Math.PI / 4, ca = Math.cos(a), sa = Math.sin(a);
+    const lt = Math.min(1.05, 0.32 * (sky.skyI == null ? 0.6 : sky.skyI) + 0.7 * (sky.sunI || 0) * Math.max(0, sky.sunW ? sky.sunW[2] : 0.5)) * (sky.expo || 1), wet = sky.wet || 0, snow = sky.snow || 0, night = sky.key === 'moon' || lt < 0.2;
+    const A = [50, 45, 39], B = [134, 121, 101];
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const i = y * W + x, o4 = i * 4;
+      if (px[o4 + 3] && this.state.channel !== 'lit') { d[o4] = px[o4]; d[o4 + 1] = px[o4 + 1]; d[o4 + 2] = px[o4 + 2]; d[o4 + 3] = 255; continue; }
+      const xr = (x + 0.5 - C.ox) / C.S, yr = (-(y + 0.5 - C.oy) / C.S) / C.se, mx = xr * C.ct + yr * C.st, my = -xr * C.st + yr * C.ct, ex = mx * ca - my * sa, ny = mx * sa + my * ca;
+      const pl = Math.floor(ny / 0.2), fy = ny / 0.2 - pl, seam = fy < 0.09, k = ((Math.imul(pl, 2654435761) ^ Math.imul(Math.floor(ex / 2.4 + (pl & 1) * 0.5), 40503)) >>> 0) % 7;
+      let f = lt * (0.9 + k * 0.022) * (seam ? 0.86 : 1) * (1 - 0.28 * wet); if (sh[i]) f *= [1, 0.82, 0.68, 0.56][sh[i]];
+      let r = A[0] + (B[0] - A[0]) * f, g = A[1] + (B[1] - A[1]) * f, b = A[2] + (B[2] - A[2]) * f * 1.02;
+      if (snow > 0.3) { const v = 150 + 92 * f; r += (v - r) * snow * 0.9; g += (v + 4 - g) * snow * 0.9; b += (v + 12 - b) * snow * 0.9; }
+      if (night) { r *= 0.78; g *= 0.84; b *= 1.08; }
+      if (px[o4 + 3]) { r = px[o4]; g = px[o4 + 1]; b = px[o4 + 2]; }
+      d[o4] = r; d[o4 + 1] = g; d[o4 + 2] = b; d[o4 + 3] = 255; }
+    this._base = img;
+  }
+  // one v9.2 figure per verb, straight from stations(); ladders and stairs move on their own clocks
+  _cast() { const st = this._stations.stations, s = this.state, B = ['fisher', 'ginny', 'skipper', 'deckboss', 'packer', 'hand', 'cutter', 'nan'], F = []; let b = 0;
+    for (const q of st) { if (s.section === 'ground' && q.level === 1) continue; if (s.decay !== 'sound' && s.decay !== 'neglected' && q.kind !== 'door') continue;
+      const f = { build: B[b++ % B.length], q, yaw: q.faceYaw, clip: q.clip, opts: q.opts || {} };
+      if (q.kind === 'door') { f.path = q.path; f.clip = 'walk'; f.rate = 0.727; }
+      else if (q.kind === 'ladder') { f.clip = 'ladderDown'; f.reverse = true; f.at = [q.top.root[0], q.top.root[1]]; f.z0 = q.standZ; f.z1 = q.top.station; }
+      else if (q.kind === 'stair') { const rm = q.seq[0].rootMotion; f.path = [rm.from, rm.to]; f.clip = 'walk'; f.rate = 0.6; }
+      else if (q.clip === 'dig') f.opts = {};
+      F.push(f); }
+    this._figs = F; }
+  _tick() {
+    if (!this._base || !this._fr || this.state.busy) return; const fr = this._fr, ctx = this._ctx, W = fr.W, H = fr.H, t = (performance.now() - this._t0) / 1000, sky = this._skyNow;
+    const img = new ImageData(new Uint8ClampedArray(this._base.data), W, H), d = img.data, CI = window.CharacterIso9, C = fr.C, gb = fr.gb, s = this.state;
+    const gl = Math.min(1, 0.32 + 0.9 * (0.6 * (sky.sunI || 0) * Math.max(0, sky.sunW ? sky.sunW[2] : 0.5) + 0.5 * (sky.skyI == null ? 0.6 : sky.skyI)));
+    const proj = (p) => { const xr = p[0] * C.ct - p[1] * C.st, yr = p[0] * C.st + p[1] * C.ct; return [C.ox + xr * C.S, C.oy - (yr * C.se + (p[2] || 0) * C.ce) * C.S, yr * C.ce - (p[2] || 0) * C.se]; };
+    if (s.figs && CI && s.channel === 'lit') for (const f of this._figs) {
+      let at, yaw = f.yaw; const A = CI.ANIMS[CI.clipDef(f.clip).anim]; let k = Math.floor(t * 1000 / A.ms) % A.frames; if (f.reverse) k = A.frames - 1 - k;
+      if (f.path) { const P = f.path; let L = 0; const seg = []; for (let i = 0; i + 1 < P.length; i++) { const l = Math.hypot(P[i + 1][0] - P[i][0], P[i + 1][1] - P[i][1], (P[i + 1][2] || 0) - (P[i][2] || 0)); seg.push(l); L += l; }
+        let u = ((t * f.rate) % (L + 1.2)); if (u > L) u = L; let i = 0; while (i < seg.length - 1 && u > seg[i]) { u -= seg[i]; i++; } const w = seg[i] ? u / seg[i] : 0, p0 = P[i], p1 = P[i + 1];
+        at = [p0[0] + (p1[0] - p0[0]) * w, p0[1] + (p1[1] - p0[1]) * w, (p0[2] || 0) + ((p1[2] || 0) - (p0[2] || 0)) * w]; yaw = Math.atan2(p1[0] - p0[0], p1[1] - p0[1]) * 180 / Math.PI; }
+      else if (f.z1 != null) { const span = Math.max(0.1, f.z1 - f.z0), u = ((t * 0.436) % (span + 0.6)); at = [f.at[0], f.at[1], f.z0 + Math.min(span, u)]; }
+      else at = [f.q.stand[0], f.q.stand[1], f.q.standZ || 0];
+      const cy = ((Math.round(yaw - s.dir * 45) % 360) + 360) % 360, key = f.build + '|' + f.clip + '|' + k + '|' + cy + '|' + JSON.stringify(f.opts);
+      let R = this._figCache.get(key); if (!R) { try { R = CI.render({ clip: f.clip, frame: k, yaw: cy, build: f.build, opts: f.opts }); } catch (e) { continue; } this._figCache.set(key, R); if (this._figCache.size > 700) this._figCache.delete(this._figCache.keys().next().value); }
+      const q = proj(at), X0 = Math.round(q[0]) - 32, Y0 = Math.round(q[1]) - 82, fd = q[2];
+      for (let y = 0; y < R.H; y++) for (let x = 0; x < R.W; x++) { const a = (y * R.W + x) * 4; if (!R.rgba[a + 3]) continue; const X = X0 + x, Y = Y0 + y; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; const i = Y * W + X; if (gb.a[i] && gb.d[i] < fd - 0.12) continue;
+        d[i * 4] = R.rgba[a] * gl; d[i * 4 + 1] = R.rgba[a + 1] * gl; d[i * 4 + 2] = R.rgba[a + 2] * gl; } }
+    ctx.putImageData(img, 0, 0);
+    if (s.smoke && s.channel === 'lit' && s.section === 'off' && fr.mdl.C.stacks.length && (s.decay === 'sound' || s.decay === 'neglected')) { const wv = sky.wind ? sky.wind.w : 0.2, sm = fr.s.mirror;
+      for (const c of fr.mdl.C.stacks) { const q = proj([sm ? -c[0] : c[0], c[1], c[2]]); for (let p = 0; p < 9; p++) { const life = (t * 0.45 + p / 9) % 1, rise = life * 46, drift = (wv * 60 + 6 * Math.sin(life * 3 + c[1])) * life, r = 2 + life * 8, al = (1 - life) * (sky.key === 'moon' ? 0.2 : 0.3);
+        ctx.fillStyle = 'rgba(' + (sky.key === 'moon' ? '130,140,155' : '196,200,204') + ',' + al.toFixed(3) + ')'; ctx.beginPath(); ctx.arc(q[0] + drift, q[1] - rise - 4, r, 0, 7); ctx.fill(); } } }
+  }
+  _drawOverlay() { const o = this._octx, fr = this._fr; if (!o || !fr) return; o.clearRect(0, 0, fr.W, fr.H); if (!this.state.overlay) return; const C = fr.C;
+    const P = (x, y, z) => { const xr = x * C.ct - y * C.st, yr = x * C.st + y * C.ct; return [C.ox + xr * C.S, C.oy - (yr * C.se + (z || 0) * C.ce) * C.S]; };
+    const rect = (q, z, col, dash) => { o.strokeStyle = col; o.setLineDash(dash || []); o.beginPath(); [[q.x0, q.y0], [q.x1, q.y0], [q.x1, q.y1], [q.x0, q.y1]].forEach((p, i) => { const s = P(p[0], p[1], z); if (i) o.lineTo(s[0], s[1]); else o.moveTo(s[0], s[1]); }); o.closePath(); o.stroke(); o.setLineDash([]); };
+    o.lineWidth = 1; for (const q of this._foot) rect(q, q.z || 0, q.walk ? 'rgba(127,214,201,0.8)' : 'rgba(224,177,58,0.7)', q.walk ? null : [4, 3]);
+    for (const q of this._stations.stations) { const s0 = P(q.stand[0], q.stand[1], q.standZ || 0), a0 = P(q.at[0], q.at[1], q.at[2] || 0), good = q.fits && q.reachable !== false && q.topReachable !== false;
+      if (q.path) { o.strokeStyle = 'rgba(127,214,201,0.9)'; o.beginPath(); q.path.forEach((p, i) => { const s = P(p[0], p[1], p[2] || 0); if (i) o.lineTo(s[0], s[1]); else o.moveTo(s[0], s[1]); }); o.stroke(); }
+      if (q.top) { const t0 = P(q.top.stand[0], q.top.stand[1], q.top.z); o.strokeStyle = 'rgba(201,168,106,0.9)'; o.beginPath(); o.moveTo(s0[0], s0[1]); o.lineTo(t0[0], t0[1]); o.stroke(); o.fillStyle = '#c9a86a'; o.fillRect(t0[0] - 2, t0[1] - 2, 4, 4); }
+      o.strokeStyle = 'rgba(238,243,242,0.5)'; o.beginPath(); o.moveTo(s0[0], s0[1]); o.lineTo(a0[0], a0[1]); o.stroke();
+      o.fillStyle = good ? '#7fd6c9' : '#f07a6a'; o.beginPath(); o.arc(s0[0], s0[1], 3, 0, 7); o.fill(); o.font = '9px ui-monospace,monospace'; o.fillStyle = '#eef3f2'; o.fillText(q.verb, s0[0] + 5, s0[1] - 4); } }
+
+  _bakeSheet() { const WB = this._WB(); if (!WB || !this._sh) return; const o = this._opts(), sky = this._skyNow || this._sky(), cells = []; let d = 0;
+    const step = () => { if (this.dead) return; if (d >= 8) { const w = cells[0].width, h = cells[0].height, S = 0.5, cv = this._sh; cv.width = Math.ceil(8 * w * S + 7 * 6); cv.height = Math.ceil(h * S + 16); const c = cv.getContext('2d'); c.imageSmoothingEnabled = false; c.fillStyle = '#0e181d'; c.fillRect(0, 0, cv.width, cv.height);
+        cells.forEach((cc, i) => { c.drawImage(cc, i * (w * S + 6), 0, w * S, h * S); c.fillStyle = i === this.state.dir ? '#cfeee8' : '#6f7e83'; c.font = '10px ui-monospace,monospace'; c.fillText(i + ' · ' + this.ORDER[i], i * (w * S + 6) + 4, h * S + 12); });
+        const full = document.createElement('canvas'); full.width = w * 8; full.height = h; const fc = full.getContext('2d'); cells.forEach((cc, i) => fc.drawImage(cc, i * w, 0)); this._saveCanvas(full, 'WharfBuildingIso2_' + (this.state.preset || this.state.build.type) + '.png');
+        this.setState({ busy: false, status: '', sheetNote: '8 × (' + w + ' × ' + h + ') · the pivot at (' + this._fr.pivot.x + ', ' + this._fr.pivot.y + ') in every cell · N NE E SE S SW W NW' }); return; }
+      this.setState({ busy: true, status: 'baking facing ' + d + ' of 8…' });
+      setTimeout(() => { const fr = WB.frame(d, o), px = WB.relight(fr, sky), cv = document.createElement('canvas'); cv.width = fr.W; cv.height = fr.H; cv.getContext('2d').putImageData(new ImageData(px, fr.W, fr.H), 0, 0); cells.push(cv); d++; step(); }, 30); };
+    step(); }
+  _saveCanvas(cv, name) { cv.toBlob((b) => { if (!b) return; const url = URL.createObjectURL(b), a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 2000); }); }
+  _downloadCell() { if (!this._fr || !this._px) return; const fr = this._fr, cv = document.createElement('canvas'); cv.width = fr.W; cv.height = fr.H; cv.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(this._px), fr.W, fr.H), 0, 0); this._saveCanvas(cv, 'WharfBuildingIso2_' + (this.state.preset || this.state.build.type) + '_' + this.ORDER[this.state.dir] + '.png'); }
+  _downloadGameplay() { const WB = this._WB(); if (!WB) return; const o = this._opts(); delete o.time; delete o.cutaway; const gp = WB.gameplay(Object.assign({ preset: this.state.preset }, o)), b = new Blob([JSON.stringify(gp, null, 1)], { type: 'application/json' }), url = URL.createObjectURL(b), a = document.createElement('a');
+    a.href = url; a.download = 'wharfBuilding2.' + (this.state.preset || this.state.build.type) + '.gameplay.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 2000); }
+  _runChecks() { const WB = this._WB(); if (!WB) return; this.setState({ busy: true, status: 'measuring the door at every listed facing…' }); setTimeout(() => { try { const o = this._opts(); delete o.cutaway; this.setState({ checks: WB.checks(o), busy: false, status: '' }); } catch (e) { this.setState({ busy: false, status: '' }); console.error(e); } }, 30); }
+  _preset(k) { const WB = this._WB(); if (!WB) return; const p = WB.PRESETS[k]; const d = WB.placement(p).facings[0].dir; this._set({ preset: k, build: Object.assign({ kept: 0.7 }, p), dir: d, checks: null }); }
+  _skyPreset(k) { const p = window.WeatherSky.PRESETS.find(q => q.key === k); if (!p) return; this._set({ skyKey: k, time: p.time, cloud: p.cloud, rain: p.rain, fog: p.fog, snow: p.snow, wind: p.wind, winter: k === 'snow' ? true : (this.state.winter && k === 'snow') }); }
+
+  renderVals() {
+    const WB = this._WB(), s = this.state, b = s.build, ready = !!(WB && this._ready);
+    const on = { fg: '#0b1216', bg: '#7fd6c9', bd: '#7fd6c9' }, off = { fg: '#aeb9bb', bg: '#141f25', bd: '#2f444c' }, gold = { fg: '#0b1216', bg: '#e0b13a', bd: '#e0b13a' };
+    const mk = (label, sel, fn, st) => Object.assign({ label, onClick: fn }, sel ? (st || on) : off);
+    const R = ready ? WB.resolve(this._opts()) : null, P = ready ? WB.placement(this._opts()) : { facings: [] };
+    const dirChips = this.ORDER.map((n, d) => { const f = P.facings.find(q => q.dir === d), rank = f ? P.facings.indexOf(f) : -1;
+      return Object.assign(mk(d + ' · ' + n, d === s.dir, () => this._set({ dir: d })), { sub: f ? (rank === 0 ? '★ ' : '') + (f.via === 'door' ? 'door ' + f.doorFaces : 'side') : 'back', title: f ? 'listed ' + (rank + 1) + ' · door faces ' + f.doorFaces + (f.showSide ? ' · dock/show side ' + f.showSide : '') : 'not listed: the door faces north' }); });
+    const skyChips = ready && window.WeatherSky ? window.WeatherSky.PRESETS.map(p => mk(p.name, s.skyKey === p.key, () => this._skyPreset(p.key))) : [];
+    const sky = this._skyNow;
+    const stageSliders = [
+      { name: 'TIME', val: s.time, min: 4, max: 23.5, step: 0.25, disp: sky ? sky.clock : '', onInput: (e) => this._set({ time: +e.target.value, skyKey: null }) },
+      { name: 'DOORS OPEN', val: s.doorOpen, min: 0, max: 1, step: 0.05, disp: Math.round(s.doorOpen * 100) + '%', onInput: (e) => this._set({ doorOpen: +e.target.value }) },
+      { name: 'BAYS · LOFT DOOR', val: Math.max(s.bayOpen, s.loftOpen), min: 0, max: 1, step: 0.05, disp: Math.round(Math.max(s.bayOpen, s.loftOpen) * 100) + '%', onInput: (e) => this._set({ bayOpen: +e.target.value, loftOpen: +e.target.value }) },
+      { name: 'ZOOM', val: s.zoom, min: 1, max: 3, step: 0.5, disp: s.zoom + '×', onInput: (e) => this.setState({ zoom: +e.target.value }, () => { this._save(); if (this._fr) this._compose(this._fr, this._skyNow); }) },
+    ];
+    const stageToggles = [
+      mk('FIGURES', s.figs, () => this._set({ figs: !s.figs }, false)), mk('GAMEPLAY', s.overlay, () => this.setState({ overlay: !s.overlay }, () => { this._save(); this._drawOverlay(); })),
+      mk('SMOKE', s.smoke, () => this._set({ smoke: !s.smoke }, false)), mk('WINTER', s.winter, () => this._set({ winter: !s.winter })),
+      mk('SECTION: ' + (s.section === 'off' ? 'OFF' : s.section.toUpperCase()), s.section !== 'off', () => this._set({ section: s.section === 'off' ? 'ground' : s.section === 'ground' && R && R.loftKind ? 'loft' : 'off' }), gold),
+    ];
+    const channelChips = ['lit', 'unlit', 'normal', 'ao', 'sun', 'tags', 'emit'].map(c => mk(c.toUpperCase(), s.channel === c, () => this._set({ channel: c })));
+    const presetChips = ready ? Object.keys(WB.PRESETS).map(k => mk(k.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()), s.preset === k, () => this._preset(k), gold)) : [];
+    const cur = (k) => R ? R[k] : b[k], chip = (label, key, val) => mk(label, cur(key) === val, () => this._setB({ [key]: val }));
+    const L = { gable: 'GABLE', gambrel: 'GAMBREL', shed: 'SHED', shingle: 'SHINGLE', clapboard: 'CLAPBOARD', boardBatten: 'BOARD & BATTEN', corrugated: 'CORRUGATED', asphaltGrey: 'GREY ASPH', asphaltBrown: 'BROWN ASPH', metalSeam: 'SEAM', rusted: 'RUSTED',
+      doubleBarn: 'DOUBLE', slidingBarn: 'SLIDING', plank: 'PLANK', rollUp: 'ROLL-UP', personnel: 'PERSONNEL', twoOverTwo: '2/2', sixOverSix: '6/6', oneOverOne: '1/1', industrial: 'INDUSTRIAL', none: 'NONE', cupola: 'CUPOLA', monitor: 'MONITOR', window: 'WINDOW', door: 'DOOR', stone: 'STONE', concrete: 'CONCRETE', sills: 'SILLS' };
+    const chipRows = ready ? [
+      { name: 'TYPE · reseeds the massing, the interior and the fittings', opts: Object.keys(WB.TYPES).map(k => mk(WB.TYPES[k].label.toUpperCase(), cur('type') === k, () => this._set({ build: Object.assign({ kept: b.kept, weather: b.weather }, { type: k, size: b.size }), preset: null, checks: null }), gold)) },
+      { name: 'SHAPE', opts: WB.SHAPES.map(v => chip(L[v], 'shape', v)) }, { name: 'SIDING', opts: WB.SIDINGS.map(v => chip(L[v], 'siding', v)) },
+      { name: 'ROOF', opts: WB.ROOFS.map(v => chip(L[v] || v.toUpperCase(), 'roof', v)) }, { name: 'MAIN DOOR · +Y gable', opts: WB.DOORS.map(v => chip(L[v], 'door', v)) },
+      { name: 'WINDOWS', opts: WB.WINDOWS.map(v => chip(L[v], 'windows', v)) }, { name: 'ROOF VENT', opts: WB.CUPOLAS.map(v => chip(L[v], 'cupola', v)) },
+      { name: 'GABLE PEAK', opts: ['none', 'window', 'door'].map(v => chip(L[v], 'loft', v)) }, { name: 'PLINTH', opts: WB.PLINTHS.map(v => chip(L[v], 'plinth', v)) },
+      { name: 'LIFECYCLE · BuildingLifecycle decay', opts: ['sound', 'neglected', 'abandoned', 'collapsing', 'ruin'].map(v => mk(v.toUpperCase(), s.decay === v, () => this._set({ decay: v }))) },
+    ] : [];
+    const swatches = ready ? Object.keys(WB.BODY).map(k => ({ name: k, col: WB.BODY[k][3], onClick: () => this._setB({ body: k }), border: cur('body') === k ? '2px solid #eef3f2' : '1px solid #2f444c' })) : [];
+    const bs = (name, key, min, max, step, fmt) => ({ name, val: b[key] != null ? b[key] : (R ? R[key === 'winDensity' ? 'winD' : key] : 0), min, max, step, disp: fmt(b[key] != null ? b[key] : (R ? R[key === 'winDensity' ? 'winD' : key] : 0)), onInput: (e) => this._setB({ [key]: +e.target.value }) });
+    const buildSliders = [bs('SIZE', 'size', 0, 1, 0.05, v => R ? R.Wd.toFixed(1) + ' × ' + R.Ln.toFixed(1) + ' m' : ''), bs('WEATHER · fresh → silvered, moss, rust', 'weather', 0, 1, 0.05, v => Math.round(v * 100) + '%'),
+      bs('KEPT · peeling → painted this year', 'kept', 0, 1, 0.05, v => Math.round(v * 100) + '%'), bs('WINDOW DENSITY', 'winDensity', 0.1, 1, 0.05, v => Math.round(v * 100) + '%'), bs('EXHAUST STACKS', 'stacks', 0, 3, 1, v => '' + v)];
+    const fl = (label, key) => mk((cur(key) ? '■ ' : '□ ') + label, !!cur(key), () => this._setB({ [key]: !cur(key) }));
+    const flagToggles = [fl('DOCK', 'dock'), fl('HVAC', 'hvac'), fl('VENTS', 'vents'), fl('SIGN', 'sign'), fl('BOOM', 'boom'), fl('STOVE', 'stove'), fl('TRAPS & BUOYS', 'goods'), fl('MIRROR', 'mirror')];
+    // verbs
+    const st = this._stations ? this._stations.stations : [], lvl = (q) => q.level === 1 ? (R && R.loftKind === 'mezz' ? 'mezz' : 'loft') : (q.standZ > 0.3 ? 'floor' : 'ground');
+    const stationRows = [{ verb: 'VERB', clip: 'CLIP', height: 'HEIGHT', fit: 'FIT', level: 'STANDS ON', ok: 'OK', note: 'NOTE', bt: 'none', bg: '#0f191e', c1: '#6f7e83', c2: '#6f7e83', c3: '#6f7e83', okc: '#6f7e83' }].concat(st.map(q => {
+      const good = q.fits && q.reachable !== false && q.topReachable !== false;
+      const h = q.kind === 'stair' ? q.n + ' × ' + q.riser : q.kind === 'ladder' ? 'rung ' + q.rung : q.kind === 'door' ? q.clearWidth + ' × ' + q.clearHeight : q.fixtureZ != null && q.fixture ? q.fixtureZ.toFixed(2) : '—';
+      const fit = q.kind === 'stair' ? 'going ' + q.going + ' · ' + q.pitchDeg.toFixed(0) + '°' : q.fit ? q.fit[0] + '–' + q.fit[1] : q.kind === 'door' ? '≥ 0.758 wide' : '—';
+      const note = q.kind === 'ladder' ? 'top-out board 0.72, 0.60 onto the loft · asks ladderOn/Off' : q.kind === 'stair' ? 'walk + root z (±' + (q.riser * 12.26).toFixed(1) + ' px) · exact: boardDown per riser · asks stairWalk' : q.kind === 'door' ? (q.opens || '') + (q.entry && q.entry.kind ? ' · ' + q.entry.kind + (q.entry.slopeDeg ? ' ' + q.entry.slopeDeg.toFixed(0) + '°' : '') : '') : (q.note || '');
+      return { verb: q.verb, clip: q.clip + (q.also && q.also.length ? ' +' + q.also.length : ''), height: h, fit, level: lvl(q), ok: good ? '✓' : '✗', okc: good ? '#7fd6c9' : '#f07a6a', note, bt: '1px solid #1c2a30', bg: 'transparent', c1: '#e7eceb', c2: '#c4cdcd', c3: '#9aa6aa' }; }));
+    const ck = s.checks, checkRows = ck ? ck.rows.map((r, i) => ({ mark: r.info ? 'note' : r.ok ? 'ok' : 'FAIL', c: r.info ? '#c9a86a' : r.ok ? '#7fd6c9' : '#f07a6a', id: r.id, v: r.v + (r.note ? ' — ' + r.note : ''), bt: i ? '1px solid #1c2a30' : 'none' })) : [];
+    const flaws = [
+      { what: 'Light baked once', was: 'Every face took one band from a fixed upper-left key, ordered-dithered, with a 1 px keyline. No self-shadow: the inside of the doorway was as bright as the gable.', now: 'A G-buffer relit by any WeatherSky sky on CoastalPass.light (the houses’ engine): sky visibility, a sun map, cast shadow on the ground, no dither, no keyline.' },
+      { what: 'No weather', was: 'weather was a ramp fade plus random pixels chosen per screen pixel, so the speckle moved between facings and read as noise.', now: 'Rain darkens by porosity and glints on lit wet tops, fog is height-heavy, snow holds by material (tin sheds it), icicles in winter. Moss, rust streaks and peel are model-space patches that stay put.' },
+      { what: 'The gambrel was a gable', was: 'Both slopes were about 45°, so the storage barn read as a plain gable, and its gable ends had no siding above the eave.', now: 'A steep lower slope (2.1 : 1) and a shallow upper one, a knee trim, the siding carried to the peak.' },
+      { what: 'Braces drawn as dots', was: 'The Z-braces and the boom arm were eight small squares along a line: at 32 px/m they read as dotted beads, not timber.', now: 'Every brace, arm, stile and rail is a solid stick.' },
+      { what: 'Things floated', was: 'The exhaust stacks started 0.6 m above the roof; the monitor walls hung from the ridge, up to 1.2 m clear of the slope; stacks ran into the monitor.', now: 'Stacks and pipes are set into the roof with flashing and clear the ridge; the monitor walls stand on the slope; stacks sit outside the monitor.' },
+      { what: 'Dock below the doors', was: 'The dock deck was 1.05 m while the plant floor and the bay sills were 0.6 m, so the bottom 0.45 m of every bay door was behind the dock. Its three steps had 0.35 m risers.', now: 'The plant floor is at dock height (1.2 m; the eave is where it was). Dock, bay sills and floor are one level. Seven 0.171 m risers on 0.28 m goings.' },
+      { what: 'Nothing opened', was: 'Doors and bays were flat decals with a depth bias: no reveal, no interior, nothing a figure could walk through.', now: 'Real openings with reveals. Double leaves and plank doors swing, sliders run along the track, roll-ups roll into the hood, the loft door swings: doorOpen, bayOpen, loftOpen.' },
+      { what: 'No interior', was: 'One shell. The README listed it: no interior, doors are façade decals.', now: 'A net loft over the gear floor (shack), a gear store with a loft (barn), a cutting floor with an office mezzanine (plant). cutaway:"section" by storey, as the houses.' },
+      { what: 'No verbs', was: 'No footprint, stations, approach or placement. Nothing was built to a character number.', now: 'stations(): every fixture height inside the v9.2 fit for all 375 creator bodies, a stand point reached from the approach on a 0.1 m grid, the clip and its opts.' },
+      { what: 'No ladders or stairs', was: 'No way up to the loft, and the dock steps were too tall to walk.', now: 'Loft ladders at the wharf rig’s 0.24 m rung with the top-out at 0.72; stairs of ≤ 0.19 m risers on 0.26 m goings with headroom cut over every tread; stairWalk and ladderOn/Off asked of the rig.' },
+      { what: 'The sign sat on the door', was: 'At small sizes the sign board’s bottom (3.25 m) was below the roll-up’s head (4.16 m).', now: 'The board goes above the door head and shrinks to fit under the rake and clear of the boom mast, or is left off.' },
+      { what: 'The shed loft window', was: 'On the mono-pitch shape the peak window was placed as for a gable and stood 0.5 m above the wall top.', now: 'Peak openings are placed under the actual top edge of that wall, toward its high side.' },
+      { what: 'Shingles read as bricks', was: 'Courses of 0.34 × 0.24 m and a 0.30 m clapboard lap: at 32 px/m these read as masonry.', now: 'The houses’ scales: 0.18 m shingle courses, a 0.20 m lap, 0.30 m battens.' },
+      { what: 'Windows in the wainscot', was: 'Windows at floor + 1.0 overlapped the cinderblock band on the plant.', now: 'Sills sit above the band; the clerestory clears the bays and the mezzanine.' },
+      { what: 'Every window lit at night', was: 'night:true lit every pane, all night, in every building.', now: 'Occupancy: the fisher’s shed is lit 04:00–06:15 and 15:30–20:30, the store briefly, the plant through its 05:00–17:30 shift; wall packs burn dusk to dawn; the stove glows while in use; lights() hands the game every lamp and pool.' },
+      { what: 'The dock was unseen', was: 'The dock is on +X, and at facing 3 +X faces north-west, so the plant’s best feature could face away.', now: 'placement() lists the facing that shows the dock (or the buoys) first; mirror:true puts it on −X for the other diagonal.' },
+      { what: 'Dereliction broke on real walls', was: 'BuildingLifecycle reads a single-skinned shell.', now: 'With a decay state on, the rig builds that single skin, so Ginny’s plot (neglected, ruin, collapsing) and the collapsing cannery still work.' },
+      { what: 'Viewer cost', was: 'The builder re-rendered all seven presets for the wharf row on every change.', now: 'One facing per change, cropped to the union of the eight silhouettes; the sheet bakes on request.' },
+    ];
+    const boards = [
+      { src: 'boards/before-after-netShed.png', alt: 'Net shed before and after', title: 'Net shed', cap: 'pass 1 at facing 5 · pass 2 at its first listed facing, 14:00 · 04:30, the fisher up before the boats: the windows, the door lamp and the stove burn.' },
+      { src: 'boards/before-after-gambrelBarn.png', alt: 'Storage barn before and after', title: 'Storage barn', cap: 'the gambrel is a gambrel now, with the loft door under a hood and a hoist beam out past the ramp.' },
+      { src: 'boards/before-after-fishPlant.png', alt: 'Fish plant before and after', title: 'Fish plant', cap: 'the floor, the dock and the bay sills are one level; the apron, its stair and the boom face the wharf; wall packs at the 05:30 shift.' },
+      { src: 'boards/interiors-netShed.png', alt: 'Net shed interior', title: 'Net shed inside', cap: 'the ladder to the loft, the bench, the stove and the oilskins; the loft with the net pole inside the 2 m headroom strip. Each figure is v9.2 playing its station’s clip.' },
+      { src: 'boards/interiors-gambrelBarn.png', alt: 'Storage barn interior', title: 'Storage barn inside', cap: 'sixteen 0.18 m risers to the loft, traps, the bait freezer, the bench; the buoy rack and the loft door above.' },
+      { src: 'boards/interiors-fishPlant.png', alt: 'Fish plant interior', title: 'Fish plant inside', cap: 'the cutting line, fish boxes, the ice bin, the scale, the hose; the steel stair to the tally desk on the mezzanine.' },
+      { src: 'boards/weather-tealShack.png', alt: 'Weather on the teal shack', title: 'Weather', cap: 'golden hour, a squall, fog and after snowfall (winter: icicles on the eaves; the seam roof sheds most of the snow).' },
+      { src: 'boards/lifecycle.png', alt: 'Dereliction states', title: 'Ginny’s plot', cap: 'the states the game places: redShed neglected, netShed ruin, tealShack collapsing.' },
+      { src: 'boards/presets-more.png', alt: 'More presets', title: 'Red shed, ice house, cannery', cap: 'each at its first listed facing, morning.' },
+    ];
+    const fr = this._fr;
+    return {
+      stageRef: this.stageRef, ovRef: this.ovRef, sheetRef: this.sheetRef,
+      busy: s.busy, status: s.status, clock: sky ? sky.clock : '', skyName: sky ? sky.name : '',
+      stateLine: R ? R.label.toUpperCase() + ' · ' + this.ORDER[s.dir] + (s.section !== 'off' ? ' · SECTION ' + s.section.toUpperCase() : '') + (s.decay !== 'sound' ? ' · ' + s.decay.toUpperCase() : '') : '',
+      dirChips, skyChips, stageSliders, stageToggles, channelChips, presetChips, chipRows, swatches, bodyName: cur('body') || '', buildSliders, flagToggles,
+      stageNote: fr ? 'cell crop ' + fr.W + ' × ' + fr.H + ' · pivot (' + fr.pivot.x + ', ' + fr.pivot.y + ') in every facing · ' + (R ? R.Wd.toFixed(1) + ' × ' + R.Ln.toFixed(1) + ' m, floor ' + R.fH + ', eave ' + R.eaveZ.toFixed(2) + (R.loftKind ? ', ' + (R.loftKind === 'mezz' ? 'mezzanine' : 'loft') + ' ' + R.loftZ.toFixed(2) : '') : '') + ' · GAMEPLAY draws the footprint (dashed), walkable surfaces, every station and the path in.' : 'loading…',
+      stationCount: st.length + ' verbs, ' + st.filter(q => q.fits && q.reachable !== false && q.topReachable !== false).length + ' fit and reachable',
+      stationRows, runChecks: () => this._runChecks(), hasChecks: !!ck, checkRows, checksHead: ck ? (ck.ok ? 'every check passes' : ck.rows.filter(r => !r.ok).length + ' failing') : 'door visibility at every listed facing, the cell, the sheet, stairs, ladders, the sign, the stations',
+      flaws, boards, bakeSheet: () => this._bakeSheet(), downloadCell: () => this._downloadCell(), downloadGameplay: () => this._downloadGameplay(), sheetNote: s.sheetNote,
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -134,8 +134,9 @@ namespace HiddenHarbours.Art.Editor
 
         /// <summary>
         /// The rig whose builds bake the light channels: the returned house, which lights through
-        /// <c>CoastalPass.light</c>. The wharf building's four sheets do not move in drop 14; L2 for them
-        /// is a later step, priced in the PR.
+        /// <c>CoastalPass.light</c>. The four wharf-building sheets bake albedo only: drop 13 re-baked
+        /// them in pass 2 (<c>wharfBuilding2</c>), and the owner ruled albedo for its new look (L2 maps for
+        /// them are an option, priced in #910, not built).
         /// </summary>
         public const string LightChannelRig = "house";
 
@@ -193,7 +194,7 @@ namespace HiddenHarbours.Art.Editor
             /// <summary>What the owner sees in a dropdown or the scene hierarchy.</summary>
             public readonly string Label;
 
-            /// <summary>Catalog rig key — <c>"house"</c> or <c>"wharfBuilding"</c>.</summary>
+            /// <summary>Catalog rig key — <c>"house"</c>, or <c>"wharfBuilding2"</c> for the wharf buildings (pass 2).</summary>
             public readonly string RigKey;
 
             /// <summary>The rig's own preset name, or null for a dialled build.</summary>
@@ -489,20 +490,20 @@ namespace HiddenHarbours.Art.Editor
             // makes that safe rather than hopeful.
 
             Build.FromPresetInState(
-                "ginnyWoodshed", "Ginny's woodshed (neglected)", "wharfBuilding", "redShed",
+                "ginnyWoodshed", "Ginny's woodshed (neglected)", "wharfBuilding2", "redShed",
                 phase: null, decay: "neglected", burnt: false,
                 why: "behind her cottage on the north side - the one still standing squarest, because " +
                      "a woodshed is the one you keep the roof on. Red board-and-batten so the three " +
                      "read as three different buildings and not one shed copied about."),
 
             Build.FromPresetInState(
-                "ginnyNetStore", "Ginny's net store (ruin)", "wharfBuilding", "netShed",
+                "ginnyNetStore", "Ginny's net store (ruin)", "wharfBuilding2", "netShed",
                 phase: null, decay: "ruin", burnt: false,
                 why: "east, the furthest out - a net store from when this land was worked, and the " +
                      "furthest gone. The netShed preset by name as well as by shape."),
 
             Build.FromPresetInState(
-                "ginnyLeanTo", "Ginny's lean-to (collapsing)", "wharfBuilding", "tealShack",
+                "ginnyLeanTo", "Ginny's lean-to (collapsing)", "wharfBuilding2", "tealShack",
                 phase: null, decay: "collapsing", burnt: false,
                 why: "north-west, first thing you pass walking up - a lean-to with its back broken, " +
                      "which is what `collapsing` draws: a roof slope stove in, rafters showing."),
@@ -514,7 +515,7 @@ namespace HiddenHarbours.Art.Editor
             // scenery, and this building is meant to read as a thing that could be brought back. At
             // collapsing it still has walls, a name and a roofline - and one slope stove in.
             Build.FromPresetInState(
-                "stPetersCannery", "St Peters cannery (collapsing)", "wharfBuilding", "cannery",
+                "stPetersCannery", "St Peters cannery (collapsing)", "wharfBuilding2", "cannery",
                 phase: null, decay: "collapsing", burnt: false,
                 why: "the fish cannery that shut when the business went to the mainland - the long-arc " +
                      "goal the owner named on 2026-08-19: get it running again and employ the village. " +
@@ -529,6 +530,10 @@ namespace HiddenHarbours.Art.Editor
                 //   abandoned    832 x 707      2x4 REFUSED     4x2 = 3328x1414   17 MB
                 //   collapsing   840 x 673      2x4 REFUSED     4x2 = 3360x1346   17 MB   <- this build
                 //   ruin         864 x 612      2x4 REFUSED     4x2 = 3456x1224   16 MB
+                //
+                // That table is pass 1's. Pass 2 (drop 13; the rig this row bakes since #910) draws the
+                // collapsing cannery 892 x 681 on the same 9.5 x 15.4 m footprint: 2x4 REFUSED at 2048,
+                // 4x2 = 3568x1362 at 4096, 18.5 MiB. Still one 4096 sheet, as the owner ruled.
                 //
                 // ⭐ NOTE THE FIRST ROW. This is NOT the dereliction blowing the cap - the cannery has
                 // never fitted a 2048-capped 8-facing sheet, in any state. That is why M1Set never
