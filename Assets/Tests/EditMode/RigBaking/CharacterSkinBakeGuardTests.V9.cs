@@ -15,8 +15,9 @@ namespace HiddenHarbours.Tests.RigBaking
     /// <b>THE RIG 9 BAKE (characterIsoRig9.js rev 9.2), HELD TO THE SAME BAR AS RIG 7'S.</b>
     ///
     /// <para><see cref="CharacterSkinAssetBaker.ComposeV9"/> bakes every cast preset from the rig
-    /// under <see cref="ToneRule.V9"/>: one skeleton, one bind mesh of the preset's rest face, and
-    /// the rig's 53 clips as bone keys. These guards replay each def the way a
+    /// under <see cref="ToneRule.V9"/>: one skeleton, one bind mesh of every face with every face
+    /// group (character PR 2a; one group per slot draws per frame), and the rig's 53 clips as bone
+    /// keys with their face and tool tracks. These guards replay each def the way a
     /// <see cref="SkinnedMeshRenderer"/> would and hold it to the rig's own posed geometry, count what
     /// it paints against <see cref="CharacterSkinDef.MaxMaterials"/> for v9, and check that it
     /// carries every clip of the committed export (<c>builds/&lt;preset&gt;.v9.json</c>) with the
@@ -96,8 +97,9 @@ namespace HiddenHarbours.Tests.RigBaking
         /// The player's def is a v9 def: the v9 tone rule, the rig and poses paths, and the rig's
         /// revision. Its two source hashes are the ones the committed export was derived from, so
         /// a def baked from a rig that has moved since the export cannot pass. Every material it
-        /// carries is one its bind mesh paints (the 9.2 contract declares 32 for the fisher and
-        /// the rest face paints 19; a def padded to the declaration would hide the real count).
+        /// carries is one its bind mesh paints (the 9.2 contract declares 32 for the fisher; its
+        /// rest face paints 19 and its whole face, every group, 21; a def padded to the declaration
+        /// would hide the real count).
         /// </summary>
         [Test]
         public void V9_ComposesThePlayerUnderTheV9ToneRule()
@@ -170,9 +172,10 @@ namespace HiddenHarbours.Tests.RigBaking
         /// own <c>posed()</c> geometry for that clip and frame, corner for corner.
         ///
         /// <para>A corner whose face group the frame does not show is skipped and counted: the def
-        /// binds the rest face, and where a clip blinks or looks the rig draws another face group
-        /// over those corners. Ruling 8 has the engine play blink and gaze, so the count is reported
-        /// rather than hidden.</para>
+        /// binds every face group and the engine draws one per slot, so on any frame the other
+        /// groups' corners are ones neither the rig nor the engine draws. Every group's geometry is
+        /// still held to the rig in pixels, at the facings where the face shows, by the bake's ink
+        /// comparison (<see cref="CharacterSkinInk9"/>), which shoots each state in turn.</para>
         /// </summary>
         [Test]
         public void V9_TheDefReplaysTheRigsOwnPoseOnEveryClipAndFrame()
@@ -189,7 +192,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 CharacterSkinDef def = V9Bake(preset).Def;
                 Assert.AreEqual(names.Length, def.Clips.Length,
                     $"{preset}: the rig names {names.Length} clips and the def carries {def.Clips.Length}.");
-                string[] rest = CharacterSkinExtractor.DefaultFaceGroups9(host, preset);
+                string[] bound = CharacterSkinExtractor.FaceGroupOrder9(host);
                 Vector3[] bindVerts = def.BindMesh.vertices;
                 BoneWeight[] weights = def.BindMesh.boneWeights;
                 double presetWorst = 0; long presetHidden = 0;
@@ -199,7 +202,7 @@ namespace HiddenHarbours.Tests.RigBaking
                     CharacterSkinDef.SkinClip clip = def.Clips[i];
                     for (int k = 0; k < clip.FrameCount; k++)
                     {
-                        double[] truth = CharacterSkinExtractor.PosedCorners9(host, preset, rest, names[i], k);
+                        double[] truth = CharacterSkinExtractor.PosedCorners9(host, preset, bound, names[i], k);
                         Assert.AreEqual(bindVerts.Length * 3, truth.Length,
                             $"{preset} {names[i]}[{k}]: the rig posed {truth.Length / 3} corners and the bind " +
                             $"mesh has {bindVerts.Length}, so the two are not the same corner list.");

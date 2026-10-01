@@ -47,6 +47,16 @@ namespace HiddenHarbours.Tests.PlayMode
 
         private const int SettleFrames = 3;
 
+        /// <summary>Where the life guard's stepped clock starts, in game seconds.</summary>
+        private const double LifeClockOrigin = 1000.0;
+
+        /// <summary>The life guard's clock step while it waits for a beat: under a quarter of the slowest
+        /// clip frame the cast plays (rig 9's idle, 5.88 fps).</summary>
+        private const double BeatStepSeconds = 0.04;
+
+        /// <summary>A bound on that wait: many clip frames' worth of steps.</summary>
+        private const int MaxBeatSteps = 200;
+
         private readonly List<Object> _spawned = new();
 
         [SetUp]
@@ -294,6 +304,80 @@ namespace HiddenHarbours.Tests.PlayMode
                 "skin the cast bake links (ADR 0044 §7):\n  " + string.Join("\n  ", failures));
         }
 
+        [UnityTest]
+        public IEnumerator AMooredSkipper_BlinksOnTheirOwnClock_AndLooksAtThePlayerNearby()
+        {
+            // Character PR 2a (A2) down production's whole road: the skipper's figure is keyed by the boat's
+            // one identity, the owner id; it blinks as the rig's BLINK says, on the clock the clips play on;
+            // and it turns toward a player standing within the radius, and not toward one past it. The skin
+            // is the skipper's own as committed, so this is RED until the cast is re-baked with the face, the
+            // blink and the look (PR 2a Phase B), by design.
+            AssertTheRealServicesAreRegistered();
+            CharacterSkinDef skin = SkinForTheSkipper();
+            Assert.IsTrue(skin.HasBlink, $"'{skin.Id}' carries no blink. Re-bake the cast (character PR 2a, Phase B).");
+            Assert.IsTrue(skin.HasLook, $"'{skin.Id}' carries no look. Re-bake the cast (character PR 2a, Phase B).");
+            GameConfig config = UseConfig(meshCast: true);
+            Assert.IsTrue(config.CharacterBlink && config.CharacterHeadLook && config.CharacterEyeLook,
+                "harness: a config built in code must start with the figure's life on");
+            var clock = new SteppedClock { TotalSeconds = LifeClockOrigin };
+            GameServices.Clock = clock;
+            BoatOwnerDef owner = SkipperOwnerWearing(skin);
+
+            MooredBoat moored = Moor(owner, Vector2.zero);
+            yield return Settle();
+
+            var presenter = SkipperOf(moored, owner.Id).GetComponent<CharacterFigurePresenter>();
+            Assert.IsNotNull(presenter, $"'{owner.Id}': no figure presenter was attached");
+            Assert.AreEqual(CharacterFigurePresenter.Refusal.None, presenter.WhyNot,
+                $"'{owner.Id}' is not drawing as their mesh: {presenter.NotDrawingReason}");
+            IsoCharacterFigureRenderer figure = presenter.Figure;
+            Assert.AreEqual(owner.Id, presenter.FigureLife.Key,
+                "the skipper's life must be keyed by their boat's one identity, the owner id");
+            Assert.AreEqual(CharacterFigurePresenter.KeyHash(owner.Id), presenter.FigureLife.KeyHash,
+                "the skipper's life must be handed the ONE hash of that identity, the one the presenter took");
+            Assert.AreEqual(CharacterFigureBlink.SeedFor(skin.Id, CharacterFigurePresenter.KeyHash(owner.Id)),
+                presenter.FigureLife.Blink.Seed, "the skipper's blink must be seeded by their skin and that one hash");
+            Assert.IsTrue(skin.TryGetClip(presenter.DrawnStateKey, out CharacterSkinDef.SkinClip clip),
+                $"harness: '{skin.Id}' has no clip '{presenter.DrawnStateKey}'");
+
+            // ---- the blink: its first step shows over the clip's own eyes, and the eyes come back after it.
+            CharacterFigureBlink blink = presenter.FigureLife.Blink;
+            double start = blink.NextStart;
+            Assert.That(start, Is.InRange(LifeClockOrigin, LifeClockOrigin + skin.BlinkIntervalSeconds.y + 1e-6),
+                "the first blink must fall inside the first wait");
+            Assert.Greater(skin.BlinkDoubleGapSeconds, 0f, "harness: the rig's blink has a gap before its second");
+            CharacterSkinDef.BlinkStep first = skin.BlinkSteps[0];
+            clock.TotalSeconds = start + first.Seconds * 0.5;
+            yield return Settle();
+            Assert.IsFalse(CharacterFigureFace.Skips(skin, OwnEyes(skin, clip, figure.DrawnFrame)),
+                "harness: the frame shown must be one a blink shows over");
+            Assert.AreEqual(first.Group, figure.DrawnFace.x,
+                $"'{owner.Id}' did not blink {first.Seconds * 0.5:F3} s into the blink their clock scheduled");
+
+            clock.TotalSeconds = start + blink.Length + skin.BlinkDoubleGapSeconds * 0.5;
+            yield return Settle();
+            Assert.AreEqual(OwnEyes(skin, clip, figure.DrawnFrame), figure.DrawnFace.x,
+                $"'{owner.Id}''s eyes did not come back to the clip's own after the blink");
+
+            // ---- the look: a player a step ahead and to the skipper's right is looked at; one past the
+            // radius is not. The look is sampled on the clip's beat, so each read waits for the next one.
+            var player = new GameObject("LookedAtPlayer");
+            _spawned.Add(player);
+            player.transform.position = WorldAtFigureGround(figure, new Vector2(0.8f, 1.5f));
+            GameServices.PlayerTransform = player.transform;
+            yield return ToTheNextBeat(clock, figure);
+            Assert.That(figure.DrawnLookYaw, Is.GreaterThan(0.0).And.LessThanOrEqualTo(skin.LookYawLimits.y),
+                $"'{owner.Id}' did not turn toward a player a step ahead and to their right");
+
+            float pastTheRadius = config.CharacterLookRadiusMetres + 1f;
+            player.transform.position = WorldAtFigureGround(figure, new Vector2(pastTheRadius, 1.5f));
+            yield return ToTheNextBeat(clock, figure);
+            Assert.AreEqual(0.0, figure.DrawnLookYaw, $"'{owner.Id}' turned toward a player past the radius");
+            Assert.AreEqual(0.0, figure.DrawnLookPitch, $"'{owner.Id}' tipped toward a player past the radius");
+            Assert.AreEqual(CharacterFigureLook.GazeOpen, figure.DrawnGaze,
+                $"'{owner.Id}''s eyes followed a player past the radius");
+        }
+
         // ------------------------------------------------------------------ the harness
 
         private static void AssertTheRealServicesAreRegistered()
@@ -406,6 +490,69 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(1, characters.Length, $"harness: '{who}' stands {characters.Length} characters, not one skipper");
             Assert.AreEqual(MooredBoat.SkipperChildName, characters[0].name, $"harness: '{who}''s character is not the skipper");
             return characters[0];
+        }
+
+        /// <summary>The clock the skipper's clips and blink play on in the life guard: stepped by the test
+        /// alone, so a blink and a beat land where the test puts them.</summary>
+        private sealed class SteppedClock : IGameClock
+        {
+            public double TotalSeconds { get; set; }
+            public GameTime Now => new GameTime(TotalSeconds);
+            public Season Season => Season.EarlySpring;
+            public int Year => 1;
+            public int DayIndex => 0;
+            public int DayOfSeason => 1;
+            public Weekday Weekday => Weekday.Monday;
+            public bool IsMarketDay => false;
+            public float HourOfDay => 0f;
+            public float DayFraction => 0f;
+            public bool IsPaused { get; set; }
+            public float TimeScale { get; set; } = 1f;
+        }
+
+        /// <summary>The eyes a frame shows of its own: its face track's, else the def's rest face.</summary>
+        private static int OwnEyes(CharacterSkinDef skin, in CharacterSkinDef.SkinClip clip, int frame)
+        {
+            int eyes = clip.FaceGroupOf(frame, CharacterSkinDef.EyesSlot);
+            if (eyes != CharacterSkinDef.NoFaceGroup) return eyes;
+            return skin.RestFace != null && skin.RestFace.Length > CharacterSkinDef.EyesSlot
+                ? skin.RestFace[CharacterSkinDef.EyesSlot]
+                : CharacterSkinDef.NoFaceGroup;
+        }
+
+        /// <summary>The world point that stands at <paramref name="ground"/> on the figure's own ground, in
+        /// its rig metres. <see cref="IsoCharacterFigureRenderer.TryFigureGround"/> is affine in the world
+        /// point, so three probes give its inverse; the answer is checked back through it.</summary>
+        private static Vector3 WorldAtFigureGround(IsoCharacterFigureRenderer figure, Vector2 ground)
+        {
+            Vector3 o = figure.transform.position;
+            bool seen = figure.TryFigureGround(o, out Vector3 g0);
+            seen &= figure.TryFigureGround(o + Vector3.right, out Vector3 gx);
+            seen &= figure.TryFigureGround(o + Vector3.up, out Vector3 gy);
+            Assert.IsTrue(seen, "harness: the figure's ground is seen edge-on");
+            double a = gx.x - g0.x, b = gy.x - g0.x, c = gx.y - g0.y, d = gy.y - g0.y;
+            double det = a * d - b * c;
+            double rx = ground.x - g0.x, ry = ground.y - g0.y;
+            var world = o + new Vector3((float)((d * rx - b * ry) / det), (float)((a * ry - c * rx) / det), 0f);
+            Assert.IsTrue(figure.TryFigureGround(world, out Vector3 back), "harness: the probe was refused");
+            Assert.That(Vector2.Distance(ground, back), Is.LessThan(1e-3f),
+                $"harness: the player was meant to stand at {ground} on the figure's ground and stands at {back}");
+            return world;
+        }
+
+        /// <summary>Step the clock a quarter of a clip frame at a time until the figure is asked for a new
+        /// frame, its next beat, and let the presenter pose it once more.</summary>
+        private static IEnumerator ToTheNextBeat(SteppedClock clock, IsoCharacterFigureRenderer figure)
+        {
+            int was = figure.RequestedFrame;
+            for (int i = 0; i < MaxBeatSteps && figure.RequestedFrame == was; i++)
+            {
+                clock.TotalSeconds += BeatStepSeconds;
+                yield return null;
+            }
+            Assert.AreNotEqual(was, figure.RequestedFrame,
+                "harness: the clip never asked for a new frame, so the look was never sampled again");
+            yield return null;
         }
 
         private static List<Transform> FiguresUnder(Transform root) =>

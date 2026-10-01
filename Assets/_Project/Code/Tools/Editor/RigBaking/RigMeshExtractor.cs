@@ -97,6 +97,29 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <c>f.uv</c>, which <c>paint()</c> interpolates barycentrically before calling the
         /// generator. Null when the face carries no texture, which is every hull face.</summary>
         public Vector2[] Uv;
+
+        /// <summary>
+        /// <b>Rig 9's face group:</b> 1 + the face's index in the rig's <c>GROUP_ORDER</c>
+        /// (<c>eyes.open</c> … <c>mouth.smile</c>), or 0 on a face no group owns (the body, the head,
+        /// the hair). Reaches the mesh as UV1.x on a mesh that
+        /// <see cref="RigMeshData.CarriesFaceAttributes"/>; 0 on every other rig.
+        /// </summary>
+        public int FaceGroup;
+
+        /// <summary>Rig 9's per-face cull threshold, <c>f.minT</c> (0 on a face that declares none):
+        /// the toward-camera component the face's normal must BEAT to be painted
+        /// (<c>toward &lt;= max(1e-4, minT)</c> skips it).</summary>
+        public double MinToward;
+
+        /// <summary>The role <see cref="MinToward"/> resolves to, as
+        /// <see cref="HiddenHarbours.Core.CharacterSkinDef.FaceRole"/>: the mesh carries the role (UV1.y)
+        /// and the def carries each role's threshold, so a threshold stays data.</summary>
+        public int FaceRole;
+
+        /// <summary>True when the face's first corner rides the head bone first — rig 9's
+        /// <c>posed()</c> flag <c>head: f.bone[0][0][0] === ix.head</c>: the faces its head snap moves.
+        /// UV1.z on a mesh that <see cref="RigMeshData.CarriesFaceAttributes"/>.</summary>
+        public bool Head;
     }
 
     /// <summary>A MATS entry: a palette ramp plus a constant index offset.</summary>
@@ -232,6 +255,16 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>True when this rig declared a level vocabulary, so its faces carry real tags and
         /// the mesh gains a TexCoord1 channel.</summary>
         public bool CarriesLevelTags => LevelIds != null && LevelIds.Count > 0;
+
+        /// <summary>
+        /// True when the mesh builder writes rig 9's FACE ATTRIBUTES into TexCoord1 as a Vector4 —
+        /// <c>x = face group (0 = none), y = role, z = 1 on a head face, w = 0</c>
+        /// (<see cref="RigMeshBuilder.FaceUvChannel"/>). Set by the v9 skin bake on a bind mesh that
+        /// carries every face group; false on every other mesh, which gains no channel. A mesh cannot
+        /// carry both this and <see cref="CarriesLevelTags"/>: the two share the channel, and the
+        /// shader's keywords that read them are exclusive.
+        /// </summary>
+        public bool CarriesFaceAttributes;
 
         public Color32 Keyline;
         public int W, H;
