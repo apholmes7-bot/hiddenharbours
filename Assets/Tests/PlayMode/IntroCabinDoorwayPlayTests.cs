@@ -22,7 +22,7 @@ namespace HiddenHarbours.Tests.PlayMode
     /// <para><b>What S7 reads is the PICTURE.</b> Never the helm slot, never <c>StandTheSkipperAt</c>'s argument,
     /// never <c>OccupantStandRigMeters</c>: a guard that reads what the code was told stays green while he
     /// stands in a wall (<c>AssertArmandKeepsTheHelm</c> did). Whichever draws him on a frame is what is read:
-    /// the mesh (its root and the soles of its posed mesh) when <c>CharacterFigurePresenter</c> draws instead
+    /// the mesh (its root and the ankles of its drawn pose) when <c>CharacterFigurePresenter</c> draws instead
     /// of his sprite, otherwise the sprite's pivot. Both are read in the frame his hull is DRAWN in, her facet
     /// hull's posed mesh (the rig's metres: +x starboard, +y bow, +z up) — the geometry he is seen standing
     /// in, below decks and on deck alike, because the cape's house interior is geometry.</para>
@@ -40,8 +40,13 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <summary>§5 S7: his drawn feet within this of the helm station, rig metres.</summary>
         private const float StationToleranceMetres = 0.05f;
 
-        /// <summary>Posed-mesh vertices within this of his lowest are the soles of his feet.</summary>
-        private const float SoleBandMetres = 0.03f;
+        /// <summary>
+        /// His ankles: the rig's foot bones, whose joint is where the shin meets the foot (rig 9 names no
+        /// <c>ankle</c> bone; <c>foot_L</c>/<c>foot_R</c> sit 0.075 m above his root at rest). Owner ruling (a),
+        /// 2026-10-01: his feet are measured here, not at the middle of his soles, whose toe box reaches forward
+        /// of where he stands.
+        /// </summary>
+        private static readonly string[] AnkleBoneIds = { "foot_L", "foot_R" };
 
         /// <summary>How long she stands below before she walks, and after she walks back in.</summary>
         private const float StandBelowSeconds = 0.5f;
@@ -91,6 +96,7 @@ namespace HiddenHarbours.Tests.PlayMode
             public string Drawer;
             public string Branch;
             public Vector3 Root;
+            /// <summary>His feet: the middle of his two ankles (mesh), or the sprite's pivot on his deck.</summary>
             public Vector3 Feet;
             public float Error;
             public int Order;
@@ -168,10 +174,11 @@ namespace HiddenHarbours.Tests.PlayMode
                 "harness: Armand was drawn on no frame of the passage, by his mesh or his sprite.\n" +
                 Describe(frames, heading));
             Assert.IsFalse(drawn.Any(f => f.Drawer == Mesh && float.IsNaN(f.Feet.x)),
-                "harness: his mesh drew but its posed mesh could not be read, so his feet cannot be.\n" +
+                "harness: his mesh drew but its drawn pose's ankles could not be read, so his feet cannot be.\n" +
                 Describe(frames, heading));
             string report = Describe(frames, heading);
             Debug.Log(report);
+            TestContext.WriteLine(AnkleLine(drawn, heading));
             List<Frame> off = drawn.Where(f => !(f.Error <= StationToleranceMetres)).ToList();
             Assert.AreEqual(0, off.Count,
                 $"Armand's drawn feet were more than {StationToleranceMetres:0.00} m from his helm station on " +
@@ -358,7 +365,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 f.Drawer = Mesh;
                 f.Root = posed.InverseTransformPoint(presenter.Figure.transform.position);
-                f.Feet = SolesOf(presenter.Figure, posed);
+                f.Feet = AnklesOf(presenter.Figure, posed);
             }
             else if (sprite != null && sprite.enabled && !sprite.forceRenderingOff && sprite.sprite != null &&
                      sprite.gameObject.activeInHierarchy)
@@ -371,37 +378,65 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 return f;
             }
-            f.Error = Mathf.Max(Vector3.Distance(f.Root, _station), Vector3.Distance(f.Feet, _station));
+            f.Error = Mathf.Max(Vector3.Distance(f.Root, _station), OffDeckPlane(f.Feet, _station));
             return f;
         }
 
         /// <summary>
-        /// The soles of his posed mesh in her rig metres: the middle of every vertex within
-        /// <see cref="SoleBandMetres"/> of his lowest, at that lowest height. NaN when the mesh cannot be read.
+        /// The middle of his ankles in her rig metres, read from the pose his figure DREW: its bone matrices for
+        /// the frame (<c>_world</c>, the matrices it skinned its posed mesh with, so in that mesh's space) at
+        /// <see cref="AnkleBoneIds"/>, carried through the posed mesh's transform into her hull's. NaN when the
+        /// figure's pose or its posed mesh cannot be read.
         /// </summary>
-        private static Vector3 SolesOf(IsoCharacterFigureRenderer figure, Transform posed)
+        private static Vector3 AnklesOf(IsoCharacterFigureRenderer figure, Transform posed)
         {
-            MeshFilter filter = figure.GetComponentInChildren<MeshFilter>(true);
-            UnityEngine.Mesh mesh = filter != null ? filter.sharedMesh : null;
-            if (mesh == null || !mesh.isReadable || mesh.vertexCount == 0)
-                return new Vector3(float.NaN, float.NaN, float.NaN);
-            Vector3[] vertices = mesh.vertices;
-            var rig = new Vector3[vertices.Length];
-            float lowest = float.PositiveInfinity;
-            for (int i = 0; i < vertices.Length; i++)
+            var nan = new Vector3(float.NaN, float.NaN, float.NaN);
+            var def = FigureDef.GetValue(figure) as CharacterSkinDef;
+            var world = FigureWorld.GetValue(figure) as Matrix4x4[];
+            var mesh = FigurePosedMesh.GetValue(figure) as UnityEngine.Mesh;
+            if (def == null || world == null || mesh == null || world.Length != def.Bones.Length) return nan;
+            MeshFilter filter = figure.GetComponentsInChildren<MeshFilter>(true)
+                                      .FirstOrDefault(m => m.sharedMesh == mesh);
+            if (filter == null) return nan;
+            Vector3 sum = Vector3.zero;
+            foreach (string id in AnkleBoneIds)
             {
-                rig[i] = posed.InverseTransformPoint(filter.transform.TransformPoint(vertices[i]));
-                lowest = Mathf.Min(lowest, rig[i].z);
+                int bone = Array.FindIndex(def.Bones, b => b.Id == id);
+                if (bone < 0) return nan;
+                Vector3 joint = world[bone].MultiplyPoint3x4(Vector3.zero);
+                sum += posed.InverseTransformPoint(filter.transform.TransformPoint(joint));
             }
-            Vector2 sum = Vector2.zero;
-            int soles = 0;
-            for (int i = 0; i < rig.Length; i++)
-            {
-                if (rig[i].z > lowest + SoleBandMetres) continue;
-                sum += new Vector2(rig[i].x, rig[i].y);
-                soles++;
-            }
-            return new Vector3(sum.x / soles, sum.y / soles, lowest);
+            return sum / AnkleBoneIds.Length;
+        }
+
+        private const System.Reflection.BindingFlags Private =
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+
+        private static readonly System.Reflection.FieldInfo FigureDef =
+            typeof(IsoCharacterFigureRenderer).GetField("_def", Private);
+
+        private static readonly System.Reflection.FieldInfo FigureWorld =
+            typeof(IsoCharacterFigureRenderer).GetField("_world", Private);
+
+        private static readonly System.Reflection.FieldInfo FigurePosedMesh =
+            typeof(IsoCharacterFigureRenderer).GetField("_posedMesh", Private);
+
+        /// <summary>How far <paramref name="point"/> stands off <paramref name="station"/> across her deck
+        /// (+x, +y): his ankles stand above the deck by the height of his ankle, which is not an offset.</summary>
+        private static float OffDeckPlane(Vector3 point, Vector3 station) =>
+            new Vector2(point.x - station.x, point.y - station.y).magnitude;
+
+        /// <summary>The TestContext line the owner asked for: his largest ankle offset from the station at this
+        /// heading, over the frames his mesh drew him.</summary>
+        private string AnkleLine(List<Frame> drawn, float heading)
+        {
+            List<Frame> mesh = drawn.Where(f => f.Drawer == Mesh && !float.IsNaN(f.Feet.x)).ToList();
+            if (mesh.Count == 0) return $"[S7 ankles] heading {heading:0.0}°: his mesh drew him on no frame.";
+            Frame worst = mesh.OrderByDescending(f => OffDeckPlane(f.Feet, _station)).First();
+            return $"[S7 ankles] heading {heading:0.0}°: his largest ankle offset from the station " +
+                   $"{OffDeckPlane(worst.Feet, _station):0.000} m (frame {worst.Index}, " +
+                   $"{(worst.Below ? "below" : "on deck")}; the middle of his ankles {Fmt(worst.Feet)}, the station " +
+                   $"{Fmt(_station)}), over {mesh.Count} mesh frames.";
         }
 
         /// <summary>
@@ -464,7 +499,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 if (drawn.Count == 0) continue;
                 Frame worst = drawn.OrderByDescending(f => f.Error).First();
                 sb.AppendLine($"    worst frame {worst.Index} ({worst.Drawer}): off by {worst.Error:0.000} m; root " +
-                              $"{Fmt(worst.Root)}, feet {Fmt(worst.Feet)}; median off " +
+                              $"{Fmt(worst.Root)}, ankles {Fmt(worst.Feet)}; median off " +
                               $"{drawn.Select(f => f.Error).OrderBy(e => e).ElementAt(drawn.Count / 2):0.000} m.");
             }
             sb.Append(Transitions(frames));
