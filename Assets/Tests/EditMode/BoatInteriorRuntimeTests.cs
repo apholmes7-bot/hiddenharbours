@@ -513,18 +513,16 @@ namespace HiddenHarbours.Tests.EditMode
         //  the fixture
         // =====================================================================================
 
-        /// <summary>Walk her across the open threshold, the way a walker does: one tick measurably clear
-        /// of the doorway to arm the approach, one standing in it to spend it. Both points are DERIVED
-        /// from the door's own measured opening, so a re-measured doorway needs no edit here.</summary>
+        /// <summary>Walk her across the open threshold, the way a walker does: onto its wall line with the
+        /// key held through it. The line and the way through are DERIVED from the door's own measurement,
+        /// so a re-measured doorway needs no edit here.</summary>
         private static void WalkThroughTheDoorway(Rig rig)
         {
-            BoatInteriorDoor door = rig.Door.Door;
-            Vector2 doorway = BoatCabinThreshold.PointOf(door);
-            Vector2 clear = doorway + Vector2.right *
-                            (BoatCabinThreshold.ReleaseRadiusMetres(door) + 1f);
-
-            rig.Door.TryWalkThrough(clear);
-            Assert.IsTrue(rig.Door.TryWalkThrough(doorway), "she walks through her own open door");
+            Assert.IsTrue(BoatCabinThreshold.TryWallLine(rig.Def, rig.Door.Door, out _, out Vector2 onLine,
+                                                         out Vector2 outward),
+                          "the premise: her doorway is cut in a wall");
+            Vector2 through = rig.Interior.IsInside ? outward : -outward;
+            Assert.IsTrue(rig.Door.TryWalkThrough(onLine, through, 1f / 60f), "she walks through her own open door");
         }
 
         private struct Rig

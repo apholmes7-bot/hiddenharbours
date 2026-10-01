@@ -349,7 +349,7 @@ namespace HiddenHarbours.Tests.EditMode
                     ? Mathf.Max(
                         DistanceBack(hull, rig.Point, FloorOf(hull, input.Screen, c.Heading, r.Below), r.Below) / near
                         + BackSlackSeconds,
-                        CrossingGapSeconds - since + dt)
+                        hull.Door.CrossingSettle - since + dt)
                     : float.NaN,
             };
             float limit = Mathf.Max(MinimumRunSeconds, 2f * res.PassBar);
@@ -1225,7 +1225,7 @@ namespace HiddenHarbours.Tests.EditMode
                 hull.DeckSpeed = (float)Get(_arrival, "_deckWalkSpeed");
 
                 // ArrivalCabinWalk.TryOpen: the room the doorway is cut into, else the level its sill resolves to.
-                int level = -1;
+                int level = _door.RoomLevelIndex;
                 if (level < 0) level = interior.LevelIndexAtHeight(hull.Door.ThresholdPoint.z);
                 if (level < 0 || !interior.IsUsableLevel(level)) return;
                 hull.Sole ??= hull.Interior.Levels[level];
@@ -1251,7 +1251,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             public float Readout => Below ? _cabin.SpeedMetresPerSecond : _deckWalk.SpeedMetresPerSecond;
 
-            public float Pace => Below ? _hull.CabinSpeed : _hull.DeckSpeed;
+            public float Pace => Below ? _cabin.PaceMetresPerSecond : _deckWalk.PaceMetresPerSecond;
 
             public float Time { get; private set; }
 
@@ -1271,11 +1271,7 @@ namespace HiddenHarbours.Tests.EditMode
                 SeatThePlayer.Invoke(_arrival, null);
             }
 
-            public void SpendTheLatch(float secondsSince)
-            {
-                Set(_door, "_passageArmed", false);
-                Set(_door, "_passageSeeded", true);
-            }
+            public void SpendTheLatch(float secondsSince) => Set(_door, "_sinceCrossingSeconds", secondsSince);
 
             /// <summary>One frame, in the arrival's order: the hull moves (FixedUpdate); FollowTheCabin, one
             /// read of the held input into WalkTheCabin or WalkTheDeck, FollowTheCabin again, and the pose reads
