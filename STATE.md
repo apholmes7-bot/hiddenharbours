@@ -1,6 +1,6 @@
 # Hidden Harbours: the design desk
 
-**As of 2026-10-01 17:29Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
+**As of 2026-10-01 23:08Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
 
 Read this file at the start of every session, then the brief the owner names. A ruling the owner gives you in a message wins over this file and over any brief. Some older docs still describe sprites where the owner has since ruled meshes (section 4); where they disagree, the ruling wins.
 
@@ -112,6 +112,20 @@ Read this file at the start of every session, then the brief the owner names. A 
 - 09-30, St Peters first. The owner: "i want to start by finising up st peters as one new consolidated scene with all key scenes and seams completed so i can see it in game as soon as possible". So St Peters, as one scene on pass 9's ground, comes before Nine Mile Creek's part 2: [briefs/BRIEF-2026-09-30-st-peters-one-scene.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-30-st-peters-one-scene.md).
 - 10-01, the village and a main beach. The owner ruled the village plan with its 11 recommendations, in their words "go with leans to make village square happen": plan B, six homes, no manor now, and the lights within the island's ruling. Pass 9 wins under the scenes, and each scene's own asks still win on its own spot. Then: "I want there to a be a popular main beach on the south shore of st peters". Both are in the one-scene brief, with one reading of y for every position (section 5).
 - 10-01, St Peters' package taken. The owner, on your package's calls and the Art desk's leans on them: "go with leans". So West Gap Beach stands as drawn; the crossing's crest pools stay as pass 9 cuts them, 0.38 to 0.80 m; the Alder Fall keeps the quick look's planting; and the seven kit asks go to the next kit pass. The wall numbers were checked here against the walls table: yours were placed by length, so the game takes the Art desk's list by the real walls, and by those the beach opens walls 043 to 054, not 045 to 054. Three small fixes go to the game's own lanes, not to you: cliff walls on the Head's neck's south face, the beach's west end smoothed where it meets pass 9, and wall 068's foot kept under the spring low. Nine Mile Creek's part 2 resumes.
+- 10-01, Nine Mile Creek's part 2 taken. The owner, on your calls 15 to 30, the two points on part 1's record, and the Art desk's leans on them: "I go with leans". So:
+  - the river wall is laid with its fill; the boardwalks stand on piles on the plan's lines; the bridge stands as drawn, its name and year the owner's to give;
+  - the restaurant and bar is ManorIso `harbourmaster`, and the game's building lane lights its glass at night;
+  - the landing keeps its flood board; the Falls stand on the texture's ramp, with the steps the cascade piece's rock and the white water the game's foam; the Falls deck gets its 1.8 m landing at +3.2;
+  - the campground keeps part 1's two roads, and the crossing's stakes stand every 8 m along the bar walk;
+  - the waterfront houses stand as drawn, and each of the seven waterfront pads is at no less than +3.6;
+  - the gully steps go down the cove's north wall, with a spur of the shore path to their head;
+  - the weather face shows the bluff, the cove and the ledges in the squall, and the landing's two boards carry the bar;
+  - the Art desk bakes the gas bar's three boards from your `nfsBakePage2c.html`;
+  - Wharf Road runs straight at y 92 along the gas bar (call 30). At the wharf it takes lean A: onto the ramp and into the turning pad, with the ramp regraded at about 14%;
+  - the groove at x 28 is filled;
+  - all of the ground's changes, the river wall's fill and the pads included, go into one re-issue of part 1's ground (section 6), so the game bakes one texture.
+
+  The town bridge's restaurant was drawn with an older ManorIso than the game's. The bridge's boards stand as baked, and from here on you use the game's: [manorIsoRig.js](https://github.com/apholmes7-bot/hiddenharbours/blob/3ffd5712aaef9f6379e79a2fdb719c8dc835fd2c/docs/art/rigs/village-return/houses-kit/Art/manorIsoRig.js).
 
 ## 5. How work comes back
 
@@ -152,7 +166,18 @@ Each thread has, or will get, its own paste in its own conversation. This list i
 
   The wharf, the gas bar, the bar and the crossing stay as drawn: [briefs/BRIEF-2026-09-29-nmc-key-scenes.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-29-nmc-key-scenes.md).
 
-  Parts 1 and 3 arrived on 09-30 and passed on real Node, 20 of 20 and 12 of 12. Your texture decodes here to your numbers, today's map in it is the game's, and the bar and the seam are today's to the bit. The owner took your fourteen calls (section 4). Part 2 was asked on 09-30, with three points on part 1's record, in the owner's paste. St Peters' package came in on 10-01 and the owner took it, so part 2 resumes now, as asked on 09-30, with two notes from your region views in the owner's paste. Road kit v4 reaches the game once the game's road bake can read it (the first open item in your README).
+  Parts 1 and 3 arrived on 09-30 and passed on real Node, 20 of 20 and 12 of 12. Your texture decodes here to your numbers, today's map in it is the game's, and the bar and the seam are today's to the bit. The owner took your fourteen calls (section 4). Road kit v4 reaches the game once the game's road bake can read it (the first open item in your README).
+
+  Part 2 arrived on 10-01 in three zips. It passed on real Node: 25 of 25, 24 of 24, and 30 of 30 with 2c's package group. Your scene tools regenerate here, and your answers on part 1's record check. The owner took it (section 4).
+
+  Asked of you now, the last of this brief: one re-issue of part 1's ground, as one zip with its checker. Every texel outside these changes stays part 1's, to the bit:
+  1. The groove at x 28, filled to its neighbours.
+  2. Lean A: Wharf Road's new line onto the ramp, into the turning pad, and the ramp regraded at about 14%. plan.json's line goes on east of the pad through the yard, by (56, 104), (100, 116) and (140, 122). Say whether Wharf Road ends at the turning pad, or what that stretch becomes.
+  3. Call 30: the vertex at (-100, 92). `hedge.nmc_wharf_road` has its from and to on today's line; move them onto the new one.
+  4. Call 15: the river wall's fill, in the texture.
+  5. Call 26: each of the seven waterfront lots' pads at no less than +3.6, in the texture. By the Art desk's read of the lot boxes, that raises lots 2, 3, 4 and 6, and lot 4's box dips to +1.66.
+
+  The gas bar's three boards are the Art desk's to bake. After the re-issue, nothing more is asked of Nine Mile Creek's key scenes.
 - Character kit 9.2 (09-24). In the game since 09-26; a change in review now plays its face, blink, look-at and carry clips. Asked of you: the send-back, [briefs/BRIEF-2026-09-30-character-9-2-send-back.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-30-character-9-2-send-back.md): six fixes, the owner's question on the fisher's irises, and two things the game measured. Nothing in the game waits on it.
 - The channel check (09-27, on this branch): DONE the same day. Text reaches you; pictures do not (section 1). [briefs/BRIEF-2026-09-27-channel-check.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-27-channel-check.md).
 
