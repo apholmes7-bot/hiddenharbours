@@ -930,10 +930,22 @@ namespace HiddenHarbours.Art
 
         // Unity forbids SetParent during hierarchy deactivation. Return the id now, but keep the
         // frame (and its posed mesh) until a safe hand-over or teardown. The caller re-enters.
+        private void OnEnable() => HullMeshReflection.Register(this);
+
         private void OnDisable()
         {
+            HullMeshReflection.Unregister(this);
             ReleaseAshoreId();
             SyncInk();   // disabled: out of the ink registry until it is enabled and shown again
+        }
+
+        internal MeshRenderer ReflectionRenderer => _meshRenderer;
+        internal Mesh ReflectionMesh => _posedMesh;
+        internal void PrepareReflection()
+        {
+            if (_figureId != 0) return;
+            WriteHullProperties();
+            SyncInk();
         }
 
         private void OnDestroy() => Teardown(keepDef: false);
