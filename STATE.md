@@ -1,6 +1,6 @@
 # Hidden Harbours: the design desk
 
-**As of 2026-09-30 23:35Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
+**As of 2026-10-01 00:36Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
 
 Read this file at the start of every session, then the brief the owner names. A ruling the owner gives you in a message wins over this file and over any brief. Some older docs still describe sprites where the owner has since ruled meshes (section 4); where they disagree, the ruling wins.
 
@@ -8,13 +8,13 @@ Read this file at the start of every session, then the brief the owner names. A 
 
 - This branch, `design-desk`, holds text only: this file and the `briefs/` folder. It is public, and it is never merged into the game.
 - The owner pastes you one line: "Read <link> and follow it." The link names one brief.
-- Links into the game point at one commit of its `main` branch (`16cee51a` today), so they cannot move while you work. Open them with your GitHub file reader. `/raw/` links are refused on your side (the channel check, 09-27), so briefs give `/blob/` links only.
+- Links into the game point at one commit of its `main` branch (`e8de9cd0` today), so they cannot move while you work. Open them with your GitHub file reader. `/raw/` links are refused on your side (the channel check, 09-27), so briefs give `/blob/` links only.
 - You only read here. Your work comes back as files the owner downloads (section 5).
 - Pictures do not reach you through GitHub. The game keeps PNG, JPG, PSD and ZIP files in Git LFS, and the channel check of 09-27 found no way through: the GitHub page showed no image, the raw link was refused, the file server could not be reached, and your file reader returned only the pointer text. Every picture you need comes to you in a zip the owner uploads; the brief names it.
 
 ## 2. The game
 
-- The canon: [docs/vision-and-pillars.md](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/vision-and-pillars.md). Its logline: "Start with two hands and a tide table on a hard, beautiful stretch of the Atlantic Canadian coast. Dig clams at low water, earn your first boat and put it right, read the tides, the wind, and a market that never sits still, and work your way up from hauling handlines by hand to commanding a cargo fleet."
+- The canon: [docs/vision-and-pillars.md](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/vision-and-pillars.md). Its logline: "Start with two hands and a tide table on a hard, beautiful stretch of the Atlantic Canadian coast. Dig clams at low water, earn your first boat and put it right, read the tides, the wind, and a market that never sits still, and work your way up from hauling handlines by hand to commanding a cargo fleet."
 - The five pillars: P1 The Sea Has Moods · P2 From Dory to Dynasty · P3 A Living Working Coast · P4 Earn It, Then Automate It · P5 Cozy, but with Teeth. Every piece of art serves at least one.
 - PC first (landscape; keyboard, mouse and gamepad). A phone port stays possible, so keep texture memory and draw counts modest.
 
@@ -22,19 +22,19 @@ Read this file at the start of every session, then the brief the owner names. A 
 
 - The bible's north star: a working North Atlantic coast, cozy, weathered and quietly dangerous; Stardew's readable three-quarter top-down clarity wearing Kingdom Two Crowns' painterly light and limited palette.
 - Its three non-negotiables: one perspective everywhere (three-quarter top-down; land, town and water share it); one scale, always (32 pixels per metre, 1 tile = 1 m); a limited palette that shifts with season, weather, time, fog and region but never loses its salt-stained North Atlantic identity.
-- The art and audio bible: [docs/design/art-and-audio-bible.md](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/design/art-and-audio-bible.md). Section 2 perspective (locked), 3 scale, 4 palette and mood, 6 light, day-night and fog, 7 UI art.
+- The art and audio bible: [docs/design/art-and-audio-bible.md](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/design/art-and-audio-bible.md). Section 2 perspective (locked), 3 scale, 4 palette and mood, 6 light, day-night and fog, 7 UI art.
 - The decisions that shape your work (ADRs):
-  - [0021](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/adr/0021-in-engine-js-rig-baking.md): the game runs your rig `.js` unmodified in its editor and bakes from it.
-  - [0022](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/adr/0022-3d-boat-hulls.md): large hulls are real-time 3D meshes, baked from the same rigs.
-  - [0026](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/adr/0026-rig-pivot-conventions.md): a rig pivot is a continuous cell-corner coordinate, not a pixel index.
-  - [0029](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/adr/0029-character-colour-runtime-structure-baked.md): the character: colour is runtime, structure is baked.
-  - [0036](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/adr/0036-interior-levels-as-layers.md): a second storey is a second interior layer on one footprint.
-  - [0038](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/adr/0038-boat-interiors.md): a boat cabin is a level that rides.
-  - [0041](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/adr/0041-full-mesh-interiors.md): full mesh interiors: the room becomes geometry, with a palette of its own.
-  - [0042](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/adr/0042-squash-is-an-art-fact.md): the squash is an art fact (the world plane against the bake projection).
-  - [0044](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/adr/0044-characters-are-meshes.md): characters are meshes in every state. Its text still says Proposed; the owner ruled its direction on 09-17 (section 4).
-- Rig sources and kits: [docs/art/rigs](https://github.com/apholmes7-bot/hiddenharbours/tree/16cee51a7c574817cae6002b37ff61f36029ead6/docs/art/rigs). The [recipe ledger](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/art/rig-recipe-ledger.md) and the [asset manifest](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/art/asset-manifest.md). Briefs that became canon: [docs/art/briefs](https://github.com/apholmes7-bot/hiddenharbours/tree/16cee51a7c574817cae6002b37ff61f36029ead6/docs/art/briefs).
-- St Peters' ground is terrain pass 9: [part 1](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/design/st-peters-terrain-pass-9.md) and [part 2](https://github.com/apholmes7-bot/hiddenharbours/blob/16cee51a7c574817cae6002b37ff61f36029ead6/docs/design/st-peters-terrain-pass-9-part-2.md), both ruled. The game's height map shows it only once terrain PR 5 lands. Until then, stand St Peters on the Art desk's texture of it (section 4, 09-29).
+  - [0021](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/adr/0021-in-engine-js-rig-baking.md): the game runs your rig `.js` unmodified in its editor and bakes from it.
+  - [0022](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/adr/0022-3d-boat-hulls.md): large hulls are real-time 3D meshes, baked from the same rigs.
+  - [0026](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/adr/0026-rig-pivot-conventions.md): a rig pivot is a continuous cell-corner coordinate, not a pixel index.
+  - [0029](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/adr/0029-character-colour-runtime-structure-baked.md): the character: colour is runtime, structure is baked.
+  - [0036](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/adr/0036-interior-levels-as-layers.md): a second storey is a second interior layer on one footprint.
+  - [0038](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/adr/0038-boat-interiors.md): a boat cabin is a level that rides.
+  - [0041](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/adr/0041-full-mesh-interiors.md): full mesh interiors: the room becomes geometry, with a palette of its own.
+  - [0042](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/adr/0042-squash-is-an-art-fact.md): the squash is an art fact (the world plane against the bake projection).
+  - [0044](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/adr/0044-characters-are-meshes.md): characters are meshes in every state. Its text still says Proposed; the owner ruled its direction on 09-17 (section 4).
+- Rig sources and kits: [docs/art/rigs](https://github.com/apholmes7-bot/hiddenharbours/tree/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/art/rigs). The [recipe ledger](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/art/rig-recipe-ledger.md) and the [asset manifest](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/art/asset-manifest.md). Briefs that became canon: [docs/art/briefs](https://github.com/apholmes7-bot/hiddenharbours/tree/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/art/briefs).
+- St Peters' ground is terrain pass 9: [part 1](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/design/st-peters-terrain-pass-9.md) and [part 2](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/design/st-peters-terrain-pass-9-part-2.md), both ruled. The game's height map shows it only once terrain PR 5 lands. Until then, stand St Peters on the Art desk's texture of it (section 4, 09-29).
 
 ## 4. Standing rulings (the owner's, 2026)
 
@@ -110,6 +110,7 @@ Read this file at the start of every session, then the brief the owner names. A 
   - there is no shore path north of the wharf for now;
   - your key scenes come in your order: the town bridge, the Falls, the landing and the campground first, then the north creek and the weather face.
 - 09-30, St Peters first. The owner: "i want to start by finising up st peters as one new consolidated scene with all key scenes and seams completed so i can see it in game as soon as possible". So St Peters, as one scene on pass 9's ground, comes before Nine Mile Creek's part 2: [briefs/BRIEF-2026-09-30-st-peters-one-scene.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-30-st-peters-one-scene.md).
+- 10-01, the village and a main beach. The owner ruled the village plan with its 11 recommendations, in their words "go with leans to make village square happen": plan B, six homes, no manor now, and the lights within the island's ruling. Pass 9 wins under the scenes, and each scene's own asks still win on its own spot. Then: "I want there to a be a popular main beach on the south shore of st peters". Both are in the one-scene brief, with one reading of y for every position (section 5).
 
 ## 5. How work comes back
 
@@ -120,25 +121,25 @@ Read this file at the start of every session, then the brief the owner names. A 
 - Your Node is emulated, so PNG bytes and the last digits of a float can differ from real Node. The Art desk re-runs every checker on real Node, compares pictures by pixels and regenerates your generated files there, so ship the scripts that write them.
 - Ship every rig a scene or bake page loads inside the zip, or name the file in the game it matches byte for byte, as a blob link. A load from your project that is not in the zip cannot run here.
 - A PNG master for every board or render; WebP only as an extra. If a full-size PNG will not upload, ship the rigs and the bake page, so the masters render here, and say so in the README.
-- Positions in ground metres (x east, y north), with the reading stated in the file's `units`.
+- World positions in the game's units, each plan's own numbers: x is metres east, and y is north, where a metre of ground northward is 0.643 of a unit (the camera every rig is baked through, [ADR 0034](https://github.com/apholmes7-bot/hiddenharbours/blob/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/adr/0034-ground-bearings-not-world-xy.md)). Heights and sizes in ground metres. State the reading in the file's `units`.
 
 ## 6. Open threads
 
 Each thread has, or will get, its own paste in its own conversation. This list is here so every conversation knows the others exist. If one is new to you, say so, and the owner will send its paste.
 
 - The boats switch (09-26). Asked of you: the batch plan; one versioned spec for the new layout (every field with its units and frame, the scripts that write it, and a checker in each zip); then the batches, the six new boats and the two sport fishers first, with the 53 at 0.67 m. On our side: your sport-fishers PROPOSAL zip of 09-26 (mesh interiors, ghost cutaway) arrived on 09-27, and all 14 sums match. An ADR for the new layout comes next; what it needs from you will follow when it lands.
-- The village v3 send-back (09-26). Asked of you: Plan B drawn, two or three manor sites, the manor on the light engine, room heights and the side-entry rooms, the school's classroom, and the outbuilding rig's params sidecar with the kit designs.
+- The village v3 send-back (09-26). Asked of you: Plan B drawn, two or three manor sites, the manor on the light engine, room heights and the side-entry rooms, the school's classroom, and the outbuilding rig's params sidecar with the kit designs. The owner ruled the village plan on 10-01: its plan B is drawn in St Peters as one scene (below).
 - The St Peters key scenes (09-27). Asked of you: seven scenes (the Landing, the cannery, the north-east lighthouse and cliff, the village square, Ginny's plot, the waterfall, the tidal crossing). Return 1 (passes 1 to 5) arrived the same day and passed on real Node; the owner's rulings on it are in section 4. Pass 6 arrived on 09-28, then a re-issue of passes 1 to 7. Return 2 then came in parts, all on 09-28:
   - Part 1 (the north-east light, the sixteen rigs and the Alder Fall's scene.json) passed 15 of 17 checks on real Node.
   - Parts 2a, 2b and 3 (pass 2's notes, Ginny's plot, the crossing) passed 16 of 16, 4 of 4 and 13 of 13. Ginny's masters stitch here pixel for pixel.
   - The owner ruled the north-east light and your calls 1 to 16 (section 4).
   - The Alder Fall's masters will be rendered here from `pass6/afBakePage.html`.
-  - The village square stays held.
+  - The village square: the owner ruled the village plan on 10-01, so it is drawn in the one scene.
   - Return 3 (Ginny's cottage, then the camper's pass 2) arrived on 09-28 and passed on real Node, 43 of 43 and 49 of 49. The owner took both, with the cottage yellow (section 4).
   - Ginny's plot, redrawn ([briefs/BRIEF-2026-09-28-ginnys-plot-redraw.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-28-ginnys-plot-redraw.md)), arrived on 09-29, and the owner accepted it (section 4).
   - Your quick look at two extra places (the lookout at the South Arm's south end, and the plank bridge over the Gap Brook) arrived on 09-29 and passed on real Node, 43 of 43. It stood on the old ground, so you redrew it on St Peters' planned ground ([briefs/BRIEF-2026-09-29-st-peters-pass9-ground.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-29-st-peters-pass9-ground.md)). That arrived on 09-29 too and passed on real Node, 43 of 43: its texture is the Art desk's, pixel for pixel, and your spot heights match here. The owner took your eight calls on it (section 4). Next: your full return for both places, on pass 9's ground, the lookout first.
   - Your measure of what pass 9 moves under the six ruled scenes went to the terrain lane. As your notes say, each of those scenes redraws on pass 9, for what it moves, with its full return. They are asked for now, all together, in the one scene below.
-  - St Peters as one scene (09-30), asked before Nine Mile Creek's part 2: [briefs/BRIEF-2026-09-30-st-peters-one-scene.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-30-st-peters-one-scene.md). It asks for the whole island on pass 9's ground, the south ring included, with every scene in it, redrawn where pass 9 moves it. The water is drawn once and every seam is finished. A quick look comes first, then the package.
+  - St Peters as one scene (09-30), asked before Nine Mile Creek's part 2: [briefs/BRIEF-2026-09-30-st-peters-one-scene.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-30-st-peters-one-scene.md). It asks for the whole island on pass 9's ground, the south ring included, with every scene in it, redrawn where pass 9 moves it. The water is drawn once and every seam is finished. A quick look comes first, then the package. Updated 10-01: the village as ruled, a main beach on the south shore, and one reading of y.
 - Nine Mile Creek's wharf, an art pass (09-28). Asked of you: the wharf rearranged and redrawn with your newest kits, light and flora. Art comes first and the layout is free. It also takes your pass 6 fuel stop, re-sited on Wharf Road: [briefs/BRIEF-2026-09-28-nmc-wharf-pass.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-28-nmc-wharf-pass.md). Your quick look (revision 2) arrived on 09-28 and passed, and the owner ruled on it (section 4). The scenes were asked for in [briefs/BRIEF-2026-09-28-nmc-wharf-scene.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-28-nmc-wharf-scene.md).
   - Your scene return, in three parts, arrived on 09-28. It passed on real Node, 42 of 42, over the three parts together.
   - The gas bar's name stays open.
@@ -156,4 +157,4 @@ Each thread has, or will get, its own paste in its own conversation. This list i
 
 ## 7. Landed in the game from you
 
-- Character rig v9.2 (09-24): [docs/art/rigs/character/rig9](https://github.com/apholmes7-bot/hiddenharbours/tree/16cee51a7c574817cae6002b37ff61f36029ead6/docs/art/rigs/character/rig9). Everything earlier is under [docs/art/rigs](https://github.com/apholmes7-bot/hiddenharbours/tree/16cee51a7c574817cae6002b37ff61f36029ead6/docs/art/rigs) and in the recipe ledger.
+- Character rig v9.2 (09-24): [docs/art/rigs/character/rig9](https://github.com/apholmes7-bot/hiddenharbours/tree/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/art/rigs/character/rig9). Everything earlier is under [docs/art/rigs](https://github.com/apholmes7-bot/hiddenharbours/tree/e8de9cd075f5c0b2daf4719e87a7ef751e648ae7/docs/art/rigs) and in the recipe ledger.
