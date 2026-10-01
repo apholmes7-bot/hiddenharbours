@@ -34,7 +34,7 @@ namespace HiddenHarbours.Boats
     /// draughts rather than at a shared guess.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class MooredBoat : MonoBehaviour, IVesselWay, ICharacterFigureStand
+    public sealed class MooredBoat : MonoBehaviour, IVesselWay, ICharacterFigureStand, ICharacterFigureIdentity
     {
         /// <summary>
         /// <b>How she is lying, for her lamps</b> (ADR 0016, the lamp regime) — <see cref="VesselWay.
@@ -395,6 +395,11 @@ namespace HiddenHarbours.Boats
         // is the slot's, the bearing is the sprite's held heading against the hull's drawn one.
 
         IsoCharacterSprite ICharacterFigureStand.FigureCharacter => _skipper;
+
+        /// <summary>The skipper's one stable key (character PR 2a): the owner's id, so the same skipper
+        /// blinks the same way on every run and the look seam can name them. Empty for a review hull,
+        /// which has no owner.</summary>
+        string ICharacterFigureIdentity.FigureKey => _owner != null ? _owner.Id : string.Empty;
 
         /// <summary>The hull the skipper stands on — but only while that hull holds their deck slot, because
         /// the stand point is only published, and only kept current by <see cref="StandTheSkipperAt"/>,

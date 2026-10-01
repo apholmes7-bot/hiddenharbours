@@ -194,14 +194,24 @@ namespace HiddenHarbours.Tools.RigBaking
         // ---- the cast (ADR 0044, amendment 2026-09-17) ------------------------------------------
 
         /// <summary>
-        /// The states a FRESH cast def is created with: the four the player's committed def switched
+        /// The states a FRESH cast def is created with: the ones the player's committed def switched
         /// on once its presenter had drawn them (<c>Skin/fisher.asset</c>). A guard holds this list to
         /// that asset, so the cast cannot switch on a state the player never drew.
+        ///
+        /// <para>Character PR 2a switched on the wheel and the oars (the state map's own spellings) and
+        /// the one load the game carries a rig pose for: <c>container.bucket</c>, whose row in
+        /// <see cref="CharacterCarryPoseDef"/> asks for <c>buckets</c>. The rig bakes no run at the wheel
+        /// or the oars, so there is none to switch on.</para>
         /// </summary>
         public static readonly string[] CastMeshStates =
         {
             CharacterSkinStateMap.Idle, CharacterSkinStateMap.Walk,
             CharacterSkinStateMap.Run, CharacterSkinStateMap.Balance,
+            CharacterSkinStateMap.CarryKey(CharacterSkinStateMap.Idle, CharacterSkinStateMap.HelmCarry),
+            CharacterSkinStateMap.CarryKey(CharacterSkinStateMap.Walk, CharacterSkinStateMap.HelmCarry),
+            CharacterSkinStateMap.CarryKey(CharacterSkinStateMap.Idle, CharacterSkinStateMap.OarsCarry),
+            CharacterSkinStateMap.CarryKey(CharacterSkinStateMap.Walk, CharacterSkinStateMap.OarsCarry),
+            "idle_buckets", "walk_buckets", "run_buckets",
         };
 
         /// <summary>Where the characters' art defs live, one <c>{stem}Iso.asset</c> each. The
@@ -347,6 +357,22 @@ namespace HiddenHarbours.Tools.RigBaking
             public float WorstStepDegrees;
             public string WorstStepAt = "";
             public string SignReport = "";
+
+            /// <summary>Rig 9 only: what the face mechanism baked — the groups, the roles, the rest face,
+            /// the face and tool tracks, the ink numbers, the blink and the look. Empty on rig 7.</summary>
+            public string FaceReport = "";
+
+            /// <summary>Rig 9 only: the def, posed through the engine's path and painted by the rig's
+            /// rules, against rig 9's own render, shot by shot (<see cref="CharacterSkinInk9"/>). Empty
+            /// on rig 7.</summary>
+            public string InkReport = "";
+
+            /// <summary>Rig 9 only: the largest cluster of differing pixels over every ink shot — the
+            /// number the ink guard holds to <see cref="CharacterSkinInk9.ClusterBar"/>. 0 on rig 7.</summary>
+            public int InkWorstCluster;
+
+            /// <summary>Rig 9 only: every ink shot, for a guard that wants to name the one that moved.</summary>
+            public CharacterSkinInk9.Reading[] InkReadings = Array.Empty<CharacterSkinInk9.Reading>();
 
             public long BindGeometryBytes, BoneWeightBytes, BindposeBytes, ClipBytes;
             public long BindBytes => BindGeometryBytes + BoneWeightBytes + BindposeBytes;
@@ -639,6 +665,8 @@ namespace HiddenHarbours.Tools.RigBaking
 
             CharacterSkinDef def = bake.Def;
             Debug.Log($"[char-skin] {preset} turntable sign:\n{bake.SignReport}");
+            if (bake.FaceReport.Length > 0) Debug.Log($"[char-skin] {preset} face: {bake.FaceReport}");
+            if (bake.InkReport.Length > 0) Debug.Log($"[char-skin] {preset} ink against rig 9:\n{bake.InkReport}");
 
             // ⚠ CREATION ONLY, and before CreateAsset, so no file ever exists with the list empty. A
             // refresh must not reach this line with the states in hand: that is the `??=` rule in

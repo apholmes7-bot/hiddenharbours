@@ -35,6 +35,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// figure. The live pool goes back BEFORE anything is destroyed: the fixture's hull runs in edit mode,
     /// took its id and fore block from the live pool in <c>SetUp</c>, and returns them on its
     /// <c>OnDisable</c>.</para>
+    ///
+    /// <para><b>Her life rides the same key</b> (amendment 2026-09-28): the ONE hash her idle phase is moved
+    /// by seeds her blink, and she looks at the player nearby, as a skipper aboard does.</para>
     /// </summary>
     public sealed class CharacterFigurePresenterTests
     {
@@ -82,6 +85,21 @@ namespace HiddenHarbours.Tests.Art.EditMode
             public Transform FigureHull => Hull;
             public Vector3 FigureStandRigMetres => Point;
             public float FigureDeckBearingDegrees => Bearing;
+        }
+
+        private sealed class NamedStand : ICharacterFigureStand, ICharacterFigureIdentity
+        {
+            public IsoCharacterSprite Character;
+            public Transform Hull;
+            public Vector3 Point;
+            public float Bearing;
+            public string Key;
+
+            public IsoCharacterSprite FigureCharacter => Character;
+            public Transform FigureHull => Hull;
+            public Vector3 FigureStandRigMetres => Point;
+            public float FigureDeckBearingDegrees => Bearing;
+            public string FigureKey => Key;
         }
 
         private sealed class FakeService : ICharacterFigurePresentationService
@@ -437,6 +455,74 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.IsTrue(presenter.Figure == null, "the figure went with its hull and must not be kept");
         }
 
+        // =================================================================== the figure's life (character PR 2a)
+
+        [Test]
+        public void TheStandsOwnIdentityKeysTheFiguresLife_AndNoIdentityKeysNothing()
+        {
+            CharacterFigurePresenter presenter = Attach();
+            presenter.PoseFigure(_stand, aboard: true);
+            AssertDraws(presenter);
+            Assert.AreEqual(string.Empty, presenter.FigureLife.Key, "a stand with no identity keyed a life");
+            Assert.AreEqual(0u, presenter.FigureLife.KeyHash, "a stand with no identity hashed a key");
+
+            var named = new NamedStand
+            {
+                Character = _character, Hull = _hullGo.transform, Point = StandPoint, Bearing = StandBearing,
+                Key = "npc.test_skipper",
+            };
+            // The key is read when the figure is attached (ADR 0044 §9), as MooredBoat attaches her skipper.
+            presenter.Configure(named);
+            presenter.PoseFigure(named, aboard: true);
+            AssertDraws(presenter);
+            Assert.AreEqual("npc.test_skipper", presenter.FigureLife.Key,
+                            "the figure's life must be keyed by the stand's one identity, never a key of its own");
+            uint hash = CharacterFigurePresenter.KeyHash("npc.test_skipper");
+            Assert.AreEqual(hash, presenter.FigureLife.KeyHash, "the life must be handed the presenter's one hash of that key");
+            Assert.AreEqual(CharacterFigureBlink.SeedFor(_skin.Id, hash), presenter.FigureLife.Blink.Seed,
+                            "the blink must be seeded by the def and that one hash");
+
+            // Read and hashed ONCE: a key the stand answers later is not read again every frame.
+            named.Key = "npc.someone_else";
+            presenter.PoseFigure(named, aboard: true);
+            AssertDraws(presenter);
+            Assert.AreEqual("npc.test_skipper", presenter.FigureLife.Key, "the key was read again after the attach");
+            Assert.AreEqual(hash, presenter.FigureLife.KeyHash, "the key was hashed again after the attach");
+        }
+
+        [Test]
+        public void ASkipperWithALook_LooksAtThePublishedPlayerNearby_AndNotAtOneFarOff()
+        {
+            GiveTheSkinALook();
+
+            // Where the figure will stand: the stand's rig point under the hull's posed mesh, yawed by the
+            // bearing (the first test above holds the presenter to exactly this).
+            Matrix4x4 figureWorld = _hull.PosedMesh.localToWorldMatrix *
+                                    Matrix4x4.TRS(StandPoint, Quaternion.AngleAxis(-StandBearing, Vector3.forward), Vector3.one);
+            GameObject player = Track(new GameObject("TestPlayer"));
+            player.transform.position = figureWorld.MultiplyPoint3x4(new Vector3(0.8f, 1.5f, 0f));
+            GameServices.PlayerTransform = player.transform;
+            try
+            {
+                CharacterFigurePresenter presenter = Attach();
+                presenter.PoseFigure(_stand, aboard: true);
+                AssertDraws(presenter);
+                Assert.Greater(presenter.Figure.DrawnLookYaw, 0.0,
+                               "the skipper did not turn toward a player a step ahead and to her right");
+
+                player.transform.position = figureWorld.MultiplyPoint3x4(new Vector3(20f, 1.5f, 0f));
+                presenter.Configure(_stand);   // a fresh figure, so the look is sampled again
+                presenter.PoseFigure(_stand, aboard: true);
+                AssertDraws(presenter);
+                Assert.AreEqual(0.0, presenter.Figure.DrawnLookYaw, "the skipper turned toward a player past the radius");
+                Assert.AreEqual(CharacterFigureLook.GazeOpen, presenter.Figure.DrawnGaze);
+            }
+            finally
+            {
+                GameServices.PlayerTransform = null;
+            }
+        }
+
         // =================================================================== the seam's service
 
         [Test]
@@ -740,9 +826,99 @@ namespace HiddenHarbours.Tests.Art.EditMode
                             "a steady ashore pose allocated bytes on the thread's own counter");
         }
 
+        // =================================================================== ashore: her life (character PR 2a)
+
+        [Test]
+        public void AVillagersLifeIsKeyedByHerOneKey_AndHerIdlePhaseDoesNotMove()
+        {
+            UseFreshIdPool();
+            ScriptedClock clock = UseScriptedTime(worldSeed: 0);
+            _config.MeshCastAshore = true;
+            FakeAshoreStand stand = AshoreStand(_character, KeyA);
+            CharacterFigurePresenter presenter = Attach(_characterGo, stand);
+            clock.SeekTo(0.5d * IdleFrameSeconds);
+            presenter.PoseFigure(stand, aboard: false);
+
+            AssertDrawsAshore(presenter, _sprite);
+            Assert.AreEqual(KeyA, presenter.FigureLife.Key, "her life must be keyed by her one key, her NpcDef id");
+            Assert.AreEqual(0x9944F2BAu, presenter.FigureLife.KeyHash,
+                            "her life must be handed the ONE hash her idle phase is moved by (ThePhaseMixIsPinned's)");
+            Assert.AreEqual(CharacterFigureBlink.SeedFor(_skin.Id, 0x9944F2BAu), presenter.FigureLife.Blink.Seed,
+                            "her blink must be seeded by her skin and that one hash");
+            Assert.AreEqual(2, PosedIdleFrame(presenter, _sprite), "her idle phase moved: npc.test_a's in world 0 is 2");
+        }
+
+        [Test]
+        public void AVillagerAshoreLooksAtThePlayerNearby_AndNotAtOneFarOff_AndAllocatesNothing()
+        {
+            GiveTheSkinALook();
+            UseFreshIdPool();
+            ScriptedClock clock = UseScriptedTime(worldSeed: 0);
+            _config.MeshCastAshore = true;
+            FakeAshoreStand stand = AshoreStand(_character, KeyA);
+            CharacterFigurePresenter presenter = Attach(_characterGo, stand);
+            // EditMode runs no LateUpdate: a hold and a release is how a heading is written here.
+            _character.HoldHeading(VillagerHeading);
+            _character.ReleaseHeading();
+            clock.SeekTo(0.5d * IdleFrameSeconds);
+            presenter.PoseFigure(stand, aboard: false);
+            AssertDrawsAshore(presenter, _sprite);
+            IsoCharacterFigureRenderer figure = presenter.AshoreFigure;
+            Assert.AreEqual(0.0, figure.DrawnLookYaw, "harness: no player is published, so she looks at nothing");
+
+            // A step ahead of her and to her right ON HER OWN GROUND, her turned facet child's frame, where
+            // the look reads its target. Her sprite does not move, so that frame holds for the whole test.
+            Matrix4x4 herGround = FacetChildOf(figure).localToWorldMatrix;
+            GameObject player = Track(new GameObject("TestPlayer"));
+            player.transform.position = herGround.MultiplyPoint3x4(new Vector3(0.8f, 1.5f, 0f));
+            GameServices.PlayerTransform = player.transform;
+            try
+            {
+                // The look is sampled on the clip's beat: her next idle frame.
+                PoseFrames(presenter, stand, clock, 1);
+                AssertDrawsAshore(presenter, _sprite);
+                Assert.Greater(figure.DrawnLookYaw, 0.0, "the villager did not turn toward a player a step ahead and to her right");
+                Assert.AreEqual(-VillagerHeading, presenter.AshoreYawDegrees, 1e-4f, "her facing is still her sprite's");
+
+                // Rule 7 with the look and the blink live: a steady pose ashore allocates nothing.
+                PoseFrames(presenter, stand, clock, IdleFrameCount);
+                Assert.That(() => { _sink = new object[64]; }, Is.AllocatingGCMemory(),
+                            "harness: the GC.Alloc recorder saw no allocation at all");
+                Assert.That(() => PoseFrames(presenter, stand, clock, MeasuredFrames), Is.Not.AllocatingGCMemory(),
+                            "a villager looking at the player allocated (rule 7: nothing per frame)");
+                AssertDrawsAshore(presenter, _sprite);
+                Assert.Greater(figure.DrawnLookYaw, 0.0, "harness: the loop measured a villager who was looking");
+
+                player.transform.position = herGround.MultiplyPoint3x4(new Vector3(20f, 1.5f, 0f));
+                PoseFrames(presenter, stand, clock, 1);
+                AssertDrawsAshore(presenter, _sprite);
+                Assert.AreEqual(0.0, figure.DrawnLookYaw, "the villager turned toward a player past the radius");
+                Assert.AreEqual(CharacterFigureLook.GazeOpen, figure.DrawnGaze);
+            }
+            finally
+            {
+                GameServices.PlayerTransform = null;
+            }
+        }
+
         // =================================================================== helpers
 
         private CharacterFigurePresenter Attach() => Attach(_characterGo, _stand);
+
+        /// <summary>The synthetic skin, given the rig's look: a neck and a head to turn, and eyes that lead.</summary>
+        private void GiveTheSkinALook()
+        {
+            _skin.LookChestBone = 1;
+            _skin.LookNeckBone = 2;
+            _skin.LookHeadBone = 2;
+            _skin.LookSplitNeck = 0.4f;
+            _skin.LookSplitHead = 0.6f;
+            _skin.LookYawLimits = new Vector2(-60f, 60f);
+            _skin.LookPitchLimits = new Vector2(-30f, 30f);
+            _skin.LookHeadShare = 0.7f;
+            _skin.LookEyesBeyondDeg = 8f;
+            Assert.IsTrue(_skin.HasLook && _skin.IsUsable(), "harness: the skin must carry a look and stay usable");
+        }
 
         private static CharacterFigurePresenter Attach(GameObject host, ICharacterFigureStand stand)
         {
