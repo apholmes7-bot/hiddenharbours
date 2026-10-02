@@ -481,6 +481,12 @@ namespace HiddenHarbours.Core
         public Vector2 PivotPx;
         public int PxPerMetre = 32;
         public float ElevationDeg = 40f;
+        [Tooltip("How far the figure reaches past the cell, in px, as (left, top, right, bottom): the most " +
+                 "any honest frame of any clip passes each edge by, at whichever facing carries it furthest " +
+                 "(negative: room to spare). MEASURED by the bake (CharacterSkinPose.MeasureReach), never " +
+                 "authored. The ashore overlay pads by it, so a figure that lies past the cell is not cut. " +
+                 "Zero on a def baked before it: the overlay keeps the one pixel it always had.")]
+        public Vector4 ReachPx;
 
         [Header("Shading (the rig's own pipeline, verbatim)")]
         [Tooltip("The rig's LN, already normalised by the rig itself.")]

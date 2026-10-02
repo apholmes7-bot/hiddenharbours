@@ -83,6 +83,11 @@ namespace HiddenHarbours.Art
         private int _gaze;
         private bool _inkApplied, _inkJoined;
 
+        // Rig 10's smooth normal (the rig 10 intake, Phase B). Null on a def whose mesh carries none.
+        private int[] _smoothFaces;               // the faces that carry one, as indices into _faceStarts
+        private Vector3[] _smoothBind;            // ... each one's normal in the bind frame
+        private Vector4[] _marks;                 // UV2 as posed: xyz the posed smooth normal, w the flags
+
         // stateKey -> the fenced frame map for that clip, built once at Configure.
         private readonly Dictionary<string, int[]> _honestFrames = new Dictionary<string, int[]>();
         private readonly List<string> _fenceReport = new List<string>();
@@ -251,6 +256,7 @@ namespace HiddenHarbours.Art
             _posedMesh.bounds = bind.bounds;
 
             ReadFaceRuns(def, bind);
+            ReadSmoothNormals(bind);
         }
 
         /// <summary>
@@ -270,6 +276,42 @@ namespace HiddenHarbours.Art
                     $"CharacterSkinDef '{def.Id}' carries rig 9's face, but its bind mesh is not one fan of " +
                     "consecutive vertices per face, so its faces cannot be culled whole. Re-bake it.");
         }
+
+        /// <summary>
+        /// <b>Rig 10's smooth normals</b> (the rig 10 intake, Phase B). On a rig 10 figure UV2's xyz is
+        /// each face's smooth normal in the bind frame, zero on a face with none. The rig's paint culls a
+        /// face on its own normal and lights it on this one, so every re-skin poses it
+        /// (<see cref="CharacterSkinPose.PoseSmoothNormals"/>) for the facet shader to light by, and the
+        /// cull keeps the Newell normal. Read only on a def with the face, whose faces are known runs;
+        /// any other def lights each face by its own normal, as before.
+        /// </summary>
+        private void ReadSmoothNormals(Mesh bind)
+        {
+            _smoothFaces = null;
+            _smoothBind = null;
+            _marks = null;
+            if (_faceStarts == null) return;
+            bind.GetUVs(IsoFacetFigureShaderIds.SmoothNormalUvChannel, s_Uv);
+            if (s_Uv.Count != _srcVerts.Length) return;
+
+            int smooth = 0;
+            foreach (int s in _faceStarts)
+                if (HasSmoothNormal(s_Uv[s])) smooth++;
+            if (smooth == 0) return;
+
+            _smoothFaces = new int[smooth];
+            _smoothBind = new Vector3[smooth];
+            for (int f = 0, i = 0; f < _faceStarts.Length; f++)
+            {
+                Vector4 m = s_Uv[_faceStarts[f]];
+                if (!HasSmoothNormal(m)) continue;
+                _smoothFaces[i] = f;
+                _smoothBind[i++] = new Vector3(m.x, m.y, m.z);
+            }
+            _marks = s_Uv.ToArray();
+        }
+
+        private static bool HasSmoothNormal(Vector4 m) => m.x != 0f || m.y != 0f || m.z != 0f;
 
         private static readonly List<Vector4> s_Uv = new List<Vector4>();
 
@@ -495,10 +537,13 @@ namespace HiddenHarbours.Art
             // carries the face at all (y). A v9 def baked before the face writes y = 0, and the shader
             // then gates, culls and snaps nothing: it draws exactly as it did. z is rig 10's mark
             // floor: its point marks also cull by their own turn band (UV1.w); 0 on every rig 9 def.
+            // w is 1 while the mesh carries rig 10's smooth normals (UV2), which then light each face
+            // they belong to; 0 on every rig 9 def, whose faces light by their own normals.
             _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureFaceMinT, def.FaceMinToward);
             _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureFaceParams,
                                      new Vector4(def.FaceCullFloor, def.HasFace ? 1f : 0f,
-                                                 def.HasFace ? def.FaceMarkAzFloor : 0f, 0f));
+                                                 def.HasFace ? def.FaceMarkAzFloor : 0f,
+                                                 _smoothFaces != null ? 1f : 0f));
             _faceUniform = Vector4.zero;
             if (def.HasFace && def.RestFace != null && def.RestFace.Length == CharacterSkinDef.FaceSlots)
                 _faceUniform = new Vector4(def.RestFace[0], def.RestFace[1], def.RestFace[2], 0f);
@@ -554,6 +599,8 @@ namespace HiddenHarbours.Art
         /// uniform, so a blink never re-skins and never costs a second draw call.</item>
         /// <item><b>The head snap</b>'s point, the head's mid point after the turn, is taken on every
         /// re-skin.</item>
+        /// <item><b>Rig 10's smooth normals</b> are posed on every re-skin and uploaded in UV2, which the
+        /// facet shader lights each such face by (<see cref="CharacterSkinPose.PoseSmoothNormals"/>).</item>
         /// </list>
         /// </summary>
         public bool SetPose(string stateKey, int frame, in Life life)
@@ -585,6 +632,12 @@ namespace HiddenHarbours.Art
                 CharacterSkinPose.Skin(_skin, _weights, _srcVerts, _srcNorms, _outVerts, _outNorms);
                 if (_faceStarts != null)
                     CharacterSkinPose.NewellNormals(_faceStarts, _faceCounts, _outVerts, _outNorms);
+                if (_smoothFaces != null)
+                {
+                    CharacterSkinPose.PoseSmoothNormals(_smoothFaces, _smoothBind, _faceStarts, _faceCounts,
+                                                        _skin, _weights, _marks);
+                    _posedMesh.SetUVs(IsoFacetFigureShaderIds.SmoothNormalUvChannel, _marks);
+                }
                 _posedMesh.vertices = _outVerts;
                 _posedMesh.normals = _outNorms;
                 _posedMesh.RecalculateBounds();
@@ -831,20 +884,22 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// Her overlay: the def's cell rectangle around the pivot, padded 1 px, built exactly as
-        /// <see cref="IsoFacetHullRenderer"/> builds a hull's from its setup — and, like it, under a
-        /// SortingGroup, because a mesh renderer does not sort against sprites without one.
+        /// Her overlay: the def's cell rectangle around the pivot, padded 1 px, and on each side as many
+        /// whole pixels again as the figure's measured reach passes the cell by there
+        /// (<see cref="CharacterSkinDef.ReachPx"/>: rig 10's deck boss asleep reaches 1.69 px below it).
+        /// Built exactly as <see cref="IsoFacetHullRenderer"/> builds a hull's from its setup — and, like
+        /// it, under a SortingGroup, because a mesh renderer does not sort against sprites without one.
         /// </summary>
         private void BuildAshoreOverlay(Shader overlayShader)
         {
             _overlayMaterial = new Material(overlayShader) { hideFlags = HideFlags.HideAndDontSave };
 
             float ppu = _def.PxPerMetre;
-            float pad = 1f / ppu;
-            float left = -_def.PivotPx.x / ppu - pad;
-            float right = (_def.CellW - _def.PivotPx.x) / ppu + pad;
-            float top = _def.PivotPx.y / ppu + pad;
-            float bottom = -(_def.CellH - _def.PivotPx.y) / ppu - pad;
+            Vector4 reach = _def.ReachPx;
+            float left = -_def.PivotPx.x / ppu - OverlayPad(reach.x, ppu);
+            float right = (_def.CellW - _def.PivotPx.x) / ppu + OverlayPad(reach.z, ppu);
+            float top = _def.PivotPx.y / ppu + OverlayPad(reach.y, ppu);
+            float bottom = -(_def.CellH - _def.PivotPx.y) / ppu - OverlayPad(reach.w, ppu);
 
             _overlayQuad = new Mesh { name = "HHFigureOverlayQuad", hideFlags = HideFlags.HideAndDontSave };
             _overlayQuad.SetVertices(new[]
@@ -866,6 +921,12 @@ namespace HiddenHarbours.Art
             _overlaySortingGroup = go.AddComponent<SortingGroup>();
             _overlayChild = go.transform;
         }
+
+        /// <summary>One side's overlay pad, in metres: the pixel the overlay always kept past the cell,
+        /// and the whole pixels the figure's reach passes the cell by on that side (none while it stays
+        /// inside).</summary>
+        private static float OverlayPad(float reachPx, float ppu) =>
+            (1f + (reachPx > 0f ? Mathf.Ceil(reachPx) : 0f)) / ppu;
 
         /// <summary>
         /// <b>Ashore, what a hull writes for itself</b> — for her own root, with her own id: the
@@ -968,6 +1029,9 @@ namespace HiddenHarbours.Art
             _darkRampTex = null;
             _stepRampTex = null;
             _faceStarts = _faceCounts = null;
+            _smoothFaces = null;
+            _smoothBind = null;
+            _marks = null;
             _faceUniform = Vector4.zero;
             HeadSnapPoint = Vector4.zero;
             if (!keepDef) { _def = null; _hull = null; _honestFrames.Clear(); _fenceReport.Clear(); }
@@ -1016,8 +1080,15 @@ namespace HiddenHarbours.Art
         /// <summary><c>float4</c>, per material: x the floor every face culls at
         /// (<see cref="CharacterSkinDef.FaceCullFloor"/>), y 1 when the def carries the face, z rig 10's
         /// mark floor (<see cref="CharacterSkinDef.FaceMarkAzFloor"/>; 0 = no marks), below which a
-        /// mark's flattened normal is too short to ask its turn band.</summary>
+        /// mark's flattened normal is too short to ask its turn band, w 1 while the mesh carries rig 10's
+        /// smooth normals (<see cref="SmoothNormalUvChannel"/>), which then light their faces.</summary>
         public static readonly int FigureFaceParams = Shader.PropertyToID("_HHFigureFaceParams");
+
+        /// <summary>The mesh channel of rig 10's smooth normal: UV2, <c>TEXCOORD2</c> in the
+        /// <see cref="FigureKeyword"/> variant. xyz is the face's smooth normal, which the bake writes in
+        /// the bind frame (zero on a face with none) and the renderer poses on every re-skin; w is the
+        /// face's mark flags, which only the bake reads.</summary>
+        public const int SmoothNormalUvChannel = 2;
 
         /// <summary><c>float</c>, per material: <see cref="InkWithRing"/> or <see cref="InkWithoutRing"/>
         /// while the rig's ink is live for this figure, 0 when it is not. The facet pass flags the

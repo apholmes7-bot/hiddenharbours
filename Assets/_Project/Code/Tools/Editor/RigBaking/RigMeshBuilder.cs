@@ -111,8 +111,10 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <c>xyz = the face's smooth normal</c> (<see cref="RigFace.SmoothNormal"/>, bind frame; 0 on a
         /// face with none) and <c>w = its mark flags</c> (<see cref="MarkFlags"/>), with UV1.w the turn
         /// band of a mark (<see cref="RigFace.MarkAz"/>; 0 on every other face). The facet shader's
-        /// figure variant reads UV1.w to cull a mark by its band; the rest is for the bake's own port
-        /// of the rig's paint (<see cref="CharacterSkinInk9"/>), which poses the mesh as the engine does.
+        /// figure variant reads UV1.w to cull a mark by its band, and lights a face by its smooth normal,
+        /// which the figure renderer poses on every re-skin (<c>IsoCharacterFigureRenderer</c>, since the
+        /// rig 10 intake's Phase B). The flags are for the bake's own port of the rig's paint
+        /// (<see cref="CharacterSkinInk9"/>), which poses the mesh as the engine does.
         ///
         /// <para>The same channel as <see cref="TexUvChannel"/>, and never both on one mesh: a room
         /// rides a hull, never a figure. Written only when <see cref="RigMeshData.CarriesMarkAttributes"/>,

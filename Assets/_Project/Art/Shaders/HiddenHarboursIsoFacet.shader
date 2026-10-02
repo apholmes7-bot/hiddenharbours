@@ -248,7 +248,8 @@ Shader "HiddenHarbours/IsoFacet"
             float4 _HHFigureHead;           // per draw: the head's mid point, figure frame; w = 1 while it snaps
             float4 _HHFigureFaceMinT;       // the cull by role: (near, far, side, mouth)
             float4 _HHFigureFaceParams;     // x = the floor every face culls at, y = 1 when the def has the face,
-                                            // z = rig 10's mark floor (0: no marks, every rig 9 def)
+                                            // z = rig 10's mark floor (0: no marks, every rig 9 def), w = 1 when
+                                            // rig 10's smooth normal (TEXCOORD2) lights (0: every rig 9 def)
             float  _HHFigureInkOn;          // the dark target's alpha flag is 1 minus this: 1 while the rig's ink
                                             // is live with its keyline ring, 0.75 while it is live without one
                                             // (rig 10, owner ruling K4), 0 off
@@ -283,6 +284,11 @@ Shader "HiddenHarbours/IsoFacet"
                 // missing channel is never read. w = a rig 10 mark's turn band, the cosine its paint
                 // stores as f.az (0 on every other face, and on every rig 9 face).
                 float4 faceAttr   : TEXCOORD1;
+                // RIG 10'S SMOOTH NORMAL (the rig 10 intake, Phase B): xyz = the face's smooth normal,
+                // posed by the renderer on every re-skin (zero on a face with none); w = its mark flags,
+                // which only the bake reads. Read only while _HHFigureFaceParams.w = 1. On a hull this
+                // channel is HH_LEVEL_GATE's room, and a figure never carries a room.
+                float4 markAttr   : TEXCOORD2;
 #endif
             };
 
@@ -325,6 +331,11 @@ Shader "HiddenHarbours/IsoFacet"
                 // dot with LN — see the header comment.
                 float sh = dot(wn, _LN.xyz);
 #ifdef HH_FIGURE
+                // RIG 10 LIGHTS ON THE SMOOTH NORMAL: "a face with a smooth normal is culled on its own
+                // normal and lit on the smooth one" (characterIsoRig10.js, paint). The renderer posed it
+                // into markAttr.xyz; the cull below still reads normalOS, the face's own.
+                if (_HHFigureFaceParams.w > 0.5 && dot(v.markAttr.xyz, v.markAttr.xyz) > 0.0)
+                    sh = dot(normalize(mul((float3x3)unity_ObjectToWorld, v.markAttr.xyz)), _LN.xyz);
                 // THE V9 SHADE INDEX: a gain and bias per MATERIAL, where rig 7 has one global pair.
                 // With _LN the folded key, sh = s + form·formMid, and bias' took gain·form·formMid out
                 // again, so this is the kit's s·gain + bias + b (kit rule 6; IsoFacetFigureTone.Tone).
