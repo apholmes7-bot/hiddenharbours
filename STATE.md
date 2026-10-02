@@ -1,6 +1,6 @@
 # Hidden Harbours: the design desk
 
-**As of 2026-10-02 21:16Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
+**As of 2026-10-02 21:17Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
 
 Read this file at the start of every session, then the brief the owner names. A ruling the owner gives you in a message wins over this file and over any brief. Some older docs still describe sprites where the owner has since ruled meshes (section 4); where they disagree, the ruling wins.
 
@@ -141,7 +141,7 @@ Read this file at the start of every session, then the brief the owner names. A 
   - the truck wells (call 36) and the north creek's five laid boxes go into one more small re-issue of part 1's ground (section 6), so the game bakes one texture;
   - four small fixes go to the game's own lanes, not to you: the dories tied at their docks' heads, two bed ids renamed, the pickups seated on their drives, and the north bank's doors shown through their houses.
 
-  From here on: no coordinates in ids (two beds were `_bed_35` and `_bed_29`), and a boat drawn afloat on the flood sits where a tide floats it (dory 5's spot needed +2.33, above the spring high).
+  From here on: no coordinates in ids (two beds were `_bed_35` and `_bed_29`; the game names them `_bed_w` and `_bed_e`), and a boat drawn afloat on the flood sits where a tide floats it (dory 5's spot needed +2.33, above the spring high).
 
 ## 5. How work comes back
 
