@@ -198,7 +198,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             if (_waterOwner == null)
             {
                 var go = new GameObject("R3 calibration publisher"); _objects.Add(go);
+                go.AddComponent<SpriteRenderer>(); // DisplacedWaterSurface requires a concrete Renderer.
                 _waterOwner = go.AddComponent<DisplacedWaterSurface>();
+                Assert.That(_waterOwner, Is.Not.Null, "Calibration publisher must exist before publishing its frame");
             }
             float e = 40 * Mathf.Deg2Rad;
             DisplacedWaterRegistry.PublishIsoDepthFrame(_waterOwner,
