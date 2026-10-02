@@ -318,7 +318,7 @@ MonoBehaviour:
   CharacterHeadLook: 1
   CharacterEyeLook: 1
   CharacterLookRadiusMetres: 5
-  CharacterLookTargetHeightMetres: 1.31
+  CharacterLookTargetHeightMetres: 1.63
   MeshFigureKeyline: 1
   MeshCharacter: 1
   MeshCharacterAshore: 1

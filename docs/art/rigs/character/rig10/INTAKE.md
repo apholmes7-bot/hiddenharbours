@@ -4,7 +4,7 @@ Landed 2026-10-02 by the art-pipeline lane: the character rig 10 intake (charter
 `HANDOFF-2026-10-01-character-rig-10-intake.md`). This folder is Claude Design's kit **as delivered**,
 except for 3 generated files that real Node writes differently (below). Nothing in the rig was edited.
 Rig 9's folder (`../rig9/`) is unchanged and stays as 9.2's record. Rig 10 is registered beside it as
-catalog key `characterRig10`. Until the intake's Phase B, the editor still bakes rig 9
+catalog key `characterRig10`. Since the intake's Phase B (below), the editor bakes rig 10
 (`CharacterSkinAssetBaker.LiveRig`).
 
 | | |
@@ -17,6 +17,34 @@ catalog key `characterRig10`. Until the intake's Phase B, the editor still bakes
 | Checks | `Art/characterIsoRig10.checks.js`, sha256 (LF) `9b25859906baf75f076eae6fde1b5f2210330e00e1306f3640854043b577ad55`. Optional; loaded after the poses |
 | Frozen 10.1 | `Art/characterIsoRig10_1.js` and `_1.poses.js` define `CharacterIso10_1`, for the review page only. The game loads neither |
 | Added by the intake | `INTAKE.md` (this file), `INTAKE.SHA256SUMS.txt`, and the Art desk's harness `node_check_char10_2.cjs` (sha256 `1e33d7879c2822f10e5c6a736959c84da84a0eb2ac8e9394d7e00ecb76a68dea`, as in `C:/hh-drops/character-rig-kit-v10.2-desk/`) |
+
+## Phase B: the bake and the switch (2026-10-02)
+
+All ten committed skins (`Assets/_Project/Data/Characters/Skin/<preset>.asset`, the player and the
+nine cast) were re-baked from rig 10 in one headless run. Each keeps its GUID, id and switch states. Each
+now pins `characterIsoRig10.js` and `characterIsoRig10.poses.js` at the hashes above and records revision
+10.2 and tone rule V9. Each carries 28 bones, 53 clips and a bind mesh of 519 to 713 faces (2,119 to 2,852
+corners), binds the 13 face groups, and paints 20 to 24 of the 32 colour slots that V9 allows. Two changes
+came with the switch:
+
+- **Smooth shading.** Where rig 10 gives a face a smooth normal, the bake stores it in UV2, every pose
+  skins it, and the facet shader lights the face by it. Against the kit's own renders
+  (`renders/1x/<preset>.idle8.png`: idle's first frame at 8 facings, 80 renders, 31,782 drawn pixels),
+  the game differs in 52 pixels: 13 drawn by one side only and 39 in colour. 46 of the 80 renders are
+  pixel-exact, and the worst differs in 4. Lit flat, as Phase A's port was, the same renders differ in
+  4,778 pixels and none is exact.
+- **The overlay covers the figure's reach.** Each skin records `ReachPx`: how far its drawing passes
+  the 80 × 104 cell on each side, over every honest frame of every clip at every facing. The ashore
+  overlay pads each side by it, and the cell is unchanged. All ten reach 10.1 to 11.1 px below the cell
+  (the mount clips: `mountUp`, `mountDown`, `mountCab`, `mountCabDown`), at most 2.3 px past either
+  side, and never above. Every clip, frame and facing was shot through an overlay opened 15 px all
+  round, and no drawn pixel passed the measured reach. The old 1 px pad would have cut 707 to 1,092
+  pixels per figure past the cell, nearly all in the mount clips; the measured pads cut none.
+
+The look target height moved with the switch from 1.31 to 1.63 m (`CharacterLookTargetHeightMetres`):
+rig 10's fisher's head at rest, 1.6332 m. The plates were shot in the same slot. They are evidence and
+are not committed; the PR carries their numbers. Rig 9 stays in the catalog as `characterRig9`. To go
+back, set `LiveRig` to `CharacterRigKit.Rig9.CatalogKey` and re-bake.
 
 ## The 3 files Node regenerated
 
@@ -72,9 +100,8 @@ equal and no size differences (on the drop's copy: 565 / 600 and 30).
 
 The editor reads rig 10 with the same reader as 9.2, one kit per script host:
 `CharacterRigKit` names each kit's files, global, revision, preset table and face rules, and
-`CharacterSkinExtractor.Load9(host, CharacterRigKit.Rig10)` loads this folder. The editor still bakes
-rig 9 until the intake's Phase B moves `CharacterSkinAssetBaker.LiveRig`, so nothing on screen changes
-with this PR.
+`CharacterSkinExtractor.Load9(host, CharacterRigKit.Rig10)` loads this folder. Phase A left the editor
+baking rig 9; Phase B (above) moved `CharacterSkinAssetBaker.LiveRig` to rig 10 and re-baked the ten.
 
 | What changes | 9.2 | 10.2 | Where the game takes it |
 |---|---|---|---|
@@ -130,7 +157,8 @@ to 0.9338 m (+54%) and the hanging hands from 0.5738 to 0.7993 m (+39%). The foo
   `EveryCommittedSkinDef_PinsTheRigsAsTheyAreToday` and
   `TheCommittedBindMeshIsTheFaceTheChainComposesToday`, `CharacterSkinCastBakeTests`'
   `ThePlayersComposedTableIsTheCommittedDefsTable` and `EveryCastStateIsAClipTheRigBakes`. With
-  `LiveRig` on rig 10 they would take rig 7's branch, so Phase B teaches them rig 10 first.
+  `LiveRig` on rig 10 they would take rig 7's branch, so Phase B taught them rig 10 before it moved
+  `LiveRig`.
 - **The helm and the oars.** The contracts are unchanged (the wheel 0.655 m up and 0.315 m ahead, the
   seat 0.4 m). The intro's S7 (#916, not on main yet) holds Armand's drawn ankles (`foot_L`,
   `foot_R`) within 0.05 m of his helm station across the deck. Armand is the skipper preset. On 9.2
@@ -151,7 +179,7 @@ to 0.9338 m (+54%) and the hanging hands from 0.5738 to 0.7993 m (+39%). The foo
   Fisher head point rounded (its comment says 1.3135 m; 9.2 measures 1.3151 m), and
   `CharacterFigureLife` aims looks at it. 10.2's Fisher head point is 1.6332 m. No test ties the
   number to the rig, so after the switch villagers would look about 0.32 m low until it is retuned
-  (`GameConfig.asset`, the owner's to tune).
+  (`GameConfig.asset`, the owner's to tune). Phase B retuned it to 1.63 m with the switch.
 - **Walkers' lights.** `WalkerLights.HeadlampLiftMetres` (1.55 m, "her brow") and `LanternLiftMetres`
   (1.05 m, set for a 1.7 m figure) are fixed heights. The Fisher's crown goes from 1.506 to 1.766 m,
   so the headlamp, which rode just above 9.2's crown, sits about 0.22 m under 10.2's.
@@ -185,8 +213,9 @@ case (negative is room left):
 
 On 9.2's 64 × 92 cell, every lying clip of the ten fits (the closest is the deck boss's sleep, 0.99 px
 of room). Today only the player (the Fisher) plays the lying clips (`PlayerSleepPresenter`,
-`PlayerSwimAnimator`). The ashore figure draws inside its cell padded 1 px
-(`IsoCharacterFigureRenderer.BuildAshoreOverlay`).
+`PlayerSwimAnimator`). In Phase A the ashore figure drew inside its cell padded 1 px
+(`IsoCharacterFigureRenderer.BuildAshoreOverlay`). Phase B pads each side by the figure's measured reach
+over every clip as well (above), and the mount clips, not the lying ones, reach furthest.
 
 ## Findings for Claude Design (through the owner)
 

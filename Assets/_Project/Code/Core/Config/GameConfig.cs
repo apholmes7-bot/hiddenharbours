@@ -660,9 +660,10 @@ namespace HiddenHarbours.Core
         public const float DefaultCharacterLookRadiusMetres = 5f;
 
         /// <summary>Ship default for <see cref="CharacterLookTargetHeightMetres"/>: the player's
-        /// head point at rest — rig 9's fisher, <c>head × headMid</c> on idle's first frame, is
-        /// 1.3135 m above the ground in the rig's metres.</summary>
-        public const float DefaultCharacterLookTargetHeightMetres = 1.31f;
+        /// head point at rest — rig 10's fisher, <c>head × headMid</c> on idle's first frame, is
+        /// 1.6332 m above the ground in the rig's metres. Retuned from rig 9's 1.31 (1.3135 m) with
+        /// the switch to rig 10 (the rig 10 intake, Phase B; the owner's ruling of 10-02).</summary>
+        public const float DefaultCharacterLookTargetHeightMetres = 1.63f;
 
         /// <summary>
         /// Ship default for <see cref="MeshFigureKeyline"/> — <b>ON</b> (character PR 2a): a rig 9
@@ -693,7 +694,7 @@ namespace HiddenHarbours.Core
         public float CharacterLookRadiusMetres = DefaultCharacterLookRadiusMetres;
 
         [Tooltip("How high above the player's feet a figure aims its look, in the figure's metres. " +
-                 "1.31 is the player's head at rest.")]
+                 "1.63 is the player's head at rest.")]
         [Min(0f)]
         public float CharacterLookTargetHeightMetres = DefaultCharacterLookTargetHeightMetres;
 

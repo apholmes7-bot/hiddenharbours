@@ -15,13 +15,25 @@ namespace HiddenHarbours.Tools.RigBaking
     // and no-keyline default ride the same def.
     public static partial class CharacterSkinAssetBaker
     {
-        /// <summary>The rig the cast is baked from: rig 9 since the intake's Phase B (2026-09-26), which
-        /// baked all ten figures from it and shot their plates against rig 7. This is the one line
-        /// that switches it. Read-only static rather than a const, so the branch that is not taken
-        /// still compiles and still warns nobody.</summary>
-        public static readonly string LiveRig = CharacterSkinExtractor.V9CatalogKey;
+        /// <summary>The rig the cast is baked from: rig 10 (kit 10.2) since the rig 10 intake's Phase B
+        /// (2026-10-02), which baked all ten figures from it and shot their plates against rig 9.2.
+        /// Rig 9 was live from the character intake's Phase B (2026-09-26) until then. This is the one
+        /// line that switches it: <see cref="CharacterSkinExtractor.V9CatalogKey"/> goes back to rig 9.2
+        /// and <see cref="CharacterSkinExtractor.CatalogKey"/> to rig 7, each with a re-bake. Read-only
+        /// static rather than a const, so the branches that are not taken still compile and still warn
+        /// nobody.</summary>
+        public static readonly string LiveRig = CharacterRigKit.Rig10.CatalogKey;
 
-        public static bool LiveRigIsV9 => LiveRig == CharacterSkinExtractor.V9CatalogKey;
+        /// <summary>The kit <see cref="LiveRig"/> names, which <see cref="Bake"/> loads into its host
+        /// before <see cref="ComposeV9"/> reads it: rig 9 or rig 10, or null while it names rig 7.</summary>
+        public static CharacterRigKit LiveKit =>
+            LiveRig == CharacterRigKit.Rig10.CatalogKey ? CharacterRigKit.Rig10
+            : LiveRig == CharacterRigKit.Rig9.CatalogKey ? CharacterRigKit.Rig9
+            : null;
+
+        /// <summary>True while the live rig bakes through <see cref="ComposeV9"/>: rig 9 or rig 10, and
+        /// <see cref="LiveKit"/> says which.</summary>
+        public static bool LiveRigIsV9 => LiveKit != null;
 
         /// <summary>
         /// Compose one preset's skin def from rig 9, without touching the AssetDatabase. The bind

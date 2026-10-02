@@ -15,8 +15,8 @@ namespace HiddenHarbours.Tests.RigBaking
     /// <summary>
     /// <b>THE RIG 10 BAKE (characterIsoRig10.js rev 10.2), HELD TO RIG 9.2'S GUARDS.</b>
     ///
-    /// <para>The rig 10 intake ports the bake onto rig 10 (<see cref="CharacterRigKit.Rig10"/>); the
-    /// committed skins stay 9.2's until its Phase B. Every guard 9.2's bake answers to runs here on
+    /// <para>The rig 10 intake ports the bake onto rig 10 (<see cref="CharacterRigKit.Rig10"/>), and
+    /// since its Phase B the committed skins are rig 10's. Every guard 9.2's bake answers to runs here on
     /// rig 10's fresh bakes, through the same bodies (<see cref="GuardRig9"/>): the tone rule and the
     /// rig's sources, the material limit, the pose replay on every clip and frame, the committed
     /// export's clips, the face and tool tracks, the blink, the look, the turn, the golden aim, and
@@ -61,6 +61,12 @@ namespace HiddenHarbours.Tests.RigBaking
 
         /// <summary>Rig 10.2 as the guard bodies read it.</summary>
         GuardRig9 Guard10 => _guard10 ??= new GuardRig9(CharacterRigKit.Rig10, () => V10Host, V10Bake);
+
+        /// <summary>The fresh bake of <paramref name="preset"/> from the kit the baker loads today
+        /// (<see cref="CharacterSkinAssetBaker.LiveKit"/>): rig 10 since the rig 10 intake's Phase B
+        /// (2026-10-02), rig 9 while <see cref="CharacterSkinAssetBaker.LiveRig"/> names it.</summary>
+        CharacterSkinAssetBaker.SkinBake LiveBake(string preset) =>
+            CharacterSkinAssetBaker.LiveKit == CharacterRigKit.Rig10 ? V10Bake(preset) : V9Bake(preset);
 
         [OneTimeTearDown]
         public void DisposeV10()
