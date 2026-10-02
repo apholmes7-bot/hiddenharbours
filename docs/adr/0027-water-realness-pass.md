@@ -277,6 +277,32 @@ amendment. Treat the boat-feel change as a **first-class outcome to be verified 
 
 **(7) #8 — Reflections: a filtered renderer list into an RT, wave-warped by the water shader.** — **SHIPPED (P5, 2026-07-29).** Built as decided; `design/water-rendering.md` §26 is the live spec. Two things the decision text could not have known, both recorded there: the mirror axis had to be **published per renderer** (the SpriteRenderer identity-matrix trap — every sprite, not an edge case), and the pre/post-grade split for night-lit sources needs **no flag channel**, because premultiplied output makes "rgb exceeds coverage" mean exactly "compensated light content".
 
+**R3 amendment (2026-10-01; implementation approved, activation held):** Hull reflection gains
+an opt-in physical-height mesh path. The hull's current posed mesh, selected door leaf,
+hull-owned mesh fittings and hull-attached mesh figures draw through a reflected rig-height
+view into a camera-local depth-tested facet block, then resolve into the existing wave-warped
+reflection texture before water colour consumes it. The source is this frame's geometry, not
+the normal-view resolved hull image. The rig is Z-up; its mirrored winding conventions and
+water-reachability side labels are not outward-normal or general visibility metadata.
+
+The rejection of a planar camera re-drawing the scene remains. This submits only a bounded,
+explicit hull-owned mesh list: no terrain, buildings, sea, unrelated sprites or scene lighting
+are replayed. Scratch cost is 20 bytes/source pixel plus the existing 8-byte full-size reflection
+output, with full/half source resolution and submission ceilings held as data. No eligible
+hulls means no mesh raster/resolve work. Trees retain their flat sprite mirror. The previous
+"flat silhouette is enough" probe continues to describe that sprite case; it cannot establish
+correct physical-height reflection of a hull whose projection mixes height and ground depth.
+
+Below the calibrated local water plane, reflected mesh fragments remain colourless depth
+occluders; a winning blocker yields no mesh reflection and cannot receive keyline or figure
+ink. This prevents the water's warped lookup from fetching inside through the clipped shell,
+at the stated cost of conservative suppression where submerged geometry projects beyond the
+exact waterline section. Real geometry holes remain an Art issue and are measured with
+shipped-warp contact controls. Two-sided nearest depth decides visibility; appended rooms
+remain excluded, and the pose envelope excludes capsize. Lamp glow/cones and sprite-only
+fittings are accepted omissions. Mesh mode stays off by default and changes no shipped look
+until the owner accepts Phase C's plates. See [the implementation and control boundary](../design/hull-reflection-mesh.md).
+
 ADR 0010's eighth addendum **rejected** reflections. That rejection is revisited here on a **new fact**, which is
 the only thing that justifies reopening an ADR. It read: a reflection pass "would need a second camera + render
 target wired into the 2D URP renderer (**unverifiable here**) and a second draw of the scene."

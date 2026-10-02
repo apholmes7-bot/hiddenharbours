@@ -777,6 +777,7 @@ namespace HiddenHarbours.Art
 
         private void OnEnable()
         {
+            HullMeshReflection.Register(this);
             if (_hullId == 0)
             {
                 _hullId = IsoFacetHullRegistry.Register(this);
@@ -791,6 +792,8 @@ namespace HiddenHarbours.Art
 
         private void OnDisable()
         {
+            HullMeshReflection.Unregister(this);
+            SetLegacyReflection(!HiddenHarbours.Core.GameServices.HullMeshReflections);
             if (_hullId != 0)
             {
                 IsoFacetHullRegistry.Unregister(this, _hullId);
@@ -807,6 +810,20 @@ namespace HiddenHarbours.Art
         }
 
         private void OnDestroy() => ReleaseOwned();
+
+        internal float ReflectionDepthHeave { get; private set; }
+        internal MeshRenderer ReflectionHull => _meshRenderer;
+        internal MeshRenderer ReflectionLeaf => _leafRenderer;
+        internal Mesh ReflectionMesh => _setup != null ? _setup.Mesh : null;
+        internal Mesh ReflectionLeafMesh => _leafFilter != null ? _leafFilter.sharedMesh : null;
+        internal float ReflectionElevation => _setup != null ? _setup.ElevationDeg : 0;
+        internal float ReflectionHeave => _setup != null ? _heavePixels / (float)_setup.PxPerMetre : 0;
+        internal void SetLegacyReflection(bool enabled)
+        {
+            if (_overlayMaterial != null) _overlayMaterial.SetShaderPassEnabled("HHReflect", enabled);
+        }
+        internal ReflectiveObject ReflectionSource => _overlayRenderer != null
+            ? _overlayRenderer.GetComponent<ReflectiveObject>() : null;
 
         private void OnValidate() => _poseDirty = true;
 
@@ -837,6 +854,7 @@ namespace HiddenHarbours.Art
             // the constant this hull's root is placed by and the gradient her vertices are drawn
             // through can never come from two different reads of the registry.
             Vector4 depthShear = DepthShear;
+            ReflectionDepthHeave = _heavePixels / (float)_setup.PxPerMetre;
             // ADR 0023 phase 3 (the waterline): while a displaced sea is live, translate the
             // whole hull frame into the shared private z-buffer's calibrated iso-depth convention
             // (z = baseZ + (groundY − refY)·cosElev − heaveMetres·sinElev — the water's own
@@ -890,6 +908,7 @@ namespace HiddenHarbours.Art
                 // rest of the hull: the shader takes (worldY − ReferenceY)·g off every vertex, and
                 // the compensation here adds back what it will take at THIS hull's drawn root, so
                 // the calibration above survives untouched and only the gradient changes.
+                ReflectionDepthHeave = zHeaveMeters;
                 offset.z = DisplacedWaterMath.HullDepthBias(root.y, zHeaveMeters, in isoFrame)
                            + DisplacedWaterMath.HullShearCompensation(
                                  root.y, heaveMeters, depthShear.x, in isoFrame)

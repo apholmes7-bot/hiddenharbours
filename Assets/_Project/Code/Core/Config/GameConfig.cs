@@ -556,6 +556,17 @@ namespace HiddenHarbours.Core
                  "families are naturally redone; that mixed period is accepted (ADR 0031, Half B skipped).")]
         public bool HullKeylineFlood = DefaultHullKeylineFlood;
 
+        public const int DefaultHullReflectionMaxHulls = 64;
+        public const int DefaultHullReflectionMaxPackets = 1024;
+        public const int DefaultHullReflectionMaxTriangles = 1000000;
+
+        [Header("Hull mesh reflection (experimental, requires GPU plates)")]
+        public bool HullMeshReflections = false;
+        [Range(1, 2)] public int HullReflectionResolutionDivisor = 1;
+        [Min(1)] public int HullReflectionMaxHulls = DefaultHullReflectionMaxHulls;
+        [Min(1)] public int HullReflectionMaxPackets = DefaultHullReflectionMaxPackets;
+        [Min(1)] public int HullReflectionMaxTriangles = DefaultHullReflectionMaxTriangles;
+
         /// <summary>The cabin-glow passthrough's ship default — <b>OFF</b>, which is the owner's ruling
         /// of 2026-09-03: a glow is confined to its space, and an interior's reaches the outside only
         /// through the windows. A const for exactly the reason the keyline's is: a consumer with no
