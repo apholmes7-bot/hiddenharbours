@@ -1,6 +1,6 @@
 # Hidden Harbours: the design desk
 
-**As of 2026-10-02 20:16Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
+**As of 2026-10-02 21:16Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
 
 Read this file at the start of every session, then the brief the owner names. A ruling the owner gives you in a message wins over this file and over any brief. Some older docs still describe sprites where the owner has since ruled meshes (section 4); where they disagree, the ruling wins.
 
@@ -130,6 +130,18 @@ Read this file at the start of every session, then the brief the owner names. A 
   - Your one-scene package filled its bowl (`ground.stp_fen_pool_dry`) because this file said the pool stays dry. That line was the Art desk's slip, and it is corrected in the 09-28 entry above.
   - In your next St Peters issue, take that fill out, re-cut the bowl, and list the pond in `stillWater` at its spill, as `pond.stp_fen_pool`.
   - Until then, the terrain lane ships your ground as it is, without the fen's water.
+- 10-02, Nine Mile Creek as one scene taken. The owner, on your re-issue of part 1's ground (10-01), your one-scene package, its re-issue with the north creek redrawn, your calls 31 to 47 and the Art desk's leans on them: "i take your leans on all". So:
+  - part 1's ground as you re-issued it on 10-01 is the ground every Nine Mile Creek scene stands on;
+  - the plaza faces south (call 31), and the second three-decker is left out (call 32);
+  - the plaza's site stands as you drew it (call 34), and the house on Mill Road, `lot.nmc_house_mill`, moves 2.5 m west to (-264.5, 152), 3 m off the truck apron;
+  - the storefronts carry trade words only, and the stores' and the plaza's names stay open (call 35);
+  - the plaza replaces main street's plaza master, and Water Street stands (call 37);
+  - Shore Lane stands as you leaned it: its houses on their own rig, the lane gravel at 3.1 m with its turn, the larger houses and the three households (calls 38 to 41);
+  - the north creek stands as redrawn: rears to the creek and doors to the lanes, each house its own recipe, walkouts on lots 1, 3 and 4 with lot 2's terrace, both Creek Lanes asphalt at 4.2 m, the seven households and the trees (calls 42 to 47). Lots 1, 3 and 4 stand 2.67 to 2.97 m off the asphalt, inside the plan's 3 m, and stay as drawn;
+  - the truck wells (call 36) and the north creek's five laid boxes go into one more small re-issue of part 1's ground (section 6), so the game bakes one texture;
+  - four small fixes go to the game's own lanes, not to you: the dories tied at their docks' heads, two bed ids renamed, the pickups seated on their drives, and the north bank's doors shown through their houses.
+
+  From here on: no coordinates in ids (two beds were `_bed_35` and `_bed_29`), and a boat drawn afloat on the flood sits where a tide floats it (dory 5's spot needed +2.33, above the spring high).
 
 ## 5. How work comes back
 
@@ -174,14 +186,20 @@ Each thread has, or will get, its own paste in its own conversation. This list i
 
   Part 2 arrived on 10-01 in three zips. It passed on real Node: 25 of 25, 24 of 24, and 30 of 30 with 2c's package group. Your scene tools regenerate here, and your answers on part 1's record check. The owner took it (section 4).
 
-  Asked of you now, the last of this brief: one re-issue of part 1's ground, as one zip with its checker. Every texel outside these changes stays part 1's, to the bit:
-  1. The groove at x 28, filled to its neighbours.
-  2. Lean A: Wharf Road's new line onto the ramp, into the turning pad, and the ramp regraded at about 14%. plan.json's line goes on east of the pad through the yard, by (56, 104), (100, 116) and (140, 122). Say whether Wharf Road ends at the turning pad, or what that stretch becomes.
-  3. Call 30: the vertex at (-100, 92). `hedge.nmc_wharf_road` has its from and to on today's line; move them onto the new one.
-  4. Call 15: the river wall's fill, in the texture.
-  5. Call 26: each of the seven waterfront lots' pads at no less than +3.6, in the texture. By the Art desk's read of the lot boxes, that raises lots 2, 3, 4 and 6, and lot 4's box dips to +1.66.
+  Your re-issue of part 1's ground arrived on 10-01 and passed on real Node, 33 of 33. Your one-scene package (parts 2d, 2e and 2f, and all twelve scenes on one ground with one index) arrived on 10-02 and passed 24 of 24. Its re-issue the same day, with the north creek redrawn, passed 27 of 27. The owner took all three (section 4).
 
-  The gas bar's three boards are the Art desk's to bake. After the re-issue, nothing more is asked of Nine Mile Creek's key scenes.
+  Asked of you now, the last of this brief: one more small re-issue of part 1's ground, as one zip with its checker. Every texel stays the 10-01 re-issue's, to the bit, except:
+  1. Call 36: the two truck wells, as your plaza draws them.
+  2. Call 44: the north creek's five laid boxes, as its `ground.laid` lists them, with lot 4's 1.5 m easing.
+
+  And `plan.json` takes:
+  3. Call 34: the plaza's site: its lot, the west farm's north field ending at y 75 along x -282..-182, the entrance off Route 91 at y 92, and the apron's three drives to Mill Road.
+  4. Call 32: `lot.nmc_apartments_3` out.
+  5. Calls 39 and 40: Shore Lane gravel at 3.1 m with its turn, and lots 6, 7 and 8 at their houses' sizes.
+  6. Calls 42, 43 and 45: the seven waterfront lots facing their lanes (lots 1 to 4 north, 5 to 7 south), at the scene's centres and sizes, and both Creek Lanes asphalt at 4.2 m. Lots 1, 3 and 4 then stand 2.67, 2.67 and 2.97 m off the asphalt: note them as the 3 m rule's exception.
+  7. `lot.nmc_house_mill` at (-264.5, 152).
+
+  The gas bar's three boards are the Art desk's to bake. After this re-issue, nothing more is asked of Nine Mile Creek's key scenes.
 - Character kit 9.2 (09-24). In the game since 09-26; a change in review now plays its face, blink, look-at and carry clips. Asked of you: the send-back, [briefs/BRIEF-2026-09-30-character-9-2-send-back.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-30-character-9-2-send-back.md): six fixes, the owner's question on the fisher's irises, and two things the game measured. Nothing in the game waits on it.
 - The channel check (09-27, on this branch): DONE the same day. Text reaches you; pictures do not (section 1). [briefs/BRIEF-2026-09-27-channel-check.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-27-channel-check.md).
 
