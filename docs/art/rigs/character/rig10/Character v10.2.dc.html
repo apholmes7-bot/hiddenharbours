@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Character rig 10.2 — beards, hair, wardrobe, cast</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;background:#0b1216;}
+  a{color:#7fd6c9;} a:hover{color:#a8e6db;}
+  canvas{image-rendering:pixelated;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:34px 22px 80px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:1180px;display:flex;flex-direction:column;gap:9px;">
+    <div style="font-size:10px;letter-spacing:0.22em;color:#5d6c71;">CHARACTERISO10 · PASS 10.2 · BEARDS, HAIR, WARDROBE, CAST · FROM <a href="Character v10.1.dc.html">10.1</a></div>
+    <h1 style="font-family:'IM Fell English SC',Georgia,serif;font-size:34px;font-weight:400;color:#e4ece9;margin:0;letter-spacing:0.01em;">Beards, hair, a bigger wardrobe and a cast of thirty</h1>
+    <p style="max-width:86ch;font-size:12px;line-height:1.65;color:#8d9a9d;margin:0;text-wrap:pretty;">Rig 10.2 keeps 10.1's body, face and lighting. Beards are rebuilt so each style reads at every facing, and the chin beards stand in front of the collar. Each hair style gets a lit band across the crown and a shape of its own. The wardrobe gains six tops, six outfits, four swimsuits and two bottoms. Twenty NPCs join the cast, and Randomise never dresses a man in a skirt or a dress.</p>
+    <div style="font-size:11px;line-height:1.6;color:#6f7e83;">{{ status }}</div>
+  </div>
+
+  <div style="width:100%;max-width:1180px;background:#0f1a20;border:1px solid #1b2a32;padding:13px;display:flex;flex-direction:column;gap:12px;">
+    <div style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;">1 · WARDROBE ON 10.2</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:14px;align-items:start;">
+
+      <div style="display:flex;flex-direction:column;gap:9px;min-width:0;">
+        <div style="position:relative;background:#0c161b;border:1px solid #1b2a32;">
+          <canvas ref="{{ heroRef }}" width="280" height="370" style="display:block;width:100%;max-width:420px;height:auto;margin:0 auto;"></canvas>
+          <button onClick="{{ dirPrev }}" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);width:36px;height:36px;font-family:inherit;font-size:13px;background:#111d23;color:#c9d6d4;border:1px solid #22343c;cursor:pointer;" style-hover="border-color:#7fd6c9;">&#9664;</button>
+          <button onClick="{{ dirNext }}" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);width:36px;height:36px;font-family:inherit;font-size:13px;background:#111d23;color:#c9d6d4;border:1px solid #22343c;cursor:pointer;" style-hover="border-color:#7fd6c9;">&#9654;</button>
+          <div style="position:absolute;left:8px;top:8px;font-size:10px;letter-spacing:0.12em;color:#c9d6d4;background:#0c161b;border:1px solid #22343c;padding:3px 7px;">{{ dirLabel }}</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+          <sc-for list="{{ clipList }}" as="c" hint-placeholder-count="6">
+            <button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</button>
+          </sc-for>
+          <div style="flex:1;"></div>
+          <button onClick="{{ togglePlay }}" style="font-family:inherit;font-size:11px;padding:5px 9px;cursor:pointer;border:1px solid #22343c;background:#111d23;color:#9aa7ab;">{{ playLabel }}</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <canvas ref="{{ stripRef }}" width="720" height="210" style="display:block;width:100%;height:auto;"></canvas>
+          <div style="font-size:10.5px;color:#6f7e83;">The same build at the eight facings, idle, ×3: N, NE, E, SE, S, SW, W, NW.</div>
+        </div>
+      </div>
+
+      <div style="background:#0c161b;border:1px solid #1b2a32;padding:12px;display:flex;flex-direction:column;gap:13px;min-width:0;">
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline;"><span style="font-size:10px;letter-spacing:0.14em;color:#5d6c71;">START FROM</span><span style="font-size:11px;color:#c9d6d4;">{{ buildName }}</span></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:5px;">
+            <sc-for list="{{ presetList }}" as="p" hint-placeholder-count="30">
+              <button onClick="{{ p.pick }}" title="{{ p.label }}" style="{{ p.style }}">
+                <div style="{{ p.img }}"></div>
+                <span style="display:block;font-size:10px;line-height:1.2;padding:3px 1px 1px;text-align:center;color:#9aa7ab;">{{ p.label }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid #22343c;padding-bottom:7px;">
+          <sc-for list="{{ tabList }}" as="t" hint-placeholder-count="5">
+            <button onClick="{{ t.pick }}" style="{{ t.style }}">{{ t.label }}</button>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ isBody }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:13px;">
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Sex</span><span style="color:#7d8b8f;">{{ sexLabel }}</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <sc-for list="{{ sexOpts }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button></sc-for>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Body type</span><span style="color:#7d8b8f;">{{ frameLabel }}</span></div>
+              <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;">
+                <sc-for list="{{ frameOpts }}" as="o" hint-placeholder-count="5">
+                  <button onClick="{{ o.pick }}" title="{{ o.label }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:10px;padding:3px 0 1px;text-align:center;color:#9aa7ab;">{{ o.label }}</span></button>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;">
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Height</span><span style="color:#7d8b8f;">{{ heightLabel }}</span></div>
+                <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;"><sc-for list="{{ heightOpts }}" as="o" hint-placeholder-count="5"><button onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button></sc-for></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Weight</span><span style="color:#7d8b8f;">{{ weightLabel }}</span></div>
+                <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;"><sc-for list="{{ weightOpts }}" as="o" hint-placeholder-count="5"><button onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button></sc-for></div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Age</span><span style="color:#7d8b8f;">{{ ageLabel }}</span></div>
+              <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;"><sc-for list="{{ ageOpts }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button></sc-for></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Skin</span><span style="color:#7d8b8f;">{{ skinLabel }}</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;"><sc-for list="{{ skinOpts }}" as="o" hint-placeholder-count="9"><button onClick="{{ o.pick }}" title="{{ o.label }}" style="{{ o.style }}"></button></sc-for></div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isFace }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:13px;">
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Head shape</span><span style="color:#7d8b8f;">{{ headLabel }}</span></div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:5px;"><sc-for list="{{ headOpts }}" as="o" hint-placeholder-count="7"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:10px;padding:3px 0 1px;text-align:center;color:#9aa7ab;">{{ o.label }}</span></button></sc-for></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Eyes</span><span style="color:#7d8b8f;">{{ eyeShapeLabel }}</span></div>
+              <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;"><sc-for list="{{ eyeShapeOpts }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:10px;padding:3px 0 1px;text-align:center;color:#9aa7ab;">{{ o.label }}</span></button></sc-for></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Eye colour</span><span style="color:#7d8b8f;">{{ eyesLabel }}</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;"><sc-for list="{{ eyeOpts }}" as="o" hint-placeholder-count="7"><button onClick="{{ o.pick }}" title="{{ o.label }}" style="{{ o.style }}"></button></sc-for></div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isHair }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:13px;">
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Hair</span><span style="color:#7d8b8f;">{{ hairStyleLabel }}</span></div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:5px;"><sc-for list="{{ hairStyleOpts }}" as="o" hint-placeholder-count="8"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:10px;padding:3px 0 1px;text-align:center;color:#9aa7ab;">{{ o.label }}</span></button></sc-for></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Hair colour</span><span style="color:#7d8b8f;">{{ hairLabel }}</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;"><sc-for list="{{ hairOpts }}" as="o" hint-placeholder-count="9"><button onClick="{{ o.pick }}" title="{{ o.label }}" style="{{ o.style }}"></button></sc-for></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Beard</span><span style="color:#7d8b8f;">{{ beardLabel }}</span></div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:5px;"><sc-for list="{{ beardOpts }}" as="o" hint-placeholder-count="8"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:10px;padding:3px 0 1px;text-align:center;color:#9aa7ab;">{{ o.label }}</span></button></sc-for></div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isClothes }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:13px;">
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Tops</span><span style="color:#7d8b8f;">{{ topLabel }}</span></div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:5px;"><sc-for list="{{ topOpts }}" as="o" hint-placeholder-count="6"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:10px;padding:3px 0 1px;text-align:center;color:#9aa7ab;">{{ o.label }}</span></button></sc-for></div>
+            </div>
+            <sc-if value="{{ hasBottom }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Bottoms</span><span style="color:#7d8b8f;">{{ bottomLabel }}</span></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:5px;"><sc-for list="{{ bottomOpts }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:10px;padding:3px 0 1px;text-align:center;color:#9aa7ab;">{{ o.label }}</span></button></sc-for></div>
+              </div>
+            </sc-if>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Outfits</span><span style="color:#7d8b8f;">{{ outfitPieceLabel }}</span></div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:5px;"><sc-for list="{{ outfitPieceOpts }}" as="o" hint-placeholder-count="7"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:10px;padding:3px 0 1px;text-align:center;color:#9aa7ab;">{{ o.label }}</span></button></sc-for></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Swimwear</span><span style="color:#7d8b8f;">{{ swimLabel }}</span></div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:5px;"><sc-for list="{{ swimOpts }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:10px;padding:3px 0 1px;text-align:center;color:#9aa7ab;">{{ o.label }}</span></button></sc-for></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;">
+              <sc-for list="{{ colourRows }}" as="row" hint-placeholder-count="2">
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">{{ row.title }}</span><span style="color:#7d8b8f;">{{ row.label }}</span></div>
+                  <div style="display:flex;flex-wrap:wrap;gap:5px;"><sc-for list="{{ row.opts }}" as="o" hint-placeholder-count="6"><button onClick="{{ o.pick }}" title="{{ o.label }}" style="{{ o.style }}"></button></sc-for></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isHats }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:13px;">
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Hat</span><span style="color:#7d8b8f;">{{ hatLabel }}</span></div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:5px;"><sc-for list="{{ hatOpts }}" as="o" hint-placeholder-count="13"><button onClick="{{ o.pick }}" style="{{ o.style }}"><div style="{{ o.img }}"></div><span style="display:block;font-size:10px;padding:3px 0 1px;text-align:center;color:#9aa7ab;">{{ o.label }}</span></button></sc-for></div>
+            </div>
+            <sc-if value="{{ hasHat }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;"><span style="color:#c9d6d4;">Hat colour</span><span style="color:#7d8b8f;">{{ hatColLabel }}</span></div>
+                <div style="display:flex;flex-wrap:wrap;gap:5px;"><sc-for list="{{ hatColOpts }}" as="o" hint-placeholder-count="9"><button onClick="{{ o.pick }}" title="{{ o.label }}" style="{{ o.style }}"></button></sc-for></div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-top:1px solid #22343c;padding-top:10px;">
+          <button onClick="{{ randomise }}" style="font-family:inherit;font-size:11px;padding:6px 10px;cursor:pointer;border:1px solid #22343c;background:#111d23;color:#c9d6d4;" style-hover="border-color:#7fd6c9;">RANDOMISE</button>
+          <button onClick="{{ reset }}" style="font-family:inherit;font-size:11px;padding:6px 10px;cursor:pointer;border:1px solid #22343c;background:#111d23;color:#c9d6d4;" style-hover="border-color:#7fd6c9;">BACK TO PRESET</button>
+          <div style="flex:1;"></div>
+          <span style="font-size:11px;color:#7fd6c9;">{{ savedNote }}</span>
+          <button onClick="{{ save }}" style="font-family:inherit;font-size:11px;padding:6px 12px;cursor:pointer;border:1px solid #2f6079;background:#122530;color:#7fd6c9;" style-hover="border-color:#7fd6c9;">SAVE BUILD</button>
+        </div>
+        <div style="font-size:10px;line-height:1.5;color:#5d6c71;overflow-wrap:anywhere;">{{ buildCode }}</div>
+      </div>
+    </div>
+    <div style="font-size:11px;line-height:1.6;color:#8d9a9d;max-width:96ch;text-wrap:pretty;">The character creator's wardrobe, rendered live by rig 10.2 in the 80 × 104 cell. Randomise draws the sex first. A man never draws a skirt, a dress, a swimsuit or a bikini; a woman may draw anything, and men's swimwear comes with a top. Children and women draw no beard, grey hair goes mostly to elders, and one draw in twelve is swimwear. Builds save in the same format as 10.1 (localStorage hh.player.build.v10), so a saved build keeps its beard and garment names and is drawn the 10.2 way.</div>
+  </div>
+
+  <div style="width:100%;max-width:1180px;background:#0f1a20;border:1px solid #1b2a32;padding:13px;display:flex;flex-direction:column;gap:11px;">
+    <div style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;">2 · THE CAST · THIRTY</div>
+    <div style="font-size:11px;line-height:1.6;color:#8d9a9d;max-width:96ch;text-wrap:pretty;">The ten presets and twenty new NPCs, idle at S, ×3. Between them the new builds use every beard and hair style, most of the new wardrobe, all nine skins and all ten body types. Pick one to load it into the wardrobe above.</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;">
+      <sc-for list="{{ castList }}" as="p" hint-placeholder-count="30">
+        <button onClick="{{ p.pick }}" title="{{ p.label }}" style="{{ p.style }}">
+          <div style="{{ p.img }}"></div>
+          <span style="display:block;font-size:10.5px;line-height:1.25;padding:4px 2px 0;text-align:center;color:#c9d6d4;">{{ p.label }}</span>
+          <span style="display:block;font-size:9.5px;line-height:1.3;padding:1px 2px 3px;text-align:center;color:#6f7e83;">{{ p.meta }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1180px;background:#0f1a20;border:1px solid #1b2a32;padding:13px;display:flex;flex-direction:column;gap:11px;">
+    <div style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;">3 · BEARDS · 10.1 AND 10.2</div>
+    <div style="font-size:11px;line-height:1.6;color:#8d9a9d;max-width:96ch;text-wrap:pretty;">In 10.1 a beard was the skull's two lower rings painted, plus a moustache decal. From the 40° camera the collar covers the chin row, so most of that paint never showed: the goatee drew as a dark ring round the mouth, mutton chops as a moustache, and stubble only darkened fair skin. In 10.2 each style places its pixels separately at each of the eight facings, as the face marks do. The moustache sits on the nose column and one column either side, sideburns on the edge of the face nearest the ear, and a full beard on every column of the cheek the camera sees. The chin beards (chinstrap, goatee, Van Dyke, full and long) have a solid chin that stands in front of the collar. Stubble mixes the skin toward the hair colour, so it shows on any skin.</div>
+    <canvas ref="{{ beardsRef }}" width="570" height="820" style="width:100%;max-width:570px;height:auto;display:block;"></canvas>
+    <div style="font-size:10.5px;color:#6f7e83;">The Fisher with brown hair, idle, ×5. Left 10.1, right 10.2, each at S, SE and E. Van Dyke and sideburns are new.</div>
+  </div>
+
+  <div style="width:100%;max-width:1180px;background:#0f1a20;border:1px solid #1b2a32;padding:13px;display:flex;flex-direction:column;gap:11px;">
+    <div style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;">4 · HAIR · 10.1 AND 10.2</div>
+    <div style="font-size:11px;line-height:1.6;color:#8d9a9d;max-width:96ch;text-wrap:pretty;">From the front, most 10.1 hair styles had nearly the same outline, and their differences showed only from behind. 10.2 adds a lit band across the crown and gives each style a shape that reads from the front. The crop has a higher hairline, with the back and sides a tone darker. The mop has three tufts on the crown. The bob and the long have a curtain of hair beside each cheek, set behind the eye so the profile stays clear; the long continues to the shoulders. The bun sits high enough to show above the head. The ponytail is a tied tail that keeps its pixels in profile (10.1's broke into one floating pixel). The buzz cut mixes the hair toward the skin, and the bald head has a highlight.</div>
+    <canvas ref="{{ hairRef }}" width="670" height="640" style="width:100%;max-width:670px;height:auto;display:block;"></canvas>
+    <div style="font-size:10.5px;color:#6f7e83;">Ginny without her hood, brown hair, idle, ×4. Left 10.1, right 10.2, each at S, SE, E and N.</div>
+  </div>
+
+  <div style="width:100%;max-width:1180px;background:#0f1a20;border:1px solid #1b2a32;padding:13px;display:flex;flex-direction:column;gap:11px;">
+    <div style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;">5 · NEW CLOTHES</div>
+    <div style="font-size:11px;line-height:1.6;color:#8d9a9d;max-width:96ch;text-wrap:pretty;">Six tops: a Breton top, hoodie, cardigan, pea coat, life vest and singlet. The Breton's stripes are one pixel row tall on the body and sleeves, so they stay clean at every facing. Six outfits: chest waders, coveralls, a greatcoat with a scarf, wetsuit, sundress and pinafore. Four swimsuits, all barefoot: trunks and briefs for men, a swimsuit and a bikini for women; trunks and briefs on a woman come with a top. Two bottoms: cropped trousers and a long skirt. Each card shows a man and a woman at S in the piece's default colours. Pick one to put it on the wardrobe's build.</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:6px;">
+      <sc-for list="{{ clothesList }}" as="p" hint-placeholder-count="18">
+        <button onClick="{{ p.pick }}" title="{{ p.label }}" style="{{ p.style }}">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;"><div style="{{ p.imgM }}"></div><div style="{{ p.imgW }}"></div></div>
+          <span style="display:block;font-size:10.5px;line-height:1.25;padding:4px 2px 0;text-align:center;color:#c9d6d4;">{{ p.label }}</span>
+          <span style="display:block;font-size:9.5px;line-height:1.3;padding:1px 2px 3px;text-align:center;color:#6f7e83;">{{ p.group }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1180px;background:#0f1a20;border:1px solid #1b2a32;padding:13px;display:flex;flex-direction:column;gap:11px;">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:9px;">
+      <div style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;">6 · GOLDEN CHECKS ON 10.2 · {{ checkBuild }}</div>
+      <div style="flex:1;"></div>
+      <button onClick="{{ runChecks }}" disabled="{{ busy }}" style="font-family:inherit;font-size:11px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;padding:4px 9px;cursor:pointer;">RUN ALL ON THIS BUILD</button>
+    </div>
+    <div style="font-size:11px;line-height:1.6;color:#8d9a9d;text-wrap:pretty;max-width:96ch;">All 19 gated checks pass on the Fisher, on each of the twenty new NPCs, and on a bikini, a hoodie and trunks worn by a woman. The checks themselves are unchanged from 10.1. One fix was needed in the body: the top of the shin now sits inside the thigh. Two bodies in the build space (lean at height +2, heavy at weight +2) had drawn one knee pixel differently left and right, which failed the light check; on the presets the change moves one to three knee pixels. The checks run on the wardrobe's build. {{ checkSummary }}</div>
+    <div style="display:flex;flex-direction:column;gap:1px;">
+      <sc-for list="{{ checkRows }}" as="r" hint-placeholder-count="0">
+        <div style="display:grid;grid-template-columns:44px minmax(0,1fr) minmax(0,150px);gap:10px;padding:7px 8px;background:#0c161b;align-items:baseline;">
+          <div style="font-size:10px;letter-spacing:0.1em;color:{{ r.color }};">{{ r.mark }}</div>
+          <div style="display:flex;flex-direction:column;gap:3px;min-width:0;">
+            <div style="font-size:11px;color:#c9d6d4;">{{ r.title }}</div>
+            <div style="font-size:10.5px;line-height:1.55;color:#7d8b8f;text-wrap:pretty;overflow-wrap:anywhere;">{{ r.detail }}</div>
+          </div>
+          <div style="font-size:11px;color:#c9d6d4;text-align:right;overflow-wrap:anywhere;">{{ r.value }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1180px;background:#0f1a20;border:1px solid #1b2a32;padding:13px;display:flex;flex-direction:column;gap:9px;">
+    <div style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;">7 · OPEN</div>
+    <div style="display:flex;flex-direction:column;gap:6px;font-size:11px;line-height:1.6;color:#8d9a9d;max-width:96ch;">
+      <div style="text-wrap:pretty;"><span style="color:#c9d6d4;">The Wharf girl at SW.</span> She still shows one eye at idle: a child's head sits low, and her far shoulder rises over the far edge of her face. The same happens to a woman's narrow (long) head in the creator. The Coastguard was given an oval head to avoid it. Every other member of the cast shows two eyes at both diagonals.</div>
+      <div style="text-wrap:pretty;"><span style="color:#c9d6d4;">The Character Creator.</span> It still runs rig 9. Moving it to 10.2 means the 80 × 104 cell, the sex and body type controls, the new wardrobe and Randomise's rules; the wardrobe above is the working version of all four.</div>
+      <div style="text-wrap:pretty;"><span style="color:#c9d6d4;">Carried from 10.0.</span> The outline ruling (§4.6), fixture sizes for the 10.x body, feet on St Peters' slopes, and outfit ramps matched to the terrain's.</div>
+    </div>
+    <div style="border-top:1px solid #1b2a32;padding-top:9px;display:flex;flex-wrap:wrap;gap:7px;">
+      <a href="Art/characterIsoRig10.js" download="characterIsoRig10.js" style="font-size:10.5px;letter-spacing:0.08em;padding:7px 10px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-decoration:none;">characterIsoRig10.js (10.2)</a>
+      <a href="Art/characterIsoRig10.poses.js" download="characterIsoRig10.poses.js" style="font-size:10.5px;letter-spacing:0.08em;padding:7px 10px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-decoration:none;">characterIsoRig10.poses.js</a>
+      <a href="Art/characterIsoRig10.checks.js" download="characterIsoRig10.checks.js" style="font-size:10.5px;letter-spacing:0.08em;padding:7px 10px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-decoration:none;">characterIsoRig10.checks.js</a>
+      <a href="Character v10.1.dc.html" style="font-size:10.5px;letter-spacing:0.08em;padding:7px 10px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-decoration:none;">Character v10.1 (frozen)</a>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;ground&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;shore&quot;,&quot;deck&quot;,&quot;grass&quot;],&quot;default&quot;:&quot;shore&quot;,&quot;tsType&quot;:&quot;'shore'|'deck'|'grass'&quot;,&quot;section&quot;:&quot;Preview&quot;},&quot;keyline&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Preview&quot;}}">
+const DIRS = ['N','NE','E','SE','S','SW','W','NW'];
+const CLIPS = [['idle','Stand'],['walk','Walk'],['run','Run'],['cast','Cast'],['dig','Dig'],['hauler','Haul']];
+const TABS = [['body','Body'],['face','Face'],['hair','Hair'],['clothes','Clothes'],['hats','Hats']];
+const GROUNDS = { shore:['#b39a70','#a68d64'], deck:['#6b5a44','#5e4e3b'], grass:['#55663f','#4b5a37'] };
+const NAMES = { height:['Short','Shorter','Middling','Taller','Tall'], weight:['Slight','Lean','Middling','Sturdy','Heavy'], age:{ child:'Child', youth:'Youth', adult:'Adult', elder:'Elder' },
+  head:{ round:'Round', oval:'Oval', square:'Square', long:'Long', heart:'Heart', wide:'Wide jaw', pear:'Pear' }, eyeShape:{ round:'Round', narrow:'Narrow', lidded:'Heavy-lidded' },
+  hairStyle:{ crop:'Crop', mop:'Mop', bob:'Bob', long:'Long', bun:'Bun', ponytail:'Ponytail', buzz:'Buzz', bald:'Bald' },
+  beard:{ none:'None', stubble:'Stubble', moustache:'Moustache', chinstrap:'Chinstrap', goatee:'Goatee', vandyke:'Van Dyke', sideburns:'Sideburns', mutton:'Mutton chops', full:'Full', long:'Long' },
+  hat:{ none:'None', watchcap:'Watch cap', souwester:"Sou'wester", ballcap:'Ball cap', kerchief:'Kerchief', flatcap:'Flat cap', hood:'Hood', tophat:'Top hat', bowler:'Bowler', captain:"Captain's cap", sunhat:'Sun hat', bucket:'Bucket hat', beret:'Beret' },
+  hair:{ salt:'Salt and pepper' }, outfit:{ char:'Charcoal', oil:'Oilskin yellow' }, hatCol:{ char:'Charcoal', oil:'Oilskin yellow' } };
+const cap = (s) => String(s).charAt(0).toUpperCase() + String(s).slice(1);
+const nm = (k, v) => (NAMES[k] && NAMES[k][v]) || cap(v);
+class Component extends DCLogic {
+  state = { ready:false, err:'', b:null, base:'fisher', tab:'body', clip:'idle', dir:4, playing:true, frame:0, checks:[], busy:false, saved:'' };
+  _thumbs = new Map();
+  componentDidMount(){ this.load().catch(e => this.setState({ err:e.message })); }
+  componentWillUnmount(){ this.dead = true; cancelAnimationFrame(this.raf); }
+  componentDidUpdate(pp){ if(pp && (pp.ground !== this.props.ground || pp.keyline !== this.props.keyline)){ this.drawHero(); this.drawStrip(); } }
+  async load(){
+    const add = (src) => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('missing ' + src)); document.head.appendChild(s); });
+    if(!(window.CharacterIso10_1 && window.CharacterIso10_1.posesLoaded)){ await add('Art/characterIsoRig10_1.js'); await add('Art/characterIsoRig10_1.poses.js'); }
+    if(!(window.CharacterIso10 && window.CharacterIso10.posesLoaded)){ await add('Art/characterIsoRig10.js'); await add('Art/characterIsoRig10.poses.js'); }
+    if(!window.CharacterIso10.CHECKS) await add('Art/characterIsoRig10.checks.js');
+    if(this.dead) return;
+    const C = window.CharacterIso10; let b = null, base = 'fisher';
+    try { const raw = localStorage.getItem('hh.player.build.v10'); if(raw) b = C.normBuild(JSON.parse(raw)); } catch(e){}
+    if(!b){ b = C.normBuild('fisher'); b.preset = 'fisher'; } else if(b.preset) base = b.preset;
+    this.setState({ ready:true, b, base }, () => { this.drawStatic(); this.drawHero(); this.drawStrip(); this.loop(); });
+  }
+  cvOf(R){ const c = document.createElement('canvas'); c.width = R.W; c.height = R.H; const x = c.getContext('2d'), id = x.createImageData(R.W, R.H); id.data.set(R.rgba); x.putImageData(id, 0, 0); return c; }
+  blit(g, A, R, box, X, Y, k){ g.imageSmoothingEnabled = false; g.drawImage(this.cvOf(R), A.pivot.x + box[0], A.pivot.y + box[1], box[2], box[3], X, Y, box[2]*k, box[3]*k); }
+  ground(){ return GROUNDS[this.props.ground || 'shore'] || GROUNDS.shore; }
+  /* a render on the ground: the contact patch, then the figure, into a cell-sized canvas */
+  onGround(C, o){ const R = C.render(o), sh = C.shadow(Object.assign({ S:R.S }, o)), G = this.ground(), c = document.createElement('canvas'); c.width = R.W; c.height = R.H;
+    const x = c.getContext('2d'), id = x.createImageData(R.W, R.H), d = id.data, h2 = (s) => [parseInt(s.slice(1,3),16), parseInt(s.slice(3,5),16), parseInt(s.slice(5,7),16)], g0 = h2(G[0]), g1 = h2(G[1]);
+    for(let y = 0; y < R.H; y++) for(let xx = 0; xx < R.W; xx++){ const i = (y*R.W+xx)*4, q = (Math.floor((y+1)/6) % 2) ? g1 : g0; d[i] = q[0]; d[i+1] = q[1]; d[i+2] = q[2]; d[i+3] = 255; }
+    for(let y = 0; y < sh.H; y++) for(let xx = 0; xx < sh.W; xx++){ if(!sh.mask[y*sh.W+xx]) continue; const X = sh.x0 + xx, Y = sh.y0 + y; if(X < 0 || Y < 0 || X >= R.W || Y >= R.H) continue; const i = (Y*R.W+X)*4; for(let q = 0; q < 3; q++) d[i+q] = Math.round(d[i+q]*0.74); }
+    for(let i = 0; i < R.W*R.H; i++) if(R.rgba[i*4+3]){ d[i*4] = R.rgba[i*4]; d[i*4+1] = R.rgba[i*4+1]; d[i*4+2] = R.rgba[i*4+2]; }
+    x.putImageData(id, 0, 0); return c; }
+  drawHero(){ const C = window.CharacterIso10, cv = this._hero, st = this.state; if(!C || !cv || !st.b) return;
+    const A = C.ANIMS[C.clipDef(st.clip).anim], f = st.frame % A.frames, box = [-28,-66,56,74], g = cv.getContext('2d'); g.imageSmoothingEnabled = false;
+    try { const c = this.onGround(C, { build:st.b, clip:st.clip, frame:f, dir:st.dir, keyline:!!this.props.keyline }); g.drawImage(c, C.pivot.x+box[0], C.pivot.y+box[1], box[2], box[3], 0, 0, box[2]*5, box[3]*5); }
+    catch(e){ g.fillStyle = '#0c161b'; g.fillRect(0,0,cv.width,cv.height); g.fillStyle = '#e08a6e'; g.font = '12px monospace'; g.fillText(e.message.slice(0,38), 8, 24); } }
+  drawStrip(){ const C = window.CharacterIso10, cv = this._strip, b = this.state.b; if(!C || !cv || !b) return; const g = cv.getContext('2d'), box = [-15,-66,30,70]; g.imageSmoothingEnabled = false;
+    for(let d = 0; d < 8; d++){ const c = this.onGround(C, { build:b, dir:d, keyline:!!this.props.keyline }); g.drawImage(c, C.pivot.x+box[0], C.pivot.y+box[1], box[2], box[3], d*90, 0, box[2]*3, box[3]*3); } }
+  /* the comparison sheets: head crops (found by the head's own pixels) from 10.1, frozen, and 10.2 */
+  headCrop(R, W, H){ let x0 = 1e9, x1 = -1, y0 = 1e9; for(let y = 0; y < R.H; y++) for(let x = 0; x < R.W; x++){ const f = R.face[y*R.W+x]; if(f < 0 || !R.faces[f].head) continue; if(x < x0) x0 = x; if(x > x1) x1 = x; if(y < y0) y0 = y; }
+    const X = Math.round((x0+x1)/2) - W/2, Y = y0 - 1, c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d'), id = g.createImageData(W, H);
+    for(let y = 0; y < H; y++) for(let x = 0; x < W; x++){ const sx = X+x, sy = Y+y; if(sx < 0 || sy < 0 || sx >= R.W || sy >= R.H) continue; const si = (sy*R.W+sx)*4; if(!R.rgba[si+3]) continue; const i = (y*W+x)*4; for(let q = 0; q < 4; q++) id.data[i+q] = R.rgba[si+q]; }
+    g.putImageData(id, 0, 0); return c; }
+  drawSheet(cv, rows, cols, W, H, k){ const g = cv.getContext('2d'); g.imageSmoothingEnabled = false; g.fillStyle = '#4f5f3f'; g.fillRect(0, 0, cv.width, cv.height);
+    const LW = 104, gap = 4, half = cols.length/2, colX = (j) => LW + j*(W*k+gap) + (j >= half ? 16 : 0);
+    g.font = '11px ui-monospace, Menlo, monospace'; g.fillStyle = '#0b1216'; g.fillRect(0, 0, cv.width, 22); g.fillStyle = '#9aa7ab'; cols.forEach((c, j) => g.fillText(c.label, colX(j)+2, 15));
+    rows.forEach((r, i) => { const Y = 26 + i*(H*k+gap); g.fillStyle = '#0b1216'; g.fillRect(0, Y, LW-6, H*k); g.fillStyle = '#e4ece9'; g.fillText(r.label, 6, Y + H*k/2 + 4);
+      cols.forEach((c, j) => { const b = r.build(c.rig); if(!b){ g.fillStyle = '#3e4c33'; g.fillRect(colX(j), Y, W*k, H*k); g.fillStyle = '#9aa7ab'; g.fillText('new', colX(j)+W*k/2-11, Y+H*k/2+4); return; }
+        try { g.drawImage(this.headCrop(c.rig.render({ build:b, dir:c.dir }), W, H), colX(j), Y, W*k, H*k); } catch(e){ g.fillStyle = '#e08a6e'; g.fillText('error', colX(j)+4, Y+16); } }); }); }
+  drawStatic(){ const A = window.CharacterIso10_1, C = window.CharacterIso10; if(!A || !C) return;
+    const cols = (dirs) => [A, C].flatMap((R0) => dirs.map(([d, n]) => ({ rig:R0, dir:d, label:(R0 === A ? '10.1 ' : '10.2 ') + n })));
+    if(this._beards){ const base = Object.assign({}, C.BUILDS.fisher, { hair:'brown', hairStyle:'crop', hat:'none', preset:null });
+      this.drawSheet(this._beards, C.OPTIONS.beard.map(bd => ({ label:C.BEARDS[bd].label, build:(R0) => R0.OPTIONS.beard.indexOf(bd) >= 0 ? Object.assign({}, base, { beard:bd }) : null })), cols([[4,'S'],[3,'SE'],[2,'E']]), 14, 15, 5); }
+    if(this._hair){ const base = Object.assign({}, C.BUILDS.ginny, { hat:'none', hair:'brown', outfit:'teal', shirt:'white', preset:null });
+      this.drawSheet(this._hair, C.OPTIONS.hairStyle.map(hs => ({ label:nm('hairStyle', hs), build:() => Object.assign({}, base, { hairStyle:hs }) })), cols([[4,'S'],[3,'SE'],[2,'E'],[0,'N']]), 16, 18, 4); } }
+  loop(){ const tick = (t) => { if(this.dead) return; this.raf = requestAnimationFrame(tick); if(!this.state.playing || !this.state.ready) return;
+      const C = window.CharacterIso10, A = C.ANIMS[C.clipDef(this.state.clip).anim];
+      if(!this._t || t - this._t >= A.ms){ this._t = t; this.setState(s => ({ frame:(s.frame+1) % A.frames }), () => this.drawHero()); } };
+    this.raf = requestAnimationFrame(tick); }
+  _thumb(C, b, kind, dir){ const key = C.buildKey(C.normBuild(b)) + kind + dir; if(this._thumbs.has(key)) return this._thumbs.get(key);
+    const B = C.buildOf(b), R = C.render({ build:B, clip:'idle', frame:0, dir }), top = Math.round(C.pivot.y - B.D.heightM*Math.cos(C.ELEV*Math.PI/180)*C.PX), px = C.pivot.x;
+    const cr = kind==='head' ? { x:px-10, y:top-3, w:20, h:20 } : kind==='hat' ? { x:px-12, y:top-9, w:24, h:24 } : kind==='face' ? { x:px-7, y:top+4, w:14, h:10 } : { x:px-14, y:C.pivot.y-68, w:28, h:72 };
+    const c = document.createElement('canvas'); c.width = cr.w; c.height = cr.h; const g = c.getContext('2d'), img = g.createImageData(cr.w, cr.h);
+    for(let y = 0; y < cr.h; y++) for(let x = 0; x < cr.w; x++){ const sx = cr.x+x, sy = cr.y+y; if(sx < 0 || sy < 0 || sx >= R.W || sy >= R.H) continue; const si = (sy*R.W+sx)*4, i = (y*cr.w+x)*4; for(let k = 0; k < 4; k++) img.data[i+k] = R.rgba[si+k]; }
+    g.putImageData(img, 0, 0); const s = kind==='face' ? 8 : kind==='head' ? 4 : 3, out = document.createElement('canvas'); out.width = cr.w*s; out.height = cr.h*s;
+    const o = out.getContext('2d'); o.imageSmoothingEnabled = false; o.fillStyle = '#16252c'; o.fillRect(0, 0, out.width, out.height); o.drawImage(c, 0, 0, out.width, out.height);
+    const st = { display:'block', width:'100%', aspectRatio:cr.w + ' / ' + cr.h, backgroundImage:'url(' + out.toDataURL() + ')', backgroundSize:'100% 100%', imageRendering:'pixelated' };
+    if(this._thumbs.size > 500) this._thumbs.clear(); this._thumbs.set(key, st); return st; }
+  _set(patch){ const C = window.CharacterIso10; this.setState(s => ({ b:Object.assign(C.normBuild(Object.assign({}, s.b, patch)), { name:s.b.name, preset:null }), saved:'', checks:[] }), () => { this.drawHero(); this.drawStrip(); }); }
+  _setB(b, base){ this.setState({ b, base:base || this.state.base, saved:'', checks:[] }, () => { this.drawHero(); this.drawStrip(); }); }
+  runChecks(){ const C = window.CharacterIso10; if(!C || !C.CHECKS || this.state.busy) return; const B = C.buildOf(this.state.b), list = C.CHECKS.slice(), rows = [];
+    this.setState({ busy:true, checks:[] }); let i = 0, it = null;
+    const step = () => { if(this.dead) return; const until = performance.now() + 40;
+      while(performance.now() < until){ if(!it){ if(i >= list.length){ this.setState({ busy:false }); return; } it = list[i].run(B); }
+        let s; try { s = it.next(); } catch(e){ s = { done:true, value:{ pass:false, value:'error', detail:e.message } }; }
+        if(s.done){ const ck = list[i], r = s.value || {}; rows.push({ id:ck.id, title:ck.title, gate:ck.gate !== false, pass:!!r.pass, value:String(r.value), detail:String(r.detail || '') }); this.setState({ checks:rows.slice() }); it = null; i++; } }
+      setTimeout(step, 0); };
+    step(); }
+  ref(n){ this['_r'+n] = this['_r'+n] || ((el) => { if(el && this[n] !== el){ this[n] = el; if(this.state.ready){ if(n === '_hero') this.drawHero(); else if(n === '_strip') this.drawStrip(); else this.drawStatic(); } } }); return this['_r'+n]; }
+  renderVals(){
+    const st = this.state, C = window.CharacterIso10, ok = st.ready && C && st.b, b = st.b;
+    const on = (a) => 'font-family:inherit;font-size:11px;padding:5px 8px;cursor:pointer;border:1px solid ' + (a ? '#7fd6c9;background:#122530;color:#e4ece9;' : '#22343c;background:#111d23;color:#9aa7ab;');
+    const tile = (a) => ({ padding:'3px', cursor:'pointer', background:a ? '#122530' : '#111d23', border:a ? '1px solid #7fd6c9' : '1px solid #22343c', minWidth:0, display:'flex', flexDirection:'column', justifyContent:'flex-start', alignSelf:'start' });
+    const sw = (col, a) => ({ width:'30px', height:'30px', cursor:'pointer', background:col, border:a ? '2px solid #e4ece9' : '2px solid #22343c', boxShadow:a ? '0 0 0 1px #7fd6c9' : 'none' });
+    const nPass = st.checks.filter(r => r.gate && r.pass).length, nGate = st.checks.filter(r => r.gate).length;
+    const v = { status: st.err ? 'Could not load: ' + st.err : !ok ? 'Loading rig 10.2, its pose library and checks, and the frozen 10.1 for comparison…' : 'Rig ' + C.revision + ' loaded, with 10.1 frozen alongside (CharacterIso10_1) for the comparisons.',
+      heroRef:this.ref('_hero'), stripRef:this.ref('_strip'), beardsRef:this.ref('_beards'), hairRef:this.ref('_hair'), castList:[], clothesList:[], swimOpts:[], swimLabel:'',
+      dirLabel:DIRS[st.dir], dirPrev:() => this.setState(s => ({ dir:(s.dir+7)%8 }), () => this.drawHero()), dirNext:() => this.setState(s => ({ dir:(s.dir+1)%8 }), () => this.drawHero()),
+      clipList:CLIPS.map(([k,l]) => ({ label:l, style:on(st.clip===k), pick:() => this.setState({ clip:k, frame:0 }, () => this.drawHero()) })),
+      togglePlay:() => this.setState(s => ({ playing:!s.playing })), playLabel:st.playing ? 'PAUSE' : 'PLAY',
+      tabList:TABS.map(([k,l]) => ({ label:l, style:on(st.tab===k), pick:() => this.setState({ tab:k }) })),
+      isBody:st.tab==='body', isFace:st.tab==='face', isHair:st.tab==='hair', isClothes:st.tab==='clothes', isHats:st.tab==='hats',
+      buildName:'', presetList:[], sexOpts:[], sexLabel:'', frameOpts:[], frameLabel:'', heightOpts:[], heightLabel:'', weightOpts:[], weightLabel:'', ageOpts:[], ageLabel:'', skinOpts:[], skinLabel:'',
+      headOpts:[], headLabel:'', eyeShapeOpts:[], eyeShapeLabel:'', eyeOpts:[], eyesLabel:'', hairStyleOpts:[], hairStyleLabel:'', hairOpts:[], hairLabel:'', beardOpts:[], beardLabel:'',
+      topOpts:[], topLabel:'', bottomOpts:[], bottomLabel:'', hasBottom:false, outfitPieceOpts:[], outfitPieceLabel:'', colourRows:[], hatOpts:[], hatLabel:'', hasHat:false, hatColOpts:[], hatColLabel:'',
+      randomise:() => {}, reset:() => {}, save:() => {}, savedNote:st.saved, buildCode:'',
+      runChecks:() => this.runChecks(), busy:st.busy || !ok, checkBuild:'',
+      checkSummary: st.checks.length ? (st.busy ? 'Running: ' : 'Done: ') + nPass + ' of ' + nGate + ' gated checks pass.' : 'Press the button; hair, look and cell take a few seconds.',
+      checkRows:st.checks.map(r => ({ mark:r.pass ? 'PASS' : r.gate ? 'FAIL' : 'NOTE', color:r.pass ? '#7fd6c9' : r.gate ? '#e08a6e' : '#d8c27a', title:r.title, detail:r.detail, value:r.value })) };
+    if(!ok) return v;
+    const P = C.palettes, set = (k, val) => () => this._set({ [k]:val }), withB = (patch) => Object.assign({}, b, patch, { preset:null });
+    const thumbs = (k, kind, dir, look) => C.OPTIONS[k].map(val => { const lk = look ? look(val) : {}; return { label:nm(k,val), img:this._thumb(C, withB(Object.assign({ [k]:val }, lk)), kind, dir), pick:() => this._set(Object.assign({ [k]:val }, lk)), style:tile(b[k]===val) }; });
+    const swatches = (k, ramp, idx) => C.OPTIONS[k].map(val => ({ label:nm(k,val), pick:set(k,val), style:sw(ramp[val][idx], b[k]===val) }));
+    const presetLabel = b.preset && C.BUILDS[b.preset] ? C.BUILDS[b.preset].label : 'Custom, from ' + C.BUILDS[st.base].label;
+    v.buildName = presetLabel; v.checkBuild = (b.preset && C.BUILDS[b.preset] ? C.BUILDS[b.preset].label : 'CUSTOM').toUpperCase();
+    v.presetList = C.CAST.map(k => ({ label:C.BUILDS[k].label, img:this._thumb(C, k, 'head', 3), style:tile(b.preset===k), pick:() => { const n = C.normBuild(k); n.preset = k; this._setB(n, k); } }));
+    v.buildCode = C.buildKey(b);
+    v.castList = C.CAST.map(k => { const B0 = C.BUILDS[k]; return { label:B0.label, meta:[C.SEX[B0.sex].label, C.FRAMES[B0.sex][B0.frame].label.toLowerCase(), NAMES.age[B0.age].toLowerCase()].join(' · '),
+      img:this._thumb(C, k, 'body', 4), style:tile(b.preset===k), pick:() => { const n = C.normBuild(k); n.preset = k; this._setB(n, k); } }; });
+    const CL = [['breton','Top'],['hoodie','Top'],['cardigan','Top'],['peacoat','Top'],['lifevest','Top'],['singlet','Top'],['cropped','Bottom'],['longskirt','Bottom'],['waders','Outfit'],['coveralls','Outfit'],['greatcoat','Outfit'],['wetsuit','Outfit'],['sundress','Outfit'],['pinafore','Outfit'],['trunks','Swimwear'],['briefs','Swimwear'],['swimsuit','Swimwear'],['bikini','Swimwear']];
+    const man = Object.assign({}, C.BUILDS.fisher, { hairStyle:'crop', hair:'brown', beard:'none', hat:'none', shirt:'sky', outfit:'navy', apronCol:'red', preset:null }), wom = Object.assign({}, C.BUILDS.ginny, { hat:'none', shirt:'rose', outfit:'teal', apronCol:'ochre', preset:null });
+    v.clothesList = CL.map(([k, grp]) => { const isB = grp === 'Bottom', G = isB ? null : C.GARMENTS[k], show = isB ? { garment:'tee', bottom:k } : Object.assign({ garment:k }, G.look || {});
+      return { label:isB ? C.BOTTOMS[k].label : G.label, group:grp, imgM:this._thumb(C, Object.assign({}, man, show), 'body', 4), imgW:this._thumb(C, Object.assign({}, wom, show), 'body', 4),
+        style:tile(isB ? (C.GARMENTS[b.garment].top && b.bottom === k) : b.garment === k), pick:() => this._set(isB ? (C.GARMENTS[b.garment].top ? { bottom:k } : { garment:'tee', bottom:k }) : show) }; });
+    /* 10.2: the rig's draw (randomBuild): a man never gets a skirt or a dress; the age stays where the wardrobe has it */
+    v.randomise = () => this._setB(C.randomBuild(Math.random, { age:b.age }));
+    v.reset = () => { const n = C.normBuild(st.base); n.preset = st.base; this._setB(n); };
+    v.save = () => { try { localStorage.setItem('hh.player.build.v10', JSON.stringify(b)); this.setState({ saved:'Saved.' }); } catch(e){ this.setState({ saved:'Could not save.' }); } };
+    if(st.tab === 'body'){
+      v.sexLabel = C.SEX[b.sex].label; v.sexOpts = ['m','f'].map(sx => ({ label:C.SEX[sx].label, style:on(b.sex===sx), pick:() => this._set({ sex:sx, frame:C.FRAMES[sx][b.frame] ? b.frame : 'average', shape:C.SEX[sx].shape }) }));
+      const F = C.FRAMES[b.sex]; v.frameLabel = F[b.frame].label;
+      v.frameOpts = Object.keys(F).map(fr => ({ label:F[fr].label, img:this._thumb(C, withB({ frame:fr }), 'body', 4), style:tile(b.frame===fr), pick:set('frame', fr) }));
+      v.heightLabel = NAMES.height[b.height+2]; v.weightLabel = NAMES.weight[b.weight+2]; v.ageLabel = NAMES.age[b.age];
+      v.heightOpts = C.OPTIONS.height.map((x,i) => ({ label:['−2','−1','0','+1','+2'][i], style:on(b.height===x), pick:set('height',x) }));
+      v.weightOpts = C.OPTIONS.weight.map((x,i) => ({ label:['−2','−1','0','+1','+2'][i], style:on(b.weight===x), pick:set('weight',x) }));
+      v.ageOpts = C.OPTIONS.age.map(x => ({ label:NAMES.age[x], style:on(b.age===x), pick:set('age',x) }));
+      v.skinLabel = nm('skin', b.skin); v.skinOpts = swatches('skin', P.SKINS, 4); }
+    if(st.tab === 'face'){
+      v.headLabel = nm('head', b.head); v.headOpts = thumbs('head', 'head', 3);
+      v.eyeShapeLabel = nm('eyeShape', b.eyeShape); v.eyeShapeOpts = thumbs('eyeShape', 'face', 3);
+      v.eyesLabel = nm('eyes', b.eyes); v.eyeOpts = C.OPTIONS.eyes.map(x => ({ label:nm('eyes',x), pick:set('eyes',x), style:sw(P.EYES[x], b.eyes===x) })); }
+    if(st.tab === 'hair'){
+      v.hairStyleLabel = nm('hairStyle', b.hairStyle); v.hairStyleOpts = thumbs('hairStyle', 'head', 3);
+      v.hairLabel = nm('hair', b.hair); v.hairOpts = swatches('hair', P.HAIRS, 3);
+      v.beardLabel = nm('beard', b.beard); v.beardOpts = thumbs('beard', 'head', 3); }
+    if(st.tab === 'clothes'){
+      const Gs = C.GARMENTS, look = (x) => (x !== b.garment && Gs[x].look) || {}, short = (x) => Gs[x].short || Gs[x].label;
+      const wear = (x) => ({ label:short(x), img:this._thumb(C, withB(Object.assign({ garment:x }, look(x))), 'body', 4), pick:() => this._set(Object.assign({ garment:x }, look(x))), style:tile(b.garment===x) });
+      const G = Gs[b.garment], bot = C.BOTTOMS[b.bottom].label;
+      v.topOpts = C.OPTIONS.garment.filter(x => Gs[x].top).map(wear); v.outfitPieceOpts = C.OPTIONS.garment.filter(x => !Gs[x].top && !Gs[x].swim).map(wear); v.swimOpts = C.OPTIONS.garment.filter(x => Gs[x].swim).map(wear);
+      v.topLabel = G.top ? G.label : 'Outfit on'; v.outfitPieceLabel = (G.top || G.swim) ? 'None' : G.label; v.swimLabel = G.swim ? G.label : 'None'; v.hasBottom = !!G.top; v.bottomLabel = bot;
+      v.bottomOpts = C.OPTIONS.bottom.map(x => ({ label:C.BOTTOMS[x].label, img:this._thumb(C, withB({ bottom:x }), 'body', 4), pick:set('bottom',x), style:tile(b.bottom===x) }));
+      const W = G.wear || {}, rows = [];
+      rows.push({ title: G.top ? (W.outfit ? W.outfit.replace('%', bot.toLowerCase()) : bot) : W.outfit, key:'outfit', ramp:P.OUTFITS, idx:3 });
+      if(W.shirt) rows.push({ title:W.shirt, key:'shirt', ramp:P.SHIRTS, idx:4 });
+      if(W.trim) rows.push({ title:W.trim, key:'apronCol', ramp:P.APRONS, idx:3 });
+      v.colourRows = rows.map(r => ({ title:r.title, label:nm(r.key, b[r.key]), opts:swatches(r.key, r.ramp, r.idx) })); }
+    if(st.tab === 'hats'){
+      const look = (x) => (x !== b.hat && C.HATS[x] && C.HATS[x].look) || {};
+      v.hatLabel = nm('hat', b.hat); v.hatOpts = thumbs('hat', 'hat', 3, look);
+      v.hasHat = b.hat !== 'none'; v.hatColLabel = nm('hatCol', b.hatCol); v.hatColOpts = swatches('hatCol', P.HATCOLS, 3); }
+    return v;
+  }
+}
+</script>
+</body>
+</html>
