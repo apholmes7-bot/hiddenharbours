@@ -493,10 +493,12 @@ namespace HiddenHarbours.Art
 
             // Rig 9's face: the cull by role and the floor every face culls at, and whether this def
             // carries the face at all (y). A v9 def baked before the face writes y = 0, and the shader
-            // then gates, culls and snaps nothing: it draws exactly as it did.
+            // then gates, culls and snaps nothing: it draws exactly as it did. z is rig 10's mark
+            // floor: its point marks also cull by their own turn band (UV1.w); 0 on every rig 9 def.
             _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureFaceMinT, def.FaceMinToward);
             _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureFaceParams,
-                                     new Vector4(def.FaceCullFloor, def.HasFace ? 1f : 0f, 0f, 0f));
+                                     new Vector4(def.FaceCullFloor, def.HasFace ? 1f : 0f,
+                                                 def.HasFace ? def.FaceMarkAzFloor : 0f, 0f));
             _faceUniform = Vector4.zero;
             if (def.HasFace && def.RestFace != null && def.RestFace.Length == CharacterSkinDef.FaceSlots)
                 _faceUniform = new Vector4(def.RestFace[0], def.RestFace[1], def.RestFace[2], 0f);
@@ -679,6 +681,9 @@ namespace HiddenHarbours.Art
         /// <see cref="IsoFacetFigureInk"/>, which tells the resolve to ink flagged pixels by the rig's
         /// rules. Off, or a def without the ink: the RINDEX ramp and alpha 1, the hull's rules, exactly
         /// the picture before PR 2a. Two property writes when the switch flips; nothing otherwise.
+        /// A def whose rig draws no keyline unless asked (<see cref="CharacterSkinDef.KeylineDefault"/>
+        /// off: rig 10, owner ruling K4) is inked without its ring
+        /// (<see cref="IsoFacetFigureShaderIds.InkWithoutRing"/>): the rig's edge, and no keyline.
         /// </summary>
         private void SyncInk()
         {
@@ -687,7 +692,10 @@ namespace HiddenHarbours.Art
             if (on != _inkApplied && _facetMaterial != null)
             {
                 _facetMaterial.SetTexture(IsoFacetShaderIds.DarkRampTex, on ? _stepRampTex : _darkRampTex);
-                _facetMaterial.SetFloat(IsoFacetFigureShaderIds.FigureInkOn, on ? 1f : 0f);
+                _facetMaterial.SetFloat(IsoFacetFigureShaderIds.FigureInkOn,
+                                        !on ? 0f
+                                        : _def.KeylineDefault ? IsoFacetFigureShaderIds.InkWithRing
+                                        : IsoFacetFigureShaderIds.InkWithoutRing);
                 _inkApplied = on;
             }
 
@@ -1006,12 +1014,25 @@ namespace HiddenHarbours.Art
         public static readonly int FigureFaceMinT = Shader.PropertyToID("_HHFigureFaceMinT");
 
         /// <summary><c>float4</c>, per material: x the floor every face culls at
-        /// (<see cref="CharacterSkinDef.FaceCullFloor"/>), y 1 when the def carries the face.</summary>
+        /// (<see cref="CharacterSkinDef.FaceCullFloor"/>), y 1 when the def carries the face, z rig 10's
+        /// mark floor (<see cref="CharacterSkinDef.FaceMarkAzFloor"/>; 0 = no marks), below which a
+        /// mark's flattened normal is too short to ask its turn band.</summary>
         public static readonly int FigureFaceParams = Shader.PropertyToID("_HHFigureFaceParams");
 
-        /// <summary><c>float</c>, per material: 1 while the rig's ink is live for this figure, which
-        /// flags its pixels in the dark target's alpha (0 = the figure's rules).</summary>
+        /// <summary><c>float</c>, per material: <see cref="InkWithRing"/> or <see cref="InkWithoutRing"/>
+        /// while the rig's ink is live for this figure, 0 when it is not. The facet pass flags the
+        /// figure's pixels with 1 minus it in the dark target's alpha: 0 the figure's rules with its
+        /// keyline ring, 0.25 its rules without the ring, 1 the hull's.</summary>
         public static readonly int FigureInkOn = Shader.PropertyToID("_HHFigureInkOn");
+
+        /// <summary><see cref="FigureInkOn"/> for a figure inked by its rig's rules, keyline ring and all
+        /// (rig 9).</summary>
+        public const float InkWithRing = 1f;
+
+        /// <summary><see cref="FigureInkOn"/> for a figure inked by its rig's edge rule with no keyline
+        /// ring (rig 10: the game follows the rig and draws no keyline, owner ruling K4). The resolve
+        /// tells the two apart at <c>HH_FIGURE_RING_MAX</c>.</summary>
+        public const float InkWithoutRing = 0.75f;
 
         /// <summary><c>float4</c> on the RESOLVE material: <c>(edge, keylineMix, live, 0)</c> —
         /// <see cref="IsoFacetFigureInk"/>.</summary>

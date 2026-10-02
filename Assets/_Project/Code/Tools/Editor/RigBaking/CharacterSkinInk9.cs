@@ -20,6 +20,15 @@ namespace HiddenHarbours.Tools.RigBaking
     /// numbers.</item>
     /// </list>
     ///
+    /// <para><b>Rig 10 (the rig 10 intake):</b> the same comparison against rig 10's render, for a def
+    /// whose bind mesh carries the mark attributes (<see cref="RigMeshBuilder.MarkUvChannel"/>, with
+    /// <see cref="CharacterSkinDef.FaceMarkAzFloor"/> above 0). Its face is point marks, each culled by
+    /// its own turn band (UV1.w) and drawn over the head's pixels after every other face; its smooth
+    /// parts are lit on their own normal, posed through the face's first corner as the rig poses it;
+    /// and the keyline is drawn only where the def says the rig draws it
+    /// (<see cref="CharacterSkinDef.KeylineDefault"/>: off on rig 10, owner ruling K4). Whether the port
+    /// itself paints as the rig does is <see cref="PaintRigOwn"/>'s to show, on the rig's own faces.</para>
+    ///
     /// <para><b>What it measures is what the def CARRIES:</b> floats where the rig has doubles, bone
     /// keys as quaternions and a two-influence skin, drawn under the rig's paint. The GPU's own
     /// arithmetic is the plate's to measure. The one place the two would part is the keyline mix. There
@@ -181,13 +190,17 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             byte[] truth = CharacterSkinExtractor.RenderTruth9(
                 host, def.Preset, shot.Clip, shot.Frame, shot.Dir,
-                new CharacterSkinExtractor.TruthOptions9 { SnapHead = def.HeadSnap, Look = shot.Look, Face = shot.Face },
+                new CharacterSkinExtractor.TruthOptions9
+                {
+                    SnapHead = def.HeadSnap, Keyline = def.KeylineDefault, Look = shot.Look, Face = shot.Face,
+                },
                 out RigMeshData posed, out double[] rigSnap);
             RigPaint9.Camera cam = CameraOf(host, shot.Dir, def.ElevationDeg);
             RigPaint9.Result mine = poser.Paint(shot, cam, out double[] defSnap);
             if (mine.W != posed.W || mine.H != posed.H)
                 throw new InvalidOperationException(
-                    $"'{def.Preset}' {shot.Label}: the def paints a {mine.W}x{mine.H} cell and rig 9 a {posed.W}x{posed.H} one.");
+                    $"'{def.Preset}' {shot.Label}: the def paints a {mine.W}x{mine.H} cell and " +
+                    $"{CharacterSkinExtractor.KitOf(host).Name} a {posed.W}x{posed.H} one.");
             return new Reading
             {
                 Shot = shot,
@@ -195,6 +208,81 @@ namespace HiddenHarbours.Tools.RigBaking
                 RigSnap = rigSnap,
                 DefSnap = defSnap,
             };
+        }
+
+        /// <summary>
+        /// The port's own proof: the rig's posed faces for <paramref name="shot"/>, in the rig's
+        /// doubles, painted by <see cref="RigPaint9"/> with the rig's own materials, SHADING and floors,
+        /// against the rig's render of the same shot. Nothing of a def is in it, so every pixel that
+        /// differs is the port's; the def comparison (<see cref="MeasureAll"/>) stands on there being
+        /// none. Read off whichever rig <paramref name="host"/> holds
+        /// (<see cref="CharacterSkinExtractor.KitOf"/>).
+        /// </summary>
+        public static RigPixelDiff PaintRigOwn(IRigScriptHost host, string preset, Shot shot, bool snapHead,
+                                               bool keyline)
+        {
+            if (host == null) throw new ArgumentNullException(nameof(host));
+            CharacterRigKit kit = CharacterSkinExtractor.KitOf(host);
+            byte[] truth = CharacterSkinExtractor.RenderTruth9(
+                host, preset, shot.Clip, shot.Frame, shot.Dir,
+                new CharacterSkinExtractor.TruthOptions9
+                {
+                    SnapHead = snapHead, Keyline = keyline, Look = shot.Look, Face = shot.Face,
+                },
+                out RigMeshData posed, out double[] snap, out List<RigMaterial9> rigMats);
+
+            var mats = new RigPaint9.Material[rigMats.Count];
+            for (int m = 0; m < mats.Length; m++)
+            {
+                RigMaterial9 src = rigMats[m];
+                var ramp = new int[src.Ramp.Length];
+                for (int k = 0; k < ramp.Length; k++) ramp[k] = Rgb(src.Ramp[k]);
+                mats[m] = src.Fixed
+                    ? new RigPaint9.Material { Ramp = ramp, Fixed = true }
+                    : new RigPaint9.Material
+                    {
+                        Ramp = ramp, Gain = src.Gain, Bias = src.Bias, Lo = src.Lo, Hi = src.Hi, Off = src.Off,
+                    };
+            }
+            Vector3d key = CharacterSkinExtractor.V9Shading3(host, "key");
+            CharacterSkinExtractor.MarkCull9 marks = CharacterSkinExtractor.ReadMarkCull9(kit);
+            var ink = new RigPaint9.Ink
+            {
+                KeyX = key.X, KeyY = key.Y, KeyZ = key.Z,
+                Form = CharacterSkinExtractor.V9ShadingNumber(host, "form"),
+                FormMid = CharacterSkinExtractor.V9ShadingNumber(host, "formMid"),
+                Edge = CharacterSkinExtractor.V9ShadingNumber(host, "edge"),
+                Keyline = Rgb(posed.Keyline),
+                KeylineMix = CharacterSkinExtractor.V9ShadingNumber(host, "keylineMix"),
+                CullFloor = CharacterSkinExtractor.CullFloor9(kit),
+                MarkAzFloor = marks.AzFloor, MarkEdge = marks.Edge,
+                SinglePrecisionMix = false,
+            };
+
+            var faces = new RigPaint9.Face[posed.Faces.Count];
+            for (int i = 0; i < faces.Length; i++)
+            {
+                RigFace f = posed.Faces[i];
+                var v = new double[f.V.Length * 3];
+                for (int k = 0; k < f.V.Length; k++)
+                {
+                    v[3 * k] = f.V[k].X; v[3 * k + 1] = f.V[k].Y; v[3 * k + 2] = f.V[k].Z;
+                }
+                faces[i] = new RigPaint9.Face
+                {
+                    V = v, Mat = f.Mat, B = f.B, Db = f.Db, MinT = f.MinToward, Head = f.Head,
+                    Mark = f.Mark, Az = f.MarkAz, OverHair = f.OverHair, Under = f.UnderMark, Hair = f.Hair,
+                    Sn = f.SmoothNormal.HasValue
+                        ? new[] { f.SmoothNormal.Value.X, f.SmoothNormal.Value.Y, f.SmoothNormal.Value.Z }
+                        : null,
+                };
+            }
+            RigPaint9.Camera cam = CameraOf(host, shot.Dir, posed.DefaultElev);
+            RigPaint9.Result mine = RigPaint9.Paint(faces, cam, mats, ink, snap, keyline: keyline, edges: true);
+            if (mine.W != posed.W || mine.H != posed.H)
+                throw new InvalidOperationException(
+                    $"'{preset}' {shot.Label}: the port paints a {mine.W}x{mine.H} cell and {kit.Name} a {posed.W}x{posed.H} one.");
+            return RigMeshReferenceRasterizer.Compare(truth, mine.Rgba, posed.W, posed.H);
         }
 
         /// <summary>
@@ -225,13 +313,13 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (r.Diff.DifferingPixels > 0) lines.Append("  ").Append(r).Append('\n');
             }
             return string.Format(c,
-                       "{0} shots of '{1}' against rig 9's own render (head snap {2}, edges and keyline on): worst " +
+                       "{0} shots of '{1}' against rig {11}'s own render (head snap {2}, edges on, keyline {12}): worst " +
                        "cluster {3} px (bar {4}) at {5}; {6} of {7} inked px differ in all ({8:F4}%); the head snaps " +
                        "agree to {9:0.######} px; the keyline mix {10} is mixed in single precision, which equals " +
                        "the rig's mixHex on all 65,536 byte pairs.\n",
                        readings.Count, def.Preset, def.HeadSnap ? "on" : "off", worstCluster, ClusterBar, worstAt,
                        differing, inked, inked == 0 ? 0 : 100.0 * differing / inked, snapDelta,
-                       def.KeylineMix.ToString("R", c)) +
+                       def.KeylineMix.ToString("R", c), def.SourceRigRevision, def.KeylineDefault ? "on" : "off") +
                    (lines.Length > 0 ? "shots that differ:\n" + lines : "no shot differs by a pixel.\n");
         }
 
@@ -265,11 +353,12 @@ namespace HiddenHarbours.Tools.RigBaking
             return true;
         }
 
-        /// <summary>The rig's <c>camOf({dir, elev})</c>, read off the rig so its sines and cosines are V8's.</summary>
+        /// <summary>The rig's <c>camOf({dir, elev})</c>, read off the rig <paramref name="host"/> holds so its
+        /// sines and cosines are V8's.</summary>
         public static RigPaint9.Camera CameraOf(IRigScriptHost host, int dir, double elevationDeg)
         {
             var c = CultureInfo.InvariantCulture;
-            string g = CharacterSkinExtractor.V9GlobalName;
+            string g = CharacterSkinExtractor.KitOf(host).GlobalName;
             host.Execute($"globalThis.__hhCam9={g}.camOf({{dir:{dir.ToString(c)},elev:{elevationDeg.ToString("R", c)}}});");
             try
             {
@@ -287,8 +376,8 @@ namespace HiddenHarbours.Tools.RigBaking
         // ------------------------------------------------------------------------------------------
 
         /// <summary>The def's figure, set up once per def: its bind mesh's faces, weights and face
-        /// attributes, the materials and ink as <see cref="RigPaint9"/> reads them, and the buffers a
-        /// pose writes.</summary>
+        /// attributes (and a rig 10 def's mark attributes), the materials and ink as
+        /// <see cref="RigPaint9"/> reads them, and the buffers a pose writes.</summary>
         sealed class Poser
         {
             readonly CharacterSkinDef _def;
@@ -296,7 +385,7 @@ namespace HiddenHarbours.Tools.RigBaking
             readonly BoneWeight[] _weights;
             readonly Matrix4x4[] _bindposes, _world, _skin;
             readonly int[] _starts, _counts;
-            readonly Vector4[] _attr, _face;
+            readonly Vector4[] _attr, _face, _mark;
             readonly RigPaint9.Material[] _mats;
             readonly RigPaint9.Ink _ink;
 
@@ -304,7 +393,8 @@ namespace HiddenHarbours.Tools.RigBaking
             {
                 _def = def ?? throw new ArgumentNullException(nameof(def));
                 if (def.ToneRule != ToneRule.V9 || !def.HasFace)
-                    throw new InvalidOperationException($"'{def.Preset}' is not a v9 def with a face; the ink comparison is rig 9's.");
+                    throw new InvalidOperationException(
+                        $"'{def.Preset}' is not a v9 def with a face; the ink comparison is rig 9's and rig 10's.");
                 Mesh mesh = def.BindMesh;
                 if (mesh == null) throw new InvalidOperationException($"'{def.Preset}' has no bind mesh.");
                 _srcVerts = mesh.vertices;
@@ -327,6 +417,14 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (_attr.Length != n || _face.Length != n)
                     throw new InvalidOperationException(
                         $"'{def.Preset}''s bind mesh carries {_attr.Length} facet and {_face.Length} face attributes for {n} vertices.");
+                uv.Clear();
+                mesh.GetUVs(RigMeshBuilder.MarkUvChannel, uv);
+                _mark = uv.Count == 0 ? null : uv.ToArray();
+                bool marks = def.FaceMarkAzFloor > 0f;
+                if (marks != (_mark != null) || (_mark != null && _mark.Length != n))
+                    throw new InvalidOperationException(
+                        $"'{def.Preset}''s bind mesh carries {uv.Count} mark attributes for {n} vertices, and the def " +
+                        (marks ? $"culls face marks (FaceMarkAzFloor {def.FaceMarkAzFloor})." : "has no face marks (FaceMarkAzFloor 0)."));
 
                 _mats = new RigPaint9.Material[def.Materials.Length];
                 for (int m = 0; m < _mats.Length; m++)
@@ -347,7 +445,8 @@ namespace HiddenHarbours.Tools.RigBaking
                     KeyX = def.KeyScreen.x, KeyY = def.KeyScreen.y, KeyZ = def.KeyScreen.z,
                     Form = def.Form, FormMid = def.FormMid, Edge = def.Edge,
                     Keyline = Rgb(def.Keyline), KeylineMix = def.KeylineMix,
-                    CullFloor = def.FaceCullFloor, SinglePrecisionMix = true,
+                    CullFloor = def.FaceCullFloor, MarkAzFloor = def.FaceMarkAzFloor, MarkEdge = def.FaceMarkEdge,
+                    SinglePrecisionMix = true,
                 };
             }
 
@@ -401,13 +500,43 @@ namespace HiddenHarbours.Tools.RigBaking
                         Vector3 p = _outVerts[s0 + k];
                         v[3 * k] = p.x; v[3 * k + 1] = p.y; v[3 * k + 2] = p.z;
                     }
-                    faces.Add(new RigPaint9.Face
+                    var face = new RigPaint9.Face
                     {
                         V = v, Mat = Mathf.RoundToInt(at.x), B = at.y, Db = at.z,
                         MinT = MinTowardOf(def, Mathf.RoundToInt(fa.y)), Head = fa.z > 0.5f,
-                    });
+                    };
+                    if (_mark != null)
+                    {
+                        Vector4 mk = _mark[s0];
+                        int flags = Mathf.RoundToInt(mk.w);
+                        face.Mark = (flags & RigMeshBuilder.MarkBit) != 0;
+                        face.Az = face.Mark && fa.w > 0f ? fa.w : double.NaN;
+                        face.OverHair = (flags & RigMeshBuilder.OverHairBit) != 0;
+                        face.Under = (flags & RigMeshBuilder.UnderMarkBit) != 0;
+                        face.Hair = (flags & RigMeshBuilder.HairBit) != 0;
+                        if ((flags & RigMeshBuilder.SmoothBit) != 0) face.Sn = PosedNormal(s0, mk);
+                    }
+                    faces.Add(face);
                 }
-                return RigPaint9.Paint(faces.ToArray(), cam, _mats, _ink, snap, keyline: true, edges: true);
+                return RigPaint9.Paint(faces.ToArray(), cam, _mats, _ink, snap, keyline: def.KeylineDefault, edges: true);
+            }
+
+            /// <summary>A face's smooth normal (UV2.xyz) posed as rig 10's <c>posed()</c> poses it: by the
+            /// bone of the face's first corner, or that corner's two bones weighted and then normalised
+            /// where it is blended. Call after the skin matrices are finished for the pose.</summary>
+            double[] PosedNormal(int corner, Vector4 sn)
+            {
+                BoneWeight w = _weights[corner];
+                var n = new Vector3(sn.x, sn.y, sn.z);
+                Vector3 a = _skin[w.boneIndex0].MultiplyVector(n);
+                if (w.weight1 == 0f) return new double[] { a.x, a.y, a.z };
+                Vector3 b = _skin[w.boneIndex1].MultiplyVector(n);
+                double x = (double)a.x * w.weight0 + (double)b.x * w.weight1;
+                double y = (double)a.y * w.weight0 + (double)b.y * w.weight1;
+                double z = (double)a.z * w.weight0 + (double)b.z * w.weight1;
+                double l = RigPaint9.HypotV8(x, y, z);
+                if (l == 0) l = 1;
+                return new[] { x / l, y / l, z / l };
             }
         }
 

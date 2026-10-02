@@ -535,6 +535,11 @@ namespace HiddenHarbours.Core
         [Tooltip("V9 only: the head's mid point in the head bone's frame (the build's D.headMid), " +
                  "metres — the point the head snap rounds, and the eye the look aims from.")]
         public Vector3 HeadMid;
+        [Tooltip("V9 only: whether the rig draws its keyline round the figure unless asked not to. True " +
+                 "on rig 9 (its paint inks unless told keyline:false) and on every def baked before the " +
+                 "field; false on rig 10, which inks only when asked (owner, 10-01: the game follows the " +
+                 "rig and draws no character keyline). The figure keeps its silhouette edge either way.")]
+        public bool KeylineDefault = true;
 
         [Header("The face (v9: every group bound, one per slot drawn)")]
         [Tooltip("V9 only: the rig's face groups in its GROUP_ORDER ('eyes.open' … 'mouth.smile'). A " +
@@ -551,6 +556,13 @@ namespace HiddenHarbours.Core
         [Tooltip("V9 only: the floor every face culls at, body faces included — the 1e-4 of the " +
                  "rig's max(1e-4, minT).")]
         public float FaceCullFloor;
+        [Tooltip("Rig 10 only: its face is drawn as point marks, and a mark draws only while its normal " +
+                 "has at least this horizontal length — the 1e-6 of the rig's hh < 1e-6. Each mark's own " +
+                 "turn band (its az) rides the bind mesh's UV1.w. 0 on a def with no marks.")]
+        public float FaceMarkAzFloor;
+        [Tooltip("Rig 10 only: a mark whose centre lies within this of a pixel edge draws nothing — the " +
+                 "1e-4 of the rig's |cx − round(cx)| < 1e-4. 0 on a def with no marks.")]
+        public float FaceMarkEdge;
 
         [Header("Blink (v9: the rig's BLINK, played on the figure's own clock)")]
         [Tooltip("V9 only: the blink's steps, in order (the rig's BLINK.steps).")]

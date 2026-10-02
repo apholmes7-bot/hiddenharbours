@@ -183,6 +183,17 @@ namespace HiddenHarbours.Tools.RigBaking
                     $"{RigFolder}/character/rig9/Art/characterIsoRig9.js",
                     "CharacterIso9",
                     AzimuthConvention.Clockwise),
+
+                // Added by the character rig 10 intake (2026-10-02): Claude Design's kit 10.2, landed
+                // as delivered under character/rig10/ beside rig 9 (whose folder stays as 9.2's
+                // record). The same shape as rig 9's entry: no prerequisite, and its poses and checks
+                // patch CharacterIso10 and define nothing of their own, so Load9 runs them
+                // (CharacterRigKit.Rig10). Its frozen 10.1 (characterIsoRig10_1.js) is the review
+                // page's and no entry. Registered only: the cast bakes from it once LiveRig names it.
+                ["characterRig10"] = new RigEntry(
+                    $"{RigFolder}/character/rig10/Art/characterIsoRig10.js",
+                    "CharacterIso10",
+                    AzimuthConvention.Clockwise),
             };
     }
 }

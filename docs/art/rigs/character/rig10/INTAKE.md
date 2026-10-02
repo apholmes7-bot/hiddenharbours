@@ -68,6 +68,126 @@ cellcut)`. It took about 3 minutes here; the desk measured about 12. Section B c
 the golden checks with this folder's `golden-report.json`, so on this folder it reports 600 / 600 rows
 equal and no size differences (on the drop's copy: 565 / 600 and 30).
 
+## The game's port (Phase A, no Unity)
+
+The editor reads rig 10 with the same reader as 9.2, one kit per script host:
+`CharacterRigKit` names each kit's files, global, revision, preset table and face rules, and
+`CharacterSkinExtractor.Load9(host, CharacterRigKit.Rig10)` loads this folder. The editor still bakes
+rig 9 until the intake's Phase B moves `CharacterSkinAssetBaker.LiveRig`, so nothing on screen changes
+with this PR.
+
+| What changes | 9.2 | 10.2 | Where the game takes it |
+|---|---|---|---|
+| Names | `characterIsoRig9`, `CharacterIso9`, `'9.2'`, `CAST` | `characterIsoRig10`, `CharacterIso10`, `'10.2'`, `CAST10` | `CharacterRigKit.Rig10`; catalog key `characterRig10` |
+| The export | `_sidecarExport.js` and `fit.js` | the rig's own `exportBuild(key)` and `gameplay(key)` | `CharacterSkinExtractor` |
+| The cell | 64 × 92, pivot (32, 82) | 80 × 104, pivot (40, 90) | read from the rig (`W`, `H`, `pivot`) into the def's `CellW`, `CellH`, `PivotPx` |
+| The face marks | culled by role (`ROLE`, `minT`) | `minT` 0; a point mark culls by its own band (`pt`, `az`, `sn`, `oh`) | the band in the mesh's UV1.w, `sn` and flags in UV2; the def's `FaceMarkAzFloor` and `FaceMarkEdge`, read from the rig's source; the facet shader culls a mark by its band |
+| The keyline | drawn | not drawn unless asked (`keylineDefault: false`) | the def's `KeylineDefault`; the figure is inked by its edge without the ring (owner ruling K4). Other rigs' keylines are untouched |
+| Unknown preset | throws | throws | the bake takes the ten of `CAST10` and refuses any other key, the twenty NPCs included (presets only, owner 10-01) |
+
+**The guards.** 9.2's bake guards became bodies that take the rig they read. Their `V9_` tests run them
+on 9.2 as before, and the `V10_` tests in `CharacterSkinBakeGuardTests.V10.cs` run the same bodies on
+rig 10: the composition, the material limit, the replay of every clip and frame, the clips, the face
+and tool tracks, the blink, the look (four ways) and the ink against the rig's own render. Two 9.2
+guards stay 9.2-only because they read 9.2's `ROLE`; rig 10 has its own pair, on the faces' own `az`
+and on the rig's shading with no keyline. None retired. The strips check stays 9.2's: this kit's render
+manifest lists no RGBA hashes, so the harness held its 60 renders to the rig by pixel at landing.
+
+**Every number from the rig.** The cell, the bands, the two floors of the marks' cull (the rig's
+`1e-6` and its pixel-edge `1e-4`) and the shading are read from the rig; the guards read them again
+from the rig's source text, never from the code they test.
+
+## Measured for the switch (no Unity)
+
+**The body (the rig's own `gameplay(key)`, 9.2 against 10.2).** The work contracts (helm, oars, rail,
+ladder, seat, bed, reach: 37 values) are the same in both; the body standing in them is not.
+
+| Preset | Height 9.2 → 10.2 (m) | Change | Drawn at idle 9.2 → 10.2 (px) | Change | Collider radius 9.2 → 10.2 (m) | Change |
+|---|---:|---:|---:|---:|---:|---:|
+| fisher | 1.5057 → 1.7662 | +17.3% | 45.2 → 51.0 | +12.7% | 0.200 → 0.186 | −7.0% |
+| ginny | 1.4739 → 1.6483 | +11.8% | 44.8 → 47.5 | +6.1% | 0.172 → 0.156 | −9.3% |
+| skipper | 1.4881 → 1.6407 | +10.3% | 44.8 → 47.4 | +5.7% | 0.210 → 0.201 | −4.3% |
+| nan | 1.3572 → 1.5138 | +11.5% | 41.1 → 43.5 | +5.8% | 0.179 → 0.168 | −6.1% |
+| deckboss | 1.5981 → 1.8641 | +16.6% | 48.2 → 53.7 | +11.4% | 0.229 → 0.230 | +0.4% |
+| packer | 1.4517 → 1.6233 | +11.8% | 44.0 → 47.0 | +6.6% | 0.178 → 0.161 | −9.6% |
+| cutter | 1.3176 → 1.4916 | +13.2% | 39.9 → 43.0 | +7.7% | 0.157 → 0.142 | −9.6% |
+| hand | 1.4477 → 1.6768 | +15.8% | 43.4 → 48.1 | +10.8% | 0.174 → 0.156 | −10.3% |
+| boy | 1.1393 → 1.2570 | +10.3% | 35.8 → 37.5 | +4.9% | 0.158 → 0.147 | −7.0% |
+| girl | 1.1367 → 1.2623 | +11.0% | 35.3 → 37.3 | +5.5% | 0.144 → 0.145 | +0.7% |
+
+Height is `figure.height_m`, the crown in idle. "Drawn" is idle's first frame through the rig's own
+`proj`, top to bottom of the picture, the tallest of the 8 facings. Both rigs draw 32 px a metre at
+the same 40° camera, and the picture also holds the footprint's depth, which barely changes, so the
+picture grows less than the standing height. What grows by about 17% is the Fisher's and the deck
+boss's standing height (+0.26 and +0.27 m), most of it in the legs: the Fisher's hip goes from 0.6045
+to 0.9338 m (+54%) and the hanging hands from 0.5738 to 0.7993 m (+39%). The footprint narrows a little
+(0.40 × 0.36 to 0.372 × 0.36 m).
+
+**What pins 9.2's body today.** What the switch moves, and whether it holds on rig 10:
+
+- **The switch's own branches.** The bake (`CharacterSkinAssetBaker.cs` l.663) and four guard tests
+  read `LiveRigIsV9` as "rig 9, else rig 7": `CharacterSkinBakeGuardTests`'
+  `EveryCommittedSkinDef_PinsTheRigsAsTheyAreToday` and
+  `TheCommittedBindMeshIsTheFaceTheChainComposesToday`, `CharacterSkinCastBakeTests`'
+  `ThePlayersComposedTableIsTheCommittedDefsTable` and `EveryCastStateIsAClipTheRigBakes`. With
+  `LiveRig` on rig 10 they would take rig 7's branch, so Phase B teaches them rig 10 first.
+- **The helm and the oars.** The contracts are unchanged (the wheel 0.655 m up and 0.315 m ahead, the
+  seat 0.4 m). The intro's S7 (#916, not on main yet) holds Armand's drawn ankles (`foot_L`,
+  `foot_R`) within 0.05 m of his helm station across the deck. Armand is the skipper preset. On 9.2
+  his ankle midpoint sits 7.2 mm off his origin in `idle` (S7 measured 7 mm). On 10.2 it is 9.8 mm in
+  `idle`, 0 in `helm_idle` and 32 mm in `helm_walk` (9.2: 24.3 mm). All inside the bar; the ankles
+  stay 0.075 m up.
+- **Doors.** `BoatInteriorDef.ClearHeightMeters` is read only by the editor spike
+  `BoatInteriorExtruder`; the game's door threshold reads the width alone, so no door stops anyone.
+  On 9.2 every door cleared every figure (lowest door 1.6 m, tallest figure 1.598 m). On 10.2 the
+  Fisher (1.766 m) stands taller than the doors of `CapeIslanderIso` (1.6), `SportFisherSkybridgeIso`
+  (1.65 and 1.75), the Fundy inshore lobster boats, hardtop and open (1.696), the Northumberland ones
+  (1.74) and `SportFisherConvertibleIso` (1.75). The deck boss (1.864 m) also outgrows the
+  Newfoundland inshore boats (1.784), `SternTrawlerIso` and `SternTrawlerMk2Iso` (1.8) and
+  `LobsterBoatIso` (1.84). The rest (1.9 to 2.235 m) clear everyone.
+- **Bunks.** No bunk length is recorded anywhere; sleep lies at the rig's bed height (0.3 m in both).
+  Lying length in `sleep`'s first frame: the Fisher 1.533 → 1.791 m, the deck boss 1.608 → 1.866 m.
+- **Where villagers look.** `GameConfig.DefaultCharacterLookTargetHeightMetres` is 1.31 m, rig 9's
+  Fisher head point rounded (its comment says 1.3135 m; 9.2 measures 1.3151 m), and
+  `CharacterFigureLife` aims looks at it. 10.2's Fisher head point is 1.6332 m. No test ties the
+  number to the rig, so after the switch villagers would look about 0.32 m low until it is retuned
+  (`GameConfig.asset`, the owner's to tune).
+- **Walkers' lights.** `WalkerLights.HeadlampLiftMetres` (1.55 m, "her brow") and `LanternLiftMetres`
+  (1.05 m, set for a 1.7 m figure) are fixed heights. The Fisher's crown goes from 1.506 to 1.766 m,
+  so the headlamp, which rode just above 9.2's crown, sits about 0.22 m under 10.2's.
+- **Carried things.** `CarryHands.Pose` hangs props from `FisherCarryAnchors`, sprite-era points by
+  gait and frame. The rig's hands rise from 0.574 to 0.799 m, so props would hang low on rig 10 until
+  the anchors follow the hands.
+- **Plates.** `AshoreFigurePlatePlayTests` (`HerBox`, ±0.7 m across, −0.4 to +2.2 m up; its overlay
+  check reads the def's own cell) and `VillagersAshorePlatePlayTests` (±0.9 m, −0.5 to +2.6 m) hold
+  the taller figures as they stand.
+- **Not tied to the rig's body:** the walkers' 0.35 m foot collider (sprite-era, not the rig's
+  radius), the speech bubble at 2.1 m (above the deck boss's 1.864 m), the swim and wade waterlines
+  (sprite-only), the synthetic test fixtures, the pre-rig sprite pins, and the guards that pin 9.2 on
+  purpose.
+
+**The lying clips against the 80 × 104 cell.** Every frame of `swim` (8), `tread` (6) and `sleep` (6)
+at 8 facings, the posed mesh through the rig's own `proj`, unclipped. Reach past the cell's edge, worst
+case (negative is room left):
+
+| Preset | swim | tread | sleep | sleep's pixels past the cell | past the game's overlay (cell + 1 px) |
+|---|---:|---:|---:|---:|---:|
+| fisher | −4.39 | −6.82 | +0.37 (bottom, f0 N) | 0 | 0 |
+| ginny | −5.49 | −7.26 | −1.14 | 0 | 0 |
+| skipper | −5.49 | −6.52 | −1.43 | 0 | 0 |
+| nan | −6.37 | −6.87 | −2.70 | 0 | 0 |
+| deckboss | −3.32 | −6.47 | +1.69 (bottom, f0 N) | 8 | 1 |
+| packer | −5.57 | −6.63 | −1.39 | 0 | 0 |
+| cutter | −6.53 | −7.16 | −2.70 | 0 | 0 |
+| hand | −5.13 | −6.97 | −0.51 | 0 | 0 |
+| boy | −8.96 | −6.88 | −6.58 | 0 | 0 |
+| girl | −9.04 | −7.17 | −6.62 | 0 | 0 |
+
+On 9.2's 64 × 92 cell, every lying clip of the ten fits (the closest is the deck boss's sleep, 0.99 px
+of room). Today only the player (the Fisher) plays the lying clips (`PlayerSleepPresenter`,
+`PlayerSwimAnimator`). The ashore figure draws inside its cell padded 1 px
+(`IsoCharacterFigureRenderer.BuildAshoreOverlay`).
+
 ## Findings for Claude Design (through the owner)
 
 The rig is not edited here. The send-back waits until the intake lane reports (owner, 10-01); this list
@@ -93,13 +213,16 @@ checked by the Art desk against 10.2.
    skipper and Nan). The rod sockets still turn 180.0° between frames 1 and 2 and 4 and 5 of `cast`,
    `strike` and `land`, and `mountUp` swings the right hip 179.3° between frames 9 and 10 (9.2's worst
    body joint was 171.6°, `mountCabDown`). Ask: name an aim bar, and say whether a 180° socket turn
-   may be taken either way.
+   may be taken either way. (In the game, no code follows a socket's rotation yet: the tool track is
+   data, and a clip plays frame by frame without blending, so such a turn would first show when a prop
+   hangs on the socket.)
 8. **The cell is tighter than the README says, and the lying clips run past it.** README l.122 says
    every build's cell fits with 4–5 px spare; the kit's own report gives 2 to 5 px. Measured unclipped,
    the sleeping figure facing N runs past the cell's bottom edge, and the render cuts it there: 8 px on
    the deck boss, 5 on the lobsterman, 1 on the painter; the Fisher and the monger touch the edge.
-   The `cell` check exempts swim, sleep and tread on any build over 1.545 m, which is 9.2's Fisher and
-   covers 24 of the 30 in 10.2. Ask: a cell that holds the lying clips, or a bar set for the 10.x body.
+   Of the ten the game bakes, only the deck boss loses pixels (the table above). The `cell` check
+   exempts swim, sleep and tread on any build over 1.545 m, which is 9.2's Fisher and covers 24 of the
+   30 in 10.2. Ask: a cell that holds the lying clips, or a bar set for the 10.x body.
 9. **Stale texts in the checks file and the README.** The `cell` check's title says "the 64 × 92 cell"
    (`characterIsoRig10.checks.js` l.174). The `heights` detail still says "the Fisher is 1.522, rig 7
    1.523" (l.268). The cell check's note "cloth (skirt, apron) reaches the cell edge" fires at sleep N
@@ -112,12 +235,17 @@ checked by the Art desk against 10.2.
     least one gate (face 15, look 9, light 1). README §10 names the long head at SW and one crotch
     pixel. The ten presets the game bakes pass every gate but the girl's face at SW, which the README
     names. The owner's ruling K3 has the game's creator gate each build at bake.
+11. **The golden report's printed numbers depend on the engine.** The editor runs the rig in
+    ClearScript's V8. On the ten presets it reproduces every gated row's pass and flags (189 / 190, the
+    girl's face as the kit records), but prints 3 values differently from Node 24: residuals near
+    1e-16 m. The game holds such rows to the rig's own 1e-6 gate. Ask: print residuals rounded, as the
+    builds are (`toFixed(7)`), so any engine reprints the report byte for byte.
 
 **Notes, not defects:**
 
-- An unknown preset name now throws (`no preset "…"`), as the 09-30 send-back asked. An unknown field
-  still falls back to the Fisher's.
-- The body is about 17% taller: the Fisher's idle crown goes from 1.506 to 1.766 m and his collider
+- An unknown preset name throws (`no preset "…"`, l.1019). The desk reads this as new; 9.2 on main
+  throws the same (`characterIsoRig9.js` l.748). An unknown field still falls back to the Fisher's.
+- The body is about 17% taller: the Fisher's idle crown goes from 1.506 to 1.766 m and the collider
   radius from 0.20 to 0.186 m. That feeds the fixture resize, which Claude Design also carries as open
   ("fixture sizes for the 10.x body", README l.145).
 - `SHADING.keylineDefault` is false: 10.x draws no keyline unless asked. The game follows the rig and

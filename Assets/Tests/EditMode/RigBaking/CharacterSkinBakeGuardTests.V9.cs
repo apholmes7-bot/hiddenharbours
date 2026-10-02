@@ -25,6 +25,10 @@ namespace HiddenHarbours.Tests.RigBaking
     ///
     /// <para>The ten bakes are composed once, on first use, in a host of their own; rig 7's
     /// <see cref="ComposeOnce"/> host never has rig 9 installed.</para>
+    ///
+    /// <para>Each guard is a body that takes the rig it reads (<see cref="GuardRig9"/>): its
+    /// <c>V9_</c> test hands it rig 9.2, and <c>CharacterSkinBakeGuardTests.V10.cs</c> hands the
+    /// same bodies rig 10.</para>
     /// </summary>
     public partial class CharacterSkinBakeGuardTests
     {
@@ -68,14 +72,48 @@ namespace HiddenHarbours.Tests.RigBaking
             _v9Bakes.Clear();
             _v9Host?.Dispose();
             _v9Host = null;
+            _guard9 = null;
         }
 
-        /// <summary>One value of the committed export of <paramref name="preset"/>, as the rig's
-        /// host reads it (<c>B</c> is the export).</summary>
-        string V9Export(string preset, string expression) =>
-            V9Host.EvaluateString("(function(B){return String(" + expression + ");})(" +
-                CharacterSkinExtractor.ReadKitText9(CharacterSkinExtractor.V9KitRoot,
-                                                    $"builds/{preset}.v9.json") + ")");
+        GuardRig9 _guard9;
+
+        /// <summary>Rig 9.2 as the guard bodies read it.</summary>
+        GuardRig9 Guard9 => _guard9 ??= new GuardRig9(CharacterRigKit.Rig9, () => V9Host, V9Bake);
+
+        /// <summary>One rig as a guard body reads it: its kit, the host it is loaded in (made on
+        /// first use), its global there, the fresh bake of each preset, its committed exports, and
+        /// the clips its <c>clip()</c> plays, read once per preset (<see cref="RigClipRows9"/>).</summary>
+        sealed class GuardRig9
+        {
+            readonly Func<IRigScriptHost> _host;
+            readonly Func<string, CharacterSkinAssetBaker.SkinBake> _bake;
+
+            public readonly Dictionary<string, Dictionary<string, RigClipRow9>> ClipRows =
+                new Dictionary<string, Dictionary<string, RigClipRow9>>(StringComparer.Ordinal);
+
+            public GuardRig9(CharacterRigKit kit, Func<IRigScriptHost> host,
+                             Func<string, CharacterSkinAssetBaker.SkinBake> bake)
+            {
+                Kit = kit;
+                _host = host;
+                _bake = bake;
+            }
+
+            public CharacterRigKit Kit { get; }
+
+            public IRigScriptHost Host => _host();
+
+            /// <summary>The rig's global in its host.</summary>
+            public string G => Kit.GlobalName;
+
+            public CharacterSkinAssetBaker.SkinBake Bake(string preset) => _bake(preset);
+
+            /// <summary>One value of the committed export of <paramref name="preset"/>, as the rig's
+            /// host reads it (<c>B</c> is the export).</summary>
+            public string Export(string preset, string expression) =>
+                Host.EvaluateString("(function(B){return String(" + expression + ");})(" +
+                    CharacterSkinExtractor.ReadKitText9(Kit.KitRoot, Kit.BuildFile(preset)) + ")");
+        }
 
         /// <summary>The materials the bind mesh actually paints: the distinct material indices its
         /// faces carry in the attribute channel, read from the mesh rather than from the reader
@@ -102,20 +140,23 @@ namespace HiddenHarbours.Tests.RigBaking
         /// would hide the real count).
         /// </summary>
         [Test]
-        public void V9_ComposesThePlayerUnderTheV9ToneRule()
+        public void V9_ComposesThePlayerUnderTheV9ToneRule() =>
+            ComposesThePlayerUnderTheV9ToneRule(Guard9);
+
+        void ComposesThePlayerUnderTheV9ToneRule(GuardRig9 guard)
         {
-            CharacterSkinDef def = V9Bake(Player).Def;
+            CharacterSkinDef def = guard.Bake(Player).Def;
             int limit = CharacterSkinDef.MaxMaterials(ToneRule.V9);
 
             Assert.AreEqual(ToneRule.V9, def.ToneRule,
-                "A rig 9 def must carry the v9 tone rule, or the presenter shades it with rig 7's " +
+                $"A {guard.Kit.Name} def must carry the v9 tone rule, or the presenter shades it with rig 7's " +
                 "sixteen-slot ramp.");
-            Assert.AreEqual(CharacterSkinExtractor.V9ScriptPath, def.SourceRigPath);
-            Assert.AreEqual(CharacterSkinExtractor.V9Revision, def.SourceRigRevision);
-            Assert.AreEqual(CharacterSkinExtractor.V9PosesPath, def.BaseRigPath);
-            Assert.AreEqual(V9Export(Player, "B.derivedFromRigSha256"), def.SourceRigSha256,
+            Assert.AreEqual(guard.Kit.ScriptPath, def.SourceRigPath);
+            Assert.AreEqual(guard.Kit.Revision, def.SourceRigRevision);
+            Assert.AreEqual(guard.Kit.PosesPath, def.BaseRigPath);
+            Assert.AreEqual(guard.Export(Player, "B.derivedFromRigSha256"), def.SourceRigSha256,
                 "The def was baked from a rig that is not the one the committed export was derived from.");
-            Assert.AreEqual(V9Export(Player, "B.posesDerivedFromRigSha256"), def.BaseRigSha256,
+            Assert.AreEqual(guard.Export(Player, "B.posesDerivedFromRigSha256"), def.BaseRigSha256,
                 "The def was baked with a poses file that is not the one the committed export was derived from.");
 
             SortedSet<int> painted = PaintedMaterials(def);
@@ -139,15 +180,18 @@ namespace HiddenHarbours.Tests.RigBaking
         /// painted by the bind mesh.
         /// </summary>
         [Test]
-        public void V9_EveryPresetPaintsWithinTheV9MaterialLimit()
+        public void V9_EveryPresetPaintsWithinTheV9MaterialLimit() =>
+            EveryPresetPaintsWithinTheV9MaterialLimit(Guard9);
+
+        void EveryPresetPaintsWithinTheV9MaterialLimit(GuardRig9 guard)
         {
             int limit = CharacterSkinDef.MaxMaterials(ToneRule.V9);
             var counts = new StringBuilder();
             var over = new List<string>();
 
-            foreach (string preset in CharacterSkinExtractor.Presets9(V9Host))
+            foreach (string preset in CharacterSkinExtractor.Presets9(guard.Host))
             {
-                CharacterSkinDef def = V9Bake(preset).Def;
+                CharacterSkinDef def = guard.Bake(preset).Def;
                 int painted = PaintedMaterials(def).Count;
                 counts.Append($" {preset} {def.Materials.Length}");
 
@@ -157,7 +201,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 if (def.Materials.Length > limit) over.Add($"{preset} ({def.Materials.Length})");
             }
 
-            Debug.Log($"[CharacterSkinBakeGuardTests] v9 painted materials, limit {limit}:{counts}");
+            Debug.Log($"[CharacterSkinBakeGuardTests] {guard.Kit.FileTag} painted materials, limit {limit}:{counts}");
             Assert.IsEmpty(over, $"Presets that paint more than the {limit} materials a v9 skin carries: " +
                                  string.Join(", ", over));
         }
@@ -178,9 +222,12 @@ namespace HiddenHarbours.Tests.RigBaking
         /// comparison (<see cref="CharacterSkinInk9"/>), which shoots each state in turn.</para>
         /// </summary>
         [Test]
-        public void V9_TheDefReplaysTheRigsOwnPoseOnEveryClipAndFrame()
+        public void V9_TheDefReplaysTheRigsOwnPoseOnEveryClipAndFrame() =>
+            TheDefReplaysTheRigsOwnPoseOnEveryClipAndFrame(Guard9);
+
+        void TheDefReplaysTheRigsOwnPoseOnEveryClipAndFrame(GuardRig9 guard)
         {
-            IRigScriptHost host = V9Host;
+            IRigScriptHost host = guard.Host;
             string[] names = CharacterSkinExtractor.ClipNames9(host);
             var report = new StringBuilder();
             var sw = Stopwatch.StartNew();
@@ -189,7 +236,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
             foreach (string preset in CharacterSkinExtractor.Presets9(host))
             {
-                CharacterSkinDef def = V9Bake(preset).Def;
+                CharacterSkinDef def = guard.Bake(preset).Def;
                 Assert.AreEqual(names.Length, def.Clips.Length,
                     $"{preset}: the rig names {names.Length} clips and the def carries {def.Clips.Length}.");
                 string[] bound = CharacterSkinExtractor.FaceGroupOrder9(host);
@@ -226,12 +273,12 @@ namespace HiddenHarbours.Tests.RigBaking
                               $"{presetHidden:N0} corner-frames on a face group the frame does not show");
             }
 
-            Debug.Log($"[CharacterSkinBakeGuardTests] v9 replay: {frames:N0} frames, {compared:N0} corners " +
+            Debug.Log($"[CharacterSkinBakeGuardTests] {guard.Kit.FileTag} replay: {frames:N0} frames, {compared:N0} corners " +
                       $"compared, {hidden:N0} hidden; worst {worst.ToString("0.00E+0", CultureInfo.InvariantCulture)} m " +
                       $"at {worstAt}; bar {V9ReplayTolerance} m ({sw.ElapsedMilliseconds} ms){report}");
             Assert.Greater(compared, 0, "The replay compared no corner at all.");
             Assert.LessOrEqual(worst, V9ReplayTolerance,
-                $"A v9 def poses a corner {worst:E2} m from where rig 9 draws it ({worstAt}); the bar is " +
+                $"A {guard.Kit.FileTag} def poses a corner {worst:E2} m from where {guard.Kit.Name} draws it ({worstAt}); the bar is " +
                 $"{V9ReplayTolerance} m.{report}");
         }
 
@@ -246,16 +293,19 @@ namespace HiddenHarbours.Tests.RigBaking
         /// key, not by position, so the check does not lean on the order the baker happens to use.
         /// </summary>
         [Test]
-        public void V9_TheDefCarriesEveryClipOfTheCommittedExport()
+        public void V9_TheDefCarriesEveryClipOfTheCommittedExport() =>
+            TheDefCarriesEveryClipOfTheCommittedExport(Guard9);
+
+        void TheDefCarriesEveryClipOfTheCommittedExport(GuardRig9 guard)
         {
             var problems = new List<string>();
             int rowsTotal = 0;
 
-            foreach (string preset in CharacterSkinExtractor.Presets9(V9Host))
+            foreach (string preset in CharacterSkinExtractor.Presets9(guard.Host))
             {
-                CharacterSkinAssetBaker.SkinBake bake = V9Bake(preset);
+                CharacterSkinAssetBaker.SkinBake bake = guard.Bake(preset);
                 CharacterSkinDef def = bake.Def;
-                string[] rows = V9Export(preset,
+                string[] rows = guard.Export(preset,
                     "B.clips.map(function(c){return [c.name,c.anim,c.carry||'',c.mount||''," +
                     "c.frames,c.ms,!!c.loop,!!c.settle].join(':');}).join('|')").Split('|');
 
