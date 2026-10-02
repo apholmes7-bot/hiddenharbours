@@ -1,6 +1,6 @@
 # Hidden Harbours: the design desk
 
-**As of 2026-10-01 23:08Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
+**As of 2026-10-02 20:16Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
 
 Read this file at the start of every session, then the brief the owner names. A ruling the owner gives you in a message wins over this file and over any brief. Some older docs still describe sprites where the owner has since ruled meshes (section 4); where they disagree, the ruling wins.
 
@@ -62,7 +62,7 @@ Read this file at the start of every session, then the brief the owner names. A 
 - 09-28, St Peters' key scenes, return 2 (your calls 1 to 16, as the Art desk numbered them). The detail is in [briefs/BRIEF-2026-09-28-key-scenes-return-3.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-28-key-scenes-return-3.md).
   - Ginny's cottage keeps its door to the west, with more detail on its south wall or roof.
   - The camper gets a refresh.
-  - The run and the Fen Pool stay dry ground.
+  - The run and the Fen Pool hold water, drawn on their floors until there is a still-water map. *Corrected 10-02: this line said they stay dry ground. That was the Art desk's slip; see the 10-02 ruling below.*
   - Her sign reads "CODDLE".
   - The crossing stands as drawn.
   - The east end's three buildings wait for the wharf buildings' pass 2.
@@ -126,6 +126,10 @@ Read this file at the start of every session, then the brief the owner names. A 
   - all of the ground's changes, the river wall's fill and the pads included, go into one re-issue of part 1's ground (section 6), so the game bakes one texture.
 
   The town bridge's restaurant was drawn with an older ManorIso than the game's. The bridge's boards stand as baked, and from here on you use the game's: [manorIsoRig.js](https://github.com/apholmes7-bot/hiddenharbours/blob/3ffd5712aaef9f6379e79a2fdb719c8dc835fd2c/docs/art/rigs/village-return/houses-kit/Art/manorIsoRig.js).
+- 10-02, St Peters' Fen Pool. The owner: "Also i take the leans on the fen pool". So the Fen Pool comes back as still water.
+  - Your one-scene package filled its bowl (`ground.stp_fen_pool_dry`) because this file said the pool stays dry. That line was the Art desk's slip, and it is corrected in the 09-28 entry above.
+  - In your next St Peters issue, take that fill out, re-cut the bowl, and list the pond in `stillWater` at its spill, as `pond.stp_fen_pool`.
+  - Until then, the terrain lane ships your ground as it is, without the fen's water.
 
 ## 5. How work comes back
 
