@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c7fa69da25f097ee68bd1ab3825272, type: 3}
+  m_Name: yard.st_peters.cream_saltbox
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.YardDef
+  Id: "yard.st_peters.cream_saltbox"
+  LotId: "lot.st_peters.cream_saltbox"
+  Fence: 4
+  Mown: 1
+  Outline:
+  - {x: 23.75, y: 29.985}
+  - {x: 34.0, y: 29.985}
+  - {x: 34.0, y: 41.0}
+  - {x: 23.75, y: 41.0}
+  Gate: {x: 28.5, y: 29.985}
+  Dressing:
+  - PieceId: "prop.stp_vl_cream_saltbox_oil_tank"
+    Kind: "oilTank"
+    Position: {x: 31.4, y: 30.985}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"the oil tank on its legs\"}"
+  - PieceId: "prop.stp_vl_cream_saltbox_rain_barrel"
+    Kind: "rainBarrel"
+    Position: {x: 24.4, y: 33.185}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"a rain barrel at the corner\"}"
+  - PieceId: "prop.stp_vl_cream_saltbox_clothesline"
+    Kind: "clothesline"
+    Position: {x: 33.25, y: 35.985}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":2,\"why\":\"a washing line, hung, down the east side\"}"
+  - PieceId: "prop.stp_vl_cream_saltbox_trap_stack"
+    Kind: "trapStack"
+    Position: {x: 24.4, y: 36.985}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"WharfDecor\",\"cell\":2,\"why\":\"a few traps: somebody's sideline\"}"
+  FenceSummary:
+    Panels: 16
+    Posts: 0
+    Gates: 0
+    Offcuts: 0
+    OffcutMetres: 0.0
+    Metres: 40.73

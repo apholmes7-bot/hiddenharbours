@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a8a1730c3b79fb7eb9873bdf343be0f, type: 3}
+  m_Name: lot.st_peters.sage_cottage
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.LotDef
+  Id: "lot.st_peters.sage_cottage"
+  BuildingId: "building.stp_sage_cottage"
+  BakeKey: "sageCottage"
+  StreetId: "route.stpeters.shore_walk"
+  Position: {x: -21.5, y: 41.643}
+  DoorOffset: {x: 0.0, y: -2.588}
+  FootprintId: "footprint.st_peters.sage_cottage"
+  FacingCell: 4
+  Entry: "front"
+  DoorFaces: "S"
+  RoofTop: 50.42
+  ArtBottom: 39.055
+  Gate: {x: -21.5, y: 35.38}
+  Approach: {x: -21.5, y: 34.5}
+  Outline:
+  - {x: -25.5, y: 35.38}
+  - {x: -17.4, y: 35.38}
+  - {x: -17.4, y: 45.5}
+  - {x: -25.5, y: 45.5}
+  SetbackMetres: 1.7
+  FrontageMetres: 8.1
+  DepthMetres: 15.744
+  WalkId: "route.stpeters.sage_cottage_walk"
