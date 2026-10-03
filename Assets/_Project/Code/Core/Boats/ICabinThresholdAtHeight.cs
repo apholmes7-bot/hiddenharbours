@@ -27,8 +27,9 @@ namespace HiddenHarbours.Core
         /// <summary>
         /// <see cref="ICabinThreshold.TryWalkThrough"/>, with <paramref name="hullLocalMetres"/>'s z the
         /// height of the floor she is standing on (hull metres above the keel). A doorway refuses a
-        /// walker whose floor is not its sill's; every other gate is asked exactly as in plan.
+        /// walker whose floor is not its sill's; every other gate — her key included — is asked exactly
+        /// as in plan.
         /// </summary>
-        bool TryWalkThroughAt(Vector3 hullLocalMetres);
+        bool TryWalkThroughAt(Vector3 hullLocalMetres, Vector2 heldHullLocal, float deltaSeconds);
     }
 }

@@ -431,22 +431,24 @@ namespace HiddenHarbours.Tests.PlayMode
 
         /// <summary>
         /// Walk her for <paramref name="seconds"/> of wall clock along a direction stated against his
-        /// door: <paramref name="away"/> parts of "away from it", <paramref name="across"/> parts of "across
-        /// it", both re-read off the door's LIVE position every frame (it rides his hull). Neither part ever
-        /// closes on the door, so no walk here takes her through it by accident; the one crossing each way is
+        /// doorway: <paramref name="away"/> parts of "away from it" — its axis reversed, into his cabin below
+        /// and out across his deck above — and <paramref name="across"/> parts of "across it", square to that
+        /// axis, both turned onto the screen off his LIVE drawn heading (he turns under her). Neither part
+        /// ever points through the doorway, so no walk here takes her through it by accident (owner ruling
+        /// D1, 2026-09-30: only a key pointing through it carries her); the one crossing each way is
         /// <see cref="ComeUpOnDeck"/>'s. Below decks the cabin walk, on deck the deck walk.
         /// </summary>
         private IEnumerator WalkAgainstHisDoor(float away, float across, float seconds)
         {
             BoatCabinDoor door = _opening.CabinDoor;
             Assert.IsNotNull(door, "his cabin has no door to walk against");
+            Vector2 outward = HisDoorsAxis(_opening);
+            var side = new Vector2(outward.y, -outward.x);
             float until = Time.realtimeSinceStartup + seconds;
             while (Time.realtimeSinceStartup < until)
             {
-                Vector2 fromDoor = (Vector2)_player.transform.position - (Vector2)door.transform.position;
-                Vector2 out1 = fromDoor.sqrMagnitude > 1e-6f ? fromDoor.normalized : Vector2.down;
-                Vector2 side = new Vector2(-out1.y, out1.x);
-                Vector2 input = out1 * away + side * across;
+                Vector2 awayFromIt = _opening.IsBelowDecks ? -outward : outward;
+                Vector2 input = ScreenKeyFor(_opening, awayFromIt * away + side * across);
 
                 if (_opening.IsBelowDecks) _opening.WalkTheCabin(input, Time.deltaTime);
                 else                       _opening.WalkTheDeck(input, Time.deltaTime);
@@ -455,8 +457,8 @@ namespace HiddenHarbours.Tests.PlayMode
             }
         }
 
-        /// <summary>Walk her to the threshold, steering by the door's LIVE position, until she changes
-        /// floors (IntroCabinPassagePlayTests' walk, watched).</summary>
+        /// <summary>Walk her through his open door, her key held through it (<see cref="KeyThroughHisDoor"/>),
+        /// until she changes floors (IntroCabinPassagePlayTests' walk, watched).</summary>
         private IEnumerator SheWalksThroughHisOpenDoor(ArrivalOpening opening)
         {
             BoatCabinDoor door = opening.CabinDoor;
@@ -469,11 +471,9 @@ namespace HiddenHarbours.Tests.PlayMode
             float deadline = Time.realtimeSinceStartup + 20f;
             while (opening.IsBelowDecks == startedBelow && Time.realtimeSinceStartup < deadline)
             {
-                Vector2 toDoor = (Vector2)door.transform.position - (Vector2)_player.transform.position;
-                Vector2 heading = toDoor.sqrMagnitude > 1e-6f ? toDoor.normalized : Vector2.up;
-
-                if (opening.IsBelowDecks) opening.WalkTheCabin(heading, Time.deltaTime);
-                else                      opening.WalkTheDeck(heading, Time.deltaTime);
+                Vector2 key = KeyThroughHisDoor(opening);
+                if (opening.IsBelowDecks) opening.WalkTheCabin(key, Time.deltaTime);
+                else                      opening.WalkTheDeck(key, Time.deltaTime);
                 yield return null;
                 Watch();
             }
@@ -482,25 +482,74 @@ namespace HiddenHarbours.Tests.PlayMode
             Watch();
         }
 
-        /// <summary>One approach is one crossing, and the latch starts disarmed with her in his doorway,
-        /// so an approach begins with a step clear of it (IntroCabinPassagePlayTests' reasoning).</summary>
+        /// <summary>The doorway takes her again only once it has settled since it last took her (owner ruling
+        /// D1, 2026-09-30), so an approach begins with walking away from it — along its axis reversed, never
+        /// through it — until it has (IntroCabinPassagePlayTests' reasoning). No step at all where it already
+        /// has.</summary>
         private IEnumerator StepClearOfHisDoorway(ArrivalOpening opening)
         {
             BoatCabinDoor door = opening.CabinDoor;
             float deadline = Time.realtimeSinceStartup + 10f;
-            while (!door.PassageIsArmed && Time.realtimeSinceStartup < deadline)
+            while (!door.PassageIsSettled && Time.realtimeSinceStartup < deadline)
             {
-                Vector2 away = (Vector2)_player.transform.position - (Vector2)door.transform.position;
-                Vector2 heading = away.sqrMagnitude > 1e-6f ? away.normalized : Vector2.down;
-
-                if (opening.IsBelowDecks) opening.WalkTheCabin(heading, Time.deltaTime);
-                else                      opening.WalkTheDeck(heading, Time.deltaTime);
+                Vector2 away = ScreenKeyFor(opening, opening.IsBelowDecks ? -HisDoorsAxis(opening)
+                                                                          : HisDoorsAxis(opening));
+                if (opening.IsBelowDecks) opening.WalkTheCabin(away, Time.deltaTime);
+                else                      opening.WalkTheDeck(away, Time.deltaTime);
                 yield return null;
                 Watch();
             }
 
-            Assert.IsTrue(door.PassageIsArmed,
-                          "she could not get a doorway's width clear of his sill. " + Where());
+            Assert.IsTrue(door.PassageIsSettled,
+                          "his doorway never settled while she walked away from it. " + Where());
+        }
+
+        /// <summary>
+        /// The key a player holds to walk through his open door: toward its LIVE position while she is
+        /// farther from it than its pull reaches (it rides his hull), and straight through it along its axis
+        /// within that reach — out of his cabin below, into it on deck — the key the doorway carries (owner
+        /// ruling D1, 2026-09-30: in the band with the key pointing through, she goes; a key held within its
+        /// cone and reach is carried to the opening).
+        /// </summary>
+        private Vector2 KeyThroughHisDoor(ArrivalOpening opening)
+        {
+            BoatCabinDoor door = opening.CabinDoor;
+            Vector2 here = opening.IsBelowDecks ? opening.CabinLocalPosition : opening.DeckLocalPosition;
+            if (Vector2.Distance(here, BoatCabinThreshold.PointOf(door.Door))
+                > BoatCabinThreshold.PullReachMetres(door.Door))
+            {
+                Vector2 toDoor = (Vector2)door.transform.position - (Vector2)_player.transform.position;
+                return toDoor.sqrMagnitude > 1e-6f ? toDoor.normalized : Vector2.up;
+            }
+            return ScreenKeyFor(opening, opening.IsBelowDecks ? HisDoorsAxis(opening) : -HisDoorsAxis(opening));
+        }
+
+        /// <summary>The way out through his doorway, in the hull's metres — measured off its wall.</summary>
+        private static Vector2 HisDoorsAxis(ArrivalOpening opening)
+        {
+            Vector2 outward = opening.CabinDoor.OutwardAxis;
+            Assert.AreNotEqual(Vector2.zero, outward, "his doorway is cut in no wall it could measure");
+            return outward;
+        }
+
+        /// <summary>
+        /// The screen key that walks her along <paramref name="hullLocal"/> on the floor she is on, through
+        /// the projection that floor's walk turns her key back with — the sole's turntable below
+        /// (<c>BoatCabinWalkMath.HeldOnTheSole</c>), the deck's above (<c>DeckWalkController.HeldInHullFrame</c>)
+        /// — so the direction she is handed is <paramref name="hullLocal"/> exactly. Off his LIVE drawn heading.
+        /// </summary>
+        private static Vector2 ScreenKeyFor(ArrivalOpening opening, Vector2 hullLocal)
+        {
+            IBoatHullPresenter hull = BoatHullPresenterHost.Resolve(opening.Boat.gameObject);
+            Assert.IsNotNull(hull, "his hull has no presenter to read his drawn heading from");
+            BoatVisualDef visual = opening.Boat.Hull != null ? opening.Boat.Hull.Visual : null;
+            float heading = hull.DrawnHeadingDegrees();
+            Vector2 screen = opening.IsBelowDecks
+                ? BoatCabinWalkMath.ToWorldOffset(hullLocal, 0f, heading,
+                                                  BoatInteriorInstaller.BakeElevationDegrees(visual),
+                                                  BoatInteriorInstaller.ExteriorAzimuthCounterClockwise(visual))
+                : DeckAreaMath.DeckToWorld(hullLocal, 0f, heading, hull.BakeElevationDegrees);
+            return screen.sqrMagnitude > 1e-12f ? screen.normalized : Vector2.zero;
         }
 
         /// <summary>Come up the way the player does since the 2026-08-28 ruling: a WALK through his open

@@ -36,8 +36,19 @@ namespace HiddenHarbours.Tests.EditMode
         private static readonly Vector2 SideDoorway = new Vector2(1.3f, 0.8f);
 
         /// <summary>The middle of the house sole: 2.1 m from one doorway and 1.53 m from the other,
-        /// both beyond the 0.72 m release (a door's clear width).</summary>
+        /// both far outside either doorway's 0.36 m band (half a door's clear width).</summary>
         private static readonly Vector3 MidSole = new Vector3(0f, 0f, SoleZ);
+
+        /// <summary>Where each doorway crosses her: its wall line on the house sole's edge nearest its
+        /// threshold — the aft edge for the main door, the starboard edge for the side door.</summary>
+        private static readonly Vector2 MainLine = new Vector2(0f, -2f);
+        private static readonly Vector2 SideLine = new Vector2(1.2f, 0.8f);
+
+        /// <summary>The key held into the room through the main door, in the hull's own frame.</summary>
+        private static readonly Vector2 In = Vector2.up;
+
+        /// <summary>One of her walker's ticks.</summary>
+        private const float Tick = 1f / 60f;
 
         private readonly List<Object> _spawned = new List<Object>();
 
@@ -272,49 +283,50 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =====================================================================================
-        //  6 · THE LATCH, FROM A FLOOR SHE NAMES: over the doorway on another floor is not in it
+        //  6 · THE PASSAGE, FROM A FLOOR SHE NAMES: over the doorway on another floor is not in it
         // =====================================================================================
 
         [Test]
-        public void StandingOverTheDoorwayOnAnotherFloor_SheIsNotWalkedThrough_AndKeepsHerApproach()
+        public void StandingOverTheDoorwayOnAnotherFloor_SheIsNotWalkedThrough_AndTheDoorwayStaysSettled()
         {
+            // On the main door's wall line (the sole's aft edge, 0.1 m inside its threshold), key held in.
             Rig rig = NewRig(false);
             Open(rig.Door);
+            Assert.IsTrue(rig.Door.PassageIsSettled, "the premise: nothing has crossed");
 
-            Assert.IsFalse(rig.Door.TryWalkThroughAt(MidSole));
-            Assert.IsTrue(rig.Door.PassageIsArmed, "the premise: her first step, clear of the band, arms it");
-
-            Assert.IsFalse(rig.Door.TryWalkThroughAt(new Vector3(Doorway.x, Doorway.y, FlybridgeZ)),
+            Assert.IsFalse(rig.Door.TryWalkThroughAt(new Vector3(MainLine.x, MainLine.y, FlybridgeZ), In, Tick),
                            "on the flybridge over the doorway is not in it");
-            Assert.IsFalse(rig.Door.TryWalkThroughAt(new Vector3(Doorway.x, Doorway.y, SoleZ + 1.5f * FloorTolerance)),
+            Assert.IsFalse(rig.Door.TryWalkThroughAt(new Vector3(MainLine.x, MainLine.y, SoleZ + 1.5f * FloorTolerance),
+                                                     In, Tick),
                            "nor is 15 cm over its sill");
             Assert.IsFalse(rig.Interior.IsInside);
-            Assert.IsTrue(rig.Door.PassageIsArmed, "and neither spends her approach: she never crossed");
+            Assert.IsTrue(rig.Door.PassageIsSettled, "and neither is a crossing: she never went through");
 
-            Assert.IsTrue(rig.Door.TryWalkThroughAt(new Vector3(Doorway.x, Doorway.y, SoleZ + 0.5f * FloorTolerance)),
+            Assert.IsTrue(rig.Door.TryWalkThroughAt(new Vector3(MainLine.x, MainLine.y, SoleZ + 0.5f * FloorTolerance),
+                                                    In, Tick),
                           "5 cm over its sill is on it, and she goes through");
             Assert.IsTrue(rig.Interior.IsInside);
-            Assert.IsFalse(rig.Door.PassageIsArmed, "which spends it");
+            Assert.IsFalse(rig.Door.PassageIsSettled, "which starts its settle");
         }
 
         [Test]
-        public void EveryDoorKeepsItsOwnLatch_SoSheGoesInThroughOneAndOutThroughTheOther()
+        public void EveryDoorKeepsItsOwnSettle_SoSheGoesInThroughOneAndOutThroughTheOther()
         {
             Rig rig = NewRig(true);
             Open(rig.Door);
             Open(rig.Side);
-            Vector3 main = new Vector3(Doorway.x, Doorway.y, SoleZ);
-            Vector3 side = new Vector3(SideDoorway.x, SideDoorway.y, SoleZ);
+            Vector3 main = new Vector3(MainLine.x, MainLine.y, SoleZ);
+            Vector3 side = new Vector3(SideLine.x, SideLine.y, SoleZ);
 
-            Assert.IsNull(StepEveryDoor(rig, MidSole), "the middle of the sole is in no doorway");
-            Assert.AreSame(rig.Door, StepEveryDoor(rig, main), "in through the main door");
+            Assert.IsNull(StepEveryDoor(rig, MidSole, In), "the middle of the sole is in no doorway");
+            Assert.AreSame(rig.Door, StepEveryDoor(rig, main, In), "in through the main door");
             Assert.IsTrue(rig.Interior.IsInside);
-            Assert.IsTrue(rig.Side.PassageIsArmed, "and the side door's approach is untouched");
+            Assert.IsTrue(rig.Side.PassageIsSettled, "and the side door's settle is untouched");
 
-            Assert.AreSame(rig.Side, StepEveryDoor(rig, side), "out through the side door");
+            Assert.AreSame(rig.Side, StepEveryDoor(rig, side, Vector2.right), "out through the side door, at once");
             Assert.IsFalse(rig.Interior.IsInside);
-            Assert.IsTrue(rig.Door.PassageIsArmed, "the main door re-armed when she walked clear of it");
-            Assert.IsFalse(rig.Side.PassageIsArmed, "and the side door's crossing spent its own approach");
+            Assert.IsFalse(rig.Door.PassageIsSettled, "the main door is still settling from her way in");
+            Assert.IsFalse(rig.Side.PassageIsSettled, "and the side door's crossing started its own");
         }
 
         // =====================================================================================
@@ -463,13 +475,13 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(door.IsOpen);
         }
 
-        /// <summary>One step, handed to every door the way the deck walk hands it — every door, every
-        /// frame — returning the door that took her, if one did.</summary>
-        private static BoatCabinDoor StepEveryDoor(Rig rig, Vector3 at)
+        /// <summary>One step and the key she holds, handed to every door the way the deck walk hands them —
+        /// every door, every frame — returning the door that took her, if one did.</summary>
+        private static BoatCabinDoor StepEveryDoor(Rig rig, Vector3 at, Vector2 held)
         {
             BoatCabinDoor took = null;
-            if (rig.Door.TryWalkThroughAt(at)) took = rig.Door;
-            if (rig.Side != null && rig.Side.TryWalkThroughAt(at)) took = took == null ? rig.Side : null;
+            if (rig.Door.TryWalkThroughAt(at, held, Tick)) took = rig.Door;
+            if (rig.Side != null && rig.Side.TryWalkThroughAt(at, held, Tick)) took = took == null ? rig.Side : null;
             return took;
         }
 
