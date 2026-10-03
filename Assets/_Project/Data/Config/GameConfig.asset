@@ -312,6 +312,11 @@ MonoBehaviour:
     EnvelopeBandStrength: 0.35
     DefaultOn: 1
   HullKeylineFlood: 0
+  HullMeshReflections: 0
+  HullReflectionResolutionDivisor: 1
+  HullReflectionMaxHulls: 64
+  HullReflectionMaxPackets: 1024
+  HullReflectionMaxTriangles: 1000000
   BoatLegacyCabinGlow: 0
   PixelGridSnap: 1
   CharacterBlink: 1

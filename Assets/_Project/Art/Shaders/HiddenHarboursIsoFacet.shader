@@ -299,6 +299,8 @@ Shader "HiddenHarbours/IsoFacet"
                 // nointerpolation keeps them exact across the fan.
                 nointerpolation float fidx : TEXCOORD0;
                 nointerpolation float mat  : TEXCOORD1;
+                float reflectionHeight : TEXCOORD6;
+                float reflectionDepth : TEXCOORD7;
                 float3 wpos : TEXCOORD2;         // xy = dither frame  z = TRUE unbiased depth
 #ifdef HH_LEVEL_GATE
                 // xy = the level tag, z = 1 when the camera is rendering this
@@ -311,6 +313,8 @@ Shader "HiddenHarbours/IsoFacet"
 #endif
             };
 
+            #include "Include/HullReflection.hlsl"
+
             struct FragOut
             {
                 float4 facet : SV_Target0;       // rgb = facet colour, a = hull id
@@ -319,7 +323,7 @@ Shader "HiddenHarbours/IsoFacet"
                 float  depth : SV_Target3;       // true unbiased view depth (world z, metres)
             };
 
-            Varyings vert (Attributes v)
+            Varyings HHFacetVertex (Attributes v, bool reflection)
             {
                 Varyings o;
                 float3 wp = mul(unity_ObjectToWorld, float4(v.positionOS.xyz, 1.0)).xyz;
@@ -373,10 +377,17 @@ Shader "HiddenHarbours/IsoFacet"
                 // the water's own ReferenceY (never anything per-hull), so any two fragments
                 // sharing a pixel — same hull, another hull, or a bolted-on fitting — take the
                 // identical shift and every ordering among them is preserved.
+                o.reflectionHeight = dot(float4(wp, 1), _HHMeshReflectPlane);
+                if (reflection) wp = HHMeshReflectPoint(wp);
                 o.wpos = wp;                     // camera looks along +Z; larger z = further
-                wp.z  -= (wp.y - _HullShear.y) * _HullShear.x;   // ADR 0033: the y→z shear
-                wp.z  -= v.attrs.z;              // f.db pulls the face toward the camera
+                o.reflectionDepth = -mul(UNITY_MATRIX_V, float4(wp, 1)).z;
+                if (!reflection)
+                {
+                    wp.z  -= (wp.y - _HullShear.y) * _HullShear.x;   // ADR 0033: the y→z shear
+                    wp.z  -= v.attrs.z;              // f.db pulls the face toward the camera
+                }
                 o.positionCS = TransformWorldToHClip(wp);
+                if (reflection) o.positionCS.z = HHMeshReflectClipDepth(o.reflectionDepth) * o.positionCS.w;
 #ifdef HH_FIGURE
                 // ⭐ RIG 9'S FACE (paint and paintSolved in characterIsoRig9.js; RigPaint9 is the port
                 // a guard proves byte for byte). All thirteen face groups live in the one mesh and
@@ -396,7 +407,9 @@ Shader "HiddenHarbours/IsoFacet"
                     // UN-renormalised normal: the renderer wrote each face's unit Newell normal (zero
                     // on a face with no area, which the rig culls as toward 0), and the object matrix
                     // is orthogonal. Body faces cull at the floor alone: rig 9 has no backface rescue.
-                    float toward = dot(mul((float3x3)unity_ObjectToWorld, v.normalOS), UNITY_MATRIX_V[2].xyz);
+                    float3 viewNormal = mul((float3x3)unity_ObjectToWorld, v.normalOS);
+                    if (reflection) viewNormal = mul((float3x3)_HHMeshReflectMatrix, viewNormal);
+                    float toward = dot(viewNormal, UNITY_MATRIX_V[2].xyz);
                     float minT = role == 1 ? _HHFigureFaceMinT.x
                                : role == 2 ? _HHFigureFaceMinT.y
                                : role == 3 ? _HHFigureFaceMinT.z
@@ -430,9 +443,12 @@ Shader "HiddenHarbours/IsoFacet"
                         // unsnapped face's, as in the rig. The facet targets are the camera target's
                         // size, which is _ScreenParams; which way the target's rows run does not
                         // matter, because a whole number of rows minus a pixel centre is a pixel centre.
-                        float4 hc = TransformWorldToHClip(mul(unity_ObjectToWorld, float4(_HHFigureHead.xyz, 1.0)).xyz);
-                        float2 px = (hc.xy / hc.w * 0.5 + 0.5) * _ScreenParams.xy;
-                        o.positionCS.xy += (floor(px) + 0.5 - px) * (2.0 / _ScreenParams.xy) * o.positionCS.w;
+                        float3 head = mul(unity_ObjectToWorld, float4(_HHFigureHead.xyz, 1.0)).xyz;
+                        if (reflection) head = HHMeshReflectPoint(head);
+                        float4 hc = TransformWorldToHClip(head);
+                        float2 size = reflection ? _HHMeshReflectSize.xy : _ScreenParams.xy;
+                        float2 px = (hc.xy / hc.w * 0.5 + 0.5) * size;
+                        o.positionCS.xy += (floor(px) + 0.5 - px) * (2.0 / size) * o.positionCS.w;
                     }
                 }
 #endif
@@ -538,11 +554,23 @@ Shader "HiddenHarbours/IsoFacet"
             }
 #endif
 
-            FragOut frag (Varyings i)
+            Varyings vert (Attributes v) { return HHFacetVertex(v, false); }
+            Varyings vertReflection (Attributes v) { return HHFacetVertex(v, true); }
+
+            FragOut HHFacetFragment (Varyings i, bool reflection)
             {
 #ifdef HH_LEVEL_GATE
-                if (HHLevelDiscards(i.lvl)) discard;
+                if (reflection ? i.lvl.y > 0.5 : HHLevelDiscards(i.lvl)) discard;
 #endif
+                if (reflection && i.reflectionHeight < 0)
+                {
+                    FragOut blocker;
+                    blocker.facet = 0;
+                    blocker.dark = 0;
+                    blocker.key = float4(0, 0, 0, HH_MESH_BLOCKER);
+                    blocker.depth = i.reflectionDepth;
+                    return blocker;
+                }
                 // The hull-cell pixel this fragment lands on, derived from WORLD position: the
                 // rig's screen grid is just world metres times PPU with y down and the pivot as
                 // origin. Locked to the hull, immune to render-target conventions.
@@ -633,9 +661,12 @@ Shader "HiddenHarbours/IsoFacet"
                 o.dark  = float4(_DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0);
 #endif
                 o.key   = float4(_KeyColor.rgb, 1.0);
-                o.depth = i.wpos.z;
+                o.depth = reflection ? i.reflectionDepth : i.wpos.z;
                 return o;
             }
+
+            FragOut frag (Varyings i) { return HHFacetFragment(i, false); }
+            FragOut fragReflection (Varyings i) { return HHFacetFragment(i, true); }
 
             // ---- the INTERIOR GUARD (ADR 0023: the per-face interior mask) -------------------
             // Rides the SAME vert() above, so it occupies the same pixels with the same depth.
@@ -728,5 +759,19 @@ Shader "HiddenHarbours/IsoFacet"
             #pragma fragment fragGuard
             ENDHLSL
         }
+        Pass
+        {
+            Name "HHHullMeshReflection"
+            Tags { "LightMode" = "HHHullMeshReflection" }
+            Cull Off
+            ZWrite On
+            ZTest LEqual
+            Blend Off
+            HLSLPROGRAM
+            #pragma vertex vertReflection
+            #pragma fragment fragReflection
+            ENDHLSL
+        }
+
     }
 }

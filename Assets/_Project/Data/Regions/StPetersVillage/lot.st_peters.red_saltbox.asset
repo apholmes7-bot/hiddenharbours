@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a8a1730c3b79fb7eb9873bdf343be0f, type: 3}
+  m_Name: lot.st_peters.red_saltbox
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.LotDef
+  Id: "lot.st_peters.red_saltbox"
+  BuildingId: "building.stp_red_saltbox"
+  BakeKey: "redSaltbox"
+  StreetId: "route.stpeters.east_walk"
+  Position: {x: 21.696, y: 18.03}
+  DoorOffset: {x: -3.48, y: 0.0}
+  FootprintId: "footprint.st_peters.red_saltbox"
+  FacingCell: 4
+  Entry: "left"
+  DoorFaces: "W"
+  RoofTop: 26.97
+  ArtBottom: 13.75
+  Gate: {x: 14.4, y: 20.3}
+  Approach: {x: 13.25, y: 20.3}
+  Outline:
+  - {x: 14.4, y: 8.93}
+  - {x: 32.0, y: 8.93}
+  - {x: 32.0, y: 26.615}
+  - {x: 14.4, y: 26.615}
+  SetbackMetres: 1.0
+  FrontageMetres: 27.513
+  DepthMetres: 17.6
+  WalkId: "route.stpeters.red_saltbox_walk"

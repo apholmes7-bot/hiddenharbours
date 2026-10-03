@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a8a1730c3b79fb7eb9873bdf343be0f, type: 3}
+  m_Name: lot.st_peters.post_office
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.LotDef
+  Id: "lot.st_peters.post_office"
+  BuildingId: "building.stp_post_office"
+  BakeKey: "villagePost"
+  StreetId: "route.stpeters.school_lane"
+  Position: {x: 16.5, y: 35.766}
+  DoorOffset: {x: 1.68, y: -2.732}
+  FootprintId: "footprint.st_peters.post_office"
+  FacingCell: 4
+  Entry: "front"
+  DoorFaces: "S"
+  RoofTop: 45.21
+  ArtBottom: 33.034
+  Gate: {x: 18.18, y: 29.585}
+  Approach: {x: 18.18, y: 28.3}
+  Outline:
+  - {x: 9.25, y: 29.585}
+  - {x: 22.75, y: 29.585}
+  - {x: 22.75, y: 40.0}
+  - {x: 9.25, y: 40.0}
+  SetbackMetres: 1.0
+  FrontageMetres: 13.5
+  DepthMetres: 16.203
+  WalkId: "route.stpeters.post_office_walk"

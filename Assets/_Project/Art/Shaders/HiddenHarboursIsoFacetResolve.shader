@@ -59,19 +59,7 @@ Shader "Hidden/HiddenHarbours/IsoFacetResolve"
     {
         Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalPipeline" }
 
-        Pass
-        {
-            Name "HHHullKeylineResolve"
-            ZTest Always
-            ZWrite Off
-            Cull Off
-            Blend Off
-
-            HLSLPROGRAM
-            #pragma vertex Vert
-            #pragma fragment frag
-            #pragma target 3.5
-
+        HLSLINCLUDE
             // The canonical URP blit include stack (see e.g. URP's own Bloom.shader): URP Core
             // must precede Blit.hlsl or its TEXTURE2D_X macros are undefined.
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
@@ -234,6 +222,49 @@ Shader "Hidden/HiddenHarbours/IsoFacetResolve"
                     return HHFigureKeyline(p, w, h, ink) ? ink : float4(0, 0, 0, 0);
                 return float4(_HHKeyTex.Load(int3(q0, 0)).rgb, a0);
             }
+
+            #define HH_REFLECTION_RESOLVE
+            #include "Include/HullReflection.hlsl"
+            #include "Include/ReflectMirror.hlsl"
+            float _HHMeshReflectLit[256];
+            float4 _DayNightTint;
+            float4 fragReflection(Varyings input) : SV_Target
+            {
+                uint w, h;
+                _HHFacetTex.GetDimensions(w, h);
+                // Both payload and marker use exactly this point-mapped source coordinate.
+                int2 p = min(int2(input.positionCS.xy * float2(w, h) / _HHMeshReflectSize.xy), int2(w-1, h-1));
+                if (HHMeshBlockerAt(p)) return 0;
+                input.positionCS.xy = p;
+                float4 c = frag(input);
+                if (c.a <= 0) return 0;
+                return HHReflectPremultiply(c.rgb, 1, _HHMeshReflectLit[(int)round(c.a * 255)], _DayNightTint.rgb);
+            }
+        ENDHLSL
+        Pass
+        {
+            Name "HHHullKeylineResolve"
+            ZTest Always
+            ZWrite Off
+            Cull Off
+            Blend Off
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment frag
+            #pragma target 3.5
+            ENDHLSL
+        }
+        Pass
+        {
+            Name "HHHullMeshReflectionResolve"
+            ZTest Always
+            ZWrite Off
+            Cull Off
+            Blend One OneMinusSrcAlpha
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment fragReflection
+            #pragma target 3.5
             ENDHLSL
         }
     }

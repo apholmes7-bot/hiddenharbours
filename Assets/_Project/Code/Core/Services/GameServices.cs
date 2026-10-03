@@ -871,6 +871,19 @@ namespace HiddenHarbours.Core
         public static bool HullKeylineFlood =>
             Config != null ? Config.HullKeylineFlood : GameConfig.DefaultHullKeylineFlood;
 
+        public static bool HullMeshReflections => Config != null && Config.HullMeshReflections;
+        public static int HullReflectionResolutionDivisor =>
+            Config != null && Config.HullReflectionResolutionDivisor == 2 ? 2 : 1;
+        public static int HullReflectionMaxHulls =>
+            Config != null ? UnityEngine.Mathf.Max(1, Config.HullReflectionMaxHulls)
+                : GameConfig.DefaultHullReflectionMaxHulls;
+        public static int HullReflectionMaxPackets =>
+            Config != null ? UnityEngine.Mathf.Max(1, Config.HullReflectionMaxPackets)
+                : GameConfig.DefaultHullReflectionMaxPackets;
+        public static int HullReflectionMaxTriangles =>
+            Config != null ? UnityEngine.Mathf.Max(1, Config.HullReflectionMaxTriangles)
+                : GameConfig.DefaultHullReflectionMaxTriangles;
+
         /// <summary>Do rig 9 figures blink (character PR 2a)? Same contract as
         /// <see cref="HullKeylineFlood"/>, including the <c>Config != null</c> discipline. Falls back
         /// to <see cref="GameConfig.DefaultCharacterBlink"/> (ON). Read every pose by the figure
