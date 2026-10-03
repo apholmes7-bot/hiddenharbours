@@ -79,11 +79,15 @@ namespace HiddenHarbours.Vehicles
                  "Faster than the input rate, as a real castering front end is.")]
         [Min(0f)] public float SteerReturnFullLocksPerSecond = 3f;
 
-        [Tooltip("Speed (m/s) at which steering authority has fallen to half. Above it she turns " +
-                 "lazily, below it she is nimble — the geometric bicycle model on its own turns " +
+        [Tooltip("Speed above the falloff start (m/s) at which steering authority has fallen to half. " +
+                 "Above it she turns lazily, below it she is nimble — the geometric bicycle model on its own turns " +
                  "TIGHTER the faster you go, which is exactly backwards from how a vehicle feels. " +
                  "0 disables the falloff and leaves the pure geometric model.")]
         [Min(0f)] public float SteerFalloffHalfSpeedMetersPerSecond = 9f;
+
+        [Tooltip("Up to this speed (m/s) she has her whole lock. 0 keeps the falloff from a " +
+                 "standstill; above the start she loses lock at her half-speed's rate.")]
+        [Min(0f)] public float SteerFalloffStartMetersPerSecond = 0f;
 
         [Header("With a body on the plate — the OWNER'S four knobs")]
         [Tooltip("Top speed with a trailer coupled, as a fraction of her own. A loaded truck is not a " +

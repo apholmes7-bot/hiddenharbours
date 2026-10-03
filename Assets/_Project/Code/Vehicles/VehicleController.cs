@@ -205,8 +205,8 @@ namespace HiddenHarbours.Vehicles
                                                              Towing.KingpinToAxleCentreMeters);
 
                 float half = _vehicle != null ? _vehicle.SteerFalloffHalfSpeedMetersPerSecond : 0f;
-                if (half <= 0f) return steer;
-                return steer / (1f + Mathf.Abs(_speed) / half);
+                float start = _vehicle != null ? _vehicle.SteerFalloffStartMetersPerSecond : 0f;
+                return steer / VehicleSteeringMath.SteerFalloffDivisor(_speed, start, half);
             }
         }
 

@@ -25,6 +25,7 @@ MonoBehaviour:
   SteerRateFullLocksPerSecond: 1.7
   SteerReturnFullLocksPerSecond: 2.5
   SteerFalloffHalfSpeedMetersPerSecond: 8.31
+  SteerFalloffStartMetersPerSecond: 4
   TowingSpeedFraction: 0.72
   TowingAccelerationFraction: 0.45
   TowingBrakingFraction: 0.65
