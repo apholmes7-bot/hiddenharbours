@@ -2,7 +2,7 @@
   "kit": "vehicle-rig-pack/atv-pack",
   "rig": "atvIsoRig.js",
   "exportSymbol": "AtvIso",
-  "rigSha256": "c47d4b8c80cbfeda2e8c924c7899b60f34f01a1684d8355742fdcc05e2117277",
+  "rigSha256": "7793bff92534e4482443cd2fef4f8f5fe658dce4325679abe1a8e47b6bfad54b",
   "bodies": [
     "dirtbike",
     "trike",
@@ -542,14 +542,14 @@
         "crop_note": "pack from union_everything to hold every fitting, pose, yaw step, the lean and the parked attitude in one atlas cell; union_at_rest is the tight default build."
       },
       "painted_px_at_rest": [
-        628,
-        988,
-        1231,
-        994,
-        691,
-        1204,
-        1342,
-        1198
+        632,
+        980,
+        1212,
+        985,
+        692,
+        1192,
+        1323,
+        1186
       ],
       "union_at_rest_size": [
         74,
@@ -557,14 +557,14 @@
       ],
       "roll_seam": {
         "facing": "W",
-        "painted_px": 1341,
+        "painted_px": 1320,
         "roll1_vs_roll0": {
           "colour_px": 27,
           "alpha_px": 28,
-          "pct_of_painted": 2.013
+          "pct_of_painted": 2.045
         },
         "roll05_vs_roll0": {
-          "colour_px": 69,
+          "colour_px": 68,
           "alpha_px": 41
         },
         "distance_per_rev_m": 2.073,
@@ -596,32 +596,32 @@
           "why": "SE — nose quarter, street side: steer, yaw and (bike) lean all read",
           "cyclic": true,
           "compared": "t=0 vs t=0.25",
-          "colour_px": 442,
-          "alpha_px": 829
+          "colour_px": 461,
+          "alpha_px": 815
         },
         "bounce": {
           "facing": "W",
           "why": "W — side on, the pitch reads",
           "cyclic": true,
           "compared": "t=0 vs t=0.25",
-          "colour_px": 366,
-          "alpha_px": 253
+          "colour_px": 413,
+          "alpha_px": 262
         },
         "steer": {
           "facing": "S",
           "why": "S — nose to camera, the front wheel(s) turning read",
           "cyclic": false,
           "compared": "t=0 vs t=1",
-          "colour_px": 324,
-          "alpha_px": 149
+          "colour_px": 328,
+          "alpha_px": 151
         },
         "park": {
           "facing": "SE",
           "why": "SE — the street side, where the stand is",
           "cyclic": false,
           "compared": "t=0 vs t=1",
-          "colour_px": 662,
-          "alpha_px": 542
+          "colour_px": 678,
+          "alpha_px": 537
         }
       },
       "suspension": {
@@ -649,7 +649,7 @@
           "radius_m": 2.114,
           "note": "geometric, no lean, no slip"
         },
-        "full_lock_differs_px": 324
+        "full_lock_differs_px": 328
       },
       "stand": {
         "default": 1,
@@ -667,8 +667,8 @@
         ],
         "side": "street (-x)",
         "parked_vs_ridden_px": {
-          "colour_px": 662,
-          "alpha_px": 542
+          "colour_px": 678,
+          "alpha_px": 537
         }
       },
       "lean": {
@@ -684,8 +684,8 @@
         "note": "the contact line is the axis, so the ground row does not move with lean"
       },
       "distinct_colours_at_rest": {
-        "W": 36,
-        "SE": 39
+        "W": 37,
+        "SE": 41
       },
       "anchors": {
         "_units": "{x,y} in cell px for that facing, m = [x,y,z] in model metres, already posed",
@@ -2635,14 +2635,14 @@
         "crop_note": "pack from union_everything to hold every fitting, pose, yaw step in one atlas cell; union_at_rest is the tight default build."
       },
       "painted_px_at_rest": [
-        1065,
-        1405,
-        1445,
+        1067,
+        1406,
+        1447,
         1375,
-        1121,
+        1126,
         1370,
-        1436,
-        1383
+        1430,
+        1380
       ],
       "union_at_rest_size": [
         68,
@@ -2650,11 +2650,11 @@
       ],
       "roll_seam": {
         "facing": "W",
-        "painted_px": 1436,
+        "painted_px": 1430,
         "roll1_vs_roll0": {
           "colour_px": 8,
           "alpha_px": 0,
-          "pct_of_painted": 0.557
+          "pct_of_painted": 0.559
         },
         "roll05_vs_roll0": {
           "colour_px": 7,
@@ -2689,15 +2689,15 @@
           "why": "SE — nose quarter, street side: steer, yaw and (bike) lean all read",
           "cyclic": true,
           "compared": "t=0 vs t=0.25",
-          "colour_px": 713,
-          "alpha_px": 495
+          "colour_px": 744,
+          "alpha_px": 498
         },
         "bounce": {
           "facing": "W",
           "why": "W — side on, the pitch reads",
           "cyclic": true,
           "compared": "t=0 vs t=0.25",
-          "colour_px": 264,
+          "colour_px": 285,
           "alpha_px": 80
         },
         "steer": {
@@ -2705,8 +2705,8 @@
           "why": "S — nose to camera, the front wheel(s) turning read",
           "cyclic": false,
           "compared": "t=0 vs t=1",
-          "colour_px": 361,
-          "alpha_px": 93
+          "colour_px": 368,
+          "alpha_px": 98
         }
       },
       "suspension": {
@@ -2739,11 +2739,11 @@
           "radius_m": 2.078,
           "note": "geometric, no lean, no slip"
         },
-        "full_lock_differs_px": 361
+        "full_lock_differs_px": 368
       },
       "distinct_colours_at_rest": {
-        "W": 41,
-        "SE": 39
+        "W": 42,
+        "SE": 41
       },
       "anchors": {
         "_units": "{x,y} in cell px for that facing, m = [x,y,z] in model metres, already posed",
@@ -3964,13 +3964,13 @@
       },
       "painted_px_at_rest": [
         2062,
-        2370,
-        2349,
-        2388,
+        2367,
+        2342,
+        2389,
         2100,
-        2388,
-        2346,
-        2370
+        2389,
+        2339,
+        2367
       ],
       "union_at_rest_size": [
         74,
@@ -3978,7 +3978,7 @@
       ],
       "roll_seam": {
         "facing": "W",
-        "painted_px": 2346,
+        "painted_px": 2339,
         "roll1_vs_roll0": {
           "colour_px": 0,
           "alpha_px": 0,
@@ -4006,23 +4006,23 @@
           "why": "SE — nose quarter, street side: steer, yaw and (bike) lean all read",
           "cyclic": true,
           "compared": "t=0 vs t=0.25",
-          "colour_px": 1276,
-          "alpha_px": 599
+          "colour_px": 1319,
+          "alpha_px": 600
         },
         "bounce": {
           "facing": "W",
           "why": "W — side on, the pitch reads",
           "cyclic": true,
           "compared": "t=0 vs t=0.25",
-          "colour_px": 704,
-          "alpha_px": 140
+          "colour_px": 741,
+          "alpha_px": 137
         },
         "steer": {
           "facing": "S",
           "why": "S — nose to camera, the front wheel(s) turning read",
           "cyclic": false,
           "compared": "t=0 vs t=1",
-          "colour_px": 243,
+          "colour_px": 267,
           "alpha_px": 86
         }
       },
@@ -4052,11 +4052,11 @@
           "inner_wheel_radius_m": 2.217,
           "centreline_radius_m": 2.697
         },
-        "full_lock_differs_px": 243
+        "full_lock_differs_px": 267
       },
       "distinct_colours_at_rest": {
-        "W": 38,
-        "SE": 31
+        "W": 39,
+        "SE": 33
       },
       "anchors": {
         "_units": "{x,y} in cell px for that facing, m = [x,y,z] in model metres, already posed",
