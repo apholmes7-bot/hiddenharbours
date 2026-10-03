@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cc04cd8111b8885a3350c0510b247d4, type: 3}
+  m_Name: commons.st_peters.flake_yard
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CommonsDef
+  Id: "commons.st_peters.flake_yard"
+  Outline:
+  - {x: 34.0, y: 29.585}
+  - {x: 48.0, y: 29.585}
+  - {x: 48.0, y: 41.0}
+  - {x: 34.0, y: 41.0}
+  Furniture:
+  - PieceId: "prop.stp_vl_common_flake_01"
+    Kind: "flake"
+    Position: {x: 36.6, y: 31.6}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"of\":\"flake_yard\",\"note\":\"the village's flakes: salt fish drying on Green Row, as every outport had them\"}"
+  - PieceId: "prop.stp_vl_common_flake_02"
+    Kind: "flake"
+    Position: {x: 36.6, y: 34.2}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"of\":\"flake_yard\"}"
+  - PieceId: "prop.stp_vl_common_flake_03"
+    Kind: "flake"
+    Position: {x: 45.6, y: 31.6}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"of\":\"flake_yard\"}"
+  - PieceId: "prop.stp_vl_common_flake_04"
+    Kind: "flake"
+    Position: {x: 45.6, y: 34.2}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"of\":\"flake_yard\"}"
+  - PieceId: "prop.stp_vl_common_trap_stack_01"
+    Kind: "trapStack"
+    Position: {x: 39.0, y: 31.2}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"of\":\"flake_yard\",\"note\":\"traps stacked by the gap, waiting for the cart\"}"
+  - PieceId: "prop.stp_vl_common_bench_05"
+    Kind: "bench"
+    Position: {x: 43.6, y: 30.7}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"of\":\"flake_yard\",\"note\":\"a bench by the flakes, looking down Green Row\"}"
+  Stations:
+  - Id: "station.st_peters.flake_yard"
+    Position: {x: 39.0, y: 30.6}
+    Node: "lane_cream_saltbox"
+    Who: "the cannery hands, turning the fish (fine days)"
