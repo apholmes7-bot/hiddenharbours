@@ -561,6 +561,11 @@ namespace HiddenHarbours.App.Editor
                 // Never above the paint floor's ceiling of usefulness, never on a crossing.
                 float e = terrain.ElevationAt(pos);
                 if (e < PaintFloorElevation) continue;
+                // Never on ground the sea never touches (the grass band's floor): a shore rock there is the
+                // field's. Terrain PR 5 B's ground lifts one reef site onto the NE Head's brow, Rock_reef at
+                // (186.0, 53.5) on +11 m, and this retires it (M7, T6); the analytic ground's ring sites all
+                // stand at +0.24 m or under, so its placement is unchanged.
+                if (e > GrassFloorElevation) continue;
                 if (DistanceToSegment(pos, StPetersBuilder.BerthFrom, StPetersBuilder.BerthTo)
                     <= StPetersBuilder.BerthHalfWidth + RockClearance) continue;
                 if (DistanceToSegment(pos, StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo)

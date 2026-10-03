@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4b7e2c9a1d6f4e3aa8c50f2b9d71e6c4
+guid: 848ec1825ed76774e9256d1814b6a6f2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -509200836527787468
-    second: StPetersSeabed_HeightTex_0
+      213: -8015474171504316620
+    second: StPetersStillWater_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: StPetersSeabed_HeightTex_0
+      name: StPetersStillWater_0
       rect:
         serializedVersion: 2
         x: 0
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 432fd6b7984fee8f0800000000000000
-      internalID: -509200836527787468
+      spriteID: 43faa2575b053c090800000000000000
+      internalID: -8015474171504316620
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      StPetersSeabed_HeightTex_0: -509200836527787468
+      StPetersStillWater_0: -8015474171504316620
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
