@@ -513,20 +513,21 @@ namespace HiddenHarbours.Tests.RigBaking
         /// rigs it was never baked from, which is the one thing this pin exists to rule out.</para>
         ///
         /// <para><b>The pair it reads is the pair the baker writes today</b>, which
-        /// <see cref="CharacterSkinAssetBaker.LiveRig"/> names: rig 7 over rig 6, or, since the character
-        /// intake's Phase B (2026-09-26), rig 9 over its poses file (<c>ComposeV9</c> pins
-        /// <see cref="CharacterSkinExtractor.V9ScriptPath"/> and
-        /// <see cref="CharacterSkinExtractor.V9PosesPath"/>).</para>
+        /// <see cref="CharacterSkinAssetBaker.LiveRig"/> names: rig 7 over rig 6; rig 9 over its poses
+        /// file from the character intake's Phase B (2026-09-26); rig 10 over its own since the rig 10
+        /// intake's Phase B (2026-10-02). <c>ComposeV9</c> pins the script and the poses of the kit it
+        /// bakes (<see cref="CharacterSkinAssetBaker.LiveKit"/>).</para>
         /// </summary>
         [Test]
         public void EveryCommittedSkinDef_PinsTheRigsAsTheyAreToday()
         {
-            bool v9 = CharacterSkinAssetBaker.LiveRigIsV9;
-            string sourcePath = v9 ? CharacterSkinExtractor.V9ScriptPath : CharacterSkinExtractor.ScriptPath;
-            string basePath = v9 ? CharacterSkinExtractor.V9PosesPath : CharacterPoseMeshExtractor.ScriptPath;
-            string liveSource = v9 ? CharacterSkinExtractor.SourceSha256V9() : CharacterSkinExtractor.SourceSha256();
-            string liveBase = v9 ? CharacterSkinExtractor.PosesSha256V9() : CharacterPoseMeshExtractor.SourceSha256();
-            string sourceName = v9 ? "rig 9" : "rig 7", baseName = v9 ? "rig 9's poses" : "rig 6";
+            CharacterRigKit kit = CharacterSkinAssetBaker.LiveKit;
+            bool v9 = kit != null;
+            string sourcePath = v9 ? kit.ScriptPath : CharacterSkinExtractor.ScriptPath;
+            string basePath = v9 ? kit.PosesPath : CharacterPoseMeshExtractor.ScriptPath;
+            string liveSource = v9 ? CharacterSkinExtractor.SourceSha256V9(kit) : CharacterSkinExtractor.SourceSha256();
+            string liveBase = v9 ? CharacterSkinExtractor.PosesSha256V9(kit) : CharacterPoseMeshExtractor.SourceSha256();
+            string sourceName = v9 ? kit.Name : "rig 7", baseName = v9 ? kit.Name + "'s poses" : "rig 6";
             string[] guids = UnityEditor.AssetDatabase.FindAssets(
                 "t:" + nameof(CharacterSkinDef), new[] { "Assets" });
             Assert.IsNotEmpty(guids,
@@ -560,6 +561,47 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
+        /// <b>Every committed def records its real reach past the cell</b> (the rig 10 intake, Phase B):
+        /// <see cref="CharacterSkinDef.ReachPx"/> is what <see cref="CharacterSkinPose.MeasureReach"/>
+        /// measures on the def's own mesh and clips today, and the ashore overlay pads by it. A def baked
+        /// before the measure, or edited by hand, reds here, before a figure is cut at the overlay's edge.
+        /// </summary>
+        [Test]
+        public void EveryCommittedSkinDef_RecordsItsReachPastTheCell()
+        {
+            string[] guids = UnityEditor.AssetDatabase.FindAssets(
+                "t:" + nameof(CharacterSkinDef), new[] { "Assets" });
+            Assert.IsNotEmpty(guids,
+                "the search found no CharacterSkinDef, and the player's is committed — the search is " +
+                "broken, and every check below would pass on nothing.");
+
+            static string Px(Vector4 r) => $"({r.x:F3}, {r.y:F3}, {r.z:F3}, {r.w:F3})";
+            var wrong = new List<string>();
+            var report = new StringBuilder();
+            foreach (string guid in guids)
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                var def = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(path);
+                Assert.IsNotNull(def, $"{path} is indexed as a CharacterSkinDef and does not load as one.");
+                Vector4 measured = CharacterSkinPose.MeasureReach(def), recorded = def.ReachPx;
+                for (int k = 0; k < 4; k++)
+                    if (!(Mathf.Abs(measured[k] - recorded[k]) <= 1e-3f))
+                    {
+                        wrong.Add($"{path}: records {Px(recorded)} px, measures {Px(measured)}");
+                        break;
+                    }
+                report.Append($"\n  {def.Preset}: {Px(measured)}");
+            }
+
+            Assert.IsEmpty(wrong,
+                "a committed skin def does not record the reach its own mesh and clips measure " +
+                "(left, top, right, bottom past the cell):\n  " + string.Join("\n  ", wrong) +
+                "\nRe-bake it: the bake measures it. Never edit the numbers.");
+            Debug.Log($"[char-skin guard] {guids.Length} committed def(s) record their reach past the cell " +
+                      "(px: left, top, right, bottom):" + report);
+        }
+
+        /// <summary>
         /// <b>The committed bind mesh is the face the chain composes TODAY</b>, compared by content
         /// because no hash covers it. The def pins rigs 6 and 7. The face it wears is also read from
         /// <c>eyeIsoRig</c>, <c>headIsoRig3</c>, <c>characterFaceStudy</c>,
@@ -586,11 +628,13 @@ namespace HiddenHarbours.Tests.RigBaking
         ///
         /// <para><b>"The chain" is the one the baker runs today</b>, which
         /// <see cref="CharacterSkinAssetBaker.LiveRig"/> names. Since the character intake's Phase B
-        /// (2026-09-26) that is rig 9, so the composed side is
-        /// <see cref="CharacterSkinAssetBaker.ComposeV9"/> for the player, held to its own tolerance
-        /// (<see cref="CharacterSkinExtractor.V9Tolerance"/>), and the face is rig 9's whole face,
-        /// every face group bound since character PR 2a (<see cref="CharacterSkinExtractor.FaceMeshJs9"/>),
-        /// not the pass-06 layers above.</para>
+        /// (2026-09-26) that is a <see cref="CharacterSkinAssetBaker.ComposeV9"/> kit, rig 9 and since
+        /// the rig 10 intake's Phase B (2026-10-02) rig 10 (<see cref="LiveBake"/>), so the composed side
+        /// is <c>ComposeV9</c> for the player, held to the kit's own tolerance
+        /// (<see cref="CharacterSkinExtractor.V9Tolerance"/>, the same 1e-6 m for both), and the face is
+        /// the kit's whole face, every face group bound since character PR 2a
+        /// (<see cref="CharacterSkinExtractor.FaceMeshJs9"/>) and on rig 10 its point marks, not the
+        /// pass-06 layers above.</para>
         /// </summary>
         [Test]
         public void TheCommittedBindMeshIsTheFaceTheChainComposesToday()
@@ -598,7 +642,7 @@ namespace HiddenHarbours.Tests.RigBaking
             string path = CharacterSkinAssetBaker.AssetPathFor(Player);
             var committed = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(path);
             Assert.IsNotNull(committed, $"no CharacterSkinDef at {path}: the player's skin is committed content.");
-            CharacterSkinAssetBaker.SkinBake bake = CharacterSkinAssetBaker.LiveRigIsV9 ? V9Bake(Player) : _bake;
+            CharacterSkinAssetBaker.SkinBake bake = CharacterSkinAssetBaker.LiveRigIsV9 ? LiveBake(Player) : _bake;
             Mesh disk = committed.BindMesh, live = bake.Def.BindMesh;
             Assert.IsNotNull(disk, $"{path} carries no bind mesh sub-asset.");
             const string rebake = " The face chain moved her face and the committed skin still wears the " +

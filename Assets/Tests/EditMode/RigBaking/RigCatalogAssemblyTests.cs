@@ -150,6 +150,12 @@ namespace HiddenHarbours.Tests.RigBaking
                          "CharacterHands6", AzimuthConvention.Clockwise, "character"),
             new Snapshot("characterHead", "docs/art/rigs/headIsoRig3.js",
                          "HeadIso3", AzimuthConvention.Clockwise, "characterEye"),
+            // Added by the character rig 10 intake (2026-10-02): Claude Design's kit 10.2, landed as
+            // delivered beside rig 9. Its own body, so no prerequisite; its poses and checks are
+            // sidecars that CharacterSkinExtractor.Load9 runs (CharacterRigKit.Rig10), not entries.
+            // Ordinal order puts "characterRig10" before "characterRig9".
+            new Snapshot("characterRig10", "docs/art/rigs/character/rig10/Art/characterIsoRig10.js",
+                         "CharacterIso10", AzimuthConvention.Clockwise),
             // Added by the character rig intake, PR 1 (2026-09-25): Claude Design's kit v9.2, landed
             // as delivered. Its own body, so no prerequisite; its poses and checks are sidecars that
             // CharacterSkinExtractor.Load9 runs, not entries.

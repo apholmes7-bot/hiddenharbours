@@ -11,8 +11,8 @@ namespace HiddenHarbours.Tools.RigBaking
         public int Faces, Vertices, Triangles, Materials;
         /// <summary>Vertex + index buffer bytes: pos(12) + normal(12) + uv0(16) per vertex, plus
         /// uv1(8) on a hull that carries level tags or uv1(16) on a rig 9 figure that carries face
-        /// attributes, plus 4 bytes per index. The comparison ADR 0022 makes is against RGBA32 sheet
-        /// bytes.</summary>
+        /// attributes, plus uv2(16) on a rig 10 figure that carries mark attributes, plus 4 bytes per
+        /// index. The comparison ADR 0022 makes is against RGBA32 sheet bytes.</summary>
         public long BufferBytes;
 
         /// <summary>How many faces a face group owns — 0 on every mesh that does not carry rig 9's
@@ -107,6 +107,34 @@ namespace HiddenHarbours.Tools.RigBaking
         public const int FaceUvChannel = 1;
 
         /// <summary>
+        /// UV2 on a rig 10 FIGURE: the mark attributes, a Vector4 flat across the face —
+        /// <c>xyz = the face's smooth normal</c> (<see cref="RigFace.SmoothNormal"/>, bind frame; 0 on a
+        /// face with none) and <c>w = its mark flags</c> (<see cref="MarkFlags"/>), with UV1.w the turn
+        /// band of a mark (<see cref="RigFace.MarkAz"/>; 0 on every other face). The facet shader's
+        /// figure variant reads UV1.w to cull a mark by its band, and lights a face by its smooth normal,
+        /// which the figure renderer poses on every re-skin (<c>IsoCharacterFigureRenderer</c>, since the
+        /// rig 10 intake's Phase B). The flags are for the bake's own port of the rig's paint
+        /// (<see cref="CharacterSkinInk9"/>), which poses the mesh as the engine does.
+        ///
+        /// <para>The same channel as <see cref="TexUvChannel"/>, and never both on one mesh: a room
+        /// rides a hull, never a figure. Written only when <see cref="RigMeshData.CarriesMarkAttributes"/>,
+        /// so every hull, fitting and rig 9 figure keeps exactly the bytes it had.</para>
+        /// </summary>
+        public const int MarkUvChannel = 2;
+
+        /// <summary>The bits of <see cref="MarkFlags"/>: a point mark; a mark that also draws over the
+        /// hair; a face a mark may draw over; a hair face; a face with a smooth normal.</summary>
+        public const int MarkBit = 1, OverHairBit = 2, UnderMarkBit = 4, HairBit = 8, SmoothBit = 16;
+
+        /// <summary>A face's mark flags, UV2.w on a rig 10 figure (<see cref="MarkBit"/> and its fellows).</summary>
+        public static int MarkFlags(RigFace f) =>
+            (f.Mark ? MarkBit : 0) | (f.OverHair ? OverHairBit : 0) | (f.UnderMark ? UnderMarkBit : 0) |
+            (f.Hair ? HairBit : 0) | (f.SmoothNormal.HasValue ? SmoothBit : 0);
+
+        /// <summary>A face's UV1.w on a rig 10 figure: a mark's turn band, or 0 (no band).</summary>
+        public static float MarkBand(RigFace f) => f.Mark && !double.IsNaN(f.MarkAz) ? (float)f.MarkAz : 0f;
+
+        /// <summary>
         /// Build the mesh. <paramref name="interior"/> is the side-blind per-FACE interior mask, in
         /// <c>data.Faces</c> order — kept for callers that predate the per-side codes; true maps to
         /// <see cref="RigMeshInteriorClassifier.SideInterior"/>.
@@ -159,6 +187,16 @@ namespace HiddenHarbours.Tools.RigBaking
                     "TexCoord1 and the shader reads one or the other by keyword; a mesh with both would " +
                     "have one of them silently read as the other.");
             var faceAttrs = faced ? new Vector4[vcount] : null;
+            bool marked = data.CarriesMarkAttributes;
+            if (marked && !faced)
+                throw new InvalidOperationException(
+                    $"{data.RigKey} carries rig 10 mark attributes without the face attributes they extend " +
+                    "(a mark's band rides UV1.w).");
+            if (marked && textured)
+                throw new InvalidOperationException(
+                    $"{data.RigKey} carries both interior geometry and rig 10 mark attributes. Both live in " +
+                    "TexCoord2; a figure never carries a room.");
+            var markAttrs = marked ? new Vector4[vcount] : null;
             int taggedFaces = 0, groupedFaces = 0;
             var tris = new List<int>(data.TriangleCount * 3);
 
@@ -185,7 +223,20 @@ namespace HiddenHarbours.Tools.RigBaking
                 // every mesh baked before rooms existed keeps the exact bytes it had.
                 var levelTag = tagged ? new Vector2(f.Level, f.Interior ? 1f : 0f) : default;
                 if (tagged) taggedFaces++;
-                var faceAttr = faced ? new Vector4(f.FaceGroup, f.FaceRole, f.Head ? 1f : 0f, 0f) : default;
+                var faceAttr = faced ? new Vector4(f.FaceGroup, f.FaceRole, f.Head ? 1f : 0f,
+                                                   marked ? MarkBand(f) : 0f) : default;
+                Vector4 markAttr = default;
+                if (marked)
+                {
+                    // UV1.w reads 0 as "no band", and the shader culls a mark by its band only above 0.
+                    // A band at or below 0 would ride as none, or skip the cull the rig makes.
+                    if (f.Mark && !double.IsNaN(f.MarkAz) && !(f.MarkAz > 0))
+                        throw new InvalidOperationException(
+                            $"{data.RigKey} face {faceIndex - 1} is a mark with the turn band {f.MarkAz}. UV1.w " +
+                            "carries a band above 0 (rig 10's are cosines of 21 and 24 degrees) and reads 0 as none.");
+                    Vector3 sn = f.SmoothNormal.HasValue ? f.SmoothNormal.Value.ToVector3() : Vector3.zero;
+                    markAttr = new Vector4(sn.x, sn.y, sn.z, MarkFlags(f));
+                }
                 if (faced && f.FaceGroup > 0) groupedFaces++;
 
                 int baseIndex = v;
@@ -196,6 +247,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     attrs[v] = attr;
                     if (tagged) levels[v] = levelTag;
                     if (faced) faceAttrs[v] = faceAttr;
+                    if (marked) markAttrs[v] = markAttr;
                     if (textured)
                     {
                         Vector2 uv = f.Uv != null && k < f.Uv.Length ? f.Uv[k] : Vector2.zero;
@@ -224,6 +276,7 @@ namespace HiddenHarbours.Tools.RigBaking
             if (tagged) mesh.SetUVs(LevelUvChannel, levels);
             if (textured) mesh.SetUVs(TexUvChannel, texAttrs);
             if (faced) mesh.SetUVs(FaceUvChannel, faceAttrs);
+            if (marked) mesh.SetUVs(MarkUvChannel, markAttrs);
             mesh.SetTriangles(tris, 0, calculateBounds: true);
 
             return new RigMeshBuild
@@ -235,7 +288,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 Materials = data.Materials.Count,
                 TaggedFaces = taggedFaces,
                 GroupedFaces = groupedFaces,
-                BufferBytes = (long)vcount * (12 + 12 + 16 + (tagged ? 8 : 0) + (faced ? 16 : 0)) +
+                BufferBytes = (long)vcount * (12 + 12 + 16 + (tagged ? 8 : 0) + (faced ? 16 : 0) +
+                                              (marked ? 16 : 0)) +
                               (long)tris.Count * 4,
             };
         }

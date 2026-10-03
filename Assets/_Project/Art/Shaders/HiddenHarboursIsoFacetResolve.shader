@@ -30,6 +30,9 @@
 //       colour mixed SHADING.keylineMix of the way toward its NEAREST figure neighbour's colour
 //       after 1' (ties to the one whose bytes sum lower), scanned up, right, left, down. Never
 //       over a hull or deck pixel, and never a hull's own neighbour: the ring is the figure's.
+//       A figure inked WITHOUT its ring (rig 10: the game follows the rig and draws no keyline,
+//       owner ruling K4) flags its pixels 0.25, not 0: rule 1' is its, rule 2' never finds it,
+//       and the flood never rings it either.
 // _HHFigureInk.z = 0 — no figure inked, which is every frame with the dial off — and the pass is
 // exactly the program above, byte for byte. With the flood on, a pixel the flood gives to a hull
 // keeps the hull's keyline; only a pixel it gives to an inked figure takes the figure's ink.
@@ -77,6 +80,12 @@ Shader "Hidden/HiddenHarbours/IsoFacetResolve"
             // The rig's doEdge threshold — a property of the art director's renderer being
             // transcribed (like GAIN and BIAS), not a game tunable.
             #define HH_EDGE_DEPTH_MIN 0.30
+
+            // The dark target's alpha below which an inked figure's pixel takes rule 2' (its ring).
+            // The facet pass writes 1 minus _HHFigureInkOn: 0 for a figure inked with its ring, 0.25
+            // without one (rig 10, K4), 1 for a hull; 0.5 parts a figure from a hull, this the two
+            // figures. An encoding of the facet pass's flag, not a tunable.
+            #define HH_FIGURE_RING_MAX 0.125
 
             // 4-neighbourhood offsets. Fixed bound — never an [unroll] over a runtime count.
             static const int2 kOffs[4] = { int2(1, 0), int2(-1, 0), int2(0, 1), int2(0, -1) };
@@ -151,6 +160,7 @@ Shader "Hidden/HiddenHarbours/IsoFacetResolve"
                     float4 cq = _HHFacetTex.Load(int3(q, 0));
                     if (cq.a <= 0) continue;
                     if (_HHDarkTex.Load(int3(q, 0)).a >= 0.5) continue;   // a hull's pixel
+                    if (_HHDarkTex.Load(int3(q, 0)).a >= HH_FIGURE_RING_MAX) continue;   // a figure without its ring
                     float dn = _HHDepthTex.Load(int3(q, 0));
                     float3 bytes = HHBytesOf(HHSolidRgb(q, cq, w, h));
                     float lum = bytes.r + bytes.g + bytes.b;
@@ -206,9 +216,10 @@ Shader "Hidden/HiddenHarbours/IsoFacetResolve"
                     if (na > 0) { q0 = q; a0 = na; }
                 }
                 if (a0 <= 0) return float4(0, 0, 0, 0);
-                // The flood gave this pixel to an inked figure: that figure's own ring instead.
-                if (_HHFigureInk.z > 0.5 && _HHDarkTex.Load(int3(q0, 0)).a < 0.5 && HHFigureKeyline(p, w, h, ink))
-                    return ink;
+                // The flood gave this pixel to an inked figure: that figure's own ring instead, and
+                // none at all beside a figure inked without one (K4).
+                if (_HHFigureInk.z > 0.5 && _HHDarkTex.Load(int3(q0, 0)).a < 0.5)
+                    return HHFigureKeyline(p, w, h, ink) ? ink : float4(0, 0, 0, 0);
                 return float4(_HHKeyTex.Load(int3(q0, 0)).rgb, a0);
             }
 

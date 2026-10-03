@@ -116,7 +116,9 @@ Shader "HiddenHarbours/IsoFacet"
         //                  gate, the cull by role, the head snap: character PR 2a), one fragment block
         //                  and the ink flag in the dark target's alpha. A figure never carries a room
         //                  and a hull never carries a v9 palette, so neither needs both — which is also
-        //                  why the face may read TEXCOORD1, the channel HH_LEVEL_GATE's tag uses.
+        //                  why the face may read TEXCOORD1, the channel HH_LEVEL_GATE's tag uses. Rig
+        //                  10 (the rig 10 intake) adds one test to the same block: a point mark culls
+        //                  by its own turn band, carried in TEXCOORD1.w.
         #pragma multi_compile_local _ HH_LEVEL_GATE HH_FIGURE
 
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
@@ -245,8 +247,12 @@ Shader "HiddenHarbours/IsoFacet"
             float4 _HHFigureFace;           // per draw: (eyes, brows, mouth, 0) — the group each slot shows
             float4 _HHFigureHead;           // per draw: the head's mid point, figure frame; w = 1 while it snaps
             float4 _HHFigureFaceMinT;       // the cull by role: (near, far, side, mouth)
-            float4 _HHFigureFaceParams;     // x = the floor every face culls at, y = 1 when the def has the face
-            float  _HHFigureInkOn;          // 1 while the rig's ink is live: the dark target's alpha flag
+            float4 _HHFigureFaceParams;     // x = the floor every face culls at, y = 1 when the def has the face,
+                                            // z = rig 10's mark floor (0: no marks, every rig 9 def), w = 1 when
+                                            // rig 10's smooth normal (TEXCOORD2) lights (0: every rig 9 def)
+            float  _HHFigureInkOn;          // the dark target's alpha flag is 1 minus this: 1 while the rig's ink
+                                            // is live with its keyline ring, 0.75 while it is live without one
+                                            // (rig 10, owner ruling K4), 0 off
 #endif
 
             struct Attributes
@@ -275,8 +281,14 @@ Shader "HiddenHarbours/IsoFacet"
                 // role the cull reads (0 body, 1 near, 2 far, 3 side, 4 mouth); z = 1 when the head
                 // snap moves it. Absent on a v9 def baked before the face, whose material turns every
                 // use of it off (_HHFigureFaceParams.y = 0), so whatever the input stage fills in for a
-                // missing channel is never read.
+                // missing channel is never read. w = a rig 10 mark's turn band, the cosine its paint
+                // stores as f.az (0 on every other face, and on every rig 9 face).
                 float4 faceAttr   : TEXCOORD1;
+                // RIG 10'S SMOOTH NORMAL (the rig 10 intake, Phase B): xyz = the face's smooth normal,
+                // posed by the renderer on every re-skin (zero on a face with none); w = its mark flags,
+                // which only the bake reads. Read only while _HHFigureFaceParams.w = 1. On a hull this
+                // channel is HH_LEVEL_GATE's room, and a figure never carries a room.
+                float4 markAttr   : TEXCOORD2;
 #endif
             };
 
@@ -323,6 +335,11 @@ Shader "HiddenHarbours/IsoFacet"
                 // dot with LN — see the header comment.
                 float sh = dot(wn, _LN.xyz);
 #ifdef HH_FIGURE
+                // RIG 10 LIGHTS ON THE SMOOTH NORMAL: "a face with a smooth normal is culled on its own
+                // normal and lit on the smooth one" (characterIsoRig10.js, paint). The renderer posed it
+                // into markAttr.xyz; the cull below still reads normalOS, the face's own.
+                if (_HHFigureFaceParams.w > 0.5 && dot(v.markAttr.xyz, v.markAttr.xyz) > 0.0)
+                    sh = dot(normalize(mul((float3x3)unity_ObjectToWorld, v.markAttr.xyz)), _LN.xyz);
                 // THE V9 SHADE INDEX: a gain and bias per MATERIAL, where rig 7 has one global pair.
                 // With _LN the folded key, sh = s + form·formMid, and bias' took gain·form·formMid out
                 // again, so this is the kit's s·gain + bias + b (kit rule 6; IsoFacetFigureTone.Tone).
@@ -397,7 +414,24 @@ Shader "HiddenHarbours/IsoFacet"
                                : role == 2 ? _HHFigureFaceMinT.y
                                : role == 3 ? _HHFigureFaceMinT.z
                                : role == 4 ? _HHFigureFaceMinT.w : 0.0;
-                    if (!shown || toward <= max(_HHFigureFaceParams.x, minT))
+                    // RIG 10'S MARKS (the rig 10 intake): a point mark culls by its own turn band as
+                    // well, "if (hh < AZFLOOR || -ny/hh <= f.az) continue": its normal, laid flat on the
+                    // ground, must point within the band of the way to the camera, laid flat the same
+                    // way. The figure's up is its frame's z, as in the rig. Every rig 9 def writes
+                    // _HHFigureFaceParams.z = 0, and every face but a mark carries w = 0: neither asks.
+                    bool outOfBand = false;
+                    if (_HHFigureFaceParams.z > 0.0 && v.faceAttr.w > 0.0)
+                    {
+                        float3 up = normalize(mul((float3x3)unity_ObjectToWorld, float3(0.0, 0.0, 1.0)));
+                        float3 wnr = mul((float3x3)unity_ObjectToWorld, v.normalOS);
+                        float3 flatN = wnr - dot(wnr, up) * up;
+                        float3 flatV = UNITY_MATRIX_V[2].xyz - dot(UNITY_MATRIX_V[2].xyz, up) * up;
+                        float hh = length(flatN);
+                        float hv = length(flatV);
+                        outOfBand = hh < _HHFigureFaceParams.z || hv <= 0.0
+                                 || dot(flatN, flatV) / (hh * hv) <= v.faceAttr.w;
+                    }
+                    if (!shown || toward <= max(_HHFigureFaceParams.x, minT) || outOfBand)
                     {
                         o.positionCS = float4(2.0, 2.0, 2.0, 1.0);
                     }
@@ -619,6 +653,8 @@ Shader "HiddenHarbours/IsoFacet"
                 // THE INK FLAG. While rig 9's ink is live the renderer binds the one-step-down ramp
                 // here (paint's "stp[i]--") and this alpha reads 0, which is how the resolve knows the
                 // pixel is a figure's and inks it by the rig's rules. Every hull writes 1, as before.
+                // A figure inked without its keyline ring (rig 10, K4) reads 0.25: the resolve gives
+                // it the figure's edge and no ring.
                 o.dark  = float4(_DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0 - _HHFigureInkOn);
 #else
                 o.facet = float4(_RampTex.Load(int3(idx, m, 0)).rgb, hullId);

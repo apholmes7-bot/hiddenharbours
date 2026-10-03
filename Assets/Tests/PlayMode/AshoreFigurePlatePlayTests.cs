@@ -538,8 +538,10 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <summary>
         /// ⭐⭐ <b>S3 — St Peters at noon, behind a yard fence.</b> The nearest horizontal rail of the yards'
         /// dressing to her spawn (a picket panel, else a post-and-rail); she stands just north of it, so
-        /// the rail is in front of her on screen. Every fence piece is hidden for one CONTROL shutter in
-        /// each state, so the plate can say where her sprite and her mesh differ BEHIND the fence.
+        /// the rail is in front of her on screen. Every fence piece the game draws after her sprite is
+        /// hidden for one CONTROL shutter in each state, so the plate can say where her sprite and her
+        /// mesh differ BEHIND the fence. A piece drawn before her (a panel north of her) is rightly under
+        /// her mesh as it is under her sprite, and a figure taller than her sprite covers more of it.
         /// </summary>
         [UnityTest]
         public IEnumerator Switch_BehindAYardFence_OffThenOn_StPetersNoon()
@@ -565,7 +567,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _neighbours.Add($"rail {(rail.transform.parent != null ? rail.transform.parent.name + "/" : "")}{rail.name} at " +
                             $"{Fmt(rail.transform.position)}, bounds {Fmt(rail.bounds.min)}..{Fmt(rail.bounds.max)}, " +
                             $"{Vector2.Distance(rail.transform.position, spawn):0.0} m from her spawn; " +
-                            $"{_hiddenFence.Count} fence piece(s) in the control shutter");
+                            $"{_hiddenFence.Count} fence piece(s) in the yards");
             NoteNeighbours(at, 12f);
 
             yield return StandHer(at, at + new Vector2(0f, FrameLiftMetres), 8f, "her and the rail she stands behind",
@@ -573,13 +575,23 @@ namespace HiddenHarbours.Tests.PlayMode
             AssertTheSubjectIsInFrame(rail.transform, "S3: the fence rail");
             yield return FindHerPresenter();
 
+            // Her sprite's order is set where she now stands, so the fence in front of her is known here.
+            SpriteRenderer her = _rider.BodyRenderer;
+            List<Renderer> inFront = _hiddenFence.Where(r => DrawnAfter(r, her)).ToList();
+            _neighbours.Add($"{inFront.Count} of the {_hiddenFence.Count} fence piece(s) are drawn after her sprite " +
+                            $"(order {her.sortingOrder}): those are the fence S-e keeps in front, and the control " +
+                            $"shutter's");
+            if (!inFront.Contains(rail))
+                Assert.Fail($"[{PlateDir}] NO PLATE WRITTEN — the rail '{rail.name}' (order {rail.sortingOrder}) is not " +
+                            $"drawn after her sprite (order {her.sortingOrder}), so she does not stand behind it.");
+
             yield return ShootTheSwitch(new Arm
             {
                 Key = "s3-switch-behind-fence-stpeters-noon",
                 Frame = $"{StPetersScene} 12:00, her {BehindTheFenceMetres:0.0} m north of the rail '{rail.name}' at " +
                         $"{Fmt(at)} (the rail in front of her on screen); switch OFF / ON / OFF, each with a " +
                         "fence-hidden control shutter",
-            }, fence: _hiddenFence);
+            }, fence: inFront);
         }
 
         /// <summary>
@@ -1840,6 +1852,15 @@ namespace HiddenHarbours.Tests.PlayMode
 
         static bool IsFencePiece(string name) =>
             FencePieceKeys.Any(k => name.StartsWith(k + "_", System.StringComparison.Ordinal));
+
+        /// <summary>Whether the game draws <paramref name="r"/> after <paramref name="her"/>: a later sorting
+        /// layer, or a higher order in hers. A tie is the renderer's to break (by depth), not the plate's.</summary>
+        static bool DrawnAfter(Renderer r, Renderer her)
+        {
+            int layer = SortingLayer.GetLayerValueFromID(r.sortingLayerID);
+            int herLayer = SortingLayer.GetLayerValueFromID(her.sortingLayerID);
+            return layer != herLayer ? layer > herLayer : r.sortingOrder > her.sortingOrder;
+        }
 
         /// <summary>The nearest enabled horizontal rail of one fence style, ties by name.</summary>
         static SpriteRenderer PickTheRail(GameObject yards, string key, Vector2 near) =>

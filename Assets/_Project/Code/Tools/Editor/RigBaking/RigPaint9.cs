@@ -1,14 +1,19 @@
 using System;
+using System.Collections.Generic;
 
 namespace HiddenHarbours.Tools.RigBaking
 {
     /// <summary>
     /// <b>Rig 9's paint, ported line for line</b> (characterIsoRig9.js <c>paint</c>, and the head snap of
-    /// <c>paintSolved</c>) over faces in the rig's frame. It has two uses, and the first is what makes
-    /// the second worth anything:
+    /// <c>paintSolved</c>) over faces in the rig's frame, <b>and rig 10's</b> (characterIsoRig10.js 10.2),
+    /// which paints the same way and adds two rules: the face is drawn as point marks
+    /// (<see cref="Face.Mark"/>), and a face with a smooth normal (<see cref="Face.Sn"/>) is lit on it.
+    /// Rig 9's faces carry neither, so they paint exactly as before. It has two uses, and the first is
+    /// what makes the second worth anything:
     /// <list type="number">
-    /// <item>On the faces rig 9 itself posed, with the rig's own numbers, it returns rig 9's render
-    /// byte for byte. That is the port's proof, and a guard holds it.</item>
+    /// <item>On the faces the rig itself posed, with the rig's own numbers, it returns the rig's render
+    /// byte for byte. That is the port's proof, and a guard holds it (rig 10's:
+    /// <see cref="CharacterSkinInk9.PaintRigOwn"/>).</item>
     /// <item>On the faces a def poses through the engine's own path, with the def's thresholds, ink
     /// and snap, whatever differs from rig 9's render is what the def's data and the engine's posing
     /// cost. That is character PR 2a's ink comparison (<see cref="CharacterSkinInk9"/>).</item>
@@ -25,13 +30,34 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>One face: its corners in the rig's frame (metres, +x right, +y forward, +z up) as
         /// <c>x0, y0, z0, x1, …</c>; its material; the rig's shade bias <c>b</c> and depth bias
         /// <c>db</c>; the threshold it culls at (the rig's <c>minT</c>, or a def's role threshold);
-        /// and whether the head snap moves it.</summary>
+        /// and whether the head snap moves it. Rig 10's faces add the rest.</summary>
         public sealed class Face
         {
             public double[] V;
             public int Mat;
             public double B, Db, MinT;
             public bool Head;
+
+            /// <summary>Rig 10's <c>pt</c>: a point mark, painted after every other face as the one
+            /// pixel under its centre.</summary>
+            public bool Mark;
+
+            /// <summary>Rig 10's <c>az</c>: a mark draws only while the cosine of the horizontal angle
+            /// between its normal and the camera is above this. NaN for none.</summary>
+            public double Az = double.NaN;
+
+            /// <summary>Rig 10's <c>oh</c>: a mark that may also draw over the hair.</summary>
+            public bool OverHair;
+
+            /// <summary>Rig 10's <c>PT_UNDER[part]</c>: a mark may draw over a pixel this face holds.</summary>
+            public bool Under;
+
+            /// <summary>This face's part is the hair (for <see cref="OverHair"/>).</summary>
+            public bool Hair;
+
+            /// <summary>Rig 10's <c>sn</c>, posed, in the rig's frame: the face culls on its own normal
+            /// and is lit on this one. Null for none.</summary>
+            public double[] Sn;
 
             public int Corners => V.Length / 3;
         }
@@ -57,8 +83,9 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>The numbers paint reads besides the faces: <c>SHADING.key</c>, <c>form</c>,
-        /// <c>formMid</c>, <c>edge</c>, <c>keyline</c> (as <c>0xRRGGBB</c>), <c>keylineMix</c>, and the
-        /// floor of the face cull (the <c>1e-4</c> of <c>max(1e-4, minT)</c>).</summary>
+        /// <c>formMid</c>, <c>edge</c>, <c>keyline</c> (as <c>0xRRGGBB</c>), <c>keylineMix</c>, the
+        /// floor of the face cull (the <c>1e-4</c> of <c>max(1e-4, minT)</c>, which rig 10's marks cull
+        /// at too), and rig 10's two mark floors.</summary>
         public struct Ink
         {
             public double KeyX, KeyY, KeyZ;
@@ -67,6 +94,14 @@ namespace HiddenHarbours.Tools.RigBaking
             public int Keyline;
             public double KeylineMix;
             public double CullFloor;
+
+            /// <summary>Rig 10: a mark whose normal has less horizontal length than this draws nothing
+            /// (the <c>1e-6</c> of <c>hh &lt; 1e-6</c>).</summary>
+            public double MarkAzFloor;
+
+            /// <summary>Rig 10: a mark whose centre lies within this of a pixel edge draws nothing (the
+            /// <c>1e-4</c> of <c>|cx − round(cx)| &lt; 1e-4</c>).</summary>
+            public double MarkEdge;
 
             /// <summary>Mix the keyline in SINGLE precision, as the resolve does:
             /// <c>floor(a + (b − a)·(float)mix + 0.5)</c> in floats, rather than the rig's doubles and
@@ -121,9 +156,19 @@ namespace HiddenHarbours.Tools.RigBaking
             return new[] { JsRound(q.Sx - 0.5) + 0.5 - q.Sx, JsRound(q.Sy - 0.5) + 0.5 - q.Sy };
         }
 
+        /// <summary>The rig's <c>rotC(v, C)</c>: a direction turned into the camera's frame, as
+        /// <see cref="Project"/> turns a point (rig 10, for a smooth normal).</summary>
+        public static double[] RotC(double[] v, in Camera c)
+        {
+            double x1 = v[0] * c.Cr + v[2] * c.Sr, z1 = -v[0] * c.Sr + v[2] * c.Cr;
+            double y2 = v[1] * c.Cq - z1 * c.Sq, z2 = v[1] * c.Sq + z1 * c.Cq;
+            return new[] { x1 * c.Ct - y2 * c.St, x1 * c.St + y2 * c.Ct, z2 };
+        }
+
         /// <summary>
         /// The rig's <c>paint(faces, C, MATS, {snap, keyline, edges})</c>. <paramref name="snap"/> is
-        /// null for no snap. Materials are indexed by <see cref="Face.Mat"/>.
+        /// null for no snap. Materials are indexed by <see cref="Face.Mat"/>. Rig 10's marks wait for
+        /// every other face, then each draws the one pixel under its centre (rig 10's <c>pts</c> pass).
         /// </summary>
         public static Result Paint(Face[] faces, in Camera c, Material[] mats, in Ink ink, double[] snap,
                                    bool keyline, bool edges)
@@ -137,40 +182,26 @@ namespace HiddenHarbours.Tools.RigBaking
             var stp = new sbyte[n];
             var fid = new int[n];
             for (int i = 0; i < n; i++) { zb[i] = float.PositiveInfinity; mat[i] = -1; fid[i] = -1; }
+            var pts = new List<int>();
 
             for (int fi = 0; fi < faces.Length; fi++)
             {
                 Face f = faces[fi];
+                if (f.Mark) { pts.Add(fi); continue; }
                 int nv = f.Corners;
-                var P = new Projected[nv];
-                for (int k = 0; k < nv; k++) P[k] = Project(f.V[3 * k], f.V[3 * k + 1], f.V[3 * k + 2], c);
-                if (snap != null && f.Head)
-                    for (int k = 0; k < nv; k++) { P[k].Sx += snap[0]; P[k].Sy += snap[1]; }
-
-                double nx = 0, ny = 0, nz = 0;
-                for (int i = 0; i < nv; i++)
-                {
-                    Projected a = P[i], cc = P[(i + 1) % nv];
-                    nx += (a.Yr - cc.Yr) * (a.Zr + cc.Zr);
-                    ny += (a.Zr - cc.Zr) * (a.Xr + cc.Xr);
-                    nz += (a.Xr - cc.Xr) * (a.Yr + cc.Yr);
-                }
-                double nl = HypotV8(nx, ny, nz);
-                if (nl == 0 || double.IsNaN(nl)) nl = 1;   // Math.hypot(...) || 1
-                nx /= nl; ny /= nl; nz /= nl;
+                Projected[] P = ProjectFace(f, c, snap);
+                Normal(P, out double nx, out double ny, out double nz);
                 double toward = -ny * c.Ce + nz * c.Se;
                 if (toward <= Math.Max(ink.CullFloor, f.MinT)) continue;
 
-                double up = ny * c.Se + nz * c.Ce;
-                Material m = mats[f.Mat];
-                int step = 0;
-                if (!m.Fixed)
+                // Rig 10: a face with a smooth normal culls on its own normal and is lit on the smooth one.
+                double ux = nx, uy = ny, uz = nz;
+                if (f.Sn != null)
                 {
-                    double s = JsRound((nx * ink.KeyX + up * ink.KeyY + toward * ink.KeyZ +
-                                        ink.Form * (toward - ink.FormMid)) * 1e9) / 1e9;
-                    double tone = Clamp(JsRound(s * m.Gain + m.Bias + f.B), m.Lo ?? 0, m.Hi ?? 99) + m.Off;
-                    step = (int)Math.Max(0, Math.Min(m.Ramp.Length - 1, tone));
+                    double[] sv = RotC(f.Sn, c);
+                    ux = sv[0]; uy = sv[1]; uz = sv[2];
                 }
+                int step = StepOf(mats[f.Mat], ux, uy, uz, f.B, c, ink);
 
                 double db = f.Db;
                 for (int t = 1; t + 1 < nv; t++)
@@ -203,6 +234,40 @@ namespace HiddenHarbours.Tools.RigBaking
                             }
                         }
                 }
+            }
+
+            // Rig 10's point marks (the face). Each draws the one pixel under its centre: over a pixel
+            // a face it may draw over already holds (PT_UNDER, or the hair for a mark that says so),
+            // nearer by its depth bias, while the horizontal angle between its normal and the camera
+            // is within acos(az). A centre on a pixel edge draws nothing.
+            foreach (int fi in pts)
+            {
+                Face f = faces[fi];
+                Projected[] P = ProjectFace(f, c, snap);
+                Normal(P, out double nx, out double ny, out double nz);
+                if (-ny * c.Ce + nz * c.Se <= ink.CullFloor) continue;
+                if (!double.IsNaN(f.Az))
+                {
+                    double hh = HypotV8(nx, ny);
+                    if (hh < ink.MarkAzFloor || -ny / hh <= f.Az) continue;
+                }
+                double cx = 0, cy = 0, cd = 0;
+                foreach (Projected q in P) { cx += q.Sx; cy += q.Sy; cd += q.D; }
+                cx /= P.Length; cy /= P.Length; cd /= P.Length;
+                if (Math.Abs(cx - JsRound(cx)) < ink.MarkEdge || Math.Abs(cy - JsRound(cy)) < ink.MarkEdge) continue;
+                double fx = Math.Floor(cx), fy = Math.Floor(cy);
+                if (fx < 0 || fy < 0 || fx >= wd || fy >= hd) continue;
+                int i = (int)fy * wd + (int)fx;
+                if (fid[i] < 0) continue;
+                Face under = faces[fid[i]];
+                if (!under.Under && !(f.OverHair && under.Hair)) continue;
+                double dq = JsRound((cd - f.Db) * 1e7) / 1e7;
+                if (dq >= zb[i]) continue;
+                zb[i] = (float)dq;
+                dep[i] = (float)cd;
+                mat[i] = (short)f.Mat;
+                stp[i] = (sbyte)StepOf(mats[f.Mat], nx, ny, nz, f.B, c, ink);
+                fid[i] = fi;
             }
 
             // Inner contour: across a depth break the FARTHER pixel drops one step.
@@ -277,6 +342,47 @@ namespace HiddenHarbours.Tools.RigBaking
             return new Result { Rgba = rgba, W = wd, H = hd, Mat = mat, Step = stp, FaceIndex = fid };
         }
 
+        /// <summary>A face's corners projected, the head snap applied to a head face.</summary>
+        static Projected[] ProjectFace(Face f, in Camera c, double[] snap)
+        {
+            int nv = f.Corners;
+            var P = new Projected[nv];
+            for (int k = 0; k < nv; k++) P[k] = Project(f.V[3 * k], f.V[3 * k + 1], f.V[3 * k + 2], c);
+            if (snap != null && f.Head)
+                for (int k = 0; k < nv; k++) { P[k].Sx += snap[0]; P[k].Sy += snap[1]; }
+            return P;
+        }
+
+        /// <summary>The rig's flat normal (rig 10's <c>nrmP</c>): Newell's sum over the camera-frame
+        /// corners, over <c>Math.hypot(nx, ny, nz) || 1</c>.</summary>
+        static void Normal(Projected[] P, out double nx, out double ny, out double nz)
+        {
+            int nv = P.Length;
+            nx = 0; ny = 0; nz = 0;
+            for (int i = 0; i < nv; i++)
+            {
+                Projected a = P[i], cc = P[(i + 1) % nv];
+                nx += (a.Yr - cc.Yr) * (a.Zr + cc.Zr);
+                ny += (a.Zr - cc.Zr) * (a.Xr + cc.Xr);
+                nz += (a.Xr - cc.Xr) * (a.Yr + cc.Yr);
+            }
+            double nl = HypotV8(nx, ny, nz);
+            if (nl == 0 || double.IsNaN(nl)) nl = 1;   // Math.hypot(...) || 1
+            nx /= nl; ny /= nl; nz /= nl;
+        }
+
+        /// <summary>The step a material takes on the normal <c>(ux, uy, uz)</c> in the camera's frame
+        /// (rig 10's <c>stepOf</c>; rig 9 inlines the same arithmetic on the flat normal).</summary>
+        static int StepOf(Material m, double ux, double uy, double uz, double b, in Camera c, in Ink ink)
+        {
+            if (m.Fixed) return 0;
+            double up = uy * c.Se + uz * c.Ce, tw = -uy * c.Ce + uz * c.Se;
+            double s = JsRound((ux * ink.KeyX + up * ink.KeyY + tw * ink.KeyZ +
+                                ink.Form * (tw - ink.FormMid)) * 1e9) / 1e9;
+            double tone = Clamp(JsRound(s * m.Gain + m.Bias + b), m.Lo ?? 0, m.Hi ?? 99) + m.Off;
+            return (int)Math.Max(0, Math.Min(m.Ramp.Length - 1, tone));
+        }
+
         /// <summary>The keyline's scan order: [0,−1], [1,0], [−1,0], [0,1].</summary>
         static readonly int[] KeylineDx = { 0, 1, -1, 0 };
         static readonly int[] KeylineDy = { -1, 0, 0, 1 };
@@ -331,19 +437,29 @@ namespace HiddenHarbours.Tools.RigBaking
         /// V8's <c>Math.hypot</c> for three arguments: the largest magnitude divided out, the squares
         /// summed with Kahan's compensation, <c>sqrt(sum) * max</c>. Infinity wins over NaN, as there.
         /// </summary>
-        public static double HypotV8(double x, double y, double z)
+        public static double HypotV8(double x, double y, double z) => Hypot(x, y, z, 3);
+
+        /// <summary>
+        /// V8's <c>Math.hypot</c> for TWO arguments (rig 10's mark band, <c>Math.hypot(nx, ny)</c>). Not
+        /// the three-argument form with a zero: Kahan's compensation runs once more on the zero, and
+        /// that can move the last bit.
+        /// </summary>
+        public static double HypotV8(double x, double y) => Hypot(x, y, 0, 2);
+
+        static double Hypot(double x, double y, double z, int count)
         {
             double ax = Math.Abs(x), ay = Math.Abs(y), az = Math.Abs(z);
-            bool nan = double.IsNaN(ax) || double.IsNaN(ay) || double.IsNaN(az);
+            bool nan = double.IsNaN(ax) || double.IsNaN(ay) || (count > 2 && double.IsNaN(az));
             double max = 0;
             if (!double.IsNaN(ax) && ax > max) max = ax;
             if (!double.IsNaN(ay) && ay > max) max = ay;
-            if (!double.IsNaN(az) && az > max) max = az;
+            if (count > 2 && !double.IsNaN(az) && az > max) max = az;
             if (double.IsPositiveInfinity(max)) return double.PositiveInfinity;
             if (nan) return double.NaN;
             if (max == 0) return 0;
             double sum = 0, compensation = 0;
-            Add(ax); Add(ay); Add(az);
+            Add(ax); Add(ay);
+            if (count > 2) Add(az);
             return Math.Sqrt(sum) * max;
 
             void Add(double v)

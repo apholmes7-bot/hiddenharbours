@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.TestTools.Constraints;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
 
@@ -39,6 +40,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private readonly List<IsoCharacterFigureRenderer> _figures = new List<IsoCharacterFigureRenderer>();
         private readonly List<UnityEngine.Object> _made = new List<UnityEngine.Object>();
         private GameObject _hullGo;
+        private object _sink;
 
         [TearDown]
         public void TearDown()
@@ -339,6 +341,99 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "and a global write is not how any facet material is meant to change");
             Assert.IsFalse(AssetDatabase.Contains(v9),
                 "the v9 figure's material is an asset: the keyword would dirty it for everyone who shares it");
+        }
+
+        // =================================================================== rig 10's smooth normal
+
+        /// <summary>Rig 9's face at its smallest, which rig 10's smooth normal rides on: one group per
+        /// slot, the rest face those three, and no face track, so every frame draws the rest face.</summary>
+        private static void GiveFace(CharacterSkinDef def)
+        {
+            def.FaceGroups = new[] { "eyes.open", "brows.flat", "mouth.flat" };
+            def.RestFace = new[] { 1, 2, 3 };
+            def.FaceCullFloor = 1e-4f;
+        }
+
+        /// <summary><see cref="Idle"/> with the root turned a quarter about z on its second frame.</summary>
+        private static CharacterSkinDef.SkinClip TurnedIdle()
+        {
+            CharacterSkinDef.SkinClip clip = Idle();
+            clip.Keys[Bones].Rotation = Quaternion.AngleAxis(90f, Vector3.forward);
+            return clip;
+        }
+
+        private static List<Vector4> FourCorners(Vector4 v) => new List<Vector4> { v, v, v, v };
+
+        private static List<Vector4> PosedUv2(IsoCharacterFigureRenderer figure)
+        {
+            var uv = new List<Vector4>();
+            figure.GetComponentInChildren<MeshFilter>(true).sharedMesh
+                  .GetUVs(IsoFacetFigureShaderIds.SmoothNormalUvChannel, uv);
+            return uv;
+        }
+
+        [Test]
+        public void ARig10Figure_PosesItsSmoothNormalIntoUV2_AndLightsByIt()
+        {
+            CharacterSkinDef def = MakeDef(ToneRule.V9, 3);
+            GiveFace(def);
+            def.Clips = new[] { TurnedIdle() };
+            var sn = new Vector3(0.6f, -0.8f, 0f);
+            def.BindMesh.SetUVs(IsoFacetFigureShaderIds.SmoothNormalUvChannel, FourCorners(new Vector4(sn.x, sn.y, sn.z, 16f)));
+            Assert.IsTrue(def.IsUsable() && def.HasFace, "harness: the def must be usable and carry the face");
+
+            IsoCharacterFigureRenderer figure = MakeFigure(def);
+            Assert.AreEqual(1f, DrawnMaterial(figure.transform, "rig 10 figure")
+                                .GetVector(IsoFacetFigureShaderIds.FigureFaceParams).w,
+                "the mesh carries rig 10's smooth normals and the shader is not told to light by them");
+
+            // The face's first corner rides the root alone, so the whole face takes the root's turn: the
+            // bind normal (0.6, -0.8, 0) turned a quarter about z is (0.8, 0.6, 0).
+            Vector3 turned = Quaternion.AngleAxis(90f, Vector3.forward) * sn;
+            foreach ((int frame, Vector3 want) in new[] { (1, turned), (0, sn) })
+            {
+                Assert.IsTrue(figure.SetPose("idle", frame));
+                List<Vector4> uv = PosedUv2(figure);
+                Assert.AreEqual(4, uv.Count, $"frame {frame}: the posed mesh lost UV2");
+                for (int v = 0; v < 4; v++)
+                {
+                    Assert.AreEqual(want.x, uv[v].x, 1e-5f, $"frame {frame}, corner {v}: the posed smooth normal's x");
+                    Assert.AreEqual(want.y, uv[v].y, 1e-5f, $"frame {frame}, corner {v}: y");
+                    Assert.AreEqual(want.z, uv[v].z, 1e-5f, $"frame {frame}, corner {v}: z");
+                    Assert.AreEqual(16f, uv[v].w, $"frame {frame}, corner {v}: the mark flags ride along unchanged");
+                }
+            }
+
+            // A TestDelegate, not an Action: the constraint throws on any other delegate type.
+            TestDelegate pose = () => { figure.SetPose("idle", 1); figure.SetPose("idle", 0); };
+            pose();   // warm-up: JIT and the delegate's first-call setup are not a pose
+            Assert.That(() => { _sink = new object[64]; }, UnityEngine.TestTools.Constraints.Is.AllocatingGCMemory(),
+                        "positive control: the recorder must see an allocation when there is one");
+            Assert.That(pose, UnityEngine.TestTools.Constraints.Is.Not.AllocatingGCMemory(),
+                        "posing the smooth normal allocated (rule 7)");
+        }
+
+        [Test]
+        public void AFigureWithoutTheFaceOrWithoutSmoothNormals_LightsEachFaceByItsOwnNormal()
+        {
+            // UV2 but no face: the faces are not known runs, so the smooth normals are not read.
+            CharacterSkinDef faceless = MakeDef(ToneRule.V9, 3);
+            faceless.BindMesh.SetUVs(IsoFacetFigureShaderIds.SmoothNormalUvChannel,
+                                     FourCorners(new Vector4(0.6f, -0.8f, 0f, 16f)));
+            Assert.AreEqual(0f, DrawnMaterial(MakeFigure(faceless).transform, "faceless figure")
+                                .GetVector(IsoFacetFigureShaderIds.FigureFaceParams).w,
+                "a def without the face turned the smooth-normal light on");
+
+            // The face and no UV2, as every rig 9 def: nothing to light by, and nothing uploaded.
+            CharacterSkinDef rig9 = MakeDef(ToneRule.V9, 3);
+            GiveFace(rig9);
+            rig9.Clips = new[] { TurnedIdle() };
+            IsoCharacterFigureRenderer figure = MakeFigure(rig9);
+            Assert.AreEqual(0f, DrawnMaterial(figure.transform, "rig 9 figure")
+                                .GetVector(IsoFacetFigureShaderIds.FigureFaceParams).w,
+                "a rig 9 def turned the smooth-normal light on");
+            Assert.IsTrue(figure.SetPose("idle", 1));
+            Assert.AreEqual(0, PosedUv2(figure).Count, "a rig 9 figure's posed mesh gained a UV2 it never had");
         }
 
         // =================================================================== helpers

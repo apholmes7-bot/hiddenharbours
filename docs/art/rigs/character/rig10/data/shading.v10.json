@@ -1,0 +1,431 @@
+{
+ "schema": "hidden-harbours/character-shading@2",
+ "rig": "characterIsoRig10.js",
+ "revision": "10.2",
+ "derivedFromRigSha256": "cbd50b54001d504d711a6a2e96ea01b1843a12e8b30665c9002e6ce45a7ed814",
+ "build": "fisher",
+ "key": [
+  0,
+  0.8106792283998809,
+  0.5854905538443584
+ ],
+ "fleetKey": [
+  -0.4275044441062873,
+  0.732864761325064,
+  0.5292912165125462
+ ],
+ "form": 0.5,
+ "formMid": 0.45,
+ "edge": 0.12,
+ "keyline": "#101a19",
+ "keylineMix": 0.22,
+ "keylineDefault": false,
+ "cull": "back faces (toward-camera component of the flat normal <= 0)",
+ "step": "clamp(round(s*gain + bias + b), lo, hi) + off, clamped to the ramp; s = n.key + form*(n.toward - formMid). lo..hi is four tones: shadow, base, light, highlight; the contour pass may take one below",
+ "headSnap": "the head bone is moved in screen space so its centre sits on a pixel centre (<= 0.5 px)",
+ "materials": {
+  "skin": {
+   "ramp": [
+    "#6b4028",
+    "#8a5636",
+    "#a8724a",
+    "#c98d63",
+    "#e0a981",
+    "#f0c9a2"
+   ],
+   "gain": 2.4,
+   "bias": 2.7,
+   "lo": 2,
+   "hi": 5,
+   "off": 0
+  },
+  "skinD": {
+   "ramp": [
+    "#6b4028",
+    "#8a5636",
+    "#a8724a",
+    "#c98d63",
+    "#e0a981",
+    "#f0c9a2"
+   ],
+   "gain": 2.4,
+   "bias": 2.7,
+   "lo": 2,
+   "hi": 5,
+   "off": -1
+  },
+  "skinL": {
+   "ramp": [
+    "#6b4028",
+    "#8a5636",
+    "#a8724a",
+    "#c98d63",
+    "#e0a981",
+    "#f0c9a2"
+   ],
+   "gain": 2.4,
+   "bias": 2.7,
+   "lo": 2,
+   "hi": 5,
+   "off": 1
+  },
+  "stub": {
+   "ramp": [
+    "#704924",
+    "#84572d",
+    "#a16c38",
+    "#c0874b",
+    "#e0ac67",
+    "#f1cb8e"
+   ],
+   "gain": 2.4,
+   "bias": 2.7,
+   "lo": 2,
+   "hi": 5,
+   "off": 0
+  },
+  "hair": {
+   "ramp": [
+    "#7a5a1c",
+    "#946218",
+    "#b07d1f",
+    "#e0b13a",
+    "#f2cf6a"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 0
+  },
+  "hairD": {
+   "ramp": [
+    "#7a5a1c",
+    "#946218",
+    "#b07d1f",
+    "#e0b13a",
+    "#f2cf6a"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": -1
+  },
+  "hairL": {
+   "ramp": [
+    "#7a5a1c",
+    "#946218",
+    "#b07d1f",
+    "#e0b13a",
+    "#f2cf6a"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 1
+  },
+  "beard": {
+   "ramp": [
+    "#7a5a1c",
+    "#946218",
+    "#b07d1f",
+    "#e0b13a",
+    "#f2cf6a"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 0
+  },
+  "buzz": {
+   "ramp": [
+    "#7e5922",
+    "#996624",
+    "#b6812f",
+    "#e0af4b",
+    "#f2ce77"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": -1
+  },
+  "over": {
+   "ramp": [
+    "#0d3f3c",
+    "#14554e",
+    "#1c7367",
+    "#2ba39a",
+    "#49b8aa"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 0
+  },
+  "overD": {
+   "ramp": [
+    "#0d3f3c",
+    "#14554e",
+    "#1c7367",
+    "#2ba39a",
+    "#49b8aa"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": -1
+  },
+  "overL": {
+   "ramp": [
+    "#0d3f3c",
+    "#14554e",
+    "#1c7367",
+    "#2ba39a",
+    "#49b8aa"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 1
+  },
+  "shirt": {
+   "ramp": [
+    "#878b85",
+    "#a2a7a0",
+    "#bcc2ba",
+    "#cfd4cc",
+    "#dfe3dc",
+    "#eef0ea"
+   ],
+   "gain": 2.4,
+   "bias": 2.7,
+   "lo": 2,
+   "hi": 5,
+   "off": 0
+  },
+  "shirtD": {
+   "ramp": [
+    "#878b85",
+    "#a2a7a0",
+    "#bcc2ba",
+    "#cfd4cc",
+    "#dfe3dc",
+    "#eef0ea"
+   ],
+   "gain": 2.4,
+   "bias": 2.7,
+   "lo": 2,
+   "hi": 5,
+   "off": -1
+  },
+  "collar": {
+   "ramp": [
+    "#878b85",
+    "#a2a7a0",
+    "#bcc2ba",
+    "#cfd4cc",
+    "#dfe3dc",
+    "#eef0ea"
+   ],
+   "gain": 2.4,
+   "bias": 2.7,
+   "lo": 2,
+   "hi": 5,
+   "off": 1
+  },
+  "hat": {
+   "ramp": [
+    "#14181b",
+    "#1f262a",
+    "#2c353b",
+    "#3d484f",
+    "#505d65"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 0
+  },
+  "hatL": {
+   "ramp": [
+    "#14181b",
+    "#1f262a",
+    "#2c353b",
+    "#3d484f",
+    "#505d65"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 1
+  },
+  "hatD": {
+   "ramp": [
+    "#14181b",
+    "#1f262a",
+    "#2c353b",
+    "#3d484f",
+    "#505d65"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": -1
+  },
+  "apron": {
+   "ramp": [
+    "#4d4436",
+    "#665b48",
+    "#7f735c",
+    "#988b71",
+    "#b0a488"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 0
+  },
+  "apronD": {
+   "ramp": [
+    "#4d4436",
+    "#665b48",
+    "#7f735c",
+    "#988b71",
+    "#b0a488"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": -1
+  },
+  "belt": {
+   "ramp": [
+    "#241611",
+    "#38221a",
+    "#4d2f22",
+    "#63402d",
+    "#7c553c"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 0
+  },
+  "hose": {
+   "ramp": [
+    "#101317",
+    "#1d2127",
+    "#2b323a",
+    "#3d454e",
+    "#525c63"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 1
+  },
+  "boot": {
+   "ramp": [
+    "#101317",
+    "#1d2127",
+    "#2b323a",
+    "#3d454e",
+    "#525c63"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 0
+  },
+  "bootL": {
+   "ramp": [
+    "#101317",
+    "#1d2127",
+    "#2b323a",
+    "#3d454e",
+    "#525c63"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 1
+  },
+  "sole": {
+   "ramp": [
+    "#101317",
+    "#1d2127",
+    "#2b323a",
+    "#3d454e",
+    "#525c63"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": -2
+  },
+  "brass": {
+   "ramp": [
+    "#5a4318",
+    "#7d6024",
+    "#a68333",
+    "#c9a548",
+    "#e3c46a"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 1
+  },
+  "ink": {
+   "color": "#12181b",
+   "fixed": true
+  },
+  "ink2": {
+   "color": "#243036",
+   "fixed": true
+  },
+  "white": {
+   "color": "#e6e9e2",
+   "fixed": true
+  },
+  "iris": {
+   "color": "#2ba39a",
+   "fixed": true
+  },
+  "lid": {
+   "color": "#8a5636",
+   "fixed": true
+  },
+  "brow": {
+   "color": "#57441c",
+   "fixed": true
+  },
+  "lip": {
+   "color": "#8a5636",
+   "fixed": true
+  },
+  "mouth": {
+   "color": "#6b4028",
+   "fixed": true
+  }
+ }
+}

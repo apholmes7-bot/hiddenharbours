@@ -120,6 +120,37 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <c>posed()</c> flag <c>head: f.bone[0][0][0] === ix.head</c>: the faces its head snap moves.
         /// UV1.z on a mesh that <see cref="RigMeshData.CarriesFaceAttributes"/>.</summary>
         public bool Head;
+
+        /// <summary>
+        /// <b>Rig 10's point mark</b> (<c>f.pt</c>): the face draws as the ONE pixel under its centre,
+        /// after every other face, over a pixel a <see cref="UnderMark"/> face already covers (or the
+        /// hair, for an <see cref="OverHair"/> mark), and only while the camera is inside its turn band
+        /// (<see cref="MarkAz"/>). Its group, head flag and cull floor are a face's like any other.
+        /// False on every rig before 10.
+        /// </summary>
+        public bool Mark;
+
+        /// <summary>Rig 10's turn band of a mark (<c>f.az</c>): the cosine of the widest horizontal
+        /// angle between the mark's normal and the camera at which it still draws. NaN on a face with
+        /// none: every face but a mark, and every rig before 10. UV1.w (0 for none) on a mesh that
+        /// <see cref="RigMeshData.CarriesMarkAttributes"/>.</summary>
+        public double MarkAz = double.NaN;
+
+        /// <summary>Rig 10's <c>f.oh</c>: a mark that may also draw over the hair (the brows).</summary>
+        public bool OverHair;
+
+        /// <summary>Rig 10: a mark may draw over this face's pixels (<c>PT_UNDER[f.part]</c>: the head,
+        /// nose, beard and the face marks themselves).</summary>
+        public bool UnderMark;
+
+        /// <summary>Rig 10: this face's part is the hair, which an <see cref="OverHair"/> mark may
+        /// draw over.</summary>
+        public bool Hair;
+
+        /// <summary>Rig 10's smooth normal (<c>f.sn</c>): the face is culled on its own flat normal and
+        /// LIT on this one, which rides the face's first corner's bones. In the frame the face's corners
+        /// are in (the bind frame on a bind face, posed on a posed one). Null on a face with none.</summary>
+        public Vector3d? SmoothNormal;
     }
 
     /// <summary>A MATS entry: a palette ramp plus a constant index offset.</summary>
@@ -265,6 +296,16 @@ namespace HiddenHarbours.Tools.RigBaking
         /// shader's keywords that read them are exclusive.
         /// </summary>
         public bool CarriesFaceAttributes;
+
+        /// <summary>
+        /// True when the mesh builder also writes rig 10's MARK ATTRIBUTES: each mark's turn band in
+        /// UV1.w (0 on every other face), and in TexCoord2 (<see cref="RigMeshBuilder.MarkUvChannel"/>)
+        /// <c>xyz = the smooth normal (0 where none), w = the mark flags</c>
+        /// (<see cref="RigMeshBuilder.MarkFlags"/>). Set by the v9 skin bake on a rig 10 bind mesh;
+        /// needs <see cref="CarriesFaceAttributes"/>, and cannot ride with interior geometry, which
+        /// owns TexCoord2 on a hull.
+        /// </summary>
+        public bool CarriesMarkAttributes;
 
         public Color32 Keyline;
         public int W, H;
