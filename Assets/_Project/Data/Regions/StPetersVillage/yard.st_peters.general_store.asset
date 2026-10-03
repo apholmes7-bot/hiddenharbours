@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c7fa69da25f097ee68bd1ab3825272, type: 3}
+  m_Name: yard.st_peters.general_store
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.YardDef
+  Id: "yard.st_peters.general_store"
+  LotId: "lot.st_peters.general_store"
+  Fence: 0
+  Mown: 2
+  Outline:
+  - {x: -5.1, y: 29.585}
+  - {x: 8.25, y: 29.585}
+  - {x: 8.25, y: 39.5}
+  - {x: -5.1, y: 39.5}
+  Gate: {x: 2.5, y: 29.585}
+  Dressing:
+  - PieceId: "prop.stp_vl_general_store_barrel_planter"
+    Kind: "barrelPlanter"
+    Position: {x: -0.5, y: 29.985}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"planters at the forecourt's lane edge\"}"
+  - PieceId: "prop.stp_vl_general_store_barrel_planter_2"
+    Kind: "barrelPlanter"
+    Position: {x: 5.5, y: 29.985}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"\"}"
+  - PieceId: "prop.stp_vl_general_store_chalk_sign"
+    Kind: "chalkSign"
+    Position: {x: 0.6, y: 29.985}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"WharfDecor\",\"cell\":4,\"why\":\"today's prices, chalked\"}"
+  - PieceId: "prop.stp_vl_general_store_bench"
+    Kind: "bench"
+    Position: {x: 6.9, y: 30.285}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"WharfDecor\",\"cell\":4,\"why\":\"the bench by the door, for a yarn\"}"
+  FenceSummary:
+    Panels: 0
+    Posts: 0
+    Gates: 0
+    Offcuts: 0
+    OffcutMetres: 0.0
+    Metres: 0.0

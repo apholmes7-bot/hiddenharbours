@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c7fa69da25f097ee68bd1ab3825272, type: 3}
+  m_Name: yard.st_peters.school
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.YardDef
+  Id: "yard.st_peters.school"
+  LotId: "lot.st_peters.school"
+  Fence: 2
+  Mown: 2
+  Outline:
+  - {x: -16.35, y: 29.985}
+  - {x: -7.4, y: 29.985}
+  - {x: -7.4, y: 39.0}
+  - {x: -16.35, y: 39.0}
+  Gate: {x: -11.4, y: 29.985}
+  Dressing:
+  - PieceId: "prop.stp_vl_school_flagpole"
+    Kind: "flagpole"
+    Position: {x: -14.6, y: 30.885}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"the flag over the schoolyard\"}"
+  - PieceId: "prop.stp_vl_school_swing_set"
+    Kind: "swingSet"
+    Position: {x: -9.0, y: 31.285}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"two swings: the children are in this yard\"}"
+  - PieceId: "prop.stp_vl_school_bench"
+    Kind: "bench"
+    Position: {x: -13.7, y: 31.385}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"the teacher's bench at recess\"}"
+  FenceSummary:
+    Panels: 16
+    Posts: 0
+    Gates: 0
+    Offcuts: 0
+    OffcutMetres: 0.0
+    Metres: 34.13
