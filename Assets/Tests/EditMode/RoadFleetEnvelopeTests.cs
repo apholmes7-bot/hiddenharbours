@@ -38,6 +38,80 @@ namespace HiddenHarbours.Tests.EditMode
             "Dually3500", "UtilityQuad", "Trike200", "Enduro250", "Otter8x8",
         };
 
+        [TestCase("Dually3500", 4f)]
+        [TestCase("Modern3500", 4f)]
+        [TestCase("HightopVan", 4f)]
+        [TestCase("CaboverBox", 4f)]
+        [TestCase("ConvBox", 4f)]
+        [TestCase("ClassicSemi", 4f)]
+        [TestCase("AeroSemi", 4f)]
+        [TestCase("Enduro250", 0f)]
+        [TestCase("Trike200", 0f)]
+        [TestCase("UtilityQuad", 0f)]
+        [TestCase("Otter8x8", 0f)]
+        public void TheFleetCarriesItsOwnFalloffStart(string name, float expectedStart)
+        {
+            Assert.That(Def(name).SteerFalloffStartMetersPerSecond, Is.EqualTo(expectedStart));
+        }
+
+        [TestCase("Dually3500")]
+        [TestCase("Modern3500")]
+        [TestCase("HightopVan")]
+        [TestCase("CaboverBox")]
+        [TestCase("ConvBox")]
+        [TestCase("ClassicSemi")]
+        [TestCase("AeroSemi")]
+        public void EachRoadTruckKeepsHerFullLockRadiusThroughTheControllerAtACrawl(string name)
+        {
+            VehicleDef def = Def(name);
+            VehicleMeshDef mesh = def.Mesh;
+            Assert.That(mesh, Is.Not.Null);
+            Assert.That(def.SteerFalloffStartMetersPerSecond, Is.GreaterThan(0f));
+            float fullRadius = mesh.WheelbaseMeters / Mathf.Tan(mesh.MaxInnerSteerDegrees * Mathf.Deg2Rad)
+                               + mesh.FrontTrackMeters * 0.5f;
+            var go = new GameObject(name, typeof(Rigidbody2D), typeof(VehicleController));
+            try
+            {
+                var controller = go.GetComponent<VehicleController>();
+                var body = go.GetComponent<Rigidbody2D>();
+                foreach (float lockSign in new[] { -1f, 1f })
+                    foreach (float ceiling in new[] { def.MaxSpeedMetersPerSecond,
+                                                      -def.MaxReverseSpeedMetersPerSecond })
+                    {
+                        controller.SetVehicle(def);
+                        controller.SteerDemand = lockSign;
+                        for (int i = 0; i < 500; i++) controller.StepPhysics(0.02f);
+                        Assert.That(controller.EffectiveSteer, Is.EqualTo(lockSign));
+                        Assert.That(body.angularVelocity, Is.EqualTo(0f));
+
+                        float crawlCeiling = Mathf.Min(Mathf.Abs(ceiling), def.SteerFalloffStartMetersPerSecond);
+                        foreach (float fraction in new[] { 0.25f, 0.5f, 0.75f, 1f })
+                        {
+                            float target = Mathf.Sign(ceiling) * crawlCeiling * fraction;
+                            controller.Throttle = target / Mathf.Abs(ceiling);
+                            for (int i = 0; i < 500; i++) controller.StepPhysics(0.02f);
+                            Assert.That(controller.SpeedMetersPerSecond, Is.EqualTo(target).Within(1e-5f));
+                            Assert.That(controller.EffectiveSteer, Is.EqualTo(lockSign));
+                            float radius = Mathf.Abs(controller.SpeedMetersPerSecond /
+                                                     (body.angularVelocity * Mathf.Deg2Rad));
+                            Assert.That(radius, Is.EqualTo(fullRadius).Within(fullRadius * 0.01f),
+                                $"{name}, speed {target}, lock {lockSign}: the body lost her full-lock circle.");
+                            Assert.That(Mathf.Sign(body.angularVelocity), Is.EqualTo(Mathf.Sign(target) * lockSign));
+                        }
+
+                        // The same component must still soften the lock above the crawl band.
+                        if (Mathf.Abs(ceiling) <= def.SteerFalloffStartMetersPerSecond) continue;
+                        controller.Throttle = Mathf.Sign(ceiling);
+                        for (int i = 0; i < 1000; i++) controller.StepPhysics(0.02f);
+                        Assert.That(controller.SpeedMetersPerSecond, Is.EqualTo(ceiling).Within(1e-5f));
+                        float expected = lockSign / (1f + (Mathf.Abs(ceiling) -
+                            def.SteerFalloffStartMetersPerSecond) / def.SteerFalloffHalfSpeedMetersPerSecond);
+                        Assert.That(controller.EffectiveSteer, Is.EqualTo(expected));
+                    }
+            }
+            finally { Object.DestroyImmediate(go); }
+        }
+
         static readonly string[] Trailers =
         {
             "TrailerReefer28VehicleMesh", "TrailerFlatbed28VehicleMesh",

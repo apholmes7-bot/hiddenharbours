@@ -1,5 +1,8 @@
+using System;
 using HiddenHarbours.Core;
+using HiddenHarbours.Vehicles;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace HiddenHarbours.Tests.EditMode
@@ -16,6 +19,81 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class VehicleSteeringMathTests
     {
+        [Test]
+        public void BelowTheStartSpeedSheHasHerWholeLock()
+        {
+            foreach (float start in new[] { 0f, 2f, 4f, 7f })
+                foreach (float fraction in new[] { -1f, -0.5f, 0f, 0.5f, 1f })
+                    Assert.That(VehicleSteeringMath.SteerFalloffDivisor(start * fraction, start, 9f),
+                                Is.EqualTo(1f), $"start {start}, fraction {fraction}");
+        }
+
+        [Test]
+        public void AStartOfZeroIsTodaysCurve()
+        {
+            string[] guids = AssetDatabase.FindAssets("t:VehicleDef",
+                new[] { "Assets/_Project/Data/Vehicles" });
+            Assert.That(guids.Length, Is.GreaterThanOrEqualTo(11));
+            foreach (string guid in guids)
+            {
+                var def = AssetDatabase.LoadAssetAtPath<VehicleDef>(AssetDatabase.GUIDToAssetPath(guid));
+                Assert.That(def, Is.Not.Null);
+                float half = def.SteerFalloffHalfSpeedMetersPerSecond;
+                foreach (float ceiling in new[] { def.MaxSpeedMetersPerSecond,
+                                                  -def.MaxReverseSpeedMetersPerSecond })
+                    for (int i = 0; i <= 128; i++)
+                    {
+                        float speed = ceiling * i / 128f;
+                        foreach (float steer in new[] { -1f, -0.73f, -0.2f, -0f, 0f, 0.2f, 0.73f, 1f })
+                        {
+                            float before = half <= 0f ? steer : steer / (1f + Mathf.Abs(speed) / half);
+                            float after = steer / VehicleSteeringMath.SteerFalloffDivisor(speed, 0f, half);
+                            Assert.That(BitConverter.GetBytes(after), Is.EqualTo(BitConverter.GetBytes(before)),
+                                $"{def.name}, speed {speed}, steer {steer}: zero start changed a float bit.");
+                        }
+                    }
+            }
+        }
+
+        [Test]
+        public void OneHalfSpeedAboveTheStartLeavesHalfTheLock()
+        {
+            foreach (float half in new[] { 5f, 6f, 8.31f, 9f, 9.56f, 9.73f, 9.84f, 10.32f })
+                foreach (float start in new[] { 0f, 4f })
+                    Assert.That(1f / VehicleSteeringMath.SteerFalloffDivisor(start + half, start, half),
+                                Is.EqualTo(0.5f));
+        }
+
+        [Test]
+        public void TheFalloffIsContinuousAtTheStartAndKeepsSoftening()
+        {
+            const float start = 4f, half = 9f, epsilon = 0.0001f;
+            Assert.That(VehicleSteeringMath.SteerFalloffDivisor(start - epsilon, start, half),
+                        Is.EqualTo(1f));
+            float justAbove = VehicleSteeringMath.SteerFalloffDivisor(start + epsilon, start, half);
+            Assert.That(justAbove, Is.GreaterThan(1f).And.LessThan(1f + 2f * epsilon / half));
+            Assert.That(VehicleSteeringMath.SteerFalloffDivisor(start + half * 2f, start, half),
+                        Is.EqualTo(3f));
+        }
+
+        [Test]
+        public void AsternHasTheSameFalloffAsAhead()
+        {
+            foreach (float start in new[] { 0f, 4f })
+                foreach (float speed in new[] { 0f, 1f, 3f, 4f, 6f, 11f })
+                    Assert.That(VehicleSteeringMath.SteerFalloffDivisor(-speed, start, 9f),
+                                Is.EqualTo(VehicleSteeringMath.SteerFalloffDivisor(speed, start, 9f)));
+        }
+
+        [TestCase(0f)]
+        [TestCase(-9f)]
+        public void ANonPositiveHalfSpeedDisablesFalloffAtEveryStart(float half)
+        {
+            foreach (float start in new[] { 0f, 4f, 20f })
+                foreach (float speed in new[] { -30f, -4f, 0f, 4f, 30f })
+                    Assert.That(VehicleSteeringMath.SteerFalloffDivisor(speed, start, half), Is.EqualTo(1f));
+        }
+
         // The Dually's chassis, as the rig publishes it. Not tunables — art.
         const float Wheelbase = 4.30f;      // G.axF − G.axR
         const float FrontTrack = 1.80f;     // G.frontWX × 2
