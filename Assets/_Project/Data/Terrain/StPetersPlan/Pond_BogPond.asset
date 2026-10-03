@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a214f70d740cd7fa1ba3fc6095fc8d8, type: 3}
+  m_Name: Pond_BogPond
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PondDef
+  Id: pond.stp_bog_pond
+  DisplayName: Bog Pond
+  Kind: bog_pond
+  Centre: {x: 46, y: 49}
+  Radii: {x: 5.2, y: 3.3}
+  RotationDeg: 12
+  Surface: 5.3
+  Bed: 4.65
+  Basin: {x: 11, y: 0.35}
+  Outlet: {fileID: 11400000, guid: ee06fd0a706d1ef911a87367bfa4e471, type: 2}
+  Why: 'A kettle in the barren, peat-brown, leatherleaf and sedge to the edge. The kit''s barren has one; so does ours.'

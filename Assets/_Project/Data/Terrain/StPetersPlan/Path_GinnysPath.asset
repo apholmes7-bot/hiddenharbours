@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e4b07322d732cfe9125965394268f7, type: 3}
+  m_Name: Path_GinnysPath
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PathDef
+  Id: path.stp_ginnys_path
+  DisplayName: 'Ginny''s path'
+  Kind: 0
+  Width: 1.3
+  Points:
+  - {x: 52, y: 28.9}
+  - {x: 57, y: 28.3}
+  - {x: 62, y: 27}
+  - {x: 69.5, y: 26.5}
+  - {x: 76.74, y: 26.13}
+  LineSource: 
+  JoinPoints: []
+  Material: path
+  Weight: 1
+  Label: path
+  Ruts: 0
+  SourceId: route.stpeters.plot_path
+  Frozen: 1
+  PaintOnly: 1
+  Why: 'Ginny''s path from the village to her step, the village plan''s route; frozen at part 1''s plan heights.'

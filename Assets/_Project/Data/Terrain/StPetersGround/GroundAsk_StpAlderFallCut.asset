@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9228011ec33219cb900c857cd02fc999, type: 3}
+  m_Name: GroundAsk_StpAlderFallCut
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.GroundAskDef
+  Id: ground.stp_alder_fall_cut
+  DisplayName: 
+  Source: 0
+  Kind: 0
+  Retired: 0
+  Rule: "pass 6\u2019s cut over x 98.8 to 113.8, y 55.0 to 69.4 (SCHEMA: the ground
+    change round the fall): the fan eased, the channel above the lip, the pool\u2019s
+    bowl and the chute, blended into the ground round it over its last 1.6 m; and,
+    where pass 9\u2019s shore stands 1.5 to 2 m under part 1\u2019s bank north of
+    the pool, a shingle bar on the pool\u2019s north rim (crest +2.25, its outer
+    face 0.45 m a metre down to pass 9\u2019s beach, notched to +2.03 at the spill)
+    so the pool holds at +2.05 as drawn"
+  Package: HH-st-peters-one-scene-package-2026-10-01
+  GroundFileSha256: c2cca02b0a9a41cfb2cdd47386f3fe2d839336c1e30b364af5693c9fd60e5e19
+  Scene: keyscene.stp_alder_fall
+  FileKind: cut and fill
+  Ruled: "2026-09-28 (the Alder Fall stands as drawn); the pool\u2019s rim laid on
+    pass 9, 2026-10-01"
+  BoxMin: {x: 99.3, y: 52.5}
+  BoxMax: {x: 113.7, y: 68.3}
+  Step: 0.1
+  Width: 145
+  Height: 159
+  Patch: {fileID: 2800000, guid: 4e315bbc582d7a74bb29b449d37b2bb1, type: 3}
+  PatchSha256: b6bf211544913e84f956d2df40b5afa12dc4974dd7aba4599bff71814eb45205
+  PatchRange: {x: -4, y: 12}
+  Line: []
+  LineOf: 
+  LineSource: 
+  WindowMin: {x: -14, y: -86}
+  WindowMax: {x: 18, y: -54}
+  ShoreYScaleDeg: 40
+  SampleStep: 0.05
+  SampleRunOut: 6
+  Softness: 0.25
+  Sigma: 1
+  KernelSigmas: 4
+  AlongIn: {x: 0.5, y: 5}
+  AlongOut: {x: 13, y: 1}
+  SeaFade: {x: -1.2, y: 0.8}
+  LandFade: {x: 6, y: 2}
+  SeaZ: -1.05
+  SeaTail: 9
+  Margin: 0.05
+  FootprintStep: 0.02
+  Centre: {x: 0, y: 0}
+  Reach: 0
+  Level: 0
+  LevelTolerance: 0.01
+  KeepOutOf: 
