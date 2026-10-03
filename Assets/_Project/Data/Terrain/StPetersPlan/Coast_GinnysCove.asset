@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba11a965f465ae7368870a5168abc3cc, type: 3}
+  m_Name: Coast_GinnysCove
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CoastSectionDef
+  Id: coast.stp_ginnys_cove
+  DisplayName: 'Ginny''s Cove'
+  Type: mud_flat
+  Mode: 1
+  Recipe: {fileID: 11400000, guid: 256be95da8d7f607349d754df19e6aec, type: 2}
+  Edge: {x: 2.5, y: 16}
+  Knots:
+  - {x: 10, y: 6}
+  - {x: 7, y: 4.2}
+  - {x: 5, y: 2.6}
+  - {x: 4, y: 1.9}
+  - {x: 3, y: 1.4}
+  - {x: 1.5, y: 0.6}
+  - {x: 0, y: 0.25}
+  - {x: -15, y: -0.2}
+  - {x: -30, y: -0.7}
+  - {x: -45, y: -1.2}
+  - {x: -55, y: -1.6}
+  - {x: -62, y: -2.4}
+  SeaTail: 12
+  HasRockEdge: 0
+  RockEdge: 0
+  Poly: []
+  Sector: {x: 0, y: 0}
+  Below: 0
+  XRange: {x: 0, y: 0}
+  HalfWidth: 0
+  WindowWest: 30
+  GutX: 0
+  GutKeep: 0
+  RunnelEvery: {x: 0, y: 0}
+  RunnelWidth: 0
+  RunnelDepth: 0
+  RunnelBand: {x: -1.8, y: 0.4}
+  RunnelAcross: {x: 5.5, y: 30}
+  MusselNearGut: 0
+  MusselBand: {x: 0, y: 0}
+  LobeAmp: 0
+  LobeLambda: 0
+  LobeBand: {x: 0, y: 0, z: 0, w: 0}
+  PaintBelow: 2.4
+  CrestKeep: {x: 5, y: 1.5}
+  HeadKeep: []
+  HeadKeepFeather: 3
+  PoolRelease: {x: 1.2, y: 0.3}
+  PoolWobble: 0.06
+  Why: 'Below Ginny''s place, in the lee of the reef, where Alder Run comes down: a low bank, a cordgrass fringe, then mud out to the spring-low line. The cove the tide empties.'
