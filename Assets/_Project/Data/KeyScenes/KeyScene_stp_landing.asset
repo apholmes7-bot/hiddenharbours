@@ -136,7 +136,7 @@ MonoBehaviour:
     Piece: bench
     State: 
     At: {x: 186, y: 17.2}
-    Z: 6
+    Z: 5.86
     StandsOn: ground
     Dir: 4
     HasSortY: 0

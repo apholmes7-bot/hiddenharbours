@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba11a965f465ae7368870a5168abc3cc, type: 3}
+  m_Name: Coast_LagoonMarsh
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CoastSectionDef
+  Id: coast.stp_lagoon_marsh
+  DisplayName: Lagoon Marsh
+  Type: salt_marsh
+  Mode: 0
+  Recipe: {fileID: 11400000, guid: 6bc7a96f16e7487371eae308dab477e4, type: 2}
+  Edge: {x: 3.5, y: 22}
+  Knots:
+  - {x: 44, y: 2.3}
+  - {x: 34, y: 2.05}
+  - {x: 24, y: 1.85}
+  - {x: 14, y: 1.6}
+  - {x: 9, y: 1.25}
+  - {x: 6, y: 0.95}
+  - {x: 4.5, y: 0.62}
+  - {x: 3, y: 0.28}
+  - {x: 0, y: 0}
+  - {x: -12, y: -0.35}
+  - {x: -25, y: -0.75}
+  - {x: -40, y: -1.2}
+  - {x: -52, y: -1.7}
+  - {x: -60, y: -2.4}
+  SeaTail: 12
+  HasRockEdge: 0
+  RockEdge: 0
+  Poly: []
+  Sector: {x: 0, y: 0}
+  Below: 0
+  XRange: {x: 0, y: 0}
+  HalfWidth: 0
+  WindowWest: 30
+  GutX: 0
+  GutKeep: 0
+  RunnelEvery: {x: 0, y: 0}
+  RunnelWidth: 0
+  RunnelDepth: 0
+  RunnelBand: {x: -1.8, y: 0.4}
+  RunnelAcross: {x: 5.5, y: 30}
+  MusselNearGut: 0
+  MusselBand: {x: 0, y: 0}
+  LobeAmp: 0
+  LobeLambda: 0
+  LobeBand: {x: 0, y: 0, z: 0, w: 0}
+  PaintBelow: 2.4
+  CrestKeep: {x: 5, y: 1.5}
+  HeadKeep: []
+  HeadKeepFeather: 3
+  PoolRelease: {x: 1.2, y: 0.3}
+  PoolWobble: 0.06
+  Why: 'Sheltered twice (the bar to the west, North Point to the east) and fed by the Barren Brook: a marsh platform laid in front of the old bluff, high marsh +1.5..+2.1, low marsh +0.6..+1.5, a 0.35 m scarp, then mud. Neap highs reach the low marsh; spring highs drown the lot.'

@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9228011ec33219cb900c857cd02fc999, type: 3}
+  m_Name: GroundAsk_StpMainBeach
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.GroundAskDef
+  Id: ground.stp_main_beach
+  DisplayName: 
+  Source: 0
+  Kind: 0
+  Retired: 0
+  Rule: "inside the bay, the ground is the profile across the shore, laid in ground
+    metres from the mean-tide line (shore) to the rim; seaward it never lowers pass
+    9 (a smooth max with the South Flats), so the sand runs out onto the flats without
+    a line; it fades into pass 9 over 6 m past each end and 2 m past the rim, and
+    east of x 52 it lays nothing seaward over the Weather Cliff\u2019s channel and
+    the Old Man\u2019s gut"
+  Package: HH-st-peters-one-scene-package-2026-10-01
+  GroundFileSha256: c2cca02b0a9a41cfb2cdd47386f3fe2d839336c1e30b364af5693c9fd60e5e19
+  Scene: keyscene.stp_main_beach
+  FileKind: cut and fill
+  Ruled: 
+  BoxMin: {x: -8.5, y: -98.5}
+  BoxMax: {x: 70.5, y: -54.25}
+  Step: 0.25
+  Width: 317
+  Height: 178
+  Patch: {fileID: 2800000, guid: c3279c3d82759b8448439e32aec07294, type: 3}
+  PatchSha256: 12b28c2dcf21638c9024dbd6d6aa9246fbd8cb208387f1a253b641ed40f8c6d2
+  PatchRange: {x: -4, y: 12}
+  Line:
+  - {x: -1.5, y: -67}
+  - {x: 3, y: -72.6}
+  - {x: 10, y: -78.6}
+  - {x: 19, y: -80.5}
+  - {x: 29, y: -82.2}
+  - {x: 39, y: -82.2}
+  - {x: 48, y: -80.6}
+  - {x: 55, y: -78.2}
+  - {x: 60, y: -75.6}
+  - {x: 64, y: -73.4}
+  LineOf: 
+  LineSource: 
+  WindowMin: {x: -14, y: -86}
+  WindowMax: {x: 18, y: -54}
+  ShoreYScaleDeg: 40
+  SampleStep: 0.05
+  SampleRunOut: 6
+  Softness: 0.25
+  Sigma: 1
+  KernelSigmas: 4
+  AlongIn: {x: 0.5, y: 5}
+  AlongOut: {x: 13, y: 1}
+  SeaFade: {x: -1.2, y: 0.8}
+  LandFade: {x: 6, y: 2}
+  SeaZ: -1.05
+  SeaTail: 9
+  Margin: 0.05
+  FootprintStep: 0.02
+  Centre: {x: 0, y: 0}
+  Reach: 0
+  Level: 0
+  LevelTolerance: 0.01
+  KeepOutOf: 

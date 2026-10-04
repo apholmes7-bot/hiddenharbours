@@ -1274,10 +1274,24 @@ namespace HiddenHarbours.App.Editor
                 //  · the ADR 0017 weather palette with base = null ON PURPOSE, so the calm sea is the LIVE
                 //    Water.mat the owner hand-tunes rather than a frozen preset copy of it;
                 //  · the ADR 0023 displaced surface over the SAME rect — the game's water since 2026-08-05.
+                //
+                // Terrain PR 5 B (T10): the range is the seabed asset's, data, never the constants below it
+                // (−4 … +12 since the ground file), and the Sea draws that map (ADR 0014's painted source): the
+                // Sea sorts over the splat, so a bake of the analytic ground would lay water over the Head's
+                // painted land. The constants are the fallback for a checkout with no seabed asset yet.
+                var seabed = AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(
+                    DataTerrain + "/" + TerrainPaintTool.StPetersSeabedName + ".asset");
+                bool painted = seabed != null && seabed.HeightTexture != null;
                 WaterSceneTemplate.ConfigureLandRegionWater(
                     water, RegionWorldCenter, RegionWorldSize,
-                    WaterHeightBakeResolution, DeepHarbourElevation, IslandElevation,
+                    WaterHeightBakeResolution,
+                    painted ? seabed.MinElevation : DeepHarbourElevation,
+                    painted ? seabed.MaxElevation : IslandElevation,
                     ShoreGradient);
+                if (painted)
+                    water.GetComponent<HiddenHarbours.Art.WaterSurface>().ConfigurePaintedHeightMap(
+                        seabed.HeightTexture, seabed.WorldCenter, seabed.WorldSize,
+                        seabed.MinElevation, seabed.MaxElevation);
             }
             else
             {
@@ -1614,11 +1628,13 @@ namespace HiddenHarbours.App.Editor
                 // Paths from TerrainSplatAssets, not literals here: the map count grew from three
                 // to four with kit v2 and to five with kit v3's reef beds, and a second spelling of
                 // the same filenames is exactly the duplicate that wires null in silence once the
-                // two copies drift.
+                // two copies drift. Terrain PR 5 B binds the sixth, F (the plan's path paint), as
+                // the scene now carries it.
                 var splatMaps = new Texture2D[TerrainSplatBrush.TextureCount];
                 for (int i = 0; i < splatMaps.Length; i++)
                     splatMaps[i] = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(i));
-                splat.ConfigureSplat(splatMaps[0], splatMaps[1], splatMaps[2], splatMaps[3], splatMaps[4]);
+                splat.ConfigureSplat(splatMaps[0], splatMaps[1], splatMaps[2], splatMaps[3], splatMaps[4],
+                    splatMaps[5]);
 
                 // Everything is on the component; NOW let OnEnable build the quad — at the region's real
                 // extent, with every uniform already in place. See the SetActive(false) note above.

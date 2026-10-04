@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e4b07322d732cfe9125965394268f7, type: 3}
+  m_Name: Path_ReefWalk
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PathDef
+  Id: path.stp_reef_walk
+  DisplayName: Reef walk
+  Kind: 0
+  Width: 0.9
+  Points:
+  - {x: 70, y: 64}
+  - {x: 70.5, y: 70}
+  - {x: 70, y: 76}
+  - {x: 70.5, y: 82}
+  - {x: 70, y: 88}
+  LineSource: 
+  JoinPoints: []
+  Material: path
+  Weight: 1
+  Label: path
+  Ruts: 0
+  SourceId: path.stp_reef_walk
+  Frozen: 0
+  PaintOnly: 0
+  Why: 'Out along the point''s spine to the platform: dry at every tide to the bluff foot, then only at low water.'

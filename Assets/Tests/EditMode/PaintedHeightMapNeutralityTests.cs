@@ -51,6 +51,14 @@ namespace HiddenHarbours.Tests.EditMode
     /// <para><b>When a committed map changes on purpose</b> (PR 5 commits a new St Peters map), this guard
     /// fails BY NAME on the SHA and says so. Re-fixture that map in the PR that changes it, from that PR's
     /// base: the same formula over the map's range, and the new codes' SHA. Never widen the bar to pass.</para>
+    ///
+    /// <para><b>St Peters since terrain PR 5 B</b> is an R16 map over −4 … +12 m (its ground file's import), so
+    /// clause 1 reads its 16-bit codes through <c>GetPixelData</c>, pins them by the SHA-256 of their
+    /// little-endian bytes, bottom row first (taken from the written PNG by an independent decoder, and the
+    /// manifest's height values), and asks each texel for the R16 rule <c>min + (max − min) × k / 65535</c>,
+    /// computed here in double: the file's definition, not the code under test. One code is 0.24 mm, 24 times
+    /// the bar; the float decode is within 2e-6 m. The map binds a still water now (PR 5's), so clause 2 is
+    /// asked of its heights on a copy with the still map taken off.</para>
     /// </summary>
     public class PaintedHeightMapNeutralityTests
     {
@@ -61,12 +69,15 @@ namespace HiddenHarbours.Tests.EditMode
         private static readonly float[] Tides = { -2.2f, 0f, 0.88f, 2.2f, -1000f, 1000f };
 
         private GameObject _go;
+        private PaintedHeightMap _copy;
 
         [TearDown]
         public void TearDown()
         {
             if (_go != null) Object.DestroyImmediate(_go);
             _go = null;
+            if (_copy != null) Object.DestroyImmediate(_copy);
+            _copy = null;
             GameServices.Reset();
         }
 
@@ -83,11 +94,8 @@ namespace HiddenHarbours.Tests.EditMode
             Texture2D tex = map.HeightTexture;
 
             // Which code each texel holds, as Unity loaded it: proven to be the committed file's codes.
-            Color32[] px = tex.GetPixels32();
-            Assert.AreEqual(m.Width * m.Height, px.Length, $"{key}: GetPixels32 returned the wrong texel count.");
-            var codes = new byte[px.Length];
-            for (int i = 0; i < px.Length; i++) codes[i] = px[i].r;
-            string sha = Sha256Hex(codes);
+            int[] codes = LoadedCodes(key, m, tex, out byte[] bytes);
+            string sha = Sha256Hex(bytes);
             Assert.AreEqual(m.CodesSha256, sha,
                 $"{key}: the codes Unity loads from '{m.PngPath}' (format {tex.format}) are not the codes this " +
                 "guard's table was built for. Either the committed map changed, or Unity now loads it " +
@@ -102,20 +110,20 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(m.Height, field.Height, $"{key}: the decoded field's height.");
 
             int bad = 0;
-            float worst = 0f;
+            double worst = 0;
             int worstX = 0, worstY = 0, firstBadX = -1, firstBadY = -1;
             for (int y = 0; y < m.Height; y++)
             {
                 for (int x = 0; x < m.Width; x++)
                 {
-                    float want = m.BaseDecode[codes[y * m.Width + x]];
-                    float err = Mathf.Abs(field.ElevationAtTexel(x, y) - want);
+                    double want = m.Decode(codes[y * m.Width + x]);
+                    double err = System.Math.Abs(field.ElevationAtTexel(x, y) - want);
                     if (!(err <= Tolerance))            // a NaN counts against it
                     {
                         if (bad == 0) { firstBadX = x; firstBadY = y; }
                         bad++;
                     }
-                    if (float.IsNaN(err) || err > worst) { worst = err; worstX = x; worstY = y; }
+                    if (double.IsNaN(err) || err > worst) { worst = err; worstX = x; worstY = y; }
                 }
             }
 
@@ -125,7 +133,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0, bad,
                 $"{bad} texel(s) no longer decode to the metres the base decoded them to — the first at " +
                 $"({firstBadX}, {firstBadY}), code {(firstBadX < 0 ? -1 : codes[firstBadY * m.Width + firstBadX])}, " +
-                $"base {(firstBadX < 0 ? float.NaN : m.BaseDecode[codes[firstBadY * m.Width + firstBadX]])} m, " +
+                $"base {(firstBadX < 0 ? double.NaN : m.Decode(codes[firstBadY * m.Width + firstBadX]))} m, " +
                 $"now {(firstBadX < 0 ? float.NaN : field.ElevationAtTexel(firstBadX, firstBadY))} m. PR 4 must " +
                 "not move a committed region (charter §0.2). " + report);
             Debug.Log("[PaintedHeightMapNeutrality] " + report);
@@ -142,7 +150,13 @@ namespace HiddenHarbours.Tests.EditMode
             CommittedMap m = Fixture(key);
             PaintedHeightMap map = LoadMap(m);
 
-            // The premise, read off the committed asset: it binds no still map, so its decode builds none.
+            // The premise, read off the committed asset: it binds no still map, so its decode builds none. A map
+            // that binds one since PR 5 (St Peters') is asked of its heights on a copy with the still map taken off.
+            if (m.StillBound)
+            {
+                Assert.IsNotNull(map.StillLevelTexture, $"{key}: the committed map no longer binds its still-level texture.");
+                map = WithoutItsStillMap(map);
+            }
             Assert.IsNull(map.StillLevelTexture,
                 $"{key}: the committed map now binds a still-level texture. PR 4 adds no water anywhere " +
                 "(charter §0.2); a still map arrives with PR 5.");
@@ -229,6 +243,48 @@ namespace HiddenHarbours.Tests.EditMode
             return map;
         }
 
+        /// <summary>
+        /// The code each texel holds as Unity loaded it, bottom row first, and the bytes its SHA is taken over: an 8-bit
+        /// map's R bytes through <c>GetPixels32</c>, an R16 map's codes through <c>GetPixelData</c> as little-endian pairs.
+        /// </summary>
+        private static int[] LoadedCodes(string key, CommittedMap m, Texture2D tex, out byte[] bytes)
+        {
+            if (m.Bits == 16)
+            {
+                Assert.AreEqual(TextureFormat.R16, tex.format, $"{key}: '{m.PngPath}' does not load as R16.");
+                var data = tex.GetPixelData<ushort>(0);
+                Assert.AreEqual(m.Width * m.Height, data.Length, $"{key}: GetPixelData returned the wrong texel count.");
+                var codes16 = new int[data.Length];
+                bytes = new byte[data.Length * 2];
+                for (int i = 0; i < data.Length; i++)
+                {
+                    ushort k = data[i];
+                    codes16[i] = k;
+                    bytes[2 * i] = (byte)k;
+                    bytes[2 * i + 1] = (byte)(k >> 8);
+                }
+                return codes16;
+            }
+            Color32[] px = tex.GetPixels32();
+            Assert.AreEqual(m.Width * m.Height, px.Length, $"{key}: GetPixels32 returned the wrong texel count.");
+            var codes = new int[px.Length];
+            bytes = new byte[px.Length];
+            for (int i = 0; i < px.Length; i++) { bytes[i] = px[i].r; codes[i] = px[i].r; }
+            return codes;
+        }
+
+        /// <summary>A copy of the committed map with its still-level texture taken off (the asset is not touched).</summary>
+        private PaintedHeightMap WithoutItsStillMap(PaintedHeightMap map)
+        {
+            _copy = Object.Instantiate(map);
+            var so = new SerializedObject(_copy);
+            SerializedProperty still = so.FindProperty("_stillLevelTexture");
+            Assert.IsNotNull(still, "PaintedHeightMap has no _stillLevelTexture to take off.");
+            still.objectReferenceValue = null;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return _copy;
+        }
+
         private static string Sha256Hex(byte[] bytes)
         {
             using (var sha = SHA256.Create())
@@ -260,8 +316,13 @@ namespace HiddenHarbours.Tests.EditMode
             public int Width, Height;
             public float Min, Max;
             public Vector2 WorldCenter, WorldSize;
-            public string CodesSha256;    // the file's codes, bottom row first (GetPixels32's order)
-            public float[] BaseDecode;    // metres for code k, as the base decoded it (the class doc's formula)
+            public int Bits = 8;          // 8: the R byte through GetPixels32; 16: R16 codes through GetPixelData
+            public bool StillBound;       // the committed asset binds a still-level texture (clause 2 takes it off a copy)
+            public string CodesSha256;    // the file's codes, bottom row first (GetPixels32's order; R16 little-endian)
+            public float[] BaseDecode;    // 8-bit: metres for code k, as the base decoded it (the class doc's formula)
+
+            /// <summary>The metres code <paramref name="k"/> stands for: the table, or the R16 rule in double.</summary>
+            public double Decode(int k) => Bits == 16 ? Min + ((double)Max - Min) * k / 65535.0 : BaseDecode[k];
         }
 
         private static CommittedMap Fixture(string key)
@@ -273,11 +334,11 @@ namespace HiddenHarbours.Tests.EditMode
                     {
                         AssetPath = "Assets/_Project/Data/Terrain/StPetersSeabed.asset",
                         PngPath = "Assets/_Project/Data/Terrain/StPetersSeabed_HeightTex.png",
-                        Width = 1520, Height = 1040, Min = -4f, Max = 6f,
+                        Width = 1520, Height = 1040, Min = -4f, Max = 12f,
                         WorldCenter = new Vector2(0f, 0f), WorldSize = new Vector2(760f, 520f),
-                        // The PNG file itself: dd4780eeeb0b81a986e75c75e3b06acd3724405166295fa545f620e30717c71c
-                        CodesSha256 = "1cd2d70e98d5f1725dc5bc3cf327f54cf79769b5e7d302cf157e32d37832f3f4",
-                        BaseDecode = StPetersBaseDecode,
+                        // Terrain PR 5 B: ground.stp_island's import (StPetersPlan.manifest.json's height values).
+                        Bits = 16, StillBound = true,
+                        CodesSha256 = "5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261",
                     };
                 case "NineMileCreek":
                     return new CommittedMap
@@ -295,43 +356,6 @@ namespace HiddenHarbours.Tests.EditMode
                     return null;
             }
         }
-
-        // St Peters, -4 … +6 m: the base's decode of code k (0 … 255), eight to a row.
-        private static readonly float[] StPetersBaseDecode =
-        {
-            -4.0f, -3.9607842f, -3.9215686f, -3.8823528f, -3.8431373f, -3.8039215f, -3.764706f, -3.72549f,
-            -3.6862745f, -3.6470587f, -3.6078432f, -3.5686274f, -3.5294118f, -3.490196f, -3.4509804f, -3.4117646f,
-            -3.372549f, -3.3333333f, -3.2941177f, -3.254902f, -3.2156863f, -3.1764705f, -3.137255f, -3.0980392f,
-            -3.0588236f, -3.0196078f, -2.980392f, -2.9411764f, -2.9019608f, -2.862745f, -2.8235292f, -2.7843137f,
-            -2.745098f, -2.7058823f, -2.6666665f, -2.627451f, -2.5882354f, -2.5490196f, -2.5098038f, -2.4705882f,
-            -2.4313726f, -2.3921568f, -2.352941f, -2.3137255f, -2.27451f, -2.235294f, -2.1960783f, -2.1568627f,
-            -2.1176472f, -2.0784314f, -2.0392156f, -2.0f, -1.9607842f, -1.9215686f, -1.8823528f, -1.8431373f,
-            -1.8039215f, -1.7647059f, -1.7254901f, -1.6862745f, -1.6470587f, -1.6078432f, -1.5686274f, -1.5294118f,
-            -1.490196f, -1.4509802f, -1.4117646f, -1.3725488f, -1.3333333f, -1.2941175f, -1.2549019f, -1.2156861f,
-            -1.1764705f, -1.1372547f, -1.0980392f, -1.0588233f, -1.0196078f, -0.980392f, -0.9411764f, -0.9019606f,
-            -0.86274505f, -0.82352924f, -0.7843137f, -0.7450979f, -0.7058823f, -0.6666665f, -0.62745094f, -0.58823514f,
-            -0.5490196f, -0.5098038f, -0.4705882f, -0.4313724f, -0.39215684f, -0.35294104f, -0.31372547f, -0.27450967f,
-            -0.2352941f, -0.1960783f, -0.15686274f, -0.11764693f, -0.07843137f, -0.039215565f, 0.0f, 0.039215565f,
-            0.07843161f, 0.11764717f, 0.15686274f, 0.1960783f, 0.23529434f, 0.2745099f, 0.31372547f, 0.35294104f,
-            0.39215708f, 0.43137264f, 0.4705882f, 0.5098038f, 0.5490198f, 0.5882354f, 0.62745094f, 0.6666665f,
-            0.70588255f, 0.7450981f, 0.7843137f, 0.82352924f, 0.8627453f, 0.90196085f, 0.9411764f, 0.980392f,
-            1.019608f, 1.0588236f, 1.0980396f, 1.1372552f, 1.1764708f, 1.2156868f, 1.2549024f, 1.2941179f,
-            1.3333335f, 1.372549f, 1.4117651f, 1.4509807f, 1.4901962f, 1.5294123f, 1.5686278f, 1.6078434f,
-            1.647059f, 1.6862745f, 1.7254906f, 1.7647061f, 1.8039217f, 1.8431377f, 1.8823533f, 1.9215689f,
-            1.9607844f, 2.0f, 2.039216f, 2.0784316f, 2.1176472f, 2.1568632f, 2.1960788f, 2.2352943f,
-            2.27451f, 2.3137255f, 2.3529415f, 2.392157f, 2.4313726f, 2.4705887f, 2.5098042f, 2.5490198f,
-            2.5882354f, 2.627451f, 2.666667f, 2.7058825f, 2.745098f, 2.7843142f, 2.8235297f, 2.8627453f,
-            2.9019608f, 2.9411764f, 2.9803925f, 3.019608f, 3.0588236f, 3.0980396f, 3.1372552f, 3.1764708f,
-            3.2156863f, 3.254902f, 3.294118f, 3.3333335f, 3.372549f, 3.411765f, 3.4509807f, 3.4901962f,
-            3.5294118f, 3.5686274f, 3.6078434f, 3.647059f, 3.6862745f, 3.7254906f, 3.7647061f, 3.8039217f,
-            3.8431373f, 3.8823528f, 3.9215689f, 3.9607844f, 4.0f, 4.039216f, 4.078431f, 4.117647f,
-            4.156863f, 4.1960783f, 4.2352943f, 4.2745094f, 4.3137255f, 4.3529415f, 4.3921566f, 4.4313726f,
-            4.4705887f, 4.509804f, 4.54902f, 4.588236f, 4.627451f, 4.666667f, 4.705882f, 4.745098f,
-            4.784314f, 4.8235292f, 4.8627453f, 4.9019604f, 4.9411764f, 4.9803925f, 5.0196075f, 5.0588236f,
-            5.0980396f, 5.1372547f, 5.1764708f, 5.215687f, 5.254902f, 5.294118f, 5.333333f, 5.372549f,
-            5.411765f, 5.45098f, 5.490196f, 5.5294113f, 5.5686274f, 5.6078434f, 5.6470585f, 5.6862745f,
-            5.7254906f, 5.7647057f, 5.8039217f, 5.8431377f, 5.882353f, 5.921569f, 5.960784f, 6.0f,
-        };
 
         // Nine Mile Creek, -6 … +6 m: the base's decode of code k (0 … 255), eight to a row.
         private static readonly float[] NineMileCreekBaseDecode =

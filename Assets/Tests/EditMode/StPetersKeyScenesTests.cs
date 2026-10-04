@@ -771,7 +771,8 @@ namespace HiddenHarbours.Tests.EditMode
             new Row(L, "prop.stp_landing_cart", Dk, "dockCart", "", 193.2f, 1.5f, 5.35f, Deck, 4),
             new Row(L, "prop.stp_landing_bait_barrel", Dk, "baitBarrel", "", 205.9f, 2f, 5.35f, Deck, 4),
             new Row(L, "prop.stp_landing_rope", Dk, "ropeCoil", "", 206.5f, -2f, 5.35f, Deck, 4),
-            new Row(L, "prop.stp_strand_bench", Dk, "bench", "", 186f, 17.2f, 6f, Ground, 4),
+            // The package's z, not return 2's 6: PR 5 B lays the package's ground under the bench (amendment 1 §4.11).
+            new Row(L, "prop.stp_strand_bench", Dk, "bench", "", 186f, 17.2f, 5.86f, Ground, 4),
             new Row(L, "prop.stp_wrack_driftwood", Fk, "Driftwood", "bleached", 198.45f, 12.4f, 2.39f, Ground, 4),
             new Row(L, "prop.stp_wrack_plank", Fk, "DriftPlank", "dry", 197.1f, 16.4f, 2.41f, Ground, 3),
             new Row(L, "prop.stp_wrack_float", Fk, "NetFloat", "dry", 198.95f, 10.4f, 2.42f, Ground, 4),

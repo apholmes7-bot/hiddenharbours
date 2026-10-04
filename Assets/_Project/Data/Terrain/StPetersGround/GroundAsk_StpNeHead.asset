@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9228011ec33219cb900c857cd02fc999, type: 3}
+  m_Name: GroundAsk_StpNeHead
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.GroundAskDef
+  Id: ground.stp_ne_head
+  DisplayName: 
+  Source: 0
+  Kind: 0
+  Retired: 0
+  Rule: "max(pass 9, the Head): the headland at +11.0 inside its brow, the wave-cut
+    platform round the foot, the Lantern Stack\u2019s plinth and the NE bar, as terrain.json
+    has them; the neck (10-01): along its spine pass 3\u2019s ramp from +6 up to
+    +11 over 16 m from the root line (the plank path\u2019s heights stand), and off
+    the spine the ground eased from the spine\u2019s height back to pass 9\u2019s
+    over shoulders about 12 m wide, on the plateau and down the shore\u2019s bank,
+    wrapping 5 m round the root\u2019s corners; within the cannery\u2019s 21.06 m
+    nothing is raised, and the neck fades out over the 6 beyond it"
+  Package: HH-st-peters-one-scene-package-2026-10-01
+  GroundFileSha256: c2cca02b0a9a41cfb2cdd47386f3fe2d839336c1e30b364af5693c9fd60e5e19
+  Scene: keyscene.stp_ne_light
+  FileKind: raise
+  Ruled: "2026-09-28 (site A, the Head); the neck refined at the owner\u2019s ask,
+    2026-10-01"
+  BoxMin: {x: 152.5, y: 28.25}
+  BoxMax: {x: 261.25, y: 106}
+  Step: 0.25
+  Width: 436
+  Height: 312
+  Patch: {fileID: 2800000, guid: ed508fda964eb764db6fbd43d329aaee, type: 3}
+  PatchSha256: 3083c01bad42ef75f563cb85b49315e05ab3be600535cbfb29db6d7e7a9131ea
+  PatchRange: {x: -4, y: 12}
+  Line: []
+  LineOf: 
+  LineSource: 
+  WindowMin: {x: -14, y: -86}
+  WindowMax: {x: 18, y: -54}
+  ShoreYScaleDeg: 40
+  SampleStep: 0.05
+  SampleRunOut: 6
+  Softness: 0.25
+  Sigma: 1
+  KernelSigmas: 4
+  AlongIn: {x: 0.5, y: 5}
+  AlongOut: {x: 13, y: 1}
+  SeaFade: {x: -1.2, y: 0.8}
+  LandFade: {x: 6, y: 2}
+  SeaZ: -1.05
+  SeaTail: 9
+  Margin: 0.05
+  FootprintStep: 0.02
+  Centre: {x: 0, y: 0}
+  Reach: 0
+  Level: 0
+  LevelTolerance: 0.01
+  KeepOutOf: 
