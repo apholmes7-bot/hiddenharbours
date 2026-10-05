@@ -19,7 +19,9 @@ namespace HiddenHarbours.App.Editor
     /// three in <see cref="PlanAll"/> that uses their <see cref="LayerPatch"/> and its <see cref="LayerPatch.Seal"/>.
     ///
     /// <para><b>What it writes.</b> Every piece the St Peters <see cref="KeySceneDef"/>s place today, under
-    /// its own root (<see cref="KeyScenesRootName"/>), one group per key scene, as whole YAML documents. Each
+    /// its own root (<see cref="KeyScenesRootName"/>), one group per placed key scene, as whole YAML documents.
+    /// A scene comes in unplaced, as data, until its wave turns it on (<see cref="KeySceneDef.Placed"/>); a
+    /// piece that other code places, or that rides the tide, is never placed here (<see cref="Places"/>). Each
     /// piece gets a sprite renderer showing its cell for CD's facing; the sort its Def asks for (a
     /// <c>raised</c> piece is y-sorted by a <see cref="YSortSprite"/>, a <c>floor</c> piece sits at
     /// <see cref="SortingBands.DecorFloor"/>, under every figure); its walk-blocking polygons; and no light.
@@ -224,8 +226,9 @@ namespace HiddenHarbours.App.Editor
             return walls;
         }
 
-        /// <summary>Every piece St Peters' key scenes place today, resolved, in scene then CD order.
-        /// Refuses what the step cannot place truly rather than placing it wrong.</summary>
+        /// <summary>Every piece St Peters' key scenes place today, resolved, in scene then CD order: of each
+        /// placed scene (<see cref="KeySceneDef.Placed"/>), the pieces <see cref="Places"/> takes. A scene that
+        /// is not placed is data only. Refuses what the step cannot place truly rather than placing it wrong.</summary>
         public static List<KeyScenePlacement> PlaceKeyScenes(IReadOnlyList<KeySceneDef> keyScenes, IKeySceneAssets assets)
         {
             if (keyScenes == null || keyScenes.Count == 0) throw new Refusal($"{KeyScenesStep}: no key scenes to place.");
@@ -236,10 +239,11 @@ namespace HiddenHarbours.App.Editor
             {
                 if (ks == null) throw new Refusal($"{KeyScenesStep}: an empty key scene.");
                 if (!sceneIds.Add(Plain(ks.Id))) throw new Refusal($"{KeyScenesStep}: two key scenes are '{ks.Id}'.");
+                if (!ks.Placed) continue;
                 foreach (KeyScenePiece p in ks.Pieces ?? Array.Empty<KeyScenePiece>())
                 {
                     if (p == null) throw new Refusal($"{KeyScenesStep}: '{ks.Id}' holds an empty piece.");
-                    if (p.Variants == null || !p.Variants.Contains(KeySceneDef.Today)) continue;
+                    if (!Places(p)) continue;
                     if (!pieceIds.Add(Plain(p.Id))) throw new Refusal($"{KeyScenesStep}: '{p.Id}' is placed twice.");
                     placed.Add(Place(ks.Id, p, assets));
                 }
@@ -247,9 +251,19 @@ namespace HiddenHarbours.App.Editor
             return placed;
         }
 
+        /// <summary>Whether the step places a piece of a placed scene: it stands in today's variant, no other
+        /// code places it (<see cref="KeyScenePiece.Owner"/>, so it is never placed twice), and it does not ride
+        /// the tide (<see cref="KeySceneDef.StandsOnWater"/>). The rest is kept as data.</summary>
+        static bool Places(KeyScenePiece p) =>
+            p.Variants != null && p.Variants.Contains(KeySceneDef.Today) && string.IsNullOrEmpty(p.Owner) &&
+            p.StandsOn != KeySceneDef.StandsOnWater;
+
         static KeyScenePlacement Place(string scene, KeyScenePiece p, IKeySceneAssets assets)
         {
             string what = $"{KeyScenesStep}: '{p.Id}' ({p.Kit} {p.Piece})";
+            if (p.StandsOn == KeySceneDef.StandsOnMount)
+                throw new Refusal($"{what}: it stands on a host ('{p.MountHost}' at '{p.MountAnchor}'). A piece on a host stands on " +
+                                  "the host's picture (ADR 0042), which this step does not place.");
             var at = new KeyScenePlacement
             {
                 Scene = scene, Id = p.Id, Kit = p.Kit, Piece = p.Piece, At = p.At, Material = assets.SpriteMaterial,
@@ -329,7 +343,7 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>
         /// The key scenes' pieces as one patch to the <see cref="KeyScenesRootName"/> root: the root, one
-        /// group per key scene, and every piece the scenes place today, as whole documents. What already
+        /// group per placed key scene, and every piece the scenes place today, as whole documents. What already
         /// stands as written is left alone; what changed is edited, what is gone deleted, each by name; a
         /// new root joins the scene's SceneRoots list. Sealed before it is returned.
         /// </summary>
@@ -348,7 +362,7 @@ namespace HiddenHarbours.App.Editor
 
             var want = new List<Wanted>();
             var groupTrs = new List<long>();
-            foreach (KeySceneDef ks in keyScenes)
+            foreach (KeySceneDef ks in keyScenes.Where(k => k.Placed))
             {
                 long gGo = ids.Next(KeyOf(ks.Id, "GameObject")), gTr = ids.Next(KeyOf(ks.Id, "Transform"));
                 var pieceTrs = new List<long>();
