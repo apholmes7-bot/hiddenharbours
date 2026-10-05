@@ -1,0 +1,1070 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_stp_ne_light
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.stp_ne_light
+  DisplayName: The north-east light and its cliff
+  RegionId: region.st_peters
+  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_ne_light/scene.json,
+    36010 bytes, sha256 d9fec2ce6df52908432c0b88cc9cff7be21436fe7e61e5e551eea15c4060e901
+  Placed: 0
+  Pieces:
+  - Id: station.stp_ne_light
+    Kind: building
+    Owner: 
+    Kit: lightStation2
+    Piece: schoolhouse
+    State: 
+    At: {x: 206.5, y: 58.8}
+    Z: 11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: "the kit\u2019s footprints (tower, house, oil house, shed)"
+    Variants:
+    - integral
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: family
+      Value: schoolhouse
+    - Key: size
+      Value: 1
+    - Key: clad
+      Value: clapboard
+    - Key: body
+      Value: white
+    - Key: mark
+      Value: red
+    - Key: daymark
+      Value: plain
+    - Key: gallery
+      Value: picket
+    - Key: cap
+      Value: cone
+    - Key: oilHouse
+      Value: true
+    - Key: shed
+      Value: true
+    - Key: weather
+      Value: 0.32
+    - Key: char
+      Value: Fl W 6s
+    - Key: occupancy
+      Value: keeper
+  - Id: station.stp_ne_light_tower
+    Kind: building
+    Owner: 
+    Kit: lightStation2
+    Piece: pyramid
+    State: 
+    At: {x: 206.5, y: 58.8}
+    Z: 11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: "the kit\u2019s footprints (tower, house, oil house, shed)"
+    Variants:
+    - tower
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: family
+      Value: pyramid
+    - Key: size
+      Value: 1
+    - Key: clad
+      Value: clapboard
+    - Key: body
+      Value: white
+    - Key: mark
+      Value: red
+    - Key: daymark
+      Value: plain
+    - Key: gallery
+      Value: picket
+    - Key: cap
+      Value: cone
+    - Key: dwelling
+      Value: true
+    - Key: oilHouse
+      Value: true
+    - Key: shed
+      Value: true
+    - Key: weather
+      Value: 0.32
+    - Key: char
+      Value: Fl W 6s
+    - Key: occupancy
+      Value: keeper
+  - Id: structure.stp_ne_fog_bell
+    Kind: setPiece
+    Owner: 
+    Kit: stpLightPieces
+    Piece: fogBell
+    State: 
+    At: {x: 215.4, y: 61.8}
+    Z: 11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_ne_clothesline
+    Kind: setPiece
+    Owner: 
+    Kit: stpLightPieces
+    Piece: clothesline
+    State: 
+    At: {x: 185, y: 59.6}
+    Z: 11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_ne_flagstaff
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: flagpole
+    State: 
+    At: {x: 199.6, y: 52.4}
+    Z: 11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_ne_woodpile
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: woodStack
+    State: 
+    At: {x: 192.6, y: 55.2}
+    Z: 11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_ne_woodpile_b
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: woodStack
+    State: 
+    At: {x: 191.3, y: 55.6}
+    Z: 11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_ne_brow_bench
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: bench
+    State: 
+    At: {x: 189.6, y: 45.9}
+    Z: 11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_ne_barrow
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: wheelbarrow
+    State: 
+    At: {x: 194.2, y: 57.4}
+    Z: 11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_ne_find_0
+    Kind: setPiece
+    Owner: 
+    Kit: shoreFinds
+    Piece: DriftBranch
+    State: bleached
+    At: {x: 188.19, y: 37.77}
+    Z: 0.55
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: state
+      Value: bleached
+  - Id: prop.stp_ne_find_1
+    Kind: setPiece
+    Owner: 
+    Kit: shoreFinds
+    Piece: NetFloat
+    State: dry
+    At: {x: 192.87, y: 40.86}
+    Z: -0.51
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: state
+      Value: dry
+  - Id: prop.stp_ne_find_2
+    Kind: setPiece
+    Owner: 
+    Kit: shoreFinds
+    Piece: RopeScrap
+    State: dry
+    At: {x: 189.01, y: 32.16}
+    Z: 2.3
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: state
+      Value: dry
+  - Id: prop.stp_ne_find_3
+    Kind: setPiece
+    Owner: 
+    Kit: shoreFinds
+    Piece: TrapLath
+    State: bleached
+    At: {x: 191.6, y: 40.6}
+    Z: -0.32
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: state
+      Value: bleached
+  - Id: prop.stp_ne_find_4
+    Kind: setPiece
+    Owner: 
+    Kit: shoreFinds
+    Piece: Driftwood
+    State: bleached
+    At: {x: 194.4, y: 42.8}
+    Z: -0.05
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: state
+      Value: bleached
+  - Id: prop.stp_ne_find_5
+    Kind: setPiece
+    Owner: 
+    Kit: shoreFinds
+    Piece: GullFeather
+    State: dry
+    At: {x: 188.38, y: 36.67}
+    Z: 0.82
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 7
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: state
+      Value: dry
+  - Id: prop.stp_ne_gull_stack_a
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 223.6, y: 58.1}
+    Z: 7.65
+    StandsOn: mount
+    MountHost: form.stp_lantern_stack
+    MountAnchor: top
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+  - Id: prop.stp_ne_gull_stack_b
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 224.9, y: 57.6}
+    Z: 7.65
+    StandsOn: mount
+    MountHost: form.stp_lantern_stack
+    MountAnchor: top
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 1
+  - Id: prop.stp_ne_gull_bell
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 215.5, y: 61.75}
+    Z: 14.12
+    StandsOn: mount
+    MountHost: structure.stp_ne_fog_bell
+    MountAnchor: frame
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 2
+  - Id: prop.stp_ne_gull_bar_a
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 233.6, y: 75.2}
+    Z: -0.02
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+  - Id: prop.stp_ne_gull_bar_b
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 235.1, y: 76.4}
+    Z: -0.29
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 7
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 1
+  - Id: prop.stp_ne_gull_bar_c
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 231.8, y: 73.9}
+    Z: -0.03
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 2
+  - Id: prop.stp_ne_gull_face_a
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 199, y: 46.2}
+    Z: 6.4
+    StandsOn: mount
+    MountHost: ground.stp_ne_head
+    MountAnchor: westFaceLedge
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 1
+  - Id: prop.stp_ne_gull_face_b
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 204.9, y: 47.9}
+    Z: 8.3
+    StandsOn: mount
+    MountHost: ground.stp_ne_head
+    MountAnchor: westFaceLedge
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+  - Id: prop.stp_ne_gull_face_c
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 210.6, y: 50.2}
+    Z: 4.6
+    StandsOn: mount
+    MountHost: ground.stp_ne_head
+    MountAnchor: southFaceLedge
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 2
+  - Id: aid.stp_ne_bar_east_cardinal
+    Kind: navMark
+    Owner: StPetersNavMarks.Cardinals
+    Kit: navBuoyRig
+    Piece: CardinalE
+    State: 
+    At: {x: 259.8, y: 105.2}
+    Z: 0
+    StandsOn: water
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: structure.stp_ne_brow_fence
+    Kind: setPiece
+    Owner: 
+    Kit: stpLightPieces
+    Piece: picket
+    State: 
+    At: {x: 181.65, y: 41.14}
+    Z: 11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: behind
+    Collider: a line collider along the run
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: runs
+      Value: '[[[181.65,41.14,11],[183.5,41.94,11]],[[183.5,41.94,11],[185.36,42.73,11]],[[185.36,42.73,11],[187.21,43.53,11]],[[187.21,43.53,11],[189.56,44.67,11]],[[189.56,44.67,11],[191.91,45.81,11]],[[191.91,45.81,11],[194.25,46.95,11]],[[194.25,46.95,11],[196.48,47.77,11]],[[196.48,47.77,11],[198.71,48.59,11]],[[198.71,48.59,11],[200.94,49.41,11]],[[200.94,49.41,11],[203.63,50.1,11]],[[203.63,50.1,11],[206.33,50.78,11]],[[206.33,50.78,11],[208.88,52.07,11]],[[208.88,52.07,11],[211.43,53.37,11]],[[211.43,53.37,11],[213.49,55.2,11]],[[213.49,55.2,11],[215.54,57.02,11]]]'
+  - Id: structure.stp_ne_garden_fence
+    Kind: setPiece
+    Owner: 
+    Kit: stpLightPieces
+    Piece: picket
+    State: 
+    At: {x: 187.2, y: 58}
+    Z: 11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: behind
+    Collider: a line collider along the run
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: runs
+      Value: '[[[187.2,58,11],[189.1,58,11]],[[190.2,58,11],[191.8,58,11]],[[191.8,58,11],[191.8,61.6,11]],[[191.8,61.6,11],[187.2,61.6,11]],[[187.2,61.6,11],[187.2,58,11]]]'
+  - Id: path.stp_ne_plank
+    Kind: setPiece
+    Owner: 
+    Kit: stpLightPieces
+    Piece: plank
+    State: 
+    At: {x: 168.4, y: 45}
+    Z: 7.94
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: floor
+    Walk: on
+    Collider: none (walked on)
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: runs
+      Value: '[[[168.4,45,7.94],[169.8,45.33,8.59]],[[169.8,45.33,8.59],[171.2,45.67,9.22]],[[171.2,45.67,9.22],[172.6,46,9.8]],[[172.6,46,9.79],[174.5,46.4,10.58]],[[174.5,46.4,10.59],[176.4,46.8,10.89]],[[176.4,46.8,10.89],[178.3,47.2,11]],[[178.3,47.2,11],[180.2,47.6,11]],[[180.2,47.6,11],[181.73,48.13,11]],[[181.73,48.13,11],[183.27,48.67,11]],[[183.27,48.67,11],[184.8,49.2,11]],[[184.8,49.2,11],[186.53,49.87,11]],[[186.53,49.87,11],[188.27,50.53,11]],[[188.27,50.53,11],[190,51.2,11]],[[190,51.2,11],[191.35,51.65,11]],[[191.35,51.65,11],[192.7,52.1,11]],[[192.7,52.1,11],[194.05,52.55,11]],[[194.05,52.55,11],[195.4,53,11]],[[195.4,53,11],[197.07,53.43,11]],[[197.07,53.43,11],[198.73,53.87,11]],[[198.73,53.87,11],[200.4,54.3,11]],[[200.4,54.3,11],[201.8,54.47,11]],[[201.8,54.47,11],[203.2,54.63,11]],[[203.2,54.63,11],[204.6,54.8,11]]]'
+  - Id: rock.stp_ne_fall_block
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: block
+    State: 
+    At: {x: 191.2, y: 41}
+    Z: 0.11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: stone
+      Value: sandstone
+    - Key: seat
+      Value: talus
+    - Key: dress
+      Value: 0
+  - Id: rock.stp_ne_fall_slab
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: slab
+    State: 
+    At: {x: 197.9, y: 44.2}
+    Z: -0.07
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: stone
+      Value: sandstone
+    - Key: seat
+      Value: rockweed
+    - Key: dress
+      Value: 1
+  - Id: rock.stp_ne_fall_cloven
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: cloven
+    State: 
+    At: {x: 203.8, y: 46}
+    Z: -0.06
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: stone
+      Value: sandstone
+    - Key: seat
+      Value: rockweed
+    - Key: dress
+      Value: 1
+  - Id: rock.stp_ne_tip_knuckle
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: knuckle
+    State: 
+    At: {x: 220.8, y: 56.8}
+    Z: 0
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: stone
+      Value: sandstone
+    - Key: seat
+      Value: null
+    - Key: dress
+      Value: 2
+  - Id: rock.stp_ne_stack_skerry
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: skerry
+    State: 
+    At: {x: 229.2, y: 60.4}
+    Z: -0.82
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: stone
+      Value: sandstone
+    - Key: seat
+      Value: null
+    - Key: dress
+      Value: 2
+  - Id: tree.stp_ne_keepers_spruce
+    Kind: tree
+    Owner: 
+    Kit: treeIsoRig4
+    Piece: BlackSpruce
+    State: 
+    At: {x: 180.4, y: 56.2}
+    Z: 11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: young
+    - Key: variant
+      Value: 1
+  - Id: tree.stp_ne_keepers_fir
+    Kind: tree
+    Owner: 
+    Kit: treeIsoRig4
+    Piece: BalsamFir
+    State: 
+    At: {x: 178.6, y: 54}
+    Z: 11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: sapling
+    - Key: variant
+      Value: 0
+  - Id: tree.stp_ne_root_spruce
+    Kind: tree
+    Owner: 
+    Kit: treeIsoRig4
+    Piece: BlackSpruce
+    State: 
+    At: {x: 182, y: 57.9}
+    Z: 11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: sapling
+    - Key: variant
+      Value: 1
+  Lights:
+  - PieceId: station.stp_ne_light
+    Preset: keeperLamp
+    Pool: 1
+    ReachMetres: 3.4
+    At: {x: 0.4, y: -5.4, z: 2}
+    Colour: '#ffc774'
+    Intensity: 0.75
+    When: dusk
+    WhoLights: the keeper
+    Budget: 1
+    Note: 
+  - PieceId: station.stp_ne_light_tower
+    Preset: keeperLamp
+    Pool: 1
+    ReachMetres: 3.4
+    At: {x: -5.7, y: -3.6, z: 2}
+    Colour: '#ffc774'
+    Intensity: 0.75
+    When: dusk
+    WhoLights: the keeper
+    Budget: 1
+    Note: 
+  RetiredIds: []
