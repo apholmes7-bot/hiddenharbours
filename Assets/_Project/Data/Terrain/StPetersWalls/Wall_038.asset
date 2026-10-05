@@ -25,6 +25,7 @@ MonoBehaviour:
   - {x: 95.42737, y: -69.21683}
   - {x: 95.17828, y: -69.24803}
   - {x: 94.92302, y: -69.22931}
+  - {x: 94.79541, y: -69.21979}
   - {x: 94.66781, y: -69.21026}
   - {x: 94.39228, y: -69.021545}
   - {x: 94.11027, y: -68.77397}
@@ -49,6 +50,7 @@ MonoBehaviour:
   - {x: 95.68356, y: -71.250755}
   - {x: 95.4257, y: -71.23267}
   - {x: 95.167915, y: -71.214264}
+  - {x: 95.01178, y: -70.98155}
   - {x: 94.85565, y: -70.74883}
   - {x: 94.60862, y: -70.81236}
   - {x: 94.34761, y: -70.75984}
@@ -73,6 +75,7 @@ MonoBehaviour:
   - 7.456008
   - 7.4190497
   - 7.3886404
+  - 7.261345
   - 7.13405
   - 7.355937
   - 7.553634
@@ -97,6 +100,7 @@ MonoBehaviour:
   - -1.6399809
   - -1.6065284
   - -1.5945241
+  - -1.4920903
   - -1.3896565
   - -1.5884577
   - -1.6051868
@@ -116,11 +120,13 @@ MonoBehaviour:
   - -1.9474268
   - -1.9924921
   - -2.0380607
+  TextureBrow: []
   Stations:
   - 0
   - 1
   - 2
   - 3
+  - 3.5
   - 4
   - 5
   - 6
@@ -145,6 +151,7 @@ MonoBehaviour:
   - 1
   - 1
   - 1
+  - 2
   - 1
   - 1
   - 1
@@ -169,6 +176,7 @@ MonoBehaviour:
   - 1
   - 1
   - 1
+  - 2
   - 1
   - 1
   - 1
@@ -193,6 +201,7 @@ MonoBehaviour:
   - 2.7116141
   - 2.737692
   - 3.032097
+  - 3.1752794
   - 3.3184617
   - 4.410767
   - 5.676106
@@ -217,6 +226,7 @@ MonoBehaviour:
   - -1.6499428
   - -1.6499428
   - -1.6499428
+  - -1.649936
   - -1.6499292
   - -1.6499428
   - -1.6499428
@@ -241,4 +251,4 @@ MonoBehaviour:
   SourceRow: 38
   MeasuredOn: 'the ground file''s import, StPetersSeabed_HeightTex.png at 883f27b5 (codes sha256 5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261)'
   FaceNeeded: 
-  Why: 'Re-lined on the import: stations k0-k22. The list''s row 038 (East Ledges): re-lined.'
+  Why: 'Re-lined on the import: stations k0-k22. The list''s row 038 (East Ledges): re-lined. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k0-k22, with k3.5 added as a slice of its face.'

@@ -15,34 +15,22 @@ MonoBehaviour:
   Id: wall.stp_006
   Status: 0
   SplitFrom: 
-  Follows: wall.stp_005
+  Follows: wall.stp_198
   Rock: sandstone
   Class: 4
   Aspect: E
   Batter: steep
   Brow:
-  - {x: 188.02054, y: -12.661853}
-  - {x: 187.94466, y: -12.900215}
-  - {x: 187.86745, y: -13.138134}
   - {x: 187.78893, y: -13.375635}
   - {x: 187.70908, y: -13.61269}
   - {x: 187.62793, y: -13.849319}
   - {x: 187.5455, y: -14.085492}
-  - {x: 187.46176, y: -14.321211}
   Toe:
-  - {x: 190.7915, y: -13.535501}
-  - {x: 190.70746, y: -13.78826}
-  - {x: 190.62201, y: -14.040448}
   - {x: 190.53511, y: -14.292082}
   - {x: 190.44684, y: -14.543144}
   - {x: 190.35715, y: -14.793647}
   - {x: 190.26608, y: -15.043553}
-  - {x: 190.17363, y: -15.29288}
   DropMetres:
-  - 10
-  - 10
-  - 10
-  - 10
   - 10
   - 10
   - 10
@@ -52,24 +40,13 @@ MonoBehaviour:
   - -4
   - -4
   - -4
-  - -4
-  - -4
-  - -4
-  - -4
+  TextureBrow: []
   Stations:
-  - 0
-  - 1
-  - 2
   - 3
   - 4
   - 5
   - 6
-  - 7
   BrowFrom:
-  - 0
-  - 0
-  - 0
-  - 0
   - 0
   - 0
   - 0
@@ -79,31 +56,19 @@ MonoBehaviour:
   - 0
   - 0
   - 0
-  - 0
-  - 0
-  - 0
-  - 0
   BrowPass9:
-  - 5.907062
-  - 5.8850436
-  - 5.895746
   - 5.945536
   - 5.9838567
   - 5.954089
   - 5.912785
-  - 5.890149
   ToePass9:
-  - -3.977748
-  - -3.9481864
-  - -3.89166
   - -3.8924613
   - -3.915843
   - -3.966297
   - -3.981219
-  - -3.9198449
   SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
   SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
   SourceRow: 6
   MeasuredOn: 
   FaceNeeded: 
-  Why: 'Kept as the scene had it at 883f27b5: the list''s row 006 (South Arm): kept.'
+  Why: 'Kept as the scene had it at 883f27b5: the list''s row 006 (South Arm): kept. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k3-k6.'

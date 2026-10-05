@@ -33,6 +33,14 @@ namespace HiddenHarbours.App.Editor
     /// draws them through <see cref="ChunksOfDefs"/> — the same chunk math, cutting where each Def ends — and the
     /// scene's own walls are read back by <see cref="WallsInScene"/>. <see cref="ResolveChunks"/> stays: it is
     /// the cliff proof's walk and the analytic coast's own pins.</para>
+    ///
+    /// <para><b>⭐ CUT AT 1 M, AS SLICES (terrain PR 5w).</b> St Peters' walls are cut where their toes would span
+    /// <see cref="RegionTerrainPlanDef.WallToeSpanMetres"/> (its plan's 1 m, not the builder's own 2 m, which Nine Mile
+    /// Creek keeps). Re-cutting set stations between whole ones (a k that is not whole): the chunk math carries each
+    /// one's slice, and the whole stations past a chunk's cut ends, to <see cref="CliffWallSurface"/>, which draws it
+    /// as that slice of the face its whole stations draw. <c>u</c> runs along the whole stations only, so a cut
+    /// station moves no texture, and where a top was moved out its texture runs along where it was
+    /// (<see cref="CliffWallDef.TextureBrow"/>).</para>
     /// </summary>
     public static class StPetersCliffWalls
     {
@@ -179,6 +187,18 @@ namespace HiddenHarbours.App.Editor
             /// count every chunk of the run shares, so a shared edge is approximated identically on both
             /// sides. See <see cref="CliffWallGeometry.RowsBasisSurfaceMetres"/>.</summary>
             public float RunSurfaceMetres;
+
+            /// <summary>Per station, in step with <see cref="Samples"/>: 0 for a whole station, else how far it is cut
+            /// from the whole station before it toward the one after (terrain PR 5w). Null or empty: all whole.</summary>
+            public List<float> SliceAt;
+
+            /// <summary>Per station: where its texture runs along, its brow unless a top was moved out. Null or empty:
+            /// the brows.</summary>
+            public List<Vector2> TextureBrow;
+
+            /// <summary>The whole station before the first station and after the last, where those are cut (one, or
+            /// none, each): the columns their slices are laid between.</summary>
+            public CliffWallSliceEnd[] SliceBefore, SliceAfter;
         }
 
         /// <summary>One station of the coast walk, as the chunk math reads it: the wall standing there
@@ -196,6 +216,14 @@ namespace HiddenHarbours.App.Editor
             /// <summary>A chunk ends at the station before this one, which seeds the next, as a texture change cuts
             /// it. A wall laid from its Def (<see cref="ChunksOfDefs"/>) cuts here, so each Def is one chunk.</summary>
             public bool CutBefore;
+
+            /// <summary>0 for a whole station; else how far it is cut from the whole station before it toward the one
+            /// after (terrain PR 5w). Its chunk draws it as that slice of the face the two of them draw.</summary>
+            public float SliceAt;
+
+            /// <summary>Where its texture runs along, where that is not its brow: a top moved out keeps its texture, and
+            /// the run's `u` downstream, where they were. Null: the brow.</summary>
+            public Vector2? TextureBrowPlan;
 
             /// <summary>A standing station, its aspect and batter snapped exactly as the walk snaps them.</summary>
             public static Station Standing(in CliffWallSample sample, float azimuth, CoastClass cls) =>
@@ -229,6 +257,10 @@ namespace HiddenHarbours.App.Editor
             public float WallAzimuth;
             public float Batter;
             public float OverburdenSurfaceMetres;
+            public Vector2[] TextureBrowPlan;           // empty where they are the brows
+            public float[] SliceAt;                     // empty where every station is whole
+            public CliffWallSliceEnd[] SliceBefore;     // one where the first station is cut, else none
+            public CliffWallSliceEnd[] SliceAfter;      // one where the last station is cut, else none
         }
 
         // =============================================================================================
@@ -269,19 +301,42 @@ namespace HiddenHarbours.App.Editor
         /// ⭐ <b>THE CHUNK MATH, PURE.</b> The walk's stations, in order, into chunks of standing wall: the
         /// cuts, the run bookkeeping and the run's shared row basis. No terrain and no scene, so the
         /// analytic walk above and stations read off any other ground are cut, chained and sized by the
-        /// one rule. Deterministic to the bit (rule 5).
+        /// one rule. Deterministic to the bit (rule 5). Cut at the builder's own <see cref="ChunkToeSpanMetres"/>.
         /// </summary>
-        public static List<Chunk> ChunksOf(IReadOnlyList<Station> stations)
+        public static List<Chunk> ChunksOf(IReadOnlyList<Station> stations) => ChunksOf(stations, ChunkToeSpanMetres);
+
+        /// <summary>The chunk math, cut where a chunk's toes would span more than <paramref name="toeSpanMetres"/>.</summary>
+        public static List<Chunk> ChunksOf(IReadOnlyList<Station> stations, float toeSpanMetres)
         {
             var chunks = new List<Chunk>();
             if (stations == null) return chunks;
 
+            // The whole stations either side of each one, inside its run: a chunk that starts or ends on a cut station
+            // carries the whole one past it, the column its slice is laid toward (terrain PR 5w).
+            int count = stations.Count;
+            var prevWhole = new int[count];
+            var nextWhole = new int[count];
+            for (int i = 0, w = -1; i < count; i++)
+            {
+                if (!stations[i].Live) { w = -1; prevWhole[i] = -1; continue; }
+                prevWhole[i] = w;
+                if (stations[i].SliceAt == 0f) w = i;
+            }
+            for (int i = count - 1, w = -1; i >= 0; i--)
+            {
+                if (!stations[i].Live) { w = -1; nextWhole[i] = -1; continue; }
+                nextWhole[i] = w;
+                if (stations[i].SliceAt == 0f) w = i;
+            }
+
             // Cut runs where the wall stops being drawable, where the TEXTURE must change (aspect or
             // batter), or where a chunk has run long enough that one sorting order stops being honest.
-            var current = new Chunk { Samples = new List<CliffWallSample>() };
+            Chunk current = NewChunk();
             float runMetres = 0f;
             float toeLow = float.MaxValue, toeHigh = float.MinValue;
             Vector2 lastBrow = Vector2.zero;
+            Vector2 lastTexture = Vector2.zero;     // the last WHOLE station's, which is where `u` has run to
+            int lastIndex = -1;                     // the station `current` ends on
 
             // ⭐ THE RUN BOOKKEEPING — the B3 fix. A cut is a SORTING decision and must not be visible,
             // so the two things a chunk would otherwise re-derive from its own first station are carried
@@ -289,8 +344,8 @@ namespace HiddenHarbours.App.Editor
             // the texture AND for the profile displacement), and which run it belongs to (so the row
             // count can be shared afterwards). Both reset only where the wall genuinely STOPS.
             int runIndex = 0;
-            float runAlong = 0f;            // arc length from the run's start to `lastBrow`
-            float chunkStartAlong = 0f;     // ...and to `current`'s first station
+            float runAlong = 0f;            // arc length from the run's start to `lastTexture`
+            float chunkStartAlong = 0f;     // ...and to `current`'s first column
 
             for (int i = 0; i < stations.Count; i++)
             {
@@ -298,25 +353,36 @@ namespace HiddenHarbours.App.Editor
                 if (!st.Live)
                 {
                     if (current.Samples.Count > 0 || runAlong > 0f) runIndex++;
+                    if (current.Samples.Count > 0) current.SliceAfter = SliceEnd(stations, lastIndex, nextWhole);
                     Flush(chunks, ref current);
                     runMetres = 0f; toeLow = float.MaxValue; toeHigh = float.MinValue;
-                    runAlong = 0f; chunkStartAlong = 0f;
+                    runAlong = 0f; chunkStartAlong = 0f; lastIndex = -1;
                     continue;
                 }
 
                 float toeY = CliffWallGeometry.ToeScreen(st.Sample).y;
+                bool whole = st.SliceAt == 0f;
+                Vector2 texture = st.TextureBrowPlan ?? st.Sample.BrowPlan;
                 bool startsNew = current.Samples.Count == 0;
                 if (!startsNew)
                 {
                     float step = Vector2.Distance(lastBrow, st.Sample.BrowPlan);
                     runMetres += step;
-                    runAlong += step;                       // `runAlong` is now THIS station's along
+                    // ⭐ `u` RUNS ALONG THE WHOLE STATIONS ONLY (terrain PR 5w). A cut station is a slice of the
+                    // face between two whole ones, so it adds nothing to the run: re-cutting a wall finer slides
+                    // no texture, here or downstream.
+                    float alongBefore = runAlong, alongStep = 0f;
+                    if (whole)
+                    {
+                        alongStep = Vector2.Distance(lastTexture, texture);
+                        runAlong += alongStep;              // `runAlong` is now THIS station's along
+                    }
                     bool textureChanged = st.AspectIndex != current.AspectIndex ||
                                           st.BatterIndex != current.BatterIndex;
                     // The Y span INCLUDING this station — a chunk is cut before it grows too tall to
                     // sort honestly, not after (see ChunkToeSpanMetres).
                     float span = Mathf.Max(toeHigh, toeY) - Mathf.Min(toeLow, toeY);
-                    if (textureChanged || st.CutBefore || runMetres >= ChunkMetres || span > ChunkToeSpanMetres)
+                    if (textureChanged || st.CutBefore || runMetres >= ChunkMetres || span > toeSpanMetres)
                     {
                         // ⭐ THE BOUNDARY STATION SEEDS THE NEXT CHUNK; it does NOT join this one.
                         //
@@ -333,16 +399,28 @@ namespace HiddenHarbours.App.Editor
                         // this station's along less the step just taken. Without that the two copies of
                         // one station are displaced by different amounts and the overlap tears open
                         // instead: measured at RMS 0.40 m and up to 1.10 m, at 76 of 78 boundaries.
-                        CliffWallSample shared = current.Samples[current.Samples.Count - 1];
+                        //
+                        // A chunk's `u` starts at its first COLUMN: the shared station where it and this one
+                        // are whole (today's arithmetic, to the bit), else the whole station the slices are laid
+                        // from, whose along is the one before this station.
+                        int last = current.Samples.Count - 1;
+                        CliffWallSample shared = current.Samples[last];
+                        float sharedSlice = current.SliceAt[last];
+                        Vector2 sharedTexture = current.TextureBrow[last];
+                        current.SliceAfter = SliceEnd(stations, lastIndex, nextWhole);
                         Flush(chunks, ref current);
                         current.Samples.Add(shared);
+                        current.SliceAt.Add(sharedSlice);
+                        current.TextureBrow.Add(sharedTexture);
+                        current.SliceBefore = SliceEnd(stations, lastIndex, prevWhole);
                         float sharedToe = CliffWallGeometry.ToeScreen(shared).y;
                         toeLow = toeHigh = sharedToe;
                         runMetres = step;
-                        chunkStartAlong = runAlong - step;
+                        chunkStartAlong = sharedSlice == 0f && whole ? runAlong - alongStep : alongBefore;
                         startsNew = true;
                     }
                 }
+                else current.SliceBefore = SliceEnd(stations, i, prevWhole);
 
                 if (startsNew)
                 {
@@ -354,13 +432,41 @@ namespace HiddenHarbours.App.Editor
                     current.AlongOffsetMetres = chunkStartAlong;
                 }
                 current.Samples.Add(st.Sample);
+                current.SliceAt.Add(st.SliceAt);
+                current.TextureBrow.Add(texture);
                 toeLow = Mathf.Min(toeLow, toeY);
                 toeHigh = Mathf.Max(toeHigh, toeY);
                 lastBrow = st.Sample.BrowPlan;
+                if (whole) lastTexture = texture;
+                lastIndex = i;
             }
+            if (current.Samples.Count > 0) current.SliceAfter = SliceEnd(stations, lastIndex, nextWhole);
             Flush(chunks, ref current);
             ResolveRunSurfaces(chunks);
             return chunks;
+        }
+
+        static Chunk NewChunk() => new Chunk
+        {
+            Samples = new List<CliffWallSample>(), SliceAt = new List<float>(), TextureBrow = new List<Vector2>(),
+            SliceBefore = new CliffWallSliceEnd[0], SliceAfter = new CliffWallSliceEnd[0],
+        };
+
+        /// <summary>The whole station past a chunk's end station <paramref name="at"/>, where that is cut (none where it
+        /// is whole): <paramref name="wholeBeside"/> is the nearest whole station before it, or after it, in its run.</summary>
+        static CliffWallSliceEnd[] SliceEnd(IReadOnlyList<Station> stations, int at, int[] wholeBeside)
+        {
+            if (at < 0 || stations[at].SliceAt == 0f) return new CliffWallSliceEnd[0];
+            int w = wholeBeside[at];
+            if (w < 0)
+                throw new System.InvalidOperationException(
+                    $"station {at} is cut at {stations[at].SliceAt}, with no whole station past it in its run: a run starts and ends whole.");
+            Station s = stations[w];
+            return new[]
+            {
+                new CliffWallSliceEnd(s.Sample.BrowPlan, s.Sample.ToePlan, s.Sample.DropMetres, s.Sample.ToeElevation,
+                                      s.TextureBrowPlan ?? s.Sample.BrowPlan),
+            };
         }
 
         /// <summary>
@@ -405,7 +511,7 @@ namespace HiddenHarbours.App.Editor
                     CliffWallGeometry.OutwardPlan(current.Samples[current.Samples.Count / 2]));
                 into.Add(current);
             }
-            current = new Chunk { Samples = new List<CliffWallSample>() };
+            current = NewChunk();
         }
 
         /// <summary>⭐ A chunk's serialized fields, pure: the arrays straight off its samples, and the
@@ -433,6 +539,19 @@ namespace HiddenHarbours.App.Editor
                 fields.DropMetres[i] = chunk.Samples[i].DropMetres;
                 fields.ToeElevations[i] = chunk.Samples[i].ToeElevation;
             }
+            // The slices (terrain PR 5w), each written only where it says something: a wall with none is the wall it
+            // always was, field for field.
+            bool movedTexture = false, anyCut = false;
+            for (int i = 0; i < n; i++)
+            {
+                if (chunk.TextureBrow != null && chunk.TextureBrow.Count == n && !chunk.TextureBrow[i].Equals(fields.BrowPlan[i]))
+                    movedTexture = true;
+                if (chunk.SliceAt != null && chunk.SliceAt.Count == n && chunk.SliceAt[i] != 0f) anyCut = true;
+            }
+            fields.TextureBrowPlan = movedTexture ? chunk.TextureBrow.ToArray() : new Vector2[0];
+            fields.SliceAt = anyCut ? chunk.SliceAt.ToArray() : new float[0];
+            fields.SliceBefore = chunk.SliceBefore ?? new CliffWallSliceEnd[0];
+            fields.SliceAfter = chunk.SliceAfter ?? new CliffWallSliceEnd[0];
             return fields;
         }
 
@@ -459,8 +578,14 @@ namespace HiddenHarbours.App.Editor
         /// refuses what would not round-trip: a Def that is not one chunk, a run that does not join station to
         /// station to the bit, a wall that follows none or is followed twice, an aspect or a batter the
         /// default bake does not carry. <paramref name="owners"/> is each chunk's Def, in step.</para>
+        ///
+        /// <para>Cut at <paramref name="toeSpanMetres"/>, the plan's (<see cref="RegionTerrainPlanDef.WallToeSpanMetres"/>),
+        /// so a Def whose toes span more is refused, not drawn. A station whose k is not whole is cut between the whole
+        /// stations either side of it on its own wall (across the Defs that wall was cut into), and must say so
+        /// (<see cref="CliffStationSource.Interpolated"/>); its slice is how far its k is between theirs.</para>
         /// </summary>
-        public static List<Chunk> ChunksOfDefs(IReadOnlyList<CliffWallDef> defs, out List<CliffWallDef> owners)
+        public static List<Chunk> ChunksOfDefs(IReadOnlyList<CliffWallDef> defs, float toeSpanMetres,
+                                               out List<CliffWallDef> owners)
         {
             owners = new List<CliffWallDef>();
             var live = new Dictionary<string, CliffWallDef>(System.StringComparer.Ordinal);
@@ -502,13 +627,11 @@ namespace HiddenHarbours.App.Editor
             foreach (List<CliffWallDef> run in runs)
             {
                 if (stations.Count > 0) stations.Add(Station.Gap);
+                float[][] slices = SlicesOf(run);
                 for (int w = 0; w < run.Count; w++)
                 {
                     CliffWallDef d = run[w];
-                    int n = d.Brow == null ? 0 : d.Brow.Length;
-                    if (n < 2 || d.Toe == null || d.Toe.Length != n || d.DropMetres == null || d.DropMetres.Length != n ||
-                        d.ToeElevations == null || d.ToeElevations.Length != n)
-                        throw new System.InvalidOperationException($"'{d.Id}' needs two or more stations, each with a brow, a toe, a drop and a toe height.");
+                    int n = d.Brow.Length;
                     int aspect = System.Array.IndexOf(CliffCatalog.Aspects, d.Aspect);
                     int baked = System.Array.IndexOf(CliffBaker.DefaultBatters, System.Array.IndexOf(CliffCatalog.Batters, d.Batter));
                     if (aspect < 0 || baked < 0)
@@ -519,7 +642,8 @@ namespace HiddenHarbours.App.Editor
                         int last = p.Brow.Length - 1;
                         // Exact, not Vector2's ==: that one forgives 1e-5 m.
                         if (!p.Brow[last].Equals(d.Brow[0]) || !p.Toe[last].Equals(d.Toe[0]) ||
-                            p.DropMetres[last] != d.DropMetres[0] || p.ToeElevations[last] != d.ToeElevations[0])
+                            p.DropMetres[last] != d.DropMetres[0] || p.ToeElevations[last] != d.ToeElevations[0] ||
+                            !TextureBrowOf(p, last).Equals(TextureBrowOf(d, 0)))
                             throw new System.InvalidOperationException($"'{d.Id}' follows '{p.Id}' but does not start on its last station.");
                     }
                     for (int i = w == 0 ? 0 : 1; i < n; i++)
@@ -532,12 +656,14 @@ namespace HiddenHarbours.App.Editor
                             Class = d.Class,
                             Live = true,
                             CutBefore = w > 0 && i == 1,
+                            SliceAt = slices[w][i],
+                            TextureBrowPlan = d.TextureBrow != null && d.TextureBrow.Length > 0 ? d.TextureBrow[i] : (Vector2?)null,
                         });
                     owners.Add(d);
                 }
             }
 
-            List<Chunk> chunks = ChunksOf(stations);
+            List<Chunk> chunks = ChunksOf(stations, toeSpanMetres);
             if (chunks.Count != owners.Count)
                 throw new System.InvalidOperationException($"the chunk math cut {owners.Count} walls into {chunks.Count} chunks.");
             for (int k = 0; k < chunks.Count; k++)
@@ -545,6 +671,83 @@ namespace HiddenHarbours.App.Editor
                     throw new System.InvalidOperationException($"the chunk math cut '{owners[k].Id}' inside its own stations.");
             return chunks;
         }
+
+        /// <summary>Each station's slice, Def by Def along a run: 0 where its k is whole, else how far its k is from the
+        /// whole k before it to the whole k after it on its own wall. Checks each Def's station lines first.</summary>
+        static float[][] SlicesOf(List<CliffWallDef> run)
+        {
+            foreach (CliffWallDef d in run)
+            {
+                int n = d.Brow == null ? 0 : d.Brow.Length;
+                if (n < 2 || d.Toe == null || d.Toe.Length != n || d.DropMetres == null || d.DropMetres.Length != n ||
+                    d.ToeElevations == null || d.ToeElevations.Length != n)
+                    throw new System.InvalidOperationException($"'{d.Id}' needs two or more stations, each with a brow, a toe, a drop and a toe height.");
+                if (d.Stations == null || d.Stations.Length != n || d.BrowFrom == null || d.BrowFrom.Length != n ||
+                    d.ToeFrom == null || d.ToeFrom.Length != n)
+                    throw new System.InvalidOperationException($"'{d.Id}' needs a k, and where its brow and toe came from, at each station.");
+                if (d.TextureBrow != null && d.TextureBrow.Length != 0 && d.TextureBrow.Length != n)
+                    throw new System.InvalidOperationException($"'{d.Id}' has {d.TextureBrow.Length} texture brows for {n} stations.");
+            }
+            var slices = new float[run.Count][];
+            for (int w = 0; w < run.Count; w++)
+            {
+                CliffWallDef d = run[w];
+                slices[w] = new float[d.Stations.Length];
+                for (int i = 0; i < d.Stations.Length; i++)
+                {
+                    float k = d.Stations[i];
+                    bool cut = Mathf.Floor(k) != k;
+                    if ((d.BrowFrom[i] == CliffStationSource.Interpolated) != cut || (d.ToeFrom[i] == CliffStationSource.Interpolated) != cut)
+                        throw new System.InvalidOperationException(
+                            $"'{d.Id}' k{k.ToString(System.Globalization.CultureInfo.InvariantCulture)}: a station is interpolated where, and only where, its k is not whole.");
+                    if (!cut) continue;
+                    float before = WholeK(run, w, i, -1), after = WholeK(run, w, i, +1);
+                    slices[w][i] = (k - before) / (after - before);
+                }
+            }
+            return slices;
+        }
+
+        /// <summary>The whole k beside the run's Def <paramref name="w"/>'s station <paramref name="i"/>, back (-1) or on
+        /// (+1): through its cut stations, and across a join into the Def its wall goes on in (the same wall's).</summary>
+        static float WholeK(List<CliffWallDef> run, int w, int i, int dir)
+        {
+            CliffWallDef from = run[w];
+            string root = RootOf(from);
+            float k = from.Stations[i];
+            string at = $"'{from.Id}' k{k.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
+            while (true)
+            {
+                int next = i + dir;
+                if (next < 0 || next >= run[w].Stations.Length)
+                {
+                    int w2 = w + dir;
+                    if (w2 < 0 || w2 >= run.Count)
+                        throw new System.InvalidOperationException($"{at} is cut, with no whole station {(dir < 0 ? "before" : "after")} it in its run.");
+                    CliffWallDef there = run[w2];
+                    int join = dir < 0 ? there.Stations.Length - 1 : 0;     // the station both Defs hold
+                    if (RootOf(there) != root || there.Stations[join] != run[w].Stations[i])
+                        throw new System.InvalidOperationException($"{at} is cut, and its wall goes on in '{there.Id}', which does not hold it.");
+                    w = w2;
+                    next = join + dir;
+                }
+                i = next;
+                float kk = run[w].Stations[i];
+                if (Mathf.Floor(kk) != kk) continue;
+                if (dir < 0 ? !(kk < k) : !(kk > k))
+                    throw new System.InvalidOperationException(
+                        $"{at} is cut, and the whole station {(dir < 0 ? "before" : "after")} it is k{kk.ToString(System.Globalization.CultureInfo.InvariantCulture)}.");
+                return kk;
+            }
+        }
+
+        /// <summary>The wall a Def was cut from (its <see cref="CliffWallDef.SplitFrom"/>), else its own: the wall its
+        /// k count along.</summary>
+        static string RootOf(CliffWallDef d) =>
+            string.IsNullOrEmpty(d.SplitFrom) ? d.RealId : d.SplitFrom.Substring(System.Math.Max(0, d.SplitFrom.Length - 3));
+
+        static Vector2 TextureBrowOf(CliffWallDef d, int i) =>
+            d.TextureBrow != null && d.TextureBrow.Length > 0 ? d.TextureBrow[i] : d.Brow[i];
 
         static string LeastId(List<CliffWallDef> run)
         {
@@ -585,6 +788,10 @@ namespace HiddenHarbours.App.Editor
             public int BatterIndex;             // into BakedBatterAngles()
             public Vector2[] Brow, Toe;
             public float[] DropMetres, ToeElevations;
+            /// <summary>The slices (terrain PR 5w): each empty where the scene holds none.</summary>
+            public Vector2[] TextureBrow;
+            public float[] SliceAt;
+            public CliffWallSliceEnd[] SliceBefore, SliceAfter;
             public float AlongOffsetMetres, RowsBasisSurfaceMetres, WallAzimuth, Batter;
             public Vector3 Position;
             public int SortingOrder;
@@ -613,7 +820,14 @@ namespace HiddenHarbours.App.Editor
                 RunIndex = RunIndex,
                 AlongOffsetMetres = AlongOffsetMetres,
                 RunSurfaceMetres = RowsBasisSurfaceMetres,
+                SliceAt = new List<float>(SliceAt != null && SliceAt.Length > 0 ? SliceAt : new float[Brow.Length]),
+                TextureBrow = new List<Vector2>(TextureBrows),
+                SliceBefore = SliceBefore ?? new CliffWallSliceEnd[0],
+                SliceAfter = SliceAfter ?? new CliffWallSliceEnd[0],
             };
+
+            /// <summary>The brows its texture runs along: <see cref="TextureBrow"/>, else its brows.</summary>
+            public Vector2[] TextureBrows => TextureBrow != null && TextureBrow.Length > 0 ? TextureBrow : Brow;
         }
 
         /// <summary>
@@ -694,6 +908,15 @@ namespace HiddenHarbours.App.Editor
             if (n < 2 || w.Toe.Length != n || w.DropMetres.Length != n || w.ToeElevations.Length != n)
                 throw new System.InvalidOperationException($"'{name}' holds {n} brow, {w.Toe.Length} toe, {w.DropMetres.Length} drop and " +
                                                            $"{w.ToeElevations.Length} toe height stations.");
+            // The slices are optional: a wall saved before the re-cut has none, and reads as whole.
+            w.TextureBrow = Vec2List(surface, "_textureBrowPlan", optional: true);
+            w.SliceAt = FloatList(surface, "_sliceAt", optional: true);
+            w.SliceBefore = SliceEndList(surface, "_sliceBefore");
+            w.SliceAfter = SliceEndList(surface, "_sliceAfter");
+            if ((w.TextureBrow.Length != 0 && w.TextureBrow.Length != n) || (w.SliceAt.Length != 0 && w.SliceAt.Length != n) ||
+                w.SliceBefore.Length > 1 || w.SliceAfter.Length > 1)
+                throw new System.InvalidOperationException($"'{name}' holds {w.TextureBrow.Length} texture brows, {w.SliceAt.Length} slices, " +
+                                                           $"{w.SliceBefore.Length} and {w.SliceAfter.Length} slice ends for {n} stations.");
             return w;
         }
 
@@ -706,8 +929,9 @@ namespace HiddenHarbours.App.Editor
             return true;
         }
 
-        /// <summary>The entries of one of a document's own sequence fields: the lines "  - …" under "  key:".</summary>
-        static List<string> ListOf(StPetersLayerRefresh.Doc d, string key)
+        /// <summary>The entries of one of a document's own sequence fields: the lines "  - …" under "  key:". A field
+        /// that is <paramref name="optional"/> and not there reads as empty.</summary>
+        static List<string> ListOf(StPetersLayerRefresh.Doc d, string key, bool optional = false)
         {
             var values = new List<string>();
             string[] lines = d.Lines;
@@ -719,28 +943,72 @@ namespace HiddenHarbours.App.Editor
                     values.Add(lines[j].Substring(4));
                 return values;
             }
+            if (optional) return values;
             throw new System.InvalidOperationException($"no '{key}' in {lines[0]}.");
+        }
+
+        /// <summary>A sequence of <see cref="CliffWallSliceEnd"/>s: each "  - BrowPlan: …" and the "    Key: …" lines under
+        /// it. Not there reads as none.</summary>
+        static CliffWallSliceEnd[] SliceEndList(StPetersLayerRefresh.Doc d, string key)
+        {
+            var ends = new List<CliffWallSliceEnd>();
+            string[] lines = d.Lines;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (lines[i] == "  " + key + ": []") break;
+                if (lines[i] != "  " + key + ":") continue;
+                var fields = new Dictionary<string, string>(System.StringComparer.Ordinal);
+                for (int j = i + 1; j <= lines.Length; j++)
+                {
+                    bool item = j < lines.Length && lines[j].StartsWith("  - ", System.StringComparison.Ordinal);
+                    bool more = j < lines.Length && lines[j].StartsWith("    ", System.StringComparison.Ordinal);
+                    if ((item || !more) && fields.Count > 0)
+                    {
+                        ends.Add(SliceEndOf(fields, key));
+                        fields.Clear();
+                    }
+                    if (!item && !more) break;
+                    string entry = lines[j].Substring(4);
+                    int colon = entry.IndexOf(": ", System.StringComparison.Ordinal);
+                    if (colon < 0) throw new System.InvalidOperationException($"'{entry}' in {key} is not a field.");
+                    fields[entry.Substring(0, colon)] = entry.Substring(colon + 2);
+                }
+                break;
+            }
+            return ends.ToArray();
+        }
+
+        static CliffWallSliceEnd SliceEndOf(Dictionary<string, string> fields, string key)
+        {
+            string Field(string name) =>
+                fields.TryGetValue(name, out string v) ? v : throw new System.InvalidOperationException($"a slice end in {key} has no {name}.");
+            return new CliffWallSliceEnd(Vec2Of(Field("BrowPlan"), key), Vec2Of(Field("ToePlan"), key),
+                                         StPetersLayerRefresh.ParseFloat(Field("DropMetres")),
+                                         StPetersLayerRefresh.ParseFloat(Field("ToeElevation")),
+                                         Vec2Of(Field("TextureBrowPlan"), key));
+        }
+
+        static Vector2 Vec2Of(string value, string key)
+        {
+            var m = Vec2Rx.Match(value);
+            if (!m.Success) throw new System.InvalidOperationException($"'{value}' in {key} is not a vector.");
+            return new Vector2(StPetersLayerRefresh.ParseFloat(m.Groups[1].Value), StPetersLayerRefresh.ParseFloat(m.Groups[2].Value));
         }
 
         static readonly System.Text.RegularExpressions.Regex Vec2Rx =
             new System.Text.RegularExpressions.Regex(@"^\{x: ([^,]+), y: ([^}]+)\}$", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
 
-        static Vector2[] Vec2List(StPetersLayerRefresh.Doc d, string key)
+        static Vector2[] Vec2List(StPetersLayerRefresh.Doc d, string key, bool optional = false)
         {
-            List<string> values = ListOf(d, key);
+            List<string> values = ListOf(d, key, optional);
             var v = new Vector2[values.Count];
-            for (int i = 0; i < v.Length; i++)
-            {
-                var m = Vec2Rx.Match(values[i]);
-                if (!m.Success) throw new System.InvalidOperationException($"'{values[i]}' in {key} is not a vector.");
-                v[i] = new Vector2(StPetersLayerRefresh.ParseFloat(m.Groups[1].Value), StPetersLayerRefresh.ParseFloat(m.Groups[2].Value));
-            }
+            for (int i = 0; i < v.Length; i++) v[i] = Vec2Of(values[i], key);
             return v;
         }
 
-        static float[] FloatList(StPetersLayerRefresh.Doc d, string key)
+        static float[] FloatList(StPetersLayerRefresh.Doc d, string key, bool optional = false)
         {
-            List<string> values = ListOf(d, key);
+            List<string> values = ListOf(d, key, optional);
             var v = new float[values.Count];
             for (int i = 0; i < v.Length; i++) v[i] = StPetersLayerRefresh.ParseFloat(values[i]);
             return v;
@@ -967,7 +1235,9 @@ namespace HiddenHarbours.App.Editor
             var existing = GameObject.Find(RootName);
             if (existing != null) Object.DestroyImmediate(existing);
 
-            List<Chunk> chunks = ChunksOfDefs(defs, out List<CliffWallDef> owners);
+            // Cut where the plan says (St Peters' 1 m), so Defs cut for it are refused if they no longer meet it.
+            List<Chunk> chunks = ChunksOfDefs(defs, StPetersTerrainPlan.LoadPlan().WallToeSpanMetres,
+                                              out List<CliffWallDef> owners);
             if (chunks.Count == 0) return 0;
 
             var material = AssetDatabase.LoadAssetAtPath<Material>(CliffFaceMat);
@@ -1016,7 +1286,8 @@ namespace HiddenHarbours.App.Editor
                                   CliffCatalog.FaceMetresS, CliffCatalog.FaceMetresT,
                                   CliffCatalog.ProfileSubdivideMetres, CliffCatalog.ProfileMetres,
                                   CliffCatalog.StripMetresT, CliffCatalog.BrowLineAt,
-                                  fields.ToeElevations);
+                                  fields.ToeElevations,
+                                  fields.TextureBrowPlan, fields.SliceAt, fields.SliceBefore, fields.SliceAfter);
                 built++;
             }
 

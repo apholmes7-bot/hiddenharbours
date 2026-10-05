@@ -15,50 +15,33 @@ MonoBehaviour:
   Id: wall.stp_000
   Status: 0
   SplitFrom: 
-  Follows: 
+  Follows: wall.stp_189
   Rock: sandstone
   Class: 4
   Aspect: E
   Batter: ramp
   Brow:
-  - {x: 189.42722, y: -6.831251}
-  - {x: 189.38503, y: -7.0777526}
   - {x: 189.34137, y: -7.324}
   - {x: 189.29625, y: -7.5699897}
   - {x: 189.24966, y: -7.815702}
-  - {x: 189.20164, y: -8.061143}
   Toe:
-  - {x: 192.35754, y: -7.3238344}
-  - {x: 192.31033, y: -7.587416}
   - {x: 192.2615, y: -7.850655}
   - {x: 192.21104, y: -8.113545}
   - {x: 192.159, y: -8.376066}
-  - {x: 192.10533, y: -8.638216}
   DropMetres:
-  - 4.4800425
-  - 4.8175354
   - 5.062385
   - 5.1947684
   - 5.229478
-  - 5.3597007
   ToeElevations:
-  - 1.5199574
-  - 1.1824646
   - 0.93761504
   - 0.8052316
   - 0.77052224
-  - 0.64029944
+  TextureBrow: []
   Stations:
-  - 0
-  - 1
   - 2
   - 3
   - 4
-  - 5
   BrowFrom:
-  - 0
-  - 0
-  - 0
   - 0
   - 0
   - 0
@@ -66,26 +49,17 @@ MonoBehaviour:
   - 0
   - 0
   - 0
-  - 0
-  - 0
-  - 0
   BrowPass9:
-  - 5.5639915
-  - 5.69876
   - 5.8211603
   - 5.906303
   - 5.9856653
-  - 5.9878206
   ToePass9:
-  - 1.4937221
-  - 1.1974049
   - 0.9679377
   - 0.8720936
   - 0.7740067
-  - 0.66046125
   SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
   SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
   SourceRow: 0
   MeasuredOn: 
   FaceNeeded: 
-  Why: 'Kept as the scene had it at 883f27b5: the list''s row 000 (South Arm): kept.'
+  Why: 'Kept as the scene had it at 883f27b5: the list''s row 000 (South Arm): kept. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k2-k4.'

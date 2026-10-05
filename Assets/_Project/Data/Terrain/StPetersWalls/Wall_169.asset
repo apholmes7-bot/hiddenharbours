@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: wall.stp_169
   Status: 2
   SplitFrom: wall.stp_057
-  Follows: wall.stp_168
+  Follows: wall.stp_277
   Rock: sandstone
   Class: 5
   Aspect: SW
@@ -40,6 +40,7 @@ MonoBehaviour:
   - 0.58869135
   - 0.041676894
   - -0.18853125
+  TextureBrow: []
   Stations:
   - 2
   - 3

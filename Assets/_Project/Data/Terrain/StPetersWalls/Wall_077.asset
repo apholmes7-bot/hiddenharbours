@@ -15,42 +15,33 @@ MonoBehaviour:
   Id: wall.stp_077
   Status: 0
   SplitFrom: 
-  Follows: wall.stp_076
+  Follows: wall.stp_263
   Rock: sandstone
   Class: 4
   Aspect: SW
   Batter: ramp
   Brow:
-  - {x: -44.07438, y: -21.725044}
-  - {x: -44.19587, y: -21.50675}
   - {x: -44.316322, y: -21.287909}
   - {x: -44.435715, y: -21.068485}
   - {x: -44.55406, y: -20.848482}
   - {x: -44.67134, y: -20.627935}
   Toe:
-  - {x: -46.4707, y: -23.066216}
-  - {x: -46.6024, y: -22.838684}
   - {x: -46.733032, y: -22.61047}
   - {x: -46.862602, y: -22.381556}
   - {x: -46.991108, y: -22.151932}
   - {x: -47.11852, y: -21.921635}
   DropMetres:
-  - 5.9650946
-  - 5.651806
   - 5.411655
   - 5.2601523
   - 5.2121754
   - 5.1454926
   ToeElevations:
-  - 0.034905307
-  - 0.34819427
   - 0.5883452
   - 0.73984766
   - 0.7878247
   - 0.8545075
+  TextureBrow: []
   Stations:
-  - 0
-  - 1
   - 2
   - 3
   - 4
@@ -60,25 +51,17 @@ MonoBehaviour:
   - 0
   - 0
   - 0
-  - 0
-  - 0
   ToeFrom:
   - 0
   - 0
   - 0
   - 0
-  - 0
-  - 0
   BrowPass9:
-  - 5.967365
-  - 5.9757433
   - 5.9621453
   - 5.942302
   - 5.959908
   - 5.9834895
   ToePass9:
-  - 0.06380166
-  - 0.38766944
   - 0.5770531
   - 0.7292734
   - 0.86079186
@@ -88,4 +71,4 @@ MonoBehaviour:
   SourceRow: 77
   MeasuredOn: 
   FaceNeeded: 
-  Why: 'Kept as the scene had it at 883f27b5: the list''s row 077 (South-West Bluff): kept.'
+  Why: 'Kept as the scene had it at 883f27b5: the list''s row 077 (South-West Bluff): kept. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k2-k5.'

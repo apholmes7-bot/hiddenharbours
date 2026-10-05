@@ -22,48 +22,57 @@ MonoBehaviour:
   Batter: ramp
   Brow:
   - {x: 98.336426, y: -68.27288}
+  - {x: 98.20899, y: -68.265594}
   - {x: 98.08156, y: -68.2583}
   - {x: 97.82679, y: -68.243385}
   - {x: 97.57892, y: -68.27767}
   - {x: 97.34449, y: -68.410706}
   Toe:
   - {x: 98.693855, y: -70.79771}
+  - {x: 98.59258, y: -70.98871}
   - {x: 98.49131, y: -71.1797}
   - {x: 98.23968, y: -71.214836}
   - {x: 97.98799, y: -71.24965}
   - {x: 97.72949, y: -71.23458}
   DropMetres:
   - 7.1923695
+  - 7.332596
   - 7.472822
   - 7.5225344
   - 7.49798
   - 7.3635077
   ToeElevations:
   - -1.3339688
+  - -1.4542165
   - -1.5744641
   - -1.5827866
   - -1.5721956
   - -1.4910139
+  TextureBrow: []
   Stations:
   - 12
+  - 12.5
   - 13
   - 14
   - 15
   - 16
   BrowFrom:
   - 1
+  - 2
   - 1
   - 1
   - 1
   - 1
   ToeFrom:
   - 1
+  - 2
   - 1
   - 1
   - 1
   - 1
   BrowPass9:
   - 5.544568
+  - 5.626813
   - 5.7090573
   - 5.831667
   - 5.7778745
@@ -74,9 +83,10 @@ MonoBehaviour:
   - -1.6499428
   - -1.6499428
   - -1.6499428
+  - -1.6499428
   SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
   SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
   SourceRow: 37
   MeasuredOn: 'the ground file''s import, StPetersSeabed_HeightTex.png at 883f27b5 (codes sha256 5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261)'
   FaceNeeded: 
-  Why: 'Cut from 037, re-lined on the import: its stations k12-k16. The list''s row 037 (East Ledges): re-lined.'
+  Why: 'Cut from 037, re-lined on the import: its stations k12-k16. The list''s row 037 (East Ledges): re-lined. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k12-k16, with k12.5 added as a slice of its face.'

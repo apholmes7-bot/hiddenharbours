@@ -31,6 +31,9 @@ namespace HiddenHarbours.App.Editor
         static readonly string[] WallKitFields =
             { "_material", "_faceMetresS", "_faceMetresT", "_subdivideMetres", "_profileMetres", "_stripMetresT", "_browLineAt" };
 
+        /// <summary>A wall's slices (terrain PR 5w), in their declared order after <c>_toeElevations</c>.</summary>
+        static readonly string[] WallSliceFields = { "_textureBrowPlan", "_sliceAt", "_sliceBefore", "_sliceAfter" };
+
         /// <summary>
         /// ⭐ <b>THE WALLS BY THEIR REAL IDS.</b> The <c>CliffWalls</c> root as the walls' Defs have it, written by
         /// text, never by a rebuild (St Peters cannot be rebuilt). The scene's walls are matched to their Defs by the
@@ -49,8 +52,12 @@ namespace HiddenHarbours.App.Editor
         /// step refuses if two walls wearing one face disagree on them, or a Def wears a face no wall does. It refuses
         /// a scene wall with no Def, or a held one's, and a re-order of the walls that stay. Re-planned on its own
         /// result, it finds nothing to do.
+        ///
+        /// <para>The Defs are cut at <paramref name="toeSpanMetres"/>, the plan's (St Peters' 1 m): a Def that is not one
+        /// chunk at that cut is refused. A wall's slices are written where it has them, and where its surface already
+        /// holds the field; a wall with none, saved before they existed, keeps none (terrain PR 5w).</para>
         /// </summary>
-        public static LayerPatch CliffWalls(SceneYaml scene, IReadOnlyList<CliffWallDef> defs)
+        public static LayerPatch CliffWalls(SceneYaml scene, IReadOnlyList<CliffWallDef> defs, float toeSpanMetres)
         {
             string rootName = StPetersCliffWalls.RootName;
             Doc root = scene.RootNamed(rootName);
@@ -64,7 +71,7 @@ namespace HiddenHarbours.App.Editor
             try
             {
                 walls = StPetersCliffWalls.WallsUnder(scene);
-                chunks = StPetersCliffWalls.ChunksOfDefs(defs, out owners);
+                chunks = StPetersCliffWalls.ChunksOfDefs(defs, toeSpanMetres, out owners);
             }
             catch (InvalidOperationException e)
             {
@@ -137,6 +144,8 @@ namespace HiddenHarbours.App.Editor
                     if (groupAfter != group.Text) what.Add($"its sorting order {w.SortingOrder} → {order}");
                     if (!WallFaceFields.All(key => WallFieldBlock(surface.Text, key) == WallFieldBlock(surfaceAfter, key)))
                         what.Add($"its face, to {face}");
+                    if (!WallSliceFields.All(key => SliceBlock(surface.Text, key) == SliceBlock(surfaceAfter, key)))
+                        what.Add($"its slices ({Slices(f)})");
                     if (f.AlongOffsetMetres != w.AlongOffsetMetres)
                         what.Add($"along {WallFloat(w.AlongOffsetMetres)} → {WallFloat(f.AlongOffsetMetres)}");
                     if (f.RowsBasisSurfaceMetres != w.RowsBasisSurfaceMetres)
@@ -166,7 +175,7 @@ namespace HiddenHarbours.App.Editor
                     patch.Add(SetField(Remap(scene.Get(parent.SortingGroup).Text, map), "m_SortingOrder", Int(order)), $"{name} SortingGroup");
                     patch.Add(WallSurface(Remap(scene.Get(parent.Surface).Text, map), f, faceDonor), $"{name} CliffWallSurface");
                     patch.Note(name, $"{d.Id} ({d.Status})",
-                               $"added, cut from {parent.Name}: {f.BrowPlan.Length} stations, along {WallFloat(f.AlongOffsetMetres)}, " +
+                               $"added, cut from {parent.Name}: {f.BrowPlan.Length} stations ({Slices(f)}), along {WallFloat(f.AlongOffsetMetres)}, " +
                                $"rows {WallFloat(f.RowsBasisSurfaceMetres)}, sorting order {order}");
                     children.Add(map[parent.Transform]);
                 }
@@ -219,6 +228,12 @@ namespace HiddenHarbours.App.Editor
             text = WithWallFieldBlock(text, "_toePlan", WallList("_toePlan", f.ToePlan.Select(WallVec2)));
             text = WithWallFieldBlock(text, "_dropMetres", WallList("_dropMetres", f.DropMetres.Select(WallFloat)));
             text = WithWallFieldBlock(text, "_toeElevations", WallList("_toeElevations", f.ToeElevations.Select(WallFloat)));
+            // The slices: a field with nothing to say stays out of a wall that never had it (a wall saved before them
+            // has none, and reads as whole); one that is there is written, empty or not.
+            text = WithSliceField(text, 0, WallList("_textureBrowPlan", f.TextureBrowPlan.Select(WallVec2)), f.TextureBrowPlan.Length == 0);
+            text = WithSliceField(text, 1, WallList("_sliceAt", f.SliceAt.Select(WallFloat)), f.SliceAt.Length == 0);
+            text = WithSliceField(text, 2, WallEnds("_sliceBefore", f.SliceBefore), f.SliceBefore.Length == 0);
+            text = WithSliceField(text, 3, WallEnds("_sliceAfter", f.SliceAfter), f.SliceAfter.Length == 0);
             text = SetField(text, "_alongOffsetMetres", WallFloat(f.AlongOffsetMetres));
             text = SetField(text, "_rowsBasisSurfaceMetres", WallFloat(f.RowsBasisSurfaceMetres));
             foreach (string key in WallFaceFields) text = WithWallFieldBlock(text, key, WallFieldBlock(faceDonor.Text, key));
@@ -226,6 +241,55 @@ namespace HiddenHarbours.App.Editor
             text = SetField(text, "_batter", WallFloat(f.Batter));
             return text;
         }
+
+        /// <summary>A slice field written, or put in after the nearest field before it in the declared order where it is
+        /// not there and has something to say.</summary>
+        static string WithSliceField(string text, int field, string block, bool empty)
+        {
+            string key = WallSliceFields[field];
+            if (HasWallField(text, key)) return WithWallFieldBlock(text, key, block);
+            if (empty) return text;
+            string after = "_toeElevations";
+            for (int i = field - 1; i >= 0; i--)
+                if (HasWallField(text, WallSliceFields[i])) { after = WallSliceFields[i]; break; }
+            var lines = new List<string>(text.Split('\n'));
+            WallFieldLines(lines.ToArray(), after, out int _, out int end);
+            lines.InsertRange(end, block.Split('\n'));
+            return string.Join("\n", lines);
+        }
+
+        static bool HasWallField(string docText, string key)
+        {
+            string prefix = "  " + key + ":";
+            string[] lines = docText.Split('\n');
+            for (int i = 1; i < lines.Length; i++)
+                if (lines[i].StartsWith(prefix, StringComparison.Ordinal) &&
+                    (lines[i].Length == prefix.Length || lines[i][prefix.Length] == ' '))
+                    return true;
+            return false;
+        }
+
+        static string SliceBlock(string docText, string key) => HasWallField(docText, key) ? WallFieldBlock(docText, key) : "";
+
+        /// <summary>Slice ends as Unity writes a list of structs: "  - " before the first field, four spaces before the rest.</summary>
+        static string WallEnds(string key, CliffWallSliceEnd[] ends)
+        {
+            if (ends.Length == 0) return $"  {key}: []";
+            var lines = new List<string> { $"  {key}:" };
+            foreach (CliffWallSliceEnd e in ends)
+            {
+                lines.Add($"  - BrowPlan: {WallVec2(e.BrowPlan)}");
+                lines.Add($"    ToePlan: {WallVec2(e.ToePlan)}");
+                lines.Add($"    DropMetres: {WallFloat(e.DropMetres)}");
+                lines.Add($"    ToeElevation: {WallFloat(e.ToeElevation)}");
+                lines.Add($"    TextureBrowPlan: {WallVec2(e.TextureBrowPlan)}");
+            }
+            return string.Join("\n", lines);
+        }
+
+        static string Slices(StPetersCliffWalls.ChunkFields f) =>
+            $"{f.SliceAt.Count(s => s != 0f)} cut, {f.SliceBefore.Length + f.SliceAfter.Length} slice ends" +
+            (f.TextureBrowPlan.Length > 0 ? ", its texture pinned" : "");
 
         static void RequireSameFields(Doc a, Doc b, string[] keys, string what)
         {
@@ -360,7 +424,8 @@ namespace HiddenHarbours.App.Editor
                     throw new Refusal("StPeters is open in the editor. Close it first: an open scene would overwrite the file on its next save.");
 
             string text = File.ReadAllText(ScenePath);
-            LayerPatch patch = CliffWalls(SceneYaml.Parse(text), StPetersCliffWalls.LoadDefs());
+            LayerPatch patch = CliffWalls(SceneYaml.Parse(text), StPetersCliffWalls.LoadDefs(),
+                                          StPetersTerrainPlan.LoadPlan().WallToeSpanMetres);
 
             Directory.CreateDirectory(PatchFolder);
             var utf8 = new UTF8Encoding(false);

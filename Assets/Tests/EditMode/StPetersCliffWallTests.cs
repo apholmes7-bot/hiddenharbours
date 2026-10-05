@@ -39,11 +39,17 @@ namespace HiddenHarbours.Tests.EditMode
         private List<StPetersCliffWalls.SceneWall> _walls;
         private List<StPetersCliffWalls.Chunk> _chunks;
 
+        /// <summary>The cut St Peters' walls were made at: its plan's <see cref="RegionTerrainPlanDef.WallToeSpanMetres"/>
+        /// (1 m; terrain PR 5w), not the builder's own <see cref="StPetersCliffWalls.ChunkToeSpanMetres"/>.</summary>
+        private float _cut;
+
         /// <summary>Where the scene's runs start and end, by real id, in run order (terrain PR 5w, amendment 1
         /// §4.3; Phase A2's report §2): main's ends that stay (000 k0, 022 k13 | 023 k0, 078 k4), 032's cut
-        /// (153, its k19 | 154, its k21) and the main beach's two ends (043 k2 | 056 k5).</summary>
-        static readonly string[] RunStarts = { "000", "023", "154", "056" };
-        static readonly string[] RunEnds = { "022", "153", "043", "078" };
+        /// (153, its k19 | 154, its k21) and the main beach's two ends (043 k2 | 056 k5). At St Peters' 1 m cut four
+        /// of those stations stand in pieces split from their walls, under new ids: 000 k0 in 189, 023 k0 in 221,
+        /// 153 k19 in 269 and 078 k4 in 265.</summary>
+        static readonly string[] RunStarts = { "189", "221", "154", "056" };
+        static readonly string[] RunEnds = { "022", "269", "043", "265" };
 
         [OneTimeSetUp]
         public void ReadTheScenesWalls()
@@ -51,6 +57,9 @@ namespace HiddenHarbours.Tests.EditMode
             _walls = StPetersCliffWalls.WallsInScene(File.ReadAllText(StPetersLayerRefreshTests.ScenePath));
             _chunks = new List<StPetersCliffWalls.Chunk>(_walls.Count);
             foreach (StPetersCliffWalls.SceneWall w in _walls) _chunks.Add(w.AsChunk());
+            RegionTerrainPlanDef plan = StPetersTerrainPlan.LoadPlan();
+            Assert.IsNotNull(plan, "no St Peters terrain plan");
+            _cut = plan.WallToeSpanMetres;
         }
 
         [SetUp]
@@ -320,9 +329,9 @@ namespace HiddenHarbours.Tests.EditMode
         /// <para><b>⚠ THE TWO CLAIMS ARE NOT THE SAME STRENGTH, AND SAYING SO IS THE POINT.</b> The
         /// clifftop claim is EXACT and must never fail: a wall must hide a walker standing on top of it,
         /// at every station, or the island layers wrong the moment anyone walks the coast. The foot
-        /// claim is BOUNDED: a chunk carries one order and its foot wanders across
-        /// <see cref="StPetersCliffWalls.ChunkToeSpanMetres"/>, so a walker at the SHALLOWEST foot of a
-        /// chunk is mis-sorted by up to that span — by construction, and by less than the height of the
+        /// claim is BOUNDED: a chunk carries one order and its foot wanders across the cut its walls were
+        /// made at (St Peters' plan's <see cref="RegionTerrainPlanDef.WallToeSpanMetres"/>, 1 m; terrain PR 5w), so a
+        /// walker at the SHALLOWEST foot of a chunk is mis-sorted by up to that span — by construction, and by less than the height of the
         /// walker. Asserting zero there is what the first version of this test did, and the coast said
         /// no: it measured 5.6 m of wander because the chunks were cut on shore length instead of on Y.
         /// The bound is what turned that into a fixable number.</para>
@@ -367,16 +376,16 @@ namespace HiddenHarbours.Tests.EditMode
             // the cut by exactly one station's worth of Y and by nothing else. Both terms are MEASURED
             // off the built walls; neither is written down.
             Assert.LessOrEqual(worstToeSpan,
-                StPetersCliffWalls.ChunkToeSpanMetres + worstStationJump + 1e-3f,
+                _cut + worstStationJump + 1e-3f,
                 $"a chunk's foot wanders {worstToeSpan:F2} m against a " +
-                $"{StPetersCliffWalls.ChunkToeSpanMetres} m cut plus a {worstStationJump:F2} m station " +
+                $"{_cut} m cut plus a {worstStationJump:F2} m station " +
                 "— something other than the shared boundary station is widening chunks");
 
             // …and a station is a SMALL correction to the cut, not the thing setting the span. If this
             // fails the stations have grown coarse and the bound above has stopped meaning anything.
-            Assert.Less(worstStationJump, StPetersCliffWalls.ChunkToeSpanMetres * 0.5f,
+            Assert.Less(worstStationJump, _cut * 0.5f,
                 $"one station moves the foot {worstStationJump:F2} m — stations are too coarse for a " +
-                $"{StPetersCliffWalls.ChunkToeSpanMetres} m cut to bound anything");
+                $"{_cut} m cut to bound anything");
 
             int allowedFootError = Mathf.CeilToInt(worstToeSpan * SortingBands.OrdersPerMetre);
             Assert.LessOrEqual(worstFootError, allowedFootError,
@@ -386,7 +395,7 @@ namespace HiddenHarbours.Tests.EditMode
             Debug.Log($"[cliff-walls] clifftop margin ≥ {worstBrowMargin} orders (EXACT claim); " +
                       $"worst foot error {worstFootError} orders = {worstFootError / SortingBands.OrdersPerMetre:F2} m " +
                       $"of walker, from a widest chunk foot span of {worstToeSpan:F2} m " +
-                      $"({StPetersCliffWalls.ChunkToeSpanMetres} m cut + {worstStationJump:F2} m station). " +
+                      $"({_cut} m cut + {worstStationJump:F2} m station). " +
                       $"Band {SortingBands.DecorFloor}…{SortingBands.DecorCeiling} at " +
                       $"{SortingBands.OrdersPerMetre}/m.");
         }
@@ -417,15 +426,15 @@ namespace HiddenHarbours.Tests.EditMode
                 $"a chunk ran {longestChunk:F2} m against a {StPetersCliffWalls.ChunkMetres} m cut");
 
             float slack = CliffWallGeometry.BrowToToeSeparationMetres(minDrop);
-            Assert.Greater(slack, StPetersCliffWalls.ChunkToeSpanMetres,
+            Assert.Greater(slack, _cut,
                 $"the shallowest face on the island ({minDrop:F2} m) separates brow from toe by only " +
-                $"{slack:F2} m, less than the {StPetersCliffWalls.ChunkToeSpanMetres} m a chunk may " +
-                "span — a chunk could sort behind the clifftop it stands on. Lower ChunkToeSpanMetres.");
+                $"{slack:F2} m, less than the {_cut} m a chunk may " +
+                "span — a chunk could sort behind the clifftop it stands on. Lower the plan's WallToeSpanMetres.");
 
             Debug.Log($"[cliff-walls] longest chunk {longestChunk:F2} m ({cutByLength} of " +
                       $"{_chunks.Count} cut by LENGTH, the rest by Y span or texture). Shallowest face " +
                       $"{minDrop:F2} m => {slack:F2} m of brow-to-toe slack against a " +
-                      $"{StPetersCliffWalls.ChunkToeSpanMetres} m span cut.");
+                      $"{_cut} m span cut.");
         }
 
         /// <summary>A wall must never sink to the band's floor or saturate at its ceiling — both mean
@@ -477,6 +486,11 @@ namespace HiddenHarbours.Tests.EditMode
         /// <para><b>So the claim is about the JOIN, not about the formula.</b> Wherever two chunks share
         /// a station, that station must arrive at the same place along the run from both sides — to well
         /// under one texel, because a texel is the smallest thing that could show.</para>
+        ///
+        /// <para><b>At St Peters' 1 m cut (terrain PR 5w)</b> a shared station can be a cut one: a slice of the face
+        /// between two whole stations, laid at its fraction of the way between their columns. Its place along the run
+        /// is where the mesh lays it from each side (<see cref="UAt"/>), not the chunk's offset, which is the along at
+        /// its first column.</para>
         /// </summary>
         [Test]
         public void EveryChunkBoundaryClosesExactly_TheSharedStationAtTheSameU()
@@ -497,13 +511,13 @@ namespace HiddenHarbours.Tests.EditMode
                     "two chunks share a station but were put in different runs — the offset would reset " +
                     "between them and the texture would jump");
 
-                float along = a.AlongOffsetMetres + RunLength(a);
-                float error = Mathf.Abs(along - b.AlongOffsetMetres);
+                float along = UAt(a, a.Samples.Count - 1), next = UAt(b, 0);
+                float error = Mathf.Abs(along - next);
                 if (error > worstAlong) { worstAlong = error; worstAt = last.BrowPlan.x; }
 
                 Assert.Less(error, texel * 0.1f,
                     $"a shared station at {last.BrowPlan} arrives at {along:F4} m along its run from one " +
-                    $"chunk and {b.AlongOffsetMetres:F4} m from the next — {error * 1000f:F2} mm apart. " +
+                    $"chunk and {next:F4} m from the next — {error * 1000f:F2} mm apart. " +
                     "Both the rock texture and the profile displacement are addressed by that number, so " +
                     "the two copies of this station are drawn in different places and the wall is torn " +
                     "open between them.");
@@ -527,8 +541,9 @@ namespace HiddenHarbours.Tests.EditMode
         ///
         /// <para><b>On the scene's walls (terrain PR 5w).</b> The runs are rebuilt from the scene, a wall
         /// whose first brow station is another's last following it, as the pin above reads them. Within
-        /// a run each wall starts where the one before it ended, by its brow's length, to the pin's tenth
-        /// of a texel. And a run ends only where the wall genuinely stops, by real id
+        /// a run each wall's first station is where the wall before it ended, as the mesh lays them
+        /// (<see cref="UAt"/>: along its texture's brows, over its whole stations), to the pin's tenth of a
+        /// texel. And a run ends only where the wall genuinely stops, by real id
         /// (<see cref="RunStarts"/>, <see cref="RunEnds"/>): any other reset fails.</para>
         /// </summary>
         [Test]
@@ -554,11 +569,12 @@ namespace HiddenHarbours.Tests.EditMode
                 }
                 else
                 {
-                    Assert.AreEqual(expected, c.AlongOffsetMetres, texel * 0.1f,
-                        $"{_walls[k].Name} starts {c.AlongOffsetMetres:F4} m along its run, but the wall before " +
+                    float first = UAt(c, 0);
+                    Assert.AreEqual(expected, first, texel * 0.1f,
+                        $"{_walls[k].Name} starts {first:F4} m along its run, but the wall before " +
                         $"it ends at {expected:F4} m");
                 }
-                expected = c.AlongOffsetMetres + RunLength(c);
+                expected = UAt(c, c.Samples.Count - 1);
 
                 runLength.TryGetValue(c.RunIndex, out float had);
                 runLength[c.RunIndex] = Mathf.Max(had, expected);
@@ -580,12 +596,25 @@ namespace HiddenHarbours.Tests.EditMode
                       "genuinely stops and the brow/toe decals finish it.");
         }
 
-        static float RunLength(StPetersCliffWalls.Chunk c)
+        /// <summary>
+        /// How far along its run a chunk's station <paramref name="i"/> sits, as the mesh lays it (terrain PR 5w): on
+        /// the chunk's columns (<see cref="CliffWallSurface.TryColumns"/>), its whole stations and the whole one past an
+        /// end that is cut, the texture running on from the chunk's offset along their texture brows; a cut station at
+        /// its fraction of the way between the columns either side of it. On a wall with no cut station and no moved
+        /// top, the offset plus its brows' length to station <paramref name="i"/>, as it always was.
+        /// </summary>
+        static float UAt(StPetersCliffWalls.Chunk c, int i)
         {
-            float run = 0f;
-            for (int i = 1; i < c.Samples.Count; i++)
-                run += Vector2.Distance(c.Samples[i - 1].BrowPlan, c.Samples[i].BrowPlan);
-            return run;
+            Assert.IsTrue(CliffWallSurface.TryColumns(c.Samples.ToArray(), c.TextureBrow?.ToArray(), c.SliceAt?.ToArray(),
+                                                      c.SliceBefore, c.SliceAfter, out CliffWallColumns columns,
+                                                      out string problem),
+                          $"a wall's slice data does not lay: {problem}");
+            int g = columns.Gap[i];
+            float along = 0f;
+            for (int k = 1; k <= g; k++) along += Vector2.Distance(columns.AlongBrow[k - 1], columns.AlongBrow[k]);
+            if (columns.At[i] > 0f)
+                along += Vector2.Distance(columns.AlongBrow[g], columns.AlongBrow[g + 1]) * columns.At[i];
+            return c.AlongOffsetMetres + along;
         }
 
         // =========================================================================================

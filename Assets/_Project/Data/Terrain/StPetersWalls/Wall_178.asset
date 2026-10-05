@@ -15,45 +15,46 @@ MonoBehaviour:
   Id: wall.stp_178
   Status: 1
   SplitFrom: wall.stp_063
-  Follows: wall.stp_063
+  Follows: wall.stp_279
   Rock: sandstone
   Class: 5
   Aspect: SW
   Batter: ramp
   Brow:
-  - {x: -25.014904, y: -44.254482}
+  - {x: -25.150269, y: -44.15387}
   - {x: -25.21795, y: -44.10356}
   - {x: -25.300676, y: -43.79203}
   Toe:
-  - {x: -27.724354, y: -47.9098}
+  - {x: -27.388111, y: -47.16294}
   - {x: -27.21999, y: -46.789513}
   - {x: -27.24993, y: -46.39259}
   DropMetres:
-  - 7.37512
+  - 7.193626
   - 7.102879
   - 7.336088
   ToeElevations:
-  - -1.5685568
+  - -1.4095981
   - -1.3301188
   - -1.3863362
+  TextureBrow: []
   Stations:
-  - 11
+  - 11.666667
   - 12
   - 13
   BrowFrom:
-  - 1
+  - 2
   - 1
   - 1
   ToeFrom:
-  - 1
+  - 2
   - 1
   - 1
   BrowPass9:
-  - 1.8498867
+  - 1.8512924
   - 1.8519952
   - 2.8643093
   ToePass9:
-  - -1.6585982
+  - -1.6528279
   - -1.6499428
   - -1.6499428
   SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
@@ -61,4 +62,4 @@ MonoBehaviour:
   SourceRow: 63
   MeasuredOn: 'the ground file''s import, StPetersSeabed_HeightTex.png at 883f27b5 (codes sha256 5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261)'
   FaceNeeded: 
-  Why: 'Cut from 063, re-lined on the import: its stations k11-k13. The list''s row 063 (West Ledges): re-lined.'
+  Why: 'Cut from 063, re-lined on the import: its stations k11-k13. The list''s row 063 (West Ledges): re-lined. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k11.67-k13, with k11.67 added as a slice of its face.'

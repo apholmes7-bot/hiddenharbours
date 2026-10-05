@@ -401,6 +401,7 @@ MonoBehaviour:
   Warp2: {x: 1.2, y: 7}
   WallKeep: {x: 3, y: 2}
   WallPaintKeep: {x: 0.5, y: 0.5}
+  WallToeSpanMetres: 1
   Reef:
     Channel: 5
     Rise: {x: 6, y: 9}

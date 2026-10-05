@@ -15,11 +15,14 @@ namespace HiddenHarbours.World
         Held = 6,
     }
 
-    /// <summary>Where a station's height came from: the scene's own (kept), or read off the ground file's import (measured).</summary>
+    /// <summary>Where a station's height came from: the scene's own (kept), read off the ground file's import (measured), or
+    /// set between two whole stations of the same wall (interpolated: its k is not whole, and its lines are the straight
+    /// mix of theirs, so it draws as a slice of the face they draw).</summary>
     public enum CliffStationSource
     {
         Kept = 0,
         Measured = 1,
+        Interpolated = 2,
     }
 
     /// <summary>
@@ -32,6 +35,13 @@ namespace HiddenHarbours.World
     /// <para><b>Runs.</b> A wall that <see cref="Follows"/> another starts on that wall's last station; its offsets along
     /// the run and the run's row basis come from the chunk math over the whole run (<c>StPetersCliffWalls.ChunksOfDefs</c>).
     /// A wall that follows none starts a run.</para>
+    ///
+    /// <para><b>Interpolated stations</b> (terrain PR 5w, the 1 m re-cut). A station whose k is not whole sits between
+    /// two whole stations of the wall it was cut from (the same <see cref="SplitFrom"/>, else the same wall), at the
+    /// fraction its k says, and its <see cref="BrowFrom"/> and <see cref="ToeFrom"/> read
+    /// <see cref="CliffStationSource.Interpolated"/>. It adds no face of its own: the scene's <c>CliffWallSurface</c> draws
+    /// it as a slice of the face its whole neighbours draw, so a re-cut moves no rock. <see cref="TextureBrow"/>, where a
+    /// wall carries it, is the brow its texture runs along.</para>
     ///
     /// <para><b>Ids are append-only.</b> A wall cut from another records <see cref="SplitFrom"/>; a retired id keeps its Def
     /// and is never used again; a held id (the Head's ring, 079 to 146) stands in no scene and carries the lines it was
@@ -67,10 +77,14 @@ namespace HiddenHarbours.World
         public float[] DropMetres = new float[0];
         [Tooltip("The toe's height at each station (m above chart datum).")]
         public float[] ToeElevations = new float[0];
+        [Tooltip("Where its texture runs along at each station (world x, y), where that is not the brow: a top moved out " +
+                 "keeps the face's texture where it was, and the run's offsets downstream with it. Empty: the brow.")]
+        public Vector2[] TextureBrow = new Vector2[0];
 
         [Header("Where each station came from")]
-        [Tooltip("Each station's index on the wall it came from (its k).")]
-        public int[] Stations = new int[0];
+        [Tooltip("Each station's index on the wall it came from (its k). A k that is not whole is an interpolated station, " +
+                 "between the whole stations either side of it.")]
+        public float[] Stations = new float[0];
         public CliffStationSource[] BrowFrom = new CliffStationSource[0];
         public CliffStationSource[] ToeFrom = new CliffStationSource[0];
         [Tooltip("Pass 9's height at each station's brow (m), as the measure read it: a kept station's ground must stay within " +

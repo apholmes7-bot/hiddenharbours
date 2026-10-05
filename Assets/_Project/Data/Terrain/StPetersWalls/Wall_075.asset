@@ -22,43 +22,53 @@ MonoBehaviour:
   Batter: steep
   Brow:
   - {x: -43.45166, y: -22.807665}
+  - {x: -43.514935, y: -22.699995}
   - {x: -43.57821, y: -22.592325}
-  - {x: -43.70378, y: -22.376368}
+  - {x: -43.640995, y: -22.484346}
   Toe:
   - {x: -45.796833, y: -24.19318}
+  - {x: -45.865227, y: -24.081196}
   - {x: -45.93362, y: -23.969213}
-  - {x: -46.06943, y: -23.74451}
+  - {x: -46.001526, y: -23.856861}
   DropMetres:
   - 8.095366
+  - 7.869667
   - 7.6439686
-  - 7.190428
+  - 7.417198
   ToeElevations:
   - -2.0953655
+  - -1.869667
   - -1.6439685
-  - -1.1904278
+  - -1.4171982
+  TextureBrow: []
   Stations:
   - 0
+  - 0.5
   - 1
-  - 2
+  - 1.5
   BrowFrom:
   - 0
+  - 2
   - 0
-  - 0
+  - 2
   ToeFrom:
   - 0
+  - 2
   - 0
-  - 0
+  - 2
   BrowPass9:
   - 5.928637
+  - 5.936913
   - 5.945189
-  - 5.972003
+  - 5.958596
   ToePass9:
   - -2.072453
+  - -1.8217598
   - -1.5710666
-  - -1.1185935
+  - -1.34483
   SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
   SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
   SourceRow: 75
   MeasuredOn: 
   FaceNeeded: 
-  Why: 'Kept as the scene had it at 883f27b5: the list''s row 075 (South-West Bluff): kept.'
+  Why: 'Kept as the scene had it at 883f27b5: the list''s row 075 (South-West Bluff): kept. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k0-k1.5, with k0.5 and k1.5 added as slices of its face.'

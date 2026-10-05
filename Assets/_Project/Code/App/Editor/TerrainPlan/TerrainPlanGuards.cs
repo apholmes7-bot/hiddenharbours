@@ -170,7 +170,9 @@ namespace HiddenHarbours.App.Editor
         /// Cliff and the South-West Bluff). The ledges' toes stand on their own shelf: they are reported, not judged.</summary>
         public static readonly string[] WetSections = { "coast.stp_south_arm", "coast.stp_weather_cliff", "coast.stp_sw_bluff" };
 
-        /// <summary>The new toe stations that stand dry by name, at the beach's banked end (question 4): 042 k23, 043 k0 to k2.</summary>
+        /// <summary>The new toe stations that stand dry by name, at the beach's banked end (question 4): 042 k23, 043 k0 to k2. A
+        /// station St Peters' 1 m cut added between two of them (043 k0.5) is a slice of the face they draw, and is named with
+        /// them (<see cref="DryByName"/>; terrain PR 5w).</summary>
         public static readonly string[] DryToesByName = { "042 k23", "043 k0", "043 k1", "043 k2" };
 
         /// <summary>Part 2's toe_field reads 12 m off a toe; its channel band (p2_check) is the cells within 3 m of a toe, under
@@ -1539,7 +1541,8 @@ namespace HiddenHarbours.App.Editor
         /// A new toe station in a wet section stands wet at a spring low (question 4): each toe station of a wall the patch
         /// changed (not kept) in the South Arm, the Weather Cliff or the South-West Bluff stands under the spring's low water on the
         /// map, but the beach's banked end, by name (042 k23, 043 k0 to k2). A station is named by its parent (a split wall's
-        /// SplitFrom) and its Def's station, and counts once.
+        /// SplitFrom) and its Def's station, and counts once; one cut between two whole stations is named where both of
+        /// them are.
         /// </summary>
         static TerrainPlanGuardCase NewToesWet(Ctx x)
         {
@@ -1573,7 +1576,7 @@ namespace HiddenHarbours.App.Editor
                         if (margin < least) { least = margin; leastAt = at; }
                         continue;
                     }
-                    (Array.IndexOf(DryToesByName, at) >= 0 ? named : other).Add(at + " (dry by " + F(-margin) + " m)");
+                    (DryByName(parent, d.Stations[j]) ? named : other).Add(at + " (dry by " + F(-margin) + " m)");
                 }
             }
             k.Pass = pw.Problem == null && stations > 0 && unpaired.Count == 0 && other.Count == 0;
@@ -1587,11 +1590,23 @@ namespace HiddenHarbours.App.Editor
             return k;
         }
 
+        /// <summary>A station named dry (<see cref="DryToesByName"/>), or one cut between two whole stations of its parent that
+        /// both are: St Peters' 1 m cut adds stations as slices of the face between whole ones (terrain PR 5w).</summary>
+        static bool DryByName(string parent, float station)
+        {
+            if (Array.IndexOf(DryToesByName, parent + " k" + station.ToString(Inv)) >= 0) return true;
+            double below = Math.Floor(station), above = Math.Ceiling(station);
+            return below != station && Array.IndexOf(DryToesByName, parent + " k" + below.ToString(Inv)) >= 0 &&
+                   Array.IndexOf(DryToesByName, parent + " k" + above.ToString(Inv)) >= 0;
+        }
+
         /// <summary>
         /// A channel cell wet today stays wet (question 5): of the cells within 3 m of a patched toe and under 0 m in the flats'
         /// window, one today's ground holds under the spring's low water stands under it on the map, by section (its nearest toe's
         /// wall's), in the wet sections; but two named sets, the Weather Cliff's 42 by 042 and 043 (the beach) and the South-West
-        /// Bluff's 2 by 070. The ledges' cells are reported, not judged.
+        /// Bluff's 2 by 070. A cell is named by its nearest toe's wall's parent (a split wall's SplitFrom), as
+        /// <see cref="NewToesWet"/> names a station: St Peters' 1 m cut leaves pieces of 070 nearer one of the bluff's two. The
+        /// ledges' cells are reported, not judged.
         /// </summary>
         static TerrainPlanGuardCase ChannelCellsStayWet(Ctx x)
         {
@@ -1620,8 +1635,9 @@ namespace HiddenHarbours.App.Editor
                 lostBy.TryGetValue(id, out int n);
                 lostBy[id] = n + 1;
                 if (Array.IndexOf(WetSections, sec) < 0) continue;
-                if (Array.IndexOf(BeachLostBy, id) >= 0) beach++;
-                else if (id == BluffLostBy && x.Xs[c] >= BluffLostX0 && x.Xs[c] <= BluffLostX1 && x.Ys[r] >= BluffLostY0 && x.Ys[r] <= BluffLostY1) bluff++;
+                string parent = pw.Defs.TryGetValue(id, out var d) && !string.IsNullOrEmpty(d.SplitFrom) ? RealIdOf(d.SplitFrom) : id;
+                if (Array.IndexOf(BeachLostBy, parent) >= 0) beach++;
+                else if (parent == BluffLostBy && x.Xs[c] >= BluffLostX0 && x.Xs[c] <= BluffLostX1 && x.Ys[r] >= BluffLostY0 && x.Ys[r] <= BluffLostY1) bluff++;
                 else { other++; if (otherAt < 0) otherAt = i; }
             }
             bool everyWetSection = true;

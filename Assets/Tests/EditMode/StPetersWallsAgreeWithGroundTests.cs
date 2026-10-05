@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -18,15 +19,17 @@ namespace HiddenHarbours.Tests.EditMode
     /// <list type="bullet">
     /// <item><b>The ground, station by station:</b> a station whose height was read off the map sits on it within 2 cm; at
     /// a station that kept the scene's height, the map is within 10 cm of pass 9's there (the Art desk's kept rule). A kept
-    /// station's stored height is not compared with the map: a face inside one texel is more than a raster holds.</item>
+    /// station's stored height is not compared with the map: a face inside one texel is more than a raster holds. Nor is a
+    /// station St Peters' 1 m cut added between two whole ones (<see cref="CliffStationSource.Interpolated"/>): it is a
+    /// slice of their face.</item>
     /// <item><b>The faces:</b> no wall stands where its face is under the builder's minimum.</item>
     /// <item><b>The beach:</b> no wall stands where the retired walls stood (044–055, the main beach's opened span), but
     /// 043's return, as its Def records it.</item>
     /// <item><b>The ids:</b> 000 to the last with no gap, each live, retired or held; each live id one scene wall named
     /// by its Def; a retired or held id none.</item>
-    /// <item><b>The round trip:</b> the walls the Defs make are the scene's, to the bit.</item>
-    /// <item><b>Where walls may not stand:</b> the cannery's guard, the arrival route's capsule (but the kept 000–011,
-    /// where they stood) and the neck's ramp.</item>
+    /// <item><b>The round trip:</b> the walls the Defs make, at the plan's cut, are the scene's, slices and all, to the bit.</item>
+    /// <item><b>Where walls may not stand:</b> the cannery's guard, the arrival route's capsule (but the kept 000–011 and
+    /// their pieces, where they stood) and the neck's ramp.</item>
     /// <item><b>The rocks:</b> each scatter records its count, and none stands on the main beach's sand or where the
     /// retired walls stood.</item>
     /// </list>
@@ -44,12 +47,16 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>The walls by real id after Phase A, as the owner ruled the counts (10-04): 189 Defs, 109 live, 42 new
         /// (147 to 188, each cut from a wall), the main beach's 12 retired (044 to 055) and the Head's ring held (079 to
-        /// 146) until its own PR (amendment 1 §4.1, §4.2, §4.4; amendment 2 §4.1).</summary>
-        const int DefCount = 189, LiveCount = 109, FirstNew = 147;
+        /// 146) until its own PR (amendment 1 §4.1, §4.2, §4.4; amendment 2 §4.1). St Peters' 1 m cut (terrain PR 5w)
+        /// adds 101 more (189 to 289), each a piece of a live wall under a new id: 290 Defs, 210 live.</summary>
+        const int DefCount = 290, LiveCount = 210, FirstNew = 147;
         const int FirstRetired = 44, LastRetired = 55, FirstHeld = 79, LastHeld = 146;
 
         /// <summary>The kept walls that stand inside the arrival route's capsule, by id, where they stood (Q2).</summary>
         const int LastInTheRoute = 11;
+
+        /// <summary>Their pieces in the capsule, by id: St Peters' 1 m cut split them (terrain PR 5w).</summary>
+        const int FirstPieceInTheRoute = 189, LastPieceInTheRoute = 203;
 
         /// <summary>The main beach's return: the one wall that stands where the retired walls stood (Q12).</summary>
         const string Return = "043";
@@ -209,9 +216,9 @@ namespace HiddenHarbours.Tests.EditMode
         //  3. the ids and the round trip
         // =========================================================================================
 
-        /// <summary>⭐ The ids run from 000 to the last with no gap, each live, retired or held: the 189, the 109 live, the
-        /// 42 new each cut from a wall, the retired 044–055 and the held 079–146. A retired id is never a live wall's run
-        /// or source again.</summary>
+        /// <summary>⭐ The ids run from 000 to the last with no gap, each live, retired or held: the 290, the 210 live, the
+        /// 143 new each cut from a wall (42 at Phase A, 101 at St Peters' 1 m cut), the retired 044–055 and the held
+        /// 079–146. A retired id is never a live wall's run or source again.</summary>
         [Test]
         public void TheIdsRunWithNoGap_EachLiveRetiredOrHeld()
         {
@@ -256,11 +263,13 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>⭐ The round trip: the walls the Defs make (<see cref="StPetersCliffWalls.ChunksOfDefs"/>, as the builder
-        /// lays them) are the scene's walls, station for station and field for field, to the bit.</summary>
+        /// lays them, at the plan's <see cref="RegionTerrainPlanDef.WallToeSpanMetres"/>) are the scene's walls, station for
+        /// station and field for field, slices and all (terrain PR 5w), to the bit.</summary>
         [Test]
         public void TheDefsAndTheScenesWalls_AgreeToTheBit()
         {
-            List<StPetersCliffWalls.Chunk> chunks = StPetersCliffWalls.ChunksOfDefs(_defs, out List<CliffWallDef> owners);
+            List<StPetersCliffWalls.Chunk> chunks =
+                StPetersCliffWalls.ChunksOfDefs(_defs, _plan.WallToeSpanMetres, out List<CliffWallDef> owners);
             Assert.AreEqual(_live.Count, chunks.Count, "one chunk per live Def");
             Dictionary<string, StPetersCliffWalls.SceneWall> byId = _walls.ToDictionary(w => w.RealId);
             var off = new List<string>();
@@ -273,6 +282,9 @@ namespace HiddenHarbours.Tests.EditMode
                 if (!Same(f.ToePlan, w.Toe)) off.Add($"{d.RealId} toe");
                 if (!Same(f.DropMetres, w.DropMetres)) off.Add($"{d.RealId} drop");
                 if (!Same(f.ToeElevations, w.ToeElevations)) off.Add($"{d.RealId} toe heights");
+                if (!Same(f.TextureBrowPlan, w.TextureBrow)) off.Add($"{d.RealId} texture brow");
+                if (!Same(f.SliceAt, w.SliceAt)) off.Add($"{d.RealId} slices");
+                if (!Same(f.SliceBefore, w.SliceBefore) || !Same(f.SliceAfter, w.SliceAfter)) off.Add($"{d.RealId} slice ends");
                 if (f.AlongOffsetMetres != w.AlongOffsetMetres) off.Add($"{d.RealId} along {f.AlongOffsetMetres:R} vs {w.AlongOffsetMetres:R}");
                 if (f.RowsBasisSurfaceMetres != w.RowsBasisSurfaceMetres) off.Add($"{d.RealId} rows basis {f.RowsBasisSurfaceMetres:R} vs {w.RowsBasisSurfaceMetres:R}");
                 if (f.WallAzimuth != w.WallAzimuth) off.Add($"{d.RealId} azimuth {f.WallAzimuth:R} vs {w.WallAzimuth:R}");
@@ -307,7 +319,9 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>⭐ Inside the arrival route's capsule (its half-width and the keep's margin) stand only the kept 000 to
-        /// 011, where they stood: kept, every station's height the scene's own.</summary>
+        /// 011, where they stood: kept, every station's height the scene's own. St Peters' 1 m cut (terrain PR 5w) split
+        /// them into pieces under new ids (189 to 203 stand in the capsule), and a station it added between two whole ones
+        /// is a slice of their face (<see cref="CliffStationSource.Interpolated"/>).</summary>
         [Test]
         public void InsideTheArrivalRoutesCapsule_StandOnlyTheKept000To011()
         {
@@ -327,10 +341,15 @@ namespace HiddenHarbours.Tests.EditMode
                 least = Mathf.Min(least, near);
                 most = Mathf.Max(most, near);
                 Assert.AreEqual(CliffWallStatus.Kept, d.Status, $"{d.Id} stands {near:F1} m from the route and is not a kept wall");
-                Assert.IsTrue(d.BrowFrom.All(s => s == CliffStationSource.Kept) && d.ToeFrom.All(s => s == CliffStationSource.Kept),
+                Assert.IsTrue(d.BrowFrom.All(StoodThere) && d.ToeFrom.All(StoodThere),
                     $"{d.Id} stands in the route's capsule, but not where it stood");
+                string root = string.IsNullOrEmpty(d.SplitFrom) ? d.RealId : d.SplitFrom.Substring(d.SplitFrom.Length - 3);
+                Assert.That(int.Parse(root), Is.InRange(0, LastInTheRoute),
+                    $"{d.Id} stands in the route's capsule, and is not one of the kept 000 to 011 or a piece of one");
             }
-            var expected = Enumerable.Range(0, LastInTheRoute + 1).Select(n => n.ToString("D3")).ToList();
+            var expected = Enumerable.Range(0, LastInTheRoute + 1)
+                .Concat(Enumerable.Range(FirstPieceInTheRoute, LastPieceInTheRoute - FirstPieceInTheRoute + 1))
+                .Select(n => n.ToString("D3")).ToList();
             CollectionAssert.AreEqual(expected, inside, $"inside the route's {reach} m capsule stand {string.Join(", ", inside)}");
             Debug.Log($"[walls-on-ground] inside the route's {reach} m capsule: {string.Join(", ", inside)}, {least:F1} to {most:F1} m");
         }
@@ -407,7 +426,10 @@ namespace HiddenHarbours.Tests.EditMode
         //  helpers
         // =========================================================================================
 
-        static string At(CliffWallDef d, int i) => $"{d.RealId} k{d.Stations[i]}";
+        static string At(CliffWallDef d, int i) => $"{d.RealId} k{d.Stations[i].ToString(CultureInfo.InvariantCulture)}";
+
+        /// <summary>A station where its wall stood: kept, or cut between two kept ones (St Peters' 1 m cut).</summary>
+        static bool StoodThere(CliffStationSource s) => s == CliffStationSource.Kept || s == CliffStationSource.Interpolated;
 
         GroundRampDef TheNecksRamp()
         {
@@ -486,6 +508,16 @@ namespace HiddenHarbours.Tests.EditMode
         {
             if (a.Length != b.Length) return false;
             for (int i = 0; i < a.Length; i++) if (a[i] != b[i]) return false;
+            return true;
+        }
+
+        static bool Same(CliffWallSliceEnd[] a, CliffWallSliceEnd[] b)
+        {
+            if (a.Length != b.Length) return false;
+            for (int i = 0; i < a.Length; i++)
+                if (!Same(new[] { a[i].BrowPlan, a[i].ToePlan, a[i].TextureBrowPlan }, new[] { b[i].BrowPlan, b[i].ToePlan, b[i].TextureBrowPlan }) ||
+                    !Same(new[] { a[i].DropMetres, a[i].ToeElevation }, new[] { b[i].DropMetres, b[i].ToeElevation }))
+                    return false;
             return true;
         }
     }

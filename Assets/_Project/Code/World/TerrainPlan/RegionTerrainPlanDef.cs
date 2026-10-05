@@ -168,6 +168,10 @@ namespace HiddenHarbours.World
         public Vector2 WallKeep = new Vector2(3f, 2f);
         [Tooltip("...and keeps part 1's paint within x (m), feathered over y (m).")]
         public Vector2 WallPaintKeep = new Vector2(0.5f, 0.5f);
+        [Tooltip("The live walls' chunk cut (screen m): the builder starts a new chunk where a chunk's toes would span more " +
+                 "than this, and no step between a wall's stations may reach half of it. St Peters' walls are cut at 1 m " +
+                 "(terrain PR 5w); 2 m is the builder's own, which Nine Mile Creek keeps.")]
+        public float WallToeSpanMetres = 2f;
         [Tooltip("The toe reefs' shape.")]
         public TerrainPlanReef Reef = new TerrainPlanReef();
         [Tooltip("The flats off the south, or none.")]

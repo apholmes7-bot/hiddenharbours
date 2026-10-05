@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: wall.stp_067
   Status: 1
   SplitFrom: 
-  Follows: wall.stp_066
+  Follows: wall.stp_250
   Rock: sandstone
   Class: 5
   Aspect: SW
@@ -27,10 +27,6 @@ MonoBehaviour:
   - {x: -32.761833, y: -37.737}
   - {x: -32.774372, y: -37.381474}
   - {x: -32.78519, y: -37.02645}
-  - {x: -32.89811, y: -36.780216}
-  - {x: -33.11413, y: -36.641796}
-  - {x: -33.225338, y: -36.394924}
-  - {x: -33.30054, y: -36.112167}
   Toe:
   - {x: -34.37527, y: -40.607216}
   - {x: -34.568726, y: -40.428177}
@@ -38,10 +34,6 @@ MonoBehaviour:
   - {x: -34.81701, y: -39.922462}
   - {x: -35.008408, y: -39.741894}
   - {x: -35.19927, y: -39.56066}
-  - {x: -35.25119, y: -39.234398}
-  - {x: -35.509922, y: -39.12427}
-  - {x: -35.69893, y: -38.941265}
-  - {x: -35.71259, y: -38.57885}
   DropMetres:
   - 7.2901444
   - 7.3770275
@@ -49,10 +41,6 @@ MonoBehaviour:
   - 7.2496023
   - 7.2980175
   - 7.44204
-  - 7.384404
-  - 7.354035
-  - 7.5566072
-  - 7.6581206
   ToeElevations:
   - -1.4781471
   - -1.4870638
@@ -60,10 +48,7 @@ MonoBehaviour:
   - -1.4212657
   - -1.4587513
   - -1.551323
-  - -1.5209585
-  - -1.5843273
-  - -1.6990112
-  - -1.7522875
+  TextureBrow: []
   Stations:
   - 0
   - 1
@@ -71,15 +56,7 @@ MonoBehaviour:
   - 3
   - 4
   - 5
-  - 6
-  - 7
-  - 8
-  - 9
   BrowFrom:
-  - 1
-  - 1
-  - 1
-  - 1
   - 1
   - 1
   - 1
@@ -93,10 +70,6 @@ MonoBehaviour:
   - 1
   - 1
   - 1
-  - 1
-  - 1
-  - 1
-  - 1
   BrowPass9:
   - 2.1648617
   - 3.0754623
@@ -104,10 +77,6 @@ MonoBehaviour:
   - 2.3468
   - 3.4847677
   - 4.489788
-  - 4.855144
-  - 4.6238785
-  - 5.005621
-  - 5.410477
   ToePass9:
   - -1.6499428
   - -1.6499428
@@ -115,13 +84,9 @@ MonoBehaviour:
   - -1.6501638
   - -1.6519576
   - -1.6728281
-  - -1.713545
-  - -1.7622234
-  - -1.828419
-  - -1.9423282
   SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
   SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
   SourceRow: 67
   MeasuredOn: 'the ground file''s import, StPetersSeabed_HeightTex.png at 883f27b5 (codes sha256 5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261)'
   FaceNeeded: 
-  Why: 'Re-lined on the import: stations k0-k9. The list''s row 067 (West Ledges): re-lined.'
+  Why: 'Re-lined on the import: stations k0-k9. The list''s row 067 (West Ledges): re-lined. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k0-k5.'

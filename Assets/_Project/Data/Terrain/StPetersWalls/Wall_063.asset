@@ -29,7 +29,7 @@ MonoBehaviour:
   - {x: -24.373934, y: -44.6636}
   - {x: -24.518932, y: -44.433727}
   - {x: -24.722456, y: -44.284122}
-  - {x: -25.014904, y: -44.254482}
+  - {x: -24.86868, y: -44.269302}
   Toe:
   - {x: -25.719652, y: -48.745766}
   - {x: -26.050407, y: -48.755943}
@@ -39,7 +39,7 @@ MonoBehaviour:
   - {x: -27.319387, y: -48.703938}
   - {x: -27.563694, y: -48.587273}
   - {x: -27.718859, y: -48.349102}
-  - {x: -27.724354, y: -47.9098}
+  - {x: -27.721607, y: -48.12945}
   DropMetres:
   - 7.3181977
   - 7.604392
@@ -49,7 +49,7 @@ MonoBehaviour:
   - 7.413486
   - 7.4019866
   - 7.5059266
-  - 7.37512
+  - 7.440523
   ToeElevations:
   - -1.6361207
   - -1.6489968
@@ -59,7 +59,8 @@ MonoBehaviour:
   - -1.5721383
   - -1.5329589
   - -1.5509167
-  - -1.5685568
+  - -1.5597367
+  TextureBrow: []
   Stations:
   - 3
   - 4
@@ -69,7 +70,7 @@ MonoBehaviour:
   - 8
   - 9
   - 10
-  - 11
+  - 10.5
   BrowFrom:
   - 1
   - 1
@@ -79,7 +80,7 @@ MonoBehaviour:
   - 1
   - 1
   - 1
-  - 1
+  - 2
   ToeFrom:
   - 1
   - 1
@@ -89,7 +90,7 @@ MonoBehaviour:
   - 1
   - 1
   - 1
-  - 1
+  - 2
   BrowPass9:
   - -1.6499428
   - -1.6499428
@@ -99,7 +100,7 @@ MonoBehaviour:
   - 2.0683525
   - 2.5709336
   - 2.5929112
-  - 1.8498867
+  - 2.2213988
   ToePass9:
   - -1.6500992
   - -1.6524662
@@ -109,10 +110,10 @@ MonoBehaviour:
   - -1.6761577
   - -1.6793149
   - -1.6727638
-  - -1.6585982
+  - -1.665681
   SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
   SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
   SourceRow: 63
   MeasuredOn: 'the ground file''s import, StPetersSeabed_HeightTex.png at 883f27b5 (codes sha256 5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261)'
   FaceNeeded: 
-  Why: 'Re-lined on the import: stations k3-k11. The list''s row 063 (West Ledges): re-lined.'
+  Why: 'Re-lined on the import: stations k3-k11. The list''s row 063 (West Ledges): re-lined. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k3-k10.5, with k10.5 added as a slice of its face.'

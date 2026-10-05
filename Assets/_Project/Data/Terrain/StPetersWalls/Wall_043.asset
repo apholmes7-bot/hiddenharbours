@@ -22,38 +22,48 @@ MonoBehaviour:
   Batter: steep
   Brow:
   - {x: 66.89129, y: -69.97651}
+  - {x: 66.76425, y: -70.09952}
   - {x: 66.63722, y: -70.222534}
   - {x: 66.386086, y: -70.268295}
   Toe:
   - {x: 66.85803, y: -72.17626}
+  - {x: 66.73129, y: -72.199265}
   - {x: 66.60456, y: -72.22227}
   - {x: 66.35187, y: -72.217995}
   DropMetres:
   - 7.820074
+  - 7.4104333
   - 7.0007925
   - 6.625035
   ToeElevations:
   - -1.820073
+  - -1.7181742
   - -1.6162755
   - -1.381009
+  TextureBrow: []
   Stations:
   - 0
+  - 0.5
   - 1
   - 2
   BrowFrom:
   - 0
+  - 2
   - 1
   - 1
   ToeFrom:
   - 1
+  - 2
   - 1
   - 1
   BrowPass9:
   - 5.7266393
+  - 5.570367
   - 5.4140944
   - 5.2440543
   ToePass9:
   - -3.1940784
+  - -3.1943407
   - -3.1946032
   - -3.1946406
   SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
@@ -61,4 +71,4 @@ MonoBehaviour:
   SourceRow: 43
   MeasuredOn: 'the ground file''s import, StPetersSeabed_HeightTex.png at 883f27b5 (codes sha256 5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261)'
   FaceNeeded: 
-  Why: 'Return on the import: stations k0-k2. The list''s row 043 (Weather Cliff): opened.'
+  Why: 'Return on the import: stations k0-k2. The list''s row 043 (Weather Cliff): opened. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k0-k2, with k0.5 added as a slice of its face.'

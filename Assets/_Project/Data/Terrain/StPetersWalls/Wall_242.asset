@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_242
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_242
+  Status: 0
+  SplitFrom: wall.stp_058
+  Follows: wall.stp_058
+  Rock: sandstone
+  Class: 5
+  Aspect: SW
+  Batter: steep
+  Brow:
+  - {x: -6.978546, y: -53.69932}
+  - {x: -7.203026, y: -53.589554}
+  - {x: -7.427246, y: -53.47936}
+  - {x: -7.6512833, y: -53.368717}
+  - {x: -7.875084, y: -53.257633}
+  - {x: -8.098663, y: -53.146114}
+  - {x: -8.322037, y: -53.03414}
+  - {x: -8.545189, y: -52.92172}
+  - {x: -8.768112, y: -52.808857}
+  Toe:
+  - {x: -7.8752604, y: -55.537636}
+  - {x: -8.1043005, y: -55.428078}
+  - {x: -8.333108, y: -55.3181}
+  - {x: -8.5617485, y: -55.20766}
+  - {x: -8.790178, y: -55.096775}
+  - {x: -9.018404, y: -54.985447}
+  - {x: -9.246447, y: -54.873653}
+  - {x: -9.474293, y: -54.76141}
+  - {x: -9.701931, y: -54.64872}
+  DropMetres:
+  - 7.65
+  - 7.65
+  - 7.65
+  - 7.65
+  - 7.65
+  - 7.65
+  - 7.65
+  - 7.65
+  - 7.65
+  ToeElevations:
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  TextureBrow: []
+  Stations:
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9:
+  - 5.942453
+  - 5.91382
+  - 5.843622
+  - 5.858768
+  - 5.9532294
+  - 5.9270706
+  - 5.878517
+  - 5.83958
+  - 5.9092574
+  ToePass9:
+  - -1.4899032
+  - -1.5358026
+  - -1.6136761
+  - -1.5616728
+  - -1.4994838
+  - -1.5026163
+  - -1.6002014
+  - -1.6161174
+  - -1.5188936
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 58
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Cut from 058 at St Peters'' 1 m cut (terrain PR 5w): its stations k9-k17. The list''s row 058 (West Ledges): kept.'

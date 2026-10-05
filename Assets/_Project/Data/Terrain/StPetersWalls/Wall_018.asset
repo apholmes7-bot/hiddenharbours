@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: wall.stp_018
   Status: 0
   SplitFrom: 
-  Follows: wall.stp_017
+  Follows: wall.stp_213
   Rock: sandstone
   Class: 4
   Aspect: SE
@@ -27,11 +27,6 @@ MonoBehaviour:
   - {x: 175.40967, y: -33.45305}
   - {x: 175.23868, y: -33.635727}
   - {x: 175.06706, y: -33.817802}
-  - {x: 174.8948, y: -33.99927}
-  - {x: 174.72192, y: -34.180138}
-  - {x: 174.5484, y: -34.360413}
-  - {x: 174.37428, y: -34.54008}
-  - {x: 174.19954, y: -34.719147}
   Toe:
   - {x: 177.7655, y: -34.587276}
   - {x: 177.58733, y: -34.775505}
@@ -39,17 +34,7 @@ MonoBehaviour:
   - {x: 177.22911, y: -35.14997}
   - {x: 177.04909, y: -35.336197}
   - {x: 176.86847, y: -35.521748}
-  - {x: 176.68724, y: -35.706635}
-  - {x: 176.50543, y: -35.89085}
-  - {x: 176.32303, y: -36.07442}
-  - {x: 176.14005, y: -36.257305}
-  - {x: 175.95648, y: -36.43954}
   DropMetres:
-  - 10
-  - 10
-  - 10
-  - 10
-  - 10
   - 10
   - 10
   - 10
@@ -63,11 +48,7 @@ MonoBehaviour:
   - -4
   - -4
   - -4
-  - -4
-  - -4
-  - -4
-  - -4
-  - -4
+  TextureBrow: []
   Stations:
   - 0
   - 1
@@ -75,17 +56,7 @@ MonoBehaviour:
   - 3
   - 4
   - 5
-  - 6
-  - 7
-  - 8
-  - 9
-  - 10
   BrowFrom:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
   - 0
   - 0
   - 0
@@ -99,11 +70,6 @@ MonoBehaviour:
   - 0
   - 0
   - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
   BrowPass9:
   - 5.8684893
   - 5.961304
@@ -111,11 +77,6 @@ MonoBehaviour:
   - 5.8673882
   - 5.9733777
   - 5.9111176
-  - 5.872021
-  - 5.9816914
-  - 5.8888273
-  - 5.8819976
-  - 5.986361
   ToePass9:
   - -3.9165788
   - -3.9043334
@@ -123,14 +84,9 @@ MonoBehaviour:
   - -3.9160032
   - -3.8861299
   - -3.8807237
-  - -3.9150097
-  - -3.8735025
-  - -3.8920362
-  - -3.9216175
-  - -3.8681543
   SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
   SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
   SourceRow: 18
   MeasuredOn: 
   FaceNeeded: 
-  Why: 'Kept as the scene had it at 883f27b5: the list''s row 018 (South Arm): kept.'
+  Why: 'Kept as the scene had it at 883f27b5: the list''s row 018 (South Arm): kept. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k0-k5.'
