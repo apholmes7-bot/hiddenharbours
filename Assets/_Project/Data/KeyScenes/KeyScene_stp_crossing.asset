@@ -1,0 +1,2385 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_stp_crossing
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.stp_crossing
+  DisplayName: The tidal crossing
+  RegionId: region.st_peters
+  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_crossing/scene.json,
+    93787 bytes, sha256 3668d9f5d0ae81e89350222a1c2218a46a946643a1e6d734701601417555a395
+  Placed: 0
+  Pieces:
+  - Id: prop.stp_cx_crossing_board
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: crossingBoard
+    State: 
+    At: {x: -52.6, y: 2.3}
+    Z: 5.64
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words:
+    - words.stp_crossing_board
+    Options:
+    - Key: words
+      Value: null
+  - Id: prop.stp_cx_gut_gauge
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: gutGauge
+    State: 
+    At: {x: -74.5, y: 12.2}
+    Z: -0.89
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: foot
+      Value: -0.89
+    - Key: cut
+      Value: -0.1
+    - Key: top
+      Value: 2.4
+    - Key: weedTo
+      Value: 0.2
+  - Id: prop.stp_cx_withy_01
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -60.5, y: 0.91}
+    Z: 2.23
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.67
+    - Key: lean
+      Value: 0.122
+    - Key: ld
+      Value: 1.022
+    - Key: seed
+      Value: 1
+    - Key: wrackZ
+      Value: -0.05
+  - Id: prop.stp_cx_withy_02
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -72.79, y: -0.31}
+    Z: 0.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.66
+    - Key: lean
+      Value: 0.095
+    - Key: ld
+      Value: 0.965
+    - Key: seed
+      Value: 2
+    - Key: wrackZ
+      Value: 1.32
+  - Id: prop.stp_cx_withy_03
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -83.89, y: 0.16}
+    Z: 0.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.97
+    - Key: lean
+      Value: 0.076
+    - Key: ld
+      Value: 0.783
+    - Key: seed
+      Value: 3
+    - Key: wrackZ
+      Value: 1.31
+  - Id: prop.stp_cx_withy_04
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -95.05, y: 3.64}
+    Z: 0.67
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.8
+    - Key: lean
+      Value: 0.081
+    - Key: ld
+      Value: 0.787
+    - Key: seed
+      Value: 4
+    - Key: wrackZ
+      Value: 1.51
+  - Id: prop.stp_cx_withy_05
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -106.96, y: 0.92}
+    Z: 0.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.86
+    - Key: lean
+      Value: 0.09
+    - Key: ld
+      Value: 0.717
+    - Key: seed
+      Value: 5
+    - Key: wrackZ
+      Value: 1.32
+  - Id: prop.stp_cx_withy_06
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -118.97, y: -2.26}
+    Z: 0.78
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.72
+    - Key: lean
+      Value: 0.113
+    - Key: ld
+      Value: 0.679
+    - Key: seed
+      Value: 6
+    - Key: wrackZ
+      Value: 1.39
+  - Id: prop.stp_cx_withy_07
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -131.25, y: 1.92}
+    Z: 0.81
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.93
+    - Key: lean
+      Value: 0.076
+    - Key: ld
+      Value: 0.823
+    - Key: seed
+      Value: 7
+    - Key: wrackZ
+      Value: 1.36
+  - Id: prop.stp_cx_withy_08
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -142.04, y: 1.29}
+    Z: 0.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.95
+    - Key: lean
+      Value: 0.122
+    - Key: ld
+      Value: 0.897
+    - Key: seed
+      Value: 8
+    - Key: wrackZ
+      Value: 1.32
+  - Id: prop.stp_cx_withy_09
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -153.32, y: -2.09}
+    Z: 0.8
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.74
+    - Key: lean
+      Value: 0.14
+    - Key: ld
+      Value: 0.651
+    - Key: seed
+      Value: 9
+    - Key: wrackZ
+      Value: 1.37
+  - Id: prop.stp_cx_withy_10
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -164.77, y: 0.85}
+    Z: 0.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.98
+    - Key: lean
+      Value: 0.099
+    - Key: ld
+      Value: 0.639
+    - Key: seed
+      Value: 10
+    - Key: wrackZ
+      Value: 1.33
+  - Id: prop.stp_cx_withy_11
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -176.04, y: 2.54}
+    Z: 0.76
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.84
+    - Key: lean
+      Value: 0.137
+    - Key: ld
+      Value: 0.606
+    - Key: seed
+      Value: 11
+    - Key: wrackZ
+      Value: 1.42
+  - Id: prop.stp_cx_withy_12
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -186.79, y: -1.3}
+    Z: 0.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.98
+    - Key: lean
+      Value: 0.137
+    - Key: ld
+      Value: 0.783
+    - Key: seed
+      Value: 12
+    - Key: wrackZ
+      Value: 1.32
+  - Id: prop.stp_cx_withy_13
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -198.3, y: 0.94}
+    Z: 0.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.83
+    - Key: lean
+      Value: 0.15
+    - Key: ld
+      Value: 0.841
+    - Key: seed
+      Value: 13
+    - Key: wrackZ
+      Value: 1.31
+  - Id: prop.stp_cx_withy_14
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -210.12, y: 1.63}
+    Z: 0.83
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.75
+    - Key: lean
+      Value: 0.101
+    - Key: ld
+      Value: 0.952
+    - Key: seed
+      Value: 14
+    - Key: wrackZ
+      Value: 1.35
+  - Id: prop.stp_cx_withy_15
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -227.1, y: 0.9}
+    Z: 0.06
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 3.03
+    - Key: lean
+      Value: 0.089
+    - Key: ld
+      Value: 0.874
+    - Key: seed
+      Value: 91
+    - Key: wrackZ
+      Value: 2.11
+  - Id: prop.stp_cx_withy_16
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -234.1, y: 0.9}
+    Z: -0.59
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.98
+    - Key: lean
+      Value: 0.147
+    - Key: ld
+      Value: 0.559
+    - Key: seed
+      Value: 92
+    - Key: wrackZ
+      Value: 2.75
+  - Id: prop.stp_cx_withy_17
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -241.1, y: 0.9}
+    Z: 0.05
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.9
+    - Key: lean
+      Value: 0.097
+    - Key: ld
+      Value: 0.7
+    - Key: seed
+      Value: 93
+    - Key: wrackZ
+      Value: 2.12
+  - Id: prop.stp_cx_withy_18
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -247.2, y: 0.87}
+    Z: 0.81
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.94
+    - Key: lean
+      Value: 0.085
+    - Key: ld
+      Value: 0.829
+    - Key: seed
+      Value: 17
+    - Key: wrackZ
+      Value: 1.37
+  - Id: prop.stp_cx_withy_19
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -260.31, y: 0.8}
+    Z: 0.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.65
+    - Key: lean
+      Value: 0.084
+    - Key: ld
+      Value: 0.908
+    - Key: seed
+      Value: 18
+    - Key: wrackZ
+      Value: 1.31
+  - Id: prop.stp_cx_withy_20
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -272.69, y: 0.16}
+    Z: 0.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.67
+    - Key: lean
+      Value: 0.078
+    - Key: ld
+      Value: 0.785
+    - Key: seed
+      Value: 19
+    - Key: wrackZ
+      Value: 1.32
+  - Id: prop.stp_cx_withy_21
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -284.09, y: 0.66}
+    Z: 0.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.86
+    - Key: lean
+      Value: 0.09
+    - Key: ld
+      Value: 0.603
+    - Key: seed
+      Value: 20
+    - Key: wrackZ
+      Value: 1.32
+  - Id: prop.stp_cx_withy_22
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -296.28, y: 4.01}
+    Z: 0.65
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.95
+    - Key: lean
+      Value: 0.128
+    - Key: ld
+      Value: 0.644
+    - Key: seed
+      Value: 21
+    - Key: wrackZ
+      Value: 1.53
+  - Id: prop.stp_cx_withy_23
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -307.91, y: 0.42}
+    Z: 0.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.91
+    - Key: lean
+      Value: 0.086
+    - Key: ld
+      Value: 0.94
+    - Key: seed
+      Value: 22
+    - Key: wrackZ
+      Value: 1.31
+  - Id: prop.stp_cx_withy_24
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -319.67, y: 0.15}
+    Z: 0.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.98
+    - Key: lean
+      Value: 0.098
+    - Key: ld
+      Value: 0.665
+    - Key: seed
+      Value: 23
+    - Key: wrackZ
+      Value: 1.32
+  - Id: prop.stp_cx_withy_25
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -331.32, y: 0.88}
+    Z: 0.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.67
+    - Key: lean
+      Value: 0.149
+    - Key: ld
+      Value: 0.794
+    - Key: seed
+      Value: 24
+    - Key: wrackZ
+      Value: 1.31
+  - Id: prop.stp_cx_withy_26
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: withy
+    State: 
+    At: {x: -343.93, y: 0.93}
+    Z: 0.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 2.85
+    - Key: lean
+      Value: 0.146
+    - Key: ld
+      Value: 0.657
+    - Key: seed
+      Value: 25
+    - Key: wrackZ
+      Value: 1.32
+  - Id: structure.stp_cx_refuge
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: refugeHut
+    State: 
+    At: {x: -250, y: 4.6}
+    Z: 0.57
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words:
+    - words.stp_refuge_name
+    Options:
+    - Key: floor
+      Value: 3.43
+    - Key: words
+      Value: null
+    - Key: weedTo
+      Value: 1.68
+  - Id: structure.stp_cx_wreck
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: wreck
+    State: 
+    At: {x: -168, y: -13.8}
+    Z: -1.34
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 11
+    - Key: beam
+      Value: 3.4
+    - Key: yaw
+      Value: 0.25
+    - Key: seed
+      Value: 5
+  - Id: prop.stp_cx_lost_pot
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: lostPot
+    State: 
+    At: {x: -240.5, y: -11.6}
+    Z: -0.75
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: seed
+      Value: 3
+  - Id: prop.stp_cx_clam_hod
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: clamHod
+    State: 
+    At: {x: -71.6, y: -12.9}
+    Z: -1.02
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":-1.6,"clock":"low water - 2 h to + 2 h"}'
+    Words: []
+    Options:
+    - Key: full
+      Value: true
+  - Id: prop.stp_cx_clam_rake
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: rakes
+    State: 
+    At: {x: -70.9, y: -13.25}
+    Z: -0.92
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 7
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":-1.6,"clock":"low water - 2 h to + 2 h"}'
+    Words: []
+    Options:
+    - Key: n
+      Value: 1
+  - Id: prop.stp_cx_sandpiper_01
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -100.95, y: -17.12}
+    Z: -2.09
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_02
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -100.26, y: -17.54}
+    Z: -2.17
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 1
+  - Id: prop.stp_cx_sandpiper_03
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -99.79, y: -16.61}
+    Z: -1.95
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 7
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_04
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -130.11, y: -15.95}
+    Z: -1.87
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_05
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -131.09, y: -17.25}
+    Z: -2.21
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 1
+  - Id: prop.stp_cx_sandpiper_06
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -130.9, y: -17.12}
+    Z: -2.18
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_07
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -130.49, y: -17.18}
+    Z: -2.18
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 2
+  - Id: prop.stp_cx_sandpiper_08
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -130.03, y: -15.9}
+    Z: -1.89
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 1
+  - Id: prop.stp_cx_sandpiper_09
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -155.92, y: -16.74}
+    Z: -2
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_10
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -156.21, y: -15.25}
+    Z: -1.64
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 1
+  - Id: prop.stp_cx_sandpiper_11
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -156.5, y: -15.78}
+    Z: -1.77
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 7
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_12
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -156.16, y: -16.24}
+    Z: -1.85
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 2
+  - Id: prop.stp_cx_sandpiper_13
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -200.15, y: -15.33}
+    Z: -1.49
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_14
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -200.43, y: -16.31}
+    Z: -1.72
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 1
+  - Id: prop.stp_cx_sandpiper_15
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -201.67, y: -17.44}
+    Z: -1.97
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_16
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -201.08, y: -16.57}
+    Z: -1.77
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 2
+  - Id: prop.stp_cx_sandpiper_17
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -201.66, y: -16.97}
+    Z: -1.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 7
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 1
+  - Id: prop.stp_cx_sandpiper_18
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -211.29, y: -15.76}
+    Z: -1.74
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_19
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -211.27, y: -15.46}
+    Z: -1.66
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 1
+  - Id: prop.stp_cx_sandpiper_20
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -210.17, y: -15.9}
+    Z: -1.7
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_21
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -210.58, y: -16.26}
+    Z: -1.81
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 2
+  - Id: prop.stp_cx_sandpiper_22
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -259.67, y: -16.82}
+    Z: -2.16
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_23
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -259.17, y: -15.94}
+    Z: -1.93
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 1
+  - Id: prop.stp_cx_sandpiper_24
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -259.96, y: -15.77}
+    Z: -1.91
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_25
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -293.76, y: -15.46}
+    Z: -1.97
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_26
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -294.41, y: -15.55}
+    Z: -1.98
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 1
+  - Id: prop.stp_cx_sandpiper_27
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -294.08, y: -16.59}
+    Z: -2.24
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_28
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -294.16, y: -17.65}
+    Z: -2.49
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 2
+  - Id: prop.stp_cx_sandpiper_29
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -294.53, y: -16.65}
+    Z: -2.25
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 1
+  - Id: prop.stp_cx_sandpiper_30
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -327.5, y: -16.59}
+    Z: -1.66
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_31
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -326.74, y: -15.98}
+    Z: -1.51
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 1
+  - Id: prop.stp_cx_sandpiper_32
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -326.74, y: -15.56}
+    Z: -1.41
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 0
+  - Id: prop.stp_cx_sandpiper_33
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -327.03, y: -16.74}
+    Z: -1.7
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 2
+  - Id: prop.stp_cx_sandpiper_34
+    Kind: setPiece
+    Owner: 
+    Kit: cxPieces
+    Piece: sandpiper
+    State: 
+    At: {x: -326.81, y: -15.82}
+    Z: -1.48
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: '{"below":"its ground - 0.05"}'
+    Words: []
+    Options:
+    - Key: pose
+      Value: 1
+  - Id: gull.stp_cx_wreck_stem
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -162.38, y: -12.37}
+    Z: 0.22
+    StandsOn: mount
+    MountHost: structure.stp_cx_wreck
+    MountAnchor: stem
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+  - Id: gull.stp_cx_mussels_a
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -229.2, y: 13.4}
+    Z: -1.17
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: peck
+    - Key: frame
+      Value: 0
+  - Id: gull.stp_cx_mussels_b
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -226.8, y: 14.1}
+    Z: -1.34
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: stand
+    - Key: frame
+      Value: 0
+  - Id: gull.stp_cx_mussels_c
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -243.5, y: -13.2}
+    Z: -1.13
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: stand
+    - Key: frame
+      Value: 0
+  - Id: gull.stp_cx_flats_a
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -80.5, y: -6.2}
+    Z: 0.34
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    - open
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: stand
+    - Key: frame
+      Value: 0
+  - Id: gull.stp_cx_flats_b
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -65.8, y: 8.4}
+    Z: -0.06
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - low
+    - open
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: peck
+    - Key: frame
+      Value: 0
+  - Id: gull.stp_cx_crest_mid
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -181.5, y: 3.2}
+    Z: 0.71
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - open
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: stand
+    - Key: frame
+      Value: 0
+  - Id: gull.stp_cx_crest_gut
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -221, y: -2.4}
+    Z: 0.72
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - open
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: stand
+    - Key: frame
+      Value: 0
+  - Id: gull.stp_cx_float_1
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -83, y: 5.5}
+    Z: 0.31
+    StandsOn: water
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - high
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: float
+    - Key: frame
+      Value: 0
+  - Id: gull.stp_cx_float_2
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -72.5, y: -9}
+    Z: -0.18
+    StandsOn: water
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - high
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: float
+    - Key: frame
+      Value: 0
+  - Id: gull.stp_cx_float_3
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -178, y: 6.5}
+    Z: 0.5
+    StandsOn: water
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - high
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: float
+    - Key: frame
+      Value: 0
+  - Id: gull.stp_cx_float_4
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -160, y: -4.5}
+    Z: 0.59
+    StandsOn: water
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - high
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: float
+    - Key: frame
+      Value: 0
+  - Id: gull.stp_cx_float_5
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -231, y: 7.5}
+    Z: -0.52
+    StandsOn: water
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - high
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: float
+    - Key: frame
+      Value: 0
+  - Id: gull.stp_cx_float_6
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -238, y: -5.2}
+    Z: -0.41
+    StandsOn: water
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 7
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - high
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: float
+    - Key: frame
+      Value: 0
+  Lights: []
+  RetiredIds: []
