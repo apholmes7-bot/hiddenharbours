@@ -20,7 +20,6 @@ namespace HiddenHarbours.Tests.EditMode
     /// C# reimplementation of the HLSL gate. Null-device cases skip, never certify the look.
     /// GPU measurements use the shipped shore fixture, actual production shaders and public maths.
     /// No dependency on the uncommitted B1Capture assembly or its evidence.</summary>
-    [NonParallelizable]
     public class SurfSequenceTests
     {
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
