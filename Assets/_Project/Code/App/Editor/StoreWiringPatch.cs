@@ -186,9 +186,34 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>A region's scene text with its patches applied, in order. The patches touch disjoint roots,
-        /// so each finds its documents as it planned them.</summary>
+        /// so each finds its documents as it planned them. The book's new document is then put with its
+        /// GameObject's own (<see cref="PlaceBook"/>).</summary>
         public static string ApplyAll(string sceneText, IEnumerable<LayerPatch> patches) =>
-            patches.Aggregate(sceneText, (text, p) => p.ApplyTo(text));
+            patches.Aggregate(sceneText, (text, p) => PlaceBook(p.ApplyTo(text), p));
+
+        /// <summary>
+        /// The book patch's new document, moved from where every patch adds documents, just before SceneRoots,
+        /// to just after the last of its GameObject's own documents (the GameObject and its other components).
+        /// The tail before SceneRoots holds the layer-refresh steps' new roots. The key scenes step's guard takes
+        /// its root, the last in St Peters' tail, out and writes it back there (StPetersKeyScenesPatchTests'
+        /// WithoutTheRoot), so a document of the store's in that tail would come back on the wrong side of that
+        /// root. Placing it twice changes nothing.
+        /// </summary>
+        static string PlaceBook(string sceneText, LayerPatch patch)
+        {
+            StPetersLayerRefresh.Op add = patch.Root == BookRoot
+                ? patch.Ops.SingleOrDefault(o => o.Kind == StPetersLayerRefresh.OpKind.Add)
+                : null;
+            if (add == null) return sceneText;
+            SceneYaml scene = SceneYaml.Parse(sceneText);
+            Doc book = scene.Require(add.FileId, $"{patch.Step}: the wares book");
+            Doc go = scene.Require(patch.RootGameObject, $"{patch.Step}: {BookRoot}");
+            var own = new HashSet<long>(scene.ComponentsOf(go).Select(c => c.FileId)) { go.FileId };
+            own.Remove(book.FileId);
+            List<Doc> docs = scene.Docs.Where(d => d.FileId != book.FileId).ToList();
+            docs.Insert(docs.FindLastIndex(d => own.Contains(d.FileId)) + 1, book);
+            return new SceneYaml(scene.Preamble, docs).Render();
+        }
 
         static string StepOf(Region region, string root) => $"StoreWiring.{region.Name}.{root}";
 
@@ -245,7 +270,7 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>DialogueUI's patch: the wares book as a new document, listed last among its components,
-        /// unless it holds one already.</summary>
+        /// unless it holds one already. <see cref="ApplyAll"/> writes the document after DialogueUI's own.</summary>
         static LayerPatch Book(SceneYaml scene, Region region, IStoreWiringAssets assets)
         {
             Doc go = scene.RootNamed(BookRoot);
