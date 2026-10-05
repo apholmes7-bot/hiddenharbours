@@ -15,6 +15,11 @@ namespace HiddenHarbours.World
     /// end's weight where the ask filled (seaward of the shore, and landward where it raised the file's base), and elsewhere
     /// only where that weight passes <see cref="EndCut"/>, the return where the ask's cut stops.</para>
     ///
+    /// <para>Its box is the ask's too, and CD's rule stops at it. Where the box cuts the surface while it still weighs in full
+    /// (the main beach's west end, at x −8), a straight line would run down the paint; so inside the box the bay fades out over
+    /// <see cref="EdgeFade"/>, from a line that wanders by <see cref="EdgeWander"/>, and the paint ends raggedly (terrain
+    /// PR 5w).</para>
+    ///
     /// <para>The paint reads the imported map (amendment 1 §4.6), so the bands follow the ground the player stands on. A bay
     /// is painted only on a ground file: it is the file's.</para>
     /// </summary>
@@ -36,6 +41,10 @@ namespace HiddenHarbours.World
         public Vector2[] Rim = new Vector2[0];
         [Tooltip("Nothing outside this box (world x, y).")]
         public Vector2 BoxMin, BoxMax;
+        [Tooltip("Inside the box it fades out over this far to the box's edge (ground m), so where the box cuts it the paint ends raggedly, not on the box's line. 0: the box cuts it.")]
+        public float EdgeFade;
+        [Tooltip("That fade starts up to x m either side of its line (ground m): fractal value noise (three octaves) of wavelength y (m), keyed on position.")]
+        public Vector2 EdgeWander;
         [Tooltip("The shore to the rim is never taken as narrower than this (ground m).")]
         public float MinWidth = 8f;
         [Tooltip("It fades over this far past the ends of its lines (ground m)...")]

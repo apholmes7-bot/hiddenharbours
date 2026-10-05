@@ -112,6 +112,9 @@ namespace HiddenHarbours.World
         /// </summary>
         public byte[] BayPaint;
 
+        /// <summary>Part 2's south (terrain PR 5w): its masks and what it painted. Null without part 2's sections. Not in <see cref="Sha256"/>.</summary>
+        public TerrainPlanSouth South;
+
         /// <summary>The distance to the nearest painted path's centre, its half width, its index in the plan's list.</summary>
         public double[] PathD, PathH;
         public int[] PathW;

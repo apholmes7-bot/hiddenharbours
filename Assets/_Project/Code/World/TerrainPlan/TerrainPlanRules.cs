@@ -65,10 +65,65 @@ namespace HiddenHarbours.World
         public const double LobeSideOffset = 400.0, PoolReach = 1.8, PoolEllipseLambda = 2.0;
         public const double MovedBy = 1e-9;
 
+        // ---- part 2's south (PR 5w; p2_lib's coast2, flats, plinths and paint), on Part2Seed ----------------------------------
+        public const double StrandReliefAbove = 2.0, StrandRelief = 0.14, StrandReliefLambda = 5.0;
+        public const int SeedStrandRelief = 49;
+        public const double CoveKeepFeather = 0.4;
+        public const double SpitWander = 0.8, SpitWanderLambda = 6.0, SpitCrestNoise = 0.08, SpitCrestLambda = 3.0;
+        public const double SpitTipStretch = 1.4, SpitRootBack = 4.0;
+        public const int SeedSpitWander = 31, SeedSpitCrest = 33;
+        public const double GullyFirst = 6.0, GullyEndKeep = 4.0, GullyLean = 20.0, GullyReach = 1.6;
+        public const int SeedGullyEvery = 211, SeedGullyLean = 213, SeedGullyWidth = 215;
+        public const double ReefEdgeNoise = 1.6, ReefEdgeLambda = 11.0, ReefCrestLambda = 7.0, ReefRough = 0.12, ReefRoughLambda = 2.2;
+        public const int SeedReefEdge = 201, SeedReefCrest = 203, SeedReefRough = 205, SeedReefWidth = 207;
+        public const double FlatsLobeRamp = 12.0, FlatsWidthRamp = 6.0, FlatsShoreIn = 2.0, FlatsShoreSpan = 4.0;
+        public const double FlatsRidgeIn = 0.15, FlatsRidgeOutFrom = 0.8, FlatsRidgeOut = 0.2;
+        public const double FlatsRidgeBreakLambda = 22.0, FlatsRidgeBreakShift = 0.2, FlatsRidgeBreakSpan = 0.5;
+        public const double FlatsRidgePhase = 2.0, FlatsRidgePhaseLambda = 40.0;
+        public const double RibWanderLambda = 30.0, RibBreakLambda = 7.0, RibFrom = 0.12, RibTo = 0.95;
+        public const int SeedFlatsLobe = 801, SeedFlatsSwell = 803, SeedFlatsRidgeBreak = 805, SeedFlatsRidgePhase = 807;
+        public const int SeedFlatsRipple = 809, SeedRibWander = 821, SeedRibBreak = 823, SeedFlatsOuter = 841;
+        public const int SeedFlatsRunnelEvery = 811, SeedFlatsRunnelWidth = 813, SeedFlatsRunnelDepth = 815;
+        public const int SeedFlatsRunnel = 817, SeedFlatsMeander = 831, SeedFlatsBranch = 833;
+        public const double RunnelReachPad = 1.0, BranchReachWidth = 62.0, RunnelStartMargin = 0.02, RunnelFirstQ = 0.03;
+        public const double RunnelLastQ = 1.05, RunnelFadeIn = 0.1, BranchFirstQ = 0.05, BranchFadeOut = 0.25, BranchMarkTo = 0.9;
+        public const double RunnelHalfFrom = 0.65, RunnelHalfGrowth = 0.7, RunnelDepthFrom = 0.5, RunnelDepthGrowth = 0.7;
+        public const double BranchDepthFrom = 0.4, BranchDepthGrowth = 0.6, BranchWander = 0.8, BranchWanderLambda = 6.0;
+        public const double RunnelMeanderLane = 53.0, RunnelMeanderLaneOff = 11.0, BranchLane = 91.0, BranchLaneStep = 13.0;
+        public const double RunnelMarked = 0.5;
+        public const double FootReach = 12.0, FootWobble = 0.12, FootWobbleLambda = 3.0;
+        public const int SeedFoot = 81, SeedFootStep = 7;
+        public const double SouthToeFloor = -4.6, SouthToeReach = 25.0;
+        public const int SeedFormRecipe = 530;
+        public const double FreshBankCap = 50.0;
+        public const double StrandRunnelOffset = 14.0, StrandRunnelWander = 2.0, StrandRunnelLambda = 9.0, StrandRunnelHalf = 1.0;
+        public const int SeedStrandRunnel = 320, SeedApron = 330;
+        public const double StrandSiltFrom = -1.9, StrandSiltTo = -0.4, StrandTalusFrom = -1.2, StrandTalusTo = 0.5, StrandTalusAbove = 0.76;
+        public const double LandingWeedFrom = 1.95, LandingWeedTo = 2.35, LandingWeedAbove = 0.34;
+        public const double LandingTalusFrom = -0.2, LandingTalusTo = 1.2, LandingTalusAbove = 0.7;
+        public const double ApronReach = 6.0, ApronWander = 2.0, ApronLambda = 5.0, ApronRippleBelow = -2.3, ApronTalusBelow = -1.4;
+        public const double ReefToeTalus = 5.5, ReefToeTalusBelow = -1.4, ReefToeTalusAbove = 0.58;
+        public const double ReefCrestTalusW = 0.3, ReefCrestTalusFrom = -2.2, ReefCrestTalusTo = -1.3, ReefCrestTalusAbove = 0.5;
+        public const double ReefEelgrassW = 0.05, ReefEelgrassOff = 17.0, ReefEelgrassBelow = -2.3;
+        public const double SpitShingleFrom = -0.5, SpitShingleTo = 2.4, SpitWeedFrom = -1.5;
+        public const double CoveTalusFrom = -1.2, CoveTalusTo = 0.5, CoveTalusAbove = 0.76;
+        public const double StormWeedFrom = -0.4, StormWeedTo = 0.8, StormWeedAbove = 0.6;
+        public const double StormTalusFrom = 2.5, StormTalusTo = 3.4, StormTalusAbove = 0.62;
+        public const double FlatsPaintBelow = 0.6, FlatsPaintAbove = -4.6, FlatsMarked = 0.5;
+        public const int SeedFlatsSand = 850, SeedFlatsMud = 851, SeedFlatsF1 = 853, SeedFlatsF2 = 855, SeedFlatsRib = 857;
+        public const int SeedFlatsToeTalus = 859, SeedFlatsMussel = 861;
+        public const double FlatsF1Lambda = 3.0, FlatsF2Lambda = 1.8, FlatsMusselF1 = 0.42;
+        public const double FlatsMudSiltFrom = -1.75, FlatsMudSiltTo = -1.0, FlatsMudSiltAbove = 0.7, FlatsRunnelSiltBelow = -0.3;
+        public const double FlatsBoulderAbove = 0.64, FlatsBoulderFrom = -1.9;
+        public const double FlatsToeTalus = 9.0, FlatsToeTalusWander = 2.5, FlatsToeTalusLambda = 6.0, FlatsToeTalusFrom = -2.6;
+        public const double CreekPaintReach = 8.0, CreekMudBank = 1.4, CreekMudFrom = -2.2;
+
         // ---- the still water on a ground file (PR 5 B; amendment 2 §4.2) ----------------------------------------------------
         /// <summary>How many height-map steps a pool's flood may drop to hold (4096 steps of 16/65535 m: about a metre).</summary>
         public const int StillStepsDown = 4096;
         public const int SeedBay = 570;
+        /// <summary>A bay's edge wanders on its own salt (PR 5w): this plus its index.</summary>
+        public const int SeedBayEdge = 580;
         /// <summary>The village's routes wander by the plan's PathEdge, each on its own salt: this plus its index.</summary>
         public const int SeedRoute = 700;
 

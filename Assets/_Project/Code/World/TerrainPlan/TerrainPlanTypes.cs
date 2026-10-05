@@ -96,6 +96,10 @@ namespace HiddenHarbours.World
         PaintOnly = 2,
         /// <summary>The bar's crossing (part 2 §5): runnels, lobes, pools and its own paint.</summary>
         Crossing = 3,
+        /// <summary>Part 2 (PR 5w): a cliff's foot. It keeps the ground and paints off its walls' toe line.</summary>
+        Toe = 4,
+        /// <summary>Part 2: keeps the ground and its paint, and only takes its share of the sections' weights.</summary>
+        Keep = 5,
     }
 
     /// <summary>What a path is (part 1 §5).</summary>
@@ -114,6 +118,39 @@ namespace HiddenHarbours.World
         Barren = 2,
         Meadow = 3,
         Swale = 4,
+    }
+
+    /// <summary>
+    /// A toe reef's shape (part 2 §4.2): the ledge that runs out from a cliff's toe, its crest band, its gullies across it
+    /// and its rock pools, in metres off the toe line. The ground file holds it; the south's paint reads its masks.
+    /// </summary>
+    [Serializable]
+    public class TerrainPlanReef
+    {
+        [Tooltip("The channel at the toe (m).")]
+        public float Channel = 5f;
+        [Tooltip("The reef rises over x to y metres off the toe...")]
+        public Vector2 Rise = new Vector2(6f, 9f);
+        [Tooltip("...its crest runs from x to y...")]
+        public Vector2 Crest = new Vector2(9f, 17f);
+        [Tooltip("...and it falls over x to y.")]
+        public Vector2 Fall = new Vector2(17f, 21f);
+        [Tooltip("The crest's height (m), wandering by CrestAmp.")]
+        public float CrestZ = -0.6f;
+        public float CrestAmp = 0.3f;
+        [Tooltip("A gully every x to y metres along the toe, x to y wide, down to GullyZ (m).")]
+        public Vector2 GullyEvery = new Vector2(15f, 25f);
+        public Vector2 GullyWidth = new Vector2(1.5f, 2.5f);
+        public float GullyZ = -1.6f;
+        [Tooltip("Rock pools on the crest: so many per 100 m of toe, radius (m), depth (m).")]
+        public float PoolsPer100m = 7f;
+        public Vector2 PoolRadius = new Vector2(0.8f, 1.5f);
+        public Vector2 PoolDepth = new Vector2(0.3f, 0.5f);
+        [Tooltip("A broken reef's gullies come this many times closer and wider.")]
+        public float BrokenScale = 1.5f;
+        [Tooltip("The reef's width wanders by this fraction over this wavelength (m).")]
+        public float WidthWander = 0.3f;
+        public float WidthLambda = 30f;
     }
 
     /// <summary>

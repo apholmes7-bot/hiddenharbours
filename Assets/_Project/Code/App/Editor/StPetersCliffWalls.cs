@@ -26,12 +26,22 @@ namespace HiddenHarbours.App.Editor
     /// and the height field stays the single source of truth for where a player may stand (the slope
     /// gate is its own lane). It is not the coast plan — the 40.2% authored share and every named
     /// constraint are rendered AS AUTHORED and nothing here retunes them.</para>
+    ///
+    /// <para><b>⭐ ST PETERS' WALLS ARE ITS DEFS NOW (terrain PR 5w).</b> Since the island's ground became the
+    /// package's import, the analytic walk above no longer stands where the ground does, so the scene's walls are
+    /// data: one <see cref="CliffWallDef"/> per wall, by its real id, under <see cref="WallsFolder"/>. The builder
+    /// draws them through <see cref="ChunksOfDefs"/> — the same chunk math, cutting where each Def ends — and the
+    /// scene's own walls are read back by <see cref="WallsInScene"/>. <see cref="ResolveChunks"/> stays: it is
+    /// the cliff proof's walk and the analytic coast's own pins.</para>
     /// </summary>
     public static class StPetersCliffWalls
     {
         /// <summary>The scene object every generated chunk parents under. Rebuilding destroys it whole,
         /// which is what makes a Refresh converge rather than stack a second coast on the first.</summary>
         public const string RootName = "CliffWalls";
+
+        /// <summary>St Peters' walls' Defs, one per wall by real id (<c>wall.stp_NNN</c>).</summary>
+        public const string WallsFolder = "Assets/_Project/Data/Terrain/StPetersWalls";
 
         /// <summary>The shipped face material — all texture slots empty by design, because the bake root
         /// is gitignored and the channels arrive per chunk through a property block.</summary>
@@ -171,6 +181,56 @@ namespace HiddenHarbours.App.Editor
             public float RunSurfaceMetres;
         }
 
+        /// <summary>One station of the coast walk, as the chunk math reads it: the wall standing there
+        /// (when <see cref="Live"/>), the aspect and batter its face snaps to, its true azimuth and its
+        /// class. A station that is not live is where the wall stops: it ends the run.</summary>
+        public struct Station
+        {
+            public CliffWallSample Sample;
+            public int AspectIndex;         // into CliffCatalog.Aspects; -1 where no wall stands
+            public int BatterIndex;         // into BakedBatterAngles(); -1 where no wall stands
+            public float Azimuth;           // TRUE, unsnapped
+            public CoastClass Class;
+            public bool Live;
+
+            /// <summary>A chunk ends at the station before this one, which seeds the next, as a texture change cuts
+            /// it. A wall laid from its Def (<see cref="ChunksOfDefs"/>) cuts here, so each Def is one chunk.</summary>
+            public bool CutBefore;
+
+            /// <summary>A standing station, its aspect and batter snapped exactly as the walk snaps them.</summary>
+            public static Station Standing(in CliffWallSample sample, float azimuth, CoastClass cls) =>
+                new Station
+                {
+                    Sample = sample,
+                    AspectIndex = SnapAspectIndex(azimuth),
+                    BatterIndex = CliffWallGeometry.SnapBatterIndex(CliffWallGeometry.BatterDegrees(in sample),
+                                                                    BakedBatterAngles()),
+                    Azimuth = azimuth,
+                    Class = cls,
+                    Live = true,
+                };
+
+            /// <summary>A station where no wall stands.</summary>
+            public static Station Gap =>
+                new Station { AspectIndex = -1, BatterIndex = -1, Azimuth = 0f, Class = CoastClass.Beach };
+        }
+
+        /// <summary>A chunk's serialized fields: what <see cref="Build"/> configures its
+        /// <see cref="CliffWallSurface"/> with, less the assets. The soil band ends, and the rock band
+        /// starts, <see cref="OverburdenSurfaceMetres"/> down the face; the rock runs on to the toe.</summary>
+        public struct ChunkFields
+        {
+            public Vector2[] BrowPlan;
+            public Vector2[] ToePlan;
+            public float[] DropMetres;
+            public float[] ToeElevations;
+            public float AlongOffsetMetres;
+            public float RowsBasisSurfaceMetres;
+            public float WallAzimuth;
+            public float Batter;
+            public float OverburdenSurfaceMetres;
+        }
+
         // =============================================================================================
         //  the plan → geometry (pure; no scene, no assets — this is what the tests drive)
         // =============================================================================================
@@ -182,14 +242,12 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static List<Chunk> ResolveChunks(TidalTerrain terrain)
         {
-            var chunks = new List<Chunk>();
-            if (terrain == null) return chunks;
+            if (terrain == null) return new List<Chunk>();
 
             // Walk in BEARING, but step by a constant length of SHORE: a degree near due south buys
             // 120 m/rad of coast on this ellipse where one near the harbour buys 70, so a constant
             // angular step would make the stations bunch at the ends and thin out along the flanks.
-            var stations = new List<(CliffWallSample sample, int aspect, int batter, float azimuth,
-                                     CoastClass cls, bool live)>();
+            var stations = new List<Station>();
 
             float bearing = 0f;
             while (bearing < 360f)
@@ -197,21 +255,26 @@ namespace HiddenHarbours.App.Editor
                 float speed = Mathf.Max(1e-3f, ShoreSpeed(bearing));         // metres per radian
                 float stepDeg = StationMetres / speed * Mathf.Rad2Deg;
 
-                if (TryStationAt(terrain, bearing, out CliffWallSample sample, out CoastClass cls,
-                                 out float azimuth))
-                {
-                    int aspect = SnapAspectIndex(azimuth);
-                    float batterTrue = CliffWallGeometry.BatterDegrees(in sample);
-                    int batter = CliffWallGeometry.SnapBatterIndex(batterTrue, BakedBatterAngles());
-                    stations.Add((sample, aspect, batter, azimuth, cls, true));
-                }
-                else
-                {
-                    stations.Add((default, -1, -1, 0f, CoastClass.Beach, false));
-                }
+                stations.Add(TryStationAt(terrain, bearing, out CliffWallSample sample, out CoastClass cls,
+                                          out float azimuth)
+                             ? Station.Standing(in sample, azimuth, cls)
+                             : Station.Gap);
 
                 bearing += Mathf.Max(1e-4f, stepDeg);
             }
+            return ChunksOf(stations);
+        }
+
+        /// <summary>
+        /// ⭐ <b>THE CHUNK MATH, PURE.</b> The walk's stations, in order, into chunks of standing wall: the
+        /// cuts, the run bookkeeping and the run's shared row basis. No terrain and no scene, so the
+        /// analytic walk above and stations read off any other ground are cut, chained and sized by the
+        /// one rule. Deterministic to the bit (rule 5).
+        /// </summary>
+        public static List<Chunk> ChunksOf(IReadOnlyList<Station> stations)
+        {
+            var chunks = new List<Chunk>();
+            if (stations == null) return chunks;
 
             // Cut runs where the wall stops being drawable, where the TEXTURE must change (aspect or
             // batter), or where a chunk has run long enough that one sorting order stops being honest.
@@ -231,8 +294,8 @@ namespace HiddenHarbours.App.Editor
 
             for (int i = 0; i < stations.Count; i++)
             {
-                var st = stations[i];
-                if (!st.live)
+                Station st = stations[i];
+                if (!st.Live)
                 {
                     if (current.Samples.Count > 0 || runAlong > 0f) runIndex++;
                     Flush(chunks, ref current);
@@ -241,19 +304,19 @@ namespace HiddenHarbours.App.Editor
                     continue;
                 }
 
-                float toeY = CliffWallGeometry.ToeScreen(st.sample).y;
+                float toeY = CliffWallGeometry.ToeScreen(st.Sample).y;
                 bool startsNew = current.Samples.Count == 0;
                 if (!startsNew)
                 {
-                    float step = Vector2.Distance(lastBrow, st.sample.BrowPlan);
+                    float step = Vector2.Distance(lastBrow, st.Sample.BrowPlan);
                     runMetres += step;
                     runAlong += step;                       // `runAlong` is now THIS station's along
-                    bool textureChanged = st.aspect != current.AspectIndex ||
-                                          st.batter != current.BatterIndex;
+                    bool textureChanged = st.AspectIndex != current.AspectIndex ||
+                                          st.BatterIndex != current.BatterIndex;
                     // The Y span INCLUDING this station — a chunk is cut before it grows too tall to
                     // sort honestly, not after (see ChunkToeSpanMetres).
                     float span = Mathf.Max(toeHigh, toeY) - Mathf.Min(toeLow, toeY);
-                    if (textureChanged || runMetres >= ChunkMetres || span > ChunkToeSpanMetres)
+                    if (textureChanged || st.CutBefore || runMetres >= ChunkMetres || span > ChunkToeSpanMetres)
                     {
                         // ⭐ THE BOUNDARY STATION SEEDS THE NEXT CHUNK; it does NOT join this one.
                         //
@@ -283,17 +346,17 @@ namespace HiddenHarbours.App.Editor
 
                 if (startsNew)
                 {
-                    current.AspectIndex = st.aspect;
-                    current.BatterIndex = st.batter;
-                    current.WallAzimuth = st.azimuth;
-                    current.Class = st.cls;
+                    current.AspectIndex = st.AspectIndex;
+                    current.BatterIndex = st.BatterIndex;
+                    current.WallAzimuth = st.Azimuth;
+                    current.Class = st.Class;
                     current.RunIndex = runIndex;
                     current.AlongOffsetMetres = chunkStartAlong;
                 }
-                current.Samples.Add(st.sample);
+                current.Samples.Add(st.Sample);
                 toeLow = Mathf.Min(toeLow, toeY);
                 toeHigh = Mathf.Max(toeHigh, toeY);
-                lastBrow = st.sample.BrowPlan;
+                lastBrow = st.Sample.BrowPlan;
             }
             Flush(chunks, ref current);
             ResolveRunSurfaces(chunks);
@@ -344,6 +407,399 @@ namespace HiddenHarbours.App.Editor
             }
             current = new Chunk { Samples = new List<CliffWallSample>() };
         }
+
+        /// <summary>⭐ A chunk's serialized fields, pure: the arrays straight off its samples, and the
+        /// scalars the run bookkeeping and the snapped batter give it.</summary>
+        public static ChunkFields FieldsOf(in Chunk chunk)
+        {
+            int n = chunk.Samples.Count;
+            var fields = new ChunkFields
+            {
+                BrowPlan = new Vector2[n],
+                ToePlan = new Vector2[n],
+                DropMetres = new float[n],
+                // The absolute toe elevations — what the WATERLINE is measured against (2026-08-06).
+                ToeElevations = new float[n],
+                AlongOffsetMetres = chunk.AlongOffsetMetres,
+                RowsBasisSurfaceMetres = chunk.RunSurfaceMetres,
+                WallAzimuth = chunk.WallAzimuth,
+                Batter = CliffCatalog.BatterAngles[BakedBatterToCatalogIndex(chunk.BatterIndex)],
+                OverburdenSurfaceMetres = OverburdenSurfaceMetresOf(chunk.BatterIndex),
+            };
+            for (int i = 0; i < n; i++)
+            {
+                fields.BrowPlan[i] = chunk.Samples[i].BrowPlan;
+                fields.ToePlan[i] = chunk.Samples[i].ToePlan;
+                fields.DropMetres[i] = chunk.Samples[i].DropMetres;
+                fields.ToeElevations[i] = chunk.Samples[i].ToeElevation;
+            }
+            return fields;
+        }
+
+        /// <summary>A chunk's name: its class, aspect and batter, and its index along the coast.</summary>
+        public static string ChunkName(in Chunk chunk, int index) =>
+            $"CliffWall_{chunk.Class}_" +
+            $"{CliffCatalog.Aspects[chunk.AspectIndex]}_" +
+            $"{CliffCatalog.Batters[BakedBatterToCatalogIndex(chunk.BatterIndex)]}_" +
+            $"{index:D3}";
+
+        // =============================================================================================
+        //  the walls' Defs → chunks (pure; terrain PR 5w)
+        // =============================================================================================
+
+        /// <summary>
+        /// ⭐ <b>THE WALLS FROM THEIR DEFS.</b> Each live <see cref="CliffWallDef"/> is one chunk, laid through
+        /// <see cref="ChunksOf"/> so the run bookkeeping is the walk's own: the Defs a run chains through
+        /// (<see cref="CliffWallDef.Follows"/>) are fed as one walk, each Def's first station skipped where it
+        /// is the station the wall before it ended on, and a <see cref="Station.CutBefore"/> at its second, so
+        /// the chunk math cuts exactly where each Def ends. Offsets march on through every cut, and the run's
+        /// row basis is the longest face in it. Runs go in the order of their least id, a gap between each.
+        ///
+        /// <para>Each station takes its Def's aspect and batter, which the Def holds as the face it wears. It
+        /// refuses what would not round-trip: a Def that is not one chunk, a run that does not join station to
+        /// station to the bit, a wall that follows none or is followed twice, an aspect or a batter the
+        /// default bake does not carry. <paramref name="owners"/> is each chunk's Def, in step.</para>
+        /// </summary>
+        public static List<Chunk> ChunksOfDefs(IReadOnlyList<CliffWallDef> defs, out List<CliffWallDef> owners)
+        {
+            owners = new List<CliffWallDef>();
+            var live = new Dictionary<string, CliffWallDef>(System.StringComparer.Ordinal);
+            if (defs == null) return new List<Chunk>();
+            foreach (CliffWallDef d in defs)
+            {
+                if (d == null || !d.IsLive) continue;
+                if (live.ContainsKey(d.Id)) throw new System.InvalidOperationException($"two live walls are '{d.Id}'.");
+                live.Add(d.Id, d);
+            }
+
+            var next = new Dictionary<string, CliffWallDef>(System.StringComparer.Ordinal);
+            var starts = new List<CliffWallDef>();
+            foreach (CliffWallDef d in live.Values)
+            {
+                if (string.IsNullOrEmpty(d.Follows)) { starts.Add(d); continue; }
+                if (!live.ContainsKey(d.Follows))
+                    throw new System.InvalidOperationException($"'{d.Id}' follows '{d.Follows}', which is no live wall.");
+                if (next.ContainsKey(d.Follows))
+                    throw new System.InvalidOperationException($"'{d.Id}' and '{next[d.Follows].Id}' both follow '{d.Follows}'.");
+                next.Add(d.Follows, d);
+            }
+
+            var runs = new List<List<CliffWallDef>>();
+            int walked = 0;
+            foreach (CliffWallDef s in starts)
+            {
+                var run = new List<CliffWallDef>();
+                for (CliffWallDef d = s; d != null; d = next.TryGetValue(d.Id, out CliffWallDef n) ? n : null)
+                    run.Add(d);
+                walked += run.Count;
+                runs.Add(run);
+            }
+            if (walked != live.Count)
+                throw new System.InvalidOperationException($"{live.Count - walked} live walls follow one another in a ring: no run starts them.");
+            runs.Sort((a, b) => string.CompareOrdinal(LeastId(a), LeastId(b)));
+
+            var stations = new List<Station>();
+            foreach (List<CliffWallDef> run in runs)
+            {
+                if (stations.Count > 0) stations.Add(Station.Gap);
+                for (int w = 0; w < run.Count; w++)
+                {
+                    CliffWallDef d = run[w];
+                    int n = d.Brow == null ? 0 : d.Brow.Length;
+                    if (n < 2 || d.Toe == null || d.Toe.Length != n || d.DropMetres == null || d.DropMetres.Length != n ||
+                        d.ToeElevations == null || d.ToeElevations.Length != n)
+                        throw new System.InvalidOperationException($"'{d.Id}' needs two or more stations, each with a brow, a toe, a drop and a toe height.");
+                    int aspect = System.Array.IndexOf(CliffCatalog.Aspects, d.Aspect);
+                    int baked = System.Array.IndexOf(CliffBaker.DefaultBatters, System.Array.IndexOf(CliffCatalog.Batters, d.Batter));
+                    if (aspect < 0 || baked < 0)
+                        throw new System.InvalidOperationException($"'{d.Id}' wears {d.Aspect} {d.Batter}, which the default bake does not carry.");
+                    if (w > 0)
+                    {
+                        CliffWallDef p = run[w - 1];
+                        int last = p.Brow.Length - 1;
+                        // Exact, not Vector2's ==: that one forgives 1e-5 m.
+                        if (!p.Brow[last].Equals(d.Brow[0]) || !p.Toe[last].Equals(d.Toe[0]) ||
+                            p.DropMetres[last] != d.DropMetres[0] || p.ToeElevations[last] != d.ToeElevations[0])
+                            throw new System.InvalidOperationException($"'{d.Id}' follows '{p.Id}' but does not start on its last station.");
+                    }
+                    for (int i = w == 0 ? 0 : 1; i < n; i++)
+                        stations.Add(new Station
+                        {
+                            Sample = new CliffWallSample(d.Brow[i], d.Toe[i], d.DropMetres[i], d.ToeElevations[i]),
+                            AspectIndex = aspect,
+                            BatterIndex = baked,
+                            Azimuth = CoastPlan.AspectAzimuths[aspect],
+                            Class = d.Class,
+                            Live = true,
+                            CutBefore = w > 0 && i == 1,
+                        });
+                    owners.Add(d);
+                }
+            }
+
+            List<Chunk> chunks = ChunksOf(stations);
+            if (chunks.Count != owners.Count)
+                throw new System.InvalidOperationException($"the chunk math cut {owners.Count} walls into {chunks.Count} chunks.");
+            for (int k = 0; k < chunks.Count; k++)
+                if (chunks[k].Samples.Count != owners[k].Brow.Length)
+                    throw new System.InvalidOperationException($"the chunk math cut '{owners[k].Id}' inside its own stations.");
+            return chunks;
+        }
+
+        static string LeastId(List<CliffWallDef> run)
+        {
+            string least = run[0].Id;
+            foreach (CliffWallDef d in run) if (string.CompareOrdinal(d.Id, least) < 0) least = d.Id;
+            return least;
+        }
+
+        /// <summary>A wall's scene name: its class, aspect and batter, and its real id.</summary>
+        public static string WallName(CliffWallDef def) =>
+            $"CliffWall_{def.Class}_{def.Aspect}_{def.Batter}_{def.RealId}";
+
+        /// <summary>Every St Peters wall Def, live, retired and held, by id.</summary>
+        public static List<CliffWallDef> LoadDefs()
+        {
+            var defs = new List<CliffWallDef>();
+            foreach (string guid in AssetDatabase.FindAssets("t:" + nameof(CliffWallDef), new[] { WallsFolder }))
+            {
+                var d = AssetDatabase.LoadAssetAtPath<CliffWallDef>(AssetDatabase.GUIDToAssetPath(guid));
+                if (d != null) defs.Add(d);
+            }
+            defs.Sort((a, b) => string.CompareOrdinal(a.Id, b.Id));
+            return defs;
+        }
+
+        // =============================================================================================
+        //  the scene's walls, read as text (pure; terrain PR 5w)
+        // =============================================================================================
+
+        /// <summary>One wall as the scene file holds it: its name and the parts its name says, its documents, its
+        /// <see cref="CliffWallSurface"/>'s fields, where it stands and how it sorts, and the run it is in.</summary>
+        public sealed class SceneWall
+        {
+            public string Name, RealId;
+            public long GameObject, Transform, SortingGroup, Surface;
+            public CoastClass Class;
+            public int AspectIndex;             // into CliffCatalog.Aspects
+            public int BatterIndex;             // into BakedBatterAngles()
+            public Vector2[] Brow, Toe;
+            public float[] DropMetres, ToeElevations;
+            public float AlongOffsetMetres, RowsBasisSurfaceMetres, WallAzimuth, Batter;
+            public Vector3 Position;
+            public int SortingOrder;
+
+            /// <summary>Its run, rebuilt from the scene: runs in the order of their least id.</summary>
+            public int RunIndex;
+
+            public List<CliffWallSample> Samples
+            {
+                get
+                {
+                    var s = new List<CliffWallSample>(Brow.Length);
+                    for (int i = 0; i < Brow.Length; i++) s.Add(new CliffWallSample(Brow[i], Toe[i], DropMetres[i], ToeElevations[i]));
+                    return s;
+                }
+            }
+
+            /// <summary>The wall as the chunk math's chunk, its fields as the scene holds them.</summary>
+            public Chunk AsChunk() => new Chunk
+            {
+                Samples = Samples,
+                AspectIndex = AspectIndex,
+                BatterIndex = BatterIndex,
+                WallAzimuth = WallAzimuth,
+                Class = Class,
+                RunIndex = RunIndex,
+                AlongOffsetMetres = AlongOffsetMetres,
+                RunSurfaceMetres = RowsBasisSurfaceMetres,
+            };
+        }
+
+        /// <summary>
+        /// The walls under the scene's <see cref="RootName"/>, read from the file's text (the scene is never opened),
+        /// in run order: a wall whose first brow station is another's last follows it, and the runs go in the order
+        /// of their least id. Refuses a name that does not parse, a wall that is not one GameObject with a transform,
+        /// a sorting group and a <see cref="CliffWallSurface"/>, an id two walls share, and a join two walls claim.
+        /// </summary>
+        public static List<SceneWall> WallsInScene(string sceneText) =>
+            InRuns(WallsUnder(StPetersLayerRefresh.SceneYaml.Parse(sceneText)));
+
+        /// <summary>The walls under the scene's <see cref="RootName"/> in the scene's own order (the root's
+        /// <c>m_Children</c>), not chained into runs; <see cref="SceneWall.RunIndex"/> is left at 0.</summary>
+        public static List<SceneWall> WallsUnder(StPetersLayerRefresh.SceneYaml scene)
+        {
+            StPetersLayerRefresh.Doc rootTr = scene.TransformOf(scene.RootNamed(RootName));
+            var walls = new List<SceneWall>();
+            var byId = new HashSet<string>(System.StringComparer.Ordinal);
+            foreach (long childTr in rootTr.FieldRefs("m_Children"))
+            {
+                StPetersLayerRefresh.Doc tr = scene.Require(childTr, $"a child of '{RootName}'");
+                StPetersLayerRefresh.Doc go = scene.Require(tr.FieldRef("m_GameObject"), $"the GameObject of &{childTr}");
+                SceneWall w = ReadWall(scene, go, tr);
+                if (!byId.Add(w.RealId)) throw new System.InvalidOperationException($"two walls are {w.RealId}.");
+                walls.Add(w);
+            }
+            return walls;
+        }
+
+        /// <summary>The scene's walls as the chunk math's chunks, in run order (<see cref="WallsInScene"/>).</summary>
+        public static List<Chunk> ChunksInScene(string sceneText)
+        {
+            var chunks = new List<Chunk>();
+            foreach (SceneWall w in WallsInScene(sceneText)) chunks.Add(w.AsChunk());
+            return chunks;
+        }
+
+        static SceneWall ReadWall(StPetersLayerRefresh.SceneYaml scene, StPetersLayerRefresh.Doc go, StPetersLayerRefresh.Doc tr)
+        {
+            string name = go.Field("m_Name") ?? "";
+            string[] parts = name.Split('_');
+            int catalogBatter = parts.Length == 5 ? System.Array.IndexOf(CliffCatalog.Batters, parts[3]) : -1;
+            var w = new SceneWall
+            {
+                Name = name,
+                RealId = parts.Length == 5 ? parts[4] : "",
+                GameObject = go.FileId,
+                Transform = tr.FileId,
+                AspectIndex = parts.Length == 5 ? System.Array.IndexOf(CliffCatalog.Aspects, parts[2]) : -1,
+                BatterIndex = System.Array.IndexOf(CliffBaker.DefaultBatters, catalogBatter),
+            };
+            if (parts.Length != 5 || parts[0] != "CliffWall" || !System.Enum.IsDefined(typeof(CoastClass), parts[1]) ||
+                w.AspectIndex < 0 || w.BatterIndex < 0 || w.RealId.Length != 3 || !IsDigits(w.RealId))
+                throw new System.InvalidOperationException($"'{name}' is not a CliffWall_<class>_<aspect>_<batter>_<NNN> name.");
+            w.Class = (CoastClass)System.Enum.Parse(typeof(CoastClass), parts[1]);
+
+            StPetersLayerRefresh.Doc surface = null, group = null;
+            foreach (StPetersLayerRefresh.Doc c in scene.ComponentsOf(go))
+            {
+                if (c.ClassId == SortingGroupClass) group = c;
+                else if (c.IsScript(typeof(CliffWallSurface).FullName)) surface = c;
+            }
+            if (surface == null || group == null)
+                throw new System.InvalidOperationException($"'{name}' needs a CliffWallSurface and a SortingGroup.");
+            w.Surface = surface.FileId;
+            w.SortingGroup = group.FileId;
+            w.SortingOrder = StPetersLayerRefresh.ParseInt(group.Field("m_SortingOrder"));
+            w.Position = StPetersLayerRefresh.ParseVec3(tr.Field("m_LocalPosition"));
+            w.Brow = Vec2List(surface, "_browPlan");
+            w.Toe = Vec2List(surface, "_toePlan");
+            w.DropMetres = FloatList(surface, "_dropMetres");
+            w.ToeElevations = FloatList(surface, "_toeElevations");
+            w.AlongOffsetMetres = StPetersLayerRefresh.ParseFloat(surface.Field("_alongOffsetMetres"));
+            w.RowsBasisSurfaceMetres = StPetersLayerRefresh.ParseFloat(surface.Field("_rowsBasisSurfaceMetres"));
+            w.WallAzimuth = StPetersLayerRefresh.ParseFloat(surface.Field("_wallAzimuth"));
+            w.Batter = StPetersLayerRefresh.ParseFloat(surface.Field("_batter"));
+            int n = w.Brow.Length;
+            if (n < 2 || w.Toe.Length != n || w.DropMetres.Length != n || w.ToeElevations.Length != n)
+                throw new System.InvalidOperationException($"'{name}' holds {n} brow, {w.Toe.Length} toe, {w.DropMetres.Length} drop and " +
+                                                           $"{w.ToeElevations.Length} toe height stations.");
+            return w;
+        }
+
+        /// <summary>A SortingGroup's YAML class id.</summary>
+        public const int SortingGroupClass = 210;
+
+        static bool IsDigits(string s)
+        {
+            foreach (char c in s) if (c < '0' || c > '9') return false;
+            return true;
+        }
+
+        /// <summary>The entries of one of a document's own sequence fields: the lines "  - …" under "  key:".</summary>
+        static List<string> ListOf(StPetersLayerRefresh.Doc d, string key)
+        {
+            var values = new List<string>();
+            string[] lines = d.Lines;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (lines[i] == "  " + key + ": []") return values;
+                if (lines[i] != "  " + key + ":") continue;
+                for (int j = i + 1; j < lines.Length && lines[j].StartsWith("  - ", System.StringComparison.Ordinal); j++)
+                    values.Add(lines[j].Substring(4));
+                return values;
+            }
+            throw new System.InvalidOperationException($"no '{key}' in {lines[0]}.");
+        }
+
+        static readonly System.Text.RegularExpressions.Regex Vec2Rx =
+            new System.Text.RegularExpressions.Regex(@"^\{x: ([^,]+), y: ([^}]+)\}$", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+        static Vector2[] Vec2List(StPetersLayerRefresh.Doc d, string key)
+        {
+            List<string> values = ListOf(d, key);
+            var v = new Vector2[values.Count];
+            for (int i = 0; i < v.Length; i++)
+            {
+                var m = Vec2Rx.Match(values[i]);
+                if (!m.Success) throw new System.InvalidOperationException($"'{values[i]}' in {key} is not a vector.");
+                v[i] = new Vector2(StPetersLayerRefresh.ParseFloat(m.Groups[1].Value), StPetersLayerRefresh.ParseFloat(m.Groups[2].Value));
+            }
+            return v;
+        }
+
+        static float[] FloatList(StPetersLayerRefresh.Doc d, string key)
+        {
+            List<string> values = ListOf(d, key);
+            var v = new float[values.Count];
+            for (int i = 0; i < v.Length; i++) v[i] = StPetersLayerRefresh.ParseFloat(values[i]);
+            return v;
+        }
+
+        /// <summary>The walls in run order: each run a chain of walls, one starting where the last ended, to the bit;
+        /// the runs in the order of their least id.</summary>
+        static List<SceneWall> InRuns(List<SceneWall> walls)
+        {
+            var endingAt = new Dictionary<Vector2, SceneWall>();
+            foreach (SceneWall w in walls)
+            {
+                Vector2 last = w.Brow[w.Brow.Length - 1];
+                if (endingAt.ContainsKey(last))
+                    throw new System.InvalidOperationException($"{endingAt[last].Name} and {w.Name} end on the same station.");
+                endingAt.Add(last, w);
+            }
+            var after = new Dictionary<SceneWall, SceneWall>();
+            var starts = new List<SceneWall>();
+            foreach (SceneWall w in walls)
+            {
+                if (endingAt.TryGetValue(w.Brow[0], out SceneWall before) && before != w)
+                {
+                    if (after.ContainsKey(before))
+                        throw new System.InvalidOperationException($"{after[before].Name} and {w.Name} both start where {before.Name} ends.");
+                    after.Add(before, w);
+                }
+                else starts.Add(w);
+            }
+            var runs = new List<List<SceneWall>>();
+            int walked = 0;
+            foreach (SceneWall s in starts)
+            {
+                var run = new List<SceneWall>();
+                for (SceneWall w = s; w != null; w = after.TryGetValue(w, out SceneWall n) ? n : null) run.Add(w);
+                walked += run.Count;
+                runs.Add(run);
+            }
+            if (walked != walls.Count)
+                throw new System.InvalidOperationException($"{walls.Count - walked} walls join one another in a ring.");
+            runs.Sort((a, b) => string.CompareOrdinal(LeastRealId(a), LeastRealId(b)));
+            var ordered = new List<SceneWall>(walls.Count);
+            for (int r = 0; r < runs.Count; r++)
+                foreach (SceneWall w in runs[r]) { w.RunIndex = r; ordered.Add(w); }
+            return ordered;
+        }
+
+        static string LeastRealId(List<SceneWall> run)
+        {
+            string least = run[0].RealId;
+            foreach (SceneWall w in run) if (string.CompareOrdinal(w.RealId, least) < 0) least = w.RealId;
+            return least;
+        }
+
+        /// <summary>How far down the face, in surface metres, the soil band ends and the rock begins, at
+        /// a baked batter (see <see cref="TryLoadBands"/>).</summary>
+        public static float OverburdenSurfaceMetresOf(int bakedBatterIndex) =>
+            CliffWallGeometry.OverburdenSurfaceMetres(
+                OverburdenMetres, CliffCatalog.BatterAngles[BakedBatterToCatalogIndex(bakedBatterIndex)]);
 
         /// <summary>
         /// The wall standing at a bearing, or false where none does.
@@ -497,16 +953,21 @@ namespace HiddenHarbours.App.Editor
         // =============================================================================================
 
         /// <summary>
-        /// Build (or rebuild) the region's cliff walls under a single <see cref="RootName"/> object.
+        /// Build (or rebuild) the region's cliff walls under a single <see cref="RootName"/> object, from
+        /// its walls' Defs (<see cref="LoadDefs"/>): each live Def is one chunk, named by its real id.
         /// Destroys any previous root first, so a builder Refresh converges: hand-placed decor elsewhere
         /// in the scene is untouched, and running twice gives the same coast as running once.
+        ///
+        /// <para>⚠ It draws what the Defs say, which is what the scene holds (the round trip in
+        /// <c>StPetersWallsAgreeWithGroundTests</c>), and never the analytic walk: that walk's 79 walls
+        /// stood on the old ground, and a rebuild that drew them would undo every wall the import moved.</para>
         /// </summary>
-        public static int Build(TidalTerrain terrain)
+        public static int Build(IReadOnlyList<CliffWallDef> defs)
         {
             var existing = GameObject.Find(RootName);
             if (existing != null) Object.DestroyImmediate(existing);
 
-            List<Chunk> chunks = ResolveChunks(terrain);
+            List<Chunk> chunks = ChunksOfDefs(defs, out List<CliffWallDef> owners);
             if (chunks.Count == 0) return 0;
 
             var material = AssetDatabase.LoadAssetAtPath<Material>(CliffFaceMat);
@@ -524,8 +985,9 @@ namespace HiddenHarbours.App.Editor
 
             var root = new GameObject(RootName);
             int built = 0, stratified = 0, browDecals = 0, toeDecals = 0;
-            foreach (Chunk chunk in chunks)
+            for (int k = 0; k < chunks.Count; k++)
             {
+                Chunk chunk = chunks[k];
                 if (!TryLoadBands(chunk, colour, out CliffFaceBand[] bands, out Texture2D profile))
                     continue;
                 if (bands.Length > 1) stratified++;
@@ -534,24 +996,10 @@ namespace HiddenHarbours.App.Editor
                 if (browStrip != null) browDecals++;
                 if (toeStrip != null) toeDecals++;
 
-                int n = chunk.Samples.Count;
-                var brow = new Vector2[n];
-                var toe = new Vector2[n];
-                var drop = new float[n];
-                // The absolute toe elevations — what the WATERLINE is measured against (2026-08-06).
-                var toeElevation = new float[n];
-                for (int i = 0; i < n; i++)
-                {
-                    brow[i] = chunk.Samples[i].BrowPlan;
-                    toe[i] = chunk.Samples[i].ToePlan;
-                    drop[i] = chunk.Samples[i].DropMetres;
-                    toeElevation[i] = chunk.Samples[i].ToeElevation;
-                }
+                ChunkFields fields = FieldsOf(in chunk);
+                Vector2[] brow = fields.BrowPlan;
 
-                var go = new GameObject($"CliffWall_{chunk.Class}_" +
-                                        $"{CliffCatalog.Aspects[chunk.AspectIndex]}_" +
-                                        $"{CliffCatalog.Batters[BakedBatterToCatalogIndex(chunk.BatterIndex)]}_" +
-                                        $"{built:D3}");
+                var go = new GameObject(WallName(owners[k]));
                 go.transform.SetParent(root.transform, worldPositionStays: false);
                 // Park the chunk at its own first brow so its vertices stay small and local — a mesh
                 // authored at absolute world coordinates 200 m from the origin loses float precision in
@@ -559,15 +1007,16 @@ namespace HiddenHarbours.App.Editor
                 go.transform.position = new Vector3(brow[0].x, brow[0].y, 0f);
 
                 var surface = go.AddComponent<CliffWallSurface>();
-                surface.Configure(brow, toe, drop, material, bands, profile, browStrip, toeStrip,
-                                  chunk.AlongOffsetMetres, chunk.RunSurfaceMetres,
-                                  chunk.WallAzimuth,
-                                  CliffCatalog.BatterAngles[BakedBatterToCatalogIndex(chunk.BatterIndex)],
+                surface.Configure(brow, fields.ToePlan, fields.DropMetres, material, bands, profile,
+                                  browStrip, toeStrip,
+                                  fields.AlongOffsetMetres, fields.RowsBasisSurfaceMetres,
+                                  fields.WallAzimuth,
+                                  fields.Batter,
                                   CliffCatalog.AspectBakeLights[chunk.AspectIndex],
                                   CliffCatalog.FaceMetresS, CliffCatalog.FaceMetresT,
                                   CliffCatalog.ProfileSubdivideMetres, CliffCatalog.ProfileMetres,
                                   CliffCatalog.StripMetresT, CliffCatalog.BrowLineAt,
-                                  toeElevation);
+                                  fields.ToeElevations);
                 built++;
             }
 
@@ -626,8 +1075,7 @@ namespace HiddenHarbours.App.Editor
             // The soil horizon is a vertical depth; the face is addressed along its own surface, so the
             // conversion uses the SNAPPED batter — the angle the pixels were actually baked at, not the
             // station's true one, or the band would sit at a depth the texture disagrees with.
-            float overburden = CliffWallGeometry.OverburdenSurfaceMetres(
-                OverburdenMetres, CliffCatalog.BatterAngles[catalogBatter]);
+            float overburden = OverburdenSurfaceMetresOf(chunk.BatterIndex);
 
             if (!TryLoadFaceSet(OverburdenRock, aspect, catalogBatter, colour, out CliffFaceBand soil))
             {

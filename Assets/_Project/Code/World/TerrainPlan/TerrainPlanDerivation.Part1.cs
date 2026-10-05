@@ -37,6 +37,19 @@ namespace HiddenHarbours.World
         // ---- the plan's numbers, read once --------------------------------------------------------------------------------
         double _spring, _lineStep, _pathDipM, _plateau, _woodsFloor;
 
+        /// <summary>
+        /// The cliffs the barren rule measures from: today's walls (the frozen file's, the ones still standing), and with
+        /// part 2's south its walls as they stand, each at its first brow, where the scene parks it (PR 5w). The barren is
+        /// cliff-top heath, so it follows the walls a patch moves or adds. The paint keep reads today's walls alone: a
+        /// wall the plan moves or adds holds no paint of today's.
+        /// </summary>
+        List<PlanPoint> BarrenCliffs()
+        {
+            var o = new List<PlanPoint>(_src.ItemsOf(_keep.CliffRoot));
+            foreach (var w in SouthWalls()) o.Add(new PlanPoint(w.Brow[0].x, w.Brow[0].y));
+            return o;
+        }
+
         void Part1()
         {
             _spring = Num(_plan.SpringM); _lineStep = Num(_plan.LineStep); _pathDipM = Num(_plan.PathDip);
@@ -44,7 +57,7 @@ namespace HiddenHarbours.World
             Lines();
             Protection();
             _treesD = DistRaster(_src.ItemsOf(_keep.WoodsRoot), Rules.DistanceCap);
-            _cliffD = DistRaster(_src.ItemsOf(_keep.CliffRoot), Rules.DistanceCap);
+            _cliffD = DistRaster(BarrenCliffs(), Rules.DistanceCap);
 
             var b = _src.Base;
             var ke = new double[_n];
@@ -93,6 +106,28 @@ namespace HiddenHarbours.World
 
         // ---- the lines: the shore reference line (extended), the channels and the paths --------------------------------
 
+        /// <summary>A resampled line with straight run-outs, 1 m apart, past both ends (pass 9's _extend; part 2's line too).</summary>
+        static PlanLine RunOut(PlanLine line0, int ext)
+        {
+            var R0 = line0.R; int m = R0.Length;
+            double ax = R0[0].X - R0[3].X, ay = R0[0].Y - R0[3].Y, an = Math.Sqrt(ax * ax + ay * ay);
+            double bx = R0[m - 1].X - R0[m - 4].X, by = R0[m - 1].Y - R0[m - 4].Y, bn = Math.Sqrt(bx * bx + by * by);
+            ax /= an; ay /= an; bx /= bn; by /= bn;
+            var R = new PlanPoint[m + 2 * ext];
+            for (int j = 0; j < ext; j++)
+            {
+                double k0 = ext - j, k1 = j + 1;                                 // np.arange(n, 0, -1); k[::-1]
+                R[j] = new PlanPoint(R0[0].X + ax * k0, R0[0].Y + ay * k0);
+                R[ext + m + j] = new PlanPoint(R0[m - 1].X + bx * k1, R0[m - 1].Y + by * k1);
+            }
+            Array.Copy(R0, 0, R, ext, m);
+            var S = new double[R.Length];
+            for (int j = 1; j < R.Length; j++) S[j] = S[j - 1] + Hypot(R[j].X - R[j - 1].X, R[j].Y - R[j - 1].Y);
+            var ks = new double[line0.Knots.Length];
+            for (int j = 0; j < ks.Length; j++) ks[j] = line0.Knots[j] + ext;
+            return new PlanLine(R, S, ks);
+        }
+
         void Lines()
         {
             var sl = _plan.ShoreLine;
@@ -112,25 +147,7 @@ namespace HiddenHarbours.World
                     throw new InvalidOperationException("[TerrainPlan] section " + k + " is not the one the shore line starts there (" + sl[starts[k]].SectionId + ").");
 
             // pass 9: _R0 = catmull(SHORE, 1.0); SHORE_R = _extend(_R0): straight run-outs, 1 m apart, past both ends
-            var line0 = Catmull(pts, Num(_plan.ShoreStep));
-            var R0 = line0.R; int m = R0.Length, ext = (int)Num(_plan.ShoreRunOut);
-            double ax = R0[0].X - R0[3].X, ay = R0[0].Y - R0[3].Y, an = Math.Sqrt(ax * ax + ay * ay);
-            double bx = R0[m - 1].X - R0[m - 4].X, by = R0[m - 1].Y - R0[m - 4].Y, bn = Math.Sqrt(bx * bx + by * by);
-            ax /= an; ay /= an; bx /= bn; by /= bn;
-            var R = new PlanPoint[m + 2 * ext];
-            for (int j = 0; j < ext; j++)
-            {
-                double k0 = ext - j;                                             // np.arange(n, 0, -1)
-                R[j] = new PlanPoint(R0[0].X + ax * k0, R0[0].Y + ay * k0);
-                double k1 = j + 1;                                               // k[::-1]
-                R[ext + m + j] = new PlanPoint(R0[m - 1].X + bx * k1, R0[m - 1].Y + by * k1);
-            }
-            Array.Copy(R0, 0, R, ext, m);
-            var S = new double[R.Length];
-            for (int j = 1; j < R.Length; j++) S[j] = S[j - 1] + Hypot(R[j].X - R[j - 1].X, R[j].Y - R[j - 1].Y);
-            var ks = new double[line0.Knots.Length];
-            for (int j = 0; j < ks.Length; j++) ks[j] = line0.Knots[j] + ext;
-            _shore = new PlanLine(R, S, ks);
+            _shore = RunOut(Catmull(pts, Num(_plan.ShoreStep)), (int)Num(_plan.ShoreRunOut));
 
             // SEC_U: each section's start as an along-shore bearing; U_END: the line's last point
             _secU = new double[starts.Count];

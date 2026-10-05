@@ -41,6 +41,9 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>A walker's wade, GameConfig.WadeDepth: a path is cut once the tide stands this far over its lowest ground.</summary>
         public double WadeDepth = double.NaN;
+
+        /// <summary>The tide's period, GameConfig.TidalPeriodHours (h): how long a walk over the flats stays open.</summary>
+        public double TidalPeriodHours = double.NaN;
     }
 
     /// <summary>One guard's verdict, what it measured and where.</summary>
@@ -162,7 +165,48 @@ namespace HiddenHarbours.App.Editor
         /// barren and shore paths keep half their width plus 0.5 m.</summary>
         public const double TrunkClear = 3.0, FootprintGround = 5.9, YardGround = 5.5, PathRoom = 0.5;
 
-        /// <summary>The cases, in the charter's order, then the ground file's and the village's.</summary>
+        // ---- part 2's guards on the patched walls (terrain PR 5w: amendment 1 §4.6, questions 3 to 6) --------------------------
+        /// <summary>The toe sections whose walls stand in the sea at a spring low (part 2's p2_data: the South Arm, the Weather
+        /// Cliff and the South-West Bluff). The ledges' toes stand on their own shelf: they are reported, not judged.</summary>
+        public static readonly string[] WetSections = { "coast.stp_south_arm", "coast.stp_weather_cliff", "coast.stp_sw_bluff" };
+
+        /// <summary>The new toe stations that stand dry by name, at the beach's banked end (question 4): 042 k23, 043 k0 to k2.</summary>
+        public static readonly string[] DryToesByName = { "042 k23", "043 k0", "043 k1", "043 k2" };
+
+        /// <summary>Part 2's toe_field reads 12 m off a toe; its channel band (p2_check) is the cells within 3 m of a toe, under
+        /// 0 m, in the flats' window (p2_lib.FLAT_WIN, south of y −5).</summary>
+        public const double ToeReach = 12.0, ChannelReach = 3.0, ChannelUnder = 0.0;
+        public const double FlatsX0 = -110, FlatsY0 = -160, FlatsX1 = 235, FlatsY1 = -5;
+
+        /// <summary>The channel cells lost by name (question 5): the Weather Cliff's 42 by 042 and 043, where the beach banks; the
+        /// South-West Bluff's 2 by 070, x −40.8 to −40.2, y −30.8 to −30.2.</summary>
+        public static readonly string[] BeachLostBy = { "042", "043" };
+        public const int BeachLostCells = 42;
+        public const string BluffLostBy = "070";
+        public const double BluffLostX0 = -40.8, BluffLostY0 = -30.8, BluffLostX1 = -40.2, BluffLostY1 = -30.2;
+        public const int BluffLostCells = 2;
+
+        /// <summary>A walk over the flats at a low (part 2's p2_check; its ends are checks2_B.json's): the box it is judged in, and
+        /// its sill as Phase B measured it on the committed map (question 6), held to one R16 step.</summary>
+        public sealed class FlatsWalk
+        {
+            public string Name;
+            public PlanPoint A, B;
+            public double X0, Y0, X1, Y1, Sill;
+        }
+
+        public static readonly FlatsWalk[] FlatsWalks =
+        {
+            new FlatsWalk { Name = "east_gap_to_west_gap", A = new PlanPoint(170.4, -52.9), B = new PlanPoint(4.8, -69.1),
+                            X0 = -20, Y0 = -140, X1 = 180, Y1 = -35, Sill = -1.988006 },           // R16 code 8241, at (63.75, −77.75)
+            new FlatsWalk { Name = "west_gap_to_storm_beach", A = new PlanPoint(4.8, -69.1), B = new PlanPoint(-62.5, -16.8),
+                            X0 = -110, Y0 = -125, X1 = 25, Y1 = -5, Sill = -2.449195 },          // R16 code 6352, at (−51.75, −28.75)
+        };
+
+        /// <summary>A walker keeps 0.5 m off a wall's footprint (part 2's wall_mask) and to ground under +2 m (its SHORE_CAP).</summary>
+        public const double WalkOffWalls = 0.5, WalkCap = 2.0;
+
+        /// <summary>The cases, in the charter's order, then the ground file's, the village's and part 2's on the patched walls.</summary>
         public static readonly string[] Names =
         {
             "FrozenMaskHoldsToday", "HeldGroundUnchanged", "NavMarksDeepAtSpringLow", "ClamsInsideTheirBand", "PondsDoNotLeak",
@@ -173,6 +217,7 @@ namespace HiddenHarbours.App.Editor
             "CanneryCircleIsPassNine", "ToeChannelsHoldAtSpringLow", "BeachWestEndBlends", "BeachDrySandStaysAboveTheSpringHigh",
             "DippingPoolHoldsItsLevel", "NeckHollowFilled", "HeathBrookNeverClimbsToTheShore", "CrossingWalkOffStillWater",
             "VillageClearOfTrunks", "VillageOnThePlateau", "VillagePathsKeepTheirRoom", "MainBeachSandByItsRecipe",
+            "FlatsMoatOffThePatchedToes", "NewToesWetInTheWetSections", "ChannelCellsStayWet", "FlatsWindowsAtTheirSills",
         };
 
         static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
@@ -189,6 +234,7 @@ namespace HiddenHarbours.App.Editor
                 SeaRangeMatchesMap,
                 CanneryCircle, ToeChannelsHold, BeachWestEndBlends, BeachDrySand, DippingPoolHolds, NeckHollowFilled, HeathBrook,
                 CrossingWalk, VillageClearOfTrunks, VillageOnThePlateau, VillagePathsKeepTheirRoom, MainBeachSand,
+                FlatsMoat, NewToesWet, ChannelCellsStayWet, FlatsWindows,
             };
             var o = new List<TerrainPlanGuardCase>();
             for (int n = 0; n < cases.Length; n++)
@@ -1457,6 +1503,182 @@ namespace HiddenHarbours.App.Editor
             return k;
         }
 
+        // ---- part 2's guards on the patched walls (terrain PR 5w: amendment 1 §4.6) -------------------------------------------------
+
+        /// <summary>
+        /// The flats keep their moat off the patched toes (question 3): no cell the south lays flats on (its weight over 0) lies
+        /// within the flats' moat (FlatsDef.Moat.x) of a scene wall's toe line.
+        /// </summary>
+        static TerrainPlanGuardCase FlatsMoat(Ctx x)
+        {
+            var k = New("FlatsMoatOffThePatchedToes");
+            var south = x.R.South ?? throw new InvalidOperationException("the derivation laid no south");
+            var flats = x.Plan.Flats ?? throw new InvalidOperationException("the plan has no flats");
+            var pw = x.Walls;
+            double moat = Num(flats.Moat.x);
+            int cells = 0, inside = 0, insideAt = -1, nearestAt = -1;
+            double nearest = double.PositiveInfinity;
+            for (int i = 0; i < x.N; i++)
+            {
+                if (!(south.FlatsW[i] > 0)) continue;
+                cells++;
+                double d = pw.ToeDistance[i];
+                if (d < nearest) { nearest = d; nearestAt = i; }
+                if (d < moat) { inside++; if (insideAt < 0) insideAt = i; }
+            }
+            k.Pass = pw.Problem == null && moat > 0 && cells > 0 && inside == 0;
+            k.Detail = flats.Id + ": " + cells + " cells of flats, " + inside + " of them within its " + F(moat) + " m moat of the scene's " + pw.Ids.Count +
+                       " walls' toes" + (inside > 0 ? ", first" + x.At(insideAt) : "") + "; the nearest " +
+                       (nearestAt < 0 ? "more than " + F(ToeReach) + " m off any" : F(nearest) + " m off " + pw.Ids[pw.NearestWall[nearestAt]] + "'s toe" + x.At(nearestAt)) +
+                       (pw.Problem != null ? "; " + pw.Problem : "");
+            Put(k, "flats_cells", cells); Put(k, "inside_moat", inside); Put(k, "moat_m", moat); Put(k, "nearest_m", nearest);
+            return k;
+        }
+
+        /// <summary>
+        /// A new toe station in a wet section stands wet at a spring low (question 4): each toe station of a wall the patch
+        /// changed (not kept) in the South Arm, the Weather Cliff or the South-West Bluff stands under the spring's low water on the
+        /// map, but the beach's banked end, by name (042 k23, 043 k0 to k2). A station is named by its parent (a split wall's
+        /// SplitFrom) and its Def's station, and counts once.
+        /// </summary>
+        static TerrainPlanGuardCase NewToesWet(Ctx x)
+        {
+            var k = New("NewToesWetInTheWetSections");
+            var pw = x.Walls;
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            var walls = new List<string>();
+            var named = new List<string>();
+            var other = new List<string>();
+            var unpaired = new List<string>();
+            int stations = 0, wet = 0;
+            double least = double.PositiveInfinity;
+            string leastAt = "";
+            foreach (string id in pw.Ids)
+            {
+                if (!pw.Defs.TryGetValue(id, out var d) || d.Status == CliffWallStatus.Kept || Array.IndexOf(WetSections, pw.Section[id]) < 0) continue;
+                var toes = pw.Toes[id];
+                if (d.Stations == null || d.Stations.Length != toes.Count) { unpaired.Add(id); continue; }
+                walls.Add(id);
+                string parent = string.IsNullOrEmpty(d.SplitFrom) ? id : RealIdOf(d.SplitFrom);
+                for (int j = 0; j < toes.Count; j++)
+                {
+                    string at = parent + " k" + d.Stations[j].ToString(Inv);
+                    if (!seen.Add(at)) continue;
+                    stations++;
+                    var p = toes[j];
+                    double margin = x.In.SpringLow - x.Imp.Bilinear(x.R.E, p.X, p.Y);
+                    if (margin > 0)
+                    {
+                        wet++;
+                        if (margin < least) { least = margin; leastAt = at; }
+                        continue;
+                    }
+                    (Array.IndexOf(DryToesByName, at) >= 0 ? named : other).Add(at + " (dry by " + F(-margin) + " m)");
+                }
+            }
+            k.Pass = pw.Problem == null && stations > 0 && unpaired.Count == 0 && other.Count == 0;
+            k.Detail = stations + " new toe stations in the wet sections (walls " + string.Join(", ", walls) + "), " + wet + " under the spring's low water (" +
+                       F(x.In.SpringLow) + " m) on the map, the least by " + F(least) + " m at " + leastAt + "; dry by name: " +
+                       (named.Count > 0 ? string.Join(", ", named) : "none") + "; dry otherwise: " + (other.Count > 0 ? string.Join(", ", other) : "none") +
+                       (unpaired.Count > 0 ? "; toes that do not pair with their Def's stations: " + string.Join(", ", unpaired) : "") +
+                       (pw.Problem != null ? "; " + pw.Problem : "");
+            Put(k, "stations", stations); Put(k, "wet", wet); Put(k, "dry_named", named.Count); Put(k, "dry_other", other.Count);
+            Put(k, "least_margin_m", least);
+            return k;
+        }
+
+        /// <summary>
+        /// A channel cell wet today stays wet (question 5): of the cells within 3 m of a patched toe and under 0 m in the flats'
+        /// window, one today's ground holds under the spring's low water stands under it on the map, by section (its nearest toe's
+        /// wall's), in the wet sections; but two named sets, the Weather Cliff's 42 by 042 and 043 (the beach) and the South-West
+        /// Bluff's 2 by 070. The ledges' cells are reported, not judged.
+        /// </summary>
+        static TerrainPlanGuardCase ChannelCellsStayWet(Ctx x)
+        {
+            var k = New("ChannelCellsStayWet");
+            var pw = x.Walls;
+            double low = x.In.SpringLow;
+            var tally = new SortedDictionary<string, int[]>(StringComparer.Ordinal);     // section: cells, wet today, wet now, lost
+            var lostBy = new SortedDictionary<string, int>(StringComparer.Ordinal);
+            int beach = 0, bluff = 0, other = 0, otherAt = -1;
+            if (!x.G.Win(FlatsX0, FlatsY0, FlatsX1, FlatsY1, out int r0, out int r1, out int c0, out int c1))
+                throw new InvalidOperationException("the flats' window is off the map");
+            for (int r = r0; r < r1; r++)
+            for (int c = c0; c < c1; c++)
+            {
+                int i = r * x.W + c;
+                if (!(pw.ToeDistance[i] < ChannelReach) || !(x.R.E[i] < ChannelUnder) || !(x.Ys[r] < FlatsY1)) continue;
+                string id = pw.Ids[pw.NearestWall[i]];
+                string sec = pw.Section.TryGetValue(id, out var s) ? s : "(no section)";
+                if (!tally.TryGetValue(sec, out var t)) tally[sec] = t = new int[4];
+                bool wasWet = x.Base[i] < low, isWet = x.R.E[i] < low;
+                t[0]++;
+                if (wasWet) t[1]++;
+                if (isWet) t[2]++;
+                if (!wasWet || isWet) continue;
+                t[3]++;
+                lostBy.TryGetValue(id, out int n);
+                lostBy[id] = n + 1;
+                if (Array.IndexOf(WetSections, sec) < 0) continue;
+                if (Array.IndexOf(BeachLostBy, id) >= 0) beach++;
+                else if (id == BluffLostBy && x.Xs[c] >= BluffLostX0 && x.Xs[c] <= BluffLostX1 && x.Ys[r] >= BluffLostY0 && x.Ys[r] <= BluffLostY1) bluff++;
+                else { other++; if (otherAt < 0) otherAt = i; }
+            }
+            bool everyWetSection = true;
+            foreach (string sec in WetSections) everyWetSection &= tally.TryGetValue(sec, out var t) && t[1] > 0;
+            k.Pass = pw.Problem == null && everyWetSection && other == 0 && beach <= BeachLostCells && bluff <= BluffLostCells;
+            var bySection = new List<string>();
+            foreach (var kv in tally)
+            {
+                bySection.Add(kv.Key + " " + kv.Value[0] + " cells, wet today " + kv.Value[1] + ", wet now " + kv.Value[2] + ", lost " + kv.Value[3] +
+                              (Array.IndexOf(WetSections, kv.Key) < 0 ? " (not judged)" : ""));
+                Put(k, kv.Key + ".cells", kv.Value[0]); Put(k, kv.Key + ".wet_today", kv.Value[1]);
+                Put(k, kv.Key + ".wet_now", kv.Value[2]); Put(k, kv.Key + ".lost", kv.Value[3]);
+            }
+            var by = new List<string>();
+            foreach (var kv in lostBy) by.Add(kv.Key + " " + kv.Value);
+            k.Detail = "channel cells (within " + F(ChannelReach) + " m of the scene's toes, under " + F(ChannelUnder) + " m, in the flats' window) against the spring's " +
+                       "low water (" + F(low) + " m): " + string.Join("; ", bySection) + ". Lost, by wall: " + (by.Count > 0 ? string.Join(", ", by) : "none") +
+                       ". In the wet sections " + beach + " by name at the beach (042, 043; at most " + BeachLostCells + "), " + bluff + " by name at " + BluffLostBy +
+                       " (at most " + BluffLostCells + "), " + other + " otherwise" + (other > 0 ? ", first" + x.At(otherAt) : "") +
+                       (pw.Problem != null ? "; " + pw.Problem : "");
+            Put(k, "lost_beach", beach); Put(k, "lost_bluff", bluff); Put(k, "lost_other", other);
+            return k;
+        }
+
+        /// <summary>
+        /// The flats' two windows (question 6): each walk's sill, the highest level that joins its ends over ground under +2 m and
+        /// 0.5 m off every scene wall's footprint, 4-connected (part 2's bottleneck, exactly), stands within one R16 step of Phase
+        /// B's measure on the committed map. Reported beside it, the hours the walk stays open (its sill under water by less than
+        /// the wade) at a spring low and at a neap low.
+        /// </summary>
+        static TerrainPlanGuardCase FlatsWindows(Ctx x)
+        {
+            var k = New("FlatsWindowsAtTheirSills");
+            var pw = x.Walls;
+            var barred = pw.Footprints(x, WalkOffWalls);
+            double mean = 0.5 * (x.In.SpringHigh + x.In.SpringLow), spring = 0.5 * (x.In.SpringHigh - x.In.SpringLow);
+            double neap = spring * Num(HiddenHarbours.Core.GameConfig.DefaultNeapAmplitudeFraction), period = x.In.TidalPeriodHours;
+            bool pass = pw.Problem == null && period > 0;
+            var parts = new List<string>();
+            foreach (var wk in FlatsWalks)
+            {
+                double sill = WidestPath(x, x.R.E, barred, wk, out int at);
+                double off = Math.Abs(sill - wk.Sill);
+                bool held = off <= x.Step * UnchangedCodes;
+                pass &= held;
+                double cut = sill + x.In.WadeDepth - mean;
+                double openSpring = period - HoursAbove(cut, spring, period), openNeap = period - HoursAbove(cut, neap, period);
+                parts.Add(wk.Name + ": sill " + F(sill) + " m" + x.At(at) + " against Phase B's " + F(wk.Sill) + " m, off by " + F(off * 1000) + " mm (" +
+                          (held ? "within" : "MORE than") + " one R16 step); open " + F(openSpring) + " h of a spring low, " + F(openNeap) + " h of a neap");
+                Put(k, wk.Name + ".sill_m", sill); Put(k, wk.Name + ".off_m", off);
+                Put(k, wk.Name + ".spring_open_h", openSpring); Put(k, wk.Name + ".neap_open_h", openNeap);
+            }
+            k.Pass = pass;
+            k.Detail = string.Join("; ", parts) + (pw.Problem != null ? "; " + pw.Problem : "");
+            return k;
+        }
+
         // ---- the rules the cases share ----------------------------------------------------------------------------------------------
 
         /// <summary>
@@ -1665,26 +1887,32 @@ namespace HiddenHarbours.App.Editor
 
         static bool InGinnyRim(double X, double Y) => X >= GinnyRimX0 && X <= GinnyRimX1 && Y >= GinnyRimY0 && Y <= GinnyRimY1;
 
+        const string ToeKey = "\n  _toePlan:", BrowKey = "\n  _browPlan:";
+
         /// <summary>
         /// The scene's cliff walls by real id (the last three digits of each CliffWall_ GameObject's name): each one's toe stations,
         /// its CliffWallSurface's _toePlan (world units). An id two walls share goes in <paramref name="twice"/>.
         /// </summary>
-        static Dictionary<string, List<PlanPoint>> Toes(string scene, List<string> twice)
+        static Dictionary<string, List<PlanPoint>> Toes(string scene, List<string> twice) => Lines(scene, ToeKey, twice);
+
+        /// <summary>The scene's cliff walls by real id: each one's stations under <paramref name="key"/> (its CliffWallSurface's
+        /// _toePlan or _browPlan, world units). An id two walls share goes in <paramref name="twice"/>.</summary>
+        static Dictionary<string, List<PlanPoint>> Lines(string scene, string key, List<string> twice)
         {
-            const string key = "\n  _toePlan:", block = "\n--- !u!", owner = "\n  m_GameObject: {fileID: ", head = "\n--- !u!1 &";
+            const string block = "\n--- !u!", owner = "\n  m_GameObject: {fileID: ", head = "\n--- !u!1 &";
             var byObject = new Dictionary<string, List<PlanPoint>>(StringComparer.Ordinal);
             for (int at = scene.IndexOf(key, StringComparison.Ordinal); at >= 0; at = scene.IndexOf(key, at + key.Length, StringComparison.Ordinal))
             {
                 int start = Math.Max(0, scene.LastIndexOf(block, at, StringComparison.Ordinal));
                 int o = scene.IndexOf(owner, start, at - start, StringComparison.Ordinal);
-                if (o < 0) throw new InvalidOperationException("a _toePlan has no GameObject");
+                if (o < 0) throw new InvalidOperationException("a " + key.Trim() + " has no GameObject");
                 int oEnd = scene.IndexOf('}', o + owner.Length);
                 string go = scene.Substring(o + owner.Length, oEnd - o - owner.Length).Trim();
                 var pts = new List<PlanPoint>();
                 for (int eol = scene.IndexOf('\n', at + key.Length); eol >= 0;)
                 {
                     int next = scene.IndexOf('\n', eol + 1);
-                    var m = ToeLine.Match(scene.Substring(eol + 1, (next < 0 ? scene.Length : next) - eol - 1).TrimEnd('\r'));
+                    var m = StationLine.Match(scene.Substring(eol + 1, (next < 0 ? scene.Length : next) - eol - 1).TrimEnd('\r'));
                     if (!m.Success) break;
                     pts.Add(new PlanPoint(double.Parse(m.Groups[1].Value, NumberStyles.Float, Inv), double.Parse(m.Groups[2].Value, NumberStyles.Float, Inv)));
                     eol = next;
@@ -1708,7 +1936,7 @@ namespace HiddenHarbours.App.Editor
             return walls;
         }
 
-        static readonly Regex ToeLine = new Regex(@"^  - \{x: ([^,]+), y: ([^}]+)\}$");
+        static readonly Regex StationLine = new Regex(@"^  - \{x: ([^,]+), y: ([^}]+)\}$");
 
         /// <summary>
         /// The crossing's sill (p2_check.bottleneck): the highest level z at which the bar's root and the pass stay joined over
@@ -1780,6 +2008,77 @@ namespace HiddenHarbours.App.Editor
             }
             return f;
         }
+
+        static readonly int[] StepR = { 1, -1, 0, 0 }, StepC = { 0, 0, 1, -1 };
+
+        /// <summary>
+        /// A walk's sill over the flats (part 2's bottleneck, exactly: PR 5w's sill_exact): the highest level z at which its
+        /// ends stay joined, 4-neighbour, over cells at or above z, under <see cref="WalkCap"/> and not barred; seeded at the
+        /// first end and its four neighbours, as the prototype's flood. <paramref name="at"/> is the lowest cell on the widest
+        /// path, the one that sets it; −1 (and −∞) when the ends do not join.
+        /// </summary>
+        static double WidestPath(Ctx x, double[] e, bool[] barred, FlatsWalk wk, out int at)
+        {
+            if (!x.G.Win(wk.X0, wk.Y0, wk.X1, wk.Y1, out int r0, out int r1, out int c0, out int c1))
+                throw new InvalidOperationException(wk.Name + "'s box is off the map");
+            int w = c1 - c0, h = r1 - r0;
+            int ar = (int)((x.G.Y1 - wk.A.Y) / x.G.Mpp) - r0, ac = (int)((wk.A.X - x.G.X0) / x.G.Mpp) - c0;
+            int br = (int)((x.G.Y1 - wk.B.Y) / x.G.Mpp) - r0, bc = (int)((wk.B.X - x.G.X0) / x.G.Mpp) - c0;
+            if (ar < 0 || ar >= h || ac < 0 || ac >= w || br < 0 || br >= h || bc < 0 || bc >= w)
+                throw new InvalidOperationException(wk.Name + "'s ends are not inside its box");
+            var best = new double[w * h];
+            var from = new int[w * h];
+            for (int j = 0; j < best.Length; j++) { best[j] = double.NegativeInfinity; from[j] = -1; }
+            bool Ok(int r, int c)
+            {
+                if (r < 0 || r >= h || c < 0 || c >= w) return false;
+                int i = (r0 + r) * x.W + c0 + c;
+                return !barred[i] && e[i] <= WalkCap;
+            }
+            double Level(int j) => e[(r0 + j / w) * x.W + c0 + j % w];
+            var heap = new MinHeap();                                   // keyed by the level's negative: the highest first
+            for (int s = -1; s < 4; s++)
+            {
+                int r = ar + (s < 0 ? 0 : StepR[s]), c = ac + (s < 0 ? 0 : StepC[s]);
+                if (!Ok(r, c)) continue;
+                int j = r * w + c;
+                if (!(Level(j) > best[j])) continue;
+                best[j] = Level(j);
+                heap.Push(-best[j], j);
+            }
+            int goal = br * w + bc;
+            while (heap.Count > 0)
+            {
+                heap.Pop(out double key, out int v);
+                double lv = -key;
+                if (lv < best[v]) continue;
+                if (v == goal) break;
+                int r = v / w, c = v % w;
+                for (int s = 0; s < 4; s++)
+                {
+                    int rr = r + StepR[s], cc = c + StepC[s];
+                    if (!Ok(rr, cc)) continue;
+                    int j = rr * w + cc;
+                    double nv = Math.Min(lv, Level(j));
+                    if (!(nv > best[j])) continue;
+                    best[j] = nv; from[j] = v;
+                    heap.Push(-nv, j);
+                }
+            }
+            at = -1;
+            if (double.IsNegativeInfinity(best[goal])) return double.NegativeInfinity;
+            int low = goal;
+            for (int v = goal; v >= 0; v = from[v]) if (Level(v) < Level(low)) low = v;
+            at = (r0 + low / w) * x.W + c0 + low % w;
+            return best[goal];
+        }
+
+        /// <summary>How long in a period the tide stands over z (m about its mean) at an amplitude (plan9_check's hours_above).</summary>
+        static double HoursAbove(double z, double amp, double period) =>
+            z >= amp ? 0 : z <= -amp ? period : period * Math.Acos(z / amp) / Math.PI;
+
+        /// <summary>A wall's real id: its Def id's last three digits.</summary>
+        static string RealIdOf(string id) => id != null && id.Length >= 3 ? id.Substring(id.Length - 3) : "";
 
         /// <summary>Each component with the script's guid: its _heightMin and _heightMax, from the scene's text.</summary>
         static List<KeyValuePair<float, float>> Ranges(string scene, string guid)
@@ -1859,6 +2158,109 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
+        /// <summary>
+        /// The scene's walls after the patch (terrain PR 5w), by real id: each one's brow and toe stations (its CliffWallSurface's
+        /// _browPlan and _toePlan), its Def and its section. The plan's toe sections list their live walls in run order, the
+        /// sections in the coast's, so <see cref="Ids"/> runs as the patch's chunks do; a wall no section lists comes last, and
+        /// is a problem. Each cell's distance to the nearest toe line out to <see cref="ToeReach"/>, with that wall (part 2's
+        /// toe_field: the first in that order keeps a tie).
+        /// </summary>
+        sealed class PatchedWalls
+        {
+            public readonly List<string> Ids = new List<string>();
+            public readonly Dictionary<string, List<PlanPoint>> Toes, Brows;
+            public readonly Dictionary<string, CliffWallDef> Defs = new Dictionary<string, CliffWallDef>(StringComparer.Ordinal);
+            public readonly Dictionary<string, string> Section = new Dictionary<string, string>(StringComparer.Ordinal);
+            public readonly double[] ToeDistance;
+            public readonly int[] NearestWall;
+
+            /// <summary>Where the scene's walls and the sections' lists disagree, or null.</summary>
+            public readonly string Problem;
+
+            public PatchedWalls(Ctx x)
+            {
+                var twice = new List<string>();
+                Toes = Lines(x.In.SceneText, ToeKey, twice);
+                Brows = Lines(x.In.SceneText, BrowKey, new List<string>());
+                var listedTwice = new List<string>();
+                var missing = new List<string>();
+                foreach (var s in x.Plan.Sections2)
+                {
+                    if (s == null || s.Mode != CoastSectionMode.Toe || s.Walls == null) continue;
+                    foreach (var d in s.Walls)
+                    {
+                        if (d == null) continue;
+                        if (Defs.ContainsKey(d.RealId)) { listedTwice.Add(d.RealId); continue; }
+                        Defs[d.RealId] = d;
+                        Section[d.RealId] = s.Id;
+                        if (Toes.ContainsKey(d.RealId)) Ids.Add(d.RealId);
+                        else missing.Add(d.RealId);
+                    }
+                }
+                var unlisted = new List<string>();
+                foreach (var id in Toes.Keys) if (!Defs.ContainsKey(id)) unlisted.Add(id);
+                unlisted.Sort(StringComparer.Ordinal);
+                Ids.AddRange(unlisted);
+                var unpaired = new List<string>();
+                foreach (var id in Ids) if (!Brows.TryGetValue(id, out var b) || b.Count != Toes[id].Count) unpaired.Add(id);
+                var problems = new List<string>();
+                if (Toes.Count == 0) problems.Add("the scene holds no walls");
+                if (missing.Count > 0) problems.Add("listed walls the scene lacks: " + string.Join(", ", missing));
+                if (unlisted.Count > 0) problems.Add("scene walls no toe section lists: " + string.Join(", ", unlisted));
+                if (listedTwice.Count > 0) problems.Add("walls two sections list: " + string.Join(", ", listedTwice));
+                if (twice.Count > 0) problems.Add("ids two scene walls share: " + string.Join(", ", twice));
+                if (unpaired.Count > 0) problems.Add("walls whose brows and toes do not pair: " + string.Join(", ", unpaired));
+                Problem = problems.Count > 0 ? string.Join("; ", problems) : null;
+
+                ToeDistance = new double[x.N];
+                NearestWall = new int[x.N];
+                for (int i = 0; i < x.N; i++) { ToeDistance[i] = double.PositiveInfinity; NearestWall[i] = -1; }
+                for (int n = 0; n < Ids.Count; n++)
+                {
+                    var toe = Toes[Ids[n]];
+                    if (toe.Count == 0) continue;
+                    double x0 = double.PositiveInfinity, y0 = double.PositiveInfinity, x1 = double.NegativeInfinity, y1 = double.NegativeInfinity;
+                    foreach (var p in toe) { x0 = Math.Min(x0, p.X); y0 = Math.Min(y0, p.Y); x1 = Math.Max(x1, p.X); y1 = Math.Max(y1, p.Y); }
+                    if (!x.G.Win(x0 - ToeReach, y0 - ToeReach, x1 + ToeReach, y1 + ToeReach, out int r0, out int r1, out int c0, out int c1)) continue;
+                    for (int r = r0; r < r1; r++)
+                    for (int c = c0; c < c1; c++)
+                    {
+                        double d = toe.Count == 1 ? Hypot(x.Xs[c] - toe[0].X, x.Ys[r] - toe[0].Y) : double.PositiveInfinity;
+                        for (int j = 1; j < toe.Count; j++) d = Math.Min(d, Seg(x.Xs[c], x.Ys[r], toe[j - 1], toe[j]));
+                        int i = r * x.W + c;
+                        if (d <= ToeReach && d < ToeDistance[i]) { ToeDistance[i] = d; NearestWall[i] = n; }
+                    }
+                }
+            }
+
+            /// <summary>The cells inside a wall's footprint (its brow, then its toe back) or within <paramref name="off"/> of it
+            /// (part 2's wall_mask).</summary>
+            public bool[] Footprints(Ctx x, double off)
+            {
+                var m = x.Mask();
+                foreach (var id in Ids)
+                {
+                    if (!Brows.TryGetValue(id, out var brow)) continue;
+                    var poly = new List<PlanPoint>(brow);
+                    var toe = Toes[id];
+                    for (int j = toe.Count - 1; j >= 0; j--) poly.Add(toe[j]);
+                    if (poly.Count < 3) continue;
+                    double x0 = double.PositiveInfinity, y0 = double.PositiveInfinity, x1 = double.NegativeInfinity, y1 = double.NegativeInfinity;
+                    foreach (var p in poly) { x0 = Math.Min(x0, p.X); y0 = Math.Min(y0, p.Y); x1 = Math.Max(x1, p.X); y1 = Math.Max(y1, p.Y); }
+                    double pad = off + 1.0;
+                    if (!x.G.Win(x0 - pad, y0 - pad, x1 + pad, y1 + pad, out int r0, out int r1, out int c0, out int c1)) continue;
+                    for (int r = r0; r < r1; r++)
+                    for (int c = c0; c < c1; c++)
+                    {
+                        int i = r * x.W + c;
+                        if (m[i]) continue;
+                        if (PointInPoly(x.Xs[c], x.Ys[r], poly) || PolyEdgeDist(x.Xs[c], x.Ys[r], poly) <= off) m[i] = true;
+                    }
+                }
+                return m;
+            }
+        }
+
         /// <summary>A binary min-heap of (level, cell), for the minimax flood.</summary>
         sealed class MinHeap
         {
@@ -1922,8 +2324,8 @@ namespace HiddenHarbours.App.Editor
                 R = input.Result ?? throw new ArgumentException("[TerrainPlanGuards] no derivation");
                 if (input.Items == null || input.SceneText == null) throw new ArgumentException("[TerrainPlanGuards] no scene");
                 if (double.IsNaN(input.SpringLow) || double.IsNaN(input.SpringHigh) || double.IsNaN(input.NavFloor) || double.IsNaN(input.WadeDepth) ||
-                    float.IsNaN(input.MapMin) || float.IsNaN(input.MapMax))
-                    throw new ArgumentException("[TerrainPlanGuards] a required number is missing (the tide, the mark's floor, the wade or the map's range)");
+                    double.IsNaN(input.TidalPeriodHours) || float.IsNaN(input.MapMin) || float.IsNaN(input.MapMax))
+                    throw new ArgumentException("[TerrainPlanGuards] a required number is missing (the tide, its period, the mark's floor, the wade or the map's range)");
                 G = R.Grid;
                 W = G.W; H = G.H; N = G.Count;
                 Base = Src.Base ?? throw new ArgumentException("[TerrainPlanGuards] the sources carry no today's ground");
@@ -1962,6 +2364,11 @@ namespace HiddenHarbours.App.Editor
 
             /// <summary>The village's buildings and yards; a case that reads them fails without them.</summary>
             public VillagePlanDerivation.Result Village => In.Village ?? throw new InvalidOperationException("the input carries no village");
+
+            PatchedWalls _walls;
+
+            /// <summary>The scene's walls after the patch, read once for part 2's guards.</summary>
+            public PatchedWalls Walls => _walls ?? (_walls = new PatchedWalls(this));
 
             /// <summary>The R16 codes of the final ground, today's, part 1's and pass 9's, at the plan's range (the map writer's rule).</summary>
             public ushort[] CE => _ce ?? (_ce = Codes(R.E));
