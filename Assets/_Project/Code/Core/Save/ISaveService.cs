@@ -44,7 +44,9 @@ namespace HiddenHarbours.Core
         /// new blob is written to disk immediately — so "I started a new game" survives a crash in the
         /// next second rather than resurrecting the old one on relaunch (M1 §7.8's New Game).
         ///
-        /// <para><b>Destructive and unguarded.</b> The one slot is overwritten with no undo; the CONFIRM
+        /// <para><b>Destructive and unguarded.</b> The one slot is overwritten with no undo in the game. The
+        /// real service keeps the replaced file beside the save first (<see cref="SaveStore.KeepReplaced"/>),
+        /// so a mistaken New Game can be recovered by hand, but the CONFIRM still
         /// belongs to the surface that offers the button (the title page), not to the service. Nothing
         /// is snapshotted from the live services on the way out — a new game starts from the blob's own
         /// defaults, not from whatever the previous session had in its wallet.</para>
