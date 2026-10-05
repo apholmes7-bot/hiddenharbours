@@ -5,7 +5,7 @@ namespace HiddenHarbours.Tools.RigBaking
 {
     /// <summary>
     /// <b>Rig 9's paint, ported line for line</b> (characterIsoRig9.js <c>paint</c>, and the head snap of
-    /// <c>paintSolved</c>) over faces in the rig's frame, <b>and rig 10's</b> (characterIsoRig10.js 10.2),
+    /// <c>paintSolved</c>) over faces in the rig's frame, <b>and rig 10's</b> (characterIsoRig10.js 10.3),
     /// which paints the same way and adds two rules: the face is drawn as point marks
     /// (<see cref="Face.Mark"/>), and a face with a smooth normal (<see cref="Face.Sn"/>) is lit on it.
     /// Rig 9's faces carry neither, so they paint exactly as before. It has two uses, and the first is
@@ -82,10 +82,36 @@ namespace HiddenHarbours.Tools.RigBaking
             public int W, H, Cx, Cy;
         }
 
+        /// <summary>The tolerances paint reads besides its floors: rig 10.3's <c>TOL.area</c>,
+        /// <c>inside</c>, <c>depthScale</c>, <c>tieDepth</c> and <c>shadeScale</c>, which its paint reads
+        /// from there (rig 9's paint holds the same tolerances as literals). Read off the rig
+        /// (<see cref="CharacterSkinExtractor.PaintTolerance9"/>), never copied here: paint refuses one
+        /// that is not a finite number above 0.</summary>
+        public struct Tolerance
+        {
+            /// <summary>A triangle whose screen area is below this draws nothing.</summary>
+            public double Area;
+
+            /// <summary>A pixel centre is inside a triangle when each barycentric weight is at least
+            /// −<see cref="Inside"/>.</summary>
+            public double Inside;
+
+            /// <summary>The z test compares <c>round((d − db) · DepthScale) / DepthScale</c>.</summary>
+            public double DepthScale;
+
+            /// <summary>The keyline takes its nearest neighbour by depth, ties within this going to the
+            /// darker.</summary>
+            public double TieDepth;
+
+            /// <summary>The shade <c>s</c> is <c>round(s · ShadeScale) / ShadeScale</c> before the step.</summary>
+            public double ShadeScale;
+        }
+
         /// <summary>The numbers paint reads besides the faces: <c>SHADING.key</c>, <c>form</c>,
         /// <c>formMid</c>, <c>edge</c>, <c>keyline</c> (as <c>0xRRGGBB</c>), <c>keylineMix</c>, the
-        /// floor of the face cull (the <c>1e-4</c> of <c>max(1e-4, minT)</c>, which rig 10's marks cull
-        /// at too), and rig 10's two mark floors.</summary>
+        /// floor of the face cull (rig 10.3's <c>TOL.cull</c> in <c>max(TOL.cull, minT)</c>, which its
+        /// marks cull at too; rig 9's literal there), rig 10's two mark floors, and the paint's
+        /// <see cref="Tolerance"/>.</summary>
         public struct Ink
         {
             public double KeyX, KeyY, KeyZ;
@@ -96,12 +122,15 @@ namespace HiddenHarbours.Tools.RigBaking
             public double CullFloor;
 
             /// <summary>Rig 10: a mark whose normal has less horizontal length than this draws nothing
-            /// (the <c>1e-6</c> of <c>hh &lt; 1e-6</c>).</summary>
+            /// (the floor of the rig's <c>hh &lt; floor</c>, a literal in its paint).</summary>
             public double MarkAzFloor;
 
-            /// <summary>Rig 10: a mark whose centre lies within this of a pixel edge draws nothing (the
-            /// <c>1e-4</c> of <c>|cx − round(cx)| &lt; 1e-4</c>).</summary>
+            /// <summary>Rig 10: a mark whose centre lies within this of a pixel edge draws nothing
+            /// (rig 10.3's <c>TOL.markEdge</c> in <c>|cx − round(cx)| &lt; TOL.markEdge</c>).</summary>
             public double MarkEdge;
+
+            /// <summary>The tolerances the rig paints with (<see cref="Tolerance"/>).</summary>
+            public Tolerance Tol;
 
             /// <summary>Mix the keyline in SINGLE precision, as the resolve does:
             /// <c>floor(a + (b − a)·(float)mix + 0.5)</c> in floats, rather than the rig's doubles and
@@ -175,6 +204,8 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             if (faces == null) throw new ArgumentNullException(nameof(faces));
             if (mats == null) throw new ArgumentNullException(nameof(mats));
+            Tolerance tol = ink.Tol;
+            CheckTolerance(tol);
             int wd = c.W, hd = c.H, n = wd * hd;
             var zb = new float[n];
             var dep = new float[n];
@@ -208,7 +239,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 {
                     Projected a = P[0], bq = P[t], cc = P[t + 1];
                     double area = (bq.Sx - a.Sx) * (cc.Sy - a.Sy) - (cc.Sx - a.Sx) * (bq.Sy - a.Sy);
-                    if (Math.Abs(area) < 1e-9) continue;
+                    if (Math.Abs(area) < tol.Area) continue;
                     int x0 = (int)Math.Max(0, Math.Floor(Math.Min(a.Sx, Math.Min(bq.Sx, cc.Sx))));
                     int x1 = (int)Math.Min(wd - 1, Math.Ceiling(Math.Max(a.Sx, Math.Max(bq.Sx, cc.Sx))));
                     int y0 = (int)Math.Max(0, Math.Floor(Math.Min(a.Sy, Math.Min(bq.Sy, cc.Sy))));
@@ -220,10 +251,10 @@ namespace HiddenHarbours.Tools.RigBaking
                             double w0 = ((bq.Sx - px) * (cc.Sy - py) - (cc.Sx - px) * (bq.Sy - py)) / area;
                             double w1 = ((cc.Sx - px) * (a.Sy - py) - (a.Sx - px) * (cc.Sy - py)) / area;
                             double w2 = 1 - w0 - w1;
-                            if (w0 < -1e-6 || w1 < -1e-6 || w2 < -1e-6) continue;
+                            if (w0 < -tol.Inside || w1 < -tol.Inside || w2 < -tol.Inside) continue;
                             double d = w0 * a.D + w1 * bq.D + w2 * cc.D;
                             int i = y * wd + x;
-                            double dq = JsRound((d - db) * 1e7) / 1e7;
+                            double dq = JsRound((d - db) * tol.DepthScale) / tol.DepthScale;
                             if (dq < zb[i])
                             {
                                 zb[i] = (float)dq;
@@ -261,7 +292,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (fid[i] < 0) continue;
                 Face under = faces[fid[i]];
                 if (!under.Under && !(f.OverHair && under.Hair)) continue;
-                double dq = JsRound((cd - f.Db) * 1e7) / 1e7;
+                double dq = JsRound((cd - f.Db) * tol.DepthScale) / tol.DepthScale;
                 if (dq >= zb[i]) continue;
                 zb[i] = (float)dq;
                 dep[i] = (float)cd;
@@ -318,7 +349,7 @@ namespace HiddenHarbours.Tools.RigBaking
                             int j = Y * wd + X, cj = col[j];
                             if (cj < 0) continue;
                             double lum = ((cj >> 16) & 255) + ((cj >> 8) & 255) + (cj & 255);
-                            if (dep[j] < sd - 1e-9 || (Math.Abs(dep[j] - sd) <= 1e-9 && lum < sl))
+                            if (dep[j] < sd - tol.TieDepth || (Math.Abs(dep[j] - sd) <= tol.TieDepth && lum < sl))
                             {
                                 src = cj; sd = dep[j]; sl = lum;
                             }
@@ -340,6 +371,26 @@ namespace HiddenHarbours.Tools.RigBaking
                 rgba[i * 4 + 3] = 255;
             }
             return new Result { Rgba = rgba, W = wd, H = hd, Mat = mat, Step = stp, FaceIndex = fid };
+        }
+
+        /// <summary>Refuse a <see cref="Tolerance"/> that is not five finite numbers above 0: one left
+        /// at its default would rasterise degenerate triangles, divide a depth by zero, or never break a
+        /// keyline tie. The numbers come from the rig, never from here.</summary>
+        static void CheckTolerance(in Tolerance t)
+        {
+            Positive(t.Area, nameof(Tolerance.Area));
+            Positive(t.Inside, nameof(Tolerance.Inside));
+            Positive(t.DepthScale, nameof(Tolerance.DepthScale));
+            Positive(t.TieDepth, nameof(Tolerance.TieDepth));
+            Positive(t.ShadeScale, nameof(Tolerance.ShadeScale));
+        }
+
+        static void Positive(double v, string what)
+        {
+            if (!(v > 0) || double.IsInfinity(v))
+                throw new ArgumentException(
+                    $"Paint's tolerance {what} is {v}; it must be a finite number above 0, read off the rig " +
+                    "(CharacterSkinExtractor.PaintTolerance9).");
         }
 
         /// <summary>A face's corners projected, the head snap applied to a head face.</summary>
@@ -378,7 +429,7 @@ namespace HiddenHarbours.Tools.RigBaking
             if (m.Fixed) return 0;
             double up = uy * c.Se + uz * c.Ce, tw = -uy * c.Ce + uz * c.Se;
             double s = JsRound((ux * ink.KeyX + up * ink.KeyY + tw * ink.KeyZ +
-                                ink.Form * (tw - ink.FormMid)) * 1e9) / 1e9;
+                                ink.Form * (tw - ink.FormMid)) * ink.Tol.ShadeScale) / ink.Tol.ShadeScale;
             double tone = Clamp(JsRound(s * m.Gain + m.Bias + b), m.Lo ?? 0, m.Hi ?? 99) + m.Off;
             return (int)Math.Max(0, Math.Min(m.Ramp.Length - 1, tone));
         }

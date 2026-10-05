@@ -496,7 +496,8 @@ globalThis.__hh9a = (function (C) {
         /// <summary>
         /// <see cref="GoldenDrift9(IRigScriptHost, string, string, out int, out int)"/>, counting the rows
         /// <paramref name="reprinted"/>: a value the rig prints with the report's text and every number
-        /// within <see cref="V9Tolerance"/> of the report's, but not character for character. A residual
+        /// within the rig's gate tolerance of the report's (<see cref="GateTolerance9"/>: rig 10.3's
+        /// <c>TOL.gate_m</c>, rig 9's <see cref="V9Tolerance"/>), but not character for character. A residual
         /// near 1e-16 m prints differently from one JS engine to the next (rig 10's report was written
         /// on Node 24; the game reads the rig in ClearScript's V8), and the rig's own checks hold such
         /// numbers to that gate. The pass and gate flags are held exactly; a reprinted row is not a move.
@@ -509,7 +510,7 @@ globalThis.__hh9a = (function (C) {
             host.Execute($"globalThis.__hh9gold=({ReadKitText9(kitRoot, V9GoldenFile)});");
             try
             {
-                string tol = V9Tolerance.ToString("R", CultureInfo.InvariantCulture);
+                string tol = GateTolerance9(host).ToString("R", CultureInfo.InvariantCulture);
                 string[] f = Lines9(host.EvaluateString(
                     $"globalThis.__hh9a.golden({Js(preset)},globalThis.__hh9gold,{tol})"));
                 passed = Int9(f[0], At9);
