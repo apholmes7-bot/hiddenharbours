@@ -19,8 +19,9 @@ namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
     /// <b>TERRAIN PR 5 B: ST PETERS' GROUND, PHOTOGRAPHED IN THE GAME.</b> The plates the three charters ask
-    /// for (09-29 §4.3, amendment 1 §5, amendment 2 §5), each shot through the persistent core's own camera
-    /// on the committed scene and maps, so the owner judges the ground the player will stand on.
+    /// for (09-29 §4.3, amendment 1 §5, amendment 2 §5), and terrain PR 5w's of the walls on that ground (W1-W4:
+    /// the 10-01 charter §4.6), each shot through the persistent core's own camera on the committed scene and
+    /// maps, so the owner judges the ground the player will stand on.
     ///
     /// <para><b>THE CAMERA IS FREE.</b> A plate needs a frame the play framing never shows (the beach at
     /// CD's 32 px per metre, the crossing whole), so the camera's <see cref="CameraFollow"/> and its
@@ -38,8 +39,10 @@ namespace HiddenHarbours.Tests.PlayMode
     /// <see cref="PaintedHeightMap.StillWater"/> from the committed seabed themselves, and say so in the
     /// caption; every other plate shows the game as it draws today.</para>
     ///
-    /// <para><b>THE INTERIM.</b> PR 5 B lays the ground and PR 5w its walls (amendment 1 §4.10), so every
-    /// caption names the cliff walls in its frame by real id, with what the interim does to each.</para>
+    /// <para><b>THE WALLS.</b> PR 5 B laid the ground and PR 5w lays its walls on it by their real ids
+    /// (amendment 1 §4.10), so every caption names the cliff walls in its frame by real id, with what PR 5w
+    /// did to each, read from its Def in <c>Data/Terrain/StPetersWalls/</c>. A retired or held wall stands in
+    /// no scene: one in a frame is named as a fault.</para>
     ///
     /// <para><b>THE SAVE.</b> St Peters boots to the title, the save service writes nothing while the shell
     /// is there, and these plates never leave it. A case skips, before it moves anything, if the region did
@@ -229,7 +232,9 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary><b>B (amendment 1 §5).</b> The beach's west end, where fix 2 holds the beach's toe at the
-        /// flats' level, at a spring low.</summary>
+        /// flats' level, at a spring low. Terrain PR 5w shoots the same frame for the seam at x -8 (the owner's
+        /// ruling, 10-04 21:12:53Z): the beach's paint fades out over its box's edge, so no straight step runs
+        /// along it.</summary>
         [UnityTest]
         public IEnumerator MainBeach_WestEnd_Fix2_AtASpringLow()
         {
@@ -238,8 +243,10 @@ namespace HiddenHarbours.Tests.PlayMode
             var plate = new Plate
             {
                 Name = "b-beach-west-end", Centre = new Vector2(2f, -70f), Ortho = 16f,
-                Subject = "St Peters: the main beach's west end (fix 2)",
-                Ids = "ground.stp_main_beach_west_blend (fix 2: the beach's toe held at the flats' level, raised only); ground.stp_main_beach",
+                Subject = "St Peters: the main beach's west end (fix 2), and the seam at x -8 (PR 5w)",
+                Ids = "ground.stp_main_beach_west_blend (fix 2: the beach's toe held at the flats' level, raised only); ground.stp_main_beach; " +
+                      "bay.stp_main_beach (PR 5w: its paint fades over 5 m inside its box's edges, the edge wandering 4 m at 3 m, seed 580; " +
+                      "the height map is main's)",
             };
             yield return PinTheTide(TideAt.SpringLow);
             yield return FrameFree(plate);
@@ -264,8 +271,9 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return Shoot(plate, "spring-low", null);
         }
 
-        /// <summary><b>D (amendment 1 §4.10, §5).</b> The Head's neck from the south, named as the interim:
-        /// the Head's south face stands as a bare step until PR 5w's walls (fix 1).</summary>
+        /// <summary><b>D (amendment 1 §4.10, §5; the 10-01 charter §4.6).</b> The Head's neck from the south,
+        /// named as the interim: PR 5w puts no ring wall in (amendment 1 §4.2, §6), so the Head's south face
+        /// stands as a bare step until the ring's own PR, and the ring's walls 079-146 are held Defs.</summary>
         [UnityTest]
         public IEnumerator HeadsNeck_FromTheSouth_TheInterim()
         {
@@ -274,7 +282,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var plate = new Plate
             {
                 Name = "d-heads-neck-from-the-south", Centre = new Vector2(182f, 42f), Ortho = 20f,
-                Subject = "St Peters: the Head's neck from the south, THE INTERIM (amendment 1 §4.10): the Head's south face is a bare step at x 190.25 until PR 5w's walls",
+                Subject = "St Peters: the Head's neck from the south, THE INTERIM (amendment 1 §4.10, §6): the Head's south face is a bare step at x 190.25 until the Head's ring (walls 079-146 held; PR 5w puts no ring wall in)",
                 Ids = "ground.stp_ne_neck; ground.stp_ne_head; ground.stp_cannery_hold",
             };
             yield return PinTheTide(TideAt.Mean);
@@ -462,6 +470,87 @@ namespace HiddenHarbours.Tests.PlayMode
                 trees.AppendLine($"TREE '{t.name}' at ({at.x:0.00}, {at.y:0.00}) in '{t.gameObject.scene.name}': ground {Ground(at):+0.0000;-0.0000} m on the committed map");
             }
             yield return Shoot(plate, "mean", trees.Length > 0 ? trees.ToString().TrimEnd() : "TREES: neither BlackSpruce_1 nor BlackSpruce_2 is in the loaded scene");
+        }
+
+        // =============================================================================================
+        //  TERRAIN PR 5w: the walls by their real ids, on this ground (the 10-01 charter §4.6). Each frame
+        //  at a spring low and at mean tide; each caption names every wall in it, with its Def's state.
+        // =============================================================================================
+
+        /// <summary><b>W1 (PR 5w).</b> The main beach whole, then its banked ends: the west end, where 056
+        /// and 057 bank with 057's new chunks 167-169, and the east end, where 042 banks and 043 returns.
+        /// 044-055 are retired: no wall stands across the dune.</summary>
+        [UnityTest]
+        public IEnumerator W1_MainBeach_TheBankedEndsAndTheReturn()
+        {
+            RequireAGraphicsDevice();
+            yield return LoadStPeters();
+            yield return AtASpringLowAndMean(
+                new Plate { Name = "w1a-main-beach-whole", Centre = new Vector2(33.5f, -66f), Ortho = 24f,
+                            Subject = "St Peters (PR 5w): the main beach whole, its banked ends and 043's return",
+                            Ids = "walls 042, 056, 057 and 167-169 banked; 043 the return; 041, 058 kept; 044-055 retired" },
+                new Plate { Name = "w1b-beach-west-end-banked", Centre = new Vector2(-3f, -58f), Ortho = 8f,
+                            Subject = "St Peters (PR 5w): the beach's west end, where 056 and 057 bank",
+                            Ids = "walls 056, 057 and 057's new chunks 167-169 banked; 058 kept; 055 retired" },
+                new Plate { Name = "w1c-beach-east-end-banked", Centre = new Vector2(69.5f, -72f), Ortho = 8f,
+                            Subject = "St Peters (PR 5w): the beach's east end, where 042 banks and 043 returns",
+                            Ids = "wall 042 banked; 043 the return; 040, 041 kept; 044 retired" });
+        }
+
+        /// <summary><b>W2 (PR 5w).</b> The East Ledges: 028-038 re-lined on this ground, cut into their new
+        /// chunks 147-166, between 027 and 039 (kept).</summary>
+        [UnityTest]
+        public IEnumerator W2_EastLedges_TheReLinedWallsAndTheirCuts()
+        {
+            RequireAGraphicsDevice();
+            yield return LoadStPeters();
+            yield return AtASpringLowAndMean(
+                new Plate { Name = "w2-east-ledges", Centre = new Vector2(117.7f, -63.2f), Ortho = 17f,
+                            Subject = "St Peters (PR 5w): the East Ledges' re-lined walls and their cuts",
+                            Ids = "walls 028-038 re-lined, with their new chunks 147-166; 027, 039 kept" });
+        }
+
+        /// <summary><b>W3 (PR 5w).</b> The West Ledges: 059-067 re-lined on this ground, cut into their new
+        /// chunks 170-188, from 057's bank to the bluff's lifted toes.</summary>
+        [UnityTest]
+        public IEnumerator W3_WestLedges_TheReLinedWallsAndTheirCuts()
+        {
+            RequireAGraphicsDevice();
+            yield return LoadStPeters();
+            yield return AtASpringLowAndMean(
+                new Plate { Name = "w3-west-ledges", Centre = new Vector2(-22.6f, -44.6f), Ortho = 12f,
+                            Subject = "St Peters (PR 5w): the West Ledges' re-lined walls and their cuts",
+                            Ids = "walls 059-067 re-lined, with their new chunks 170-188; 057, 169 banked; 058 kept; 068, 069 toe lifted" });
+        }
+
+        /// <summary><b>W4 (PR 5w).</b> The South-West Bluff: 068-071 with their toes lifted, between 067's new
+        /// chunks 185-188 and 072 (kept).</summary>
+        [UnityTest]
+        public IEnumerator W4_SouthWestBluff_TheLiftedToes()
+        {
+            RequireAGraphicsDevice();
+            yield return LoadStPeters();
+            yield return AtASpringLowAndMean(
+                new Plate { Name = "w4-sw-bluff", Centre = new Vector2(-38.8f, -31.3f), Ortho = 7f,
+                            Subject = "St Peters (PR 5w): the South-West Bluff, 068-071 with their toes lifted",
+                            Ids = "walls 068-071 toe lifted; 066, 067 and 067's new chunks 185-188 re-lined; 072-074 kept" });
+        }
+
+        /// <summary>PR 5w's frames: each plate at a spring low, then each at mean tide. The tide is pinned
+        /// once per level, and each frame is held still before its shot.</summary>
+        IEnumerator AtASpringLowAndMean(params Plate[] plates)
+        {
+            TideAt[] tides = { TideAt.SpringLow, TideAt.Mean };
+            string[] tags = { "spring-low", "mean" };
+            for (int t = 0; t < tides.Length; t++)
+            {
+                yield return PinTheTide(tides[t]);
+                foreach (Plate p in plates)
+                {
+                    yield return FrameFree(p);
+                    yield return Shoot(p, tags[t], null);
+                }
+            }
         }
 
         // =============================================================================================
@@ -755,9 +844,8 @@ namespace HiddenHarbours.Tests.PlayMode
             $"the committed map's ground there {Ground(d.Centre):+0.000;-0.000} m; still level there {StillAt(d.Centre)}";
 
         /// <summary>
-        /// The cliff walls in the frame, by real id, with what the interim does to each (A2 §7, the desk's
-        /// walls by real id: re-lined 028-038 and 059-067, opened 043-054, banked 042 and 055-057, toe lifted
-        /// 068-071, the rest kept). PR 5w re-lays them on this ground.
+        /// The cliff walls in the frame, by real id, each with what PR 5w did to it, read from its Def
+        /// (<see cref="StateOf"/>).
         /// </summary>
         string WallsInFrame()
         {
@@ -779,20 +867,41 @@ namespace HiddenHarbours.Tests.PlayMode
                 else r = new Rect(t.position.x, t.position.y, 0f, 0f);
                 if (!r.Overlaps(view, true)) continue;
                 string tail = t.name.Length >= 3 ? t.name.Substring(t.name.Length - 3) : "";
-                string status = int.TryParse(tail, out int id) ? InterimOf(id) : "no id";
+                string status = int.TryParse(tail, out _) ? StateOf(tail) : "no id";
                 rows.Add($"{t.name} ({status})");
             }
             rows.Sort(System.StringComparer.Ordinal);
             return rows.Count == 0 ? "none in frame" : string.Join("; ", rows);
         }
 
-        static string InterimOf(int id)
+        Dictionary<string, CliffWallDef> _wallDefs;   // the walls' Defs by real id: content, so one load serves every case
+
+        /// <summary>
+        /// What PR 5w did to a wall, from its Def in <c>Data/Terrain/StPetersWalls/</c>: kept, re-lined, banked,
+        /// the return or toe lifted, and for a new chunk the wall it was cut from. A retired or held wall stands
+        /// in no scene, so one in a frame is named as a fault.
+        /// </summary>
+        string StateOf(string realId)
         {
-            if ((id >= 28 && id <= 38) || (id >= 59 && id <= 67)) return $"{id:000} RE-LINED in PR 5w: its toe or face does not meet this ground yet";
-            if (id >= 43 && id <= 54) return $"{id:000} OPENED in PR 5w: still standing across the dune in the interim";
-            if (id == 42 || (id >= 55 && id <= 57)) return $"{id:000} BANKED in PR 5w: sand at its foot in the interim";
-            if (id >= 68 && id <= 71) return $"{id:000} toe lifted";
-            return $"{id:000} kept";
+            if (_wallDefs == null)
+            {
+                _wallDefs = new Dictionary<string, CliffWallDef>();
+                foreach (CliffWallDef d in StPetersCliffWalls.LoadDefs()) _wallDefs[d.RealId] = d;
+            }
+            if (!_wallDefs.TryGetValue(realId, out CliffWallDef def)) return $"{realId}: NO DEF";
+            string state;
+            switch (def.Status)
+            {
+                case CliffWallStatus.Kept: state = "kept"; break;
+                case CliffWallStatus.Relined: state = "re-lined"; break;
+                case CliffWallStatus.Banked: state = "banked"; break;
+                case CliffWallStatus.Return: state = "the return"; break;
+                case CliffWallStatus.ToeLifted: state = "toe lifted"; break;
+                default: state = $"{def.Status.ToString().ToUpperInvariant()}, AND STANDING: it should stand in no scene"; break;
+            }
+            if (!string.IsNullOrEmpty(def.SplitFrom) && def.SplitFrom.Length >= 3)
+                state += $", new, cut from {def.SplitFrom.Substring(def.SplitFrom.Length - 3)}";
+            return $"{realId} {state}";
         }
 
         // =============================================================================================
@@ -912,7 +1021,7 @@ namespace HiddenHarbours.Tests.PlayMode
             sb.AppendLine($"tide and hour: {_pinned}");
             sb.AppendLine($"still water: {_still}");
             sb.AppendLine($"ground at the centre ({p.Centre.x:0.###}, {p.Centre.y:0.###}): {Ground(p.Centre):+0.000;-0.000} m on {StPetersTerrainPlan.SeabedPath} (the map the terrain draws)");
-            sb.AppendLine($"cliff walls in frame (THE INTERIM, amendment 1 §4.10, by real id): {WallsInFrame()}");
+            sb.AppendLine($"cliff walls in frame (by real id, each with what PR 5w did to it, from its Def): {WallsInFrame()}");
             sb.AppendLine($"ground: '{_surface.name}', quad bounds x {b.min.x:0.#}..{b.max.x:0.#}, y {b.min.y:0.#}..{b.max.y:0.#}");
             sb.AppendLine($"OpeningCinematicRunning {GameServices.OpeningCinematicRunning}; Time.timeScale {Time.timeScale}");
             sb.AppendLine($"picture {hPicture:x16}; control with the terrain off {hControl:x16}; {share:P1} of the frame changed");

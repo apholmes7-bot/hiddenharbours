@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using NUnit.Framework;
 using UnityEngine;
@@ -23,12 +24,34 @@ namespace HiddenHarbours.Tests.EditMode
     /// gitignored (PR #427), so a CI runner has no faces — every claim below is about the RESOLVED
     /// geometry, which is a pure function of the coast plan and needs no pixels at all. That split is
     /// deliberate: the part that can be tested everywhere is tested everywhere.</para>
+    ///
+    /// <para><b>⭐ THE WALLS ARE THE SCENE'S (terrain PR 5w).</b> St Peters' walls are laid from their Defs
+    /// (<see cref="CliffWallDef"/>, one per wall by real id) on the committed ground, so these cases read the
+    /// walls the scene holds (<see cref="StPetersCliffWalls.WallsInScene"/>, the file's text, in runs) rather
+    /// than the builder's walk. Three cases stay on that walk, because they are about it:
+    /// <see cref="ResolvingTwiceGivesTheSameCoast_ToTheBit"/>, <see cref="ARegionWithNoCoastPlanGetsNoWalls"/>
+    /// and <see cref="ANullTerrainIsAnsweredWithNoWalls_NotAnException"/>.</para>
     /// </summary>
     public class StPetersCliffWallTests
     {
         private GameObject _go;
         private TidalTerrain _terrain;
+        private List<StPetersCliffWalls.SceneWall> _walls;
         private List<StPetersCliffWalls.Chunk> _chunks;
+
+        /// <summary>Where the scene's runs start and end, by real id, in run order (terrain PR 5w, amendment 1
+        /// §4.3; Phase A2's report §2): main's ends that stay (000 k0, 022 k13 | 023 k0, 078 k4), 032's cut
+        /// (153, its k19 | 154, its k21) and the main beach's two ends (043 k2 | 056 k5).</summary>
+        static readonly string[] RunStarts = { "000", "023", "154", "056" };
+        static readonly string[] RunEnds = { "022", "153", "043", "078" };
+
+        [OneTimeSetUp]
+        public void ReadTheScenesWalls()
+        {
+            _walls = StPetersCliffWalls.WallsInScene(File.ReadAllText(StPetersLayerRefreshTests.ScenePath));
+            _chunks = new List<StPetersCliffWalls.Chunk>(_walls.Count);
+            foreach (StPetersCliffWalls.SceneWall w in _walls) _chunks.Add(w.AsChunk());
+        }
 
         [SetUp]
         public void SetUp()
@@ -36,7 +59,6 @@ namespace HiddenHarbours.Tests.EditMode
             _go = new GameObject("StPetersTerrain_CliffWallTest");
             _terrain = _go.AddComponent<TidalTerrain>();
             StPetersBuilder.ConfigureTidalTerrain(_terrain);
-            _chunks = StPetersCliffWalls.ResolveChunks(_terrain);
         }
 
         [TearDown]
@@ -51,23 +73,42 @@ namespace HiddenHarbours.Tests.EditMode
         // =========================================================================================
 
         /// <summary>
-        /// ⭐ THE HEADLINE: the plunged coast produces standing wall, and roughly as much of it as the
+        /// ⭐ THE HEADLINE: the plunged coast stands as wall in the scene, and roughly as much of it as the
         /// plan says is rock. The bound is DERIVED by walking the same classifier
         /// <see cref="StPetersCoastTests"/> measures the cliff share with — so a retune of the sectors
         /// moves both together and neither can quietly stop agreeing with the other.
+        ///
+        /// <para><b>Less the main beach's opened span</b> (terrain PR 5w, amendment 1 §4.6). The walls that
+        /// stood across the beach's own sand are retired (044–055), so the bearings between 043's last
+        /// station and 056's first, read from their Defs, are beach, and the cliff the walls are measured
+        /// against leaves them out. The band stays 0.95 to 1.35.</para>
         /// </summary>
         [Test]
         public void TheAuthoredCliffCoastComesOutAsStandingWall_CoveringMostOfIt()
         {
-            Assert.Greater(_chunks.Count, 0, "no wall at all was generated from a coast that is 40% rock");
+            Assert.Greater(_chunks.Count, 0, "no wall at all stands on a coast that is 40% rock");
 
             float wallMetres = 0f;
             foreach (StPetersCliffWalls.Chunk c in _chunks)
                 for (int i = 1; i < c.Samples.Count; i++)
                     wallMetres += Vector2.Distance(c.Samples[i - 1].BrowPlan, c.Samples[i].BrowPlan);
 
+            // The beach's opened span, from the Defs of the walls either side of it.
+            CliffWallDef returned = null, banked = null;
+            foreach (CliffWallDef d in StPetersCliffWalls.LoadDefs())
+            {
+                if (d.RealId == "043") returned = d;
+                else if (d.RealId == "056") banked = d;
+            }
+            Assert.IsNotNull(returned, "no Def for 043, the wall the beach's span opens after");
+            Assert.IsNotNull(banked, "no Def for 056, the wall the beach's span closes on");
+            float spanFrom = _terrain.Bearing(returned.Brow[returned.Brow.Length - 1]);
+            float spanTo = _terrain.Bearing(banked.Brow[0]);
+            Assert.Less(spanFrom, spanTo, "the beach's opened span runs backward");
+
             // The cliff share of the shoreline, re-measured here through the live classifier.
-            float cliffMetres = 0f, totalMetres = 0f;
+            float cliffMetres = 0f, totalMetres = 0f, spanMetres = 0f;
+            int spanBearings = 0;
             const int samples = 7200;
             float step = 360f / samples;
             for (int i = 0; i < samples; i++)
@@ -75,8 +116,11 @@ namespace HiddenHarbours.Tests.EditMode
                 float bearing = (i + 0.5f) * step;
                 float length = StPetersCliffWalls.ShoreSpeed(bearing) * step * Mathf.Deg2Rad;
                 totalMetres += length;
-                if (CoastPlan.IsCliff(_terrain.CoastClassAt(StPetersCliffWalls.ShorePoint(bearing))))
-                    cliffMetres += length;
+                bool open = bearing > spanFrom && bearing < spanTo;
+                if (open) spanBearings++;
+                if (!CoastPlan.IsCliff(_terrain.CoastClassAt(StPetersCliffWalls.ShorePoint(bearing)))) continue;
+                if (open) spanMetres += length;
+                else cliffMetres += length;
             }
 
             // Walls run PAST each sector into the blend (that is how a run tapers into a beach), so the
@@ -88,9 +132,11 @@ namespace HiddenHarbours.Tests.EditMode
                 $"{wallMetres:F1} m of wall on {cliffMetres:F1} m of authored cliff — the overrun is " +
                 "spilling wall onto ground the plan calls beach");
 
-            Debug.Log($"[cliff-walls] {_chunks.Count} chunks, {wallMetres:F1} m of standing wall on " +
-                      $"{cliffMetres:F1} m of authored cliff ({cliffMetres / totalMetres:P1} of " +
-                      $"{totalMetres:F1} m of shoreline).");
+            Debug.Log($"[cliff-walls] {_chunks.Count} walls, {wallMetres:F1} m of standing wall on " +
+                      $"{cliffMetres:F1} m of authored cliff ({wallMetres / cliffMetres:F4}; " +
+                      $"{cliffMetres / totalMetres:P1} of {totalMetres:F1} m of shoreline), less the beach's " +
+                      $"opened span: bearings {spanFrom:F4}° to {spanTo:F4}°, {spanBearings} of {samples}, " +
+                      $"{spanMetres:F1} m of authored cliff.");
         }
 
         /// <summary>The two crossings stay open. A wall across the sandbar's landing or the berth's cove
@@ -478,40 +524,59 @@ namespace HiddenHarbours.Tests.EditMode
         /// Within a run the offsets march forward and the run's own length is what they add up to; at a
         /// run end they start again. The bookkeeping behind the pin above, asserted separately so a
         /// failure says WHICH half is wrong.
+        ///
+        /// <para><b>On the scene's walls (terrain PR 5w).</b> The runs are rebuilt from the scene, a wall
+        /// whose first brow station is another's last following it, as the pin above reads them. Within
+        /// a run each wall starts where the one before it ended, by its brow's length, to the pin's tenth
+        /// of a texel. And a run ends only where the wall genuinely stops, by real id
+        /// (<see cref="RunStarts"/>, <see cref="RunEnds"/>): any other reset fails.</para>
         /// </summary>
         [Test]
         public void OffsetsMarchForwardThroughARun_AndResetOnlyWhereTheWallGenuinelyStops()
         {
+            float texel = CliffCatalog.FaceMetresS / CliffCatalog.FaceWidth;
             var runLength = new Dictionary<int, float>();
+            var starts = new List<string>();
+            var ends = new List<string>();
             int previousRun = -1;
-            float previousOffset = 0f;
+            float expected = 0f;
 
-            foreach (StPetersCliffWalls.Chunk c in _chunks)
+            for (int k = 0; k < _chunks.Count; k++)
             {
+                StPetersCliffWalls.Chunk c = _chunks[k];
                 if (c.RunIndex != previousRun)
                 {
                     Assert.AreEqual(0f, c.AlongOffsetMetres, 1e-4f,
-                        $"run {c.RunIndex} starts {c.AlongOffsetMetres:F2} m along itself");
+                        $"run {c.RunIndex} starts {c.AlongOffsetMetres:F2} m along itself, at {_walls[k].Name}");
+                    starts.Add(_walls[k].RealId);
+                    if (k > 0) ends.Add(_walls[k - 1].RealId);
                     previousRun = c.RunIndex;
                 }
                 else
                 {
-                    Assert.GreaterOrEqual(c.AlongOffsetMetres, previousOffset - 1e-4f,
-                        "a chunk starts BEHIND the one before it in the same run");
+                    Assert.AreEqual(expected, c.AlongOffsetMetres, texel * 0.1f,
+                        $"{_walls[k].Name} starts {c.AlongOffsetMetres:F4} m along its run, but the wall before " +
+                        $"it ends at {expected:F4} m");
                 }
-                previousOffset = c.AlongOffsetMetres;
+                expected = c.AlongOffsetMetres + RunLength(c);
 
                 runLength.TryGetValue(c.RunIndex, out float had);
-                runLength[c.RunIndex] = Mathf.Max(had, c.AlongOffsetMetres + RunLength(c));
+                runLength[c.RunIndex] = Mathf.Max(had, expected);
 
                 Assert.Greater(c.RunSurfaceMetres, 0f,
                     "a chunk carries no row-count basis, so it would fall back to its own length");
             }
+            if (_walls.Count > 0) ends.Add(_walls[_walls.Count - 1].RealId);
+
+            CollectionAssert.AreEqual(RunStarts, starts,
+                $"the scene's runs start at {string.Join(", ", starts)}: a run resets where the wall does not stop");
+            CollectionAssert.AreEqual(RunEnds, ends,
+                $"the scene's runs end at {string.Join(", ", ends)}: a run resets where the wall does not stop");
 
             var lengths = new List<string>();
             foreach (var kv in runLength) lengths.Add($"{kv.Value:F1} m");
-            Debug.Log($"[cliff-walls] {runLength.Count} unbroken runs of coast: {string.Join(", ", lengths)}. " +
-                      "The gullies between them are the two Access sectors — a run end is where the wall " +
+            Debug.Log($"[cliff-walls] {runLength.Count} unbroken runs of coast: {string.Join(", ", lengths)}, " +
+                      $"from {string.Join(", ", starts)} to {string.Join(", ", ends)}. A run end is where the wall " +
                       "genuinely stops and the brow/toe decals finish it.");
         }
 
@@ -588,7 +653,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =========================================================================================
-        //  4. determinism and idempotence
+        //  4. determinism and idempotence — the builder's own walk (it stays on ResolveChunks)
         // =========================================================================================
 
         /// <summary>
@@ -599,26 +664,28 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void ResolvingTwiceGivesTheSameCoast_ToTheBit()
         {
+            List<StPetersCliffWalls.Chunk> once = StPetersCliffWalls.ResolveChunks(_terrain);
             List<StPetersCliffWalls.Chunk> again = StPetersCliffWalls.ResolveChunks(_terrain);
-            Assert.AreEqual(_chunks.Count, again.Count);
-            for (int i = 0; i < _chunks.Count; i++)
+            Assert.Greater(once.Count, 0, "the walk resolved no wall at all");
+            Assert.AreEqual(once.Count, again.Count);
+            for (int i = 0; i < once.Count; i++)
             {
-                Assert.AreEqual(_chunks[i].AspectIndex, again[i].AspectIndex, $"chunk {i} aspect");
-                Assert.AreEqual(_chunks[i].BatterIndex, again[i].BatterIndex, $"chunk {i} batter");
-                Assert.AreEqual(_chunks[i].WallAzimuth, again[i].WallAzimuth, $"chunk {i} azimuth");
-                Assert.AreEqual(_chunks[i].Samples.Count, again[i].Samples.Count, $"chunk {i} stations");
+                Assert.AreEqual(once[i].AspectIndex, again[i].AspectIndex, $"chunk {i} aspect");
+                Assert.AreEqual(once[i].BatterIndex, again[i].BatterIndex, $"chunk {i} batter");
+                Assert.AreEqual(once[i].WallAzimuth, again[i].WallAzimuth, $"chunk {i} azimuth");
+                Assert.AreEqual(once[i].Samples.Count, again[i].Samples.Count, $"chunk {i} stations");
                 // The run bookkeeping too — it is accumulated across the whole walk, so it is the part
                 // most able to hide a hidden dependence on order or on previous state.
-                Assert.AreEqual(_chunks[i].RunIndex, again[i].RunIndex, $"chunk {i} run");
-                Assert.AreEqual(_chunks[i].AlongOffsetMetres, again[i].AlongOffsetMetres,
+                Assert.AreEqual(once[i].RunIndex, again[i].RunIndex, $"chunk {i} run");
+                Assert.AreEqual(once[i].AlongOffsetMetres, again[i].AlongOffsetMetres,
                                 $"chunk {i} along-run offset");
-                Assert.AreEqual(_chunks[i].RunSurfaceMetres, again[i].RunSurfaceMetres,
+                Assert.AreEqual(once[i].RunSurfaceMetres, again[i].RunSurfaceMetres,
                                 $"chunk {i} run surface basis");
-                for (int j = 0; j < _chunks[i].Samples.Count; j++)
+                for (int j = 0; j < once[i].Samples.Count; j++)
                 {
-                    Assert.AreEqual(_chunks[i].Samples[j].BrowPlan, again[i].Samples[j].BrowPlan);
-                    Assert.AreEqual(_chunks[i].Samples[j].ToePlan, again[i].Samples[j].ToePlan);
-                    Assert.AreEqual(_chunks[i].Samples[j].DropMetres, again[i].Samples[j].DropMetres);
+                    Assert.AreEqual(once[i].Samples[j].BrowPlan, again[i].Samples[j].BrowPlan);
+                    Assert.AreEqual(once[i].Samples[j].ToePlan, again[i].Samples[j].ToePlan);
+                    Assert.AreEqual(once[i].Samples[j].DropMetres, again[i].Samples[j].DropMetres);
                 }
             }
         }
@@ -756,19 +823,21 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>The generated names are stable and self-describing, so a scene diff reads as a coast
         /// rather than as forty anonymous objects — and so a chunk can be found in the hierarchy by what
-        /// it IS.</summary>
+        /// it IS. Since terrain PR 5w the last part is the wall's real id, which its Def carries.</summary>
         [Test]
         public void ChunkNamingCarriesTheClassAspectAndBatter()
         {
             var seen = new StringBuilder();
-            foreach (StPetersCliffWalls.Chunk c in _chunks)
+            foreach (StPetersCliffWalls.SceneWall w in _walls)
             {
-                string aspect = CliffCatalog.Aspects[c.AspectIndex];
+                string aspect = CliffCatalog.Aspects[w.AspectIndex];
                 string batter = CliffCatalog.Batters[
-                    StPetersCliffWalls.BakedBatterToCatalogIndex(c.BatterIndex)];
+                    StPetersCliffWalls.BakedBatterToCatalogIndex(w.BatterIndex)];
                 Assert.IsNotEmpty(aspect);
                 Assert.IsNotEmpty(batter);
-                seen.Append($"{c.Class}/{aspect}/{batter} ");
+                Assert.AreEqual($"CliffWall_{w.Class}_{aspect}_{batter}_{w.RealId}", w.Name,
+                    "a wall's name does not say its class, aspect, batter and real id");
+                seen.Append($"{w.Class}/{aspect}/{batter} ");
             }
             Assert.Greater(seen.Length, 0);
         }
