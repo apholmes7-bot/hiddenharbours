@@ -1,0 +1,285 @@
+{
+  "schema": "hidden-harbours/key-scene-id-map@1",
+  "renames": [
+    {
+      "old": "prop.stp_cx_sandpiper@-100.95,-17.12",
+      "new": "prop.stp_cx_sandpiper_01"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-100.26,-17.54",
+      "new": "prop.stp_cx_sandpiper_02"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-99.79,-16.61",
+      "new": "prop.stp_cx_sandpiper_03"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-130.11,-15.95",
+      "new": "prop.stp_cx_sandpiper_04"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-131.09,-17.25",
+      "new": "prop.stp_cx_sandpiper_05"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-130.9,-17.12",
+      "new": "prop.stp_cx_sandpiper_06"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-130.49,-17.18",
+      "new": "prop.stp_cx_sandpiper_07"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-130.03,-15.9",
+      "new": "prop.stp_cx_sandpiper_08"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-155.92,-16.74",
+      "new": "prop.stp_cx_sandpiper_09"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-156.21,-15.25",
+      "new": "prop.stp_cx_sandpiper_10"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-156.5,-15.78",
+      "new": "prop.stp_cx_sandpiper_11"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-156.16,-16.24",
+      "new": "prop.stp_cx_sandpiper_12"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-200.15,-15.33",
+      "new": "prop.stp_cx_sandpiper_13"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-200.43,-16.31",
+      "new": "prop.stp_cx_sandpiper_14"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-201.67,-17.44",
+      "new": "prop.stp_cx_sandpiper_15"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-201.08,-16.57",
+      "new": "prop.stp_cx_sandpiper_16"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-201.66,-16.97",
+      "new": "prop.stp_cx_sandpiper_17"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-211.29,-15.76",
+      "new": "prop.stp_cx_sandpiper_18"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-211.27,-15.46",
+      "new": "prop.stp_cx_sandpiper_19"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-210.17,-15.9",
+      "new": "prop.stp_cx_sandpiper_20"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-210.58,-16.26",
+      "new": "prop.stp_cx_sandpiper_21"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-259.67,-16.82",
+      "new": "prop.stp_cx_sandpiper_22"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-259.17,-15.94",
+      "new": "prop.stp_cx_sandpiper_23"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-259.96,-15.77",
+      "new": "prop.stp_cx_sandpiper_24"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-293.76,-15.46",
+      "new": "prop.stp_cx_sandpiper_25"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-294.41,-15.55",
+      "new": "prop.stp_cx_sandpiper_26"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-294.08,-16.59",
+      "new": "prop.stp_cx_sandpiper_27"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-294.16,-17.65",
+      "new": "prop.stp_cx_sandpiper_28"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-294.53,-16.65",
+      "new": "prop.stp_cx_sandpiper_29"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-327.5,-16.59",
+      "new": "prop.stp_cx_sandpiper_30"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-326.74,-15.98",
+      "new": "prop.stp_cx_sandpiper_31"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-326.74,-15.56",
+      "new": "prop.stp_cx_sandpiper_32"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-327.03,-16.74",
+      "new": "prop.stp_cx_sandpiper_33"
+    },
+    {
+      "old": "prop.stp_cx_sandpiper@-326.81,-15.82",
+      "new": "prop.stp_cx_sandpiper_34"
+    },
+    {
+      "old": "plant.SpeckledAlder@110.9,56.4",
+      "new": "plant.stp_af_speckled_alder_01"
+    },
+    {
+      "old": "plant.OstrichFern@103.95,62.2",
+      "new": "plant.stp_af_ostrich_fern_01"
+    },
+    {
+      "old": "plant.OstrichFern@108.35,62.35",
+      "new": "plant.stp_af_ostrich_fern_02"
+    },
+    {
+      "old": "plant.OstrichFern@104.3,65.3",
+      "new": "plant.stp_af_ostrich_fern_03"
+    },
+    {
+      "old": "plant.OstrichFern@107.2,65.1",
+      "new": "plant.stp_af_ostrich_fern_04"
+    },
+    {
+      "old": "plant.OstrichFern@103.5,60.7",
+      "new": "plant.stp_af_ostrich_fern_05"
+    },
+    {
+      "old": "plant.OstrichFern@109,61.2",
+      "new": "plant.stp_af_ostrich_fern_06"
+    },
+    {
+      "old": "plant.MarshMarigold@104.95,61.75",
+      "new": "plant.stp_af_marsh_marigold_01"
+    },
+    {
+      "old": "plant.MarshMarigold@107.45,61.95",
+      "new": "plant.stp_af_marsh_marigold_02"
+    },
+    {
+      "old": "plant.MarshMarigold@104.25,63.25",
+      "new": "plant.stp_af_marsh_marigold_03"
+    },
+    {
+      "old": "plant.MarshMarigold@107.8,63.7",
+      "new": "plant.stp_af_marsh_marigold_04"
+    },
+    {
+      "old": "plant.MarshMarigold@105.35,60.4",
+      "new": "plant.stp_af_marsh_marigold_05"
+    },
+    {
+      "old": "plant.MarshMarigold@107.2,60.55",
+      "new": "plant.stp_af_marsh_marigold_06"
+    },
+    {
+      "old": "plant.SoftRush@105.05,64.85",
+      "new": "plant.stp_af_soft_rush_01"
+    },
+    {
+      "old": "plant.SoftRush@106.75,64.95",
+      "new": "plant.stp_af_soft_rush_02"
+    },
+    {
+      "old": "plant.BlueFlag@107.55,56.7",
+      "new": "plant.stp_af_blue_flag_01"
+    },
+    {
+      "old": "plant.BlueFlag@106.05,57.3",
+      "new": "plant.stp_af_blue_flag_02"
+    },
+    {
+      "old": "plant.SpeckledAlder@107.8,66.95",
+      "new": "plant.stp_af_speckled_alder_02"
+    },
+    {
+      "old": "plant.SpeckledAlder@103.05,56.75",
+      "new": "plant.stp_af_speckled_alder_03"
+    },
+    {
+      "old": "tree.RedMaple@71.8,38.8",
+      "new": "tree.stp_gp_red_maple_01"
+    },
+    {
+      "old": "tree.WhiteBirch@89.4,45.3",
+      "new": "tree.stp_gp_white_birch_01"
+    },
+    {
+      "old": "tree.WhiteBirch@90.9,46.8",
+      "new": "tree.stp_gp_white_birch_02"
+    },
+    {
+      "old": "tree.BalsamFir@98.2,37.8",
+      "new": "tree.stp_gp_balsam_fir_01"
+    },
+    {
+      "old": "tree.RedOak@100.8,12.8",
+      "new": "tree.stp_gp_red_oak_01"
+    },
+    {
+      "old": "tree.WhitePine@64.4,32.9",
+      "new": "tree.stp_gp_white_pine_01"
+    },
+    {
+      "old": "tree.TremblingAspen@66.8,13.3",
+      "new": "tree.stp_gp_trembling_aspen_01"
+    },
+    {
+      "old": "plant.WildRose@75.2,29.9",
+      "new": "plant.stp_gp_wild_rose_01"
+    },
+    {
+      "old": "plant.Raspberry@96.6,17.6",
+      "new": "plant.stp_gp_raspberry_01"
+    },
+    {
+      "old": "plant.Serviceberry@99.4,33.4",
+      "new": "plant.stp_gp_serviceberry_01"
+    },
+    {
+      "old": "plant.Meadowsweet@69,24.1",
+      "new": "plant.stp_gp_meadowsweet_01"
+    },
+    {
+      "old": "plant.Steeplebush@92.8,12.2",
+      "new": "plant.stp_gp_steeplebush_01"
+    },
+    {
+      "old": "plant.SpeckledAlder@104.6,57.2",
+      "new": "plant.stp_gp_speckled_alder_01"
+    },
+    {
+      "old": "plant.SweetGale@102.9,51.8",
+      "new": "plant.stp_gp_sweet_gale_01"
+    },
+    {
+      "old": "rock.erratic@97.6,30.2",
+      "new": "rock.stp_gp_erratic_01"
+    },
+    {
+      "old": "rock.perched@68.9,36.8",
+      "new": "rock.stp_gp_perched_01"
+    },
+    {
+      "old": "rock.erratic@110.2,77.9",
+      "new": "rock.stp_gp_erratic_02"
+    }
+  ]
+}

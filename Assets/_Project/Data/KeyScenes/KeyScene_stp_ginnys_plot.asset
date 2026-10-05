@@ -1,0 +1,2099 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_stp_ginnys_plot
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.stp_ginnys_plot
+  DisplayName: "Ginny\u2019s plot"
+  RegionId: region.st_peters
+  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_ginnys_plot/scene.json,
+    74708 bytes, sha256 485295444d40fdb2ca4811f1a1423591fda601646a6980f075332fc71e456edb
+  Placed: 0
+  Pieces:
+  - Id: building.stp_ginny_cottage
+    Kind: building
+    Owner: StPetersGinnyPlot
+    Kit: houseIso
+    Piece: ginnyCottage
+    State: 
+    At: {x: 84, y: 28}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: era
+      Value: plain
+    - Key: shape
+      Value: gable
+    - Key: siding
+      Value: clapboard
+    - Key: body
+      Value: yellow
+    - Key: roof
+      Value: asphaltBrown
+    - Key: size
+      Value: 0.25
+    - Key: windows
+      Value: twoOverTwo
+    - Key: winDensity
+      Value: 0.5
+    - Key: attic
+      Value: gable
+    - Key: porch
+      Value: front
+    - Key: dormers
+      Value: 0
+    - Key: chimneys
+      Value: 1
+    - Key: bay
+      Value: false
+    - Key: weather
+      Value: 0.45
+    - Key: shutters
+      Value: green
+    - Key: doorPaint
+      Value: red
+    - Key: windowBoxes
+      Value: true
+    - Key: wallBench
+      Value: true
+    - Key: stovepipe
+      Value: true
+    - Key: roofPatches
+      Value: 5
+    - Key: roofLadder
+      Value: true
+    - Key: schedule
+      Value: elder
+  - Id: home.ginny_lot_camper
+    Kind: building
+    Owner: StPetersCamperLot
+    Kit: camperIso
+    Piece: camper
+    State: 
+    At: {x: 84, y: 42}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: clipper
+    - Key: awning
+      Value: false
+    - Key: swing
+      Value: 0
+    - Key: weather
+      Value: 0.32
+    - Key: paint
+      Value: null
+  - Id: structure.stp_ginny_woodshed
+    Kind: building
+    Owner: StPetersGinnyPlot
+    Kit: wharfBuilding2
+    Piece: netShed
+    State: 
+    At: {x: 93, y: 34}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: netShed
+    - Key: siding
+      Value: boardBatten
+    - Key: door
+      Value: plank
+    - Key: size
+      Value: 0.16
+    - Key: weather
+      Value: 0.62
+    - Key: decay
+      Value: neglected
+  - Id: structure.stp_ginny_net_store
+    Kind: building
+    Owner: StPetersGinnyPlot
+    Kit: wharfBuilding2
+    Piece: redShed
+    State: 
+    At: {x: 95, y: 22}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: redShed
+    - Key: size
+      Value: 0.25
+    - Key: weather
+      Value: 0.5
+    - Key: decay
+      Value: ruin
+  - Id: structure.stp_ginny_lean_to
+    Kind: building
+    Owner: StPetersGinnyPlot
+    Kit: wharfBuilding2
+    Piece: netShed
+    State: 
+    At: {x: 74, y: 33}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: netShed
+    - Key: shape
+      Value: shed
+    - Key: siding
+      Value: boardBatten
+    - Key: door
+      Value: plank
+    - Key: size
+      Value: 0.1
+    - Key: weather
+      Value: 0.66
+    - Key: decay
+      Value: collapsing
+  - Id: prop.stp_gp_gate_garden
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: picketGate
+    State: 
+    At: {x: 80.2, y: 20.8}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.45
+    - Key: paint
+      Value: white
+  - Id: prop.stp_gp_chair
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: chair
+    State: 
+    At: {x: 77.9, y: 25.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 7
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: paint
+      Value: green
+  - Id: prop.stp_gp_lantern
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: lantern
+    State: 
+    At: {x: 78.15, y: 26.35}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_gp_hod_full
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: clamHod
+    State: 
+    At: {x: 79, y: 30}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: full
+      Value: true
+  - Id: prop.stp_gp_hod
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: clamHod
+    State: 
+    At: {x: 78.55, y: 30.5}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 7
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_gp_rakes
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: rakes
+    State: 
+    At: {x: 79.85, y: 30.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: n
+      Value: 2
+  - Id: prop.stp_gp_freezer
+    Kind: setPiece
+    Owner: StPetersGinnyPlot
+    Kit: ginnyPieces
+    Piece: chestFreezer
+    State: 
+    At: {x: 78, y: 24}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 7
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: gas
+      Value: true
+  - Id: prop.stp_gp_rain_barrel
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: rainBarrel
+    State: 
+    At: {x: 80.35, y: 24.35}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.55
+  - Id: prop.stp_gp_name_sign
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: nameSign
+    State: 
+    At: {x: 73.6, y: 25.35}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words:
+    - words.stp_ginny_sign
+    Options:
+    - Key: kept
+      Value: 0.5
+  - Id: prop.stp_gp_cottage_lilac
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: lilac
+    State: 
+    At: {x: 88.8, y: 23.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.7
+  - Id: prop.stp_gp_cottage_rose
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: roseBush
+    State: 
+    At: {x: 80.6, y: 32.1}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.6
+  - Id: prop.stp_gp_garden_veg_1
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: vegRows
+    State: 
+    At: {x: 84.2, y: 18.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.8
+  - Id: prop.stp_gp_garden_veg_2
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: vegRows
+    State: 
+    At: {x: 84.2, y: 14.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.8
+  - Id: prop.stp_gp_garden_potato
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: potatoDrills
+    State: 
+    At: {x: 88.4, y: 16.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.8
+  - Id: prop.stp_gp_garden_rhubarb
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: rhubarb
+    State: 
+    At: {x: 77.9, y: 18.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.8
+  - Id: prop.stp_gp_garden_raspberry
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: raspberryRow
+    State: 
+    At: {x: 90.6, y: 16.8}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.6
+  - Id: prop.stp_gp_garden_border
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: borderBed
+    State: 
+    At: {x: 86.6, y: 19.8}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.8
+  - Id: prop.stp_gp_scarecrow
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: scarecrow
+    State: 
+    At: {x: 86.3, y: 16.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_gp_garden_potato_2
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: potatoDrills
+    State: 
+    At: {x: 88.4, y: 13.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.75
+  - Id: prop.stp_gp_garden_peas
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: trellisVine
+    State: 
+    At: {x: 80.9, y: 17.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.7
+  - Id: prop.stp_gp_garden_rhubarb_2
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: rhubarb
+    State: 
+    At: {x: 78, y: 15.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.8
+  - Id: prop.stp_gp_garden_potting
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: trapBench
+    State: 
+    At: {x: 77.4, y: 17.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.6
+  - Id: prop.stp_gp_garden_compost
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: compostBin
+    State: 
+    At: {x: 90.3, y: 13.5}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.6
+  - Id: prop.stp_gp_garden_barrow
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: wheelbarrow
+    State: 
+    At: {x: 81.6, y: 13.7}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_gp_garden_tools
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: toolLean
+    State: 
+    At: {x: 77.4, y: 13.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.5
+  - Id: prop.stp_gp_garden_pots
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: potCluster
+    State: 
+    At: {x: 77.6, y: 20.1}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.6
+  - Id: prop.stp_gp_henhouse
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: henhouse
+    State: 
+    At: {x: 72.9, y: 20.8}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_gp_hen_1
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: hen
+    State: 
+    At: {x: 70.3, y: 18.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: col
+      Value: russet
+  - Id: prop.stp_gp_hen_2
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: hen
+    State: 
+    At: {x: 71.8, y: 17.1}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: col
+      Value: white
+  - Id: prop.stp_gp_hen_3
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: hen
+    State: 
+    At: {x: 69.2, y: 20.1}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: col
+      Value: russet
+  - Id: prop.stp_gp_hen_4
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: hen
+    State: 
+    At: {x: 72.6, y: 18.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: col
+      Value: speckle
+  - Id: prop.stp_gp_hen_5
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: hen
+    State: 
+    At: {x: 68.7, y: 16.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: col
+      Value: russet
+  - Id: prop.stp_gp_hen_6
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: hen
+    State: 
+    At: {x: 75.7, y: 24.1}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 7
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: col
+      Value: russet
+  - Id: prop.stp_gp_leanto_wood
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: woodpile
+    State: 
+    At: {x: 72, y: 29.5}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.55
+  - Id: prop.stp_gp_leanto_stack
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: woodStack
+    State: 
+    At: {x: 76.6, y: 30.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_gp_chopping
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: block
+    State: 
+    At: {x: 75.1, y: 28.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_gp_sawhorses
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: sawhorses
+    State: 
+    At: {x: 70, y: 29.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.5
+  - Id: prop.stp_gp_ned_buoys
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: buoyPost
+    State: 
+    At: {x: 89.9, y: 31.1}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.3
+  - Id: prop.stp_gp_ned_traps
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 95.9, y: 37.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.95
+  - Id: prop.stp_gp_woodshed_stack
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: woodStack
+    State: 
+    At: {x: 90.4, y: 35.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_gp_ned_anchor
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: anchorProp
+    State: 
+    At: {x: 98.4, y: 25.3}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_gp_washing
+    Kind: setPiece
+    Owner: 
+    Kit: stpLightPieces
+    Piece: clothesline
+    State: 
+    At: {x: 91.6, y: 27.3}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 4.6
+  - Id: prop.stp_gp_camper_chair
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: deckChair
+    State: 
+    At: {x: 87.9, y: 39.7}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_gp_camper_boots
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: bootRack
+    State: 
+    At: {x: 83.4, y: 40.15}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_gp_track_cart
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: dockCart
+    State: 
+    At: {x: 86.6, y: 47.9}
+    Z: 6.01
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: boat.stp_ginny_skiff
+    Kind: boat
+    Owner: 
+    Kit: dory
+    Piece: decor
+    State: 
+    At: {x: 97.98, y: 61.16}
+    Z: 2.47
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 7
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: behind
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_gp_skiff_grapnel
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: anchorProp
+    State: 
+    At: {x: 100.2, y: 66.9}
+    Z: 0.2
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_gp_track_staff
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: tideStaff
+    State: 
+    At: {x: 101.9, y: 68.6}
+    Z: 0.18
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: gull.stp_gp_camper
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 85.4, y: 42.1}
+    Z: 8.84
+    StandsOn: mount
+    MountHost: home.ginny_lot_camper
+    MountAnchor: roof
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+  - Id: gull.stp_gp_mud
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 110.2, y: 77.9}
+    Z: 1.02
+    StandsOn: mount
+    MountHost: rock.stp_gp_erratic_02
+    MountAnchor: perch
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+  - Id: gull.stp_gp_reef
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 74.6, y: 84.4}
+    Z: 0.11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+  - Id: prop.stp_gp_garden_fence
+    Kind: setPiece
+    Owner: 
+    Kit: yardIso
+    Piece: picketPanel
+    State: 
+    At: {x: 77.75, y: 12.5}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: behind
+    Collider: a line collider along the run
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: kept
+      Value: 0.45
+    - Key: paint
+      Value: white
+    - Key: panels
+      Value: '[[77.75,12.5,4],[80.25,12.5,4],[82.75,12.5,4],[85.25,12.5,4],[87.75,12.5,4],[90.25,12.5,4],[78.01,20.8,4],[81.94,20.8,4],[84.06,20.8,4],[86.19,20.8,4],[88.31,20.8,4],[90.44,20.8,4],[76.5,13.54,6],[76.5,15.61,6],[76.5,17.69,6],[76.5,19.76,6],[91.5,13.54,2],[91.5,15.61,2],[91.5,17.69,2],[91.5,19.76,2]]'
+  - Id: prop.stp_gp_hen_run
+    Kind: setPiece
+    Owner: 
+    Kit: ginnyPieces
+    Piece: henRun
+    State: 
+    At: {x: 67.5, y: 15.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: behind
+    Collider: a line collider along the run
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: runs
+      Value: '[[[67.5,15.6],[74.8,15.6]],[[67.5,15.6],[67.5,22.2]],[[74.8,15.6],[74.8,22.2]],[[67.5,22.2],[72.9,22.2]],[[73.9,22.2],[74.8,22.2]]]'
+  - Id: tree.stp_gp_red_maple_01
+    Kind: tree
+    Owner: 
+    Kit: treeIsoRig4
+    Piece: RedMaple
+    State: 
+    At: {x: 71.8, y: 38.8}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 0
+  - Id: tree.stp_gp_white_birch_01
+    Kind: tree
+    Owner: 
+    Kit: treeIsoRig4
+    Piece: WhiteBirch
+    State: 
+    At: {x: 89.4, y: 45.3}
+    Z: 6.01
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: pole
+    - Key: variant
+      Value: 1
+  - Id: tree.stp_gp_white_birch_02
+    Kind: tree
+    Owner: 
+    Kit: treeIsoRig4
+    Piece: WhiteBirch
+    State: 
+    At: {x: 90.9, y: 46.8}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: young
+    - Key: variant
+      Value: 0
+  - Id: tree.stp_gp_balsam_fir_01
+    Kind: tree
+    Owner: 
+    Kit: treeIsoRig4
+    Piece: BalsamFir
+    State: 
+    At: {x: 98.2, y: 37.8}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: young
+    - Key: variant
+      Value: 1
+  - Id: tree.stp_gp_red_oak_01
+    Kind: tree
+    Owner: 
+    Kit: treeIsoRig4
+    Piece: RedOak
+    State: 
+    At: {x: 100.8, y: 12.8}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 0
+  - Id: tree.stp_gp_white_pine_01
+    Kind: tree
+    Owner: 
+    Kit: treeIsoRig4
+    Piece: WhitePine
+    State: 
+    At: {x: 64.4, y: 32.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 1
+  - Id: tree.stp_gp_trembling_aspen_01
+    Kind: tree
+    Owner: 
+    Kit: treeIsoRig4
+    Piece: TremblingAspen
+    State: 
+    At: {x: 66.8, y: 13.3}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: young
+    - Key: variant
+      Value: 0
+  - Id: plant.stp_gp_wild_rose_01
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: WildRose
+    State: 
+    At: {x: 75.2, y: 29.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 1
+  - Id: plant.stp_gp_raspberry_01
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: Raspberry
+    State: 
+    At: {x: 96.6, y: 17.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 1
+  - Id: plant.stp_gp_serviceberry_01
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: Serviceberry
+    State: 
+    At: {x: 99.4, y: 33.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 1
+  - Id: plant.stp_gp_meadowsweet_01
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: Meadowsweet
+    State: 
+    At: {x: 69, y: 24.1}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 1
+  - Id: plant.stp_gp_steeplebush_01
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: Steeplebush
+    State: 
+    At: {x: 92.8, y: 12.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 1
+  - Id: plant.stp_gp_speckled_alder_01
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: SpeckledAlder
+    State: 
+    At: {x: 104.6, y: 57.2}
+    Z: 5.37
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 1
+  - Id: plant.stp_gp_sweet_gale_01
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: SweetGale
+    State: 
+    At: {x: 102.9, y: 51.8}
+    Z: 5.25
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 1
+  - Id: rock.stp_gp_erratic_01
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: erratic
+    State: 
+    At: {x: 97.6, y: 30.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: stone
+      Value: granite
+    - Key: tide
+      Value: dry
+    - Key: dress
+      Value: 0
+    - Key: seat
+      Value: grass
+  - Id: rock.stp_gp_perched_01
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: perched
+    State: 
+    At: {x: 68.9, y: 36.8}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: stone
+      Value: granite
+    - Key: tide
+      Value: dry
+    - Key: dress
+      Value: 0
+    - Key: seat
+      Value: grass
+  - Id: rock.stp_gp_erratic_02
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: erratic
+    State: 
+    At: {x: 110.2, y: 77.9}
+    Z: 0.02
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: stone
+      Value: granite
+    - Key: tide
+      Value: wet
+    - Key: dress
+      Value: 2
+    - Key: seat
+      Value: mud
+  Lights:
+  - PieceId: prop.stp_gp_lantern
+    Preset: hurricaneLantern
+    Pool: 1
+    ReachMetres: 2.9
+    At: {x: 0, y: 0, z: 0.25}
+    Colour: '#ffb760'
+    Intensity: 0.85
+    When: dusk
+    WhoLights: 'Ginny: the step at dusk is her routine (npcs-and-routines s3.4)'
+    Budget: 1
+    Note: 
+  RetiredIds: []

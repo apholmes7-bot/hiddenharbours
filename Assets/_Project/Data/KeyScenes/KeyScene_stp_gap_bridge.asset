@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_stp_gap_bridge
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.stp_gap_bridge
+  DisplayName: "The Gap Brook\u2019s plank bridge"
+  RegionId: region.st_peters
+  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_gap_bridge/scene.json,
+    18372 bytes, sha256 f8a2c1a73d422b54ede4fa2967b314388cf7a1d4ebd05352d5f05f5d780e2a89
+  Placed: 0
+  Pieces:
+  - Id: structure.stp_gap_bridge
+    Kind: setPiece
+    Owner: 
+    Kit: stpXpPieces
+    Piece: plankBridge
+    State: 
+    At: {x: 156.45, y: -40.95}
+    Z: 5.28
+    StandsOn: mount
+    MountHost: ground.stp_gap_bridge
+    MountAnchor: footings
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 'on: the deck is walkable, and the rail blocks along its seaward edge'
+    Collider: '{"deck":[[-1.5,-0.575],[1.5,-0.575],[1.5,0.575],[-1.5,0.575]],"walk":"on","rail":[[-1.3,-0.635],[1.3,-0.635]],"turn":-11}'
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: span
+      Value: 2.8
+    - Key: width
+      Value: 0.95
+    - Key: deck
+      Value: 0.38
+    - Key: rail
+      Value: true
+    - Key: railH
+      Value: 0.98
+    - Key: yaw
+      Value: -11
+    - Key: seed
+      Value: 3
+  - Id: rock.stp_gap_dipping_stone
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: slab
+    State: 
+    At: {x: 157.95, y: -41.53}
+    Z: 5.1
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: stone
+      Value: granite
+    - Key: tide
+      Value: dry
+    - Key: dress
+      Value: 0
+    - Key: seat
+      Value: grass
+  Lights: []
+  RetiredIds: []
