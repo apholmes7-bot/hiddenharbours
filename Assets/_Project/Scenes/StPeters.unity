@@ -77132,6 +77132,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1043683725}
   - component: {fileID: 1043683724}
+  - component: {fileID: 2057719161}
   m_Layer: 0
   m_Name: DialogueUI
   m_TagString: Untagged
@@ -77184,6 +77185,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2057719161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1043683723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f8b8045a55d046a6d14f5267a043a77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.CatalogBookPresenter
 --- !u!1 &1049690733
 GameObject:
   m_ObjectHideFlags: 0
@@ -97256,6 +97269,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.LicenseVendor
   _license: {fileID: 11400000, guid: ff1692a5736e4c9f947eccb90b32c27d, type: 2}
+  _sellerId: seller.leblancs
   _walletProvider: {fileID: 1773492499}
   _onPurchased:
     m_PersistentCalls:
@@ -97273,6 +97287,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.InstrumentShop
   _offer: {fileID: 11400000, guid: 10e0e2da0a4042fd8563d356fdc821d8, type: 2}
+  _sellerId: seller.leblancs
   _walletProvider: {fileID: 1773492499}
   _onPurchased:
     m_PersistentCalls:
@@ -97290,6 +97305,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SupplyShop
   _supply: {fileID: 11400000, guid: bdfbb1c4412e4201832303cf762a47e0, type: 2}
+  _sellerId: seller.leblancs
   _walletProvider: {fileID: 1773492499}
   _onPurchased:
     m_PersistentCalls:
@@ -97307,6 +97323,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.BaitShop
   _bait: {fileID: 11400000, guid: ddc9962c2a3a4bd9b291214823c714d2, type: 2}
+  _sellerId: seller.leblancs
   _walletProvider: {fileID: 1773492499}
   _onPurchased:
     m_PersistentCalls:
@@ -97324,6 +97341,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.GearShop
   _offer: {fileID: 11400000, guid: 6cd2ccfae30a43519c8c111a79999c89, type: 2}
+  _sellerId: seller.leblancs
   _walletProvider: {fileID: 1773492499}
   _onPurchased:
     m_PersistentCalls:
