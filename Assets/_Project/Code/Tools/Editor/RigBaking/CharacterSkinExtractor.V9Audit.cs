@@ -456,14 +456,13 @@ globalThis.__hh9a = (function (C) {
         /// <summary>Every 1x strip the manifest lists, rendered by the rig today, hashed as RGBA
         /// against the manifest's <c>rgbaSha256</c>, after the manifest's own source hashes are
         /// checked against the rig and pose library in the kit. Returns one line per miss. Rig 9
-        /// only: rig 10's manifest lists its strips without hashes (the intake's harness held them
-        /// to the rig at landing, INTAKE.md).</summary>
+        /// only: rig 10's strips are drawn by its kit's own plan (<see cref="RenderMisses10"/>).</summary>
         public static List<string> RenderMisses9(IRigScriptHost host, string kitRoot, out int strips)
         {
             Install9Audit(host);
             if (KitOf(host).FaceMarks)
                 throw new InvalidOperationException(
-                    $"{KitOf(host).Title}'s render manifest lists its strips without RGBA hashes, so there is nothing to hold them to here.");
+                    $"{KitOf(host).Title}'s strips are drawn by its kit's own plan: see {nameof(RenderMisses10)}.");
             var misses = new List<string>();
             var (rig, poses) = KitShas9(kitRoot);
             host.Execute($"globalThis.__hh9man=({ReadKitText9(kitRoot, V9ManifestFile)});");
@@ -489,6 +488,83 @@ globalThis.__hh9a = (function (C) {
                 }
             }
             finally { host.Execute("delete globalThis.__hh9man;"); }
+            return misses;
+        }
+
+        /// <summary>Rig 10.3's kit's own plan of every file it writes (<c>renderPlan</c> among them):
+        /// plain JavaScript with no packages, which a page loads as <c>window.HHKit</c>.</summary>
+        public const string V10PlanFile = "tools/kit.js";
+
+        /// <summary>
+        /// Rig 10.3 on: every 1x strip the render manifest lists (idle at the 8 facings, the walk at S,
+        /// the blink and the look, for every build in the rig's <c>CAST</c>), drawn by the rig today
+        /// through the kit's own plan (<see cref="V10PlanFile"/>'s <c>renderPlan</c>, loaded beside the
+        /// rig) and hashed as RGBA against the manifest's <c>rgbaSha256</c>, after the manifest's own
+        /// source hashes are checked against the rig and pose library in the kit. Returns one line per
+        /// miss; a strip the plan draws that the manifest does not list, or the other way, is a miss.
+        /// <paramref name="planned"/> counts the plan's 1x strips, <paramref name="strips"/> those drawn
+        /// and hashed. The 4x strips and the cast sheet are the same cells scaled by the kit, which its
+        /// own checker holds on Node; they are not drawn again here.
+        /// </summary>
+        public static List<string> RenderMisses10(IRigScriptHost host, string kitRoot, out int strips, out int planned)
+        {
+            Load9(host);
+            CharacterRigKit kit = KitOf(host);
+            if (!kit.FaceMarks)
+                throw new InvalidOperationException($"{kit.Title}'s kit has no plan: see {nameof(RenderMisses9)}.");
+            var misses = new List<string>();
+            var (rig, poses) = KitShas9(kitRoot, kit);
+            host.Execute($"globalThis.__hh10man=({ReadKitText9(kitRoot, V9ManifestFile)});");
+            try
+            {
+                host.Execute(ReadKitText9(kitRoot, V10PlanFile));
+                string mRig = host.EvaluateString("String(globalThis.__hh10man.derivedFromRigSha256)");
+                string mPoses = host.EvaluateString("String(globalThis.__hh10man.posesDerivedFromRigSha256)");
+                if (mRig != rig || mPoses != poses)
+                    misses.Add($"the manifest was rendered from rig {mRig} / poses {mPoses}; the kit holds {rig} / {poses}");
+                host.Execute($"globalThis.__hh10plan=globalThis.HHKit.renderPlan({kit.GlobalName})" +
+                             ".filter(function(p){return p.scale===1;});");
+                planned = (int)host.EvaluateNumber("globalThis.__hh10plan.length");
+                var listed = new Dictionary<string, string[]>(StringComparer.Ordinal);
+                foreach (string row in Lines9(host.EvaluateString(
+                    "globalThis.__hh10man.images.filter(function(i){return i.scale===1;}).map(function(i){" +
+                    "return [i.file,i.width+'x'+i.height,i.rgbaSha256].join('|');}).join('\\n')")))
+                {
+                    string[] c = row.Split('|');
+                    if (c.Length != 3) { misses.Add($"manifest row '{row}' has {c.Length} fields"); continue; }
+                    listed[c[0]] = c;
+                }
+                strips = 0;
+                for (int i = 0; i < planned; i++)
+                {
+                    string at = $"globalThis.__hh10plan[{i.ToString(CultureInfo.InvariantCulture)}]";
+                    string file = host.EvaluateString($"String({at}.file)");
+                    if (!listed.TryGetValue(file, out string[] c))
+                    {
+                        misses.Add($"{file}: the kit's plan draws it; the manifest does not list it");
+                        continue;
+                    }
+                    listed.Remove(file);
+                    string size = host.EvaluateString(
+                        $"(function(g){{globalThis.__hh10img=g;return g.W+'x'+g.H;}})({at}.make())");
+                    byte[] rgba = host.EvaluateBytes("globalThis.__hh10img.rgba");
+                    strips++;
+                    if (size != c[1])
+                    {
+                        misses.Add($"{file}: the rig draws {size}, the manifest says {c[1]}");
+                        continue;
+                    }
+                    string sha = Sha256Hex9(rgba);
+                    if (sha != c[2]) misses.Add($"{file}: the rig renders {sha}, the manifest says {c[2]}");
+                }
+                foreach (string file in listed.Keys)
+                    misses.Add($"{file}: the manifest lists it; the kit's plan does not draw it");
+            }
+            finally
+            {
+                host.Execute("delete globalThis.__hh10man; delete globalThis.__hh10plan; delete globalThis.__hh10img; " +
+                             "delete globalThis.HHKit;");
+            }
             return misses;
         }
 

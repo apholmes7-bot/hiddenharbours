@@ -18,9 +18,8 @@ namespace HiddenHarbours.Tests.RigBaking
     /// re-made here from the rig in the kit, in a host of their own, and held to the committed copy:
     /// numbers within the rig's tolerance, sidecars byte for byte, and every golden check as committed.
     /// Since 10.3 the render manifest lists each of its 241 images with the sha256 of its pixels
-    /// (<c>rgbaSha256</c>); whether a strips test comes with the 10.3 intake's Phase B or later is the
-    /// owner's to rule, so there is none here yet: the intake's harnesses held every strip to the rig by
-    /// pixel at landing (<c>INTAKE.md</c>).</para>
+    /// (<c>rgbaSha256</c>), so the strips are held here too: the owner ruled they come with the 10.3
+    /// intake's Phase B.</para>
     ///
     /// <para>And the reader's contract with rig 10: one script host reads one character rig, and the
     /// game bakes <c>CAST10</c> alone, refusing the twenty NPCs by name.</para>
@@ -158,6 +157,24 @@ namespace HiddenHarbours.Tests.RigBaking
             }
             Assert.IsEmpty(problems, "Gameplay sidecars rig 10 no longer exports as committed:\n  " +
                                      string.Join("\n  ", problems));
+        }
+
+        /// <summary>
+        /// Every 1x strip the render manifest lists (idle at the 8 facings, the walk at S, the blink and
+        /// the look, for every build in the rig's <c>CAST</c>) is the rig's own render today, pixel for
+        /// pixel: drawn here in V8 through the kit's own plan (<c>tools/kit.js</c>, <c>renderPlan</c>)
+        /// and hashed against the manifest's <c>rgbaSha256</c>. The plan and the manifest must list the
+        /// same strips, so a strip dropped from either cannot pass by not being checked.
+        /// </summary>
+        [Test]
+        public void V10_TheCommittedStripsAreTheRigsOwnRender()
+        {
+            List<string> misses = CharacterSkinExtractor.RenderMisses10(V10Host, V10Kit, out int strips, out int planned);
+            Debug.Log($"[CharacterSkinnedExportTests] v10 strips: {strips} of the kit's {planned} 1x strips drawn, " +
+                      $"{misses.Count} miss(es)");
+            Assert.Greater(planned, 0, "The kit's plan draws no 1x strip.");
+            Assert.AreEqual(planned, strips, $"The kit's plan draws {planned} 1x strips; {strips} were checked.");
+            Assert.IsEmpty(misses, "Strips rig 10 no longer renders as committed:\n  " + string.Join("\n  ", misses));
         }
 
         /// <summary>
