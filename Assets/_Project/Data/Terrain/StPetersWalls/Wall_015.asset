@@ -1,0 +1,127 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_015
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_015
+  Status: 0
+  SplitFrom: 
+  Follows: wall.stp_014
+  Rock: sandstone
+  Class: 4
+  Aspect: SE
+  Batter: steep
+  Brow:
+  - {x: 180.50806, y: -27.285847}
+  - {x: 180.36069, y: -27.488054}
+  - {x: 180.2125, y: -27.689655}
+  - {x: 180.06345, y: -27.890638}
+  - {x: 179.9136, y: -28.091005}
+  - {x: 179.76292, y: -28.29077}
+  - {x: 179.61145, y: -28.489918}
+  - {x: 179.45917, y: -28.688444}
+  - {x: 179.30609, y: -28.88637}
+  - {x: 179.15222, y: -29.083673}
+  Toe:
+  - {x: 182.63463, y: -28.828936}
+  - {x: 182.47723, y: -29.03731}
+  - {x: 182.319, y: -29.244963}
+  - {x: 182.15997, y: -29.451921}
+  - {x: 182.00015, y: -29.658155}
+  - {x: 181.83954, y: -29.863703}
+  - {x: 181.67813, y: -30.06853}
+  - {x: 181.51596, y: -30.272646}
+  - {x: 181.35301, y: -30.47607}
+  - {x: 181.1893, y: -30.678782}
+  DropMetres:
+  - 10
+  - 10
+  - 10
+  - 10
+  - 10
+  - 10
+  - 10
+  - 10
+  - 10
+  - 10
+  ToeElevations:
+  - -4
+  - -4
+  - -4
+  - -4
+  - -4
+  - -4
+  - -4
+  - -4
+  - -4
+  - -4
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9:
+  - 5.9078474
+  - 5.8899374
+  - 5.9848003
+  - 5.898596
+  - 5.8803625
+  - 5.9605484
+  - 5.8974247
+  - 5.891525
+  - 5.9045315
+  - 5.9264255
+  ToePass9:
+  - -3.9021876
+  - -3.880062
+  - -3.9857647
+  - -3.9038737
+  - -3.8922722
+  - -3.9462392
+  - -3.8974392
+  - -3.9069147
+  - -3.9093919
+  - -3.9113884
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 15
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Kept as the scene had it at 883f27b5: the list''s row 015 (South Arm): kept.'

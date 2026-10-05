@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba11a965f465ae7368870a5168abc3cc, type: 3}
+  m_Name: Coast_WestLedges
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CoastSectionDef
+  Id: coast.stp_west_ledges
+  DisplayName: West Ledges
+  Type: toe_reef
+  Mode: 4
+  Recipe: {fileID: 11400000, guid: 6e6576addfb180280a2ccd689ef84eed, type: 2}
+  Edge: {x: 2, y: 10}
+  Knots: []
+  SeaTail: 12
+  HasRockEdge: 0
+  RockEdge: 0
+  Poly: []
+  Sector: {x: 0, y: 0}
+  Below: 0
+  XRange: {x: 0, y: 0}
+  HalfWidth: 0
+  WindowWest: 30
+  GutX: 0
+  GutKeep: 0
+  RunnelEvery: {x: 0, y: 0}
+  RunnelWidth: 0
+  RunnelDepth: 0
+  RunnelBand: {x: -1.8, y: 0.4}
+  RunnelAcross: {x: 5.5, y: 30}
+  MusselNearGut: 0
+  MusselBand: {x: 0, y: 0}
+  LobeAmp: 0
+  LobeLambda: 0
+  LobeBand: {x: 0, y: 0, z: 0, w: 0}
+  PaintBelow: 2.4
+  CrestKeep: {x: 5, y: 1.5}
+  HeadKeep: []
+  HeadKeepFeather: 3
+  PoolRelease: {x: 1.2, y: 0.3}
+  PoolWobble: 0.06
+  Walls:
+  - {fileID: 11400000, guid: 9d58da071e42450fcdfd882f0b81ad46, type: 2}
+  - {fileID: 11400000, guid: f302e33652a4daaa1f0c96cd80ea9e38, type: 2}
+  - {fileID: 11400000, guid: a2c6574b4c36f9568f991172c37238dd, type: 2}
+  - {fileID: 11400000, guid: cb2004422ce71428c2a608d0cf384d7a, type: 2}
+  - {fileID: 11400000, guid: 00bc14a5cf6415597c5bdfb15f957723, type: 2}
+  - {fileID: 11400000, guid: 884a93b5721abcefaf6d8453f867344b, type: 2}
+  - {fileID: 11400000, guid: fd023c33a7bf5d5b8263ab613cbe3eb4, type: 2}
+  - {fileID: 11400000, guid: 7338cd96882a860be187165a15763389, type: 2}
+  - {fileID: 11400000, guid: 05da0d50d1c0ff6ad4389835c70dfecd, type: 2}
+  - {fileID: 11400000, guid: ecfaa414c65e04b4da27fd3bbb8233a1, type: 2}
+  - {fileID: 11400000, guid: da3706a1c71874b1ef6dbef99d306ba2, type: 2}
+  - {fileID: 11400000, guid: d2c76e6c8810ea928cfa2676c542c164, type: 2}
+  - {fileID: 11400000, guid: dfde6d9999073c58370138304539e008, type: 2}
+  - {fileID: 11400000, guid: 99255d9f831f39dbcd574ffabea36ed1, type: 2}
+  - {fileID: 11400000, guid: bfdff9767a4c557cbdd28fe143ef2440, type: 2}
+  - {fileID: 11400000, guid: 57804a0463cf1176034acfd5e6578596, type: 2}
+  - {fileID: 11400000, guid: 80fb5325da890cf8e4dc06875b7a7726, type: 2}
+  - {fileID: 11400000, guid: 539f09363c3158815e9c58643006b448, type: 2}
+  - {fileID: 11400000, guid: f3d53fbae49b4c4b9bbfbce0f69ceb3f, type: 2}
+  - {fileID: 11400000, guid: 5056fba11ca1e3569607a5ad151fa179, type: 2}
+  - {fileID: 11400000, guid: 2e520cbb51a20408cf15f1e2fb5322e1, type: 2}
+  - {fileID: 11400000, guid: 28589d661a273d6b8d517949f37114f0, type: 2}
+  - {fileID: 11400000, guid: 9b904cdc5685349fa70aedc4e5889baa, type: 2}
+  - {fileID: 11400000, guid: 16e0e134841a0de12e9653abe02683d8, type: 2}
+  - {fileID: 11400000, guid: c1596aba21b63415e18661d01ad3cba0, type: 2}
+  - {fileID: 11400000, guid: af75fbb32b06abb5c21dfd32b0376f70, type: 2}
+  - {fileID: 11400000, guid: 37d03089891a8565ef2054d371cd5acf, type: 2}
+  - {fileID: 11400000, guid: 55aa0e908768dec82cc87c2ca7c70a84, type: 2}
+  - {fileID: 11400000, guid: 800c72c663e5e7a161244f8908747317, type: 2}
+  - {fileID: 11400000, guid: 268c0b48a43e4e63d3d7bfa960ec9391, type: 2}
+  - {fileID: 11400000, guid: da2d84875dfb793a2640e2d1a12e8a34, type: 2}
+  - {fileID: 11400000, guid: 6947196da80d93581f54b348db357902, type: 2}
+  - {fileID: 11400000, guid: 554664f756516025be1f4b8227b1519e, type: 2}
+  - {fileID: 11400000, guid: 26aea606ce95654fb1fc3c98f84d549b, type: 2}
+  Broken: 1
+  KeepAbove: 1
+  FlatsCharacter: mud
+  HasSpit: 0
+  SpitBearing: 0
+  SpitLength: 0
+  SpitHalfWidth: 0
+  SpitCrest: {x: 0, y: 0}
+  SpitMaxCut: 0
+  Why: 'Walls 055-067 (LedgeCliff, S/SW): the same reef as the east, more broken (wider gullies, more pools) where the weather comes round the island''s shoulder. Its walls (PR 5w, by real id, clockwise): 056, 167, 168, 169, 057, 058, 059, 060, 170, 171, 172, 061, 173, 062, 174, 175, 176, 177, 063, 178, 064, 179, 180, 181, 182, 183, 184, 065, 066, 067, 185, 186, 187, 188; part 2 drew it on walls 055-067. (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

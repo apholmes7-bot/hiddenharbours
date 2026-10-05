@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba11a965f465ae7368870a5168abc3cc, type: 3}
+  m_Name: Coast_StormBeach
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CoastSectionDef
+  Id: coast.stp_storm_beach
+  DisplayName: Storm Beach
+  Type: storm_beach
+  Mode: 1
+  Recipe: {fileID: 11400000, guid: fb701de23063275e9d2b37243f9eeff8, type: 2}
+  Edge: {x: 1.5, y: 9}
+  Knots:
+  - {x: 16, y: 6}
+  - {x: 12, y: 4.2}
+  - {x: 9.5, y: 2.7}
+  - {x: 7.5, y: 3.1}
+  - {x: 5, y: 2.2}
+  - {x: 0, y: 0}
+  - {x: -6, y: -0.9}
+  - {x: -14, y: -1.6}
+  - {x: -24, y: -2.4}
+  SeaTail: 10
+  HasRockEdge: 0
+  RockEdge: 0
+  Poly: []
+  Sector: {x: 0, y: 0}
+  Below: 0
+  XRange: {x: 0, y: 0}
+  HalfWidth: 0
+  WindowWest: 30
+  GutX: 0
+  GutKeep: 0
+  RunnelEvery: {x: 0, y: 0}
+  RunnelWidth: 0
+  RunnelDepth: 0
+  RunnelBand: {x: -1.8, y: 0.4}
+  RunnelAcross: {x: 5.5, y: 30}
+  MusselNearGut: 0
+  MusselBand: {x: 0, y: 0}
+  LobeAmp: 0
+  LobeLambda: 0
+  LobeBand: {x: 0, y: 0, z: 0, w: 0}
+  PaintBelow: 2.4
+  CrestKeep: {x: 5, y: 1.5}
+  HeadKeep: []
+  HeadKeepFeather: 3
+  PoolRelease: {x: 1.2, y: 0.3}
+  PoolWobble: 0.06
+  Walls: []
+  Broken: 0
+  KeepAbove: 1
+  FlatsCharacter: sand
+  HasSpit: 0
+  SpitBearing: 0
+  SpitLength: 0
+  SpitHalfWidth: 0
+  SpitCrest: {x: 0, y: 0}
+  SpitMaxCut: 0
+  Why: 'Where the bar''s south flank meets the bluff, open to the south-west: a cobble storm beach with a berm at +3.1 and a swale behind it that the Storm Brook follows to the sea. (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

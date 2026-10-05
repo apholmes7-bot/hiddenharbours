@@ -1,0 +1,118 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_012
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_012
+  Status: 0
+  SplitFrom: 
+  Follows: wall.stp_011
+  Rock: sandstone
+  Class: 4
+  Aspect: SE
+  Batter: steep
+  Brow:
+  - {x: 184.02321, y: -21.816261}
+  - {x: 183.90007, y: -22.034058}
+  - {x: 183.77591, y: -22.251278}
+  - {x: 183.65073, y: -22.46791}
+  - {x: 183.52454, y: -22.683958}
+  - {x: 183.39734, y: -22.899408}
+  - {x: 183.26915, y: -23.114277}
+  - {x: 183.13998, y: -23.328564}
+  - {x: 183.00983, y: -23.542252}
+  Toe:
+  - {x: 186.41525, y: -23.161266}
+  - {x: 186.28188, y: -23.388136}
+  - {x: 186.14746, y: -23.614305}
+  - {x: 186.01204, y: -23.839771}
+  - {x: 185.87558, y: -24.064524}
+  - {x: 185.73814, y: -24.288568}
+  - {x: 185.59967, y: -24.511898}
+  - {x: 185.46024, y: -24.734524}
+  - {x: 185.31981, y: -24.956442}
+  DropMetres:
+  - 10
+  - 10
+  - 10
+  - 10
+  - 10
+  - 10
+  - 10
+  - 10
+  - 10
+  ToeElevations:
+  - -4
+  - -4
+  - -4
+  - -4
+  - -4
+  - -4
+  - -4
+  - -4
+  - -4
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9:
+  - 5.9069133
+  - 5.8833656
+  - 5.9680257
+  - 5.931242
+  - 5.906208
+  - 5.883978
+  - 5.9668036
+  - 5.947257
+  - 5.8854814
+  ToePass9:
+  - -3.92638
+  - -3.9746375
+  - -3.896173
+  - -3.8918293
+  - -3.9229093
+  - -3.9843798
+  - -3.883205
+  - -3.924076
+  - -3.9428527
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 12
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Kept as the scene had it at 883f27b5: the list''s row 012 (South Arm): kept.'

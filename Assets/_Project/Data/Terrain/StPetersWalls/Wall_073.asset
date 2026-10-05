@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_073
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_073
+  Status: 0
+  SplitFrom: 
+  Follows: wall.stp_072
+  Rock: sandstone
+  Class: 4
+  Aspect: SW
+  Batter: steep
+  Brow:
+  - {x: -42.404015, y: -24.509287}
+  - {x: -42.538307, y: -24.298681}
+  - {x: -42.67166, y: -24.087477}
+  - {x: -42.804085, y: -23.87565}
+  - {x: -42.935547, y: -23.663229}
+  - {x: -43.066025, y: -23.450249}
+  Toe:
+  - {x: -44.66721, y: -25.959518}
+  - {x: -44.81174, y: -25.741232}
+  - {x: -44.955334, y: -25.52223}
+  - {x: -45.098, y: -25.302486}
+  - {x: -45.23971, y: -25.082035}
+  - {x: -45.380444, y: -24.860912}
+  DropMetres:
+  - 10
+  - 10
+  - 9.959141
+  - 9.819081
+  - 9.592412
+  - 9.292829
+  ToeElevations:
+  - -4
+  - -4
+  - -3.9591403
+  - -3.8190813
+  - -3.592412
+  - -3.2928286
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9:
+  - 5.884752
+  - 5.9196873
+  - 5.9516106
+  - 5.927675
+  - 5.906609
+  - 5.9202313
+  ToePass9:
+  - -3.707006
+  - -3.7296007
+  - -3.646074
+  - -3.6178534
+  - -3.461295
+  - -3.197126
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 73
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Kept as the scene had it at 883f27b5: the list''s row 073 (South-West Bluff): kept.'

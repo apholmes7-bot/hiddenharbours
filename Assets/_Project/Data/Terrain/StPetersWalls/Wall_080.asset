@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_080
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_080
+  Status: 6
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 3
+  Aspect: SW
+  Batter: ramp
+  Brow:
+  - {x: 179.18294, y: 40.778683}
+  - {x: 179.46548, y: 40.752556}
+  - {x: 179.74332, y: 40.718796}
+  - {x: 180.00555, y: 40.673546}
+  - {x: 180.16954, y: 40.46826}
+  - {x: 180.33347, y: 40.261787}
+  - {x: 180.60262, y: 40.245117}
+  - {x: 180.85693, y: 40.21538}
+  - {x: 181.12947, y: 40.19355}
+  - {x: 181.3306, y: 40.040417}
+  Toe:
+  - {x: 176.86203, y: 36.98186}
+  - {x: 177.13705, y: 36.78538}
+  - {x: 177.57492, y: 36.77569}
+  - {x: 177.91713, y: 36.74404}
+  - {x: 178.05118, y: 36.72627}
+  - {x: 178.26277, y: 36.607716}
+  - {x: 178.33891, y: 36.413918}
+  - {x: 178.34705, y: 36.42026}
+  - {x: 178.77539, y: 36.299862}
+  - {x: 179.2928, y: 36.25394}
+  DropMetres:
+  - 6.8522196
+  - 7.0087123
+  - 6.946761
+  - 6.87673
+  - 6.738594
+  - 6.6534615
+  - 6.832508
+  - 6.8954015
+  - 6.9154286
+  - 6.7300425
+  ToeElevations:
+  - 3.7786677
+  - 3.7130685
+  - 3.8472934
+  - 3.9496167
+  - 3.99436
+  - 4.0062337
+  - 3.912332
+  - 3.9196327
+  - 3.990243
+  - 4.1266723
+  Stations:
+  - 61
+  - 62
+  - 63
+  - 64
+  - 65
+  - 66
+  - 67
+  - 68
+  - 69
+  - 70
+  BrowFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 
+  SourceListSha256: 
+  SourceRow: -1
+  MeasuredOn: 'the ground file''s import (Phase A, fix 1: the Head''s ring at +10.9 m)'
+  FaceNeeded: 'SW ramp: worn (copies 076)'
+  Why: 'Held for the Head''s ring (fix 1), a forecast: no scene object. Its lines are Phase A''s on the import, ring stations 61 to 70; the ring''s own PR builds it.'

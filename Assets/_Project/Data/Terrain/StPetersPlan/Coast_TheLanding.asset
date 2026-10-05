@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba11a965f465ae7368870a5168abc3cc, type: 3}
+  m_Name: Coast_TheLanding
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CoastSectionDef
+  Id: coast.stp_the_landing
+  DisplayName: The Landing
+  Type: landing
+  Mode: 2
+  Recipe: {fileID: 11400000, guid: 04144e97247e277a13c801d915897e50, type: 2}
+  Edge: {x: 2, y: 10}
+  Knots: []
+  SeaTail: 12
+  HasRockEdge: 0
+  RockEdge: 0
+  Poly: []
+  Sector: {x: 0, y: 0}
+  Below: 0
+  XRange: {x: 0, y: 0}
+  HalfWidth: 0
+  WindowWest: 30
+  GutX: 0
+  GutKeep: 0
+  RunnelEvery: {x: 0, y: 0}
+  RunnelWidth: 0
+  RunnelDepth: 0
+  RunnelBand: {x: -1.8, y: 0.4}
+  RunnelAcross: {x: 5.5, y: 30}
+  MusselNearGut: 0
+  MusselBand: {x: 0, y: 0}
+  LobeAmp: 0
+  LobeLambda: 0
+  LobeBand: {x: 0, y: 0, z: 0, w: 0}
+  PaintBelow: 2.4
+  CrestKeep: {x: 5, y: 1.5}
+  HeadKeep: []
+  HeadKeepFeather: 3
+  PoolRelease: {x: 1.2, y: 0.3}
+  PoolWobble: 0.06
+  Walls: []
+  Broken: 0
+  KeepAbove: 1
+  FlatsCharacter: 
+  HasSpit: 0
+  SpitBearing: 0
+  SpitLength: 0
+  SpitHalfWidth: 0
+  SpitCrest: {x: 0, y: 0}
+  SpitMaxCut: 0
+  Why: 'The intro''s landing is kept: slip, wharf, dock, dory berth, dredged approach and arrival route do not move. It is framed by paint (a weed line on the slip''s flanks, a wrack line at the spring-high mark, shingle above) and by the forms either side: the strand to the north, the Harbour Stack to the south. (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

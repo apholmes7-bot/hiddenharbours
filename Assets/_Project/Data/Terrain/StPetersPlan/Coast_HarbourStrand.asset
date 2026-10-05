@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba11a965f465ae7368870a5168abc3cc, type: 3}
+  m_Name: Coast_HarbourStrand
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CoastSectionDef
+  Id: coast.stp_harbour_strand
+  DisplayName: Harbour Strand
+  Type: harbour_strand
+  Mode: 1
+  Recipe: {fileID: 11400000, guid: 35dba69436f9aa80ede015698cf0f499, type: 2}
+  Edge: {x: 1.5, y: 10}
+  Knots:
+  - {x: 16, y: 6}
+  - {x: 12, y: 4.8}
+  - {x: 9, y: 3.4}
+  - {x: 7, y: 3}
+  - {x: 5, y: 2.6}
+  - {x: 0, y: 0}
+  - {x: -8, y: -0.8}
+  - {x: -18, y: -1.3}
+  - {x: -28, y: -1.7}
+  - {x: -36, y: -2.3}
+  SeaTail: 12
+  HasRockEdge: 0
+  RockEdge: 0
+  Poly: []
+  Sector: {x: 0, y: 0}
+  Below: 0
+  XRange: {x: 0, y: 0}
+  HalfWidth: 0
+  WindowWest: 30
+  GutX: 0
+  GutKeep: 0
+  RunnelEvery: {x: 0, y: 0}
+  RunnelWidth: 0
+  RunnelDepth: 0
+  RunnelBand: {x: -1.8, y: 0.4}
+  RunnelAcross: {x: 5.5, y: 30}
+  MusselNearGut: 0
+  MusselBand: {x: 0, y: 0}
+  LobeAmp: 0
+  LobeLambda: 0
+  LobeBand: {x: 0, y: 0, z: 0, w: 0}
+  PaintBelow: 2.4
+  CrestKeep: {x: 5, y: 1.5}
+  HeadKeep: []
+  HeadKeepFeather: 3
+  PoolRelease: {x: 1.2, y: 0.3}
+  PoolWobble: 0.06
+  Walls: []
+  Broken: 0
+  KeepAbove: 1
+  FlatsCharacter: 
+  HasSpit: 0
+  SpitBearing: 0
+  SpitLength: 0
+  SpitHalfWidth: 0
+  SpitCrest: {x: 0, y: 0}
+  SpitMaxCut: 0
+  Why: 'The harbour''s north arm: part 1''s Cannery Shingle carried round the point and softened to a sand-and-shingle strand where the entrance channel''s shelter begins. It is shaped only outside the entrance route''s 30 m capsule (north of about 72 deg); inside it the ground is today''s and only the paint is new. (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

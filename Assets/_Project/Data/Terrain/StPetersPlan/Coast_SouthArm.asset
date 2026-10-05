@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba11a965f465ae7368870a5168abc3cc, type: 3}
+  m_Name: Coast_SouthArm
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CoastSectionDef
+  Id: coast.stp_south_arm
+  DisplayName: South Arm
+  Type: deep_cliff
+  Mode: 4
+  Recipe: {fileID: 11400000, guid: ca719065258ff30cb60e6315e593f5af, type: 2}
+  Edge: {x: 2, y: 10}
+  Knots: []
+  SeaTail: 12
+  HasRockEdge: 0
+  RockEdge: 0
+  Poly: []
+  Sector: {x: 0, y: 0}
+  Below: 0
+  XRange: {x: 0, y: 0}
+  HalfWidth: 0
+  WindowWest: 30
+  GutX: 0
+  GutKeep: 0
+  RunnelEvery: {x: 0, y: 0}
+  RunnelWidth: 0
+  RunnelDepth: 0
+  RunnelBand: {x: -1.8, y: 0.4}
+  RunnelAcross: {x: 5.5, y: 30}
+  MusselNearGut: 0
+  MusselBand: {x: 0, y: 0}
+  LobeAmp: 0
+  LobeLambda: 0
+  LobeBand: {x: 0, y: 0, z: 0, w: 0}
+  PaintBelow: 2.4
+  CrestKeep: {x: 5, y: 1.5}
+  HeadKeep: []
+  HeadKeepFeather: 3
+  PoolRelease: {x: 1.2, y: 0.3}
+  PoolWobble: 0.06
+  Walls:
+  - {fileID: 11400000, guid: b4f34ff7cfbaa963921680ce5708d928, type: 2}
+  - {fileID: 11400000, guid: 03b7298bc777fcff275c79c5d2da6ae1, type: 2}
+  - {fileID: 11400000, guid: e2c4c9ce5b7ec548fc2870084b82f9bf, type: 2}
+  - {fileID: 11400000, guid: 7f7a5def66381b6240152a54e17bde1d, type: 2}
+  - {fileID: 11400000, guid: 873528fb4f6916887cac04fbbf36a9c8, type: 2}
+  - {fileID: 11400000, guid: 06e1df3bd135cbb8cd10da3d55dfa306, type: 2}
+  - {fileID: 11400000, guid: 4edabca4572961c22220982ee577d3de, type: 2}
+  - {fileID: 11400000, guid: 9bccd4a27de9f1ccf273c7cda0541e6b, type: 2}
+  - {fileID: 11400000, guid: 4dfaeed27052d59205e3228a1d32b9a2, type: 2}
+  - {fileID: 11400000, guid: beae3ca0d25b36612987feec05b5e3b6, type: 2}
+  - {fileID: 11400000, guid: 08f105696260efd0a2f57cef1d89d7cc, type: 2}
+  - {fileID: 11400000, guid: 12244546ed65beeff88ab42dc16a803a, type: 2}
+  - {fileID: 11400000, guid: 0b1ae5ea7b64bb42ad64ddfe5b22510b, type: 2}
+  - {fileID: 11400000, guid: cc75ec9fff45c81fa7b3ad84e4b386a5, type: 2}
+  - {fileID: 11400000, guid: 08e8c758167ce51dc7b75d2754ed71f5, type: 2}
+  - {fileID: 11400000, guid: b3dedd4150d4926a105f85df90f27fc2, type: 2}
+  - {fileID: 11400000, guid: 86b63ea5cfa0ab03b1d37f15be71cc98, type: 2}
+  - {fileID: 11400000, guid: cf36638518627cc154d18fb22863d6be, type: 2}
+  - {fileID: 11400000, guid: 6086e0212821fc76f4c5ac8f0f081a73, type: 2}
+  - {fileID: 11400000, guid: 88d1864e85ac208b27e95f49ee27b3e7, type: 2}
+  - {fileID: 11400000, guid: c37858c2448e095d4902f2776de4bf1d, type: 2}
+  - {fileID: 11400000, guid: 72582f47b16061ee9fed2beaa7fca448, type: 2}
+  - {fileID: 11400000, guid: 6badb7d5198c49fa325c7ec473028f75, type: 2}
+  Broken: 0
+  KeepAbove: 1
+  FlatsCharacter: boulder
+  HasSpit: 0
+  SpitBearing: 0
+  SpitLength: 0
+  SpitHalfWidth: 0
+  SpitCrest: {x: 0, y: 0}
+  SpitMaxCut: 0
+  Why: 'Walls 000-022 (DeepShoreCliff, E/SE) are the harbour''s south arm. The deep water at their foot stays deep (the arrival is from the north-east); a stack and three skerries stand off the arm so the harbour reads as held between two arms. Its walls (PR 5w, by real id, clockwise): 000, 001, 002, 003, 004, 005, 006, 007, 008, 009, 010, 011, 012, 013, 014, 015, 016, 017, 018, 019, 020, 021, 022; part 2 drew it on walls 000-022. (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

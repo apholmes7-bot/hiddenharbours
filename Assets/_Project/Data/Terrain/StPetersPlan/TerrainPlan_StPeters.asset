@@ -140,6 +140,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3e76672de336f002bf4dae14e31c9d6e, type: 2}
   - {fileID: 11400000, guid: d38524bb2023670050c81e83b6685532, type: 2}
   - {fileID: 11400000, guid: 4c90c228cb1d43838078b43f5fe8cd62, type: 2}
+  - {fileID: 11400000, guid: 35dba69436f9aa80ede015698cf0f499, type: 2}
+  - {fileID: 11400000, guid: 04144e97247e277a13c801d915897e50, type: 2}
+  - {fileID: 11400000, guid: ca719065258ff30cb60e6315e593f5af, type: 2}
+  - {fileID: 11400000, guid: 6e6576addfb180280a2ccd689ef84eed, type: 2}
+  - {fileID: 11400000, guid: ce5023ca5cbf2053091101925e0b3988, type: 2}
+  - {fileID: 11400000, guid: fb701de23063275e9d2b37243f9eeff8, type: 2}
+  - {fileID: 11400000, guid: f01c745dd0b6dab43e61f319df8e4218, type: 2}
+  - {fileID: 11400000, guid: 1aa3a38d3437276d5145cc5c0f3651f3, type: 2}
   Ponds:
   - {fileID: 11400000, guid: 7a32c451e88c90915b26880e4e6165f3, type: 2}
   - {fileID: 11400000, guid: 2fd9cd39843f423b8026cf7d375a1918, type: 2}
@@ -188,6 +196,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 03ac60743a0440af8b15285f5170ed6e, type: 2}
   - {fileID: 11400000, guid: 4ce574a3f62d4a4cadf7b6d2732cf7f5, type: 2}
   - {fileID: 11400000, guid: 16a74a2ac87c44f1b441e49f241437ab, type: 2}
+  - {fileID: 11400000, guid: 42b2721798f44acea5158787dfcba25f, type: 2}
+  - {fileID: 11400000, guid: 8c759230f6c496e61adb6357dbc5a748, type: 2}
+  - {fileID: 11400000, guid: c5ae7f3ae6c7a127189a2e0133d8a64a, type: 2}
+  - {fileID: 11400000, guid: 5702eeb7d0693d7231088ee38fef1a0d, type: 2}
+  - {fileID: 11400000, guid: 1e88a9bbf064dbaed01ee44486f8f3d2, type: 2}
   Biomes:
   - {fileID: 11400000, guid: 3c0776daee3fb96b19d26764ced27d62, type: 2}
   - {fileID: 11400000, guid: 58acf464fb35feff4e1c7d146b181444, type: 2}
@@ -248,6 +261,184 @@ MonoBehaviour:
   WalkClear: 1
   ClamPull: {x: 1.5, y: 4, z: 0.03}
   ClamBand: {x: -1.8, y: 1.8}
+  ShoreLine2:
+  - At: {x: 189, y: 37.5}
+    SectionId: coast.stp_harbour_strand
+  - At: {x: 193.5, y: 32.1}
+    SectionId: 
+  - At: {x: 197, y: 27}
+    SectionId: 
+  - At: {x: 200, y: 21.7}
+    SectionId: 
+  - At: {x: 202.7, y: 15}
+    SectionId: coast.stp_the_landing
+  - At: {x: 204.2, y: 9.6}
+    SectionId: 
+  - At: {x: 204.5, y: 4}
+    SectionId: 
+  - At: {x: 204.3, y: -1}
+    SectionId: 
+  - At: {x: 201, y: -6}
+    SectionId: 
+  - At: {x: 196.2, y: -8.5}
+    SectionId: coast.stp_south_arm
+  - At: {x: 189.9, y: -12.3}
+    SectionId: 
+  - At: {x: 188.1, y: -17.2}
+    SectionId: 
+  - At: {x: 185.7, y: -21.9}
+    SectionId: 
+  - At: {x: 182.8, y: -26.6}
+    SectionId: 
+  - At: {x: 179.4, y: -31.1}
+    SectionId: 
+  - At: {x: 175.4, y: -35.5}
+    SectionId: 
+  - At: {x: 170.9, y: -39.7}
+    SectionId: 
+  - At: {x: 169.2, y: -44.3}
+    SectionId: coast.stp_east_gap
+  - At: {x: 172.5, y: -50.2}
+    SectionId: 
+  - At: {x: 170.5, y: -52.8}
+    SectionId: 
+  - At: {x: 166.6, y: -54.4}
+    SectionId: 
+  - At: {x: 158.5, y: -55.2}
+    SectionId: coast.stp_east_ledges
+  - At: {x: 148.5, y: -54.6}
+    SectionId: 
+  - At: {x: 141.8, y: -57.6}
+    SectionId: 
+  - At: {x: 134.7, y: -60.4}
+    SectionId: 
+  - At: {x: 127.3, y: -62.9}
+    SectionId: 
+  - At: {x: 119.7, y: -65.1}
+    SectionId: 
+  - At: {x: 111.8, y: -66.9}
+    SectionId: 
+  - At: {x: 103.7, y: -68.5}
+    SectionId: 
+  - At: {x: 95.4, y: -69.7}
+    SectionId: 
+  - At: {x: 87, y: -70.4}
+    SectionId: coast.stp_weather_cliff
+  - At: {x: 78.5, y: -70.9}
+    SectionId: 
+  - At: {x: 70, y: -71}
+    SectionId: 
+  - At: {x: 61.5, y: -70.9}
+    SectionId: 
+  - At: {x: 53, y: -70.4}
+    SectionId: 
+  - At: {x: 44.7, y: -69.5}
+    SectionId: 
+  - At: {x: 36.4, y: -68.3}
+    SectionId: 
+  - At: {x: 28.3, y: -66.8}
+    SectionId: 
+  - At: {x: 15.8, y: -67.9}
+    SectionId: coast.stp_west_gap
+  - At: {x: 9.2, y: -69.6}
+    SectionId: 
+  - At: {x: 4.5, y: -69}
+    SectionId: 
+  - At: {x: 0.8, y: -67.2}
+    SectionId: 
+  - At: {x: -1.4, y: -64.1}
+    SectionId: coast.stp_west_ledges
+  - At: {x: -3.5, y: -56.9}
+    SectionId: 
+  - At: {x: -10.1, y: -53.8}
+    SectionId: 
+  - At: {x: -16.3, y: -50.4}
+    SectionId: 
+  - At: {x: -22.2, y: -46.7}
+    SectionId: 
+  - At: {x: -27.5, y: -42.9}
+    SectionId: 
+  - At: {x: -32.4, y: -38.8}
+    SectionId: 
+  - At: {x: -35.5, y: -35.5}
+    SectionId: coast.stp_sw_bluff
+  - At: {x: -39.4, y: -31.1}
+    SectionId: 
+  - At: {x: -42.8, y: -26.6}
+    SectionId: 
+  - At: {x: -50.8, y: -22.9}
+    SectionId: coast.stp_storm_beach
+  - At: {x: -61.2, y: -19.1}
+    SectionId: 
+  - At: {x: -62.7, y: -15}
+    SectionId: 
+  - At: {x: -63.9, y: -11}
+    SectionId: coast.stp_bar_root
+  - At: {x: -64.5, y: 0}
+    SectionId: 
+  - At: {x: -63.9, y: 11}
+    SectionId: 
+  - At: {x: -62.25, y: 16.4}
+    SectionId: 
+  - At: {x: -60.6, y: 20.4}
+    SectionId: 
+  Sections2:
+  - {fileID: 11400000, guid: e7241a5a82622c2d22b520867144d7c1, type: 2}
+  - {fileID: 11400000, guid: 681a5454ec95d4bbac25627338fa0a4f, type: 2}
+  - {fileID: 11400000, guid: 51d6b02f92ca57a9a3fddfbe7038a98f, type: 2}
+  - {fileID: 11400000, guid: 3b892dd22365e92b41d9d5c9cdf37df3, type: 2}
+  - {fileID: 11400000, guid: c94f8d5660e0dc27784a3852bfaf3c18, type: 2}
+  - {fileID: 11400000, guid: e3628039343ff1343d65739f874a309d, type: 2}
+  - {fileID: 11400000, guid: 875ced47740a52222af2eedddee12ab4, type: 2}
+  - {fileID: 11400000, guid: 760e3d086f7304bf7551710f1916d87b, type: 2}
+  - {fileID: 11400000, guid: 5e142829b402d9f0590e3fdbb006970a, type: 2}
+  - {fileID: 11400000, guid: 33427e470a06c94a33567a75ecf8de18, type: 2}
+  - {fileID: 11400000, guid: b45ea520aef5b4e80c280199960a0b94, type: 2}
+  ShoreWindow2: 60
+  SectionFeather2: 3
+  FeatherGrowth2: 0.22
+  EndFeather2: 6
+  Warp2: {x: 1.2, y: 7}
+  WallKeep: {x: 3, y: 2}
+  WallPaintKeep: {x: 0.5, y: 0.5}
+  Reef:
+    Channel: 5
+    Rise: {x: 6, y: 9}
+    Crest: {x: 9, y: 17}
+    Fall: {x: 17, y: 21}
+    CrestZ: -0.6
+    CrestAmp: 0.3
+    GullyEvery: {x: 15, y: 25}
+    GullyWidth: {x: 1.5, y: 2.5}
+    GullyZ: -1.6
+    PoolsPer100m: 7
+    PoolRadius: {x: 0.8, y: 1.5}
+    PoolDepth: {x: 0.3, y: 0.5}
+    BrokenScale: 1.5
+    WidthWander: 0.3
+    WidthLambda: 30
+  Flats: {fileID: 11400000, guid: b999aca36d3936089e5681f28829bfb1, type: 2}
+  Forms2:
+  - {fileID: 11400000, guid: 70e2f87b1e9955c95108bec7d7d6f033, type: 2}
+  - {fileID: 11400000, guid: cc2c84d6c3e0652d93f78de37248f2d0, type: 2}
+  - {fileID: 11400000, guid: 70dd5a0e4e14f1f9df2597ed7addbc24, type: 2}
+  - {fileID: 11400000, guid: a02595504ca0bbd14410a376b955849a, type: 2}
+  - {fileID: 11400000, guid: a252a20b983072c36c0f29dc30053e5f, type: 2}
+  - {fileID: 11400000, guid: 98ebcf06d61d8c19dad01f0d6bc4fdaf, type: 2}
+  Creeks2:
+  - {fileID: 11400000, guid: e9380a0ef2c01e1a8785df5dc8abd3a5, type: 2}
+  - {fileID: 11400000, guid: 894c43cd0eb220d526b79193aad69f33, type: 2}
+  - {fileID: 11400000, guid: 46cc8b68446c760e6af753a045ad0dd8, type: 2}
+  - {fileID: 11400000, guid: 079e5bcae2774a10b8009d4874374a19, type: 2}
+  - {fileID: 11400000, guid: d5ac137a59ffdc3d4f64f70be1ae377f, type: 2}
+  FreshPonds2:
+  - {fileID: 11400000, guid: 2fd9cd39843f423b8026cf7d375a1918, type: 2}
+  - {fileID: 11400000, guid: d84444a4281b4bd8bab34a7a16c64804, type: 2}
+  - {fileID: 11400000, guid: 1566408c292241578c4650475cb633c0, type: 2}
+  FreshStreams2:
+  - {fileID: 11400000, guid: bc48277049294e339a291e938fa41de8, type: 2}
+  - {fileID: 11400000, guid: 8c2811b1334f4ac1800004a381a931fd, type: 2}
+  - {fileID: 11400000, guid: f735a46a1bb14a6394bfefb18ff631db, type: 2}
   Forms:
   - {fileID: 11400000, guid: faf52bb9b6522171c29516ef49cf5140, type: 2}
   - {fileID: 11400000, guid: d85c1208ad2dc9eff24fe346dacc2f8b, type: 2}

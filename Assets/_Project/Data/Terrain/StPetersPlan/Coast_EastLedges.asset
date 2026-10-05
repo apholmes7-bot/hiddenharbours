@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba11a965f465ae7368870a5168abc3cc, type: 3}
+  m_Name: Coast_EastLedges
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CoastSectionDef
+  Id: coast.stp_east_ledges
+  DisplayName: East Ledges
+  Type: toe_reef
+  Mode: 4
+  Recipe: {fileID: 11400000, guid: 6e6576addfb180280a2ccd689ef84eed, type: 2}
+  Edge: {x: 2, y: 10}
+  Knots: []
+  SeaTail: 12
+  HasRockEdge: 0
+  RockEdge: 0
+  Poly: []
+  Sector: {x: 0, y: 0}
+  Below: 0
+  XRange: {x: 0, y: 0}
+  HalfWidth: 0
+  WindowWest: 30
+  GutX: 0
+  GutKeep: 0
+  RunnelEvery: {x: 0, y: 0}
+  RunnelWidth: 0
+  RunnelDepth: 0
+  RunnelBand: {x: -1.8, y: 0.4}
+  RunnelAcross: {x: 5.5, y: 30}
+  MusselNearGut: 0
+  MusselBand: {x: 0, y: 0}
+  LobeAmp: 0
+  LobeLambda: 0
+  LobeBand: {x: 0, y: 0, z: 0, w: 0}
+  PaintBelow: 2.4
+  CrestKeep: {x: 5, y: 1.5}
+  HeadKeep: []
+  HeadKeepFeather: 3
+  PoolRelease: {x: 1.2, y: 0.3}
+  PoolWobble: 0.06
+  Walls:
+  - {fileID: 11400000, guid: 378c9ff63a098e4af1451ba027c55de4, type: 2}
+  - {fileID: 11400000, guid: 6ec137969f1a4783a9c43b4a17bcb312, type: 2}
+  - {fileID: 11400000, guid: c9aa67966b5bacd1656428f0a7d4a198, type: 2}
+  - {fileID: 11400000, guid: 7aaf275d048ca87c763be4fab054a8d3, type: 2}
+  - {fileID: 11400000, guid: e0fb9d93531f724ba630f11f95fb947f, type: 2}
+  - {fileID: 11400000, guid: d177942f3f505583139ef0994c34f523, type: 2}
+  - {fileID: 11400000, guid: 43f8a978019b379d1d9493364972b236, type: 2}
+  - {fileID: 11400000, guid: f7c3ddc8f872e3b67e2fcabd5cfa9e68, type: 2}
+  - {fileID: 11400000, guid: c5a7b01b5c64cc76a2f79f44b789455c, type: 2}
+  - {fileID: 11400000, guid: 43c94ccd22f434d17e154ecab09c45b0, type: 2}
+  - {fileID: 11400000, guid: e9758af6a116e439a045275169d87582, type: 2}
+  - {fileID: 11400000, guid: 650d06c2ffa7f766828201eceab82774, type: 2}
+  - {fileID: 11400000, guid: 42e3f31a0256e8216f8e27e2dd966abc, type: 2}
+  - {fileID: 11400000, guid: 9dea3eeb97fa4bca551a9d2c251b660f, type: 2}
+  - {fileID: 11400000, guid: 00af68b8a974ac1e34dfe4190ec7d49f, type: 2}
+  - {fileID: 11400000, guid: 5e6321add3b1cb98ebabd0cdc6216bc3, type: 2}
+  - {fileID: 11400000, guid: 2fb7b2bb8b644a8fef3ca4f5d2641a0c, type: 2}
+  - {fileID: 11400000, guid: 192a70ba615c63ca8740c63c10a8ef8f, type: 2}
+  - {fileID: 11400000, guid: f3c1cab2e871284b2a9467d92c9627cf, type: 2}
+  - {fileID: 11400000, guid: 4c4aadefb90e418c9ecef3ed6ac6b712, type: 2}
+  - {fileID: 11400000, guid: 42e26e39581b178f17735b90de32616b, type: 2}
+  - {fileID: 11400000, guid: 2d117e7962bfdf8756554fb889ab6b38, type: 2}
+  - {fileID: 11400000, guid: e2ccdadb339ee40e0e3c2801bff1d3b6, type: 2}
+  - {fileID: 11400000, guid: 5f5f0232b35c0f40200632b9e44e84aa, type: 2}
+  - {fileID: 11400000, guid: ce3f68f59e88c5bcca2762c7f1e5690c, type: 2}
+  - {fileID: 11400000, guid: d6aa0b6553f86b38f7bc4f440d586243, type: 2}
+  - {fileID: 11400000, guid: 2aea160f99153d2c95a74088e099c94b, type: 2}
+  - {fileID: 11400000, guid: 2776cddb8ddbada35bc661b812c53fea, type: 2}
+  - {fileID: 11400000, guid: 9986a0ea464c80621fbd5ed753c36e56, type: 2}
+  - {fileID: 11400000, guid: 420a0639e8fad2d238b92af99268587a, type: 2}
+  - {fileID: 11400000, guid: 339974571404e59d4bba585771a57324, type: 2}
+  - {fileID: 11400000, guid: a0c4c2e7b3af34452c3d85da5a51b6a3, type: 2}
+  - {fileID: 11400000, guid: d641fa8f539011e0ce7153b7c3188191, type: 2}
+  - {fileID: 11400000, guid: ab57ee51d7754356ecdf377b11ebde33, type: 2}
+  - {fileID: 11400000, guid: 1ff0b5e4defaed5b0aee0412e726c6d8, type: 2}
+  - {fileID: 11400000, guid: ce4e4f14dee4cc2424f56605acccea94, type: 2}
+  - {fileID: 11400000, guid: a32b80c941f66e7c4ddc08279622c306, type: 2}
+  Broken: 0
+  KeepAbove: 1
+  FlatsCharacter: sand
+  HasSpit: 0
+  SpitBearing: 0
+  SpitLength: 0
+  SpitHalfWidth: 0
+  SpitCrest: {x: 0, y: 0}
+  SpitMaxCut: 0
+  Why: 'Walls 023-039 (LedgeCliff) stand on a bench at -1.65. In front of it the plan lays a reef: a toe channel the walls'' foot keeps, then a weed-covered crest that bares at every low, cut by gullies along the rock''s joints and pocked with rock pools. Its walls (PR 5w, by real id, clockwise): 023, 024, 025, 026, 027, 028, 147, 148, 149, 029, 030, 150, 031, 151, 032, 152, 153, 154, 033, 155, 156, 034, 157, 035, 158, 036, 159, 160, 161, 162, 163, 164, 165, 037, 038, 166, 039; part 2 drew it on walls 023-039. (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

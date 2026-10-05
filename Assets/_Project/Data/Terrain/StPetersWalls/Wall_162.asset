@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_162
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_162
+  Status: 1
+  SplitFrom: wall.stp_037
+  Follows: wall.stp_161
+  Rock: sandstone
+  Class: 5
+  Aspect: S
+  Batter: steep
+  Brow:
+  - {x: 100.943, y: -68.745964}
+  - {x: 100.69446, y: -68.78426}
+  - {x: 100.43838, y: -68.77282}
+  - {x: 100.18237, y: -68.76102}
+  - {x: 99.92642, y: -68.74888}
+  Toe:
+  - {x: 101.401855, y: -71.71066}
+  - {x: 101.07364, y: -71.25534}
+  - {x: 100.82188, y: -71.293816}
+  - {x: 100.56259, y: -71.28251}
+  - {x: 100.296, y: -71.22141}
+  DropMetres:
+  - 7.589643
+  - 7.220517
+  - 7.308475
+  - 7.394392
+  - 7.312673
+  ToeElevations:
+  - -1.5988485
+  - -1.2952849
+  - -1.3670546
+  - -1.4767568
+  - -1.5459257
+  Stations:
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  BrowFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9:
+  - 0.88165766
+  - 0.9211844
+  - 1.2094778
+  - 1.5054864
+  - 1.8099176
+  ToePass9:
+  - -1.6499428
+  - -1.6499428
+  - -1.6499428
+  - -1.6499428
+  - -1.6499428
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 37
+  MeasuredOn: 'the ground file''s import, StPetersSeabed_HeightTex.png at 883f27b5 (codes sha256 5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261)'
+  FaceNeeded: 
+  Why: 'Cut from 037, re-lined on the import: its stations k2-k6. The list''s row 037 (East Ledges): re-lined.'
