@@ -739,11 +739,19 @@ namespace HiddenHarbours.Tests.EditMode
         ///
         /// <para><b>What is pinned:</b> on an authored cliff sector, below the top 40% of a face,
         /// NOTHING plants. The body of the wall is rock.</para>
+        ///
+        /// <para><b>⭐ On the committed map (terrain PR 5w).</b> The walls stand on #921's committed map, so the
+        /// planter is asked of that ground, read as the game reads it (<see cref="PaintedHeightField.ElevationAt"/>).
+        /// Which stretches are authored cliff still comes off the plan's blend.</para>
         /// </summary>
         [Test]
         public void TheBodyOfEveryWallIsUnplantable_AndTheBrowBandIsMeasuredNotAssumed()
         {
             const float BodyStartsAt = 0.4f;        // fraction of the way down the face
+            var map = UnityEditor.AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(StPetersTerrainPlan.SeabedPath);
+            Assert.IsNotNull(map, StPetersTerrainPlan.SeabedPath + " is missing: the walls stand on the committed map");
+            Assert.IsNotNull(map.Field, "the committed map did not decode");
+            var ground = new CommittedGround(map.Field);
             int plantableOnRock = 0, sampledOnRock = 0;
             int plantableInBody = 0, sampledInBody = 0;
             int plantableInTaper = 0, sampledInTaper = 0;
@@ -774,7 +782,7 @@ namespace HiddenHarbours.Tests.EditMode
                     {
                         Vector2 p = s.BrowPlan + outward * (run * t);
                         bool plantable =
-                            StPetersWoods.IsPlantable(_terrain, p, StPetersShoreMap.GrassFloorElevation);
+                            StPetersWoods.IsPlantable(ground, p, StPetersShoreMap.GrassFloorElevation);
 
                         if (!onRock)
                         {
@@ -819,6 +827,14 @@ namespace HiddenHarbours.Tests.EditMode
                 "quarter of the way down every plunge while it is already near-vertical. The kit ships " +
                 "a BROW DECAL for exactly that seam. Narrowing it is a habitat-floor dial, not a " +
                 "cliff-shaped exception in the planter.");
+        }
+
+        /// <summary>The committed map as the planter asks it: the ground the walls stand on (terrain PR 5w).</summary>
+        sealed class CommittedGround : ITidalTerrain
+        {
+            readonly PaintedHeightField _field;
+            public CommittedGround(PaintedHeightField field) { _field = field; }
+            public float ElevationAt(Vector2 worldPos) => _field.ElevationAt(worldPos);
         }
 
         /// <summary>The generated names are stable and self-describing, so a scene diff reads as a coast
