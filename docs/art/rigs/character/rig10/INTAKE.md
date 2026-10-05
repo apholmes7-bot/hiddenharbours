@@ -16,7 +16,7 @@ This folder is Claude Design's kit 10.3 **as regenerated on real Node**:
 - Git history keeps 10.2, and the kit carries 10.2's rig frozen as `_2`.
 - Rig 9's folder (`../rig9/`) is unchanged.
 
-In this phase (A), the game's bake reads 10.3 but nothing is re-baked. The ten committed skins stay 10.2 bakes until Phase B.
+Phase A ported the game's bake to 10.3 and re-baked nothing. Phase B (below) re-baked the ten committed skins from 10.3.
 
 | | |
 |---|---|
@@ -429,11 +429,11 @@ Before the push, the no-copy guard was run outside Unity against three trees:
 - The look guard shared with 9.2 (`TheLookPortLandsWhereTheRigsGoldenCheckDoes`) aimed at bearings and heights copied from the checks. Now it reads them off the rig: `AIM` on 10.3, and rig 9's checks file for 9.2.
 - `V10_EveryPresetExportsWithinTheRigsToleranceOfItsCommittedBuild` held the export to `V9Tolerance`. Now it holds it to the rig's own `TOL.gate_m`.
 - `V10_EveryGameplaySidecarIsTheRigsOwnByteForByte` rebuilt each sidecar unrounded, and went red on nine of the ten at the first push (only the fisher's numbers need no rounding). It now prints through the rig's own `R7`, as the kit writes the files; a kit that exports its numbers but no `R7` is refused.
-- Two guards go red by design until Phase B re-bakes the ten:
-  - `EveryCommittedSkinDef_PinsTheRigsAsTheyAreToday`: the committed skins pin 10.2's rig hashes.
-  - `TheCommittedBindMeshIsTheFaceTheChainComposesToday`: the committed bind meshes are 10.2's.
+- Two guards went red by design in Phase A, until Phase B re-baked the ten:
+  - `EveryCommittedSkinDef_PinsTheRigsAsTheyAreToday`: the committed skins pinned 10.2's rig hashes.
+  - `TheCommittedBindMeshIsTheFaceTheChainComposesToday`: the committed bind meshes were 10.2's.
 
-  Nothing merges before both are green.
+  Phase B's re-bake turns both green (below).
 
 ### Measured: what 10.3 changes in the game (no Unity)
 
@@ -516,14 +516,59 @@ Two more measures of the sleeper move from 10.2 to 10.3:
 - No face draws in `iris`.
 - The keyline colour is `SHADING.keyline` (`#101a19`). It is not drawn (owner ruling K4).
 
-**On screen.** Nothing changes in Phase A: the committed skins are 10.2 bakes. After Phase B's re-bake, these are what show:
-- **The girl's face and the brows.** The girl's face at SE and SW changes (her mouth's marks). Every brow's depth bias rises slightly; Phase B's plates will show whether any pixel moves.
+**On screen.** Nothing changed in Phase A: the committed skins were 10.2 bakes. After Phase B's re-bake, these are what show (Phase B's plates, below, measure them):
+- **The girl's face and the brows.** The girl's face at SE and SW changes (her mouth's marks). Every brow's depth bias rises slightly, and it moves no pixel in any of Phase B's plates of the game.
 - **Nothing from the rod sockets, the mounts, the sleeper or the pins.** The game never draws those clips on the rig's mesh:
   - The fishing, sleep and mount states are not among the mesh states the presenters draw (`DeckRiderMeshPresenter.cs` l.388, 396 and 407; `CharacterFigurePresenter.cs` l.375 and 385).
   - The bunk plays the player's rig 6.5 sleep sprite (`PlayerSleepPresenter`).
   - Nothing at run time reads the pins or the rod's sockets.
   - No one plays `mountUp` or `mountDown`: the presenters keep the mount states off the mesh, and nothing in the game references the girl's or the boy's build. So the game plays neither on the girl or the boy.
-- **The overlay's pad.** The re-bake re-measures each skin's `ReachPx`, which is measured over every clip, the mount and sleep clips included (`CharacterSkinPose.MeasureReach`). The figure's overlay is padded by it (`IsoCharacterFigureRenderer.cs` l.893–929). Its comment at l.889 still gives 10.2's figure ("the deck boss asleep reaches 1.69 px below it").
+- **The overlay's pad.** The re-bake re-measures each skin's `ReachPx`, which is measured over every clip, the mount and sleep clips included (`CharacterSkinPose.MeasureReach`). The figure's overlay is padded by it (`IsoCharacterFigureRenderer.cs` l.894–930). Its comment at l.889 gave 10.2's figure for the sleep ("the deck boss asleep reaches 1.69 px below it"). Phase B found the reach unchanged and the comment now gives the mount clips' reach.
+
+### Phase B: the re-bake (2026-10-05)
+
+All ten committed skins (`Assets/_Project/Data/Characters/Skin/<preset>.asset`) were re-baked from 10.3 in one headless run (`CharacterSkinAssetBaker.BakeCastCli`, 10 of 10 OK).
+- Each keeps its GUID, id and switch states, and now pins this folder's rig and pose library at the hashes above, revision 10.3.
+- Each still carries 28 bones and 53 clips, a bind mesh of 519 to 713 faces, and 20 to 24 of the 32 colour slots.
+- Only the girl's mesh changes size: 544 → 554 faces (2,214 → 2,254 corners, 1,126 → 1,146 triangles).
+- The two guards Phase A left red by design are green: `EveryCommittedSkinDef_PinsTheRigsAsTheyAreToday` and `TheCommittedBindMeshIsTheFaceTheChainComposesToday`.
+
+Each re-bake gives a skin's bind mesh a new id inside its file, and nothing outside the file refers to it. On four of the ten (nan, the deck boss, the packer and the hand), the new id puts the mesh ahead of the def in the file, so their diffs move the whole def (about 26,500 lines each). Set apart from the order, every def changes 463 to 503 lines and every mesh one line (the girl's, six).
+
+**The game against the rig.** As #918's Phase B did, the game drew each plate in its PlayMode harness (Direct3D 11): on the 10.2 skins before the re-bake and on the 10.3 skins after. Each cell was compared with the rig's own render of the same pose, frame and facing in V8 (Node), inside the 80 × 104 cell. Each pair of numbers is 10.2 → 10.3:
+
+| Plate | Cells | Exact | Drawn by one side only (px) | In colour (px) | Worst cell (px) |
+|---|---:|---|---|---|---|
+| The girl at SE and SW, every idle frame | 12 | 0 → 0 | 3 → 1 | 44 → 39 | 7 → 7 |
+| The ten at 8 facings, idle's first frame | 80 | 46 → 46 | 13 → 12 | 39 → 39 | 4 → 4 |
+| The five fishing clips at SE, every frame | 420 | 83 → 83 | 37 → 37 | 941 → 977 | 12 → 12 |
+| `mountUp` and `mountDown` at SE, every frame | 300 | 104 → 107 | 51 → 49 | 414 → 396 | 11 → 11 |
+| `sleep`'s first frame at 8 facings, where the game places it | 80 | 20 → 21 | 13 → 6 | 160 → 168 | 11 → 10 |
+
+- The rig's own 10.3 idle cells are byte-equal to the kit's `renders/1x/<preset>.idle8.png` (80 of 80). So the second row is also the game against the kit's renders: 51 pixels differ (10.2: 52).
+- The defs' numbers equal the rig's. The worst step between neighbouring frames matches on 120 rows (to 0.0000°), so the socket and mount tables above hold in the game. The sleeper's pelvis matches on all ten (to 4 decimals).
+
+**What the re-bake changes in the game's own pictures** (the game's cells, 10.2 against 10.3):
+- The girl's face at SE and SW: 5 px in every idle frame, each as the rig changes it. Her face changes in every fishing and mount frame at SE too.
+- The other nine: no pixel changes in idle at any facing, or in the fishing clips. The brows' new depth bias moves no pixel in these plates of the game. In the rig's own paint it moves 1 to 11 px in the fishing clips, on six of the nine.
+- `mountUp` and `mountDown`: on each of the nine, 11 or 12 of the 30 frames change (224 to 849 px a figure). On the girl, all 30 change.
+- `sleep`: every facing changes on all ten. The sleeper lies centred on the pivot and draws nothing past the cell (10.2: 8 px, the deck boss's).
+
+**One difference on the girl's face.** In the fishing clips at SE, the rig draws one of the girl's eye marks (2 px) and a darker mouth shade in more frames than the game does: 63 px over the 42 frames, where the game draws her skin or hair. 19 px of 10.2's differences of that kind are gone. The game makes the rest of her 10.3 change exactly as the rig does, and in idle at SE and SW the two agree. The game does not play the fishing clips on the mesh today (above).
+
+**The reach.** Every clip, honest frame and facing (3,504 poses a figure) was shot four times:
+1. through the figure's own overlay;
+2. through a copy opened 15 px all round;
+3. through a copy padded only 1 px;
+4. through its own overlay again.
+
+On all ten, the figure's own overlay cuts no pixel the open copy draws, and its two shots are identical.
+- `ReachPx` is unchanged from 10.2 on all ten. The mount clips set it: 10.15 to 11.14 px below the cell, at most 2.26 px past either side, and never above.
+- The 1 px copy cuts 707 to 1,086 px a figure, all in the four mount clips. On 10.2 it cut 707 to 1,092, 6 of them in the deck boss's sleep. Centred, the sleeper no longer passes the 1 px pad.
+
+**The strips.** A new guard, `V10_TheCommittedStripsAreTheRigsOwnRender` (`CharacterSkinnedExportTests.V10.cs`), checks every 1x strip the kit's own plan lists (`tools/kit.js`, `renderPlan`). It draws each one in the game's V8 and holds its RGBA to the manifest's `rgbaSha256`: 120 of 120, none missed. The 4x strips and the cast sheet are scalings of these, and the kit's own checker holds them on Node. The owner ruled that this check comes with Phase B.
+
+The plates were shot in the same slot. They are evidence and are not committed; the PR carries their numbers.
 
 ### For the Art desk (and Claude Design, through the owner)
 
