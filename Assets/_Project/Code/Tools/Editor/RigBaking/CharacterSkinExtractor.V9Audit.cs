@@ -231,14 +231,17 @@ globalThis.__hh9a = (function (C) {
     var st = { n: 0, w: 0, at: '', p: [] }; cmp(JSON.parse(JSON.stringify(o)), want, tol, p, st);
     return [st.n, st.w, st.at].concat(st.p).join('\n'); }
   // layout 9: two-space JSON, the sha pair after exportSymbol. layout 10: one line, the sha pair first.
-  function gameplay(p, rig, poses, layout) { var o = C.gameplay(p), r = {};
+  // round: the kit writes every number through the rig's own R7 (rig 10 since 10.3); a rig without one throws.
+  function gameplay(p, rig, poses, layout, round) { var o = C.gameplay(p), r = {}, R = null;
+    if (round) { R = C.R7;
+      if (typeof R !== 'function') throw new Error(C.rig + ' ' + C.revision + ' exports no R7, which its kit writes every gameplay file through'); }
     if (layout === 10) {
       r = { derivedFromRigSha256: rig, posesDerivedFromRigSha256: poses };
       Object.keys(o).forEach(function (k) { if (k !== 'derivedFromRigSha256' && k !== 'posesDerivedFromRigSha256') r[k] = o[k]; });
-      return JSON.stringify(r); }
+      return JSON.stringify(r, R); }
     Object.keys(o).forEach(function (k) { if (k === 'derivedFromRigSha256' || k === 'posesDerivedFromRigSha256') return; r[k] = o[k];
       if (k === 'exportSymbol') { r.derivedFromRigSha256 = rig; r.posesDerivedFromRigSha256 = poses; } });
-    return JSON.stringify(r, null, 2); }
+    return JSON.stringify(r, R, 2); }
   function strip(p, clip, dir, n) { var W = C.W * n, H = C.H, out = new Uint8Array(W * H * 4);
     for (var k = 0; k < n; k++) { var R = C.render({ clip: clip, frame: k, dir: dir, build: p });
       for (var y = 0; y < H; y++) for (var x = 0; x < C.W; x++) { var a = (y * C.W + x) * 4, d = (y * W + k * C.W + x) * 4;
@@ -416,7 +419,9 @@ globalThis.__hh9a = (function (C) {
         /// <summary>The gameplay sidecar the rig writes today for <paramref name="preset"/>
         /// against the committed one, byte for byte. Null when they are identical, else the
         /// first line that differs (rig 10 writes each sidecar on one line: the stretch around
-        /// the first character that differs).</summary>
+        /// the first character that differs). A kit that exports its numbers (rig 10.3) writes
+        /// every number through the rig's own <c>R7</c>, so the rig's sidecar is printed through
+        /// it too; a rig that exports no <c>R7</c> throws.</summary>
         public static string GameplaySidecarDiff9(IRigScriptHost host, string kitRoot, string preset)
         {
             Install9Audit(host);
@@ -425,8 +430,9 @@ globalThis.__hh9a = (function (C) {
             var (rig, poses) = KitShas9(kitRoot, kit);
             string file = kit.GameplayFile(preset);
             string want = ReadKitText9(kitRoot, file);
+            string round = kit.ExportsNumbers ? "true" : "false";
             string got = host.EvaluateString(
-                $"globalThis.__hh9a.gameplay({Js(preset)},{Js(rig)},{Js(poses)},{Layout9(host)})");
+                $"globalThis.__hh9a.gameplay({Js(preset)},{Js(rig)},{Js(poses)},{Layout9(host)},{round})");
             if (string.Equals(got, want, StringComparison.Ordinal)) return null;
             string[] a = Lines9(got), b = Lines9(want);
             for (int i = 0; i < Math.Max(a.Length, b.Length); i++)

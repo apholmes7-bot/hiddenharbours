@@ -61,7 +61,8 @@ namespace HiddenHarbours.Tools.RigBaking
         /// each there and copies none: rig 10 since 10.3 (<c>TOL</c>, which its paint reads its
         /// tolerances from; <c>DITHER</c>; <c>INK</c> with <c>INK_ROLES</c> and <c>EYE_WHITE</c>;
         /// <c>AIM</c>). Rig 9.2 exports none: its tolerances are read off its paint's own literals and
-        /// its dither is the canonical matrix.</summary>
+        /// its dither is the canonical matrix. Such a kit writes every number through the rig's own
+        /// <c>R7</c> (7 decimals), and the sidecar check prints the rig's sidecars through it too.</summary>
         public readonly bool ExportsNumbers;
 
         CharacterRigKit(string catalogKey, string rigName, string revision, int pass, string fileTag,

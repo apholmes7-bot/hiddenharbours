@@ -428,6 +428,7 @@ Before the push, the no-copy guard was run outside Unity against three trees:
 - `V10_TheInkIsTheRigsShadingWithNoKeylineAndTheMarksFloors` read its two floors as literals in the rig's source. 10.3's source holds `TOL.cull` and `TOL.markEdge` there instead, so the guard reads `TOL` and holds each test at its one site.
 - The look guard shared with 9.2 (`TheLookPortLandsWhereTheRigsGoldenCheckDoes`) aimed at bearings and heights copied from the checks. Now it reads them off the rig: `AIM` on 10.3, and rig 9's checks file for 9.2.
 - `V10_EveryPresetExportsWithinTheRigsToleranceOfItsCommittedBuild` held the export to `V9Tolerance`. Now it holds it to the rig's own `TOL.gate_m`.
+- `V10_EveryGameplaySidecarIsTheRigsOwnByteForByte` rebuilt each sidecar unrounded, and went red on nine of the ten at the first push (only the fisher's numbers need no rounding). It now prints through the rig's own `R7`, as the kit writes the files; a kit that exports its numbers but no `R7` is refused.
 - Two guards go red by design until Phase B re-bakes the ten:
   - `EveryCommittedSkinDef_PinsTheRigsAsTheyAreToday`: the committed skins pin 10.2's rig hashes.
   - `TheCommittedBindMeshIsTheFaceTheChainComposesToday`: the committed bind meshes are 10.2's.
