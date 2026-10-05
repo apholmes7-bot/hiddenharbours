@@ -37,6 +37,11 @@
 # macro for files Unity itself serialises.)
 *.recipe.json           text eol=lf linguist-language=json linguist-generated
 
+# St Peters' terrain plan (terrain PR 5; T12). Both are compared byte for byte: the frozen sources must write back to
+# themselves, and the manifest records the sources' file sha256. A CRLF checkout would red both for line endings alone.
+Assets/_Project/Data/Terrain/StPetersPlan.sources.json   text eol=lf linguist-language=json
+Assets/_Project/Data/Terrain/StPetersPlan.manifest.json  text eol=lf linguist-language=json linguist-generated
+
 # Unity UI Toolkit files
 *.tss                   text diff=css linguist-language=css
 *.uss                   text diff=css linguist-language=css

@@ -1,0 +1,70 @@
+{
+  "schema": "hidden-harbours/key-scene-hosts@1",
+  "about": "The Art desk's answers for the mounts that name no host by id, or a host by a slip (INPUT-2026-10-02 5.5 and 6.1 to 6.4; O3 amendment 1, 4.6). KeySceneImport reads each by the piece's id and its mount words as the package writes them, so a new wording still refuses. The table retires when CD's next issue names every host by id (the Art desk 7).",
+  "hosts": [
+    {
+      "piece": "prop.stp_cannery_gull_a",
+      "mount": "the cannery’s roof (building.stp_cannery, its ridge), +15.30",
+      "standsOn": "mount",
+      "host": "structure.stp_cannery",
+      "anchor": "ridge",
+      "answer": "the Art desk 5.5: building.stp_cannery is a slip for structure.stp_cannery. Hosted for sorting only: no anchor comes with StPetersCannery, so it keeps its own numbers, (174.38, 11.62) at +15.30 on the ridge."
+    },
+    {
+      "piece": "prop.stp_cannery_gull_b",
+      "mount": "the cannery’s roof (building.stp_cannery, the boiler house’s ridge), +14.60",
+      "standsOn": "mount",
+      "host": "structure.stp_cannery",
+      "anchor": "boilerHouseRidge",
+      "answer": "the Art desk 5.5: building.stp_cannery is a slip for structure.stp_cannery. Hosted for sorting only: it keeps its own numbers, (167.17, 20.53) at +14.60 on the boiler house's ridge, on the building, not the stack."
+    },
+    {
+      "piece": "prop.stp_ne_gull_bell",
+      "mount": "the fog bell’s frame on the Head (prop.stp_ne_fog_bell), +14.12",
+      "standsOn": "mount",
+      "host": "structure.stp_ne_fog_bell",
+      "anchor": "frame",
+      "answer": "the Art desk 6.1: the fog bell is the scene's own structure.stp_ne_fog_bell; prop.stp_ne_fog_bell is a slip."
+    },
+    {
+      "piece": "prop.stp_ne_gull_stack_a",
+      "mount": "the Lantern Stack’s top (form: the light’s stack tier, +7.6), +7.65",
+      "standsOn": "mount",
+      "host": "form.stp_lantern_stack",
+      "anchor": "top",
+      "answer": "the Art desk 6.2: the light's stack tier is form.stp_lantern_stack (Form_LanternStack.asset), its top at +7.6."
+    },
+    {
+      "piece": "prop.stp_ne_gull_stack_b",
+      "mount": "the Lantern Stack’s top (form: the light’s stack tier, +7.6), +7.65",
+      "standsOn": "mount",
+      "host": "form.stp_lantern_stack",
+      "anchor": "top",
+      "answer": "the Art desk 6.2: the light's stack tier is form.stp_lantern_stack (Form_LanternStack.asset), its top at +7.6."
+    },
+    {
+      "piece": "gull.stp_gp_mud",
+      "mount": "perched 1 m over the ground (a boulder, a ledge)",
+      "standsOn": "mount",
+      "host": "rock.stp_gp_erratic_02",
+      "anchor": "perch",
+      "answer": "the Art desk 6.3: it sits on the erratic at its point (pxRockIso3, its base +0.02), rock.stp_gp_erratic_02 through the id map."
+    },
+    {
+      "piece": "gull.stp_gp_reef",
+      "mount": "perched 0.12 m over the ground (a boulder, a ledge)",
+      "standsOn": "ground",
+      "host": "",
+      "anchor": "",
+      "answer": "the Art desk 6.3: no piece stands within 3 m; it stands 0.12 m over the reef ledge's own ground, with no host, as the NE bar's three gulls do."
+    },
+    {
+      "piece": "prop.stp_landing_gull",
+      "mount": "context.wharf, the pier head’s bollard on the deck, +5.72",
+      "standsOn": "mount",
+      "host": "context.wharf",
+      "anchor": "northPilehead",
+      "answer": "the Art desk 6.4: the pier's north pilehead (StPetersWharf.Fittings, HeadCellX 213), at (213.5, 2.5); bollard is CD's word for it."
+    }
+  ]
+}

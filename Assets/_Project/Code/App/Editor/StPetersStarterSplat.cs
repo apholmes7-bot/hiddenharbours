@@ -763,43 +763,63 @@ namespace HiddenHarbours.App.Editor
         // this is a destructive one-shot that replaces hand-painting, and sitting at brush priority
         // made it read like one more brush. The confirm dialog's TITLE tracks this verb — the
         // rename only protects him if the dialog it pops says the same word the menu did; its
-        // body text and its fire-only-when-paint-exists condition are unchanged.
-        [MenuItem("Hidden Harbours/Art/Regenerate St Peters Starter Splat (replaces hand-painting)",
+        // fire-only-when-paint-exists condition is unchanged.
+        //
+        // Terrain PR 5 B: St Peters' maps are the terrain plan's now — the R16 height, the still
+        // water and all six splat maps, derived together from the plan and the ground file
+        // (TerrainPlanWindow.WriteMaps). The starter pass below paints A to E from the ANALYTIC
+        // ground, so run here it would overwrite the plan's coast with today's; the menu and its
+        // batch entry run the plan's writer instead. Paint() and PaintInto stay for their tests.
+        [MenuItem("Hidden Harbours/Art/Regenerate St Peters Splat from the Terrain Plan (replaces hand-painting)",
                   priority = 25)]
         public static void PaintMenu()
         {
-            // The pass re-derives the maps from scratch every run (that is what makes it
+            // The writer re-derives the maps from scratch every run (that is what makes it
             // idempotent), so it REPLACES hand-painting rather than adding to it. Only ask when
             // there is something to lose — a first run on blank maps needs no ceremony.
             if (TerrainSplatAssets.AllExist() &&
-                !EditorUtility.DisplayDialog("Regenerate St Peters Starter Splat",
-                    "This re-derives all five splat maps from the terrain and REPLACES what is in " +
-                    "them — including any hand-painting you have done with the Material brush.\n\n" +
-                    "Re-run it after re-baking the seabed. Otherwise, cancel and paint by hand.",
-                    "Replace the splat maps", "Cancel"))
+                !EditorUtility.DisplayDialog("Regenerate St Peters Splat from the Terrain Plan",
+                    "This re-derives St Peters' height, still-water and six splat maps from the " +
+                    "Terrain Plan and REPLACES what is in them — including any hand-painting you " +
+                    "have done with the Material brush.\n\n" +
+                    "Re-run it after the plan or the ground file changes. Otherwise, cancel and " +
+                    "paint by hand.",
+                    "Replace the maps", "Cancel"))
                 return;
 
-            if (Paint())
-                Debug.Log("[StPetersStarterSplat] Starter splat painted. Open the Terrain Paint " +
-                          "Tool's Material brush to repaint it your way, or rebuild St Peters to " +
-                          "see it wired in the scene.");
+            if (WritePlanMaps())
+                Debug.Log("[StPetersStarterSplat] The Terrain Plan's maps are written. Open the " +
+                          "Terrain Paint Tool's Material brush to repaint the splat your way.");
         }
 
         /// <summary>Batch entry point for <c>-executeMethod</c> (the seabed re-bake's pattern):
-        /// paints the starter splat headlessly, exiting nonzero on failure.</summary>
+        /// writes the Terrain Plan's maps headlessly, exiting nonzero on failure.</summary>
         public static void PaintStarterSplatFromCommandLine()
         {
             try
             {
                 AssetDatabase.Refresh();
-                if (!Paint()) EditorApplication.Exit(1);
+                if (!WritePlanMaps()) EditorApplication.Exit(1);
                 AssetDatabase.SaveAssets();
             }
             catch (Exception e)
             {
-                Debug.LogError("[StPetersStarterSplat] (batch) starter paint threw: " + e);
+                Debug.LogError("[StPetersStarterSplat] (batch) the plan's map write threw: " + e);
                 EditorApplication.Exit(1);
             }
+        }
+
+        /// <summary>The Terrain Plan's map write (<see cref="TerrainPlanWindow.WriteMaps"/>), its lines
+        /// logged; false when the write's read-back differs.</summary>
+        static bool WritePlanMaps()
+        {
+            var log = new System.Collections.Generic.List<string>();
+            bool ok = TerrainPlanWindow.WriteMaps(log);
+            foreach (string line in log)
+                Debug.Log("[StPetersStarterSplat] " + line);
+            if (!ok)
+                Debug.LogError("[StPetersStarterSplat] the Terrain Plan's maps did not read back as written.");
+            return ok;
         }
 
         /// <summary>

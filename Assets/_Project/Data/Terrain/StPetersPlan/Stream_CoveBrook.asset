@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 403eb22347c5492a047a67714d80b7ef, type: 3}
+  m_Name: Stream_CoveBrook
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.StreamDef
+  Id: stream.stp_cove_brook
+  DisplayName: Cove Brook
+  Source: {fileID: 0}
+  Points:
+  - {x: 56, y: 55.5}
+  - {x: 54.5, y: 59.5}
+  - {x: 52.5, y: 63.5}
+  - {x: 51.5, y: 67}
+  - {x: 51, y: 71}
+  - {x: 50.5, y: 76}
+  - {x: 50, y: 82}
+  BedZ:
+  - 5.55
+  - 5.1
+  - 3.8
+  - 2.4
+  - 0.9
+  - -0.25
+  - -1.1
+  Widths:
+  - 0.8
+  - 0.85
+  - 0.9
+  - 1
+  - 1.1
+  - 1.2
+  - 1.3
+  Depth: 0.1
+  Bank: {x: 0.4, y: 0.6}
+  Why: 'A seep off the barren that cuts a runnel through North Cove''s dune and fans across the sand.'

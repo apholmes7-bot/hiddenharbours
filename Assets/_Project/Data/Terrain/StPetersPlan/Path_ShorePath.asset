@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e4b07322d732cfe9125965394268f7, type: 3}
+  m_Name: Path_ShorePath
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PathDef
+  Id: path.stp_shore_path
+  DisplayName: Shore path
+  Kind: 0
+  Width: 1
+  Points:
+  - {x: -36, y: 3}
+  - {x: -40, y: 14}
+  - {x: -40.5, y: 26}
+  - {x: -36.5, y: 37}
+  - {x: -30, y: 45.5}
+  - {x: -23, y: 51.5}
+  - {x: -14, y: 56}
+  - {x: -4, y: 59}
+  - {x: 5, y: 61}
+  - {x: 12, y: 61.5}
+  - {x: 19, y: 61.5}
+  - {x: 27, y: 60.5}
+  - {x: 36, y: 58.5}
+  - {x: 45, y: 57.5}
+  - {x: 54, y: 57}
+  - {x: 62, y: 60}
+  - {x: 70, y: 64}
+  - {x: 79, y: 63}
+  - {x: 88, y: 60.5}
+  - {x: 97, y: 59}
+  - {x: 100.25, y: 63.35}
+  - {x: 101.6, y: 63.2}
+  - {x: 102.8, y: 63.35}
+  - {x: 103.45, y: 63.48}
+  - {x: 103.85, y: 63.5}
+  - {x: 104.55, y: 63.95}
+  - {x: 105.15, y: 64.26}
+  - {x: 105.8, y: 64.5}
+  - {x: 106.45, y: 64.36}
+  - {x: 107.05, y: 64.06}
+  - {x: 116, y: 60.5}
+  - {x: 126, y: 62.5}
+  - {x: 135, y: 64.5}
+  - {x: 143, y: 62}
+  - {x: 151, y: 56}
+  - {x: 158, y: 47}
+  - {x: 161, y: 36}
+  - {x: 160.5, y: 24}
+  - {x: 158.5, y: 12}
+  - {x: 157, y: 5}
+  LineSource: 
+  JoinPoints: []
+  Material: path
+  Weight: 1
+  Label: path
+  Ruts: 0
+  SourceId: 
+  Frozen: 0
+  PaintOnly: 0
+  Why: 'Part 1''s shore path. M4: it crosses the Alder Run below the fall''s pool, along the fall''s walk, over the flat stone and stepping stones 1 to 5, then on to (116, 60.5).'

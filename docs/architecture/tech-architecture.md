@@ -378,6 +378,26 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
     characters; "editor" where no build was made), which is §7.8's exit criterion: a playtest report that
     cannot be pinned to a build is worth very little. Moving the CAMERA to a composed title framing is a
     separate, App-lane question — the UI assembly reaches Core only, by design.
+- **The player's save is never clobbered.** The one slot is `persistentDataPath/savegame.json`, which
+  every checkout on a machine shares (the path is keyed on company and product, not on the folder). Two
+  guarantees protect it.
+  - **No test touches it.** `SaveService` opens `SaveStore.ActivePath`. That is the player's save, except
+    under the editor's test runner, where each PlayMode run gets a file of its own:
+    `<project>/Temp/TestRunSaves/<guid>/savegame.json`, which starts absent, so every run begins on a new game
+    as CI always has. The PlayMode tests' run hook (`Tests.PlayMode.TestRunSave`, an assembly-level
+    `PrebuildSetupWithTestData`) sets it before the runner enters play mode. It is handed over in a process
+    environment variable (`SaveStore.TestRunSaveVariable`) because the service reads in `Awake` at
+    BeforeSceneLoad, before any test or run callback exists, and entering play mode reloads the domain, so no
+    static set beforehand would survive. The service keeps the path it opened, so the quit write as the runner
+    leaves play mode lands in the run's file too. The hook disarms when the editor is back in edit mode, a
+    cancelled run included, and again in the runner's cleanup. A built player compiles the branch out. Pinned
+    by `SaveNeverClobberedPlayTests`, which drives every write path of the live service and is not
+    GPU-gated, and by `SaveNeverClobberedTests`.
+  - **A New Game keeps the game it erases.** Before `BeginNewGame` replaces the file, and before the first
+    write over a save that existed but could not be read, `SaveStore.KeepReplaced` copies it, byte for byte,
+    to `savegame.kept-1.json` beside it. Older copies move up one, and the one past
+    `SaveStore.KeptGameCount` (3) is dropped. Every other write is unchanged. There is no in-game undo:
+    recovery is by hand, renaming a kept copy back to `savegame.json`.
 
 ## 7. Tick & performance model
 

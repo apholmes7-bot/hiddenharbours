@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e4b07322d732cfe9125965394268f7, type: 3}
+  m_Name: Path_GinnysHensWalk
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PathDef
+  Id: path.stp_ginnys_hens_walk
+  DisplayName: 'Ginny''s hens walk'
+  Kind: 0
+  Width: 0.7
+  Points:
+  - {x: 76.4, y: 25.6}
+  - {x: 74.7, y: 23.6}
+  - {x: 73.4, y: 22.3}
+  LineSource: 
+  JoinPoints: []
+  Material: path
+  Weight: 0.5
+  Label: worn grass
+  Ruts: 0
+  SourceId: walk.ginny.hens
+  Frozen: 0
+  PaintOnly: 1
+  Why: 'Worn grass where her feet go: the step to the hen run.'

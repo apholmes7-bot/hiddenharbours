@@ -50516,6 +50516,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.GearShop
   _offer: {fileID: 11400000, guid: 6cd2ccfae30a43519c8c111a79999c89, type: 2}
+  _sellerId: seller.nmc_chandlery
   _walletProvider: {fileID: 957678902}
   _onPurchased:
     m_PersistentCalls:
@@ -295632,6 +295633,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.Shipwright
   _offer: {fileID: 11400000, guid: 89bbe5ee338149a79cc6b94df8200038, type: 2}
+  _sellerId: seller.hectors_barrel
   _walletProvider: {fileID: 957678902}
   _onPurchased:
     m_PersistentCalls:
@@ -308665,6 +308667,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1341719454}
   - component: {fileID: 1341719453}
+  - component: {fileID: 693484514}
   m_Layer: 0
   m_Name: DialogueUI
   m_TagString: Untagged
@@ -308717,6 +308720,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &693484514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1341719452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f8b8045a55d046a6d14f5267a043a77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.CatalogBookPresenter
 --- !u!1 &1341888533
 GameObject:
   m_ObjectHideFlags: 0
@@ -339518,6 +339533,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.Shipwright
   _offer: {fileID: 11400000, guid: e261668ea4f74673990f234752e858d6, type: 2}
+  _sellerId: seller.nmc_yard
   _walletProvider: {fileID: 957678902}
   _onPurchased:
     m_PersistentCalls:
@@ -502652,6 +502668,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.PotShop
   _offer: {fileID: 11400000, guid: 7420f2a5db794195ba49223d1f632ddc, type: 2}
+  _sellerId: seller.nmc_yard
   _walletProvider: {fileID: 957678902}
   _onPurchased:
     m_PersistentCalls:
@@ -502669,6 +502686,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.PotShop
   _offer: {fileID: 11400000, guid: 9aabdb92084c4af0a3e246fcc2c57678, type: 2}
+  _sellerId: seller.nmc_yard
   _walletProvider: {fileID: 957678902}
   _onPurchased:
     m_PersistentCalls:
@@ -502686,6 +502704,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.Shipwright
   _offer: {fileID: 11400000, guid: 6bfec38f39935824aab73ef310f6305c, type: 2}
+  _sellerId: seller.nmc_yard
   _walletProvider: {fileID: 957678902}
   _onPurchased:
     m_PersistentCalls:
@@ -520219,6 +520238,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.LicenseVendor
   _license: {fileID: 11400000, guid: bf2da650c6644993819279c1b573877e, type: 2}
+  _sellerId: seller.nmc_harbourmaster
   _walletProvider: {fileID: 957678902}
   _onPurchased:
     m_PersistentCalls:

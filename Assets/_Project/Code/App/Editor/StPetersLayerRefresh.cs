@@ -1783,44 +1783,82 @@ namespace HiddenHarbours.App.Editor
         {
             try
             {
-                for (int i = 0; i < SceneManager.sceneCount; i++)
-                    if (apply && string.Equals(SceneManager.GetSceneAt(i).path, ScenePath, StringComparison.Ordinal))
-                        throw new Refusal("StPeters is open in the editor. Close it first: an open scene would overwrite the file on its next save.");
-
-                string text = File.ReadAllText(ScenePath);
-                SceneYaml scene = SceneYaml.Parse(text);
-                var terrainGo = new GameObject("StPetersLayerRefresh_Terrain") { hideFlags = HideFlags.HideAndDontSave };
-                List<LayerPatch> patches;
-                try
-                {
-                    var terrain = terrainGo.AddComponent<TidalTerrain>();
-                    StPetersBuilder.ConfigureTidalTerrain(terrain);
-                    patches = PlanAll(scene, terrain, new EditorShoreRockSprites(), LoadStPetersShoreRockDefs(), new EditorNavMarkAssets());
-                }
-                finally
-                {
-                    UnityEngine.Object.DestroyImmediate(terrainGo);
-                }
-
-                Directory.CreateDirectory(PatchFolder);
-                var utf8 = new UTF8Encoding(false);
-                foreach (LayerPatch p in patches)
-                    File.WriteAllText(Path.Combine(PatchFolder, p.Step + ".patch.yaml"), p.ToYaml(), utf8);
-                string summary = string.Join("\n", patches.Select(p => p.Summary()));
-
-                if (apply)
-                {
-                    string result = text;
-                    foreach (LayerPatch p in patches) result = p.ApplyTo(result);
-                    if (result != text) File.WriteAllText(ScenePath, result, utf8);
-                    Debug.Log($"[StPetersLayerRefresh] applied to {ScenePath} (patches in {PatchFolder}):\n{summary}");
-                }
-                else Debug.Log($"[StPetersLayerRefresh] dry run, nothing written to the scene (patches in {PatchFolder}):\n{summary}");
+                RunOnThePlanGround(apply);
             }
             catch (Refusal r)
             {
                 Debug.LogError(r.Message);
             }
+        }
+
+        // =====================================================================================
+        //  terrain PR 5 B: the three steps over the terrain plan's ground
+        // =====================================================================================
+
+        /// <summary>The terrain plan's ground as the steps' <see cref="ITidalTerrain"/>: the committed seabed
+        /// map's decoded field (<see cref="PaintedHeightMap.Field"/>, the R16 map the plan writes), which is what
+        /// a <see cref="PaintedTidalTerrain"/> reads, without one's registration (no GameServices, no still
+        /// water).</summary>
+        public sealed class PlanGround : ITidalTerrain
+        {
+            readonly PaintedHeightField _field;
+
+            public PlanGround(PaintedHeightField field) =>
+                _field = field ?? throw new ArgumentNullException(nameof(field));
+
+            public float ElevationAt(Vector2 worldPos) => _field.ElevationAt(worldPos);
+        }
+
+        /// <summary>The dry run over the plan's ground, for <c>-executeMethod</c>: a refusal fails the run instead
+        /// of logging.</summary>
+        public static void WritePatchesOnThePlanGroundBatch() => RunOnThePlanGround(apply: false);
+
+        /// <summary>The apply over the plan's ground, for <c>-executeMethod</c>, the menu's own path.</summary>
+        public static void ApplyPatchesOnThePlanGroundBatch() => RunOnThePlanGround(apply: true);
+
+        /// <summary>
+        /// Plan the three steps against the scene FILE over the terrain plan's ground, write the patches to
+        /// <see cref="PatchFolder"/>, and apply them only when asked, with the scene closed.
+        ///
+        /// <para>Since terrain PR 5 B the island the scene draws is the plan's (the seabed map at
+        /// <see cref="StPetersTerrainPlan.SeabedPath"/>: the sea and the splat read it), so the rocks, the clam
+        /// holes and the marks are placed on it, and the menu takes this path too: on the analytic ground it would
+        /// put back what the plan's coast moved. The builder's own placements still read the analytic terrain
+        /// until the painted terrain is adopted (the next PR), so the tests that hold these steps to the builder
+        /// pass the analytic terrain in themselves.</para>
+        /// </summary>
+        public static List<LayerPatch> RunOnThePlanGround(bool apply)
+        {
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+                if (apply && string.Equals(SceneManager.GetSceneAt(i).path, ScenePath, StringComparison.Ordinal))
+                    throw new Refusal("StPeters is open in the editor. Close it first: an open scene would overwrite the file on its next save.");
+
+            var seabed = AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(StPetersTerrainPlan.SeabedPath);
+            if (seabed == null || seabed.HeightTexture == null)
+                throw new Refusal("No seabed map at " + StPetersTerrainPlan.SeabedPath + ": write the terrain plan's maps first.");
+            seabed.Rebuild();   // decode the committed bytes now, not a field cached before the last write
+            var ground = new PlanGround(seabed.Field);
+
+            string text = File.ReadAllText(ScenePath);
+            SceneYaml scene = SceneYaml.Parse(text);
+            List<LayerPatch> patches = PlanAll(scene, ground, new EditorShoreRockSprites(), LoadStPetersShoreRockDefs(), new EditorNavMarkAssets());
+
+            Directory.CreateDirectory(PatchFolder);
+            var utf8 = new UTF8Encoding(false);
+            foreach (LayerPatch p in patches)
+                File.WriteAllText(Path.Combine(PatchFolder, p.Step + ".patch.yaml"), p.ToYaml(), utf8);
+            string summary = string.Join("\n", patches.Select(p => p.Summary()));
+            string over = $"over the plan's ground ({StPetersTerrainPlan.SeabedPath}, {F(seabed.MinElevation)} to {F(seabed.MaxElevation)})";
+
+            if (apply)
+            {
+                string result = text;
+                foreach (LayerPatch p in patches) result = p.ApplyTo(result);
+                if (result != text) File.WriteAllText(ScenePath, result, utf8);
+                Debug.Log($"[StPetersLayerRefresh] applied to {ScenePath} {over} (patches in {PatchFolder}):\n{summary}");
+            }
+            else Debug.Log($"[StPetersLayerRefresh] dry run {over}, nothing written to the scene (patches in {PatchFolder}):\n{summary}");
+            return patches;
         }
     }
 }

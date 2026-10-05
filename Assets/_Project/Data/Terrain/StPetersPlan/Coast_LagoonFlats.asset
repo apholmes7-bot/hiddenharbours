@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba11a965f465ae7368870a5168abc3cc, type: 3}
+  m_Name: Coast_LagoonFlats
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CoastSectionDef
+  Id: coast.stp_lagoon_flats
+  DisplayName: Lagoon Flats
+  Type: sandy_flats
+  Mode: 0
+  Recipe: {fileID: 11400000, guid: 3e76672de336f002bf4dae14e31c9d6e, type: 2}
+  Edge: {x: 3, y: 18}
+  Knots:
+  - {x: 12, y: 2.4}
+  - {x: 6, y: 1.2}
+  - {x: 0, y: 0}
+  - {x: -6, y: -0.7}
+  - {x: -14, y: -1}
+  - {x: -30, y: -1.2}
+  - {x: -48, y: -1.45}
+  - {x: -60, y: -1.8}
+  - {x: -68, y: -2.4}
+  SeaTail: 14
+  HasRockEdge: 0
+  RockEdge: 0
+  Poly: []
+  Sector: {x: 0, y: 0}
+  Below: 0
+  XRange: {x: 0, y: 0}
+  HalfWidth: 0
+  WindowWest: 30
+  GutX: 0
+  GutKeep: 0
+  RunnelEvery: {x: 0, y: 0}
+  RunnelWidth: 0
+  RunnelDepth: 0
+  RunnelBand: {x: -1.8, y: 0.4}
+  RunnelAcross: {x: 5.5, y: 30}
+  MusselNearGut: 0
+  MusselBand: {x: 0, y: 0}
+  LobeAmp: 0
+  LobeLambda: 0
+  LobeBand: {x: 0, y: 0, z: 0, w: 0}
+  PaintBelow: 2.4
+  CrestKeep: {x: 5, y: 1.5}
+  HeadKeep: []
+  HeadKeepFeather: 3
+  PoolRelease: {x: 1.2, y: 0.3}
+  PoolWobble: 0.06
+  Why: 'The lee of the bar and the island''s north-west shoulder: the one place fine sand settles. Today''s shelf, carried twice as far out and kept inside the clam holes'' tide band (+-1.8 m), so a spring low bares a flat.'
