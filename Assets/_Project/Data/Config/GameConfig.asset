@@ -223,6 +223,9 @@ MonoBehaviour:
     CompactScale: 0.55
     MinScale: 0.35
     MaxScale: 3
+  HelmFootprint:
+    CameraBandShare: 0.5
+    CameraEaseSeconds: 0.4
   Strike:
     PressStrikes: 1
     PullBackStrikes: 1
@@ -261,6 +264,13 @@ MonoBehaviour:
     MaxNaturalPeriodSeconds: 8
     MinDampingRatio: 0.35
     MaxDampingRatio: 1
+  HullTrim:
+    Enabled: 1
+    HumpFroude: 0.4
+    PlaningFroude: 0.55
+    DefaultMaxBowUpDegrees: 8
+    DefaultMaxBowDownDegrees: 4
+    DefaultResponseSeconds: 0.6
   RodFight:
     TensionRisePerSec: 0.55
     TensionFallPerSec: 0.7
@@ -302,11 +312,23 @@ MonoBehaviour:
     EnvelopeBandStrength: 0.35
     DefaultOn: 1
   HullKeylineFlood: 0
+  HullMeshReflections: 0
+  HullReflectionResolutionDivisor: 1
+  HullReflectionMaxHulls: 64
+  HullReflectionMaxPackets: 1024
+  HullReflectionMaxTriangles: 1000000
   BoatLegacyCabinGlow: 0
   PixelGridSnap: 1
+  CharacterBlink: 1
+  CharacterHeadLook: 1
+  CharacterEyeLook: 1
+  CharacterLookRadiusMetres: 5
+  CharacterLookTargetHeightMetres: 1.63
+  MeshFigureKeyline: 1
   MeshCharacter: 1
   MeshCharacterAshore: 1
   MeshCast: 1
+  MeshCastAshore: 1
   FoliageSilhouette: 1
   FoliageSilhouetteTint: {r: 0.94, g: 0.9, b: 0.82, a: 1}
   FoliageSilhouetteStrength: 0.55

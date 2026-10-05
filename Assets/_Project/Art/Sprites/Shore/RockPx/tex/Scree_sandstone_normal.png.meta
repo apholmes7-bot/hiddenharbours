@@ -1,0 +1,775 @@
+fileFormatVersion: 2
+guid: 3b93280c20d874d4abb7c2c9d22eb7a5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3265744332562385922
+    second: Scree_sandstone_normal_0
+  - first:
+      213: 599232862858604429
+    second: Scree_sandstone_normal_1
+  - first:
+      213: -94260503483333090
+    second: Scree_sandstone_normal_2
+  - first:
+      213: -3765090410687771864
+    second: Scree_sandstone_normal_3
+  - first:
+      213: -3246659087629491947
+    second: Scree_sandstone_normal_4
+  - first:
+      213: -6067090598819500582
+    second: Scree_sandstone_normal_5
+  - first:
+      213: 7878865108358048331
+    second: Scree_sandstone_normal_6
+  - first:
+      213: -2215056025802221180
+    second: Scree_sandstone_normal_7
+  - first:
+      213: 5889668118490263144
+    second: Scree_sandstone_normal_8
+  - first:
+      213: -5068021731913595834
+    second: Scree_sandstone_normal_9
+  - first:
+      213: 3681462839788500505
+    second: Scree_sandstone_normal_10
+  - first:
+      213: -6001497142279879122
+    second: Scree_sandstone_normal_11
+  - first:
+      213: 2742878467411870407
+    second: Scree_sandstone_normal_12
+  - first:
+      213: -4808550961500452696
+    second: Scree_sandstone_normal_13
+  - first:
+      213: -1416540658945974405
+    second: Scree_sandstone_normal_14
+  - first:
+      213: -7751039724015074820
+    second: Scree_sandstone_normal_15
+  - first:
+      213: 6282840118677504350
+    second: Scree_sandstone_normal_16
+  - first:
+      213: -3314434432539688023
+    second: Scree_sandstone_normal_17
+  - first:
+      213: -4773011601652826759
+    second: Scree_sandstone_normal_18
+  - first:
+      213: -8682385032531581462
+    second: Scree_sandstone_normal_19
+  - first:
+      213: -1508613459127066909
+    second: Scree_sandstone_normal_20
+  - first:
+      213: -6961201418740029086
+    second: Scree_sandstone_normal_21
+  - first:
+      213: -6901852061806475905
+    second: Scree_sandstone_normal_22
+  - first:
+      213: -3314843201367692842
+    second: Scree_sandstone_normal_23
+  - first:
+      213: 2214361667625413796
+    second: Scree_sandstone_normal_24
+  - first:
+      213: -7334115350797217623
+    second: Scree_sandstone_normal_25
+  - first:
+      213: -603654080236525677
+    second: Scree_sandstone_normal_26
+  - first:
+      213: -5297629755490587959
+    second: Scree_sandstone_normal_27
+  - first:
+      213: -2631599542522861538
+    second: Scree_sandstone_normal_28
+  - first:
+      213: 5783026092352360102
+    second: Scree_sandstone_normal_29
+  - first:
+      213: -8586823919373006643
+    second: Scree_sandstone_normal_30
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 009118adb596fce45b74e22e2a4095c9
+      internalID: 1264761088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a17ad9721c4553643be9034b1de18308
+      internalID: -477984859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb0ddf79f5764734fbe5fa63de43ed11
+      internalID: 624703114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ccdfa46603b93d4d887a2fdeee93e3f
+      internalID: -619540791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6caab196206143a45b8191a97b7edcf3
+      internalID: 2016365346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cdfe428ed464ed4ca2fdf49fef23519
+      internalID: -885081907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e18c011533f1dfd418df6d68a4adf5bf
+      internalID: -426516422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd4fdb73c8e3b84488d4854e9633bb6e
+      internalID: -1942655718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e06d5f5d4b80b84ea9c230bd0e332a7
+      internalID: 744904118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a82037013099134980e598f088244f4
+      internalID: 536568388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 787784d1099226745bc2d0e047af9166
+      internalID: 737927750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9bfb2e9c896750f46bd44d137c92ae12
+      internalID: 55099620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df4090c191a3c514ca25354c31494502
+      internalID: 557146351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6172d883a426ce419561c000f286a9f
+      internalID: -1795391001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2608f1996f9bcd4886b4987e3066eab
+      internalID: -1264128016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b39f8f871a0d5e549bce62cc628cead9
+      internalID: 721614677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96e9ff58b7c735449bee7d6333171de2
+      internalID: 1168387600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b6c38f6086392b4bb77f90ffc5e7b97
+      internalID: 1874370229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9178072089696044ba90de9890f70c91
+      internalID: -277343389
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ff38f8190284734bb96edf8807e6fab
+      internalID: 1041752143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84c993f10cf096749b7873b0eece6af0
+      internalID: 613057363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c85954c53762614fb0bb0859abd22b9
+      internalID: -10363963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 20fb5e2a1146e4e49ad43695f0d11b0b
+      internalID: -2085756319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50608052595c29940add3594e204115a
+      internalID: 1423500474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: ca3680042df5fab44a4b1b8e6e9d97cf
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Scree_sandstone_normal_c0_r0: 1264761088
+      Scree_sandstone_normal_c0_r1: 744904118
+      Scree_sandstone_normal_c0_r2: 1168387600
+      Scree_sandstone_normal_c1_r0: -477984859
+      Scree_sandstone_normal_c1_r1: 536568388
+      Scree_sandstone_normal_c1_r2: 1874370229
+      Scree_sandstone_normal_c2_r0: 624703114
+      Scree_sandstone_normal_c2_r1: 737927750
+      Scree_sandstone_normal_c2_r2: -277343389
+      Scree_sandstone_normal_c3_r0: -619540791
+      Scree_sandstone_normal_c3_r1: 55099620
+      Scree_sandstone_normal_c3_r2: 1041752143
+      Scree_sandstone_normal_c4_r0: 2016365346
+      Scree_sandstone_normal_c4_r1: 557146351
+      Scree_sandstone_normal_c4_r2: 613057363
+      Scree_sandstone_normal_c5_r0: -885081907
+      Scree_sandstone_normal_c5_r1: -1795391001
+      Scree_sandstone_normal_c5_r2: -10363963
+      Scree_sandstone_normal_c6_r0: -426516422
+      Scree_sandstone_normal_c6_r1: -1264128016
+      Scree_sandstone_normal_c6_r2: -2085756319
+      Scree_sandstone_normal_c7_r0: -1942655718
+      Scree_sandstone_normal_c7_r1: 721614677
+      Scree_sandstone_normal_c7_r2: 1423500474
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

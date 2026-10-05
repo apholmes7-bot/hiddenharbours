@@ -150,6 +150,12 @@ namespace HiddenHarbours.Tests.RigBaking
                          "CharacterHands6", AzimuthConvention.Clockwise, "character"),
             new Snapshot("characterHead", "docs/art/rigs/headIsoRig3.js",
                          "HeadIso3", AzimuthConvention.Clockwise, "characterEye"),
+            // Added by the character rig 10 intake (2026-10-02): Claude Design's kit 10.2, landed as
+            // delivered beside rig 9. Its own body, so no prerequisite; its poses and checks are
+            // sidecars that CharacterSkinExtractor.Load9 runs (CharacterRigKit.Rig10), not entries.
+            // Ordinal order puts "characterRig10" before "characterRig9".
+            new Snapshot("characterRig10", "docs/art/rigs/character/rig10/Art/characterIsoRig10.js",
+                         "CharacterIso10", AzimuthConvention.Clockwise),
             // Added by the character rig intake, PR 1 (2026-09-25): Claude Design's kit v9.2, landed
             // as delivered. Its own body, so no prerequisite; its poses and checks are sidecars that
             // CharacterSkinExtractor.Load9 runs, not entries.
@@ -165,6 +171,16 @@ namespace HiddenHarbours.Tests.RigBaking
             // catch pass 2. The wire roller basket, lathed against the shared turntable.
             new Snapshot("clamHod", "docs/art/rigs/catch-pass-2-kit/Art/clamHodRig.js",
                          "ClamHod", AzimuthConvention.Clockwise, "deckIsoSolid"),
+            // The coastal-heritage pass (drop 14, the village return; first carried by #853). NOT A
+            // RIG — an aesthetic COMPANION that repaints slate, stone, joinery and interior finishes
+            // for house, interior, manorIso and manorUnitIso, and the shared light engine. Clockwise
+            // is the placeholder every non-directional entry carries (buildingLifecycle,
+            // dialogueBubble, catchKit); nothing probes it. It names interiorProp and deliberately NOT
+            // house: house will name IT, and InstallPrerequisites has no cycle guard, so a house row
+            // here would close house -> coastalPass -> house. CoastalPass.enabled=false reverts the
+            // LOOK only — the stair geometry lives in the host rigs and stays.
+            new Snapshot("coastalPass", "docs/art/rigs/village-return/houses-kit/Art/coastalPass.js",
+                         "CoastalPass", AzimuthConvention.Clockwise, "interiorProp"),
             new Snapshot("crustacean", "docs/art/rigs/crustaceanRig.js",
                          "Crustacean", AzimuthConvention.Clockwise),
             // catch pass 2. ⚠️ render() takes the KIND first and the camera in opts.dir; an
@@ -202,10 +218,12 @@ namespace HiddenHarbours.Tests.RigBaking
             // of a registered global's source is the drift the no-edit rule exists to prevent.
             new Snapshot("gasStation", "docs/art/rigs/gas-station-rig/rig/gasStationRig.js",
                          "StationIso", AzimuthConvention.Clockwise, "deckIsoSolid", "fuel"),
-            new Snapshot("house", "docs/art/rigs/houseIsoRig.js",
-                         "HouseIso", AzimuthConvention.CounterClockwise, "buildingLifecycle"),
-            new Snapshot("interior", "docs/art/rigs/interiorIsoRig.js",
-                         "InteriorIso", AzimuthConvention.CounterClockwise),
+            // The village return (drop 14, #898): the returned house after the lifecycle pass and the
+            // companion, and the returned room after the house it opens its doorway from.
+            new Snapshot("house", "docs/art/rigs/village-return/houses-kit/Art/houseIsoRig.js",
+                         "HouseIso", AzimuthConvention.CounterClockwise, "buildingLifecycle", "coastalPass"),
+            new Snapshot("interior", "docs/art/rigs/village-return/houses-kit/Art/interiorIsoRig.js",
+                         "InteriorIso", AzimuthConvention.CounterClockwise, "house", "coastalPass"),
             new Snapshot("interiorProp", "docs/art/rigs/interiorPropRig.js",
                          "PropIso", AzimuthConvention.CounterClockwise),
             new Snapshot("lobsterBoat", "docs/art/rigs/lobsterBoatIsoRig.js",
@@ -214,6 +232,20 @@ namespace HiddenHarbours.Tests.RigBaking
             // lobsterBoat in one host — +45.000° per step at all 8 headings, un-squashed.
             new Snapshot("lobsterBoatVariants", "docs/art/rigs/lobsterBoatVariantsIsoRig.js",
                          "LobsterBoatVariantsIso", AzimuthConvention.CounterClockwise),
+            // The coastal-heritage pass (drop 14; first carried by #853). The manor SHELL — the v3
+            // return's, so no bake and no placement yet. ⚠️ It MUST be installed before
+            // manorUnitIso, which reads ManorIso for its footprint: without it ManorUnitIso.dims
+            // answers {Wd:0, Ln:0, topZ:0} and throws nothing, so the failure is silently a manor of
+            // zero size.
+            new Snapshot("manorIso", "docs/art/rigs/village-return/houses-kit/Art/manorIsoRig.js",
+                         "ManorIso", AzimuthConvention.CounterClockwise, "coastalPass"),
+            // The manor INTERIOR, floor by floor. Prerequisites are IN INSTALL ORDER and the
+            // first is load-bearing (see manorIso above). ⚠️ Its anchors() returns
+            // {anchors, openings, dims} and none of the door/floor/Wd/Ln/storeyZ that
+            // InteriorRigBaker reads, so it cannot bake through that baker as it stands.
+            new Snapshot("manorUnitIso", "docs/art/rigs/village-return/houses-kit/Art/manorUnitIsoRig.js",
+                         "ManorUnitIso", AzimuthConvention.CounterClockwise,
+                         "manorIso", "interiorProp", "coastalPass"),
             new Snapshot("navBuoy", "docs/art/rigs/nav-buoy-kit/navBuoyRig.js",
                          "NavBuoy", AzimuthConvention.Clockwise, "deckIsoSolid"),
             // The player's notebook — the main UI surface (drop 2026-08-17, imported here).
@@ -245,11 +277,11 @@ namespace HiddenHarbours.Tests.RigBaking
                          "ShipyardIso", AzimuthConvention.CounterClockwise),
             new Snapshot("shopBuilding", "docs/art/rigs/shop-building-kit/shopBuildingRig.js",
                          "ShopBuilding", AzimuthConvention.CounterClockwise, "shopInterior", "shopfront"),
-            new Snapshot("shopInterior", "docs/art/rigs/shop-building-kit/shopInteriorRig.js",
+            new Snapshot("shopInterior", "docs/art/rigs/village-return/shop-building-kit/shopInteriorRig.js",
                          "ShopInterior", AzimuthConvention.CounterClockwise),
-            new Snapshot("shopfront", "docs/art/rigs/shop-building-kit/shopfrontRig.js",
+            new Snapshot("shopfront", "docs/art/rigs/village-return/shop-building-kit/shopfrontRig.js",
                          "Shopfront", AzimuthConvention.CounterClockwise,
-                         "buildingLifecycle", "shopInterior"),
+                         "buildingLifecycle", "shopInterior", "coastalPass"),
             new Snapshot("shoreFinds", "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
                          "ShoreFinds", AzimuthConvention.CounterClockwise),
             // Added by the CLAM SPADE kit (#805). The rig itself is not new — shovelIsoRig.js has
@@ -320,6 +352,14 @@ namespace HiddenHarbours.Tests.RigBaking
                          "UtilityIso", AzimuthConvention.CounterClockwise),
             new Snapshot("wharfBuilding", "docs/art/rigs/wharfBuildingRig.js",
                          "WharfBuilding", AzimuthConvention.CounterClockwise, "buildingLifecycle"),
+            // Added by the wharf buildings pass 2, drop 13, beside pass 1 (which keeps its row). The
+            // prerequisites are the README's load order: coastalPass brings interiorProp first.
+            new Snapshot("wharfBuilding2", "docs/art/rigs/wharf-building-kit-v2/wharfBuildingRig2.js",
+                         "WharfBuilding2", AzimuthConvention.CounterClockwise,
+                         "coastalPass", "buildingLifecycle", "wharfBuilding2Geometry"),
+            // Wharf buildings pass 2, drop 13: non-directional geometry library.
+            new Snapshot("wharfBuilding2Geometry", "docs/art/rigs/wharf-building-kit-v2/wharfBuildingRig2.geo.js",
+                         "WharfBuildingGeo2", AzimuthConvention.Clockwise),
             new Snapshot("wharfDecor", "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
                          "WharfDecor", AzimuthConvention.CounterClockwise),
             new Snapshot("wharfIso", "docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js",
@@ -350,8 +390,8 @@ namespace HiddenHarbours.Tests.RigBaking
             // ships eight good cells in reverse order — every fence in both regions facing inward with
             // no error anywhere. YardRegistrationProbe re-measures at every bake and refuses on a
             // disagreement with this line.
-            new Snapshot("yardIso", "docs/art/rigs/yard-landscaping-kit/yardIsoRig.js",
-                         "YardIso", AzimuthConvention.CounterClockwise),
+            new Snapshot("yardIso", "docs/art/rigs/village-return/yard-landscaping-kit/yardIsoRig.js",
+                         "YardIso", AzimuthConvention.CounterClockwise, "coastalPass"),
         };
 
         // ---- the registration table ------------------------------------------------------------

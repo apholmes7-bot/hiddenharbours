@@ -1,0 +1,925 @@
+fileFormatVersion: 2
+guid: 21d9b78b4ae0edb468b986b1738249b1
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8084822976285867345
+    second: Spine_quartzite_barnacled_mask_0
+  - first:
+      213: -7810173379013197476
+    second: Spine_quartzite_barnacled_mask_1
+  - first:
+      213: -4224483212088873089
+    second: Spine_quartzite_barnacled_mask_2
+  - first:
+      213: -5932171293058236062
+    second: Spine_quartzite_barnacled_mask_3
+  - first:
+      213: 404031365201639919
+    second: Spine_quartzite_barnacled_mask_4
+  - first:
+      213: -4352933360852944875
+    second: Spine_quartzite_barnacled_mask_5
+  - first:
+      213: 3517783748135025869
+    second: Spine_quartzite_barnacled_mask_6
+  - first:
+      213: 2320400651167936512
+    second: Spine_quartzite_barnacled_mask_7
+  - first:
+      213: 3114827246151139972
+    second: Spine_quartzite_barnacled_mask_8
+  - first:
+      213: -6777513208319839084
+    second: Spine_quartzite_barnacled_mask_9
+  - first:
+      213: 6741406002669996042
+    second: Spine_quartzite_barnacled_mask_10
+  - first:
+      213: 8363450587961219662
+    second: Spine_quartzite_barnacled_mask_11
+  - first:
+      213: -2158817024371989794
+    second: Spine_quartzite_barnacled_mask_12
+  - first:
+      213: 5893159155139368230
+    second: Spine_quartzite_barnacled_mask_13
+  - first:
+      213: -4697987858998512685
+    second: Spine_quartzite_barnacled_mask_14
+  - first:
+      213: 2582105325643647248
+    second: Spine_quartzite_barnacled_mask_15
+  - first:
+      213: -7109815409799233439
+    second: Spine_quartzite_barnacled_mask_16
+  - first:
+      213: 425248519473752801
+    second: Spine_quartzite_barnacled_mask_17
+  - first:
+      213: 6991603588372428630
+    second: Spine_quartzite_barnacled_mask_18
+  - first:
+      213: -3088933316702802438
+    second: Spine_quartzite_barnacled_mask_19
+  - first:
+      213: -392527044308622037
+    second: Spine_quartzite_barnacled_mask_20
+  - first:
+      213: 5130419437327818889
+    second: Spine_quartzite_barnacled_mask_21
+  - first:
+      213: 4264361297710363543
+    second: Spine_quartzite_barnacled_mask_22
+  - first:
+      213: 389435284981538213
+    second: Spine_quartzite_barnacled_mask_23
+  - first:
+      213: 7534848865108803043
+    second: Spine_quartzite_barnacled_mask_24
+  - first:
+      213: 2286883193707595606
+    second: Spine_quartzite_barnacled_mask_25
+  - first:
+      213: -2905131764992593419
+    second: Spine_quartzite_barnacled_mask_26
+  - first:
+      213: 5736051955647519857
+    second: Spine_quartzite_barnacled_mask_27
+  - first:
+      213: 8437871357674916599
+    second: Spine_quartzite_barnacled_mask_28
+  - first:
+      213: -7327333520169528851
+    second: Spine_quartzite_barnacled_mask_29
+  - first:
+      213: -7496704749923509647
+    second: Spine_quartzite_barnacled_mask_30
+  - first:
+      213: -6364536549412518283
+    second: Spine_quartzite_barnacled_mask_31
+  - first:
+      213: 2947943668703636658
+    second: Spine_quartzite_barnacled_mask_32
+  - first:
+      213: 8081045384844228754
+    second: Spine_quartzite_barnacled_mask_33
+  - first:
+      213: -7989570844054769649
+    second: Spine_quartzite_barnacled_mask_34
+  - first:
+      213: 8684023397369661430
+    second: Spine_quartzite_barnacled_mask_35
+  - first:
+      213: 1665598149955940564
+    second: Spine_quartzite_barnacled_mask_36
+  - first:
+      213: 445848687715705660
+    second: Spine_quartzite_barnacled_mask_37
+  - first:
+      213: -3379692944739661659
+    second: Spine_quartzite_barnacled_mask_38
+  - first:
+      213: -1241362662825869109
+    second: Spine_quartzite_barnacled_mask_39
+  - first:
+      213: 13321530376916334
+    second: Spine_quartzite_barnacled_mask_40
+  - first:
+      213: -8539044015634718849
+    second: Spine_quartzite_barnacled_mask_41
+  - first:
+      213: 3904178256642662245
+    second: Spine_quartzite_barnacled_mask_42
+  - first:
+      213: 6502874067983913150
+    second: Spine_quartzite_barnacled_mask_43
+  - first:
+      213: -3463322088674424407
+    second: Spine_quartzite_barnacled_mask_44
+  - first:
+      213: 8878090278411443031
+    second: Spine_quartzite_barnacled_mask_45
+  - first:
+      213: -8783088799454786405
+    second: Spine_quartzite_barnacled_mask_46
+  - first:
+      213: -6505978469894273586
+    second: Spine_quartzite_barnacled_mask_47
+  - first:
+      213: 7965147798338833533
+    second: Spine_quartzite_barnacled_mask_48
+  - first:
+      213: 2037024273310629148
+    second: Spine_quartzite_barnacled_mask_49
+  - first:
+      213: 5985820217448471521
+    second: Spine_quartzite_barnacled_mask_50
+  - first:
+      213: 2636766997712157780
+    second: Spine_quartzite_barnacled_mask_51
+  - first:
+      213: -2164598818835537704
+    second: Spine_quartzite_barnacled_mask_52
+  - first:
+      213: -1842022427828066802
+    second: Spine_quartzite_barnacled_mask_53
+  - first:
+      213: 5249980572721993075
+    second: Spine_quartzite_barnacled_mask_54
+  - first:
+      213: -6442772701033341214
+    second: Spine_quartzite_barnacled_mask_55
+  - first:
+      213: 6631259694067503367
+    second: Spine_quartzite_barnacled_mask_56
+  - first:
+      213: 3966969393995385077
+    second: Spine_quartzite_barnacled_mask_57
+  - first:
+      213: 7426045397469072937
+    second: Spine_quartzite_barnacled_mask_58
+  - first:
+      213: 5459462823371726876
+    second: Spine_quartzite_barnacled_mask_59
+  - first:
+      213: 6186295475790655541
+    second: Spine_quartzite_barnacled_mask_60
+  - first:
+      213: -8484556087578493375
+    second: Spine_quartzite_barnacled_mask_61
+  - first:
+      213: -5049115888932681437
+    second: Spine_quartzite_barnacled_mask_62
+  - first:
+      213: -1898218866153873261
+    second: Spine_quartzite_barnacled_mask_63
+  - first:
+      213: -8342083617226036583
+    second: Spine_quartzite_barnacled_mask_64
+  - first:
+      213: -6619550154585694699
+    second: Spine_quartzite_barnacled_mask_65
+  - first:
+      213: -4302311600539124266
+    second: Spine_quartzite_barnacled_mask_66
+  - first:
+      213: 9008451236807521704
+    second: Spine_quartzite_barnacled_mask_67
+  - first:
+      213: -5043172832151014608
+    second: Spine_quartzite_barnacled_mask_68
+  - first:
+      213: -8069780952562934991
+    second: Spine_quartzite_barnacled_mask_69
+  - first:
+      213: 1936566005698865580
+    second: Spine_quartzite_barnacled_mask_70
+  - first:
+      213: 2647551144474952315
+    second: Spine_quartzite_barnacled_mask_71
+  - first:
+      213: -5758948655012327052
+    second: Spine_quartzite_barnacled_mask_72
+  - first:
+      213: -8587784300253228834
+    second: Spine_quartzite_barnacled_mask_73
+  - first:
+      213: 3510525172275850597
+    second: Spine_quartzite_barnacled_mask_74
+  - first:
+      213: 8899491327185925929
+    second: Spine_quartzite_barnacled_mask_75
+  - first:
+      213: -1510900904387694452
+    second: Spine_quartzite_barnacled_mask_76
+  - first:
+      213: 788395803587462105
+    second: Spine_quartzite_barnacled_mask_77
+  - first:
+      213: -5514797448798215282
+    second: Spine_quartzite_barnacled_mask_78
+  - first:
+      213: 7811760959282080057
+    second: Spine_quartzite_barnacled_mask_79
+  - first:
+      213: -3688866531766502466
+    second: Spine_quartzite_barnacled_mask_80
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fb60761b8cf92341b81716b3de7b9cd
+      internalID: -1076731094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a93cb1096e723044cb5ba58ecf27dc6b
+      internalID: 474151620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00f80b1e9f3913a4fb9d038cd475ddca
+      internalID: -272143713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f13e263db69b92b45a9bf5b80f95456f
+      internalID: 448398313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25a5a341ede96df439d67f1d501e3a4d
+      internalID: -1569821170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37c84aa0da32a964bbab0270d75c2e20
+      internalID: 1566871176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebc7dbd71cf6232469d83820344e64dc
+      internalID: -1185402230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41acaaf5eb025f84a97befc24ad23484
+      internalID: -1647389588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d21be57b57dd8404ab3d2e82539eb6da
+      internalID: 1736547723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc76ea76581fdf9428d482111f040a14
+      internalID: -530317014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb51a5d6a1012714d871504c1764dbc2
+      internalID: 2060093958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbd8aa1f49fa22349bdbcf5f7365f26f
+      internalID: 1846448745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3180d8c62cfd673498ed7eeebc26978f
+      internalID: 1153521683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43a88da3cc3580342968369a962a9ab2
+      internalID: 1828026491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: edd396a3fbe90374d925edf90eea2d13
+      internalID: 2011268792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58a7de0e799e1164db24b57920ac085b
+      internalID: -908666491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72c6a8b5b17d84149843a6210b7539fb
+      internalID: -818831771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77105807049234341b739ce37fed2174
+      internalID: -718860655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 801199853c48f4543a44a9f72fad8439
+      internalID: 1192652270
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 984e5f81955692b4692a02dbb12ed93a
+      internalID: -2031228743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00de078aba6c85f44a3d4fc973b5cf55
+      internalID: -1083018824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a73ac56ff5258b744879cf5047e7b5e1
+      internalID: 1706153181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba82c52426979b144817d992e3228afe
+      internalID: 1882638263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_quartzite_barnacled_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 339628ce26fcfe8488d32c46d6195672
+      internalID: 672978504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: bb0080726a1417e49a97d281f8e3cce1
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Spine_quartzite_barnacled_mask_c0_r0: -1076731094
+      Spine_quartzite_barnacled_mask_c0_r1: 1736547723
+      Spine_quartzite_barnacled_mask_c0_r2: -818831771
+      Spine_quartzite_barnacled_mask_c1_r0: 474151620
+      Spine_quartzite_barnacled_mask_c1_r1: -530317014
+      Spine_quartzite_barnacled_mask_c1_r2: -718860655
+      Spine_quartzite_barnacled_mask_c2_r0: -272143713
+      Spine_quartzite_barnacled_mask_c2_r1: 2060093958
+      Spine_quartzite_barnacled_mask_c2_r2: 1192652270
+      Spine_quartzite_barnacled_mask_c3_r0: 448398313
+      Spine_quartzite_barnacled_mask_c3_r1: 1846448745
+      Spine_quartzite_barnacled_mask_c3_r2: -2031228743
+      Spine_quartzite_barnacled_mask_c4_r0: -1569821170
+      Spine_quartzite_barnacled_mask_c4_r1: 1153521683
+      Spine_quartzite_barnacled_mask_c4_r2: -1083018824
+      Spine_quartzite_barnacled_mask_c5_r0: 1566871176
+      Spine_quartzite_barnacled_mask_c5_r1: 1828026491
+      Spine_quartzite_barnacled_mask_c5_r2: 1706153181
+      Spine_quartzite_barnacled_mask_c6_r0: -1185402230
+      Spine_quartzite_barnacled_mask_c6_r1: 2011268792
+      Spine_quartzite_barnacled_mask_c6_r2: 1882638263
+      Spine_quartzite_barnacled_mask_c7_r0: -1647389588
+      Spine_quartzite_barnacled_mask_c7_r1: -908666491
+      Spine_quartzite_barnacled_mask_c7_r2: 672978504
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

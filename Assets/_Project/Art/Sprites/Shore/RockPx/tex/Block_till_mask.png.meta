@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: f243eef24981afb47b06b512e668bd37
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2194469195775916624
+    second: Block_till_mask_0
+  - first:
+      213: 4294153151060843180
+    second: Block_till_mask_1
+  - first:
+      213: 9052732787069586885
+    second: Block_till_mask_2
+  - first:
+      213: -4727345731185046779
+    second: Block_till_mask_3
+  - first:
+      213: 5107213785925443349
+    second: Block_till_mask_4
+  - first:
+      213: -6005495706787677680
+    second: Block_till_mask_5
+  - first:
+      213: -5166690550092541220
+    second: Block_till_mask_6
+  - first:
+      213: -402510992131182804
+    second: Block_till_mask_7
+  - first:
+      213: 2927248866662766553
+    second: Block_till_mask_8
+  - first:
+      213: 4839544556932596276
+    second: Block_till_mask_9
+  - first:
+      213: 301234089196288656
+    second: Block_till_mask_10
+  - first:
+      213: -7805276684754035597
+    second: Block_till_mask_11
+  - first:
+      213: -6741024917416602264
+    second: Block_till_mask_12
+  - first:
+      213: 6227930809903106738
+    second: Block_till_mask_13
+  - first:
+      213: -7127691327353637449
+    second: Block_till_mask_14
+  - first:
+      213: -3705254581246610530
+    second: Block_till_mask_15
+  - first:
+      213: 6433528319591418498
+    second: Block_till_mask_16
+  - first:
+      213: -4535301388244086260
+    second: Block_till_mask_17
+  - first:
+      213: 2439735261415277919
+    second: Block_till_mask_18
+  - first:
+      213: -8529970978031889953
+    second: Block_till_mask_19
+  - first:
+      213: -9062860098454748247
+    second: Block_till_mask_20
+  - first:
+      213: 7373315025325775357
+    second: Block_till_mask_21
+  - first:
+      213: 7379309922655021547
+    second: Block_till_mask_22
+  - first:
+      213: 8195807769297806044
+    second: Block_till_mask_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Block_till_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18518518}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5929782ccb690304a97fe10574ef9e0b
+      internalID: 1720166768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a3a9694a42b7ee468a065c2a4a6c90e
+      internalID: -1345370138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14814815}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 123a2aac4ae3c574db6011cc284dcba8
+      internalID: 282818730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1cb5a475d429cde4890108fd972f3de4
+      internalID: -1818672703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18518518}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49e8dd4cc417d034fbcd6b138de5d64a
+      internalID: -132579085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6677d723ce82ccb49879256e36c7d3e8
+      internalID: 2133109460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14814815}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9527575f8b18fff49bb3b2362d5b0fde
+      internalID: -575941390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60d7d9b90c41523489f5cef6b414b7a1
+      internalID: 1301974941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18518518}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 416d49d5160ffe0499d0b142f99647d4
+      internalID: 2112689991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58d2f5f80a5b3ba42b798189f9c7c870
+      internalID: -1836786484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14814815}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23e41049a4712ff49a220f5112286ead
+      internalID: -859789324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cbf71263de75e0d46b3c05ce0bb077bc
+      internalID: -1049069521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18518518}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 46ee4e264030dd44f826dfa5abc9614b
+      internalID: 1295405033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db1185a22f9129f468564f496ac3e086
+      internalID: -903937037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14814815}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b762290db54d52b4f9bff7f69a47314d
+      internalID: -2060525658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7547120f8f1daf94f8ac332fde5a2249
+      internalID: 368442229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18518518}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f85b6d88302f88047a72bed86d831746
+      internalID: 61075821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4368236095d64f144878d5dc83bfd78a
+      internalID: 1664103809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14814815}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4f6c665d35359c4baa2469f19df679b
+      internalID: -1297306628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a39e0032b02778d42b7f003c7469e366
+      internalID: -1103595156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18518518}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c34dd39835273624e83d32ca6f5d47ce
+      internalID: -1555870129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2efbe75cedf60ad44a2830c565c56061
+      internalID: -684458394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14814815}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1bdff23904259546b8358abbea74ae4
+      internalID: 2075904037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_till_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e03325ce3f2a78d4b8c9350cb39e984d
+      internalID: 498435641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5ca5444d325f0d74487932dbfabeb11e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Block_till_mask_c0_r0: 1720166768
+      Block_till_mask_c0_r1: 2112689991
+      Block_till_mask_c0_r2: 61075821
+      Block_till_mask_c1_r0: -1345370138
+      Block_till_mask_c1_r1: -1836786484
+      Block_till_mask_c1_r2: 1664103809
+      Block_till_mask_c2_r0: 282818730
+      Block_till_mask_c2_r1: -859789324
+      Block_till_mask_c2_r2: -1297306628
+      Block_till_mask_c3_r0: -1818672703
+      Block_till_mask_c3_r1: -1049069521
+      Block_till_mask_c3_r2: -1103595156
+      Block_till_mask_c4_r0: -132579085
+      Block_till_mask_c4_r1: 1295405033
+      Block_till_mask_c4_r2: -1555870129
+      Block_till_mask_c5_r0: 2133109460
+      Block_till_mask_c5_r1: -903937037
+      Block_till_mask_c5_r2: -684458394
+      Block_till_mask_c6_r0: -575941390
+      Block_till_mask_c6_r1: -2060525658
+      Block_till_mask_c6_r2: 2075904037
+      Block_till_mask_c7_r0: 1301974941
+      Block_till_mask_c7_r1: 368442229
+      Block_till_mask_c7_r2: 498435641
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

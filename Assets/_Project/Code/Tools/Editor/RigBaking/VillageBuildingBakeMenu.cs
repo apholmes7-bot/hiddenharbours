@@ -108,6 +108,125 @@ namespace HiddenHarbours.Tools.RigBaking
             return log.ToString();
         }
 
+        /// <summary>
+        /// Bake ONLY the builds that bake their light channels — the five houses (drop 14, L2) — and
+        /// write the contract with every other entry CARRIED as it stands, sheet untouched. The owner's
+        /// ruling for drop 14: the four wharf sheets never move. Refuses, writing nothing, if a carried
+        /// entry is missing from the contract (there would be nothing to carry).
+        /// </summary>
+        public static string BakeLightChannelBuilds(out int failed) =>
+            BakeOnly(VillageBuildingKit.BakesLightChannels, out failed);
+
+        /// <summary>
+        /// Bake ONLY the builds that bake no light channels — the four wharf-building sheets, re-baked in
+        /// pass 2 (drop 13; the owner ruled albedo for them) — and write the contract with every house
+        /// CARRIED as it stands, its albedo and its three channel sheets untouched. The complement of
+        /// <see cref="BakeLightChannelBuilds"/>: between them the two cover
+        /// <see cref="VillageBuildingKit.AllBuilds"/> exactly once. Refuses, writing nothing, if a carried
+        /// entry is missing from the contract.
+        /// </summary>
+        public static string BakeAlbedoOnlyBuilds(out int failed) =>
+            BakeOnly(build => !VillageBuildingKit.BakesLightChannels(build), out failed);
+
+        /// <summary>Bake the builds <paramref name="bakes"/> picks and carry every other entry from the
+        /// contract as it stands; the contract is written only if nothing failed.</summary>
+        static string BakeOnly(Predicate<VillageBuildingKit.Build> bakes, out int failed)
+        {
+            failed = 0;
+            var log = new StringBuilder();
+            VillageBuildingKit.Contract existing = VillageBuildingKit.Load();
+            if (existing == null)
+                throw new InvalidOperationException(
+                    $"No {VillageBuildingKit.ContractPath} to carry the other builds from. Run the full bake.");
+
+            var entries = new List<VillageBuildingKit.Entry>();
+            int ppu = existing.ppu, baked = 0;
+            foreach (var build in VillageBuildingKit.AllBuilds)
+            {
+                if (!bakes(build))
+                {
+                    VillageBuildingKit.Entry carried = VillageBuildingKit.Find(existing, build.Key)
+                        ?? throw new InvalidOperationException(
+                            $"'{build.Key}' is not in {VillageBuildingKit.ContractFileName}, so it cannot be " +
+                            "carried. Run the full bake.");
+                    entries.Add(carried);
+                    log.AppendLine($"  = {build.Key,-15} carried as it stands ({carried.sheet} untouched)");
+                    continue;
+                }
+                try
+                {
+                    BuildingBakeResult r = Bake(build);
+                    entries.Add(ToEntry(build, r));
+                    ppu = r.PixelsPerMetre;
+                    baked++;
+                    log.AppendLine(Describe(build, r));
+                }
+                catch (Exception e)
+                {
+                    failed++;
+                    log.AppendLine($"  ✗ {build.Key}: {e.Message}");
+                    Debug.LogError($"[village-buildings] {build.Key} FAILED:\n{e}");
+                }
+            }
+
+            if (failed == 0)
+            {
+                string contractPath = WriteContract(entries, ppu);
+                log.AppendLine();
+                log.AppendLine($"  contract: {contractPath} ({entries.Count} building(s), {baked} re-baked)");
+            }
+            else
+            {
+                log.AppendLine();
+                log.AppendLine("  contract NOT written: a build failed, and a partial re-bake would pair " +
+                               "fresh sheets with stale entries.");
+            }
+            return log.ToString();
+        }
+
+        /// <summary>Headless entry point for the houses-only bake. Exits non-zero on any failure.</summary>
+        public static void BakeLightChannelBuildsFromCommandLine()
+        {
+            try
+            {
+                string report = BakeLightChannelBuilds(out int failed);
+                AssetDatabase.Refresh();
+                Debug.Log($"[village-buildings] (batch) houses bake report:\n{report}");
+                if (failed > 0)
+                {
+                    Debug.LogError($"[village-buildings] {failed} build(s) failed.");
+                    EditorApplication.Exit(1);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[village-buildings] batch houses bake threw: {e}");
+                EditorApplication.Exit(1);
+            }
+        }
+
+        /// <summary>Headless entry point for the albedo-only bake (the wharf sheets). Exits non-zero on
+        /// any failure.</summary>
+        public static void BakeAlbedoOnlyBuildsFromCommandLine()
+        {
+            try
+            {
+                string report = BakeAlbedoOnlyBuilds(out int failed);
+                AssetDatabase.Refresh();
+                Debug.Log($"[village-buildings] (batch) albedo-only bake report:\n{report}");
+                if (failed > 0)
+                {
+                    Debug.LogError($"[village-buildings] {failed} build(s) failed.");
+                    EditorApplication.Exit(1);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[village-buildings] batch albedo-only bake threw: {e}");
+                EditorApplication.Exit(1);
+            }
+        }
+
         /// <summary>Bake ONE build. Exposed so a test or a one-off can bake a single building.</summary>
         public static BuildingBakeResult Bake(VillageBuildingKit.Build build)
         {
@@ -154,6 +273,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     outputFolder, baseName, VillageBuildingKit.Facings,
                     requireDistinctFromDefault: true,
                     maxSheetDimension: VillageBuildingKit.ImportCapFor(build),
+                    bakeLightChannels: VillageBuildingKit.BakesLightChannels(build),
                     underlyingOptsJs: bare,
                     layerReason:
                         $"'{build.Key}' is baked at lifecycle state '{build.StateTag}', and it came " +
@@ -169,13 +289,18 @@ namespace HiddenHarbours.Tools.RigBaking
                 return BuildingBakeRequest.FromPreset(
                     build.RigKey, build.Preset, RigCatalog.Get(build.RigKey).GlobalName,
                     outputFolder, baseName, VillageBuildingKit.Facings,
-                    maxSheetDimension: VillageBuildingKit.ImportCapFor(build));
+                    maxSheetDimension: VillageBuildingKit.ImportCapFor(build),
+                    bakeLightChannels: VillageBuildingKit.BakesLightChannels(build));
 
+            // A house bakes its L2 light channels beside the albedo in EVERY path that bakes it — the
+            // menu, the houses-only bake and the Building Studio — so no path can leave a fresh albedo
+            // lit by a stale build's channels.
             return BuildingBakeRequest.FromOptions(
                 build.RigKey, OptionsLiteralFor(build), build.Key,
                 outputFolder, baseName, VillageBuildingKit.Facings,
                 requireDistinctFromDefault: true,
-                maxSheetDimension: VillageBuildingKit.ImportCapFor(build));
+                maxSheetDimension: VillageBuildingKit.ImportCapFor(build),
+                bakeLightChannels: VillageBuildingKit.BakesLightChannels(build));
         }
 
         /// <summary>
@@ -342,7 +467,14 @@ namespace HiddenHarbours.Tools.RigBaking
             $"{r.SheetWidth}×{r.SheetHeight}, {r.PngBytes / 1024.0:F0} KB png, " +
             $"crop saved {r.CropSaving:P0}, pivot ({r.PivotX:F0},{r.PivotY:F0}), " +
             $"{r.FootprintWidthMeters:F1}×{r.FootprintLengthMeters:F1} m, {r.MeasuredConvention}" +
-            (build.HasLifecycle ? $", state {build.StateTag}" : "");
+            (build.HasLifecycle ? $", state {build.StateTag}" : "") +
+            (r.HasLightChannels
+                ? $"; L2 channels mask {r.MaskPngBytes / 1024.0:F0} KB + normal {r.NormalPngBytes / 1024.0:F0} KB " +
+                  $"+ emit {r.EmitPngBytes / 1024.0:F0} KB png, {r.LightChannelRuntimeBytes / 1024.0 / 1024.0:F2} MiB " +
+                  $"in memory, {r.GlowTexels} glow texel(s) to level {r.MaxGlowLevel}, " +
+                  $"render {r.RenderMilliseconds / 1000.0:F1} s + light {r.LightMilliseconds / 1000.0:F1} s"
+                : $"; {r.RuntimeBytesRgba32 / 1024.0 / 1024.0:F2} MiB in memory, render " +
+                  $"{r.RenderMilliseconds / 1000.0:F1} s of {r.TotalMilliseconds / 1000.0:F1} s");
 
         /// <summary>
         /// Headless entry point for <c>-executeMethod</c>. Exits non-zero if any build fails, so a batch

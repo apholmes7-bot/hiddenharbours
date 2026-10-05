@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: d7f3fb8ba0d2d4b4c94f3f93385e9070
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4033204536480870074
+    second: Prisms_quartzite_0
+  - first:
+      213: -7240915142321981648
+    second: Prisms_quartzite_1
+  - first:
+      213: 13933971289075504
+    second: Prisms_quartzite_2
+  - first:
+      213: 1998028538928160778
+    second: Prisms_quartzite_3
+  - first:
+      213: -3821928062739512098
+    second: Prisms_quartzite_4
+  - first:
+      213: 1400341665205055107
+    second: Prisms_quartzite_5
+  - first:
+      213: -7033630830069241152
+    second: Prisms_quartzite_6
+  - first:
+      213: -592026284769082999
+    second: Prisms_quartzite_7
+  - first:
+      213: -7761122565958838712
+    second: Prisms_quartzite_8
+  - first:
+      213: 5862116346486399463
+    second: Prisms_quartzite_9
+  - first:
+      213: -6635216033456744940
+    second: Prisms_quartzite_10
+  - first:
+      213: -6908110318871817336
+    second: Prisms_quartzite_11
+  - first:
+      213: -6234408171722607823
+    second: Prisms_quartzite_12
+  - first:
+      213: -8016624446974386099
+    second: Prisms_quartzite_13
+  - first:
+      213: 6874808249592580574
+    second: Prisms_quartzite_14
+  - first:
+      213: 8767875377725474545
+    second: Prisms_quartzite_15
+  - first:
+      213: 233568283988124808
+    second: Prisms_quartzite_16
+  - first:
+      213: -7676228625649282382
+    second: Prisms_quartzite_17
+  - first:
+      213: -6354546501766008563
+    second: Prisms_quartzite_18
+  - first:
+      213: -4452350183645364782
+    second: Prisms_quartzite_19
+  - first:
+      213: -5393677891896882345
+    second: Prisms_quartzite_20
+  - first:
+      213: -6551553919291026545
+    second: Prisms_quartzite_21
+  - first:
+      213: 2928226823641585413
+    second: Prisms_quartzite_22
+  - first:
+      213: 476877237099164421
+    second: Prisms_quartzite_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Prisms_quartzite_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fba0e2dd474233343b93d17f68d5d3de
+      internalID: 282664974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86ab4d7f6e4186a45851c4337e5e64ab
+      internalID: -2090451888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7ca87c18bba8484fac6a25c59a51863
+      internalID: 1795309135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 518ff5d9b9cf8674ea3feb655d7c1cce
+      internalID: -1169542167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f20a5b8d79327f14aa296e8ab384f597
+      internalID: -1597538099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29737e0391bdfb149883a73db2ea77f0
+      internalID: 580152941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3ae7b479dd2848458f39c41c27d901a
+      internalID: -1229367997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b478286ca167c2a488d143dbe9c79860
+      internalID: 753043355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2590a5b721f24874f967a940816d75f6
+      internalID: 1226031875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f9e06363a574f841951b3291cd8c4e4
+      internalID: 218775497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c028c197023ae7409689b97181e2e34
+      internalID: 1721623438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c236a07be1aef9047a0e330b3040278b
+      internalID: 285097466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f2a6c4dac67661499ff7e41d3ff2077
+      internalID: -921088578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bd009201ddc0e6419b87ee4a7964158
+      internalID: -271784202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e96b007b4a7fe84a973cbc0052c3027
+      internalID: 747981157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17789b073f4ef1547bcbf227a7330656
+      internalID: -639913161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 380fece13363f7046bc95e0644f74d56
+      internalID: -2091063474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a827ae4d0818e14f9ef3e1b5427384c
+      internalID: -1337863256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83d21068fd23c8143a42cb1cfea91fb3
+      internalID: -1700634633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2078f847269729a40974a32231cc78ef
+      internalID: -1263972101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 324767ffd86e3c743807c6e5e7da5228
+      internalID: -1007800013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9dc09ffd2958659489b4c0799a240863
+      internalID: -415652674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 109015057baf6744aa113d86318879af
+      internalID: -1870883733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_quartzite_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a54b970cc102bf6459b43efd7582a846
+      internalID: 940697744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 439b1d327ae6dd943b8620980a944fab
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Prisms_quartzite_c0_r0: 282664974
+      Prisms_quartzite_c0_r1: 1226031875
+      Prisms_quartzite_c0_r2: -2091063474
+      Prisms_quartzite_c1_r0: -2090451888
+      Prisms_quartzite_c1_r1: 218775497
+      Prisms_quartzite_c1_r2: -1337863256
+      Prisms_quartzite_c2_r0: 1795309135
+      Prisms_quartzite_c2_r1: 1721623438
+      Prisms_quartzite_c2_r2: -1700634633
+      Prisms_quartzite_c3_r0: -1169542167
+      Prisms_quartzite_c3_r1: 285097466
+      Prisms_quartzite_c3_r2: -1263972101
+      Prisms_quartzite_c4_r0: -1597538099
+      Prisms_quartzite_c4_r1: -921088578
+      Prisms_quartzite_c4_r2: -1007800013
+      Prisms_quartzite_c5_r0: 580152941
+      Prisms_quartzite_c5_r1: -271784202
+      Prisms_quartzite_c5_r2: -415652674
+      Prisms_quartzite_c6_r0: -1229367997
+      Prisms_quartzite_c6_r1: 747981157
+      Prisms_quartzite_c6_r2: -1870883733
+      Prisms_quartzite_c7_r0: 753043355
+      Prisms_quartzite_c7_r1: -639913161
+      Prisms_quartzite_c7_r2: 940697744
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

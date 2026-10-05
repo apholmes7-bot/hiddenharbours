@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 4c9435278d4405448ae08992c8e2ec80
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7286952580103935631
+    second: Prisms_basalt_weeded_mask_0
+  - first:
+      213: -8790521605283929918
+    second: Prisms_basalt_weeded_mask_1
+  - first:
+      213: 7861708576556750451
+    second: Prisms_basalt_weeded_mask_2
+  - first:
+      213: -2395262924902865834
+    second: Prisms_basalt_weeded_mask_3
+  - first:
+      213: 8754575552367730513
+    second: Prisms_basalt_weeded_mask_4
+  - first:
+      213: -6418629032086125586
+    second: Prisms_basalt_weeded_mask_5
+  - first:
+      213: 8315603941394503436
+    second: Prisms_basalt_weeded_mask_6
+  - first:
+      213: -9205936785391765478
+    second: Prisms_basalt_weeded_mask_7
+  - first:
+      213: -3217006598904501228
+    second: Prisms_basalt_weeded_mask_8
+  - first:
+      213: 2791787600876729644
+    second: Prisms_basalt_weeded_mask_9
+  - first:
+      213: 3861530954378857296
+    second: Prisms_basalt_weeded_mask_10
+  - first:
+      213: 7624322788196067175
+    second: Prisms_basalt_weeded_mask_11
+  - first:
+      213: 5677551739682085147
+    second: Prisms_basalt_weeded_mask_12
+  - first:
+      213: 274000607513810332
+    second: Prisms_basalt_weeded_mask_13
+  - first:
+      213: 6576931036728219213
+    second: Prisms_basalt_weeded_mask_14
+  - first:
+      213: 992323498330872837
+    second: Prisms_basalt_weeded_mask_15
+  - first:
+      213: 5475224614613959440
+    second: Prisms_basalt_weeded_mask_16
+  - first:
+      213: -7869762281846837437
+    second: Prisms_basalt_weeded_mask_17
+  - first:
+      213: -5351059846737342641
+    second: Prisms_basalt_weeded_mask_18
+  - first:
+      213: -4646982861239839555
+    second: Prisms_basalt_weeded_mask_19
+  - first:
+      213: 553204552908975484
+    second: Prisms_basalt_weeded_mask_20
+  - first:
+      213: 7473023851233864717
+    second: Prisms_basalt_weeded_mask_21
+  - first:
+      213: 5459773983591453856
+    second: Prisms_basalt_weeded_mask_22
+  - first:
+      213: 3308276730507298223
+    second: Prisms_basalt_weeded_mask_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83d89f53a77925246891aec69af3d47b
+      internalID: 1414826533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11bc305a8d941b04ea63e0f70f566df3
+      internalID: -1320677549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd9f40b8f4cf59f4294a758e960279ce
+      internalID: 1836099576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa076f31b4ebd9b4fad67d2dcf8cee2c
+      internalID: 763449934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecc30d31e3c036f4fad0bd5e47160c16
+      internalID: -1460861777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a8c7585fd3d2244da00dcb18cc54807
+      internalID: -1031825593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c3a99a98c0d23340844b5039fc102db
+      internalID: 113482676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d1dd17aad187fb4398df0eed8d07c9f
+      internalID: 406765514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc3e264b95e0bb34a9020e8a1f305c79
+      internalID: 216298137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5aef9c5037bcd6640bedeffbf4a0f41c
+      internalID: 1070402141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7e4452a2249e0a4f98b485aede6a24f
+      internalID: -983780610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e65a47381263c9c4091e86a001150f85
+      internalID: -631730417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f371f079146cb434cb14e0312ae94914
+      internalID: 1225690076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 318024bcdc352604a98c6a00260d591e
+      internalID: -1294535254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a34c542009e48f947b1885c0c5ac5c75
+      internalID: 1248288821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24a905593ad81ec4e9f1d1cb81564eca
+      internalID: 1236941031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad0156886df526242b0157ecac3b2755
+      internalID: 1858869060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b14e29ac583fa3144b4d054f9be7cf34
+      internalID: 1196324183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 199fc1f5c8fbde248bd3866c45c4dd6c
+      internalID: 1504882485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a073a3578b7ea8e4d9fc0dfd129471a5
+      internalID: -159609854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b327b8aade63af4f88631dfb2bac154
+      internalID: 1476993153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b45efe702c6c9d749bf03180391dec24
+      internalID: -203501757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e911611a544eb748ae711b3d9a80378
+      internalID: -955908875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_weeded_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e263cf4896034254f8bc39bb7d472fbd
+      internalID: 1474893531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 17ca69c4838ed2145883e955b73c2c68
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Prisms_basalt_weeded_mask_c0_r0: 1414826533
+      Prisms_basalt_weeded_mask_c0_r1: 216298137
+      Prisms_basalt_weeded_mask_c0_r2: 1858869060
+      Prisms_basalt_weeded_mask_c1_r0: -1320677549
+      Prisms_basalt_weeded_mask_c1_r1: 1070402141
+      Prisms_basalt_weeded_mask_c1_r2: 1196324183
+      Prisms_basalt_weeded_mask_c2_r0: 1836099576
+      Prisms_basalt_weeded_mask_c2_r1: -983780610
+      Prisms_basalt_weeded_mask_c2_r2: 1504882485
+      Prisms_basalt_weeded_mask_c3_r0: 763449934
+      Prisms_basalt_weeded_mask_c3_r1: -631730417
+      Prisms_basalt_weeded_mask_c3_r2: -159609854
+      Prisms_basalt_weeded_mask_c4_r0: -1460861777
+      Prisms_basalt_weeded_mask_c4_r1: 1225690076
+      Prisms_basalt_weeded_mask_c4_r2: 1476993153
+      Prisms_basalt_weeded_mask_c5_r0: -1031825593
+      Prisms_basalt_weeded_mask_c5_r1: -1294535254
+      Prisms_basalt_weeded_mask_c5_r2: -203501757
+      Prisms_basalt_weeded_mask_c6_r0: 113482676
+      Prisms_basalt_weeded_mask_c6_r1: 1248288821
+      Prisms_basalt_weeded_mask_c6_r2: -955908875
+      Prisms_basalt_weeded_mask_c7_r0: 406765514
+      Prisms_basalt_weeded_mask_c7_r1: 1236941031
+      Prisms_basalt_weeded_mask_c7_r2: 1474893531
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

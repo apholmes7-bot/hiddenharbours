@@ -1,0 +1,769 @@
+fileFormatVersion: 2
+guid: 21c1393db5bb5994ca5d736a65b1505b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5294811641586653219
+    second: Bench_quartzite_barnacled_unlit_0
+  - first:
+      213: 5871979217785373651
+    second: Bench_quartzite_barnacled_unlit_1
+  - first:
+      213: -4792074509299906161
+    second: Bench_quartzite_barnacled_unlit_2
+  - first:
+      213: 4896818942960806074
+    second: Bench_quartzite_barnacled_unlit_3
+  - first:
+      213: -6114687277335207720
+    second: Bench_quartzite_barnacled_unlit_4
+  - first:
+      213: -8144269901675381630
+    second: Bench_quartzite_barnacled_unlit_5
+  - first:
+      213: -1388453658407940667
+    second: Bench_quartzite_barnacled_unlit_6
+  - first:
+      213: -151061128677786316
+    second: Bench_quartzite_barnacled_unlit_7
+  - first:
+      213: -6727034690972508150
+    second: Bench_quartzite_barnacled_unlit_8
+  - first:
+      213: -8688720770606230700
+    second: Bench_quartzite_barnacled_unlit_9
+  - first:
+      213: 7631888374536827487
+    second: Bench_quartzite_barnacled_unlit_10
+  - first:
+      213: -7626536860890332562
+    second: Bench_quartzite_barnacled_unlit_11
+  - first:
+      213: -4661438806560100495
+    second: Bench_quartzite_barnacled_unlit_12
+  - first:
+      213: -1295406940050626986
+    second: Bench_quartzite_barnacled_unlit_13
+  - first:
+      213: -2974131693672281280
+    second: Bench_quartzite_barnacled_unlit_14
+  - first:
+      213: 5828465119715541117
+    second: Bench_quartzite_barnacled_unlit_15
+  - first:
+      213: -5747200558406256373
+    second: Bench_quartzite_barnacled_unlit_16
+  - first:
+      213: -1831112159138425026
+    second: Bench_quartzite_barnacled_unlit_17
+  - first:
+      213: -4075847359341453244
+    second: Bench_quartzite_barnacled_unlit_18
+  - first:
+      213: 1117694377465198235
+    second: Bench_quartzite_barnacled_unlit_19
+  - first:
+      213: -8862191431619193893
+    second: Bench_quartzite_barnacled_unlit_20
+  - first:
+      213: -8647144870500902144
+    second: Bench_quartzite_barnacled_unlit_21
+  - first:
+      213: 9158237420584887907
+    second: Bench_quartzite_barnacled_unlit_22
+  - first:
+      213: -8598222095757687790
+    second: Bench_quartzite_barnacled_unlit_23
+  - first:
+      213: 4413459617966151311
+    second: Bench_quartzite_barnacled_unlit_24
+  - first:
+      213: 1259822869842048235
+    second: Bench_quartzite_barnacled_unlit_25
+  - first:
+      213: -5764032154439150628
+    second: Bench_quartzite_barnacled_unlit_26
+  - first:
+      213: 6004963095276079235
+    second: Bench_quartzite_barnacled_unlit_27
+  - first:
+      213: 1470727141853990118
+    second: Bench_quartzite_barnacled_unlit_28
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 484ba6dd2d197f9409c8d5f833f5b319
+      internalID: -652616043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc367b514dba1344cab22325c80eaf56
+      internalID: 186324157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f5610d183dd22744aeb68fbc8d80b29
+      internalID: 1938863056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6e9d930181df2b458a5a1dc177e1e12
+      internalID: -1254134233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 234d76597c6a72e47a5308dd045c9c79
+      internalID: 822677302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7d27793bf2d3594cb364ef18cbc69a2
+      internalID: -877924128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a61630c81ef7a5748bf14841b1677c5c
+      internalID: -796644728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd5b5c288dec089448fc3ba511ece225
+      internalID: -1780865150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c035aea011dfc974f8aa9dbced8dfe53
+      internalID: -1733220816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f4ed399a1b283f41918153f0faffbc8
+      internalID: 546934961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 852128e0104c8ec4d9cbbabebe3cd281
+      internalID: -694709197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41bae168516fc4b4cb2306331064d926
+      internalID: 1164303084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc657918c43688c4c92af5fd6ddc38ac
+      internalID: -1149564475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d699a64e4953bce4c907a720f1cdc086
+      internalID: -1188757186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0821e1e094fcd2247872fec085c88361
+      internalID: -931464494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d1e62c48c730b549a007cfb3d4bd9e9
+      internalID: -2049471413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9c73fe6c5a16e7479ea3487b5256811
+      internalID: -570920155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ffbabba8f2711a4f81c2e850fcb3597
+      internalID: 47779901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 308b9a8a2cfe773469a45e0399eda5c8
+      internalID: -1671486254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0dca7175d7eab034e960b02acdaf4d4b
+      internalID: 266351223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6176d06fd225e074fbb4f6eb59cf3f74
+      internalID: -96340707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f488577e2b842144b155f6724c9edaa
+      internalID: 1635489299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6cf02e58330da54db2d450141b623e4
+      internalID: 1755359178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_quartzite_barnacled_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2dad8ffe1e01834b8401ae4d98c0cba
+      internalID: -1458925513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d34fd672cee99734385b09679da5927e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Bench_quartzite_barnacled_unlit_c0_r0: -652616043
+      Bench_quartzite_barnacled_unlit_c0_r1: -1733220816
+      Bench_quartzite_barnacled_unlit_c0_r2: -570920155
+      Bench_quartzite_barnacled_unlit_c1_r0: 186324157
+      Bench_quartzite_barnacled_unlit_c1_r1: 546934961
+      Bench_quartzite_barnacled_unlit_c1_r2: 47779901
+      Bench_quartzite_barnacled_unlit_c2_r0: 1938863056
+      Bench_quartzite_barnacled_unlit_c2_r1: -694709197
+      Bench_quartzite_barnacled_unlit_c2_r2: -1671486254
+      Bench_quartzite_barnacled_unlit_c3_r0: -1254134233
+      Bench_quartzite_barnacled_unlit_c3_r1: 1164303084
+      Bench_quartzite_barnacled_unlit_c3_r2: 266351223
+      Bench_quartzite_barnacled_unlit_c4_r0: 822677302
+      Bench_quartzite_barnacled_unlit_c4_r1: -1149564475
+      Bench_quartzite_barnacled_unlit_c4_r2: -96340707
+      Bench_quartzite_barnacled_unlit_c5_r0: -877924128
+      Bench_quartzite_barnacled_unlit_c5_r1: -1188757186
+      Bench_quartzite_barnacled_unlit_c5_r2: 1635489299
+      Bench_quartzite_barnacled_unlit_c6_r0: -796644728
+      Bench_quartzite_barnacled_unlit_c6_r1: -931464494
+      Bench_quartzite_barnacled_unlit_c6_r2: 1755359178
+      Bench_quartzite_barnacled_unlit_c7_r0: -1780865150
+      Bench_quartzite_barnacled_unlit_c7_r1: -2049471413
+      Bench_quartzite_barnacled_unlit_c7_r2: -1458925513
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

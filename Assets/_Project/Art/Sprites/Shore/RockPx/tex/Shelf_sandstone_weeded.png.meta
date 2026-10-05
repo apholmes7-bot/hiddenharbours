@@ -1,0 +1,757 @@
+fileFormatVersion: 2
+guid: c1b4b9dd649c92d48ad7ba9a413863a6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2587112639066724126
+    second: Shelf_sandstone_weeded_0
+  - first:
+      213: -4939750426813031647
+    second: Shelf_sandstone_weeded_1
+  - first:
+      213: 3159436835599955877
+    second: Shelf_sandstone_weeded_2
+  - first:
+      213: -7965152132736549547
+    second: Shelf_sandstone_weeded_3
+  - first:
+      213: -394881603249599283
+    second: Shelf_sandstone_weeded_4
+  - first:
+      213: 6836835312483401380
+    second: Shelf_sandstone_weeded_5
+  - first:
+      213: 3786756346186202546
+    second: Shelf_sandstone_weeded_6
+  - first:
+      213: -4807903650522013246
+    second: Shelf_sandstone_weeded_7
+  - first:
+      213: -8700253116578138160
+    second: Shelf_sandstone_weeded_8
+  - first:
+      213: 8347376062193102870
+    second: Shelf_sandstone_weeded_9
+  - first:
+      213: -8447285086900457082
+    second: Shelf_sandstone_weeded_10
+  - first:
+      213: 7022860041864692746
+    second: Shelf_sandstone_weeded_11
+  - first:
+      213: 1282791094561003827
+    second: Shelf_sandstone_weeded_12
+  - first:
+      213: 4006584440995199908
+    second: Shelf_sandstone_weeded_13
+  - first:
+      213: -5556143267584902738
+    second: Shelf_sandstone_weeded_14
+  - first:
+      213: 6949898317711672832
+    second: Shelf_sandstone_weeded_15
+  - first:
+      213: 5039528582943506184
+    second: Shelf_sandstone_weeded_16
+  - first:
+      213: -2524159407275242363
+    second: Shelf_sandstone_weeded_17
+  - first:
+      213: 3465678288682670085
+    second: Shelf_sandstone_weeded_18
+  - first:
+      213: -333194297471220484
+    second: Shelf_sandstone_weeded_19
+  - first:
+      213: 147928536052349324
+    second: Shelf_sandstone_weeded_20
+  - first:
+      213: -3418323083531556470
+    second: Shelf_sandstone_weeded_21
+  - first:
+      213: -4552638653934896079
+    second: Shelf_sandstone_weeded_22
+  - first:
+      213: -2719526570182926972
+    second: Shelf_sandstone_weeded_23
+  - first:
+      213: 2091282514570174507
+    second: Shelf_sandstone_weeded_24
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fea99cac398eab4fb48b4a33a6c87fc
+      internalID: -718224131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af91d43181466b147bb5dc3227df8297
+      internalID: -647584285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07f91663bea4c0f4e8645a3398547e0a
+      internalID: -399749036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc9ae9d7f0cbb0d42b1a55293b814119
+      internalID: -1088880411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d67577035f94e44caf1a1151ccd30d0
+      internalID: -1822497013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48169fcf55da8424d81e4f21e15da1db
+      internalID: 1521677566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9925e09858918214e9c7ca5a67feb48f
+      internalID: 1680258992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03047c2177d3ee749930805f374a2235
+      internalID: -2089689047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 561d9f697bcb3574f83326224be1d403
+      internalID: -487625111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc34bfa3dd795d341a759d0fac402c5c
+      internalID: 832172811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a0d3e5ba65e452479f05f7c9a75dbfa
+      internalID: 1760601120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce7dd1059d68111408f394323a938732
+      internalID: 48309582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6173531e807d55f4d933ab58c95cfbb6
+      internalID: 573768635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dee718ebd77429a47b8a63d9b0a2a6e9
+      internalID: -1440151236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c74f1e37bab36145a0c58ecca73e76d
+      internalID: -603526679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76b01a9f444842c408880ce9e760cbb3
+      internalID: -1740447831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3031f87b76f00d84da309dd7616ada9b
+      internalID: -581961441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd04ce0360d15dc43b6c80568c060311
+      internalID: -1715477739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69927c76d7ed2834084683b2ed07d7e6
+      internalID: -1181038459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9fb32dcb41aa1c44dbb7e06c4ef536a7
+      internalID: 1353035684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6af9a540e06fe03438c7029505cd9e04
+      internalID: -1253621801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee5d603251bab804b8cc1d5c4438372a
+      internalID: -1104521608
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66e5780ebb308994db9f2fe9422f7aa0
+      internalID: 2050153368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_sandstone_weeded_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc612770c44904545b64848b61c04e48
+      internalID: 1005142908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 6314fda5e42a3c64ba185842e28c1331
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Shelf_sandstone_weeded_c0_r0: -718224131
+      Shelf_sandstone_weeded_c0_r1: -487625111
+      Shelf_sandstone_weeded_c0_r2: -581961441
+      Shelf_sandstone_weeded_c1_r0: -647584285
+      Shelf_sandstone_weeded_c1_r1: 832172811
+      Shelf_sandstone_weeded_c1_r2: -1715477739
+      Shelf_sandstone_weeded_c2_r0: -399749036
+      Shelf_sandstone_weeded_c2_r1: 1760601120
+      Shelf_sandstone_weeded_c2_r2: -1181038459
+      Shelf_sandstone_weeded_c3_r0: -1088880411
+      Shelf_sandstone_weeded_c3_r1: 48309582
+      Shelf_sandstone_weeded_c3_r2: 1353035684
+      Shelf_sandstone_weeded_c4_r0: -1822497013
+      Shelf_sandstone_weeded_c4_r1: 573768635
+      Shelf_sandstone_weeded_c4_r2: -1253621801
+      Shelf_sandstone_weeded_c5_r0: 1521677566
+      Shelf_sandstone_weeded_c5_r1: -1440151236
+      Shelf_sandstone_weeded_c5_r2: -1104521608
+      Shelf_sandstone_weeded_c6_r0: 1680258992
+      Shelf_sandstone_weeded_c6_r1: -603526679
+      Shelf_sandstone_weeded_c6_r2: 2050153368
+      Shelf_sandstone_weeded_c7_r0: -2089689047
+      Shelf_sandstone_weeded_c7_r1: -1740447831
+      Shelf_sandstone_weeded_c7_r2: 1005142908
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

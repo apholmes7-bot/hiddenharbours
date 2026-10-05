@@ -10,24 +10,49 @@ namespace HiddenHarbours.Tools.RigBaking
     // Rig 9's half of the skin bake. Compose reads rig 7 over its rig 6 base; ComposeV9 reads rig 9
     // alone and fills the same CharacterSkinDef under the v9 tone rule. The mesh builder, the skin
     // attach, the clip packer and the turntable-sign adjudication are shared, so a v9 def differs
-    // from a rig 7 def only in what the rig said.
+    // from a rig 7 def only in what the rig said. Rig 10 (the rig 10 intake, 2026-10-02) bakes through
+    // the same ComposeV9 from a host loaded with CharacterRigKit.Rig10: its face marks, smooth normals
+    // and no-keyline default ride the same def.
     public static partial class CharacterSkinAssetBaker
     {
-        /// <summary>The rig the cast is baked from: rig 9 since the intake's Phase B (2026-09-26), which
-        /// baked all ten figures from it and shot their plates against rig 7. This is the one line
-        /// that switches it. Read-only static rather than a const, so the branch that is not taken
-        /// still compiles and still warns nobody.</summary>
-        public static readonly string LiveRig = CharacterSkinExtractor.V9CatalogKey;
+        /// <summary>The rig the cast is baked from: rig 10 (kit 10.2) since the rig 10 intake's Phase B
+        /// (2026-10-02), which baked all ten figures from it and shot their plates against rig 9.2.
+        /// Rig 9 was live from the character intake's Phase B (2026-09-26) until then. This is the one
+        /// line that switches it: <see cref="CharacterSkinExtractor.V9CatalogKey"/> goes back to rig 9.2
+        /// and <see cref="CharacterSkinExtractor.CatalogKey"/> to rig 7, each with a re-bake. Read-only
+        /// static rather than a const, so the branches that are not taken still compile and still warn
+        /// nobody.</summary>
+        public static readonly string LiveRig = CharacterRigKit.Rig10.CatalogKey;
 
-        public static bool LiveRigIsV9 => LiveRig == CharacterSkinExtractor.V9CatalogKey;
+        /// <summary>The kit <see cref="LiveRig"/> names, which <see cref="Bake"/> loads into its host
+        /// before <see cref="ComposeV9"/> reads it: rig 9 or rig 10, or null while it names rig 7.</summary>
+        public static CharacterRigKit LiveKit =>
+            LiveRig == CharacterRigKit.Rig10.CatalogKey ? CharacterRigKit.Rig10
+            : LiveRig == CharacterRigKit.Rig9.CatalogKey ? CharacterRigKit.Rig9
+            : null;
+
+        /// <summary>True while the live rig bakes through <see cref="ComposeV9"/>: rig 9 or rig 10, and
+        /// <see cref="LiveKit"/> says which.</summary>
+        public static bool LiveRigIsV9 => LiveKit != null;
 
         /// <summary>
         /// Compose one preset's skin def from rig 9, without touching the AssetDatabase. The bind
-        /// mesh is the preset's rest face (<see cref="CharacterSkinExtractor.DefaultFaceMeshJs9"/>);
-        /// every clip rig 9 ships is baked under its (anim, carry) key; the materials are the ones
-        /// that mesh paints, each with its own gain, bias and tone window, and the bake refuses a
-        /// figure over <see cref="CharacterSkinDef.MaxMaterials"/> for <see cref="ToneRule.V9"/>
-        /// rather than dropping the tail.
+        /// mesh is EVERY face with every face group (<see cref="CharacterSkinExtractor.FaceMeshJs9"/>,
+        /// since character PR 2a), each face carrying its group, its cull role and its head flag in
+        /// UV1; every clip rig 9 ships is baked under its (anim, carry) key with its face track and
+        /// its tool track; the materials are the ones that mesh paints, each with its own gain, bias
+        /// and tone window, and the bake refuses a figure over <see cref="CharacterSkinDef.MaxMaterials"/>
+        /// for <see cref="ToneRule.V9"/> rather than dropping the tail. The blink, the look, the face
+        /// thresholds, the head snap, the edge and the keyline mix are read off the rig (the blink and
+        /// the look checked against the committed sidecar), and the finished def is painted against
+        /// rig 9's own render (<see cref="CharacterSkinInk9"/>) and the match recorded.
+        ///
+        /// <para>The host says which rig (<see cref="CharacterSkinExtractor.KitOf"/>): rig 9 unless it was
+        /// loaded with <see cref="CharacterRigKit.Rig10"/>. A rig 10 def also carries the face as point
+        /// marks (each mark's turn band in UV1.w, its flags and the faces' smooth normals in UV2, the two
+        /// mark floors on the def), no role thresholds (rig 10 culls its face by the marks' own
+        /// <c>az</c>), and <see cref="CharacterSkinDef.KeylineDefault"/> off: rig 10 draws no keyline
+        /// unless asked (K4).</para>
         /// </summary>
         public static SkinBake ComposeV9(IRigScriptHost host, string preset,
                                          CharacterSkinDef target = null,
@@ -38,17 +63,19 @@ namespace HiddenHarbours.Tools.RigBaking
             var sw = Stopwatch.StartNew();
 
             CharacterSkinExtractor.Load9(host);
+            CharacterRigKit kit = CharacterSkinExtractor.KitOf(host);
             CharacterSkinExtractor.AssertPreset9(host, preset);
             Debug.Log($"[char-skin] census — {CharacterSkinExtractor.Census9(host, preset)}");
             double tol = CharacterSkinExtractor.V9Tolerance;
-            string g = CharacterSkinExtractor.V9GlobalName;
+            string g = kit.GlobalName;
 
             progress?.Invoke("skeleton", 0.02f);
             RigBone[] rigBones = CharacterSkinExtractor.ReadSkeleton9(host, preset);
             CharacterSkinExtractor.AssertRestComposes(rigBones, tol);
 
             progress?.Invoke("bind mesh", 0.08f);
-            string meshJs = CharacterSkinExtractor.DefaultFaceMeshJs9(host, preset);
+            string[] faceGroups = CharacterSkinExtractor.FaceGroupOrder9(host);
+            string meshJs = CharacterSkinExtractor.FaceMeshJs9(host, preset);
             RigSkinning skin = CharacterSkinExtractor.ReadSkinning(
                 host, preset, CharacterSkinDef.MaxBoneInfluences, meshJs);
             CharacterSkinExtractor.MarkOwnership(rigBones, skin);
@@ -66,13 +93,17 @@ namespace HiddenHarbours.Tools.RigBaking
             }
 
             RigMeshData bind = CharacterSkinExtractor.NewData9(host, preset, $"{g}:{preset}:bind", meshJs, mats);
+            CharacterSkinExtractor.FaceThresholds9 thresholds = CharacterSkinExtractor.ReadFaceThresholds9(host, preset);
+            CharacterSkinExtractor.ResolveFaceRoles9(bind.Faces, faceGroups, thresholds, $"{g}:{preset}:bind");
+            bind.CarriesFaceAttributes = true;
+            bind.CarriesMarkAttributes = kit.FaceMarks;
             CharacterSkinExtractor.AssertBindAgrees(bind, skin, tol);
 
             progress?.Invoke("mesh", 0.14f);
-            RigMeshBuild built = RigMeshBuilder.Build(bind, $"CharSkin9_{preset}_bind");
+            RigMeshBuild built = RigMeshBuilder.Build(bind, $"{kit.MeshPrefix}_{preset}_bind");
             if (built.Vertices != skin.CornerCount)
                 throw new InvalidOperationException(
-                    $"The built mesh has {built.Vertices} vertices and rig 9 reported " +
+                    $"The built mesh has {built.Vertices} vertices and {kit.Name} reported " +
                     $"{skin.CornerCount} skinned corners. The weights would be attached to the " +
                     "wrong vertices — every one of them, by a different amount.");
             AttachSkin(built.Mesh, skin, rigBones);
@@ -80,7 +111,7 @@ namespace HiddenHarbours.Tools.RigBaking
             string[] clipNames = CharacterSkinExtractor.ClipNames9(host);
             var clips = new List<CharacterSkinDef.SkinClip>(clipNames.Length);
             var keys = new Dictionary<string, string>(StringComparer.Ordinal);
-            int totalFrames = 0;
+            int totalFrames = 0, faceClips = 0, toolClips = 0;
             float worstStepDeg = 0f; string worstStepAt = "";
             for (int i = 0; i < clipNames.Length; i++)
             {
@@ -89,12 +120,26 @@ namespace HiddenHarbours.Tools.RigBaking
                                                                   out string state);
                 if (keys.TryGetValue(state, out string first))
                     throw new InvalidOperationException(
-                        $"Rig 9 clips '{first}' and '{clipNames[i]}' both key as '{state}'. The def " +
+                        $"{kit.Title} clips '{first}' and '{clipNames[i]}' both key as '{state}'. The def " +
                         "finds a clip by its key, so one of them could never be played.");
                 keys.Add(state, clipNames[i]);
-                clips.Add(ToClip(rc, state, rigBones.Length, ref worstStepDeg, ref worstStepAt));
+                CharacterSkinDef.SkinClip sc = ToClip(rc, state, rigBones.Length, ref worstStepDeg, ref worstStepAt);
+                sc.Face = rc.Face ?? Array.Empty<byte>();
+                sc.Tool = rc.Tool ?? Array.Empty<CharacterSkinDef.ToolKey>();
+                if (sc.HasFaceTrack) faceClips++;
+                if (sc.Tool.Length > 0) toolClips++;
+                clips.Add(sc);
                 totalFrames += rc.Frames;
             }
+
+            progress?.Invoke("face, blink and look", 0.905f);
+            CharacterSkinExtractor.AssertOverlaysMatchSidecar9(host, preset);
+            CharacterSkinExtractor.Blink9 blink = CharacterSkinExtractor.ReadBlink9(host);
+            CharacterSkinExtractor.Look9 look = CharacterSkinExtractor.ReadLook9(host, preset, rigBones);
+            int[] restFace = CharacterSkinExtractor.RestFace9(host, preset, faceGroups);
+            double cullFloor = CharacterSkinExtractor.CullFloor9(kit);
+            CharacterSkinExtractor.MarkCull9 markCull = CharacterSkinExtractor.ReadMarkCull9(kit);
+            bool keylineDefault = CharacterSkinExtractor.KeylineDefault9(host);
 
             progress?.Invoke("turntable sign", 0.92f);
             bool azimuthCcw = MeasureFacetSignV9(host, preset, out string signReport);
@@ -103,14 +148,14 @@ namespace HiddenHarbours.Tools.RigBaking
             CharacterSkinDef def = target != null ? target : ScriptableObject.CreateInstance<CharacterSkinDef>();
             def.Id = IdFor(preset);
             def.Preset = preset;
-            def.SourceRigPath = CharacterSkinExtractor.V9ScriptPath;
+            def.SourceRigPath = kit.ScriptPath;
             def.SourceRigRevision = host.EvaluateString($"String({g}.revision)");
-            def.SourceRigSha256 = CharacterSkinExtractor.SourceSha256V9();
-            // Rig 9 has no base rig; its second file is its poses, and a re-bake must notice when
-            // either moves.
-            def.BaseRigPath = CharacterSkinExtractor.V9PosesPath;
+            def.SourceRigSha256 = CharacterSkinExtractor.SourceSha256V9(kit);
+            // Rigs 9 and 10 have no base rig; the second file is the poses, and a re-bake must notice
+            // when either moves.
+            def.BaseRigPath = kit.PosesPath;
             def.BaseRigRevision = def.SourceRigRevision;
-            def.BaseRigSha256 = CharacterSkinExtractor.PosesSha256V9();
+            def.BaseRigSha256 = CharacterSkinExtractor.PosesSha256V9(kit);
             def.CellW = bind.W;
             def.CellH = bind.H;
             def.PivotPx = new Vector2((float)bind.PivotX, (float)bind.PivotY);
@@ -127,6 +172,34 @@ namespace HiddenHarbours.Tools.RigBaking
             def.Gain = 1f;
             def.Bias = 0f;
             def.Keyline = bind.Keyline;
+            // The figure ink, the face, the blink and the look: all the rig's, none of them
+            // re-derived (character PR 2a).
+            def.Edge = (float)CharacterSkinExtractor.V9ShadingNumber(host, "edge");
+            def.KeylineMix = (float)CharacterSkinExtractor.V9ShadingNumber(host, "keylineMix");
+            def.HeadSnap = CharacterSkinExtractor.HeadSnap9(host);
+            def.HeadMid = CharacterSkinExtractor.HeadMid9(host, preset).ToVector3();
+            def.KeylineDefault = keylineDefault;
+            def.FaceGroups = faceGroups;
+            def.RestFace = restFace;
+            def.FaceMinToward = thresholds.ToVector4();
+            def.FaceCullFloor = (float)cullFloor;
+            def.FaceMarkAzFloor = (float)markCull.AzFloor;
+            def.FaceMarkEdge = (float)markCull.Edge;
+            def.BlinkSteps = blink.Steps;
+            def.BlinkIntervalSeconds = blink.IntervalSeconds;
+            def.BlinkDoubleChance = blink.DoubleChance;
+            def.BlinkDoubleGapSeconds = blink.DoubleGapSeconds;
+            def.BlinkSkipGroups = blink.SkipGroups;
+            def.LookNeckBone = look.Neck;
+            def.LookHeadBone = look.Head;
+            def.LookChestBone = look.Chest;
+            def.LookSplitNeck = look.SplitNeck;
+            def.LookSplitHead = look.SplitHead;
+            def.LookYawLimits = look.Yaw;
+            def.LookPitchLimits = look.Pitch;
+            def.LookHeadShare = look.HeadShare;
+            def.LookEyesBeyondDeg = look.EyesBeyondDeg;
+            def.LookEyes = look.Eyes;
             def.AzimuthCounterClockwise = azimuthCcw;
             def.StepMode = CharacterSkinDef.ShadeStep.HardThreshold;
             def.HardStepThreshold = 0.55f;
@@ -166,7 +239,28 @@ namespace HiddenHarbours.Tools.RigBaking
             def.Clips = clips.ToArray();
             def.MeshStates ??= Array.Empty<string>();
             def.BindMesh = built.Mesh;
+
+            progress?.Invoke("ink", 0.97f);
+            CharacterSkinInk9.Reading[] ink = CharacterSkinInk9.MeasureAll(host, def, keys);
+            string inkReport = CharacterSkinInk9.Report(def, ink, out int inkWorst);
             sw.Stop();
+
+            var c = System.Globalization.CultureInfo.InvariantCulture;
+            int marks = 0;
+            foreach (RigFace f in bind.Faces) if (f.Mark) marks++;
+            string cullReport = kit.FaceMarks
+                ? $"{marks} point marks culled by their own az (floor {markCull.AzFloor.ToString("R", c)}, " +
+                  $"pixel edge {markCull.Edge.ToString("R", c)}; UV1.w, UV2), no roles"
+                : $"cull by role {thresholds}";
+            string faceReport =
+                $"{faceGroups.Length} face groups bound, {built.GroupedFaces} of {built.Faces} faces in them (UV1); " +
+                $"{cullReport}, floor {cullFloor.ToString("R", c)}; keyline {(keylineDefault ? "on" : "off")} " +
+                "unless asked; rest face " +
+                $"[{string.Join(", ", RestNames(faceGroups, restFace))}]; {faceClips}/{clips.Count} clips carry a " +
+                $"face track, {toolClips} a tool track (data only); edge {def.Edge.ToString("R", c)}, keyline mix " +
+                $"{def.KeylineMix.ToString("R", c)}, head snap {(def.HeadSnap ? "on" : "off")} at " +
+                $"({def.HeadMid.x.ToString("R", c)}, {def.HeadMid.y.ToString("R", c)}, {def.HeadMid.z.ToString("R", c)}); " +
+                $"blink {blink}; look {look}";
 
             long weightBytes = (long)built.Vertices * BoneWeightBytesPerVertex;
             long bindposeBytes = (long)rigBones.Length * BindposeBytesPerBone;
@@ -184,12 +278,25 @@ namespace HiddenHarbours.Tools.RigBaking
                 WorstStepDegrees = worstStepDeg,
                 WorstStepAt = worstStepAt,
                 SignReport = signReport,
+                FaceReport = faceReport,
+                InkReport = inkReport,
+                InkWorstCluster = inkWorst,
+                InkReadings = ink,
                 BindGeometryBytes = built.BufferBytes,
                 BoneWeightBytes = weightBytes,
                 BindposeBytes = bindposeBytes,
                 ClipBytes = (long)totalFrames * rigBones.Length * BoneKeyBytes,
                 ComposeMilliseconds = sw.ElapsedMilliseconds,
             };
+        }
+
+        /// <summary>The rest face's group names, for the face report.</summary>
+        static string[] RestNames(string[] groups, int[] ids)
+        {
+            var names = new string[ids.Length];
+            for (int i = 0; i < ids.Length; i++)
+                names[i] = ids[i] >= 1 && ids[i] <= groups.Length ? groups[ids[i] - 1] : "?";
+            return names;
         }
 
         /// <summary>

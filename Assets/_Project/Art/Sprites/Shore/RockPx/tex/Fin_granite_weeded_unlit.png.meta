@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 344661e2414656d4c9226f24edbdfc36
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2951982548124982800
+    second: Fin_granite_weeded_unlit_0
+  - first:
+      213: 4100854286675821694
+    second: Fin_granite_weeded_unlit_1
+  - first:
+      213: 4792129223313233528
+    second: Fin_granite_weeded_unlit_2
+  - first:
+      213: 1487218264429469758
+    second: Fin_granite_weeded_unlit_3
+  - first:
+      213: -4131785693417020535
+    second: Fin_granite_weeded_unlit_4
+  - first:
+      213: -7016806164087598161
+    second: Fin_granite_weeded_unlit_5
+  - first:
+      213: 2645446844324837678
+    second: Fin_granite_weeded_unlit_6
+  - first:
+      213: 3906708218017337236
+    second: Fin_granite_weeded_unlit_7
+  - first:
+      213: -4315612955287049120
+    second: Fin_granite_weeded_unlit_8
+  - first:
+      213: -3996146244130574541
+    second: Fin_granite_weeded_unlit_9
+  - first:
+      213: 6722547109643003894
+    second: Fin_granite_weeded_unlit_10
+  - first:
+      213: -7247665947320771090
+    second: Fin_granite_weeded_unlit_11
+  - first:
+      213: 8860812579555126396
+    second: Fin_granite_weeded_unlit_12
+  - first:
+      213: 8465684715723099820
+    second: Fin_granite_weeded_unlit_13
+  - first:
+      213: 6524026286804938568
+    second: Fin_granite_weeded_unlit_14
+  - first:
+      213: 8342366479447073335
+    second: Fin_granite_weeded_unlit_15
+  - first:
+      213: -5372547190885971933
+    second: Fin_granite_weeded_unlit_16
+  - first:
+      213: 1418777084297207734
+    second: Fin_granite_weeded_unlit_17
+  - first:
+      213: 2604165556673060252
+    second: Fin_granite_weeded_unlit_18
+  - first:
+      213: -1519673482776538444
+    second: Fin_granite_weeded_unlit_19
+  - first:
+      213: -588254837105861292
+    second: Fin_granite_weeded_unlit_20
+  - first:
+      213: -3324953826753065700
+    second: Fin_granite_weeded_unlit_21
+  - first:
+      213: 3926117394469836352
+    second: Fin_granite_weeded_unlit_22
+  - first:
+      213: 7899996016422124226
+    second: Fin_granite_weeded_unlit_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48c9cf3baf8c607449a76e4f61c0d76c
+      internalID: 10669548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a08e01fa996b1bb42bb7b19fb0327137
+      internalID: 578031874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c0a487e08340b74bb29247980bcb398
+      internalID: -1896283894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dfb689c603fc6ba44ab91f32b2f472a9
+      internalID: 1016681238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b07f698f13d85c642892165680796d4c
+      internalID: -810642084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88dbb5d2bd6f50a498af0b2f293d89ca
+      internalID: 2051943572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e314406860d8a44ea8a573803e710d2
+      internalID: -1621504523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ac6f81eff05b224da3b556b38796cfd
+      internalID: -1234443776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e77512c640b0c4a47a2ac986856fabd6
+      internalID: 607933537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a0a389a53aff4242b6bd5695e82e8f3
+      internalID: -161125066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14870247ce0cd39419962f0eb722f02a
+      internalID: 512107511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75aa3b8fc3ffc8046a136bcce416644d
+      internalID: -1620388953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5be2bf941357b4a4f8c8818b077e6ef8
+      internalID: 916671283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ff2e6abbd2fe69469c024c26de15e85
+      internalID: -102546377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dfe59f4cfe254f548925da06351b7f25
+      internalID: -656575427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc439ff961900054dab340d63a1e3e2f
+      internalID: 1885813167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb2da25b29cd4d941aa3ed5d8afcb71e
+      internalID: 171595040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c44f0b7d369c81842b050214968e84f6
+      internalID: 539277412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc6e9cea0c40f114dbbd512c3207feac
+      internalID: 514446123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83dfc846cff241e4eb7c94e06e4f4a80
+      internalID: 931504260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 457f7cecc9a60dc48b693a6b88eaf44b
+      internalID: -141112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d54a9e86e72a3ed468476ae1bb01b41d
+      internalID: -2016490558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ce8f0c81187d494884c96db04b5a865
+      internalID: 2045728696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_weeded_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40dc2f8ed22786e46b88ce3cd52e25c3
+      internalID: -1559970038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 82b51419f87b4b3429113d7969bbdbd2
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fin_granite_weeded_unlit_c0_r0: 10669548
+      Fin_granite_weeded_unlit_c0_r1: 607933537
+      Fin_granite_weeded_unlit_c0_r2: 171595040
+      Fin_granite_weeded_unlit_c1_r0: 578031874
+      Fin_granite_weeded_unlit_c1_r1: -161125066
+      Fin_granite_weeded_unlit_c1_r2: 539277412
+      Fin_granite_weeded_unlit_c2_r0: -1896283894
+      Fin_granite_weeded_unlit_c2_r1: 512107511
+      Fin_granite_weeded_unlit_c2_r2: 514446123
+      Fin_granite_weeded_unlit_c3_r0: 1016681238
+      Fin_granite_weeded_unlit_c3_r1: -1620388953
+      Fin_granite_weeded_unlit_c3_r2: 931504260
+      Fin_granite_weeded_unlit_c4_r0: -810642084
+      Fin_granite_weeded_unlit_c4_r1: 916671283
+      Fin_granite_weeded_unlit_c4_r2: -141112
+      Fin_granite_weeded_unlit_c5_r0: 2051943572
+      Fin_granite_weeded_unlit_c5_r1: -102546377
+      Fin_granite_weeded_unlit_c5_r2: -2016490558
+      Fin_granite_weeded_unlit_c6_r0: -1621504523
+      Fin_granite_weeded_unlit_c6_r1: -656575427
+      Fin_granite_weeded_unlit_c6_r2: 2045728696
+      Fin_granite_weeded_unlit_c7_r0: -1234443776
+      Fin_granite_weeded_unlit_c7_r1: 1885813167
+      Fin_granite_weeded_unlit_c7_r2: -1559970038
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

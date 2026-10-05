@@ -1,0 +1,763 @@
+fileFormatVersion: 2
+guid: 34f1c90269c4bba44891363655f9e29d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5438200457643584003
+    second: Knuckle_sandstone_barnacled_normal_0
+  - first:
+      213: -4143072001102039804
+    second: Knuckle_sandstone_barnacled_normal_1
+  - first:
+      213: -4971392252816107868
+    second: Knuckle_sandstone_barnacled_normal_2
+  - first:
+      213: 3378745001300734752
+    second: Knuckle_sandstone_barnacled_normal_3
+  - first:
+      213: -2102250437358422919
+    second: Knuckle_sandstone_barnacled_normal_4
+  - first:
+      213: -3189819356335585951
+    second: Knuckle_sandstone_barnacled_normal_5
+  - first:
+      213: 1049710623419499019
+    second: Knuckle_sandstone_barnacled_normal_6
+  - first:
+      213: -959717577643261852
+    second: Knuckle_sandstone_barnacled_normal_7
+  - first:
+      213: 8578222169967706649
+    second: Knuckle_sandstone_barnacled_normal_8
+  - first:
+      213: -4126727994818374279
+    second: Knuckle_sandstone_barnacled_normal_9
+  - first:
+      213: -2127113988724714003
+    second: Knuckle_sandstone_barnacled_normal_10
+  - first:
+      213: 941204255026404828
+    second: Knuckle_sandstone_barnacled_normal_11
+  - first:
+      213: 1453127867153331636
+    second: Knuckle_sandstone_barnacled_normal_12
+  - first:
+      213: -1571916438222723678
+    second: Knuckle_sandstone_barnacled_normal_13
+  - first:
+      213: 997222156610750155
+    second: Knuckle_sandstone_barnacled_normal_14
+  - first:
+      213: 9118270272594928581
+    second: Knuckle_sandstone_barnacled_normal_15
+  - first:
+      213: -6996307355170118586
+    second: Knuckle_sandstone_barnacled_normal_16
+  - first:
+      213: 5850984196417183688
+    second: Knuckle_sandstone_barnacled_normal_17
+  - first:
+      213: 7980333434122707598
+    second: Knuckle_sandstone_barnacled_normal_18
+  - first:
+      213: -5521213844720734299
+    second: Knuckle_sandstone_barnacled_normal_19
+  - first:
+      213: -5411074555088848117
+    second: Knuckle_sandstone_barnacled_normal_20
+  - first:
+      213: 8978905962906963122
+    second: Knuckle_sandstone_barnacled_normal_21
+  - first:
+      213: -6185013338162659091
+    second: Knuckle_sandstone_barnacled_normal_22
+  - first:
+      213: 156272423716344319
+    second: Knuckle_sandstone_barnacled_normal_23
+  - first:
+      213: -8375083183705572647
+    second: Knuckle_sandstone_barnacled_normal_24
+  - first:
+      213: 627644908402933045
+    second: Knuckle_sandstone_barnacled_normal_25
+  - first:
+      213: -8313995143965456874
+    second: Knuckle_sandstone_barnacled_normal_26
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75827f6ad7e0fbd40b9e1bd35ede4472
+      internalID: 1701362099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b9e00543337887043bcf6764dde3c5dc
+      internalID: -463570978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a6d92ba3ab9f4149a4ee0366cd6aab5
+      internalID: 1680409072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8414fa3864e8c6e4fa20bf49a9ed2de3
+      internalID: 888413567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5c10a95059177846920899b47abdaa9
+      internalID: 614141587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59f7802af3f1a9d4f9c4798ae3e5cec8
+      internalID: -397363829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96b90c933b6a22745b9c11a7193b0e47
+      internalID: 504148942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85be91a8e7d3c61418e69c6502b038ca
+      internalID: -1397053149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fab7ed0c95b1f243814b4886e21b58c
+      internalID: -733811261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58928498d6b121d47ba0922667f31735
+      internalID: -101315847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 315e0eb92ada2534e8275dafc240f23a
+      internalID: -371952385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f08410c5e2dddfd49bf12df94019ff84
+      internalID: -1848635916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f7a25a39fad4df48b0c6fc5ee86ae22
+      internalID: 2133527204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b239cf3cc1c20e04087af77da725d093
+      internalID: -2131041583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac7eb4eac38e3a946abba77311151ec8
+      internalID: -1834713903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4197a239e02132549b8ff7fcd581408e
+      internalID: 1074983970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 307f4f45c649433429a769a4afe65d43
+      internalID: 2121791939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1dfcd608d4b1fe843ba28f4bc6518f71
+      internalID: 303760299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca5261809e0019e47bae99d1c379bb1e
+      internalID: -880951022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e1285bcb20b84b4fb25793727b43796
+      internalID: 1248122260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4164a381865dbfb428dceb45f91e452c
+      internalID: -1790463367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7b9d2a8d427d0a49aed731e44332b09
+      internalID: -1992616438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84f268bd19a6a2d4e9d179d5588ebd93
+      internalID: -1730566470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_sandstone_barnacled_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30fa9c15bd85b60489f55c7f51bdbfa7
+      internalID: 297689041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 1e84e149ea9f2a34a818f23574ea00c1
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Knuckle_sandstone_barnacled_normal_c0_r0: 1701362099
+      Knuckle_sandstone_barnacled_normal_c0_r1: -733811261
+      Knuckle_sandstone_barnacled_normal_c0_r2: 2121791939
+      Knuckle_sandstone_barnacled_normal_c1_r0: -463570978
+      Knuckle_sandstone_barnacled_normal_c1_r1: -101315847
+      Knuckle_sandstone_barnacled_normal_c1_r2: 303760299
+      Knuckle_sandstone_barnacled_normal_c2_r0: 1680409072
+      Knuckle_sandstone_barnacled_normal_c2_r1: -371952385
+      Knuckle_sandstone_barnacled_normal_c2_r2: -880951022
+      Knuckle_sandstone_barnacled_normal_c3_r0: 888413567
+      Knuckle_sandstone_barnacled_normal_c3_r1: -1848635916
+      Knuckle_sandstone_barnacled_normal_c3_r2: 1248122260
+      Knuckle_sandstone_barnacled_normal_c4_r0: 614141587
+      Knuckle_sandstone_barnacled_normal_c4_r1: 2133527204
+      Knuckle_sandstone_barnacled_normal_c4_r2: -1790463367
+      Knuckle_sandstone_barnacled_normal_c5_r0: -397363829
+      Knuckle_sandstone_barnacled_normal_c5_r1: -2131041583
+      Knuckle_sandstone_barnacled_normal_c5_r2: -1992616438
+      Knuckle_sandstone_barnacled_normal_c6_r0: 504148942
+      Knuckle_sandstone_barnacled_normal_c6_r1: -1834713903
+      Knuckle_sandstone_barnacled_normal_c6_r2: -1730566470
+      Knuckle_sandstone_barnacled_normal_c7_r0: -1397053149
+      Knuckle_sandstone_barnacled_normal_c7_r1: 1074983970
+      Knuckle_sandstone_barnacled_normal_c7_r2: 297689041
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -390,6 +390,160 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1f, outN[0].magnitude, 1e-5f);
         }
 
+        // ------------------------------------------------------------------ rig 10's smooth normal
+
+        [Test]
+        public void TheSmoothNormalRidesTheFirstCornersBone_WeightedWhereItIsBlended()
+        {
+            // Face 0 starts on bone 0 alone; face 1's first corner is blended half and half between
+            // bones 1 and 2. Bone 0 turns a quarter about z (and moves, which no direction feels),
+            // bone 1 a quarter about x, bone 2 not at all. Every other corner rides elsewhere, and
+            // the rig ignores it.
+            var skin = new[]
+            {
+                Matrix4x4.TRS(new Vector3(5f, 0f, 0f), Quaternion.AngleAxis(90f, Vector3.forward), Vector3.one),
+                Matrix4x4.TRS(Vector3.zero, Quaternion.AngleAxis(90f, Vector3.right), Vector3.one),
+                Matrix4x4.identity,
+            };
+            var weights = new BoneWeight[8];
+            for (int v = 0; v < 8; v++) weights[v] = new BoneWeight { boneIndex0 = 2, weight0 = 1f };
+            weights[0] = new BoneWeight { boneIndex0 = 0, weight0 = 1f };
+            weights[4] = new BoneWeight { boneIndex0 = 1, weight0 = 0.5f, boneIndex1 = 2, weight1 = 0.5f };
+            var marks = new Vector4[8];
+            for (int v = 0; v < 8; v++) marks[v] = new Vector4(9f, 9f, 9f, v < 4 ? 16f : 17f);
+
+            CharacterSkinPose.PoseSmoothNormals(new[] { 0, 1 }, new[] { Vector3.right, Vector3.up },
+                                                new[] { 0, 4 }, new[] { 4, 4 }, skin, weights, marks);
+
+            float h = Mathf.Sqrt(0.5f);
+            for (int v = 0; v < 8; v++)
+            {
+                // Face 0: x turned a quarter about z is y. Face 1: y turned a quarter about x is z, and y
+                // unturned is y; half and half, normalised, is (0, 1, 1)/sqrt 2.
+                Vector3 want = v < 4 ? Vector3.up : new Vector3(0f, h, h);
+                Assert.AreEqual(want.x, marks[v].x, 1e-6f, $"corner {v}: x");
+                Assert.AreEqual(want.y, marks[v].y, 1e-6f, $"corner {v}: y");
+                Assert.AreEqual(want.z, marks[v].z, 1e-6f, $"corner {v}: z");
+                Assert.AreEqual(v < 4 ? 16f : 17f, marks[v].w, $"corner {v}: the mark flags must be kept");
+            }
+        }
+
+        // ------------------------------------------------------------------ the reach past the cell
+
+        private static readonly Vector3 NoExtent =
+            new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+
+        private static CharacterSkinDef Rig10Cell()
+        {
+            var def = ScriptableObject.CreateInstance<CharacterSkinDef>();
+            def.CellW = 80;
+            def.CellH = 104;
+            def.PivotPx = new Vector2(40f, 90f);
+            def.PxPerMetre = 32;
+            def.ElevationDeg = 40f;
+            return def;
+        }
+
+        [Test]
+        public void TheReachPastTheCellIsTheRigsProjectionAtItsWorstFacing()
+        {
+            CharacterSkinDef def = Rig10Cell();
+            try
+            {
+                float e = 40f * Mathf.Deg2Rad, se = Mathf.Sin(e), ce = Mathf.Cos(e);
+
+                // One corner a metre out: 32 px to either side of the pivot at x 40, and 32·sin 40° =
+                // 20.57 px above and below it at y 90, which is 6.57 px past the 104 px cell's bottom.
+                Vector4 one = CharacterSkinPose.ReachPastCell(
+                    CharacterSkinPose.WidenExtent(NoExtent, new Vector3(1f, 0f, 0f), se, ce), def);
+                Assert.AreEqual(-8f, one.x, 1e-4f, "left: 32 - 40");
+                Assert.AreEqual(32f * se - 90f, one.y, 1e-4f, "top");
+                Assert.AreEqual(-8f, one.z, 1e-4f, "right: 40 + 32 - 80");
+                Assert.AreEqual(90f + 32f * se - 104f, one.w, 1e-4f, "bottom");
+
+                // A figure-sized cloud, against the rig's own proj swept over a whole turn in 0.25° steps.
+                var points = new[]
+                {
+                    new Vector3(0.3f, 0.4f, 1.2f), new Vector3(-0.2f, 0.9f, 0.3f), new Vector3(0.05f, -1.1f, 0.25f),
+                    new Vector3(0.6f, 0.1f, 1.75f), new Vector3(-0.4f, -0.3f, 0f),
+                };
+                Vector3 extent = NoExtent;
+                foreach (Vector3 p in points) extent = CharacterSkinPose.WidenExtent(extent, p, se, ce);
+                Vector4 bound = CharacterSkinPose.ReachPastCell(extent, def);
+
+                var swept = new[] { double.NegativeInfinity, double.NegativeInfinity,
+                                    double.NegativeInfinity, double.NegativeInfinity };
+                for (int step = 0; step < 1440; step++)
+                {
+                    double yaw = step * 0.25 * System.Math.PI / 180.0;
+                    double ct = System.Math.Cos(-yaw), st = System.Math.Sin(-yaw);
+                    foreach (Vector3 p in points)
+                    {
+                        double xr = p.x * ct - p.y * st, yr = p.x * st + p.y * ct;
+                        double sx = 40.0 + xr * 32.0, sy = 90.0 - (yr * se + p.z * ce) * 32.0;
+                        swept[0] = System.Math.Max(swept[0], -sx);
+                        swept[1] = System.Math.Max(swept[1], -sy);
+                        swept[2] = System.Math.Max(swept[2], sx - 80.0);
+                        swept[3] = System.Math.Max(swept[3], sy - 104.0);
+                    }
+                }
+                string[] side = { "left", "top", "right", "bottom" };
+                for (int k = 0; k < 4; k++)
+                    Assert.AreEqual(swept[k], bound[k], 1e-3,
+                        $"{side[k]}: the reach is not the worst the rig's projection reaches over a turn");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(def);
+            }
+        }
+
+        [Test]
+        public void TheMeasuredReachTakesEveryHonestFrame_AndNoFencedOne()
+        {
+            CharacterSkinDef def = Rig10Cell();
+            var bind = new Mesh();
+            try
+            {
+                // One bone, one triangle with a corner a metre out. Frame 1 lifts it half a metre;
+                // frame 2 throws the bone 140 m out, which the fence holds out of the animation.
+                bind.SetVertices(new[] { new Vector3(1f, 0f, 0f), Vector3.zero, new Vector3(0f, 0.1f, 0f) });
+                bind.SetTriangles(new[] { 0, 1, 2 }, 0);
+                bind.boneWeights = new[]
+                {
+                    new BoneWeight { boneIndex0 = 0, weight0 = 1f }, new BoneWeight { boneIndex0 = 0, weight0 = 1f },
+                    new BoneWeight { boneIndex0 = 0, weight0 = 1f },
+                };
+                bind.bindposes = new[] { Matrix4x4.identity };
+                def.BindMesh = bind;
+                def.Bones = new[]
+                {
+                    new CharacterSkinDef.Bone
+                    {
+                        Id = "root", Parent = CharacterSkinDef.NoBone, RestRotation = Quaternion.identity, OwnsVertex = true,
+                    },
+                };
+                def.Clips = new[]
+                {
+                    Clip("idle", 3, 1, 12f, loop: true,
+                         (f, b) => f == 0 ? Vector3.zero : f == 1 ? new Vector3(0f, 0f, 0.5f) : new Vector3(140f, 0f, 0f)),
+                };
+
+                Vector4 reach = CharacterSkinPose.MeasureReach(def);
+
+                float e = 40f * Mathf.Deg2Rad, se = Mathf.Sin(e), ce = Mathf.Cos(e);
+                Assert.AreEqual(-8f, reach.x, 1e-3f, "left: the corner's metre, at any facing; frame 2 would read 4,440 px");
+                Assert.AreEqual((0.5f * ce + se) * 32f - 90f, reach.y, 1e-3f, "top: frame 1's lift, the highest honest frame");
+                Assert.AreEqual(-8f, reach.z, 1e-3f, "right");
+                Assert.AreEqual(90f + se * 32f - 104f, reach.w, 1e-3f, "bottom: frame 0, the lowest");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(bind);
+                UnityEngine.Object.DestroyImmediate(def);
+            }
+        }
+
         private static void AssertMatrix(Matrix4x4 expected, Matrix4x4 actual, string what)
         {
             for (int i = 0; i < 16; i++)

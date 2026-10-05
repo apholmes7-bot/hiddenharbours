@@ -259,22 +259,17 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (string step in TerrainTexArrayBuilder.LadderSteps)
             {
                 string path = $"{TerrainTexArrayBuilder.TexDir}/{name}{step}.png";
-                var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
-                Assert.IsNotNull(tex, $"Kit texture missing: '{path}' — the array builder would skip the pack.");
-
-                // BuildArray hard-rejects any other size and then builds NOTHING ("never half a
-                // kit"), so a wrong-sized import costs the whole ground, not one material.
-                Assert.AreEqual(size, tex.width, $"'{path}' is {tex.width}px wide, not {size}px.");
-                Assert.AreEqual(size, tex.height, $"'{path}' is {tex.height}px tall, not {size}px.");
+                TerrainPass9Bake.Decode(path, out int width, out int height);
+                Assert.AreEqual(size, width, $"'{path}' is {width}px wide, not {size}px.");
+                Assert.AreEqual(size, height, $"'{path}' is {height}px tall, not {size}px.");
             }
         }
 
         [Test]
-        public void KitTextures_CarryTheLoadBearingImportSettings()
+        public void KitTextures_KeepTheirStandaloneArtSettings()
         {
-            // These four are not cosmetic. isReadable off makes the array pack fail; sRGB off
-            // gamma-warps every albedo; a compressed or filtered import is DXT blocking and
-            // blur on a kit whose whole contract is "Repeat + Point, exactly periodic".
+            // Standalone source previews keep their art settings. The recipe reads PNG bytes,
+            // so source readability no longer participates in packing (ADR 0047).
             foreach (string name in TerrainTexArrayBuilder.Order256)
             foreach (string step in TerrainTexArrayBuilder.LadderSteps)
             {
@@ -282,8 +277,6 @@ namespace HiddenHarbours.Tests.EditMode
                 var importer = AssetImporter.GetAtPath(path) as TextureImporter;
                 Assert.IsNotNull(importer, $"No TextureImporter for '{path}'.");
 
-                Assert.IsTrue(importer.isReadable,
-                    $"'{path}' is not readable — TerrainTexArrayBuilder.BuildArray reads its pixels.");
                 Assert.IsTrue(importer.sRGBTexture,
                     $"'{path}' is not sRGB — the kit is albedo (note this is the OPPOSITE of the " +
                     "splat weight maps, which are linear data).");

@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cc04cd8111b8885a3350c0510b247d4, type: 3}
+  m_Name: commons.st_peters.square
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CommonsDef
+  Id: "commons.st_peters.square"
+  Outline:
+  - {x: -8.0, y: 9.0}
+  - {x: 12.5, y: 9.0}
+  - {x: 12.5, y: 27.015}
+  - {x: -8.0, y: 27.015}
+  Furniture:
+  - PieceId: "light.st_peters.fire_pit_square"
+    Kind: "hearthRing"
+    Position: {x: 0.0, y: 14.0}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"r\":3.0,\"note\":\"gravel ring and fire pit: the gathering place, lit for a hall night\"}"
+  - PieceId: "prop.stp_vl_common_log_bench_01"
+    Kind: "logBench"
+    Position: {x: -2.3, y: 15.9}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{}"
+  - PieceId: "prop.stp_vl_common_log_bench_02"
+    Kind: "logBench"
+    Position: {x: -0.3, y: 16.7}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{}"
+  - PieceId: "prop.stp_vl_common_notice_board_01"
+    Kind: "noticeBoard"
+    Position: {x: 4.4, y: 18.5}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"note\":\"by the Green Walk: the ferry times, the dance, the tide table\"}"
+  - PieceId: "prop.stp_vl_common_bench_01"
+    Kind: "bench"
+    Position: {x: 0.0, y: 21.5}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{}"
+  - PieceId: "prop.stp_vl_common_bench_02"
+    Kind: "bench"
+    Position: {x: 5.2, y: 21.5}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{}"
+  - PieceId: "prop.stp_vl_common_flower_bed_01"
+    Kind: "flowerBed"
+    Position: {x: -1.8, y: 19.2}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{}"
+  - PieceId: "prop.stp_vl_common_flower_bed_02"
+    Kind: "flowerBed"
+    Position: {x: 7.2, y: 18.8}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{}"
+  - PieceId: "prop.stp_vl_common_flower_bed_03"
+    Kind: "flowerBed"
+    Position: {x: -4.8, y: 24.6}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{}"
+  - PieceId: "tree.stp_vl_square_maple_01"
+    Kind: "tree"
+    Position: {x: -5.5, y: 21.5}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"stage\":\"pole\",\"note\":\"the square's trees: red maples, the island's own species, at the kit's pole stage (0.7) - a mature crown stands 8.2-9.3 units tall on screen and would hide the store's forecourt from the green\"}"
+  - PieceId: "tree.stp_vl_square_maple_02"
+    Kind: "tree"
+    Position: {x: 8.6, y: 23.6}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"stage\":\"pole\"}"
+  Stations:
+  - Id: "station.st_peters.hearth_bench_a"
+    Position: {x: -2.3, y: 16.3}
+    Node: "cross_walk"
+    Who: "Rose's evening sit"
+  - Id: "station.st_peters.hearth_bench_b"
+    Position: {x: -0.3, y: 17.1}
+    Node: "cross_walk"
+    Who: "Junior and Basil, after the tide's in"
+  - Id: "station.st_peters.notice_board"
+    Position: {x: 4.4, y: 17.8}
+    Node: "green_walk_foot"
+    Who: "everyone's morning look; Marguerite pins the notices"
+  - Id: "station.st_peters.green_bench_a"
+    Position: {x: 0.0, y: 21.9}
+    Node: "green_walk_foot"
+    Who: "the cannery hands' lunch"
+  - Id: "station.st_peters.green_bench_b"
+    Position: {x: 5.2, y: 21.9}
+    Node: "green_walk_foot"
+    Who: "Eileen, marking, after school"

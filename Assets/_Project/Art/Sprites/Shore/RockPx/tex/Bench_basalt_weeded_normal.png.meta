@@ -1,0 +1,769 @@
+fileFormatVersion: 2
+guid: a687fe878458a564a9bf8ae0070f8d51
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 505258208088052051
+    second: Bench_basalt_weeded_normal_0
+  - first:
+      213: 1176913579939937612
+    second: Bench_basalt_weeded_normal_1
+  - first:
+      213: 212863956314024282
+    second: Bench_basalt_weeded_normal_2
+  - first:
+      213: -5847847978804568921
+    second: Bench_basalt_weeded_normal_3
+  - first:
+      213: 7803482386469345770
+    second: Bench_basalt_weeded_normal_4
+  - first:
+      213: -339416792102065812
+    second: Bench_basalt_weeded_normal_5
+  - first:
+      213: -5412491495261531352
+    second: Bench_basalt_weeded_normal_6
+  - first:
+      213: 737810135998421833
+    second: Bench_basalt_weeded_normal_7
+  - first:
+      213: -4747976840599208158
+    second: Bench_basalt_weeded_normal_8
+  - first:
+      213: 5243631828903707725
+    second: Bench_basalt_weeded_normal_9
+  - first:
+      213: -3819852028548815680
+    second: Bench_basalt_weeded_normal_10
+  - first:
+      213: -7711612190317101685
+    second: Bench_basalt_weeded_normal_11
+  - first:
+      213: -6422486041209077253
+    second: Bench_basalt_weeded_normal_12
+  - first:
+      213: 8340527082741294000
+    second: Bench_basalt_weeded_normal_13
+  - first:
+      213: 6220067240074857596
+    second: Bench_basalt_weeded_normal_14
+  - first:
+      213: 6946414992049917951
+    second: Bench_basalt_weeded_normal_15
+  - first:
+      213: 4959545083048262383
+    second: Bench_basalt_weeded_normal_16
+  - first:
+      213: 5214546556874740356
+    second: Bench_basalt_weeded_normal_17
+  - first:
+      213: -7519873497785039799
+    second: Bench_basalt_weeded_normal_18
+  - first:
+      213: 2771360028916945668
+    second: Bench_basalt_weeded_normal_19
+  - first:
+      213: 4572144831366980650
+    second: Bench_basalt_weeded_normal_20
+  - first:
+      213: -6974953116012963374
+    second: Bench_basalt_weeded_normal_21
+  - first:
+      213: -1528130590670654405
+    second: Bench_basalt_weeded_normal_22
+  - first:
+      213: -497908107501918806
+    second: Bench_basalt_weeded_normal_23
+  - first:
+      213: -5712405231263368020
+    second: Bench_basalt_weeded_normal_24
+  - first:
+      213: 1010879425825418942
+    second: Bench_basalt_weeded_normal_25
+  - first:
+      213: 7484810213851513437
+    second: Bench_basalt_weeded_normal_26
+  - first:
+      213: -8389962641272555511
+    second: Bench_basalt_weeded_normal_27
+  - first:
+      213: -6052089792823847529
+    second: Bench_basalt_weeded_normal_28
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db1b9ba05211e914f8d34db4647d16a9
+      internalID: -1795008671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76b9cccd8fa228e4987e4e1683263a9e
+      internalID: 1241474222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e432b7b8b26b14340917b55a13f0c239
+      internalID: 2056142500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f505dd7e2bd78a340a11231e67507207
+      internalID: -61797601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc6c09616b0d6924b80298f1c8e88e7e
+      internalID: -1963497858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1522ddcf09a7fad47b6327227d92facd
+      internalID: 714894801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0ac1251c62a8f649843f8ac79616ae6
+      internalID: -308128764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 255ba338f6607704685ba4a2144e4d6a
+      internalID: -50308838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9d50b4961060224f8b84b1d47278ac1
+      internalID: 194454274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d104c043002ac542b13464f92b27006
+      internalID: 782880550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ccc7959c8902e94bbacf7e5752af3d4
+      internalID: 857017897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 169e765a1bd2e02449d3c041621d2ae6
+      internalID: -997838210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa7bbb97afb9a5b4daf25863b9409843
+      internalID: -1170572205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b0ad3b819695a545b4bb2a4b33fa584
+      internalID: -58374998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c22353b1901a288459fe7b5c74049b1d
+      internalID: 1196134419
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: def3e4db71aedc04f98f84d913360cb2
+      internalID: -1996788364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff0cfe367bfca9e4c9b91913db8fb84d
+      internalID: -1313783307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ec525163af5633489b7e9b016991c73
+      internalID: -1694554216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6838facfc55b53e479f3ccdf38d861c3
+      internalID: -1843885094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc7454e64e815c841ad25795a06a0357
+      internalID: 1087474991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc49180dbe72e1941bb459323d50a30b
+      internalID: 1638317820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 773dfdda249407c438505c064445ded1
+      internalID: 1044916218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 152fbb27c73116849afa5684c4a66b6a
+      internalID: -275233224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_basalt_weeded_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04779cf16e9aa8e46a31f0e9c98ab58c
+      internalID: 748868020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 6933c2efef0f51a48b19ac0bf75615e1
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Bench_basalt_weeded_normal_c0_r0: -1795008671
+      Bench_basalt_weeded_normal_c0_r1: 194454274
+      Bench_basalt_weeded_normal_c0_r2: -1313783307
+      Bench_basalt_weeded_normal_c1_r0: 1241474222
+      Bench_basalt_weeded_normal_c1_r1: 782880550
+      Bench_basalt_weeded_normal_c1_r2: -1694554216
+      Bench_basalt_weeded_normal_c2_r0: 2056142500
+      Bench_basalt_weeded_normal_c2_r1: 857017897
+      Bench_basalt_weeded_normal_c2_r2: -1843885094
+      Bench_basalt_weeded_normal_c3_r0: -61797601
+      Bench_basalt_weeded_normal_c3_r1: -997838210
+      Bench_basalt_weeded_normal_c3_r2: 1087474991
+      Bench_basalt_weeded_normal_c4_r0: -1963497858
+      Bench_basalt_weeded_normal_c4_r1: -1170572205
+      Bench_basalt_weeded_normal_c4_r2: 1638317820
+      Bench_basalt_weeded_normal_c5_r0: 714894801
+      Bench_basalt_weeded_normal_c5_r1: -58374998
+      Bench_basalt_weeded_normal_c5_r2: 1044916218
+      Bench_basalt_weeded_normal_c6_r0: -308128764
+      Bench_basalt_weeded_normal_c6_r1: 1196134419
+      Bench_basalt_weeded_normal_c6_r2: -275233224
+      Bench_basalt_weeded_normal_c7_r0: -50308838
+      Bench_basalt_weeded_normal_c7_r1: -1996788364
+      Bench_basalt_weeded_normal_c7_r2: 748868020
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

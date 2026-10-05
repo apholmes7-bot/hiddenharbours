@@ -1,0 +1,925 @@
+fileFormatVersion: 2
+guid: 9c3e0e0fe40fa0947bf639f7af6f455f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8805956294690269641
+    second: Spine_till_mask_0
+  - first:
+      213: 1823357478083254514
+    second: Spine_till_mask_1
+  - first:
+      213: 1078159064671602036
+    second: Spine_till_mask_2
+  - first:
+      213: -6718458352855849017
+    second: Spine_till_mask_3
+  - first:
+      213: -8897116049784814289
+    second: Spine_till_mask_4
+  - first:
+      213: 5188277251281200365
+    second: Spine_till_mask_5
+  - first:
+      213: 2088686059000296413
+    second: Spine_till_mask_6
+  - first:
+      213: -6130440937449077162
+    second: Spine_till_mask_7
+  - first:
+      213: 9172419495875686529
+    second: Spine_till_mask_8
+  - first:
+      213: -2196100168211834372
+    second: Spine_till_mask_9
+  - first:
+      213: 3581497683807968435
+    second: Spine_till_mask_10
+  - first:
+      213: -6242866553534161938
+    second: Spine_till_mask_11
+  - first:
+      213: 8770860044092982828
+    second: Spine_till_mask_12
+  - first:
+      213: 1464107883406268423
+    second: Spine_till_mask_13
+  - first:
+      213: 7041310643825917901
+    second: Spine_till_mask_14
+  - first:
+      213: -741911579850064745
+    second: Spine_till_mask_15
+  - first:
+      213: 8187488002778118360
+    second: Spine_till_mask_16
+  - first:
+      213: 8297972599266148305
+    second: Spine_till_mask_17
+  - first:
+      213: 8607545016521989539
+    second: Spine_till_mask_18
+  - first:
+      213: 3945901676654687352
+    second: Spine_till_mask_19
+  - first:
+      213: 5642706273700783974
+    second: Spine_till_mask_20
+  - first:
+      213: 8473750886609455913
+    second: Spine_till_mask_21
+  - first:
+      213: 1266934319420037633
+    second: Spine_till_mask_22
+  - first:
+      213: 8648916261471661970
+    second: Spine_till_mask_23
+  - first:
+      213: -5661996556337664721
+    second: Spine_till_mask_24
+  - first:
+      213: -8950098187619679068
+    second: Spine_till_mask_25
+  - first:
+      213: -7181929628494237840
+    second: Spine_till_mask_26
+  - first:
+      213: -5035401354630587141
+    second: Spine_till_mask_27
+  - first:
+      213: 5310322679560498442
+    second: Spine_till_mask_28
+  - first:
+      213: -1119359108930100088
+    second: Spine_till_mask_29
+  - first:
+      213: -3007514942832873638
+    second: Spine_till_mask_30
+  - first:
+      213: -2609543697642318360
+    second: Spine_till_mask_31
+  - first:
+      213: 5315540676144569108
+    second: Spine_till_mask_32
+  - first:
+      213: -3575264085575778520
+    second: Spine_till_mask_33
+  - first:
+      213: 4194703830561156039
+    second: Spine_till_mask_34
+  - first:
+      213: 7580631606640248173
+    second: Spine_till_mask_35
+  - first:
+      213: 1904372172455660892
+    second: Spine_till_mask_36
+  - first:
+      213: 7624007317762994517
+    second: Spine_till_mask_37
+  - first:
+      213: 306133707590031869
+    second: Spine_till_mask_38
+  - first:
+      213: 6281752229531806639
+    second: Spine_till_mask_39
+  - first:
+      213: -90716488737311098
+    second: Spine_till_mask_40
+  - first:
+      213: -534291569685821412
+    second: Spine_till_mask_41
+  - first:
+      213: 4923300983489535445
+    second: Spine_till_mask_42
+  - first:
+      213: 7947438007822807201
+    second: Spine_till_mask_43
+  - first:
+      213: -856623891192681982
+    second: Spine_till_mask_44
+  - first:
+      213: -4656516104371634881
+    second: Spine_till_mask_45
+  - first:
+      213: 6859084926210060564
+    second: Spine_till_mask_46
+  - first:
+      213: 6661093239520331538
+    second: Spine_till_mask_47
+  - first:
+      213: 4823801087232105307
+    second: Spine_till_mask_48
+  - first:
+      213: 4700319383224760198
+    second: Spine_till_mask_49
+  - first:
+      213: -4146851322764359430
+    second: Spine_till_mask_50
+  - first:
+      213: 5159162754176714998
+    second: Spine_till_mask_51
+  - first:
+      213: 2269360094201334512
+    second: Spine_till_mask_52
+  - first:
+      213: 8962513237112880105
+    second: Spine_till_mask_53
+  - first:
+      213: -8054889338454480962
+    second: Spine_till_mask_54
+  - first:
+      213: -2169953879536587374
+    second: Spine_till_mask_55
+  - first:
+      213: 1132184601300595929
+    second: Spine_till_mask_56
+  - first:
+      213: -680530908003067198
+    second: Spine_till_mask_57
+  - first:
+      213: 8539378632458118245
+    second: Spine_till_mask_58
+  - first:
+      213: 1989778515032104264
+    second: Spine_till_mask_59
+  - first:
+      213: 5882825714511461857
+    second: Spine_till_mask_60
+  - first:
+      213: -7756815821573553519
+    second: Spine_till_mask_61
+  - first:
+      213: -515342823963006181
+    second: Spine_till_mask_62
+  - first:
+      213: 1618931224340264706
+    second: Spine_till_mask_63
+  - first:
+      213: -8614671885983117317
+    second: Spine_till_mask_64
+  - first:
+      213: 664777877219948179
+    second: Spine_till_mask_65
+  - first:
+      213: -4001244983488973559
+    second: Spine_till_mask_66
+  - first:
+      213: 1313788096966410848
+    second: Spine_till_mask_67
+  - first:
+      213: -3477622888917399064
+    second: Spine_till_mask_68
+  - first:
+      213: 9012595072462446290
+    second: Spine_till_mask_69
+  - first:
+      213: 7105605733789712797
+    second: Spine_till_mask_70
+  - first:
+      213: 1661784953279844230
+    second: Spine_till_mask_71
+  - first:
+      213: -5388844826632214885
+    second: Spine_till_mask_72
+  - first:
+      213: 5253944960545383989
+    second: Spine_till_mask_73
+  - first:
+      213: -6063417275869376630
+    second: Spine_till_mask_74
+  - first:
+      213: 2544656481910127061
+    second: Spine_till_mask_75
+  - first:
+      213: -5027816172474520441
+    second: Spine_till_mask_76
+  - first:
+      213: -1923821777682527542
+    second: Spine_till_mask_77
+  - first:
+      213: 1778474835823114739
+    second: Spine_till_mask_78
+  - first:
+      213: -9163699826812654499
+    second: Spine_till_mask_79
+  - first:
+      213: 1222217875027855436
+    second: Spine_till_mask_80
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Spine_till_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f906e99ea591df84f999761305a25b5e
+      internalID: -383966606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d8095c4eddae8a4bbb4670edd0f1f3e
+      internalID: -391226100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fdf362e9f5ac3354c9fa4f2323a986fb
+      internalID: 2090726578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47f80d997ac8b2a4289b0d4d8fe39898
+      internalID: 1732280921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ac5ae72b0a6cb048bbfd9eb2b33a475
+      internalID: 338276727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f492a712b0f537499c4f7a295aed6d8
+      internalID: -1476656557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f119404d94f0cdd41b5dfdd67385713d
+      internalID: 998227568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a99cec99cf15eb4b87d2bf06ccd924d
+      internalID: -1485560771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed84756fa1431194292e34c8b4819b0b
+      internalID: -421599123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e5c8905f17291a4fbc6232e24b714a0
+      internalID: 881779614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed20e1bf8c54f714c8c8ec16d0a945ac
+      internalID: -1876175489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89f762687b7868c46a0868d4d9e1a345
+      internalID: -1313451588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ee88a446e177b54abd8e92b206dc8fd
+      internalID: 104807398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f6077cc3c2437649adb47b4f610e504
+      internalID: 895237474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5eca53ea2be6f541b2a61ae759706a5
+      internalID: -1920979548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eaa16df101ec3524ebd1ed08fc6c58e2
+      internalID: 1646853951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f5ad4a648048bf4a80467593e89a41e
+      internalID: 1825262901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cef06a426aee05447a0dc187f3f5cbd6
+      internalID: 687341582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7503aa79f8c12f54c9bdfe33e3c22213
+      internalID: -1783993130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d892660866d1004ba11eacbee562527
+      internalID: -107244333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c2aa34de1e2d6147b7c60e4771ec1a9
+      internalID: -1407800369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b6bacb5dcaf7cc48a94158aac3d112e
+      internalID: 496007780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc44690644264884fabce13c0bb46038
+      internalID: 469521819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_till_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1cf1de52048884e4190d23f27767ae3f
+      internalID: -792542929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a890958a5508d314ca2ba43ef9a31637
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Spine_till_mask_c0_r0: -383966606
+      Spine_till_mask_c0_r1: -421599123
+      Spine_till_mask_c0_r2: 1825262901
+      Spine_till_mask_c1_r0: -391226100
+      Spine_till_mask_c1_r1: 881779614
+      Spine_till_mask_c1_r2: 687341582
+      Spine_till_mask_c2_r0: 2090726578
+      Spine_till_mask_c2_r1: -1876175489
+      Spine_till_mask_c2_r2: -1783993130
+      Spine_till_mask_c3_r0: 1732280921
+      Spine_till_mask_c3_r1: -1313451588
+      Spine_till_mask_c3_r2: -107244333
+      Spine_till_mask_c4_r0: 338276727
+      Spine_till_mask_c4_r1: 104807398
+      Spine_till_mask_c4_r2: -1407800369
+      Spine_till_mask_c5_r0: -1476656557
+      Spine_till_mask_c5_r1: 895237474
+      Spine_till_mask_c5_r2: 496007780
+      Spine_till_mask_c6_r0: 998227568
+      Spine_till_mask_c6_r1: -1920979548
+      Spine_till_mask_c6_r2: 469521819
+      Spine_till_mask_c7_r0: -1485560771
+      Spine_till_mask_c7_r1: 1646853951
+      Spine_till_mask_c7_r2: -792542929
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,1516 @@
+{
+ "schema": "hidden-harbours/yard-lots@5",
+ "date": "2026-09-26",
+ "note": "YardLots.plan(name) per lot: outbuildings and water (lot frame metres, quarter turns, world facing), RoadKit4 routes (world metres from the building pivot), checks, and door visibility on the board at the plan facing (null = the house door is edge-on at this facing: a side door, signposted)",
+ "lots": {
+  "sage_cottage": {
+   "visibility": {
+    "building": 1,
+    "shed": 1,
+    "well": 1
+   },
+   "check": {
+    "door": true,
+    "outbuildings": [
+     {
+      "id": "shed",
+      "kind": "shed",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "door",
+        "clip": "walk",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "toolRack",
+        "clip": "reach",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "pottingBench",
+        "clip": "bench",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     },
+     {
+      "id": "well",
+      "kind": "well",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "bucket",
+        "clip": "lift",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "crank",
+        "clip": "reach",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     }
+    ],
+    "dressing": [
+     {
+      "name": "lilac",
+      "reachable": true
+     },
+     {
+      "name": "borderBed",
+      "reachable": true
+     },
+     {
+      "name": "clothesline",
+      "reachable": true
+     },
+     {
+      "name": "birdbath",
+      "reachable": true
+     }
+    ],
+    "placed": 4,
+    "wanted": 4,
+    "sunlit": {},
+    "pieces": {
+     "placed": 2,
+     "wanted": 2
+    }
+   },
+   "pieces": [
+    {
+     "id": "shed",
+     "kind": "shed",
+     "x": -6.51,
+     "y": -0.735,
+     "rot": 0,
+     "facing": 4
+    },
+    {
+     "id": "well",
+     "kind": "well",
+     "x": -5.26,
+     "y": 6.015,
+     "rot": 0,
+     "facing": 4
+    }
+   ],
+   "routes": [
+    {
+     "id": "sage_cottage.walk",
+     "cls": "walk",
+     "surface": "stones",
+     "w": 0.9,
+     "foot": "stone",
+     "grip": 0.8,
+     "world": [
+      [
+       0,
+       -6.275
+      ],
+      [
+       0,
+       -8.275
+      ],
+      [
+       0,
+       -10.185
+      ]
+     ]
+    },
+    {
+     "id": "sage_cottage.shed_path",
+     "cls": "footpath",
+     "surface": "trodden",
+     "w": 1,
+     "foot": "earth",
+     "grip": 0.7,
+     "world": [
+      [
+       0,
+       -6.275
+      ],
+      [
+       6.51,
+       -2.415
+      ],
+      [
+       6.51,
+       -0.915
+      ]
+     ]
+    },
+    {
+     "id": "sage_cottage.well_path",
+     "cls": "footpath",
+     "surface": "trodden",
+     "w": 1,
+     "foot": "earth",
+     "grip": 0.7,
+     "world": [
+      [
+       0,
+       -8.235
+      ],
+      [
+       5.26,
+       -8.235
+      ],
+      [
+       5.26,
+       -6.735
+      ]
+     ]
+    }
+   ],
+   "work": "E",
+   "lot": {
+    "x0": -8.81,
+    "x1": 5.96,
+    "y0": -6.885,
+    "y1": 10.185
+   }
+  },
+  "school": {
+   "visibility": {
+    "building": 1,
+    "woodshed": 1,
+    "pump": 1
+   },
+   "check": {
+    "door": true,
+    "outbuildings": [
+     {
+      "id": "woodshed",
+      "kind": "woodshed",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "bay",
+        "clip": "walk",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "cordwood",
+        "clip": "lift",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "chopBlock",
+        "clip": "chop",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     },
+     {
+      "id": "pump",
+      "kind": "pump",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "trough",
+        "clip": "lift",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "handle",
+        "clip": "reach",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     }
+    ],
+    "dressing": [
+     {
+      "name": "flagpole",
+      "reachable": true
+     },
+     {
+      "name": "bench",
+      "reachable": true
+     },
+     {
+      "name": "swingSet",
+      "reachable": true
+     }
+    ],
+    "placed": 3,
+    "wanted": 3,
+    "sunlit": {},
+    "pieces": {
+     "placed": 2,
+     "wanted": 2
+    }
+   },
+   "pieces": [
+    {
+     "id": "woodshed",
+     "kind": "woodshed",
+     "x": 6.06,
+     "y": -1.025,
+     "rot": 0,
+     "facing": 4
+    },
+    {
+     "id": "pump",
+     "kind": "pump",
+     "x": 4.31,
+     "y": 5.725,
+     "rot": 0,
+     "facing": 4
+    }
+   ],
+   "routes": [
+    {
+     "id": "school.walk",
+     "cls": "walk",
+     "surface": "gravel",
+     "w": 1.8,
+     "foot": "gravel",
+     "grip": 0.66,
+     "world": [
+      [
+       0,
+       -6.065
+      ],
+      [
+       0,
+       -8.065
+      ],
+      [
+       0,
+       -9.975
+      ]
+     ]
+    },
+    {
+     "id": "school.woodshed_path",
+     "cls": "footpath",
+     "surface": "trodden",
+     "w": 1,
+     "foot": "earth",
+     "grip": 0.7,
+     "world": [
+      [
+       0,
+       -6.065
+      ],
+      [
+       -6.06,
+       -1.375
+      ],
+      [
+       -6.06,
+       0.125
+      ]
+     ]
+    },
+    {
+     "id": "school.pump_path",
+     "cls": "footpath",
+     "surface": "trodden",
+     "w": 1,
+     "foot": "earth",
+     "grip": 0.7,
+     "world": [
+      [
+       0,
+       -7.945
+      ],
+      [
+       -4.31,
+       -7.945
+      ],
+      [
+       -4.31,
+       -6.445
+      ]
+     ]
+    }
+   ],
+   "work": "W",
+   "lot": {
+    "x0": -6.54,
+    "x1": 8.76,
+    "y0": -6.675,
+    "y1": 9.975000000000001
+   }
+  },
+  "harbour_gable": {
+   "visibility": {
+    "building": 1,
+    "shed": 1,
+    "pump": 1
+   },
+   "check": {
+    "door": true,
+    "outbuildings": [
+     {
+      "id": "shed",
+      "kind": "shed",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "door",
+        "clip": "walk",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "toolRack",
+        "clip": "reach",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "pottingBench",
+        "clip": "bench",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     },
+     {
+      "id": "pump",
+      "kind": "pump",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "trough",
+        "clip": "lift",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "handle",
+        "clip": "reach",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     }
+    ],
+    "dressing": [
+     {
+      "name": "trapBench",
+      "reachable": true
+     },
+     {
+      "name": "buoyPost",
+      "reachable": true
+     },
+     {
+      "name": "anchorSet",
+      "reachable": true
+     },
+     {
+      "name": "fernBed",
+      "reachable": true
+     }
+    ],
+    "placed": 4,
+    "wanted": 4,
+    "sunlit": {},
+    "pieces": {
+     "placed": 2,
+     "wanted": 2
+    }
+   },
+   "pieces": [
+    {
+     "id": "shed",
+     "kind": "shed",
+     "x": -0.87,
+     "y": -6.84,
+     "rot": 3,
+     "facing": 4
+    },
+    {
+     "id": "pump",
+     "kind": "pump",
+     "x": 5.38,
+     "y": -4.84,
+     "rot": 3,
+     "facing": 4
+    }
+   ],
+   "routes": [
+    {
+     "id": "harbour_gable.walk",
+     "cls": "walk",
+     "surface": "stones",
+     "w": 0.9,
+     "foot": "stone",
+     "grip": 0.8,
+     "world": [
+      [
+       0,
+       -5.46
+      ],
+      [
+       0,
+       -7.46
+      ],
+      [
+       0,
+       -8.32
+      ]
+     ]
+    },
+    {
+     "id": "harbour_gable.shed_path",
+     "cls": "footpath",
+     "surface": "trodden",
+     "w": 1,
+     "foot": "earth",
+     "grip": 0.7,
+     "world": [
+      [
+       0,
+       -5.46
+      ],
+      [
+       -6.84,
+       -2.28
+      ],
+      [
+       -6.84,
+       -0.78
+      ]
+     ]
+    },
+    {
+     "id": "harbour_gable.pump_path",
+     "cls": "footpath",
+     "surface": "trodden",
+     "w": 1,
+     "foot": "earth",
+     "grip": 0.7,
+     "world": [
+      [
+       0,
+       -7.6
+      ],
+      [
+       -4.84,
+       -7.6
+      ],
+      [
+       -4.84,
+       -6.1
+      ]
+     ]
+    }
+   ],
+   "work": "W",
+   "lot": {
+    "x0": -6.02,
+    "x1": 8.32,
+    "y0": -9.14,
+    "y1": 7.369999999999999
+   }
+  },
+  "general_store": {
+   "visibility": {
+    "shed": 1
+   },
+   "check": {
+    "door": true,
+    "outbuildings": [
+     {
+      "id": "shed",
+      "kind": "shed",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "door",
+        "clip": "walk",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "toolRack",
+        "clip": "reach",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "pottingBench",
+        "clip": "bench",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     }
+    ],
+    "dressing": [
+     {
+      "name": "farmStand",
+      "reachable": true
+     },
+     {
+      "name": "barrelPlanter",
+      "reachable": true
+     },
+     {
+      "name": "bench",
+      "reachable": true
+     }
+    ],
+    "placed": 3,
+    "wanted": 3,
+    "sunlit": {},
+    "pieces": {
+     "placed": 1,
+     "wanted": 1
+    }
+   },
+   "pieces": [
+    {
+     "id": "shed",
+     "kind": "shed",
+     "x": -6.95,
+     "y": -1,
+     "rot": 0,
+     "facing": 4
+    }
+   ],
+   "routes": [
+    {
+     "id": "general_store.walk",
+     "cls": "walk",
+     "surface": "gravel",
+     "w": 1.8,
+     "foot": "gravel",
+     "grip": 0.66,
+     "world": [
+      [
+       0,
+       -8.25
+      ],
+      [
+       0,
+       -10.25
+      ],
+      [
+       0,
+       -11.85
+      ]
+     ]
+    },
+    {
+     "id": "general_store.shed_path",
+     "cls": "footpath",
+     "surface": "trodden",
+     "w": 1,
+     "foot": "earth",
+     "grip": 0.7,
+     "world": [
+      [
+       0,
+       -8.25
+      ],
+      [
+       6.95,
+       -8.25
+      ],
+      [
+       6.95,
+       -2.4
+      ],
+      [
+       6.95,
+       -0.9
+      ]
+     ]
+    }
+   ],
+   "work": "E",
+   "lot": {
+    "x0": -9.4,
+    "x1": 6.85,
+    "y0": -8.149999999999999,
+    "y1": 11.850000000000001
+   }
+  },
+  "post_office": {
+   "visibility": {},
+   "check": {
+    "door": true,
+    "outbuildings": [],
+    "dressing": [
+     {
+      "name": "bench",
+      "reachable": true
+     },
+     {
+      "name": "flagpole",
+      "reachable": true
+     },
+     {
+      "name": "barrelPlanter",
+      "reachable": true
+     }
+    ],
+    "placed": 3,
+    "wanted": 3,
+    "sunlit": {},
+    "pieces": {
+     "placed": 0,
+     "wanted": 0
+    }
+   },
+   "pieces": [],
+   "routes": [
+    {
+     "id": "post_office.walk",
+     "cls": "walk",
+     "surface": "gravel",
+     "w": 1.8,
+     "foot": "gravel",
+     "grip": 0.66,
+     "world": [
+      [
+       2.022,
+       -7.275
+      ],
+      [
+       2.022,
+       -9.275
+      ],
+      [
+       2.022,
+       -10.875
+      ]
+     ]
+    }
+   ],
+   "work": "E",
+   "lot": {
+    "x0": -6.3100000000000005,
+    "x1": 6.3100000000000005,
+    "y0": -7.175,
+    "y1": 10.875
+   }
+  },
+  "cream_saltbox": {
+   "visibility": {
+    "building": 1,
+    "henHouse": 1,
+    "pump": 1
+   },
+   "check": {
+    "door": true,
+    "outbuildings": [
+     {
+      "id": "henHouse",
+      "kind": "henHouse",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "door",
+        "clip": "walk",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "nestBox",
+        "clip": "reach",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "feeder",
+        "clip": "reach",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     },
+     {
+      "id": "pump",
+      "kind": "pump",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "trough",
+        "clip": "lift",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "handle",
+        "clip": "reach",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     }
+    ],
+    "dressing": [
+     {
+      "name": "vegRows",
+      "reachable": true
+     },
+     {
+      "name": "compostBin",
+      "reachable": true
+     },
+     {
+      "name": "trapBench",
+      "reachable": true
+     }
+    ],
+    "placed": 3,
+    "wanted": 3,
+    "sunlit": {
+     "vegRows": 1
+    },
+    "pieces": {
+     "placed": 2,
+     "wanted": 2
+    }
+   },
+   "pieces": [
+    {
+     "id": "henHouse",
+     "kind": "henHouse",
+     "x": -0.37,
+     "y": 7.11,
+     "rot": 3,
+     "facing": 4
+    },
+    {
+     "id": "pump",
+     "kind": "pump",
+     "x": 4.13,
+     "y": 5.86,
+     "rot": 3,
+     "facing": 4
+    }
+   ],
+   "routes": [
+    {
+     "id": "cream_saltbox.walk",
+     "cls": "walk",
+     "surface": "stones",
+     "w": 0.9,
+     "foot": "stone",
+     "grip": 0.8,
+     "world": [
+      [
+       0,
+       -5.56
+      ],
+      [
+       0,
+       -7.56
+      ],
+      [
+       0,
+       -10.45
+      ]
+     ]
+    },
+    {
+     "id": "cream_saltbox.henHouse_path",
+     "cls": "footpath",
+     "surface": "trodden",
+     "w": 1,
+     "foot": "earth",
+     "grip": 0.7,
+     "world": [
+      [
+       0,
+       -5.56
+      ],
+      [
+       7.78,
+       -5.56
+      ],
+      [
+       7.78,
+       -1.93
+      ],
+      [
+       7.78,
+       -0.43
+      ]
+     ]
+    },
+    {
+     "id": "cream_saltbox.pump_path",
+     "cls": "footpath",
+     "surface": "trodden",
+     "w": 1,
+     "foot": "earth",
+     "grip": 0.7,
+     "world": [
+      [
+       0,
+       -6.35
+      ],
+      [
+       5.86,
+       -6.35
+      ],
+      [
+       5.86,
+       -4.85
+      ]
+     ]
+    }
+   ],
+   "work": "E",
+   "lot": {
+    "x0": -6.02,
+    "x1": 10.45,
+    "y0": -6.99,
+    "y1": 9.26
+   }
+  },
+  "white_gable": {
+   "visibility": {
+    "building": 1,
+    "woodshed": 1,
+    "well": 1
+   },
+   "check": {
+    "door": true,
+    "outbuildings": [
+     {
+      "id": "woodshed",
+      "kind": "woodshed",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "bay",
+        "clip": "walk",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "cordwood",
+        "clip": "lift",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "chopBlock",
+        "clip": "chop",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     },
+     {
+      "id": "well",
+      "kind": "well",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "bucket",
+        "clip": "lift",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "crank",
+        "clip": "reach",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     }
+    ],
+    "dressing": [
+     {
+      "name": "swingSet",
+      "reachable": true
+     },
+     {
+      "name": "sandbox",
+      "reachable": true
+     },
+     {
+      "name": "clothesline",
+      "reachable": true
+     },
+     {
+      "name": "islandBed",
+      "reachable": true
+     }
+    ],
+    "placed": 4,
+    "wanted": 4,
+    "sunlit": {},
+    "pieces": {
+     "placed": 2,
+     "wanted": 2
+    }
+   },
+   "pieces": [
+    {
+     "id": "woodshed",
+     "kind": "woodshed",
+     "x": -7.69,
+     "y": -1.43,
+     "rot": 0,
+     "facing": 4
+    },
+    {
+     "id": "well",
+     "kind": "well",
+     "x": -7.19,
+     "y": 3.57,
+     "rot": 0,
+     "facing": 4
+    }
+   ],
+   "routes": [
+    {
+     "id": "white_gable.walk",
+     "cls": "walk",
+     "surface": "stones",
+     "w": 0.9,
+     "foot": "stone",
+     "grip": 0.8,
+     "world": [
+      [
+       0,
+       -7.22
+      ],
+      [
+       0,
+       -9.22
+      ],
+      [
+       0,
+       -11.13
+      ]
+     ]
+    },
+    {
+     "id": "white_gable.woodshed_path",
+     "cls": "footpath",
+     "surface": "trodden",
+     "w": 1,
+     "foot": "earth",
+     "grip": 0.7,
+     "world": [
+      [
+       0,
+       -7.22
+      ],
+      [
+       7.69,
+       -0.97
+      ],
+      [
+       7.69,
+       0.53
+      ]
+     ]
+    },
+    {
+     "id": "white_gable.well_path",
+     "cls": "footpath",
+     "surface": "trodden",
+     "w": 1,
+     "foot": "earth",
+     "grip": 0.7,
+     "world": [
+      [
+       0,
+       -7.22
+      ],
+      [
+       7.19,
+       -5.79
+      ],
+      [
+       7.19,
+       -4.29
+      ]
+     ]
+    }
+   ],
+   "work": "E",
+   "lot": {
+    "x0": -10.190000000000001,
+    "x1": 7.199999999999999,
+    "y0": -7.83,
+    "y1": 11.129999999999999
+   }
+  },
+  "red_saltbox": {
+   "visibility": {
+    "building": null,
+    "henHouse": 1,
+    "pump": 1
+   },
+   "check": {
+    "door": true,
+    "outbuildings": [
+     {
+      "id": "henHouse",
+      "kind": "henHouse",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "door",
+        "clip": "walk",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "nestBox",
+        "clip": "reach",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "feeder",
+        "clip": "reach",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     },
+     {
+      "id": "pump",
+      "kind": "pump",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "trough",
+        "clip": "lift",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "handle",
+        "clip": "reach",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     }
+    ],
+    "dressing": [
+     {
+      "name": "roseBush",
+      "reachable": true
+     },
+     {
+      "name": "birdbath",
+      "reachable": true
+     },
+     {
+      "name": "raspberryRow",
+      "reachable": true
+     }
+    ],
+    "placed": 3,
+    "wanted": 3,
+    "sunlit": {
+     "raspberryRow": 1
+    },
+    "pieces": {
+     "placed": 2,
+     "wanted": 2
+    }
+   },
+   "pieces": [
+    {
+     "id": "henHouse",
+     "kind": "henHouse",
+     "x": 7.81,
+     "y": -1.05,
+     "rot": 0,
+     "facing": 4
+    },
+    {
+     "id": "pump",
+     "kind": "pump",
+     "x": 8.06,
+     "y": 3.95,
+     "rot": 0,
+     "facing": 4
+    }
+   ],
+   "routes": [
+    {
+     "id": "red_saltbox.walk",
+     "cls": "walk",
+     "surface": "stones",
+     "w": 0.9,
+     "foot": "stone",
+     "grip": 0.8,
+     "world": [
+      [
+       -5.68,
+       -2.99
+      ],
+      [
+       -5.68,
+       -7.2
+      ],
+      [
+       -1.704,
+       -7.2
+      ],
+      [
+       8.44,
+       -7.2
+      ]
+     ]
+    },
+    {
+     "id": "red_saltbox.henHouse_path",
+     "cls": "footpath",
+     "surface": "trodden",
+     "w": 1,
+     "foot": "earth",
+     "grip": 0.7,
+     "world": [
+      [
+       -5.68,
+       -2.99
+      ],
+      [
+       -7.14,
+       -1.25
+      ],
+      [
+       -7.14,
+       0.25
+      ]
+     ]
+    },
+    {
+     "id": "red_saltbox.pump_path",
+     "cls": "footpath",
+     "surface": "trodden",
+     "w": 1,
+     "foot": "earth",
+     "grip": 0.7,
+     "world": [
+      [
+       -5.68,
+       -6.17
+      ],
+      [
+       -8.06,
+       -6.17
+      ],
+      [
+       -8.06,
+       -4.67
+      ]
+     ]
+    }
+   ],
+   "work": "W",
+   "lot": {
+    "x0": -8.440000000000001,
+    "x1": 9.959999999999999,
+    "y0": -7.2,
+    "y1": 8.9
+   }
+  },
+  "white_farmhouse": {
+   "visibility": {
+    "building": null,
+    "barn": 1,
+    "woodshed_1": 1,
+    "well": 1
+   },
+   "check": {
+    "door": true,
+    "outbuildings": [
+     {
+      "id": "barn",
+      "kind": "barn",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "doors",
+        "clip": "walk",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "feedBin",
+        "clip": "lift",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "harness",
+        "clip": "reach",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "stallRail",
+        "clip": "rail",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "ladder",
+        "clip": "rung",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     },
+     {
+      "id": "woodshed_1",
+      "kind": "woodshed",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "bay",
+        "clip": "walk",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "cordwood",
+        "clip": "lift",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "chopBlock",
+        "clip": "chop",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     },
+     {
+      "id": "well",
+      "kind": "well",
+      "facing": 4,
+      "doorFaces": "S",
+      "approach": true,
+      "stations": [
+       {
+        "id": "bucket",
+        "clip": "lift",
+        "reachable": true,
+        "fits": true
+       },
+       {
+        "id": "crank",
+        "clip": "reach",
+        "reachable": true,
+        "fits": true
+       }
+      ]
+     }
+    ],
+    "dressing": [
+     {
+      "name": "vegRows",
+      "reachable": true
+     },
+     {
+      "name": "potatoDrills",
+      "reachable": true
+     },
+     {
+      "name": "rhubarb",
+      "reachable": true
+     },
+     {
+      "name": "clothesline",
+      "reachable": true
+     }
+    ],
+    "placed": 4,
+    "wanted": 4,
+    "sunlit": {
+     "vegRows": 1,
+     "potatoDrills": 1,
+     "rhubarb": 1
+    },
+    "pieces": {
+     "placed": 3,
+     "wanted": 3
+    }
+   },
+   "pieces": [
+    {
+     "id": "barn",
+     "kind": "barn",
+     "x": 11.11,
+     "y": -1.01,
+     "rot": 0,
+     "facing": 4
+    },
+    {
+     "id": "woodshed_1",
+     "kind": "woodshed",
+     "x": 17.11,
+     "y": -1.01,
+     "rot": 0,
+     "facing": 4
+    },
+    {
+     "id": "well",
+     "kind": "well",
+     "x": 7.86,
+     "y": 6.99,
+     "rot": 0,
+     "facing": 4
+    }
+   ],
+   "routes": [
+    {
+     "id": "white_farmhouse.walk",
+     "cls": "walk",
+     "surface": "stones",
+     "w": 0.9,
+     "foot": "stone",
+     "grip": 0.8,
+     "world": [
+      [
+       -6.09,
+       -3.62
+      ],
+      [
+       -6.09,
+       -10.045
+      ],
+      [
+       -1.827,
+       -10.045
+      ],
+      [
+       9.64,
+       -10.045
+      ]
+     ]
+    },
+    {
+     "id": "white_farmhouse.barn_drive",
+     "cls": "lane",
+     "surface": "lane",
+     "w": null,
+     "foot": "earth",
+     "grip": 0.68,
+     "world": [
+      [
+       -11.11,
+       -11.745
+      ],
+      [
+       -11.11,
+       -4.29
+      ],
+      [
+       -11.11,
+       -2.79
+      ]
+     ]
+    },
+    {
+     "id": "white_farmhouse.woodshed_1_path",
+     "cls": "footpath",
+     "surface": "trodden",
+     "w": 1,
+     "foot": "earth",
+     "grip": 0.7,
+     "world": [
+      [
+       -6.09,
+       -3.62
+      ],
+      [
+       -17.11,
+       -1.39
+      ],
+      [
+       -17.11,
+       0.11
+      ]
+     ]
+    },
+    {
+     "id": "white_farmhouse.well_path",
+     "cls": "footpath",
+     "surface": "trodden",
+     "w": 1,
+     "foot": "earth",
+     "grip": 0.7,
+     "world": [
+      [
+       -6.09,
+       -9.21
+      ],
+      [
+       -7.86,
+       -9.21
+      ],
+      [
+       -7.86,
+       -7.71
+      ]
+     ]
+    }
+   ],
+   "work": "W",
+   "lot": {
+    "x0": -9.64,
+    "x1": 19.61,
+    "y0": -8.41,
+    "y1": 11.745
+   }
+  }
+ }
+}

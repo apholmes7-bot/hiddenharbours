@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 403eb22347c5492a047a67714d80b7ef, type: 3}
+  m_Name: Stream_GapBrook
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.StreamDef
+  Id: stream.stp_gap_brook
+  DisplayName: Gap Brook
+  Source: {fileID: 11400000, guid: 2fd9cd39843f423b8026cf7d375a1918, type: 2}
+  Points:
+  - {x: 154, y: -36}
+  - {x: 155.5, y: -39}
+  - {x: 156.6, y: -41.2}
+  - {x: 158.1, y: -43.5}
+  - {x: 159.9, y: -46.2}
+  - {x: 161.1, y: -48.1}
+  - {x: 163.5, y: -50.5}
+  - {x: 167, y: -53.5}
+  - {x: 170, y: -55.5}
+  BedZ:
+  - 5.18
+  - 5.12
+  - 5.05
+  - 4.98
+  - 4.85
+  - 4.3
+  - 3.1
+  - 0.3
+  - -0.7
+  Widths:
+  - 0.9
+  - 0.9
+  - 0.9
+  - 1
+  - 1
+  - 1.1
+  - 1.2
+  - 1.4
+  - 1.6
+  Depth: 0.12
+  Bank: {x: 0.35, y: 0.55}
+  Why: 'Out of the Gap Pond, past the dipping pool under the bridge, east to the shore. Its bed is the import along the line where that stands under the designed bed.'

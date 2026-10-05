@@ -1,0 +1,757 @@
+fileFormatVersion: 2
+guid: b92b943e612dd3c4ea295721b09459ad
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3639422193384081902
+    second: Shelf_basalt_normal_0
+  - first:
+      213: 3503303834151139711
+    second: Shelf_basalt_normal_1
+  - first:
+      213: -3444542772090553650
+    second: Shelf_basalt_normal_2
+  - first:
+      213: -5454840449270097516
+    second: Shelf_basalt_normal_3
+  - first:
+      213: 2705718970644308687
+    second: Shelf_basalt_normal_4
+  - first:
+      213: 7509560253282623117
+    second: Shelf_basalt_normal_5
+  - first:
+      213: -1878308591471223831
+    second: Shelf_basalt_normal_6
+  - first:
+      213: 1828370474012331918
+    second: Shelf_basalt_normal_7
+  - first:
+      213: 5757481378365544356
+    second: Shelf_basalt_normal_8
+  - first:
+      213: 4655042045568005641
+    second: Shelf_basalt_normal_9
+  - first:
+      213: 516773348087199344
+    second: Shelf_basalt_normal_10
+  - first:
+      213: -4044814273045346357
+    second: Shelf_basalt_normal_11
+  - first:
+      213: 2723963023282347073
+    second: Shelf_basalt_normal_12
+  - first:
+      213: 5907725608336087294
+    second: Shelf_basalt_normal_13
+  - first:
+      213: -3844756684026652092
+    second: Shelf_basalt_normal_14
+  - first:
+      213: 7346817888688917831
+    second: Shelf_basalt_normal_15
+  - first:
+      213: 514351194613973229
+    second: Shelf_basalt_normal_16
+  - first:
+      213: 2139009619723529962
+    second: Shelf_basalt_normal_17
+  - first:
+      213: 2151620607939327869
+    second: Shelf_basalt_normal_18
+  - first:
+      213: 2347346378539523049
+    second: Shelf_basalt_normal_19
+  - first:
+      213: 5637172865096616006
+    second: Shelf_basalt_normal_20
+  - first:
+      213: -3601185404544379199
+    second: Shelf_basalt_normal_21
+  - first:
+      213: -4076200372335246663
+    second: Shelf_basalt_normal_22
+  - first:
+      213: 7050828814149907019
+    second: Shelf_basalt_normal_23
+  - first:
+      213: 6536340668349098370
+    second: Shelf_basalt_normal_24
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ab6cc3c25b0d5545a5f394dde7b9d95
+      internalID: 1472573747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7a2b8c9db4d6da4abd66648fe37c230
+      internalID: -411701447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59a64eaada840da43a08d1f9e987d04a
+      internalID: -1761492867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0124a7fc28169c46b9fb08420d72793
+      internalID: -1577301108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e0b8b261d2695f4c8718f950d120281
+      internalID: 1195254536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f800b80d47f7af2419cb5e082fbc333c
+      internalID: 1013066592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0729b6028e10165439154ca22ec97ae6
+      internalID: 268364685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecef62c00861243479022307d18474a9
+      internalID: 1362543944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c96558dd77d907b4a903f0d5dc8c85df
+      internalID: -19522740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 898b6e3165f25264787589881be1b56a
+      internalID: -1835447188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec481deb7c13462469928e3663c729e4
+      internalID: 1750307161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 605e0d0e78e34324ba9479c156ce84ea
+      internalID: 1940133091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f818ab572b8f9974fb1f0f1203d06471
+      internalID: -1923146582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80c576c7c3ed6d740a7699da5c08a2a0
+      internalID: -1627632559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a178d177dfb10f44b7538aeaf6c2dac
+      internalID: 823975662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 232c963b5f401724ab672d3ed33c0ced
+      internalID: 1840154888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66260e8bff523ef47953ce6617d797cf
+      internalID: -1165073549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 447bc4da5c3253148bb80cc525b036fb
+      internalID: -379657005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b434410b86413941b232ead51b26e72
+      internalID: -601228097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fead1756d7340c3458a8b8ee2df97116
+      internalID: -735753035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99eddc042d1060949b404139b44f45fa
+      internalID: -539466207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 441573e2b522d1849bc98891d1c20057
+      internalID: 1739270031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a92b59f04651274a88a09ca993608ee
+      internalID: 667787496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_basalt_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fab3d50cd7c80174b8d8198bd7c00f61
+      internalID: -1905092268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d4c2fabc009949c41ac83df3800f5b4a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Shelf_basalt_normal_c0_r0: 1472573747
+      Shelf_basalt_normal_c0_r1: -19522740
+      Shelf_basalt_normal_c0_r2: -1165073549
+      Shelf_basalt_normal_c1_r0: -411701447
+      Shelf_basalt_normal_c1_r1: -1835447188
+      Shelf_basalt_normal_c1_r2: -379657005
+      Shelf_basalt_normal_c2_r0: -1761492867
+      Shelf_basalt_normal_c2_r1: 1750307161
+      Shelf_basalt_normal_c2_r2: -601228097
+      Shelf_basalt_normal_c3_r0: -1577301108
+      Shelf_basalt_normal_c3_r1: 1940133091
+      Shelf_basalt_normal_c3_r2: -735753035
+      Shelf_basalt_normal_c4_r0: 1195254536
+      Shelf_basalt_normal_c4_r1: -1923146582
+      Shelf_basalt_normal_c4_r2: -539466207
+      Shelf_basalt_normal_c5_r0: 1013066592
+      Shelf_basalt_normal_c5_r1: -1627632559
+      Shelf_basalt_normal_c5_r2: 1739270031
+      Shelf_basalt_normal_c6_r0: 268364685
+      Shelf_basalt_normal_c6_r1: 823975662
+      Shelf_basalt_normal_c6_r2: 667787496
+      Shelf_basalt_normal_c7_r0: 1362543944
+      Shelf_basalt_normal_c7_r1: 1840154888
+      Shelf_basalt_normal_c7_r2: -1905092268
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -221,7 +221,7 @@ namespace HiddenHarbours.Boats
 
         /// <summary>Resolve the sibling rigidbody/controller lazily so the transition methods work even
         /// before <see cref="Awake"/> has run (EditMode / first-tick wiring) — Unity doesn't call Awake on
-        /// an AddComponent in edit mode, mirroring <see cref="BoatController.Stop"/>'s lazy lookup.</summary>
+        /// an AddComponent in edit mode, mirroring <see cref="BoatController.Stop(bool)"/>'s lazy lookup.</summary>
         private void EnsureRefs()
         {
             if (_rb == null) _rb = GetComponent<Rigidbody2D>();

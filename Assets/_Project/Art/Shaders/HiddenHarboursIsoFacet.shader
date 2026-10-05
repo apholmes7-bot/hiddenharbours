@@ -112,8 +112,13 @@ Shader "HiddenHarbours/IsoFacet"
         //   HH_FIGURE      a v9 character (CharacterSkinDef.ToneRule.V9). Her material is runtime-
         //                  built as well (IsoCharacterFigureRenderer.BuildMaterial), so the same
         //                  stripping argument holds. Everything it adds is inside #ifdef HH_FIGURE:
-        //                  two tables, one vertex line and one fragment block. A figure never carries
-        //                  a room and a hull never carries a v9 palette, so neither needs both.
+        //                  two tables, the tone line and rig 9's face in the vertex stage (the face
+        //                  gate, the cull by role, the head snap: character PR 2a), one fragment block
+        //                  and the ink flag in the dark target's alpha. A figure never carries a room
+        //                  and a hull never carries a v9 palette, so neither needs both — which is also
+        //                  why the face may read TEXCOORD1, the channel HH_LEVEL_GATE's tag uses. Rig
+        //                  10 (the rig 10 intake) adds one test to the same block: a point mark culls
+        //                  by its own turn band, carried in TEXCOORD1.w.
         #pragma multi_compile_local _ HH_LEVEL_GATE HH_FIGURE
 
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
@@ -233,6 +238,21 @@ Shader "HiddenHarbours/IsoFacet"
             // renderer writes both at full length every time: Unity fixes an array's size at its first set.
             float4 _RampMetaFigure[32];     // (len, off, lo, hi)
             float4 _RampToneFigure[32];     // (gain, bias', 0, 0)
+
+            // ⭐ RIG 9'S FACE, HEAD SNAP AND INK (character PR 2a; IsoFacetFigureShaderIds names each).
+            // A v9 def binds all thirteen face groups in ONE mesh, and a face change is these uniforms:
+            // never a mesh edit, never a second draw call. A v9 def baked before the face writes
+            // _HHFigureFaceParams.y = 0, _HHFigureHead.w = 0 and _HHFigureInkOn = 0, and this variant
+            // then draws exactly the program above it did.
+            float4 _HHFigureFace;           // per draw: (eyes, brows, mouth, 0) — the group each slot shows
+            float4 _HHFigureHead;           // per draw: the head's mid point, figure frame; w = 1 while it snaps
+            float4 _HHFigureFaceMinT;       // the cull by role: (near, far, side, mouth)
+            float4 _HHFigureFaceParams;     // x = the floor every face culls at, y = 1 when the def has the face,
+                                            // z = rig 10's mark floor (0: no marks, every rig 9 def), w = 1 when
+                                            // rig 10's smooth normal (TEXCOORD2) lights (0: every rig 9 def)
+            float  _HHFigureInkOn;          // the dark target's alpha flag is 1 minus this: 1 while the rig's ink
+                                            // is live with its keyline ring, 0.75 while it is live without one
+                                            // (rig 10, owner ruling K4), 0 off
 #endif
 
             struct Attributes
@@ -255,6 +275,21 @@ Shader "HiddenHarbours/IsoFacet"
                 // All zero on a hull with no room, and on every hull face of a hull that has one.
                 float4 texAttr    : TEXCOORD2;
 #endif
+#ifdef HH_FIGURE
+                // RIG 9'S FACE, per face (every corner of a face carries its face's values): x = the
+                // face group, 1-based into the def's FaceGroups (0 = the body, always drawn); y = the
+                // role the cull reads (0 body, 1 near, 2 far, 3 side, 4 mouth); z = 1 when the head
+                // snap moves it. Absent on a v9 def baked before the face, whose material turns every
+                // use of it off (_HHFigureFaceParams.y = 0), so whatever the input stage fills in for a
+                // missing channel is never read. w = a rig 10 mark's turn band, the cosine its paint
+                // stores as f.az (0 on every other face, and on every rig 9 face).
+                float4 faceAttr   : TEXCOORD1;
+                // RIG 10'S SMOOTH NORMAL (the rig 10 intake, Phase B): xyz = the face's smooth normal,
+                // posed by the renderer on every re-skin (zero on a face with none); w = its mark flags,
+                // which only the bake reads. Read only while _HHFigureFaceParams.w = 1. On a hull this
+                // channel is HH_LEVEL_GATE's room, and a figure never carries a room.
+                float4 markAttr   : TEXCOORD2;
+#endif
             };
 
             struct Varyings
@@ -264,6 +299,8 @@ Shader "HiddenHarbours/IsoFacet"
                 // nointerpolation keeps them exact across the fan.
                 nointerpolation float fidx : TEXCOORD0;
                 nointerpolation float mat  : TEXCOORD1;
+                float reflectionHeight : TEXCOORD6;
+                float reflectionDepth : TEXCOORD7;
                 float3 wpos : TEXCOORD2;         // xy = dither frame  z = TRUE unbiased depth
 #ifdef HH_LEVEL_GATE
                 // xy = the level tag, z = 1 when the camera is rendering this
@@ -276,6 +313,8 @@ Shader "HiddenHarbours/IsoFacet"
 #endif
             };
 
+            #include "Include/HullReflection.hlsl"
+
             struct FragOut
             {
                 float4 facet : SV_Target0;       // rgb = facet colour, a = hull id
@@ -284,7 +323,7 @@ Shader "HiddenHarbours/IsoFacet"
                 float  depth : SV_Target3;       // true unbiased view depth (world z, metres)
             };
 
-            Varyings vert (Attributes v)
+            Varyings HHFacetVertex (Attributes v, bool reflection)
             {
                 Varyings o;
                 float3 wp = mul(unity_ObjectToWorld, float4(v.positionOS.xyz, 1.0)).xyz;
@@ -296,6 +335,11 @@ Shader "HiddenHarbours/IsoFacet"
                 // dot with LN — see the header comment.
                 float sh = dot(wn, _LN.xyz);
 #ifdef HH_FIGURE
+                // RIG 10 LIGHTS ON THE SMOOTH NORMAL: "a face with a smooth normal is culled on its own
+                // normal and lit on the smooth one" (characterIsoRig10.js, paint). The renderer posed it
+                // into markAttr.xyz; the cull below still reads normalOS, the face's own.
+                if (_HHFigureFaceParams.w > 0.5 && dot(v.markAttr.xyz, v.markAttr.xyz) > 0.0)
+                    sh = dot(normalize(mul((float3x3)unity_ObjectToWorld, v.markAttr.xyz)), _LN.xyz);
                 // THE V9 SHADE INDEX: a gain and bias per MATERIAL, where rig 7 has one global pair.
                 // With _LN the folded key, sh = s + form·formMid, and bias' took gain·form·formMid out
                 // again, so this is the kit's s·gain + bias + b (kit rule 6; IsoFacetFigureTone.Tone).
@@ -333,10 +377,81 @@ Shader "HiddenHarbours/IsoFacet"
                 // the water's own ReferenceY (never anything per-hull), so any two fragments
                 // sharing a pixel — same hull, another hull, or a bolted-on fitting — take the
                 // identical shift and every ordering among them is preserved.
+                o.reflectionHeight = dot(float4(wp, 1), _HHMeshReflectPlane);
+                if (reflection) wp = HHMeshReflectPoint(wp);
                 o.wpos = wp;                     // camera looks along +Z; larger z = further
-                wp.z  -= (wp.y - _HullShear.y) * _HullShear.x;   // ADR 0033: the y→z shear
-                wp.z  -= v.attrs.z;              // f.db pulls the face toward the camera
+                o.reflectionDepth = -mul(UNITY_MATRIX_V, float4(wp, 1)).z;
+                if (!reflection)
+                {
+                    wp.z  -= (wp.y - _HullShear.y) * _HullShear.x;   // ADR 0033: the y→z shear
+                    wp.z  -= v.attrs.z;              // f.db pulls the face toward the camera
+                }
                 o.positionCS = TransformWorldToHClip(wp);
+                if (reflection) o.positionCS.z = HHMeshReflectClipDepth(o.reflectionDepth) * o.positionCS.w;
+#ifdef HH_FIGURE
+                // ⭐ RIG 9'S FACE (paint and paintSolved in characterIsoRig9.js; RigPaint9 is the port
+                // a guard proves byte for byte). All thirteen face groups live in the one mesh and
+                // one draw; which of them shows, and which faces turn away, is decided HERE, per
+                // vertex, from uniforms the renderer sets with each pose. A face that does not draw
+                // is COLLAPSED: every corner of it moves to one point outside the clip volume, so it
+                // rasterises nothing in either pass (vertGuard reads this positionCS too).
+                if (_HHFigureFaceParams.y > 0.5)
+                {
+                    int g = (int)round(v.faceAttr.x);
+                    int role = (int)round(v.faceAttr.y);
+                    // THE FACE GATE: a face group draws only while it is its slot's group this frame.
+                    bool shown = g == 0 || g == (int)round(_HHFigureFace.x)
+                                        || g == (int)round(_HHFigureFace.y)
+                                        || g == (int)round(_HHFigureFace.z);
+                    // THE CULL BY ROLE: "if (toward <= max(1e-4, minT)) continue". toward from the
+                    // UN-renormalised normal: the renderer wrote each face's unit Newell normal (zero
+                    // on a face with no area, which the rig culls as toward 0), and the object matrix
+                    // is orthogonal. Body faces cull at the floor alone: rig 9 has no backface rescue.
+                    float3 viewNormal = mul((float3x3)unity_ObjectToWorld, v.normalOS);
+                    if (reflection) viewNormal = mul((float3x3)_HHMeshReflectMatrix, viewNormal);
+                    float toward = dot(viewNormal, UNITY_MATRIX_V[2].xyz);
+                    float minT = role == 1 ? _HHFigureFaceMinT.x
+                               : role == 2 ? _HHFigureFaceMinT.y
+                               : role == 3 ? _HHFigureFaceMinT.z
+                               : role == 4 ? _HHFigureFaceMinT.w : 0.0;
+                    // RIG 10'S MARKS (the rig 10 intake): a point mark culls by its own turn band as
+                    // well, "if (hh < AZFLOOR || -ny/hh <= f.az) continue": its normal, laid flat on the
+                    // ground, must point within the band of the way to the camera, laid flat the same
+                    // way. The figure's up is its frame's z, as in the rig. Every rig 9 def writes
+                    // _HHFigureFaceParams.z = 0, and every face but a mark carries w = 0: neither asks.
+                    bool outOfBand = false;
+                    if (_HHFigureFaceParams.z > 0.0 && v.faceAttr.w > 0.0)
+                    {
+                        float3 up = normalize(mul((float3x3)unity_ObjectToWorld, float3(0.0, 0.0, 1.0)));
+                        float3 wnr = mul((float3x3)unity_ObjectToWorld, v.normalOS);
+                        float3 flatN = wnr - dot(wnr, up) * up;
+                        float3 flatV = UNITY_MATRIX_V[2].xyz - dot(UNITY_MATRIX_V[2].xyz, up) * up;
+                        float hh = length(flatN);
+                        float hv = length(flatV);
+                        outOfBand = hh < _HHFigureFaceParams.z || hv <= 0.0
+                                 || dot(flatN, flatV) / (hh * hv) <= v.faceAttr.w;
+                    }
+                    if (!shown || toward <= max(_HHFigureFaceParams.x, minT) || outOfBand)
+                    {
+                        o.positionCS = float4(2.0, 2.0, 2.0, 1.0);
+                    }
+                    else if (v.faceAttr.z > 0.5 && _HHFigureHead.w > 0.5)
+                    {
+                        // THE HEAD SNAP: the head's faces move together by the screen offset that puts
+                        // the head's mid point on a pixel centre, round(s − 0.5) + 0.5 − s, which is
+                        // floor(s) + 0.5 − s. Screen only: depth, tone and the cull above are the
+                        // unsnapped face's, as in the rig. The facet targets are the camera target's
+                        // size, which is _ScreenParams; which way the target's rows run does not
+                        // matter, because a whole number of rows minus a pixel centre is a pixel centre.
+                        float3 head = mul(unity_ObjectToWorld, float4(_HHFigureHead.xyz, 1.0)).xyz;
+                        if (reflection) head = HHMeshReflectPoint(head);
+                        float4 hc = TransformWorldToHClip(head);
+                        float2 size = reflection ? _HHMeshReflectSize.xy : _ScreenParams.xy;
+                        float2 px = (hc.xy / hc.w * 0.5 + 0.5) * size;
+                        o.positionCS.xy += (floor(px) + 0.5 - px) * (2.0 / size) * o.positionCS.w;
+                    }
+                }
+#endif
                 return o;
             }
 
@@ -439,11 +554,23 @@ Shader "HiddenHarbours/IsoFacet"
             }
 #endif
 
-            FragOut frag (Varyings i)
+            Varyings vert (Attributes v) { return HHFacetVertex(v, false); }
+            Varyings vertReflection (Attributes v) { return HHFacetVertex(v, true); }
+
+            FragOut HHFacetFragment (Varyings i, bool reflection)
             {
 #ifdef HH_LEVEL_GATE
-                if (HHLevelDiscards(i.lvl)) discard;
+                if (reflection ? i.lvl.y > 0.5 : HHLevelDiscards(i.lvl)) discard;
 #endif
+                if (reflection && i.reflectionHeight < 0)
+                {
+                    FragOut blocker;
+                    blocker.facet = 0;
+                    blocker.dark = 0;
+                    blocker.key = float4(0, 0, 0, HH_MESH_BLOCKER);
+                    blocker.depth = i.reflectionDepth;
+                    return blocker;
+                }
                 // The hull-cell pixel this fragment lands on, derived from WORLD position: the
                 // rig's screen grid is just world metres times PPU with y down and the pivot as
                 // origin. Locked to the hull, immune to render-target conventions.
@@ -521,14 +648,25 @@ Shader "HiddenHarbours/IsoFacet"
                                             : _RampTex.Load(int3(idx, m, 0)).rgb, hullId);
                 o.dark  = float4(hhInterior ? _DarkRampTexInterior.Load(int3(idx, m, 0)).rgb
                                             : _DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0);
+#elif defined(HH_FIGURE)
+                o.facet = float4(_RampTex.Load(int3(idx, m, 0)).rgb, hullId);
+                // THE INK FLAG. While rig 9's ink is live the renderer binds the one-step-down ramp
+                // here (paint's "stp[i]--") and this alpha reads 0, which is how the resolve knows the
+                // pixel is a figure's and inks it by the rig's rules. Every hull writes 1, as before.
+                // A figure inked without its keyline ring (rig 10, K4) reads 0.25: the resolve gives
+                // it the figure's edge and no ring.
+                o.dark  = float4(_DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0 - _HHFigureInkOn);
 #else
                 o.facet = float4(_RampTex.Load(int3(idx, m, 0)).rgb, hullId);
                 o.dark  = float4(_DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0);
 #endif
                 o.key   = float4(_KeyColor.rgb, 1.0);
-                o.depth = i.wpos.z;
+                o.depth = reflection ? i.reflectionDepth : i.wpos.z;
                 return o;
             }
+
+            FragOut frag (Varyings i) { return HHFacetFragment(i, false); }
+            FragOut fragReflection (Varyings i) { return HHFacetFragment(i, true); }
 
             // ---- the INTERIOR GUARD (ADR 0023: the per-face interior mask) -------------------
             // Rides the SAME vert() above, so it occupies the same pixels with the same depth.
@@ -621,5 +759,19 @@ Shader "HiddenHarbours/IsoFacet"
             #pragma fragment fragGuard
             ENDHLSL
         }
+        Pass
+        {
+            Name "HHHullMeshReflection"
+            Tags { "LightMode" = "HHHullMeshReflection" }
+            Cull Off
+            ZWrite On
+            ZTest LEqual
+            Blend Off
+            HLSLPROGRAM
+            #pragma vertex vertReflection
+            #pragma fragment fragReflection
+            ENDHLSL
+        }
+
     }
 }

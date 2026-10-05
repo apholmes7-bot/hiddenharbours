@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: ce7d9481d3aec57429b97e9c92e62512
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1338740073209933098
+    second: Perched_granite_barnacled_0
+  - first:
+      213: -3403612763944061914
+    second: Perched_granite_barnacled_1
+  - first:
+      213: -4151836609145613814
+    second: Perched_granite_barnacled_2
+  - first:
+      213: 1585465449374090064
+    second: Perched_granite_barnacled_3
+  - first:
+      213: -6264404739363074783
+    second: Perched_granite_barnacled_4
+  - first:
+      213: 2897311246808528087
+    second: Perched_granite_barnacled_5
+  - first:
+      213: 2535268090918752724
+    second: Perched_granite_barnacled_6
+  - first:
+      213: -2821126419054281630
+    second: Perched_granite_barnacled_7
+  - first:
+      213: 4069505408557039681
+    second: Perched_granite_barnacled_8
+  - first:
+      213: -7918891794813866705
+    second: Perched_granite_barnacled_9
+  - first:
+      213: 8870838270862118062
+    second: Perched_granite_barnacled_10
+  - first:
+      213: 3665632743717207674
+    second: Perched_granite_barnacled_11
+  - first:
+      213: -4923413963263730392
+    second: Perched_granite_barnacled_12
+  - first:
+      213: -5133785601336523379
+    second: Perched_granite_barnacled_13
+  - first:
+      213: 3135025156327701937
+    second: Perched_granite_barnacled_14
+  - first:
+      213: 6739961964399199171
+    second: Perched_granite_barnacled_15
+  - first:
+      213: -607849137025929952
+    second: Perched_granite_barnacled_16
+  - first:
+      213: 8071900782192343334
+    second: Perched_granite_barnacled_17
+  - first:
+      213: 1163102988861837981
+    second: Perched_granite_barnacled_18
+  - first:
+      213: -4410666168017283583
+    second: Perched_granite_barnacled_19
+  - first:
+      213: 6368864936780548196
+    second: Perched_granite_barnacled_20
+  - first:
+      213: 3954661776316300780
+    second: Perched_granite_barnacled_21
+  - first:
+      213: -7506287164271212142
+    second: Perched_granite_barnacled_22
+  - first:
+      213: 7245611444174004953
+    second: Perched_granite_barnacled_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ac30e8a1041f5f4ea4118471da3835f
+      internalID: -995785394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c861e490a5e543e488c43c12501a5a16
+      internalID: -588295349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f3fb5d9ded33ed44cb598bff202382e7
+      internalID: -84727885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da5dc4c04ddd73246bf3a9ac24501864
+      internalID: 639703105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 295b0f96c4529744e893ee88839c65e6
+      internalID: 2117052632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb883548877fb184e8f701cd58fe461d
+      internalID: 169713108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5cb80d98975a118458da4ba9aedba7aa
+      internalID: -677448429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef31bcc6056ae4c4295ed9abd2dbdbc8
+      internalID: 157331089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 103459cc6a0fbb245a72dbf29b009598
+      internalID: 1507084347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93fed8492b8f99f4d9c21837f84d01db
+      internalID: -1077501455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ecebe868c508dc42848911716915f31
+      internalID: -993040034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa3329ef751b89748b166e18e9022fac
+      internalID: 546735275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bed7e9f8b31a2c348965590afcfbf49e
+      internalID: -138990877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e891c1d1f3b43294e97e419826decd69
+      internalID: 1977606285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7633c207615d6b4438be6c9a30479d9a
+      internalID: -2089474751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91ec25021c8cfd24cb93bbe9e17f0fd1
+      internalID: -595403018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b935a5b589529c847940ed266be0f3ba
+      internalID: 678189610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d51159535ab68254ba0a4121b8b895ef
+      internalID: 737020560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1ce704feb8240f4aa0c8332a2647506
+      internalID: 24018036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 743f0066b18d27b4ca7b24db02612410
+      internalID: -1027434852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f215f02434bed8a4cb61d9feaf68203b
+      internalID: -1751462122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8cc49613d5e02249a77f644c764848e
+      internalID: -472102568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2dc6e0c52c1c654db2a8214c0721d6f
+      internalID: 909453090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_barnacled_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dcadb83fd63cc2a439c11b3b6e8336c8
+      internalID: -1190946659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 4974f1a83d207b344be6fbef345c1813
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Perched_granite_barnacled_c0_r0: -995785394
+      Perched_granite_barnacled_c0_r1: 1507084347
+      Perched_granite_barnacled_c0_r2: 678189610
+      Perched_granite_barnacled_c1_r0: -588295349
+      Perched_granite_barnacled_c1_r1: -1077501455
+      Perched_granite_barnacled_c1_r2: 737020560
+      Perched_granite_barnacled_c2_r0: -84727885
+      Perched_granite_barnacled_c2_r1: -993040034
+      Perched_granite_barnacled_c2_r2: 24018036
+      Perched_granite_barnacled_c3_r0: 639703105
+      Perched_granite_barnacled_c3_r1: 546735275
+      Perched_granite_barnacled_c3_r2: -1027434852
+      Perched_granite_barnacled_c4_r0: 2117052632
+      Perched_granite_barnacled_c4_r1: -138990877
+      Perched_granite_barnacled_c4_r2: -1751462122
+      Perched_granite_barnacled_c5_r0: 169713108
+      Perched_granite_barnacled_c5_r1: 1977606285
+      Perched_granite_barnacled_c5_r2: -472102568
+      Perched_granite_barnacled_c6_r0: -677448429
+      Perched_granite_barnacled_c6_r1: -2089474751
+      Perched_granite_barnacled_c6_r2: 909453090
+      Perched_granite_barnacled_c7_r0: 157331089
+      Perched_granite_barnacled_c7_r1: -595403018
+      Perched_granite_barnacled_c7_r2: -1190946659
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

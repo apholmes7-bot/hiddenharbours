@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 396254959110f964eba379e351ad7c0b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8381746642556683630
+    second: Fin_sandstone_weeded_normal_0
+  - first:
+      213: 8030629116621895433
+    second: Fin_sandstone_weeded_normal_1
+  - first:
+      213: -1256247847698268690
+    second: Fin_sandstone_weeded_normal_2
+  - first:
+      213: 3380176555338055293
+    second: Fin_sandstone_weeded_normal_3
+  - first:
+      213: 6353979393121990676
+    second: Fin_sandstone_weeded_normal_4
+  - first:
+      213: -2145124825696857726
+    second: Fin_sandstone_weeded_normal_5
+  - first:
+      213: -6392967135272768191
+    second: Fin_sandstone_weeded_normal_6
+  - first:
+      213: 2882183540367325824
+    second: Fin_sandstone_weeded_normal_7
+  - first:
+      213: -5497592897040558256
+    second: Fin_sandstone_weeded_normal_8
+  - first:
+      213: -2615224393261007007
+    second: Fin_sandstone_weeded_normal_9
+  - first:
+      213: 8332197941074515145
+    second: Fin_sandstone_weeded_normal_10
+  - first:
+      213: -7864388835037884792
+    second: Fin_sandstone_weeded_normal_11
+  - first:
+      213: -4340092575516661283
+    second: Fin_sandstone_weeded_normal_12
+  - first:
+      213: 1431746555184157277
+    second: Fin_sandstone_weeded_normal_13
+  - first:
+      213: -4666583219312479343
+    second: Fin_sandstone_weeded_normal_14
+  - first:
+      213: -3090260325078762547
+    second: Fin_sandstone_weeded_normal_15
+  - first:
+      213: 7164379833276807805
+    second: Fin_sandstone_weeded_normal_16
+  - first:
+      213: -4285762627450845627
+    second: Fin_sandstone_weeded_normal_17
+  - first:
+      213: 6514400032145928153
+    second: Fin_sandstone_weeded_normal_18
+  - first:
+      213: 7819033587682000998
+    second: Fin_sandstone_weeded_normal_19
+  - first:
+      213: -5585087109063902283
+    second: Fin_sandstone_weeded_normal_20
+  - first:
+      213: -4064568244432628206
+    second: Fin_sandstone_weeded_normal_21
+  - first:
+      213: 6856734199150904685
+    second: Fin_sandstone_weeded_normal_22
+  - first:
+      213: -7802837573695597017
+    second: Fin_sandstone_weeded_normal_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8997be8417247c46bf9b93e5c55561e
+      internalID: 777870502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 753b569ece6946f4db35711471f82d6a
+      internalID: 1630302009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f43e6cfc40998a24b8df0e8443fa11d9
+      internalID: -617739868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10afcdeeba9484340874271df8fec942
+      internalID: -1191627239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: caf073b7585ac484ba282b1a1f1bcbcc
+      internalID: -1566717817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3cde012e716887d4187893a85a206ea1
+      internalID: -1848043944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b57b5a8eec1c60041b25aa4a667ce585
+      internalID: 1290890970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 512e27a7f41cf244890087fa5b1521f3
+      internalID: -268127501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: faefe3aa79adcd24db35a818707e395b
+      internalID: -748625534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1ccd52a98612954eaca7ad5b2ceddcc
+      internalID: 1540308642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d7dd4bdda967a44498c7c7bbc45744f
+      internalID: -1748061470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d61ef52ded664464fbea2e8aa126272e
+      internalID: 968170974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 227553920487dfd4ea519ef7321f20da
+      internalID: -1819071665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e81db235e3b2e164c89a50fff7981e09
+      internalID: 1927413227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e348e07842be6c4abb5df02e02fb138
+      internalID: 1902032644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac1f678601499c54eae5250ea6c78e25
+      internalID: 1017920478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d155d7ae199bd0441924ca0e36e98bf6
+      internalID: 1074767334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95939c42dbd1a9d4eabe764ca39f265e
+      internalID: -1716756412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 38612d6a966b0454e9d350ce80942bd5
+      internalID: 1435653696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: adb1de5c68881d14d89da86c81041f6c
+      internalID: 1479460077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e3f16616d36b4d48a9c5d867f91b3ad
+      internalID: -1738778775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 584fc7ca17933da4fb696cdba9dc6925
+      internalID: -504395367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f21dbc52852ab64a976d7806d7ba11a
+      internalID: 18413887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_sandstone_weeded_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d10e9b47d5c71db4390ee8817c049a24
+      internalID: 1841687132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 875fad06cf178d84ea36867976fb1d9e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fin_sandstone_weeded_normal_c0_r0: 777870502
+      Fin_sandstone_weeded_normal_c0_r1: -748625534
+      Fin_sandstone_weeded_normal_c0_r2: 1074767334
+      Fin_sandstone_weeded_normal_c1_r0: 1630302009
+      Fin_sandstone_weeded_normal_c1_r1: 1540308642
+      Fin_sandstone_weeded_normal_c1_r2: -1716756412
+      Fin_sandstone_weeded_normal_c2_r0: -617739868
+      Fin_sandstone_weeded_normal_c2_r1: -1748061470
+      Fin_sandstone_weeded_normal_c2_r2: 1435653696
+      Fin_sandstone_weeded_normal_c3_r0: -1191627239
+      Fin_sandstone_weeded_normal_c3_r1: 968170974
+      Fin_sandstone_weeded_normal_c3_r2: 1479460077
+      Fin_sandstone_weeded_normal_c4_r0: -1566717817
+      Fin_sandstone_weeded_normal_c4_r1: -1819071665
+      Fin_sandstone_weeded_normal_c4_r2: -1738778775
+      Fin_sandstone_weeded_normal_c5_r0: -1848043944
+      Fin_sandstone_weeded_normal_c5_r1: 1927413227
+      Fin_sandstone_weeded_normal_c5_r2: -504395367
+      Fin_sandstone_weeded_normal_c6_r0: 1290890970
+      Fin_sandstone_weeded_normal_c6_r1: 1902032644
+      Fin_sandstone_weeded_normal_c6_r2: 18413887
+      Fin_sandstone_weeded_normal_c7_r0: -268127501
+      Fin_sandstone_weeded_normal_c7_r1: 1017920478
+      Fin_sandstone_weeded_normal_c7_r2: 1841687132
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

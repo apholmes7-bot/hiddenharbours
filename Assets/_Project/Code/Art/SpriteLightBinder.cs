@@ -10,7 +10,8 @@ namespace HiddenHarbours.Art
     ///
     /// <para><b>What it publishes.</b> The light sheet (required), the view-space normal sheet
     /// (optional — only the tree rig bakes one), the no-rim gate sheet and its channel selector
-    /// (optional), and where the sprite stands in world space. All through ONE
+    /// (optional), the emitter sheet (optional — only the village houses bake one), and where the sprite
+    /// stands in world space. All through ONE
     /// <see cref="MaterialPropertyBlock"/> via <see cref="SpriteLightBinding"/>, which is the only writer
     /// of these properties in the project.</para>
     ///
@@ -77,6 +78,12 @@ namespace HiddenHarbours.Art
                  "words: this is the branch, read it, do not infer it.")]
         [SerializeField] private RimGateChannel _rimGateChannel = RimGateChannel.None;
 
+        [Tooltip("This building's baked EMITTER sheet, if its rig bakes one (the village houses, drop 14 " +
+                 "L2): the rig's own night glow, one byte per texel. Must be the SAME sheet dimensions " +
+                 "as the albedo. Leave empty for every other family: with none bound the shader never " +
+                 "computes a glow, and the sprite draws exactly as it did before the glow existed.")]
+        [SerializeField] private Texture2D _emitSheet;
+
         private SpriteRenderer _sr;
         private MaterialPropertyBlock _block;
 
@@ -86,6 +93,9 @@ namespace HiddenHarbours.Art
         /// <summary>True when this binder also carries a view-space normal sheet (the tree rig only).</summary>
         public bool HasNormalSheet => _normalSheet != null;
 
+        /// <summary>True when this binder also carries an emitter sheet (the village houses only).</summary>
+        public bool HasEmitSheet => _emitSheet != null;
+
         /// <summary>The gate channel this binder publishes. <see cref="RimGateChannel.None"/> unless a
         /// gate sheet is bound as well — an unbound sheet forces the selector to zero, because Unity's
         /// fallback black texture has an ALPHA of 1 and would otherwise read as "no rim anywhere".</summary>
@@ -93,16 +103,19 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// Bind this species' baked sheets (or clear them by passing nulls) and re-apply immediately.
-        /// The normal and the gate are optional; the light sheet is what turns the response on.
+        /// The normal, the gate and the emitter are optional; the light sheet is what turns the response
+        /// on, and the emitter sheet alone is what turns the glow on.
         /// </summary>
         public void SetSheets(
             Texture2D lightSheet, Texture2D normalSheet = null,
-            Texture2D rimGateSheet = null, RimGateChannel rimGateChannel = RimGateChannel.None)
+            Texture2D rimGateSheet = null, RimGateChannel rimGateChannel = RimGateChannel.None,
+            Texture2D emitSheet = null)
         {
             _lightSheet = lightSheet;
             _normalSheet = normalSheet;
             _rimGateSheet = rimGateSheet;
             _rimGateChannel = rimGateChannel;
+            _emitSheet = emitSheet;
             Apply();
         }
 
@@ -136,7 +149,7 @@ namespace HiddenHarbours.Art
 
             SpriteLightBinding.Apply(
                 _sr, _block, _lightSheet, _normalSheet, _rimGateSheet,
-                SelectorFor(_rimGateChannel), transform.position);
+                SelectorFor(_rimGateChannel), transform.position, _emitSheet);
 
 #if UNITY_EDITOR
             _publishedRoot = transform.position;

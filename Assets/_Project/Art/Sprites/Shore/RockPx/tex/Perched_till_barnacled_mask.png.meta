@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 6c1dbcd241e1d974b8f0143475f26b3e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7669686004525223703
+    second: Perched_till_barnacled_mask_0
+  - first:
+      213: 8104447697280447536
+    second: Perched_till_barnacled_mask_1
+  - first:
+      213: 6258674131399246414
+    second: Perched_till_barnacled_mask_2
+  - first:
+      213: 7351060706720166396
+    second: Perched_till_barnacled_mask_3
+  - first:
+      213: 7877841183089615252
+    second: Perched_till_barnacled_mask_4
+  - first:
+      213: 3251862258476295562
+    second: Perched_till_barnacled_mask_5
+  - first:
+      213: 4156598598376231565
+    second: Perched_till_barnacled_mask_6
+  - first:
+      213: 2274716155600249565
+    second: Perched_till_barnacled_mask_7
+  - first:
+      213: 6462773148962964166
+    second: Perched_till_barnacled_mask_8
+  - first:
+      213: 3519203755975813276
+    second: Perched_till_barnacled_mask_9
+  - first:
+      213: -471142256395230552
+    second: Perched_till_barnacled_mask_10
+  - first:
+      213: 2900160102421063190
+    second: Perched_till_barnacled_mask_11
+  - first:
+      213: 3595683350961584480
+    second: Perched_till_barnacled_mask_12
+  - first:
+      213: 1815228525334255046
+    second: Perched_till_barnacled_mask_13
+  - first:
+      213: 5544276828578119050
+    second: Perched_till_barnacled_mask_14
+  - first:
+      213: 4223152801538384483
+    second: Perched_till_barnacled_mask_15
+  - first:
+      213: -3555646446732903458
+    second: Perched_till_barnacled_mask_16
+  - first:
+      213: -6870217078068375497
+    second: Perched_till_barnacled_mask_17
+  - first:
+      213: -2491766532225483530
+    second: Perched_till_barnacled_mask_18
+  - first:
+      213: 347582827311962309
+    second: Perched_till_barnacled_mask_19
+  - first:
+      213: 2891328494035091645
+    second: Perched_till_barnacled_mask_20
+  - first:
+      213: 9059213059260648522
+    second: Perched_till_barnacled_mask_21
+  - first:
+      213: -8527357270517102865
+    second: Perched_till_barnacled_mask_22
+  - first:
+      213: 2004180324934831926
+    second: Perched_till_barnacled_mask_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5e3f3c325af883479f46da417ba3a15
+      internalID: -1586460637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25ae1eee3888d494d99e1c6d725c125d
+      internalID: 36116943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2187551d398ceb547bb2e95d928dd36f
+      internalID: 1064427715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f8f5eedb86d64348a01f13b78f1e751
+      internalID: 964467878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 974f0219f2b281647812e7dfc97faeb9
+      internalID: -122610979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c7824f1bedfb5e42bb67bc593d6e034
+      internalID: 565472718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0993778467455d41b11e5d035d8d7de
+      internalID: 199721356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c998a4c0fb9f8541b9071b51e431386
+      internalID: 918389164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc18e8a6e7cd32a42b010ab8e6bd9ce5
+      internalID: -841808378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76835ccc26070b942beb3d97814ac0f2
+      internalID: -514932141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a8b0392bdd65b14894223f63d02f681
+      internalID: 432210850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbf7db268092c3447af10af39d57a33d
+      internalID: -1482911643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2a0851b721d3484682d641afdcc2d0b
+      internalID: -419638129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb99442b0e351d94792caccb60368d80
+      internalID: 712742851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e4324165040db1459a9a32484d9b248
+      internalID: 671868896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7957a0c69c378534f8e87a049b2c006f
+      internalID: -524189368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8724c1e59349a7b4197ce07bfe1ab257
+      internalID: 992847459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2be5ad55e5aa2dd40a8e59e30309c932
+      internalID: -1826298972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 87b318fcb135e4d4db55242ebcd176dd
+      internalID: 955196057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e71fbea799dcd0c4a93f9070609d2992
+      internalID: 13868371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 811b3716031ad0f41903f4f9f3424a5f
+      internalID: 1091800346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a7779cfa3be6f84eb5dfc22b700c225
+      internalID: 1482247815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74300746c50300543a80d71b3a457ad8
+      internalID: 1237839099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_till_barnacled_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f5737954e3bf5141a7eeaf68aa73430
+      internalID: -201848577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: fa5877c7afde4d74b8033cae82493d51
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Perched_till_barnacled_mask_c0_r0: -1586460637
+      Perched_till_barnacled_mask_c0_r1: -841808378
+      Perched_till_barnacled_mask_c0_r2: 992847459
+      Perched_till_barnacled_mask_c1_r0: 36116943
+      Perched_till_barnacled_mask_c1_r1: -514932141
+      Perched_till_barnacled_mask_c1_r2: -1826298972
+      Perched_till_barnacled_mask_c2_r0: 1064427715
+      Perched_till_barnacled_mask_c2_r1: 432210850
+      Perched_till_barnacled_mask_c2_r2: 955196057
+      Perched_till_barnacled_mask_c3_r0: 964467878
+      Perched_till_barnacled_mask_c3_r1: -1482911643
+      Perched_till_barnacled_mask_c3_r2: 13868371
+      Perched_till_barnacled_mask_c4_r0: -122610979
+      Perched_till_barnacled_mask_c4_r1: -419638129
+      Perched_till_barnacled_mask_c4_r2: 1091800346
+      Perched_till_barnacled_mask_c5_r0: 565472718
+      Perched_till_barnacled_mask_c5_r1: 712742851
+      Perched_till_barnacled_mask_c5_r2: 1482247815
+      Perched_till_barnacled_mask_c6_r0: 199721356
+      Perched_till_barnacled_mask_c6_r1: 671868896
+      Perched_till_barnacled_mask_c6_r2: 1237839099
+      Perched_till_barnacled_mask_c7_r0: 918389164
+      Perched_till_barnacled_mask_c7_r1: -524189368
+      Perched_till_barnacled_mask_c7_r2: -201848577
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

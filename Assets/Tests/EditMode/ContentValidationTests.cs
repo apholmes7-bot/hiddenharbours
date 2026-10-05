@@ -27,6 +27,126 @@ namespace HiddenHarbours.Tests.EditMode
     {
         private const string DataRoot = "Assets/_Project/Data";
 
+        [Test]
+        public void VillagePlans_Exist_AndHaveUniqueIdsAndResolvedLists()
+        {
+            var plans = LoadAll<VillagePlanDef>();
+            Assert.That(plans.Count, Is.EqualTo(1), "V1 guard 19: village plans");
+            var seen = new Dictionary<string, string>();
+            foreach (var p in plans)
+            {
+                RegisterUniqueId(seen, p.Id, p.Id, "V1 guard 19: VillagePlanDef");
+                CollectionAssert.AreEquivalent(LoadAll<LotDef>().ConvertAll(x => x.Id), p.LotIds, "V1 guard 19: " + p.Id + " lots");
+                CollectionAssert.AreEquivalent(LoadAll<YardDef>().ConvertAll(x => x.Id), p.YardIds, "V1 guard 19: " + p.Id + " yards");
+                CollectionAssert.AreEquivalent(LoadAll<RouteDef>().ConvertAll(x => x.Id), p.RouteIds, "V1 guard 19: " + p.Id + " routes");
+                CollectionAssert.AreEquivalent(LoadAll<CommonsDef>().ConvertAll(x => x.Id), p.CommonsIds, "V1 guard 19: " + p.Id + " commons");
+                CollectionAssert.AreEquivalent(LoadAll<LightPostDef>().ConvertAll(x => x.Id), p.LightIds, "V1 guard 19: " + p.Id + " lights");
+                foreach (var row in p.Roadside)
+                    Assert.That(System.Array.Exists(p.Pieces, x => x.Id == row.PieceId), Is.True,
+                        "V1 guard 19: " + p.Id + "/" + row.PieceId + " roadside piece");
+            }
+        }
+
+        [Test]
+        public void VillageLots_Exist_AndHaveUniqueIdsAndResolvedStreets()
+        {
+            var lots = LoadAll<LotDef>(); var routes = LoadAll<RouteDef>();
+            Assert.That(lots.Count, Is.EqualTo(9), "V1 guard 20: lots");
+            var seen = new Dictionary<string, string>();
+            foreach (var lot in lots)
+            {
+                RegisterUniqueId(seen, lot.Id, lot.Id, "V1 guard 20: LotDef");
+                Assert.That(routes.Exists(r => r.Id == lot.StreetId), Is.True, "V1 guard 20: " + lot.Id + " street");
+                Assert.That(routes.Exists(r => r.Id == lot.WalkId && r.LotId == lot.Id), Is.True, "V1 guard 20: " + lot.Id + " walk");
+                Assert.That(LoadAll<VillagePlanDef>().Exists(p => System.Array.Exists(p.Footprints, f => f.Id == lot.FootprintId)),
+                    Is.True, "V1 guard 20: " + lot.Id + " footprint");
+                Assert.That(LoadAll<VillagePlanDef>().Exists(p => System.Array.Exists(p.Pieces, x => x.Id == lot.BuildingId)),
+                    Is.True, "V1 guard 20: " + lot.Id + " building");
+            }
+        }
+
+        [Test]
+        public void VillageYards_Exist_AndHaveUniqueIdsAndResolvedLots()
+        {
+            var yards = LoadAll<YardDef>(); var lots = LoadAll<LotDef>();
+            Assert.That(yards.Count, Is.EqualTo(9), "V1 guard 21: yards");
+            var seen = new Dictionary<string, string>();
+            foreach (var yard in yards)
+            {
+                RegisterUniqueId(seen, yard.Id, yard.Id, "V1 guard 21: YardDef");
+                Assert.That(lots.Exists(l => l.Id == yard.LotId), Is.True, "V1 guard 21: " + yard.Id + " lot");
+                Assert.That(yard.Outline.Length, Is.GreaterThanOrEqualTo(3), "V1 guard 21: " + yard.Id + " outline");
+                foreach (var row in yard.Dressing)
+                    Assert.That(LoadAll<VillagePlanDef>().Exists(p => System.Array.Exists(p.Pieces, x => x.Id == row.PieceId)),
+                        Is.True, "V1 guard 21: " + yard.Id + "/" + row.PieceId + " dressing");
+            }
+        }
+
+        [Test]
+        public void VillageRoutes_Exist_AndHaveUniqueIdsAndResolvedWalkLots()
+        {
+            var routes = LoadAll<RouteDef>(); var lots = LoadAll<LotDef>();
+            Assert.That(routes.Count, Is.EqualTo(23), "V1 guard 22: routes");
+            var seen = new Dictionary<string, string>();
+            foreach (var route in routes)
+            {
+                RegisterUniqueId(seen, route.Id, route.Id, "V1 guard 22: RouteDef");
+                Assert.That(route.Points.Length, Is.GreaterThanOrEqualTo(2), "V1 guard 22: " + route.Id + " polyline");
+                Assert.That(route.WidthMetres, Is.GreaterThan(0), "V1 guard 22: " + route.Id + " width");
+                if (!string.IsNullOrEmpty(route.LotId))
+                    Assert.That(lots.Exists(l => l.Id == route.LotId), Is.True, "V1 guard 22: " + route.Id + " lot");
+            }
+        }
+
+        [Test]
+        public void VillageCommons_Exist_AndHaveUniqueIdsAndResolvedFurniture()
+        {
+            var commons = LoadAll<CommonsDef>(); var plans = LoadAll<VillagePlanDef>();
+            Assert.That(commons.Count, Is.EqualTo(3), "V1 guard 23: commons");
+            var seen = new Dictionary<string, string>();
+            foreach (var common in commons)
+            {
+                RegisterUniqueId(seen, common.Id, common.Id, "V1 guard 23: CommonsDef");
+                Assert.That(common.Outline.Length, Is.GreaterThanOrEqualTo(3), "V1 guard 23: " + common.Id + " outline");
+                foreach (var furniture in common.Furniture)
+                {
+                    Assert.That(plans.Exists(p => System.Array.Exists(p.Pieces, x => x.Id == furniture.PieceId)),
+                        Is.True, "V1 guard 23: " + common.Id + "/" + furniture.PieceId);
+                    if (!string.IsNullOrEmpty(furniture.RouteId))
+                        Assert.That(LoadAll<RouteDef>().Exists(r => r.Id == furniture.RouteId), Is.True,
+                            "V1 guard 23: " + common.Id + "/" + furniture.RouteId);
+                }
+                foreach (var station in common.Stations)
+                    Assert.That(plans.Exists(p => System.Array.Exists(p.Tree, n => n.Node == station.Node)), Is.True,
+                        "V1 guard 23: " + common.Id + "/" + station.Id + " routine node");
+            }
+        }
+
+        [Test]
+        public void VillageLights_Exist_AndHaveUniqueIdsAndResolvedOwners()
+        {
+            var lights = LoadAll<LightPostDef>(); var lots = LoadAll<LotDef>();
+            var commons = LoadAll<CommonsDef>(); var routes = LoadAll<RouteDef>();
+            Assert.That(lights.Count, Is.EqualTo(16), "V1 guard 24: lights");
+            var seen = new Dictionary<string, string>();
+            foreach (var light in lights)
+            {
+                RegisterUniqueId(seen, light.Id, light.Id, "V1 guard 24: LightPostDef");
+                Assert.That(!string.IsNullOrEmpty(light.LotId) || !string.IsNullOrEmpty(light.CommonsId),
+                    Is.True, "V1 guard 24: " + light.Id + " lot or commons owner");
+                if (!string.IsNullOrEmpty(light.LotId))
+                    Assert.That(lots.Exists(x => x.Id == light.LotId), Is.True, "V1 guard 24: " + light.Id + " lot");
+                if (!string.IsNullOrEmpty(light.CommonsId))
+                    Assert.That(commons.Exists(x => x.Id == light.CommonsId), Is.True, "V1 guard 24: " + light.Id + " commons");
+                if (!string.IsNullOrEmpty(light.RouteId))
+                    Assert.That(routes.Exists(x => x.Id == light.RouteId), Is.True, "V1 guard 24: " + light.Id + " route");
+                Assert.That(light.Reach, Is.GreaterThan(0), "V1 guard 24: " + light.Id + " reach");
+                Assert.That(light.LitBy, Is.Not.Empty, "V1 guard 24: " + light.Id + " lighter");
+                Assert.That(LoadAll<VillagePlanDef>().Exists(p => System.Array.Exists(p.Pieces, x => x.Id == light.Id && x.Position == light.Position)),
+                    Is.True, "V1 guard 24: " + light.Id + " package piece follows its light");
+            }
+        }
+
         // ---- reusable rules (the single source of truth) ------------------------------------
 
         /// <summary>Load every asset of type T under Data/.</summary>

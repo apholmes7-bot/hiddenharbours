@@ -9,6 +9,12 @@
   **Amended 2026-09-17 by the cast (`feat/cast-to-mesh`):** §7 records the owner's ruling that the
   cast follows the player onto skinned meshes, and closes §5 items 1, 3 and 4. Item 2 stays with the
   water lane.
+  **Amended 2026-09-27 by villagers ashore (`feat/villagers-ashore-meshes`):** §8 records the owner's
+  rulings that the villagers ashore draw as meshes. It supersedes §7.3's option (b) for villagers only.
+  **Amended 2026-09-28 by character PR 2a (`feat/character-rig9-plays-in-full`):** §9 records how a
+  rig 9 figure plays what #889 left undrawn: the face, the blink, the look, the wheel, the oars, the
+  carry clips and the rig's own ink, on a skipper aboard and a villager ashore alike, keyed by one
+  identity and one hash (§9.3).
 - **Date:** 2026-09-09
 - **Decision owner:** the owner ruled the scope; `lead-architect` ratifies the record.
   **`art-pipeline`** owns the facet look, **`tools-editor`** owns the baking, **`gameplay-systems`**
@@ -538,6 +544,9 @@ guard holds. The second column is the same extractor with the face layer held ba
 
 ### 7.3 Ashore is still gated, so the owner ruled option (b)
 
+> **Superseded for villagers by §8 (2026-09-27).** The gate below is gone and the villagers are wired.
+> The moored skipper and the arrival's staging stand as written.
+
 When the owner ruled, §3.7's gate 1 stood: **a mesh character drew through the facet path only in a
 frame that also carried a registered mesh hull.** Aboard, the hull under the figure is that hull.
 Ashore, a figure would have drawn only while some mesh hull happened to be on screen, and not at all
@@ -599,6 +608,8 @@ are its PR 2, after this one. Under option (b):
 - **`GameConfig.MeshCast`** is the cast's switch, and it ships **ON** under the ruling. It is read
   live, so it flips with the game running, and OFF gives every cast sprite back exactly.
   `GameConfig.MeshCharacter` still governs the player alone (§5 item 4).
+- **`GameConfig.MeshCastAshore`** (added by §8) is the villagers' switch. It needs `MeshCast` ON too,
+  and OFF gives every villager's sprite back exactly (§8.5).
 - **`MeshStates` is authored once, when a Def is created.** `CharacterSkinAssetBaker.BakeCastCli`
   bakes the player first, as a refresh that re-proves the path, then the nine cast presets. A Def it
   CREATES gets the four states the player's committed Def switched on, `idle`, `walk`, `run` and
@@ -643,6 +654,9 @@ are its PR 2, after this one. Under option (b):
   their sprite exactly as today, with no presenter or figure on any of them. One skinned def is a mesh
   aboard and a sprite ashore, in the same world.
 
+§8.6 retires both `CharacterMeshCastAshorePlayTests` pins by name and renames the presenter's ashore
+case.
+
 ### 7.7 Debts carried, not taken
 
 The cast inherits the player's debts. This amendment takes none of them:
@@ -652,3 +666,292 @@ The cast inherits the player's debts. This amendment takes none of them:
   for Claude Design;
 - the shader look pass (43–57 % off the inked art), a separate handoff;
 - the shin-clamp re-bake.
+
+## 8. Amendment 2026-09-27: villagers ashore draw as meshes
+
+### 8.1 The rulings
+
+§7.1 quotes the owner's first ruling, verbatim: **"yes make everyone a mesh now."** Its second,
+**"GO for Phase B, option (b). Villagers stay sprites ashore."**, held the villagers back while ashore
+was gated (§7.3). That gate is gone. The ashore charter's PR 1 (#861) lets a figure hold a facet id with
+no hull under her, and `IsoFacetHullFeature` records the pass while `Count > 0 || FigureCount > 0`.
+
+On 2026-09-27 the owner moved this item up and ruled its two decisions, verbatim:
+
+- 20:19:50Z, answering the Art desk's three questions: **"1. Yes 2. Yes 3. Yes"**.
+- 21:36:31Z, answering this charter's two decisions: **"1. Yes 2. Yes"**. Decision 1: the villagers ship
+  ON once the owner accepts the plates, faceless before CHARACTER PR 2a if need be. Decision 2: this
+  lands before #877 Phase B and does not wait for it.
+
+**This amendment supersedes §7.3's option (b) for villagers only.** The eight villagers who live ashore,
+St Peters' six and Nine Mile Creek's two, draw as their skinned meshes. The rest of option (b) stands: a
+moored skipper is wired as §7.4 says, and the arrival keeps its staging (§8.4).
+
+### 8.2 The wiring
+
+- **The seam gains one interface in Core.** `ICharacterFigureAshoreStand : ICharacterFigureStand` adds
+  `FigureKey`, a stable name for the person standing (a villager's `NpcDef.Id`). Its hull members answer
+  null and zero and are never read ashore. The change is additive: every existing stand compiles and
+  behaves as before (rule 4).
+- **World publishes and never learns what draws it.** `NpcFigureStand` (World) is a villager's stand, as
+  `MooredBoat` is a skipper's. It names her own `IsoCharacterSprite` and her key, and asks
+  `CharacterFigurePresentation.Service` for a figure once, in its `Awake`.
+- **`Interactable.Awake` adds the stand** to a host that names an `NpcDef` and carries an
+  `IsoCharacterSprite`. A thing (NedsLetter: an NpcDef and no body) gets nothing. A host that already
+  carries a figure or a stand is left alone. It is `Awake`, not `Start`: her routine switches the
+  Interactable off while she is sheltered, and `Awake` still runs on a disabled component of an active
+  GameObject. Edit-time builders run no `Awake`, so no scene serialises a stand and the exporter does
+  not re-run.
+- **Art draws, through the presenter it already has.** `CharacterFigurePresenter.PoseFigure` sends an
+  ashore stand with no hull to `PoseAshore`, the twin of the player's
+  (`DeckRiderMeshPresenter.PoseAshore`). A plain stand with no hull still refuses with `Ashore`,
+  exactly as before. Her figure, `MeshCastFigureAshore`, is a child of her sprite at its pivot, on her
+  sprite's layer, and draws through `IsoCharacterFigureRenderer.EnterAshore`.
+- **The gates, in order:** both switches, read first, so a switch turned off while she is indoors still
+  gives her id back; no sprite renderer; a sprite disabled (her shelter) or hidden elsewhere; no
+  character; a suspended character; no skin; an unusable skin; no clip for the state; the state not in
+  `MeshStates`; a refusal already given (`FacetIdRefused`); the figure refused; the clip vanished; the
+  pose refused. `NotAFacetHull` and `SpriteRestaged` are aboard's alone. She stands on no hull, and her
+  sprite is re-sorted every frame by design, so her figure copies that sort instead of refusing it.
+- **The same-frame sort.** `YSortSprite` writes her sprite's order at execution order 0, and the
+  figure's own copy, also at 0, may run before it. The presenter runs at 100 and writes the ashore
+  properties again after it poses her, so her overlay ends every frame sorted exactly as her sprite.
+- **Her facing** is her sprite's compass heading through the skin's measured azimuth sign, as the
+  player's is.
+- **Her shelter and her talk are untouched.** Her routine owns `SpriteRenderer.enabled` and the
+  Interactable's `enabled`. The presenter reads the first and writes neither. It writes only
+  `forceRenderingOff`, and gives it back whenever it stops.
+
+### 8.3 The facet id: the player's policy
+
+- **Held, not churned.** She takes one figure id at her first draw with both switches on, and keeps it
+  while she is sheltered or suspended, so a door costs nothing. A switch turned off, the presenter
+  disabled or destroyed, or a re-configure gives it back.
+- **No release by region and no reserve.** Hulls register in `OnEnable`, before `SetActiveScene`, so a
+  release on region change would free nothing for Nine Mile Creek's hulls. It would also leave St
+  Peters' villagers as sprites after a round trip. The #877 note rejected release by view (its
+  option 4.2).
+- **Refused honestly at exhaustion.** A figure never takes the overflow id 255
+  (`IsoFacetIdPool.TakeFigureId`). Refused, she keeps her whole sprite and builds nothing, and the
+  registry logs its one warning for that ask. She is not asked again per frame, only when a switch is
+  turned off and on again or her presenter is enabled again.
+- **The budget, as the #877 note measured it.** St Peters fits today: 104 + the player + six villagers
+  = 111 of 255. Cold Nine Mile Creek is exhausted by its 33 hulls at load, so **its two villagers are
+  refused until #877 Phase B lands**: two warnings, two sprites. After #877 B the worst case in play is
+  127 of 255, with the cast at Nine Mile Creek.
+
+### 8.4 What stays as it was
+
+- **The arrival keeps its staging.** Its skipper is a `MooredBoat` skipper with no `Interactable`, so the
+  adder never reaches her. The aboard path still hands the draw back to her sprite (`SpriteRestaged`)
+  while the arrival lifts her sort over the cabin room.
+- **Aboard is unchanged.** An aboard stand never builds an ashore figure, and §8.5's phase is ashore's
+  alone, so every aboard plate stays byte-equal.
+
+### 8.5 The phase and the switch
+
+- **The phase, ashore only.** The seed passed to `CharacterSkinPose.FrameFor` mixes the world seed with
+  the FNV-1a of her key through MurmurHash3's 32-bit finalizer
+  (`CharacterFigurePresenter.AshorePhaseSeed`). The key is hashed once, in `Configure`. The finalizer is
+  the point. The phase is FNV-1a modulo a small
+  frame count, often a power of two, and FNV's low bits see only its input's low bits, so a plain XOR
+  would lock two villagers whose keys agree there in step on every seed. Two villagers idling side by
+  side are not in step, and the same villager is the same on every run, from (worldSeed, gameTime)
+  (rule 5). No key gives the world seed itself, which is the phase aboard.
+- **`GameConfig.MeshCastAshore` is the villagers' switch.** It needs `MeshCast` ON too, as
+  `MeshCharacterAshore` needs `MeshCharacter`. `DefaultMeshCastAshore` is false. The shipped
+  `GameConfig.asset` sets it ON under decision 1, and the owner accepts the plates before this merges.
+  With either switch OFF every villager's sprite comes back byte for byte: no ashore figure, no facet id
+  and no child object. It is read live.
+
+### 8.6 Guards added by this amendment
+
+**EditMode**, in `CharacterFigurePresenterTests` beside §7.6's cases. `AshoreNeverDrawsAndBuildsNothing`
+is renamed `APlainStandAshoreNeverDrawsAndBuildsNothing`, and now runs with both switches on.
+
+- `AnAshoreStandDrawsHerOwnFigureAndItsOverlayTakesHerSpritesSortInTheSameFrame`.
+- `APlainStandAshoreNeverDrawsAndBuildsNothing`.
+- `AtExhaustionSheKeepsHerWholeSpriteBuildsNothingAndIsNotAskedAgain`: one warning over thirty poses.
+- `ShelterHidesHerFigureAndKeepsHerIdAndSheComesOutWithTheSameOne`.
+- `TheAshoreSwitchOffGivesHerSpriteBackAndHerIdBack`,
+  `TheCastSwitchOffGivesHerSpriteBackAndHerIdBackWithTheAshoreSwitchStillOn` and
+  `ASwitchTurnedOffWhileSheIsIndoorsStillGivesHerIdBack`.
+- `TwoVillagersOfOneSkinPoseDifferentIdleFramesAtOneMomentAndOneKeyPosesTheSameFrameTwice` and
+  `ThePhaseMixIsPinned`.
+- `PosingAVillagerAshoreEveryFrameAllocatesNothingAfterWarmUp`: the GC.Alloc recorder with a positive
+  control, and the thread's allocation counter where the runtime keeps one.
+
+**PlayMode**, in `CharacterMeshCastAshorePlayTests`, rewritten. Its two option (b) pins retire by name:
+`EveryVillagerAshore_DrawsTheirSpriteExactlyAsToday_WithTheCastSwitchOn` ("villagers are not wired")
+and `TheSameSkinnedDef_IsAMeshAboard_AndTheSpriteAshore_InOneWorld` (a villager's `Ashore` refusal).
+In their place:
+
+- `EveryVillagerAshore_IsTheirMesh_WithMeshCastAndMeshCastAshoreOn` and
+  `EveryVillagerAshore_DrawsTheirSpriteExactlyAsToday_WithMeshCastAshoreOff`, on St Peters at noon.
+- `TheSameSkinnedDef_IsAMeshAboard_AndAMeshAshore_InOneWorld` and
+  `TheSameSkinnedDef_IsAMeshAboard_AndTheSpriteAshore_WithMeshCastAshoreOff`.
+- The adder: `TheAdder_StandsAVillagerOnAwake_WithHerInteractableSwitchedOff`,
+  `TheAdder_GivesAThingWithNoBody_Nothing` and `TheAdder_LeavesAHostThatAlreadyCarriesAFigure_Alone`.
+  They are PlayMode because the Art EditMode assembly references no World, and EditMode runs no
+  `Awake`.
+
+**The plates** (`VillagersAshorePlatePlayTests`: St Peters, and Nine Mile Creek's two refused) are shot
+on a granted editor slot and join this PR before it leaves draft.
+
+### 8.7 Not in this amendment
+
+- **Blink and look** come through CHARACTER PR 2a's seam. If 2a puts a figure identity on the seam, a
+  villager answers that one, and there is no second key scheme.
+- **The facet-id budget** is #877 Phase B's (lazy blocks for hulls, ADR 0045). This amendment touches
+  none of its files.
+- **No scene, builder or prefab changes.**
+- **§7.7's debts** are still carried.
+
+## 9. Amendment 2026-09-28: rig 9 plays in full (character PR 2a)
+
+### 9.1 What this adds
+
+#889 put rig 9's ten defs on screen. It read the face, the blink, the look, the helm and oars clips,
+the carry clips and the rig's own shading, and drew none of them (its findings 1, 2, 3, 5 and 7).
+This amendment draws them, under the charter `HANDOFF-2026-09-27-character-pr2.md` §4 and the owner's
+ruling 8 (the engine plays the blink and the gaze). It serves **P1** (a figure that turns and blinks
+on a moving deck reads as a person, not a cut-out) and **P3** (a skipper aboard, or a villager
+ashore (§8), who looks up as the player passes is the living coast). Nothing ships as JS: every value
+below is read from `characterIsoRig9.js` at bake, in V8 (ADR 0021), into the def.
+
+### 9.2 The face: one mesh, one draw, three numbers
+
+- **Every def binds all 13 of the rig's face groups** (`GROUP_ORDER`, `CharacterSkinDef.FaceGroups`)
+  in its one bind mesh. Each face corner carries its group, the role the cull reads and whether the
+  head snap moves it (`TEXCOORD1`, free on a figure because a figure never carries a room's level tag).
+- **A clip carries a face track** (`SkinClip.Face`: eyes, brows and mouth per frame), read from the
+  rig's clips at bake. A clip without one shows `RestFace`. The rig's tool track is carried as data
+  beside it (`SkinClip.Tool`); the baked bone keys already park the tool bones (`ParkedParts`).
+- **Which face shows is one uniform per figure** (`_HHFigureFace`, the group per slot). The vertex
+  stage collapses every face corner whose group is not showing, outside the clip volume. A face change
+  is never a mesh edit, never a second draw call and never an allocation.
+- **Composition, in the rig's order** (`CharacterFigureFace`): the frame's own groups, then the gaze
+  (it replaces `eyes.open` only), then the blink (unless the frame's own eyes are one the blink
+  skips).
+- **The cost** (triangles, vertices, bones, memory per def, the frame cost of ten figures) is measured
+  on the editor slot and recorded in the PR. Binding the whole face raises the materials a def paints
+  (the fisher 19 to 21; the most is 25 of the 32 `V9RampSlots`).
+
+### 9.3 The blink and the look
+
+- **Read at bake, per def:** the blink's steps, interval, double chance and gap and the eyes it
+  skips; the look's bones, split, yaw and pitch limits, head share, eye threshold and gaze groups.
+  Each preset carries the rig's `BLINK` and `LOOK`; a guard reads them back from the rig.
+- **The blink** (`CharacterFigureBlink`) runs on the clock the clips play on, over any clip. The first
+  blink falls uniformly in a first interval; each wait is uniform in the rig's interval; a double
+  follows by the rig's chance after its gap, and never a third. Its generator is seeded from the def
+  id and the one hash of the figure's key (FNV-1a into splitmix32), so the same figure blinks the same
+  way on every run. It never touches `UnityEngine.Random`, and no simulation system reads it (rule 5).
+- **One key, one hash.** The key is the stand's one identity, `ICharacterFigureIdentity.FigureKey`
+  (Core, beside §8's seam). `MooredBoat` answers its owner id and `NpcFigureStand` her `NpcDef` id; a
+  stand with none, and the player, key the empty string. §8.2's `ICharacterFigureAshoreStand` no longer
+  declares a key of its own: it inherits this one, so every stand, test double and pin of §8 compiles
+  and reads as before. The presenter reads the key once, in `Configure`, and hashes it once with §8.5's
+  FNV-1a (`CharacterFigurePresenter.KeyHash`). That one hash moves a villager's idle phase (§8.5,
+  unchanged: `ThePhaseMixIsPinned` is untouched) and seeds every figure's blink
+  (`CharacterFigureBlink.SeedFor(defId, keyHash)`); the key itself names the figure to the look seam.
+  This is §8.7's reading: the villager answers 2a's identity, and there is no second key scheme.
+- **The look** (`CharacterFigureLook`) is the rig's `lookAt` ported to C#, rounding as the rig
+  rounds. It goes onto the neck and head locals after the clip and before the deck rock
+  (`CharacterSkinPose.ApplyTurn`). It is sampled on the clip's beat (a new clip or a new frame) and
+  held between beats, so a figure re-skins at its clip's rate however its target moves (rule 7).
+- **Who looks at whom is a Core seam** (`CharacterLookTargets`, `ICharacterLookTargetSource`). By
+  default it answers the published player. The presenter keeps an answer only within
+  `GameConfig.CharacterLookRadiusMetres` on the figure's own ground, and aims at
+  `GameConfig.CharacterLookTargetHeightMetres` (1.31 m, the player's head at rest). The player's own
+  presenter never asks: the player looks at nothing (charter §8 item 2). A villager ashore (§8) plays
+  the same life as a skipper aboard: `PoseAshore` steps it after her facing is written, so the look
+  reads her own ground as it lies that frame. Art references no Player or NPC class (rule 4).
+- **The bars.** A guard holds the port to the rig's own `lookAt`, run in V8 over a grid of targets,
+  within 0.002°, and the golden check (share 1, targets 2 m away, inside the limits) to within 0.005°
+  of the rig's own aim on every target, under each preset's bar in the kit's `golden-report.json`:
+  1.70° for eight presets and 2.40° for the skipper and nan. README §5 says 1.7° for all; the
+  difference is reported to art-director, not decided here. The measured gaps are in the PR.
+
+### 9.4 The wheel, the oars and the loads
+
+- **`CharacterSkinStateMap.CarryKey`** is Core's twin of the bake's `CharacterState(anim, null,
+  carry).Key` (`anim_carry`). A guard holds the two equal over every carry clip of the ten defs.
+- **Helm and Oars are carries.** Helm plays `idle_helm` and `walk_helm`; Oars plays `idle_oars` and
+  `walk_oars`. All ten defs carry all four, so no def falls back. A def that lacks one (every rig 7
+  def) draws the free gait clip and says so (`FellBackToGait`). A run at either asks for the free
+  `run`, by design: neither the rig nor the sprite bakes a stance run, so nothing falls back there.
+- **A held thing names its carry through data** (`CharacterCarryPoseDef`, one Def,
+  `Resources/CharacterCarryPoses.asset`, id `carrypose.character`): a carriable's def id to a carry
+  stance, the right hand first. It maps `container.bucket` to `buckets`. The game has no carriable
+  that is a tray or a pot yet, so those two stay unmapped and listed. A carry applies to the free
+  stance alone. `CarryAnchorTableDef` (the sprite's hand-prop overlays) stays a separate table.
+
+### 9.5 The rig's own ink
+
+Under `ToneRule.V9`, inside `#ifdef HH_FIGURE`, from fields baked from the rig's `SHADING` and `ROLE`:
+
+- **the face cull by role:** a face draws only while it faces the camera past its role's threshold
+  (near, far, side and the mouth's), at the rig's floor;
+- **the head snap:** the head's faces move together so that the head's mid point sits on a pixel
+  centre, on the screen only (depth, tone and cull are the unsnapped face's, as in the rig);
+- **the edge:** a figure pixel drops one ramp step across a depth break of more than 0.12 m;
+- **the keyline:** an empty pixel beside the figure takes `#101a19` mixed 22% toward its nearest
+  figure neighbour.
+
+The keyline goes on empty pixels only, never over a hull or deck pixel. A hull writes the ink flag's
+alpha as 1, as it always has, and with no figure inked the resolve is the program it was. So no hull
+pixel moves, and `_RampMeta[16]` is unchanged. The edge and the mix are one value per frame (the ten
+defs share the rig's `SHADING`); a def with its own would need per-figure storage. **The "backface
+rescue"** #889 named is not a rig 9 term: rig 9 culls body faces at the floor alone, and nothing is
+drawn for it. The bake's comparison with the rig's own render (`RenderTruth9`) covers what is drawn,
+with the snap on; the match is in the PR.
+
+### 9.6 The switches
+
+All ON by default and read live, so the owner can turn one off in a playtest without code:
+`GameConfig.CharacterBlink`, `CharacterHeadLook`, `CharacterEyeLook` (the owner's "maybe" of 09-24)
+and `MeshFigureKeyline` (the ink). OFF gives exactly the picture before this amendment for that part.
+`CharacterLookRadiusMetres` (5 m) and `CharacterLookTargetHeightMetres` (1.31 m) tune the look.
+
+### 9.7 Guards added by this amendment
+
+**EditMode** (no editor; CI runs them):
+
+- **`CharacterSkinBakeGuardTests` (V9 life, 9).** Every preset binds every face group; every clip
+  carries the rig's face and tool tracks; the blink, the look and the ink are the rig's; the look
+  port and the turn match the rig in V8; the golden check; every preset's ink matches the rig's own
+  render. The bar is always the rig's, read in V8 or from the kit.
+- **`CharacterSkinCarryStateTests` (4).** The key twin over every carry clip; the wheel and the oars
+  as the rig's carries; every committed def plays them; every mapped carriable asks for a carry the
+  rig has and every def plays.
+- **`CharacterFigureBlinkTests` (9), `CharacterFigureFaceTests` (6), `CharacterFigureLookTests` (10),
+  `CharacterLookTargetsTests` (5), `CharacterCarryPoseDefTests` (4).** The Core arithmetic on
+  synthetic values: seeding, the first wait, the double and never a third, no draw from
+  `UnityEngine.Random`; the composition order; the clamp, the split and the rounding; the seam's
+  default and a source; the table's rows.
+- **`IsoCharacterFigureLifeTests` (13).** A default life draws exactly the clip; a blink reaches the
+  face uniform and never re-skins; the look turns only the head and is held between beats; the frame
+  path allocates nothing; the ink and its registry follow the switch and the figure's visibility.
+- **`CharacterSkinStateMapTests` (15, rewritten)** and **`CharacterFigurePresenterTests` (+4):** the
+  wheel and the oars through the map and their fall-backs; the stand's identity keys the life, read and
+  hashed once at the attach; a skipper looks at a player within the radius and not past it; a villager
+  ashore is handed the hash her idle phase is moved by and her phase does not move; she looks at a
+  player nearby and not past the radius, and allocates nothing while she looks.
+
+**PlayMode:**
+
+- **`DeckRiderMeshPresenterPlayTests` (+3).** At the wheel and the oars the player draws the rig's
+  own clips; a def without them draws the free gait and says so; her own figure never asks the look
+  seam.
+- **`CharacterMeshCastAboardPlayTests` (+1).** A moored skipper blinks on their own clock and looks at
+  a player nearby, not at one past the radius. **Red until the ten defs are re-baked on the editor
+  slot, by design.**
+
+### 9.8 What this amendment leaves alone
+
+The presets and their looks, anchors and pose heights, the sprite fallback, and §8's villagers ashore
+apart from their life: her figure, her facet id, her phase, her switch and §8.6's guards
+(`ThePhaseMixIsPinned` and `CharacterMeshCastAshorePlayTests` among them) are unchanged. Of §7.7, the
+helm and oars clips are closed for rig 9 defs: rig 9 bakes them and this amendment draws them. The
+rest of §7.7 stands.

@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c7fa69da25f097ee68bd1ab3825272, type: 3}
+  m_Name: yard.st_peters.post_office
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.YardDef
+  Id: "yard.st_peters.post_office"
+  LotId: "lot.st_peters.post_office"
+  Fence: 0
+  Mown: 1
+  Outline:
+  - {x: 9.25, y: 29.585}
+  - {x: 22.75, y: 29.585}
+  - {x: 22.75, y: 40.0}
+  - {x: 9.25, y: 40.0}
+  Gate: {x: 18.18, y: 29.585}
+  Dressing:
+  - PieceId: "prop.stp_vl_post_office_mailbox"
+    Kind: "mailbox"
+    Position: {x: 20.28, y: 29.985}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"the mailbox post at the forecourt edge, flag up\"}"
+  - PieceId: "prop.stp_vl_post_office_planter_box"
+    Kind: "planterBox"
+    Position: {x: 15.58, y: 29.985}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"WharfDecor\",\"cell\":4,\"why\":\"a planter box at the forecourt edge\"}"
+  - PieceId: "prop.stp_vl_post_office_bench"
+    Kind: "bench"
+    Position: {x: 13.18, y: 31.085}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"WharfDecor\",\"cell\":4,\"why\":\"a bench under the window\"}"
+  - PieceId: "prop.stp_vl_post_office_bicycle"
+    Kind: "bicycle"
+    Position: {x: 21.78, y: 33.785}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"WharfDecor\",\"cell\":4,\"why\":\"a bicycle against the east wall\"}"
+  FenceSummary:
+    Panels: 0
+    Posts: 0
+    Gates: 0
+    Offcuts: 0
+    OffcutMetres: 0.0
+    Metres: 0.0

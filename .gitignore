@@ -127,6 +127,10 @@ InitTestScene*.unity*
 /[Aa]ssets/_Project/Art/Terrain/Cliffs/
 /[Aa]ssets/_Project/Art/Terrain/Cliffs.meta
 
+# ADR 0047: terrain arrays are recipe import artifacts in Library.
+/[Aa]ssets/_Project/Art/Terrain/Derived/
+/[Aa]ssets/_Project/Art/Terrain/Derived.meta
+
 # Python bytecode from the standalone tools under tools/ (they run outside Unity, so nothing
 # else in the repo would otherwise mention Python).
 __pycache__/

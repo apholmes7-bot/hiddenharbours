@@ -31,6 +31,8 @@ time without merge conflicts. Every Def has a stable **string `id`** (e.g., `fis
 | `GearOffer` | `Data/Gear/` | the *economic* side of a purchasable gear item: id, display name, price (the rod/shovel/bucket). The gear *capability* (Gear flag, hold capacity) is gameplay-systems' | `design/economy-and-business.md` |
 | `BaitDef` / `GearDef` | `Data/Gear/`, `Data/Bait/` | gear/bait that gate catch resolution | `design/fish-and-content.md` |
 | `PropertyDef` | `Data/Regions/Property/` | houses & commercial lots: purchase, upgrade tiers, furnishing slots, comfort | `design/progression-and-housing.md` |
+| `KeySceneDef` | `Data/KeyScenes/` | one key scene's placements, per variant (`today` first): piece id, kit and piece, at, z and what it stands on (ground, deck), facing, sort line, the words ids its boards carry. Placements belong to the scene, not the piece's Def, so one piece type can stand in many places; `StPetersLayerRefresh` writes them into the scene | the art desk's key-scene return (`scene.json`) |
+| `WordsTableDef` | `Data/Words/` | the words a sign, name board or notice shows, by string id (`words.snake_case`); boards bake blank, so renaming a place changes a string, never a pixel | — |
 | `GameConfig` | `Data/Config/` | global tunables: day length, tide constants, season length, economy constants, stamina rates | several |
 
 > `GameConfig` centralises balance numbers so the owner / `economy-sim` can tune feel without

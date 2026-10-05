@@ -592,6 +592,27 @@ namespace HiddenHarbours.Tests.EditMode
                     "west/north (§5.1) and a slab boulder there reads as an obstacle on the dig ground");
         }
 
+        [Test]
+        public void NoShoreRockStandsOnGroundTheSeaNeverTouches()
+        {
+            // Terrain PR 5 B (M7, T6): the plan's ground lifts one reef site onto the NE Head's brow at +11 m.
+            // A ring on ground above the grass band's floor places nothing; the same rings on tide ground do.
+            Assert.IsEmpty(StPetersShoreMap.ScatterRocks(new LevelGround(StPetersShoreMap.GrassFloorElevation + 0.01f)),
+                "a shore rock on ground above the grass band's floor stands where the sea never reaches");
+            Assert.IsNotEmpty(StPetersShoreMap.ScatterRocks(new LevelGround(0f)),
+                "the control: the same rings on ground the tide covers carry their rock");
+            foreach (var r in StPetersShoreMap.ScatterRocks(_terrain))
+                Assert.LessOrEqual(_terrain.ElevationAt(r.Position), StPetersShoreMap.GrassFloorElevation,
+                    $"a {r.Sprite} at {r.Position} stands on ground the sea never touches");
+        }
+
+        sealed class LevelGround : HiddenHarbours.Core.ITidalTerrain
+        {
+            readonly float _elevation;
+            public LevelGround(float elevation) => _elevation = elevation;
+            public float ElevationAt(Vector2 worldPos) => _elevation;
+        }
+
         // =================================================================================
         //  DETERMINISM + THE FOOTPRINT BUDGET
         // =================================================================================
