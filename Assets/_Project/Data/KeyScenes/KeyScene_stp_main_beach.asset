@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_stp_main_beach
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.stp_main_beach
+  DisplayName: West Gap Beach, the main beach
+  RegionId: region.st_peters
+  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_main_beach/scene.json,
+    14731 bytes, sha256 5038d430dbb07cf5dcff89e399646ed98c531b9c0917f4baac7b5737ff118c27
+  Placed: 0
+  Pieces:
+  - Id: prop.stp_beach_bench
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: bench
+    State: 
+    At: {x: 12.6, y: -57.3}
+    Z: 5.48
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_beach_steps
+    Kind: setPiece
+    Owner: 
+    Kit: nmcSetPieces
+    Piece: gullySteps
+    State: 
+    At: {x: 11, y: -59}
+    Z: 2.78
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 1
+    Foot: {x: 10.4, y: -63.8}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: run
+      Value: 7.49
+    - Key: rise
+      Value: 2.81
+    - Key: width
+      Value: 1.1
+    - Key: yaw
+      Value: -94.59
+    - Key: landing
+      Value: 1
+  - Id: prop.stp_beach_sign
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: noticeBoard
+    State: 
+    At: {x: 13.9, y: -56.6}
+    Z: 5.18
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  Lights: []
+  RetiredIds: []

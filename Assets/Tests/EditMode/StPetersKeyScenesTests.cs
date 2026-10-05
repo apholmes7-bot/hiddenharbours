@@ -256,6 +256,7 @@ namespace HiddenHarbours.Tests.EditMode
             "a Def under another id", "a wall mount", "seven frames", "an unknown layer", "an unknown kit",
             "a find with no state", "a vane turned from its headings", "a vane on another input", "a piece placed twice",
             "no Def in the kit", "a cell the kit lacks", "a cell that is no sprite", "a tide board with no scale",
+            "a piece on a host",
         };
 
         [TestCaseSource(nameof(Unplaceable))]
@@ -296,12 +297,61 @@ namespace HiddenHarbours.Tests.EditMode
                     sp.PixelsPerMetre = 0f;
                     expect = "no scale";
                     break;
+                case "a piece on a host":
+                    piece.StandsOn = KeySceneDef.StandsOnMount; piece.MountHost = "structure.test_host"; piece.MountAnchor = "ridge";
+                    expect = "stands on a host ('structure.test_host' at 'ridge')";
+                    break;
                 default: throw new ArgumentOutOfRangeException(nameof(fault), fault, null);
             }
             var refusal = Assert.Throws<Refusal>(() => StPetersLayerRefresh.PlaceKeyScenes(scenes, assets),
                                                  $"{fault} was placed instead of refused");
             StringAssert.Contains(expect, refusal.Message);
             Assert.Throws<Refusal>(() => Plan(KeySceneSyntheticScene.Text(), scenes, assets), $"the step wrote {fault}");
+        }
+
+        [Test]
+        public void Place_LeavesToOtherCodeWhatItPlaces_AndPlacesNothingThatRides()
+        {
+            var (scenes, assets) = TwoScenes();
+            // On the quay: a building its owner's code places, and a gull riding the water. Neither is a kit the
+            // step places from, so either one taken would refuse.
+            KeyScenePiece owned = Piece("structure.test_shed", "wharfBuilding2", "netShed", 16f, 6f, 5);
+            owned.Owner = "StPetersCannery";
+            KeyScenePiece afloat = Piece("gull.test_afloat", "seagull", "gull", 9f, -6f, 0);
+            afloat.StandsOn = KeySceneDef.StandsOnWater;
+            scenes[0].Pieces = scenes[0].Pieces.Append(owned).Append(afloat).ToArray();
+
+            CollectionAssert.AreEqual(TodaysPieces, StPetersLayerRefresh.PlaceKeyScenes(scenes, assets).Select(p => p.Id).ToList(),
+                                      "the step took a piece other code places, or one that rides");
+            owned.Owner = "";
+            Assert.Throws<Refusal>(() => StPetersLayerRefresh.PlaceKeyScenes(scenes, assets), "with no owner, the shed is the step's");
+            owned.Owner = "StPetersCannery";
+            afloat.StandsOn = KeySceneDef.StandsOnGround;
+            Assert.Throws<Refusal>(() => StPetersLayerRefresh.PlaceKeyScenes(scenes, assets), "on the ground, the gull is the step's");
+        }
+
+        [Test]
+        public void Step_PlacesNothingOfAnUnplacedScene_AndGivesItNoGroup()
+        {
+            var (scenes, assets) = TwoScenes();
+            // A scene at Placed 0 is data: a rock and a gull on a host, which the step cannot place, refuse nothing.
+            KeyScenePiece gull = Piece("gull.test_perched", "seagull", "gull", 21f, 6f, 0);
+            gull.StandsOn = KeySceneDef.StandsOnMount;
+            gull.MountHost = "structure.test_rails";
+            gull.MountAnchor = "top";
+            KeySceneDef data = Scene("keyscene.test_data", Piece("rock.test_erratic", "pxRockIso3", "erratic", 30f, 9f, 0), gull);
+            data.Placed = false;
+            var withData = new List<KeySceneDef> { data };
+            withData.AddRange(scenes);
+
+            CollectionAssert.AreEqual(TodaysPieces, StPetersLayerRefresh.PlaceKeyScenes(withData, assets).Select(p => p.Id).ToList(),
+                                      "an unplaced scene placed a piece");
+            string before = KeySceneSyntheticScene.Text();
+            Assert.IsTrue(Plan(before, withData, assets).ApplyTo(before) == Plan(before, scenes, assets).ApplyTo(before),
+                          "an unplaced scene wrote into the scene");
+
+            data.Placed = true;
+            Assert.Throws<Refusal>(() => StPetersLayerRefresh.PlaceKeyScenes(withData, assets), "turned on, a scene is placed whole or refused");
         }
 
         [Test]
@@ -639,7 +689,8 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>Today's key scenes with the Landing's rope dropped, its bench moved a quarter metre east, and
-        /// a second tote stack on the deck. Copies: the committed assets are never touched.</summary>
+        /// a second tote stack on the deck. Copies, each placed or not as its asset: the committed assets are
+        /// never touched.</summary>
         List<KeySceneDef> ChangedOnPurpose(List<KeySceneDef> today)
         {
             var scenes = new List<KeySceneDef>();
@@ -656,6 +707,7 @@ namespace HiddenHarbours.Tests.EditMode
                     pieces.Add(totes);
                 }
                 KeySceneDef copy = KeySceneTestData.NewKeyScene(ks.Id, pieces.ToArray());
+                copy.Placed = ks.Placed;
                 _made.Add(copy);
                 scenes.Add(copy);
             }
@@ -681,9 +733,10 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.IsTrue(scripts.Contains(d.Field("m_EditorClassIdentifier")), $"{op.Name} runs {d.Field("m_EditorClassIdentifier")}");
             }
 
-            // Every piece is one of the three prop kits', and none is ground paint.
+            // Every piece of a placed scene is one of the three prop kits', and none is ground paint. A scene at
+            // Placed 0 is data, whatever its kits.
             var kits = new[] { StPetersLayerRefresh.SetPiecesKit, StPetersLayerRefresh.DecorKit, StPetersLayerRefresh.FindsKit };
-            foreach (KeyScenePiece p in scenes.SelectMany(s => s.Pieces))
+            foreach (KeyScenePiece p in scenes.Where(s => s.Placed).SelectMany(s => s.Pieces))
             {
                 CollectionAssert.Contains(kits, p.Kit, $"{p.Id} comes from '{p.Kit}'");
                 Assert.IsFalse(p.Id.StartsWith("path.", StringComparison.Ordinal), $"{p.Id} is ground paint");
@@ -706,13 +759,15 @@ namespace HiddenHarbours.Tests.EditMode
     }
 
     /// <summary>
-    /// <b>THE KEY SCENES' DATA HOLDS TO RETURN 2, AND TO THE GAME.</b> Subject: the committed
-    /// <see cref="KeySceneDef"/>s and <see cref="WordsTableDef"/>. They hold return 2's today pieces as the art
-    /// desk recorded them; every piece resolves to its kit; every height reads the game's own ground or deck
-    /// (#890) within five centimetres; the tide board's marks read true against the game's sea; nothing stands
-    /// in a frozen area (the arrival route, the berth pocket, the berths, the wharf's fittings and lamps, the
-    /// deck's walking lane), all proved from the game's constants; the vane turns on sixteen headings; and the
-    /// boards' words are ids in the owner's table, their text written nowhere else.
+    /// <b>THE KEY SCENES' DATA HOLDS TO ITS FILES, AND TO THE GAME.</b> Subject: the committed
+    /// <see cref="KeySceneDef"/>s and <see cref="WordsTableDef"/>. They hold their files' rows as
+    /// <see cref="StPetersKeyScenesRecord"/> records them (return 2's for the Landing and the cannery; CD's package,
+    /// through the id map, for the seven scenes O3 brings as data), and no id holds a position; every piece the step
+    /// places resolves to its kit, and every height it places reads the game's own ground or deck (#890) within five
+    /// centimetres; the tide board's marks read true against the game's sea; nothing stands in a frozen area (the
+    /// arrival route, the berth pocket, the berths, the wharf's fittings and lamps, the deck's walking lane), all
+    /// proved from the game's constants; the vane turns on sixteen headings; and the boards' words are ids in the
+    /// owner's table, their text written nowhere else.
     /// </summary>
     public class StPetersKeyScenesContentTests
     {
@@ -736,61 +791,32 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>CD's depth over the tide board's foot at a spring high: a boat's water (scene.json, tide).</summary>
         const float CdDepthAtSpringHigh = 3.95f;
 
-        // ---- return 2's record ------------------------------------------------------------------------
+        // ---- the files' record ------------------------------------------------------------------------
 
-        sealed class Row
-        {
-            public readonly string Scene, Id, Kit, Piece, State, StandsOn;
-            public readonly Vector2 At;
-            public readonly float Z;
-            public readonly int Dir;
-            public readonly float? SortY;
-            public readonly string[] Words;
+        const string C = StPetersKeyScenesRecord.Cannery;
 
-            public Row(string scene, string id, string kit, string piece, string state, float x, float y, float z, string standsOn,
-                       int dir, float? sortY = null, params string[] words)
-            {
-                Scene = scene; Id = id; Kit = kit; Piece = piece; State = state; At = new Vector2(x, y); Z = z; StandsOn = standsOn;
-                Dir = dir; SortY = sortY; Words = words;
-            }
-        }
+        /// <summary>The host a mount on one of the wharf's fittings names: the wharf this scene stands on.</summary>
+        const string WharfHost = "context.wharf";
 
-        const string L = KeySceneTestData.LandingId, C = KeySceneTestData.CanneryId;
-        const string Sp = StPetersLayerRefresh.SetPiecesKit, Dk = StPetersLayerRefresh.DecorKit, Fk = StPetersLayerRefresh.FindsKit;
-        const string Ground = KeySceneDef.StandsOnGround, Deck = KeySceneDef.StandsOnDeck;
-
-        /// <summary>Return 2's today pieces (<c>scenes/&lt;id&gt;/scene.json</c>, hashed in each scene's Source), in
-        /// CD's order: the rest of each file (the bait store, the frozen lanterns and cannery, the restored
-        /// pieces, the path paint, the gulls, the door notice) is left out on purpose.</summary>
-        static readonly Row[] Record =
-        {
-            new Row(L, TideBoardId, Sp, "slipTideBoard", "", 200.9f, -3.62f, -1.75f, Ground, 4),
-            new Row(L, "prop.stp_harbour_vane", Sp, "harbourVane", "", 183.6f, -4.4f, 5.96f, Ground, 0),
-            new Row(L, "prop.stp_landing_traps", Dk, "trapStack", "", 187.3f, 2.05f, 5.35f, Deck, 4),
-            new Row(L, "prop.stp_landing_totes", Dk, "toteStack", "", 190.1f, 2.2f, 5.35f, Deck, 4),
-            new Row(L, "prop.stp_landing_cart", Dk, "dockCart", "", 193.2f, 1.5f, 5.35f, Deck, 4),
-            new Row(L, "prop.stp_landing_bait_barrel", Dk, "baitBarrel", "", 205.9f, 2f, 5.35f, Deck, 4),
-            new Row(L, "prop.stp_landing_rope", Dk, "ropeCoil", "", 206.5f, -2f, 5.35f, Deck, 4),
-            // The package's z, not return 2's 6: PR 5 B lays the package's ground under the bench (amendment 1 §4.11).
-            new Row(L, "prop.stp_strand_bench", Dk, "bench", "", 186f, 17.2f, 5.86f, Ground, 4),
-            new Row(L, "prop.stp_wrack_driftwood", Fk, "Driftwood", "bleached", 198.45f, 12.4f, 2.39f, Ground, 4),
-            new Row(L, "prop.stp_wrack_plank", Fk, "DriftPlank", "dry", 197.1f, 16.4f, 2.41f, Ground, 3),
-            new Row(L, "prop.stp_wrack_float", Fk, "NetFloat", "dry", 198.95f, 10.4f, 2.42f, Ground, 4),
-            new Row(L, "prop.stp_wrack_rope", Fk, "RopeScrap", "dry", 196.2f, 18.6f, 2.41f, Ground, 4),
-            new Row(L, "prop.stp_wrack_lath", Fk, "TrapLath", "bleached", 197.9f, 14.3f, 2.38f, Ground, 5),
-            new Row(C, "structure.stp_cannery_boiler_stack", Sp, "boilerStack", "", 173.32f, 22.15f, 6f, Ground, 7, 16.4f),
-            new Row(C, "structure.stp_cannery_trolley_line", Sp, "trolleyLine", "", 175.59f, 9.57f, 6f, Ground, 0, 12f),
-            new Row(C, "prop.stp_cannery_trolley", Sp, "trolley", "", 178f, 6.9f, 6f, Ground, 7),
-            new Row(C, "prop.stp_cannery_conveyor", Sp, "conveyor", "", 168.3f, 9.21f, 6f, Ground, 3),
-            new Row(C, "prop.stp_cannery_fallen_sign", Sp, "fallenSign", "", 166.6f, 5.4f, 6f, Ground, 4, null, "words.cannery_sign"),
-            new Row(C, "prop.stp_cannery_net_rack", Dk, "netFrame", "", 180.2f, 12.6f, 6f, Ground, 4),
-            new Row(C, "prop.stp_cannery_broken_boxes", Dk, "crateStack", "", 172.6f, 8.4f, 6f, Ground, 4),
-            new Row(C, "prop.stp_cannery_drum", Dk, "oilDrum", "", 163.9f, 9.6f, 6f, Ground, 4),
-        };
+        static StPetersKeyScenesRecord.Row[] Record => StPetersKeyScenesRecord.Rows;
 
         static IEnumerable<string> RecordedIds => Record.Select(r => r.Id);
 
+        /// <summary>Whether the step places a piece: its scene is placed, and the piece stands today, no other code
+        /// places it, and it does not ride the tide (the step's own rule). A scene not placed yet, and decision 1's
+        /// pieces, which come and go, are data.</summary>
+        static bool StepPlaces(bool scenePlaced, string[] variants, string owner, string standsOn) =>
+            scenePlaced && variants.Contains(KeySceneDef.Today) && owner.Length == 0 && standsOn != KeySceneDef.StandsOnWater;
+
+        static bool StepPlaces(KeySceneDef ks, KeyScenePiece p) => StepPlaces(ks.Placed, p.Variants, p.Owner, p.StandsOn);
+
+        static bool StepPlaces(StPetersKeyScenesRecord.Row r) =>
+            StepPlaces(StPetersKeyScenesRecord.Scenes.Single(s => s.Id == r.Scene).Placed, r.Variants, r.Owner, r.StandsOn);
+
         static List<KeyScenePiece> Pieces(List<KeySceneDef> scenes) => scenes.SelectMany(s => s.Pieces).ToList();
+
+        static IEnumerable<(KeySceneDef Scene, KeyScenePiece Piece)> ScenePieces(List<KeySceneDef> scenes) =>
+            scenes.SelectMany(s => s.Pieces.Select(p => (s, p)));
 
         static PaintedHeightField Seabed()
         {
@@ -824,33 +850,74 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheKeyScenes_HoldExactlyTheRecordedPieces_InCdsOrder()
         {
             List<KeySceneDef> scenes = KeySceneTestData.StPeters();
-            CollectionAssert.AreEqual(new[] { C, L }, scenes.Select(s => s.Id).ToList(), "St Peters' key scenes");
+            CollectionAssert.AreEqual(StPetersKeyScenesRecord.Scenes.Select(s => s.Id).ToList(), scenes.Select(s => s.Id).ToList(),
+                                      "St Peters' key scenes");
             foreach (KeySceneDef ks in scenes)
             {
+                StPetersKeyScenesRecord.Scene recorded = StPetersKeyScenesRecord.Scenes.Single(s => s.Id == ks.Id);
                 CollectionAssert.AreEqual(Record.Where(r => r.Scene == ks.Id).Select(r => r.Id).ToList(), ks.Pieces.Select(p => p.Id).ToList(),
                                           $"{ks.Id}'s pieces");
-                StringAssert.Contains("return 2", ks.Source, $"{ks.Id} does not say where its placements came from");
+                Assert.AreEqual(recorded.Source, ks.Source, $"{ks.Id} does not say where its pieces came from");
                 Assert.That(ks.Source, Does.Match(@"sha256 [0-9a-f]{64}$"), $"{ks.Id}'s source is not pinned by its hash");
-                Assert.IsTrue(ks.Pieces.All(p => p.Variants.SequenceEqual(new[] { KeySceneDef.Today })), $"{ks.Id} holds a piece for a later variant");
+                Assert.AreEqual(recorded.Placed, ks.Placed, $"whether {ks.Id} is placed");
             }
         }
 
         [TestCaseSource(nameof(RecordedIds))]
-        public void EachPiece_IsReturnTwosRecord(string id)
+        public void EachPiece_IsThePackagesRecord(string id)
         {
-            Row r = Record.Single(x => x.Id == id);
+            StPetersKeyScenesRecord.Row r = Record.Single(x => x.Id == id);
             KeySceneDef ks = KeySceneTestData.StPeters().Single(s => s.Id == r.Scene);
             KeyScenePiece p = ks.Pieces.Single(x => x.Id == id);
+            Assert.AreEqual(r.Kind, p.Kind, "kind");
+            Assert.AreEqual(r.Owner, p.Owner, "the code that places it instead of the step");
             Assert.AreEqual(r.Kit, p.Kit, "kit");
             Assert.AreEqual(r.Piece, p.Piece, "piece");
             Assert.AreEqual(r.State, p.State, "state");
             Assert.AreEqual(r.At, p.At, "where it stands");
             Assert.AreEqual(r.Z, p.Z, "its height");
             Assert.AreEqual(r.StandsOn, p.StandsOn, "what it stands on");
+            Assert.AreEqual(r.MountHost, p.MountHost, "its host");
+            Assert.AreEqual(r.MountAnchor, p.MountAnchor, "where on its host");
             Assert.AreEqual(r.Dir, p.Dir, "its facing");
             Assert.AreEqual(r.SortY.HasValue, p.HasSortY, "whether CD gives it a sort line");
             if (r.SortY.HasValue) Assert.AreEqual(r.SortY.Value, p.SortY, "its sort line");
+            CollectionAssert.AreEqual(r.Variants, p.Variants, "the variants it stands in");
             CollectionAssert.AreEqual(r.Words, p.Words, "its words' ids");
+        }
+
+        /// <summary>The id map's guard (amendment 1 §4.2): no key-scene id holds a position (a piece's own, a host's, a
+        /// word's, a light's or a retired one), no old id of the map stands in an asset, and each new id stands once.</summary>
+        [Test]
+        public void TheIdMap_LeavesNoIdHoldingAPosition_AndEachNewIdStandsOnce()
+        {
+            string text = File.ReadAllText(KeySceneImport.IdMapFile);
+            MatchCollection renames = Regex.Matches(text, "\\{\\s*\"old\":\\s*\"([^\"]+)\",\\s*\"new\":\\s*\"([^\"]+)\"\\s*\\}");
+            Assert.AreEqual(Regex.Matches(text, "\"old\"").Count, renames.Count, KeySceneImport.IdMapFile + " holds a rename this guard cannot read");
+            Assert.IsNotEmpty(renames, KeySceneImport.IdMapFile + " renames nothing");
+
+            List<KeySceneDef> scenes = KeySceneTestData.StPeters();
+            var held = new List<string>();
+            foreach (KeySceneDef ks in scenes)
+            {
+                held.Add(ks.Id);
+                foreach (KeyScenePiece p in ks.Pieces)
+                {
+                    held.Add(p.Id);
+                    held.Add(p.MountHost);
+                    held.AddRange(p.Words);
+                }
+                held.AddRange(ks.Lights.Select(l => l.PieceId));
+                held.AddRange(ks.RetiredIds);
+            }
+            Assert.IsEmpty(held.Where(i => i.Contains("@")).ToList(), "key-scene ids that hold a position");
+            var rows = scenes.SelectMany(s => s.Pieces).Select(p => p.Id).ToList();
+            foreach (Match m in renames)
+            {
+                string old = m.Groups[1].Value, now = m.Groups[2].Value;
+                CollectionAssert.DoesNotContain(held, old, $"{old} stands, which the id map renames {now}");
+                Assert.AreEqual(1, rows.Count(i => i == now), $"{now}, the id map's new id for {old}, is not one row's id");
+            }
         }
 
         [Test]
@@ -858,7 +925,8 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var assets = new StPetersLayerRefresh.EditorKeySceneAssets();
             List<KeyScenePlacement> placed = StPetersLayerRefresh.PlaceKeyScenes(KeySceneTestData.StPeters(), assets);
-            CollectionAssert.AreEquivalent(RecordedIds.ToList(), placed.Select(p => p.Id).ToList(), "every recorded piece is placed");
+            CollectionAssert.AreEquivalent(Record.Where(StepPlaces).Select(r => r.Id).ToList(), placed.Select(p => p.Id).ToList(),
+                                           "every recorded piece the step places is placed");
 
             foreach (KeyScenePlacement p in placed)
             {
@@ -885,23 +953,30 @@ namespace HiddenHarbours.Tests.EditMode
             Rect planks = StPetersWharf.DeckFootprint();
             var table = new StringBuilder("piece | stands on | recorded z | game's z | difference\n");
             var off = new List<string>();
-            foreach (KeyScenePiece p in Pieces(KeySceneTestData.StPeters()))
+            foreach ((KeySceneDef ks, KeyScenePiece p) in ScenePieces(KeySceneTestData.StPeters()))
             {
+                // Afloat, a piece rides the tide; on a host, it reads its host, which its own guard holds when a wave
+                // places it.
+                if (p.StandsOn == KeySceneDef.StandsOnWater || p.StandsOn == KeySceneDef.StandsOnMount) continue;
+                bool onDeck = p.StandsOn == KeySceneDef.StandsOnDeck;
+                if (!onDeck && p.StandsOn != KeySceneDef.StandsOnGround)
+                {
+                    Assert.Fail($"{p.Id} stands on '{p.StandsOn}', a way to stand no key scene knows");
+                    return;
+                }
+                // A frozen piece stands where its owner puts it; a scene not placed yet, and a piece that comes and goes
+                // (decision 1), are data.
+                if (!StepPlaces(ks, p)) continue;
                 float game;
-                if (p.StandsOn == KeySceneDef.StandsOnDeck)
+                if (onDeck)
                 {
                     Assert.IsTrue(planks.Contains(p.At), $"{p.Id} reads the deck but stands off its planks");
                     game = deck;
                 }
-                else if (p.StandsOn == KeySceneDef.StandsOnGround)
+                else
                 {
                     Assert.IsFalse(planks.Contains(p.At), $"{p.Id} reads the ground under the deck");
                     game = ground.ElevationAt(p.At);
-                }
-                else
-                {
-                    Assert.Fail($"{p.Id} stands on '{p.StandsOn}': a mounted piece reads its mount, and none is placed yet");
-                    return;
                 }
                 table.Append($"{p.Id} | {p.StandsOn} | {M(p.Z)} | {M(game)} | {M(p.Z - game)}\n");
                 if (Mathf.Abs(p.Z - game) > HeightToleranceMetres) off.Add($"{p.Id}: {M(p.Z)} recorded, {M(game)} in the game");
@@ -977,6 +1052,10 @@ namespace HiddenHarbours.Tests.EditMode
             var broken = new List<string>();
             foreach (KeyScenePiece p in Pieces(KeySceneTestData.StPeters()))
             {
+                // Every scene's rows are held, placed or not, but for two kinds that stand in a frozen area by design:
+                // a frozen piece stands where its owner puts it (the Landing's lanterns on the lamp-post sites), and a
+                // piece mounted on a wharf fitting stands on it (the Landing's gull on the north pilehead).
+                if (p.Owner.Length > 0 || (p.StandsOn == KeySceneDef.StandsOnMount && p.MountHost == WharfHost)) continue;
                 bool onDeck = p.StandsOn == KeySceneDef.StandsOnDeck;
                 float toRoute = ToLine(p.At, route.Waypoints), pocket = ToSegment(p.At, pocketFrom, pocketTo);
                 (string Name, Vector2 Position) nearest = fixtures.OrderBy(f => Vector2.Distance(f.Position, p.At)).First();
@@ -1173,8 +1252,10 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>A piece copied field by field, so a test can change it without touching an asset.</summary>
         internal static KeyScenePiece Copy(KeyScenePiece p) => new KeyScenePiece
         {
-            Id = p.Id, Kit = p.Kit, Piece = p.Piece, State = p.State, At = p.At, Z = p.Z, StandsOn = p.StandsOn, Dir = p.Dir,
-            HasSortY = p.HasSortY, SortY = p.SortY, Variants = (string[])p.Variants.Clone(), Words = (string[])p.Words.Clone(),
+            Id = p.Id, Kind = p.Kind, Owner = p.Owner, Kit = p.Kit, Piece = p.Piece, State = p.State, At = p.At, Z = p.Z,
+            StandsOn = p.StandsOn, MountHost = p.MountHost, MountAnchor = p.MountAnchor, HasFoot = p.HasFoot, Foot = p.Foot,
+            Dir = p.Dir, HasSortY = p.HasSortY, SortY = p.SortY, Layer = p.Layer, Walk = p.Walk, Collider = p.Collider,
+            Variants = (string[])p.Variants.Clone(), WhenTide = p.WhenTide, Words = (string[])p.Words.Clone(),
             Options = p.Options.Select(o => new KeySceneOption { Key = o.Key, Value = o.Value }).ToArray(),
         };
 

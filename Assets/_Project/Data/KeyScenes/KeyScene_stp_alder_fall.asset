@@ -1,0 +1,947 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_stp_alder_fall
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.stp_alder_fall
+  DisplayName: The Alder Fall
+  RegionId: region.st_peters
+  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_alder_fall/scene.json,
+    32326 bytes, sha256 cfdf7ca09bd48835ab3a0f2c9c9780f8a9c5ae8a974b81377fa89f93b79b7b1e
+  Placed: 0
+  Pieces:
+  - Id: fall.stp_alder_fall
+    Kind: waterfall
+    Owner: 
+    Kit: alderFall
+    Piece: fallfx
+    State: 
+    At: {x: 106.22, y: 61.32}
+    Z: 2.05
+    StandsOn: mount
+    MountHost: pond.stp_alder_plunge
+    MountAnchor: surface
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: rock.stp_af_flat_stone
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: rock
+    State: 
+    At: {x: 103.85, y: 63.5}
+    Z: 2.16
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_af_tin_cup
+    Kind: setPiece
+    Owner: 
+    Kit: afPieces
+    Piece: tinCup
+    State: 
+    At: {x: 103.98, y: 63.44}
+    Z: 2.33
+    StandsOn: mount
+    MountHost: rock.stp_af_flat_stone
+    MountAnchor: top
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: rock.stp_af_stepping_stone_1
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: rock
+    State: 
+    At: {x: 104.55, y: 63.95}
+    Z: 2.07
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: rock.stp_af_stepping_stone_2
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: rock
+    State: 
+    At: {x: 105.15, y: 64.26}
+    Z: 2.11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: rock.stp_af_stepping_stone_3
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: rock
+    State: 
+    At: {x: 105.8, y: 64.5}
+    Z: 2
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: rock.stp_af_stepping_stone_4
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: rock
+    State: 
+    At: {x: 106.45, y: 64.36}
+    Z: 2.07
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: rock.stp_af_stepping_stone_5
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: rock
+    State: 
+    At: {x: 107.05, y: 64.06}
+    Z: 2
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: rock.stp_af_chute_1
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: rock
+    State: 
+    At: {x: 105.35, y: 65.35}
+    Z: 1.82
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: rock.stp_af_chute_2
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: rock
+    State: 
+    At: {x: 106.05, y: 65.9}
+    Z: 1.67
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: rock.stp_af_chute_3
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: rock
+    State: 
+    At: {x: 105.05, y: 66.75}
+    Z: 1.17
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: rock.stp_af_chute_4
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: rock
+    State: 
+    At: {x: 105.7, y: 67.35}
+    Z: 0.9
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: rock.stp_af_lip_bed_w
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: rock
+    State: 
+    At: {x: 104.75, y: 60.85}
+    Z: 2.92
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: rock.stp_af_lip_bed_e
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: rock
+    State: 
+    At: {x: 107.85, y: 61.15}
+    Z: 3.21
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: rock.stp_af_east_block
+    Kind: rock
+    Owner: 
+    Kit: pxRockIso3
+    Piece: rock
+    State: 
+    At: {x: 108.25, y: 63}
+    Z: 2.36
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_af_fallen_alder
+    Kind: setPiece
+    Owner: 
+    Kit: afPieces
+    Piece: fallenAlder
+    State: 
+    At: {x: 105.65, y: 66.25}
+    Z: 1.39
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 3.6
+    - Key: dy
+      Value: 0.5
+    - Key: zW
+      Value: 1.13
+    - Key: zE
+      Value: 0.63
+  - Id: plant.stp_af_speckled_alder_01
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: SpeckledAlder
+    State: 
+    At: {x: 110.9, y: 56.4}
+    Z: 5.61
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 1
+  - Id: plant.stp_af_ostrich_fern_01
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: OstrichFern
+    State: 
+    At: {x: 103.95, y: 62.2}
+    Z: 2.34
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 1
+  - Id: plant.stp_af_ostrich_fern_02
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: OstrichFern
+    State: 
+    At: {x: 108.35, y: 62.35}
+    Z: 2.65
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 2
+  - Id: plant.stp_af_ostrich_fern_03
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: OstrichFern
+    State: 
+    At: {x: 104.3, y: 65.3}
+    Z: 1.83
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 0
+  - Id: plant.stp_af_ostrich_fern_04
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: OstrichFern
+    State: 
+    At: {x: 107.2, y: 65.1}
+    Z: 2.1
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: young
+    - Key: variant
+      Value: 3
+  - Id: plant.stp_af_ostrich_fern_05
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: OstrichFern
+    State: 
+    At: {x: 103.5, y: 60.7}
+    Z: 3.54
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 2
+  - Id: plant.stp_af_ostrich_fern_06
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: OstrichFern
+    State: 
+    At: {x: 109, y: 61.2}
+    Z: 4.1
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 0
+  - Id: plant.stp_af_marsh_marigold_01
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: MarshMarigold
+    State: 
+    At: {x: 104.95, y: 61.75}
+    Z: 1.63
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 0
+  - Id: plant.stp_af_marsh_marigold_02
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: MarshMarigold
+    State: 
+    At: {x: 107.45, y: 61.95}
+    Z: 1.86
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 1
+  - Id: plant.stp_af_marsh_marigold_03
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: MarshMarigold
+    State: 
+    At: {x: 104.25, y: 63.25}
+    Z: 2.06
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 2
+  - Id: plant.stp_af_marsh_marigold_04
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: MarshMarigold
+    State: 
+    At: {x: 107.8, y: 63.7}
+    Z: 2.11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 3
+  - Id: plant.stp_af_marsh_marigold_05
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: MarshMarigold
+    State: 
+    At: {x: 105.35, y: 60.4}
+    Z: 4
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: young
+    - Key: variant
+      Value: 0
+  - Id: plant.stp_af_marsh_marigold_06
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: MarshMarigold
+    State: 
+    At: {x: 107.2, y: 60.55}
+    Z: 4.1
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: young
+    - Key: variant
+      Value: 1
+  - Id: plant.stp_af_soft_rush_01
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: SoftRush
+    State: 
+    At: {x: 105.05, y: 64.85}
+    Z: 2.15
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 0
+  - Id: plant.stp_af_soft_rush_02
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: SoftRush
+    State: 
+    At: {x: 106.75, y: 64.95}
+    Z: 2.16
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: young
+    - Key: variant
+      Value: 1
+  - Id: plant.stp_af_blue_flag_01
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: BlueFlag
+    State: 
+    At: {x: 107.55, y: 56.7}
+    Z: 5.1
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 2
+  - Id: plant.stp_af_blue_flag_02
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: BlueFlag
+    State: 
+    At: {x: 106.05, y: 57.3}
+    Z: 5.01
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 1
+  - Id: plant.stp_af_speckled_alder_02
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: SpeckledAlder
+    State: 
+    At: {x: 107.8, y: 66.95}
+    Z: 1.1
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: young
+    - Key: variant
+      Value: 1
+  - Id: plant.stp_af_speckled_alder_03
+    Kind: plant
+    Owner: 
+    Kit: plantIsoRig5
+    Piece: SpeckledAlder
+    State: 
+    At: {x: 103.05, y: 56.75}
+    Z: 5.61
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: stage
+      Value: mature
+    - Key: variant
+      Value: 1
+  Lights: []
+  RetiredIds: []
