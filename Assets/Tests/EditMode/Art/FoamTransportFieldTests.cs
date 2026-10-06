@@ -79,6 +79,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 using var field=new FoamTransportField(16,2);
                 Prepare(field,Vector2.zero,map); Assert.AreEqual(0,field.Occupied);
                 var raw=texture.GetRawTextureData<byte>(); raw[4*8+4]=255; texture.Apply(false,false);
+                // Null-device Apply need not advance the revision; explicitly exercise cache invalidation.
+                texture.IncrementUpdateCount();
                 Prepare(field,Vector2.zero,map); Assert.AreEqual(256,field.RebuiltCells); Assert.Greater(field.Occupied,0);
                 Prepare(field,Vector2.zero,map,level:3);
                 Assert.AreEqual(0,field.RebuiltCells); Assert.AreEqual(0,field.Occupied,"Tide re-compares cached bounds.");
