@@ -1,0 +1,773 @@
+{
+  "schema": "hidden-harbours/nmc-retired-ids@1",
+  "retired": [
+    {
+      "id": "prop.nmc_waterfront_6_bed_35",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_waterfront_6_bed_29",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_camp_tent_a19_cabinTent",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "float.nmc_fingerA",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "float.nmc_fingerB",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "ladder.nmc_unloadW",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "ladder.nmc_unloadE",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "harbour.armW",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "harbour.armE",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_0_0",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_0_1",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_0_2",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_0_3",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_1_0",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_1_1",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_1_2",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_1_3",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_2_0",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_2_1",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_2_2",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_2_3",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_3_0",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_3_1",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_3_2",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_3_3",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_4_0",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_4_1",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_4_2",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_traps_yardW_4_3",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "light.nmc_rest_deck_177.6",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "light.nmc_rest_deck_178.4",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "light.nmc_dock_183.6",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "light.nmc_dock_177.6",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "light.nmc_dock_171.6",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "light.nmc_dock_165.6",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "road.nmc.wharf_road",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "road.nmc.route_91",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "road.nmc.stream_lane",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "road.nmc.mill_road",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_river_wall.00",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_river_wall.01",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_river_wall.02",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_river_wall.03",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_river_wall.04",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_river_wall.05",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_river_wall.06",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_river_wall.07",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_river_wall.08",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_river_wall.09",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_river_wall.10",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_river_wall.11",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_river_wall.12",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_town_north.00",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_town_north.01",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_town_north.02",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_town_north.03",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_town_north.04",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_town_north.05",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_town_south.00",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_town_south.01",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_town_south.02",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_town_south.03",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_town_south.04",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_town_north.spur_240",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_wall_stairs_240",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_town_north.spur_205",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_town_north.spur_160",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_wall_stairs_160",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_bank_stairs_236",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_bank_stairs_190",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_boardwalk_lamp.n252",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_boardwalk_lamp.n238",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_boardwalk_lamp.n224",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_boardwalk_lamp.n212",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_boardwalk_lamp.n200",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_boardwalk_lamp.n189",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_boardwalk_lamp.n166",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_boardwalk_lamp.n154",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_boardwalk_lamp.s246",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_boardwalk_lamp.s230",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_boardwalk_lamp.s216",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_boardwalk_lamp.s203",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_boardwalk_lamp.s190",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_boardwalk_lamp.s166",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_street_lamp.w236",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_street_lamp.w214",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_street_lamp.w192",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_street_lamp.w160",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_street_lamp.w148",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_falls_deck.landing",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_bar_stake.00",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_bar_stake.01",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_bar_stake.02",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_bar_stake.03",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_bar_stake.04",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_bar_stake.05",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_bar_stake.06",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_bar_stake.07",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_bar_stake.08",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_bar_stake.09",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "road.nmc.north_creek_lane",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "road.nmc.creek_lane_south",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_creek_dock.1",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_creek_dock.2",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_creek_dock.3",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_creek_dock.4",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_creek_dock.5",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_creek_dock.6",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_creek_dock.7",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_creek_dock.1_steps",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_creek_dock.3_gangway",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_creek_dock.3_steps",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_creek_dock.4_gangway",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "structure.nmc_creek_dock.4_steps",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_yard_rack_277",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_yard_rack_267",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_yard_fence_e140",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_lot_strip_256",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_lot_strip_241",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_lot_strip_210",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_lot_island_255_93",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_lot_island_198_93",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_lot_island_255_81",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_lot_island_198_81",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_lot_pole_252_97",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_lot_pole_229_97",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_lot_pole_206_97",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_lot_pole_255_81",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_lot_pole_198_81",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "road.nmc.shore_lane",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_shore_lane_sand_fence_212",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_shore_lane_sand_fence_192",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_shore_lane_sand_fence_171",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_shore_lane_sand_fence_146",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "road.nmc.bar_road",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "road.nmc.water_street",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "road.nmc.camp_road",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "road.nmc.camp_loop_a",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "road.nmc.camp_loop_b_stem",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "road.nmc.camp_loop_b",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "road.nmc.camp_loop_c_stem",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "road.nmc.camp_loop_c",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "coast.nmc_south_shore + coast.nmc_east_coast",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "coast.nmc_east_coast.sections",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "stream.nmc_town_river.mouth",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "stream.nmc_town_river.head",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "stream.nmc_town_river.head_of_tide",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "stream.nmc_north_creek.mouth",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "stream.nmc_north_creek.head",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "stream.nmc_camp_brook.mouth",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "stream.nmc_camp_brook.head",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "falls.nmc_the_falls.lip",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "falls.nmc_the_falls.pool",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "pond.nmc_camp_pond.bed",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "pond.nmc_north_creek_pond.bed",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "pond.nmc_barachois.bed",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "pond.nmc_marsh_pool.bed",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "boardwalk.nmc_town_north.under",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "boardwalk.nmc_town_south.under",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "boardwalk.nmc_falls_deck.under",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "boardwalk.nmc_marsh_walk.under",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "stream.nmc_town_river.mid",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "stream.nmc_town_river_mouth.mid",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "stream.nmc_north_creek.mid",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "stream.nmc_camp_brook.mid",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "pond.nmc_camp_pond.surface",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "pond.nmc_north_creek_pond.surface",
+      "reason": "pre-first-commit rename"
+    },
+    {
+      "id": "prop.nmc_camp_lights_a6",
+      "reason": "superseded campground/record-2b"
+    },
+    {
+      "id": "prop.nmc_camp_tent_a7",
+      "reason": "superseded campground/record-2b"
+    },
+    {
+      "id": "prop.nmc_camp_lights_a9",
+      "reason": "superseded campground/record-2b"
+    },
+    {
+      "id": "prop.nmc_camp_tent_a10",
+      "reason": "superseded campground/record-2b"
+    },
+    {
+      "id": "boat.nmc_creek_dory_3",
+      "reason": "superseded north_creek/record-2c"
+    },
+    {
+      "id": "boat.nmc_creek_dory_4",
+      "reason": "superseded north_creek/record-2c"
+    },
+    {
+      "id": "structure.nmc_plaza_hardware",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "prop.nmc_plaza_row_1",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "prop.nmc_plaza_row_2",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "prop.nmc_plaza_island",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "prop.nmc_plaza_corral",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "prop.nmc_plaza_pole_1",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "prop.nmc_plaza_pole_2",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "prop.nmc_plaza_pole_3",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "prop.nmc_plaza_pole_4",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "prop.nmc_plaza_dock",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "prop.nmc_plaza_bin",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "prop.nmc_plaza_pylon",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "vehicle.nmc_plaza_van_1",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "vehicle.nmc_plaza_truck_1",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "vehicle.nmc_plaza_truck_2",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "vehicle.nmc_plaza_van_2",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "vehicle.nmc_plaza_truck_3",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "vehicle.nmc_plaza_truck_4",
+      "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "vehicle.nmc_plaza_van_3",
+      "reason": "superseded main_street.plaza"
+    }
+  ]
+}

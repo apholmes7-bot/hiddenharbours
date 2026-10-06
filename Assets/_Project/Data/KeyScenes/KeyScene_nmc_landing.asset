@@ -1,0 +1,1199 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_nmc_landing
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.nmc_landing
+  DisplayName: 'The landing: where the bar comes ashore'
+  RegionId: region.nine_mile_creek
+  Source: HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02, hh-nmc-key-scenes/scenes/keyscene.nmc_landing/scene.json,
+    17537 bytes, sha256 03c613163813228f615d81262435d77d092294da44be4a8d548f9ac088483cc8
+  Placed: 0
+  Pieces:
+  - Id: structure.nmc_crossing_board
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: crossingBoard
+    State: 
+    At: {x: 61.6, y: -149.6}
+    Z: 5.18
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"the crossing board"'
+    - Key: nmc.faces
+      Value: '"its notice and tide table to the arrivals off the bar"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/crossingBoard.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: SetPieceDef
+    - Key: nmc.scene.sound
+      Value: '[{"id":"sound.nmc_landing_surf","kind":"surf","at":[72,-164],"z":0,"radiusM":22,"gain":"the
+        swash on the corner beach; quiet at the spring low, when the bar holds the
+        sea off","lane":"audio"}]'
+    - Key: nmc.scene.game
+      Value: '["the crossing open or closed by the tide: the board\u2019s tide table
+        (words.nmc_crossing_tides) bound to the game\u2019s tide; the notice words.nmc_crossing_notice","the
+        stakes as solid markers along the bar walk","the bell on the board rung in
+        fog","the life ring takeable"]'
+    - Key: nmc.scene.budgets
+      Value: '{"masters":[{"board":"landing_low","sprites":92,"byFamily":{"piece":9,"rock":14,"boat":1,"flower":21,"grass":43,"shrub":4}},{"board":"landing_flood","sprites":84,"byFamily":{"piece":9,"rock":17,"boat":1,"grass":45,"flower":12}}],"frames":[{"frame":"wide_landing","pieces":9,"lights":0,"note":"plants
+        and grass as the masters count them, by area"},{"frame":"of_head","pieces":10,"lights":0,"note":"plants
+        and grass as the masters count them, by area"}],"note":"Every piece is one
+        sprite (the Falls: its rock and its painted water, two); the campers are the
+        costliest."}'
+    - Key: nmc.scene.ground
+      Value: '{"source":"export/HH-nmc-ground-part-1-2026-09-30/ground/NineMileCreekSeabed_HeightTex_plan.png
+        (16-bit, -6 to +6 m; file sha256 a998ce68ca3a8e05179b54d7f1b4d5d95ecdb804fca921b75c20df86ddd56c75,
+        pixels sha256 edce029b38697ebfb3b15eb64f9286f08b697e93c699cd83556eb69236819564),
+        with its still water, through NmcHeightTex","ruled":"09-30, the owner on part
+        1: \u201cGo with leans\u201d (STATE.md s4)","laid":[],"note":"The landing
+        lays nothing: the wrack line, the wet films on the flats and the cobbles on
+        the strand are the picture\u2019s (the game\u2019s shore shading), not ground."}'
+    - Key: nmc.scene.context
+      Value: '{"crossing":"path.nmc_bar_walk (tidal crossing, 3 m, on the bar\u2019s
+        crest to the seam)","road":"road.nmc_bar_road (its end at (58, -146))","path":"path.nmc_shore_path
+        (its head at (60, -150))","beach":"path.nmc_south_strand (the south shore\u2019s
+        beach, running west)","changedFromPlan":[{"what":"the crossing\u2019s stakes","plan":"none","scene":"a
+        stake every 8 m on the bar walk\u2019s line, from where the beach falls below
+        +3.0","why":"the crossing is walked at low water; the stakes mark it in fog
+        and on the flood"},{"what":"the crossing board","plan":"none","scene":"at
+        (61.6, -149.6), facing the arrivals off the bar","why":"the crossing\u2019s
+        notice and its tide table"}]}'
+    - Key: nmc.scene.refs
+      Value: '[]'
+    - Key: nmc.scene.sourceRows
+      Value: 25
+    - Key: nmc.scene.ownedRows
+      Value: 25
+    - Key: nmc.deferred
+      Value: placement=H8; names/households/calendar/visits/fire schedules=H13 after
+        the owner names slate; tide/float=H5/H7/H8/H11; lights/audio/flora=scene placement
+        lane with art-pipeline/audio; river fishery=M3; bookings/fees/ring/bell/pool/court/interiors=separate
+        scope; roads/access=H4 (R2), then R4; office identity=N3; crane gameplay=N9
+  - Id: prop.nmc_landing_life_ring
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: lifeRingPost
+    State: 
+    At: {x: 57.2, y: -148.2}
+    Z: 5.62
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid; take the ring
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a life ring on its post"'
+    - Key: nmc.faces
+      Value: '"the ring to local +Y"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/lifeRingPost.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_landing_bench
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: bench
+    State: 
+    At: {x: 52.6, y: -148.6}
+    Z: 5.73
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid; sit
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a bench"'
+    - Key: nmc.faces
+      Value: '"its seat faces local +Y"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/bench.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_bar_stake_00
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: barStake
+    State: 
+    At: {x: 72.14, y: -154.42}
+    Z: 2.97
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid (a marker)
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a bar stake"'
+    - Key: nmc.faces
+      Value: '"any"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/barStake.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_bar_stake_01
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: barStake
+    State: 
+    At: {x: 80.04, y: -155.71}
+    Z: 1.53
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid (a marker)
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a bar stake"'
+    - Key: nmc.faces
+      Value: '"any"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/barStake.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_bar_stake_02
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: barStake
+    State: 
+    At: {x: 87.93, y: -156.99}
+    Z: 0.88
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid (a marker)
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a bar stake"'
+    - Key: nmc.faces
+      Value: '"any"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/barStake.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_bar_stake_03
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: barStake
+    State: 
+    At: {x: 95.83, y: -158.28}
+    Z: 0.88
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid (a marker)
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a bar stake"'
+    - Key: nmc.faces
+      Value: '"any"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/barStake.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_bar_stake_04
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: barStake
+    State: 
+    At: {x: 103.73, y: -159.56}
+    Z: 0.87
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid (a marker)
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a bar stake"'
+    - Key: nmc.faces
+      Value: '"any"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/barStake.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_bar_stake_05
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: barStake
+    State: 
+    At: {x: 111.62, y: -160.85}
+    Z: 0.87
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid (a marker)
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a bar stake"'
+    - Key: nmc.faces
+      Value: '"any"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/barStake.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_bar_stake_06
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: barStake
+    State: 
+    At: {x: 119.52, y: -162.14}
+    Z: 0.87
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid (a marker)
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a bar stake"'
+    - Key: nmc.faces
+      Value: '"any"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/barStake.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_bar_stake_07
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: barStake
+    State: 
+    At: {x: 127.41, y: -163.42}
+    Z: 0.87
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid (a marker)
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a bar stake"'
+    - Key: nmc.faces
+      Value: '"any"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/barStake.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_bar_stake_08
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: barStake
+    State: 
+    At: {x: 135.31, y: -164.71}
+    Z: 0.88
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid (a marker)
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a bar stake"'
+    - Key: nmc.faces
+      Value: '"any"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/barStake.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_bar_stake_09
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: barStake
+    State: 
+    At: {x: 143.21, y: -165.99}
+    Z: 0.87
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid (a marker)
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a bar stake"'
+    - Key: nmc.faces
+      Value: '"any"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/barStake.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: rock.nmc_landing_cobbles_0
+    Kind: rock
+    Owner: H8
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: cobbles
+    State: 
+    At: {x: 53.3, y: -164.25}
+    Z: 2.11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"cobbles on the strand"'
+    - Key: nmc.form
+      Value: '"cobbles"'
+    - Key: nmc.variant
+      Value: 0
+    - Key: nmc.mirror
+      Value: false
+    - Key: nmc.stone
+      Value: '"granite"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"sand"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: RockDef
+  - Id: rock.nmc_landing_cobbles_1
+    Kind: rock
+    Owner: H8
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: cobbles
+    State: 
+    At: {x: 55.6, y: -162.66}
+    Z: 2.34
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"cobbles on the strand"'
+    - Key: nmc.form
+      Value: '"cobbles"'
+    - Key: nmc.variant
+      Value: 1
+    - Key: nmc.mirror
+      Value: true
+    - Key: nmc.stone
+      Value: '"granite"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"sand"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: RockDef
+  - Id: rock.nmc_landing_cobbles_2
+    Kind: rock
+    Owner: H8
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: cobbles
+    State: 
+    At: {x: 57.9, y: -162.07}
+    Z: 2.28
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"cobbles on the strand"'
+    - Key: nmc.form
+      Value: '"cobbles"'
+    - Key: nmc.variant
+      Value: 2
+    - Key: nmc.mirror
+      Value: false
+    - Key: nmc.stone
+      Value: '"granite"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"sand"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: RockDef
+  - Id: rock.nmc_landing_cobbles_3
+    Kind: rock
+    Owner: H8
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: cobbles
+    State: 
+    At: {x: 62.5, y: -160.82}
+    Z: 2.19
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"cobbles on the strand"'
+    - Key: nmc.form
+      Value: '"cobbles"'
+    - Key: nmc.variant
+      Value: 0
+    - Key: nmc.mirror
+      Value: true
+    - Key: nmc.stone
+      Value: '"granite"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"sand"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: RockDef
+  - Id: rock.nmc_landing_cobbles_4
+    Kind: rock
+    Owner: H8
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: cobbles
+    State: 
+    At: {x: 67.1, y: -159}
+    Z: 2.26
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"cobbles on the strand"'
+    - Key: nmc.form
+      Value: '"cobbles"'
+    - Key: nmc.variant
+      Value: 1
+    - Key: nmc.mirror
+      Value: false
+    - Key: nmc.stone
+      Value: '"granite"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"sand"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: RockDef
+  - Id: rock.nmc_landing_cobbles_5
+    Kind: rock
+    Owner: H8
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: cobbles
+    State: 
+    At: {x: 71.7, y: -140.13}
+    Z: 2.03
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"cobbles on the strand"'
+    - Key: nmc.form
+      Value: '"cobbles"'
+    - Key: nmc.variant
+      Value: 2
+    - Key: nmc.mirror
+      Value: true
+    - Key: nmc.stone
+      Value: '"granite"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"sand"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: RockDef
+  - Id: rock.nmc_landing_cobbles_6
+    Kind: rock
+    Owner: H8
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: cobbles
+    State: 
+    At: {x: 74, y: -139.67}
+    Z: 1.34
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"cobbles on the strand"'
+    - Key: nmc.form
+      Value: '"cobbles"'
+    - Key: nmc.variant
+      Value: 0
+    - Key: nmc.mirror
+      Value: false
+    - Key: nmc.stone
+      Value: '"granite"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"sand"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: RockDef
+  - Id: rock.nmc_landing_cobbles_7
+    Kind: rock
+    Owner: H8
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: cobbles
+    State: 
+    At: {x: 78.6, y: -139.87}
+    Z: 0.23
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"cobbles on the strand"'
+    - Key: nmc.form
+      Value: '"cobbles"'
+    - Key: nmc.variant
+      Value: 1
+    - Key: nmc.mirror
+      Value: true
+    - Key: nmc.stone
+      Value: '"granite"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"sand"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: RockDef
+  - Id: rock.nmc_landing_cobbles_8
+    Kind: rock
+    Owner: H8
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: cobbles
+    State: 
+    At: {x: 80.9, y: -139.97}
+    Z: -0.11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"cobbles on the strand"'
+    - Key: nmc.form
+      Value: '"cobbles"'
+    - Key: nmc.variant
+      Value: 2
+    - Key: nmc.mirror
+      Value: false
+    - Key: nmc.stone
+      Value: '"granite"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"sand"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: RockDef
+  - Id: rock.nmc_landing_cobbles_9
+    Kind: rock
+    Owner: H8
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: cobbles
+    State: 
+    At: {x: 83.2, y: -139.86}
+    Z: -0.37
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"cobbles on the strand"'
+    - Key: nmc.form
+      Value: '"cobbles"'
+    - Key: nmc.variant
+      Value: 0
+    - Key: nmc.mirror
+      Value: true
+    - Key: nmc.stone
+      Value: '"granite"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"sand"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: RockDef
+  - Id: rock.nmc_landing_cobbles_10
+    Kind: rock
+    Owner: H8
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: cobbles
+    State: 
+    At: {x: 87.8, y: -139.55}
+    Z: -0.72
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"cobbles on the strand"'
+    - Key: nmc.form
+      Value: '"cobbles"'
+    - Key: nmc.variant
+      Value: 1
+    - Key: nmc.mirror
+      Value: false
+    - Key: nmc.stone
+      Value: '"granite"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"sand"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: RockDef
+  - Id: boat.nmc_landing_dory
+    Kind: boat
+    Owner: H8
+    Kit: DoryIso (Art/doryIsoRig.js)
+    Piece: DoryIso
+    State: 
+    At: {x: 57.5, y: -163.8}
+    Z: 1.83
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: build
+      Value: oars
+    - Key: nmc.name
+      Value: '"a dory"'
+    - Key: nmc.rig
+      Value: '"DoryIso"'
+    - Key: nmc.note
+      Value: '"hauled up on the beach"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_landing
+    - Key: nmc.type
+      Value: AmbientBoatDef
+  Lights: []
+  RetiredIds:
+  - prop.nmc_bar_stake.00
+  - prop.nmc_bar_stake.01
+  - prop.nmc_bar_stake.02
+  - prop.nmc_bar_stake.03
+  - prop.nmc_bar_stake.04
+  - prop.nmc_bar_stake.05
+  - prop.nmc_bar_stake.06
+  - prop.nmc_bar_stake.07
+  - prop.nmc_bar_stake.08
+  - prop.nmc_bar_stake.09
+  - prop.nmc_waterfront_6_bed_35
+  - prop.nmc_waterfront_6_bed_29
+  - prop.nmc_camp_tent_a19_cabinTent
+  - float.nmc_fingerA
+  - float.nmc_fingerB
+  - ladder.nmc_unloadW
+  - ladder.nmc_unloadE
+  - harbour.armW
+  - harbour.armE
+  - prop.nmc_traps_yardW_0_0
+  - prop.nmc_traps_yardW_0_1
+  - prop.nmc_traps_yardW_0_2
+  - prop.nmc_traps_yardW_0_3
+  - prop.nmc_traps_yardW_1_0
+  - prop.nmc_traps_yardW_1_1
+  - prop.nmc_traps_yardW_1_2
+  - prop.nmc_traps_yardW_1_3
+  - prop.nmc_traps_yardW_2_0
+  - prop.nmc_traps_yardW_2_1
+  - prop.nmc_traps_yardW_2_2
+  - prop.nmc_traps_yardW_2_3
+  - prop.nmc_traps_yardW_3_0
+  - prop.nmc_traps_yardW_3_1
+  - prop.nmc_traps_yardW_3_2
+  - prop.nmc_traps_yardW_3_3
+  - prop.nmc_traps_yardW_4_0
+  - prop.nmc_traps_yardW_4_1
+  - prop.nmc_traps_yardW_4_2
+  - prop.nmc_traps_yardW_4_3
+  - light.nmc_rest_deck_177.6
+  - light.nmc_rest_deck_178.4
+  - light.nmc_dock_183.6
+  - light.nmc_dock_177.6
+  - light.nmc_dock_171.6
+  - light.nmc_dock_165.6
+  - road.nmc.wharf_road
+  - road.nmc.route_91
+  - road.nmc.stream_lane
+  - road.nmc.mill_road
+  - structure.nmc_river_wall.00
+  - structure.nmc_river_wall.01
+  - structure.nmc_river_wall.02
+  - structure.nmc_river_wall.03
+  - structure.nmc_river_wall.04
+  - structure.nmc_river_wall.05
+  - structure.nmc_river_wall.06
+  - structure.nmc_river_wall.07
+  - structure.nmc_river_wall.08
+  - structure.nmc_river_wall.09
+  - structure.nmc_river_wall.10
+  - structure.nmc_river_wall.11
+  - structure.nmc_river_wall.12
+  - structure.nmc_town_north.00
+  - structure.nmc_town_north.01
+  - structure.nmc_town_north.02
+  - structure.nmc_town_north.03
+  - structure.nmc_town_north.04
+  - structure.nmc_town_north.05
+  - structure.nmc_town_south.00
+  - structure.nmc_town_south.01
+  - structure.nmc_town_south.02
+  - structure.nmc_town_south.03
+  - structure.nmc_town_south.04
+  - structure.nmc_town_north.spur_240
+  - structure.nmc_wall_stairs_240
+  - structure.nmc_town_north.spur_205
+  - structure.nmc_town_north.spur_160
+  - structure.nmc_wall_stairs_160
+  - structure.nmc_bank_stairs_236
+  - structure.nmc_bank_stairs_190
+  - prop.nmc_boardwalk_lamp.n252
+  - prop.nmc_boardwalk_lamp.n238
+  - prop.nmc_boardwalk_lamp.n224
+  - prop.nmc_boardwalk_lamp.n212
+  - prop.nmc_boardwalk_lamp.n200
+  - prop.nmc_boardwalk_lamp.n189
+  - prop.nmc_boardwalk_lamp.n166
+  - prop.nmc_boardwalk_lamp.n154
+  - prop.nmc_boardwalk_lamp.s246
+  - prop.nmc_boardwalk_lamp.s230
+  - prop.nmc_boardwalk_lamp.s216
+  - prop.nmc_boardwalk_lamp.s203
+  - prop.nmc_boardwalk_lamp.s190
+  - prop.nmc_boardwalk_lamp.s166
+  - prop.nmc_street_lamp.w236
+  - prop.nmc_street_lamp.w214
+  - prop.nmc_street_lamp.w192
+  - prop.nmc_street_lamp.w160
+  - prop.nmc_street_lamp.w148
+  - structure.nmc_falls_deck.landing
+  - road.nmc.north_creek_lane
+  - road.nmc.creek_lane_south
+  - structure.nmc_creek_dock.1
+  - structure.nmc_creek_dock.2
+  - structure.nmc_creek_dock.3
+  - structure.nmc_creek_dock.4
+  - structure.nmc_creek_dock.5
+  - structure.nmc_creek_dock.6
+  - structure.nmc_creek_dock.7
+  - structure.nmc_creek_dock.1_steps
+  - structure.nmc_creek_dock.3_gangway
+  - structure.nmc_creek_dock.3_steps
+  - structure.nmc_creek_dock.4_gangway
+  - structure.nmc_creek_dock.4_steps
+  - prop.nmc_yard_rack_277
+  - prop.nmc_yard_rack_267
+  - prop.nmc_yard_fence_e140
+  - prop.nmc_lot_strip_256
+  - prop.nmc_lot_strip_241
+  - prop.nmc_lot_strip_210
+  - prop.nmc_lot_island_255_93
+  - prop.nmc_lot_island_198_93
+  - prop.nmc_lot_island_255_81
+  - prop.nmc_lot_island_198_81
+  - prop.nmc_lot_pole_252_97
+  - prop.nmc_lot_pole_229_97
+  - prop.nmc_lot_pole_206_97
+  - prop.nmc_lot_pole_255_81
+  - prop.nmc_lot_pole_198_81
+  - road.nmc.shore_lane
+  - prop.nmc_shore_lane_sand_fence_212
+  - prop.nmc_shore_lane_sand_fence_192
+  - prop.nmc_shore_lane_sand_fence_171
+  - prop.nmc_shore_lane_sand_fence_146
+  - road.nmc.bar_road
+  - road.nmc.water_street
+  - road.nmc.camp_road
+  - road.nmc.camp_loop_a
+  - road.nmc.camp_loop_b_stem
+  - road.nmc.camp_loop_b
+  - road.nmc.camp_loop_c_stem
+  - road.nmc.camp_loop_c
+  - coast.nmc_south_shore + coast.nmc_east_coast
+  - coast.nmc_east_coast.sections
+  - stream.nmc_town_river.mouth
+  - stream.nmc_town_river.head
+  - stream.nmc_town_river.head_of_tide
+  - stream.nmc_north_creek.mouth
+  - stream.nmc_north_creek.head
+  - stream.nmc_camp_brook.mouth
+  - stream.nmc_camp_brook.head
+  - falls.nmc_the_falls.lip
+  - falls.nmc_the_falls.pool
+  - pond.nmc_camp_pond.bed
+  - pond.nmc_north_creek_pond.bed
+  - pond.nmc_barachois.bed
+  - pond.nmc_marsh_pool.bed
+  - boardwalk.nmc_town_north.under
+  - boardwalk.nmc_town_south.under
+  - boardwalk.nmc_falls_deck.under
+  - boardwalk.nmc_marsh_walk.under
+  - stream.nmc_town_river.mid
+  - stream.nmc_town_river_mouth.mid
+  - stream.nmc_north_creek.mid
+  - stream.nmc_camp_brook.mid
+  - pond.nmc_camp_pond.surface
+  - pond.nmc_north_creek_pond.surface
+  - prop.nmc_camp_lights_a6
+  - prop.nmc_camp_tent_a7
+  - prop.nmc_camp_lights_a9
+  - prop.nmc_camp_tent_a10
+  - boat.nmc_creek_dory_3
+  - boat.nmc_creek_dory_4
+  - structure.nmc_plaza_hardware
+  - prop.nmc_plaza_row_1
+  - prop.nmc_plaza_row_2
+  - prop.nmc_plaza_island
+  - prop.nmc_plaza_corral
+  - prop.nmc_plaza_pole_1
+  - prop.nmc_plaza_pole_2
+  - prop.nmc_plaza_pole_3
+  - prop.nmc_plaza_pole_4
+  - prop.nmc_plaza_dock
+  - prop.nmc_plaza_bin
+  - prop.nmc_plaza_pylon
+  - vehicle.nmc_plaza_van_1
+  - vehicle.nmc_plaza_truck_1
+  - vehicle.nmc_plaza_truck_2
+  - vehicle.nmc_plaza_van_2
+  - vehicle.nmc_plaza_truck_3
+  - vehicle.nmc_plaza_truck_4
+  - vehicle.nmc_plaza_van_3

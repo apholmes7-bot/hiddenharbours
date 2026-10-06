@@ -1,5 +1,25 @@
 # Hidden Harbours — the harbour's geography: Route 91, the three rivers, the marina
 
+> **H1 reconciliation — 2026-10-06.** The owner's 2026-09-26 11:59:38Z ruling puts the
+> West River north of the peninsula/Rocky Point. NMC faces east; the south shore at the
+> St Peters crossing extends west to Rice Point. Route 91 runs north to the peninsula's
+> centre, with a right-hand branch through Cumberland to Rocky Point. The 22:23:05Z
+> ruling retains those names, the trunk's two large crossings, and area 6 outside the
+> city's harbour including east-bank land. The scene allocation is the seat's delegated
+> interpretation; see [world-map-plan Q12–Q21](world-map-plan.md#7-open-questions-for-the-owner).
+> These answers supersede the historical alternatives below. Bearings only are carried
+> from the private blueprint; no imagery, real coordinates or real-world scale is imported.
+>
+> NMC's town river and the small west-running inland creek north of the wharf belong to
+> the ruled M2 overhaul, after St Peters. The final ground package supplies their terrain
+> and still water; H1 holds unplaced contracts, H2 applies ground, H4 fits bridges and roads
+> to that ground, then R4 proves traffic. N1 is the sole scene-write route. No ford, fresh
+> grading pass, house pad, route change, access grant or new fishery is authorized by H1.
+> The four north-bank nearest-corner exceptions are 2.72, 2.78, 2.02 and 2.12 m; the house
+> footprint is its extent, while `at` is its rig origin. River fishing remains M3; bookings,
+> marina businesses, sports/swimming and playable interiors require their own scope.
+
+
 > **Status: DESIGN CAPTURE of the owner's 2026-08-20 rulings.** Six new facts about the bay's
 > landform were ruled (§1). This document writes them down one level above any scene — what the
 > land *is*, not how a builder lays it out — and states honestly what each one costs the built
@@ -495,31 +515,27 @@ below.
    bridge, which is settled. These are M3 and unbuilt. Recommendation: **bridge** at the west river,
    and hold the **north river** open as a possible **ferry** — the threshold to the city is the best
    place in the game for a scheduled crossing.
-5. **When may Nine Mile Creek be re-cut?** The wharf, lifecycle and municipal branches are all open
-   against this geometry right now. The town river should land **after** them; this document
-   recommends it is not started until they merge. **This is now the only thing gating the work.**
+5. **Resolved execution gate:** after St Peters, through N1. H1 is unplaced data; H2 and
+   later scene application wait for the coordinator's granted slot and settled main.
 6. **Is the town river simply "Nine Mile Creek"?** (§9 — the town is already named for it.) And the
    three big rivers' names, whenever the name slate comes due.
 
 **From the owner's eight areas, 2026-09-26** — asked in full in [`world-map-plan.md`](world-map-plan.md)
 §7 Q12–Q21; the ones that belong to this document's landform are listed here.
 
-7. **Which side of the West River is the peninsula on?** Ruling 1: Route 91 *"crosses a
-   **west-running river**, making the peninsula/point that heads **east** toward the harbour
-   entrance"* (§1), and §2.1 puts crossing #1 before the peninsula. The owner: *"7 is the west river
-   with rocky point to its south"*. (world-map-plan Q12.)
-8. **Which way does the road to Rocky Point run?** The owner: *"theres a road north from nine mile
-   which heads west to rocky point."* This document: the peninsula *"heads **east** toward the harbour
-   entrance"* (§1, §2.1). (world-map-plan Q13.)
-9. **What is area 6?** The owner: *"...leading into the main cities harbour 6, 7 is the west river"*.
-   The coordinator read 6 as the water outside the city's harbour — the harbour mouth of §3.2, where
-   the lighthouse's channel is. The owner's answer skips 6. (world-map-plan Q14.)
-10. **Is the owner's road Route 91, or a branch off it?** The owner: *"a road north from nine mile ...
-    Through cumberland past the resort and to a lighthouse"*. §2: Route 91 is the shipped `ThroughRoad`
-    and runs on to Finnigan's Landing. (world-map-plan Q17.)
-11. **Names.** Cumberland, Rice Point, Rocky Point and the West River are real names, used by the
-    owner as written; §9 lists Rocky Point and West River among variants. Ruled as written, or
-    candidates? (world-map-plan Q16.)
+7. **Resolved (09-26 11:59:38Z):** West River north; peninsula/Rocky Point south of it.
+8. **Resolved (same ruling):** north from NMC, then right toward Rocky Point at the
+   peninsula's centre. The earlier “west” alternative is superseded.
+9. **Resolved (09-26 22:23:05Z):** area 6 is the water outside the city harbour, with
+   east-bank land; its later scene allocation is the seat's delegated interpretation.
+10. **Resolved (same ruling):** Cumberland's road is a Route 91 branch; the trunk
+    continues with the two large river crossings toward the city.
+11. **Resolved (same ruling):** Cumberland, Rice Point, Rocky Point and the West River
+    remain as written. Other local names are held for the names slate.
+
+The 09-28 09:36:30Z #892 relay also closes world-map-plan Q20/Q21: area 4 is East Water
+with East Point beyond it; Governors Island, East Point and New Scotland stand as ruled.
+The relay's “q92 yes” is read as Q21. Later regions and businesses are logged, not built by H1.
 
 ---
 

@@ -1,0 +1,374 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_nmc_main_street
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.nmc_main_street
+  DisplayName: 'Main street: the plaza and Water Street'
+  RegionId: region.nine_mile_creek
+  Source: HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02, hh-nmc-key-scenes/scenes/keyscene.nmc_main_street/scene.json,
+    19767 bytes, sha256 74356c60553518660d26f728cc1adc9af5d8ea893ea4dfc97be8eee25c3b80d9
+  Placed: 0
+  Pieces:
+  - Id: structure.nmc_apartments_2
+    Kind: building
+    Owner: H7
+    Kit: "StackFlatsIso (Art/stackFlatsIsoRig.js), its decker3 preset\u2019s fields"
+    Piece: StackFlatsIso
+    State: 
+    At: {x: -156, y: 241.8}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 241.8
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: decker3
+    - Key: nmc.name
+      Value: '"the three-decker by the bridge (three flats, one a floor, porches to
+        the street)"'
+    - Key: nmc.faces
+      Value: '"S (dir 4): its porches to Water Street"'
+    - Key: nmc.footprintM
+      Value: '[11.4,16.15]'
+    - Key: nmc.rig
+      Value: '"StackFlatsIso"'
+    - Key: nmc.nightOpts
+      Value: '{"night":true}'
+    - Key: nmc.centre
+      Value: '[-156,250]'
+    - Key: nmc.frontM
+      Value: 8.2
+    - Key: nmc.lot
+      Value: '"lot.nmc_apartments_2"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+    - Key: nmc.scene.sound
+      Value: '[{"id":"sound.nmc_plaza","kind":"town","at":[-224,130],"z":6.5,"radiusM":30,"gain":"carts,
+        car doors, the grocery\u2019s doors sliding; Route 91 beyond","lane":"audio"},{"id":"sound.nmc_water_street","kind":"town","at":[-162,228],"z":6.5,"radiusM":20,"gain":"the
+        chandlery\u2019s bell, a radio on a porch, the river under the wall","lane":"audio"}]'
+    - Key: nmc.scene.game
+      Value: '["the storefronts as BuildingDefs facing south, their doors on the walk;
+        the interiors are the plaza kit\u2019s own (plazaInteriorRig.js reads the
+        same lease table)","the lot as a car park: its stalls, its cart corral, its
+        poles lit on the lamp rule","the cars ambient and parked, the pickup on Water
+        Street too","the bands and the pylon carry the trade words the kit draws (GROCERY,
+        HARDWARE); the plaza\u2019s own name stays open","the three-decker\u2019s
+        three flats, each a home"]'
+    - Key: nmc.scene.budgets
+      Value: '{"masters":[{"board":"plaza_morning","sprites":78,"byFamily":{"building":2,"piece":11,"vehicle":7,"flower":52,"grass":6}},{"board":"water_street_morning","sprites":177,"byFamily":{"piece":8,"building":1,"vehicle":1,"tree":3,"grass":54,"flower":108,"shrub":2}}],"frames":[{"frame":"wide_plaza","pieces":13,"lights":0,"note":"plants
+        and grass as the masters count them, by area"},{"frame":"of_grocery","pieces":10,"lights":2,"note":"plants
+        and grass as the masters count them, by area"},{"frame":"wide_water_street","pieces":7,"lights":2,"note":"plants
+        and grass as the masters count them, by area"},{"frame":"of_chandlery","pieces":7,"lights":2,"note":"plants
+        and grass as the masters count them, by area"}],"note":"Every piece is one
+        sprite. The plaza\u2019s two bays are the costliest; its rows, island and
+        corral lie flat under the cars. The bridge is the town bridge scene\u2019s,
+        drawn at its numbers."}'
+    - Key: nmc.scene.ground
+      Value: '{"source":"export/HH-nmc-ground-part-1-reissue-2026-10-01/ground/NineMileCreekSeabed_HeightTex_plan.png
+        (16-bit, -6 to +6 m; file sha256 e840457db37afd925afb585cab322e2908c9ec9643d758c58244a34ae32ad90f,
+        pixels sha256 00cf42cf3ee43620f226bc916471f7d630bb3c9da58ec8324a840c8ca27b7848),
+        with its still water, through NmcHeightTex","ruled":"10-01, the owner on part
+        2 and part 1\u2019s record (\u201cI go with leans\u201d, STATE.md s4); the
+        re-issue carries the groove\u2019s fill, lean A\u2019s ramp, the river wall\u2019s
+        fill and the waterfront pads (STATE.md s6)","laid":[],"note":"Main street
+        lays nothing. It stands on part 1\u2019s ground as re-issued on 10-01, where
+        Water Street is level at +6.0 on the river wall\u2019s fill. The plaza\u2019s
+        lot, its service yard and its entrance are road kit v4\u2019s town asphalt
+        on the texture\u2019s +5.8 to +6.0."}'
+    - Key: nmc.scene.context
+      Value: '{"plaza":"lot.nmc_town_plaza: west of Route 91, south of Mill Road,
+        across the road from the gas bar","roads":["road.nmc_route_91","road.nmc_mill_road
+        (behind the plaza)","road.nmc_water_street (paved, on the wall\u2019s top)","road.nmc_north_creek_lane
+        (behind the three-decker)"],"river":"stream.nmc_town_river, under the wall,
+        below the frame","fromTownBridge":["structure.nmc_route91_bridge","structure.nmc_chandlery","structure.nmc_river_wall_09
+        to .12","prop.nmc_street_lamp_w_04 and .w148: at the numbers in keyscene.nmc_town_bridge\u2019s
+        scene.json"],"changedFromPlan":[{"what":"the plaza\u2019s facing (call 31)","plan":{"faces":"E","at":[-240.5,125],"size":[11,40.4],"parking":[-235,-205,104,146]},"scene":{"faces":"S","storefronts":"on
+        y 138, x -242.4 to -205.6","walk":"y 135.65 to 138","lot":[-247,-201,117,135.65],"serviceYard":[-246,-202,148.5,155.5],"entrance":"from
+        Route 91 along y 126.3"},"why":"in the game\u2019s camera a storefront that
+        faces east is edge-on (PlazaIso dir 2), so the plaza would show only its roof
+        and its south end wall. Faced south, both storefronts face the camera across
+        their lot. The plaza keeps its site, its tenants and its neighbours: the gas
+        bar across Route 91, Mill Road behind it, the lumber yard to the west."},{"what":"the
+        hardware store","plan":"two doubles, 22 m of frontage","scene":"one anchor-size
+        bay, 18.4 m: the plaza\u2019s older brick block, at its west end by the lumber
+        yard","why":"the plaza kit draws a sign and a demising wall for each bay,
+        so two doubles read as two hardware stores"},{"what":"the lot","plan":"40
+        stalls in [-235, -205, 104, 146]","scene":"PlazaIso.plan\u2019s two rows of
+        12 stalls (24), a planted island, a cart corral and four light poles, in front
+        of the storefronts","why":"turned with the plaza; the kit lays its own lot"},{"what":"the
+        three-decker by the bridge","plan":{"at":[-156,250],"size":[12.5,15.5]},"scene":{"centre":[-156,250],"bodyM":[11.4,12.2],"porchesM":2.1,"rearDeckM":1.85},"why":"StackFlatsIso
+        decker3\u2019s own size: its porches reach 0.45 m past the lot\u2019s front
+        line and its rear deck 0.2 m past the back"},{"what":"the second three-decker
+        (lot.nmc_apartments_3, the optional third)","plan":{"at":[-136,244],"faces":"SW"},"scene":"not
+        drawn (call 32)","why":"its lot runs down into the north creek\u2019s head:
+        the ground falls from +6.0 along its south side to +3.2 at its north-east
+        corner, where about 20 m\u00b2 of it lies under the creek\u2019s still water"}]}'
+    - Key: nmc.scene.refs
+      Value: '[{"id":"structure.nmc_route91_bridge","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_09","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_10","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_11","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_12","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_street_lamp_w_04","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_street_lamp_w_05","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_chandlery","owner":"keyscene.nmc_town_bridge"}]'
+    - Key: nmc.scene.sourceRows
+      Value: 10
+    - Key: nmc.scene.ownedRows
+      Value: 2
+    - Key: nmc.deferred
+      Value: placement=H7; names/households/calendar/visits/fire schedules=H13 after
+        the owner names slate; tide/float=H5/H7/H8/H11; lights/audio/flora=scene placement
+        lane with art-pipeline/audio; river fishery=M3; bookings/fees/ring/bell/pool/court/interiors=separate
+        scope; roads/access=H4 (R2), then R4; office identity=N3; crane gameplay=N9
+  - Id: vehicle.nmc_water_street_truck
+    Kind: vehicle
+    Owner: H7
+    Kit: VehicleIso (Art/vehicleIsoRig.js), its dually3500
+    Piece: VehicleIso
+    State: 
+    At: {x: -169, y: 228.95}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 1
+    SortY: 227.8
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: workhorse
+    - Key: nmc.name
+      Value: '"a pickup at the kerb outside the chandlery"'
+    - Key: nmc.faces
+      Value: '"side on, parked along the north kerb"'
+    - Key: nmc.rig
+      Value: '"VehicleIso"'
+    - Key: nmc.centre
+      Value: '[-169,228.95]'
+    - Key: nmc.frontM
+      Value: 1.2
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: AmbientVehicleDef
+  Lights: []
+  RetiredIds:
+  - prop.nmc_waterfront_6_bed_35
+  - prop.nmc_waterfront_6_bed_29
+  - prop.nmc_camp_tent_a19_cabinTent
+  - float.nmc_fingerA
+  - float.nmc_fingerB
+  - ladder.nmc_unloadW
+  - ladder.nmc_unloadE
+  - harbour.armW
+  - harbour.armE
+  - prop.nmc_traps_yardW_0_0
+  - prop.nmc_traps_yardW_0_1
+  - prop.nmc_traps_yardW_0_2
+  - prop.nmc_traps_yardW_0_3
+  - prop.nmc_traps_yardW_1_0
+  - prop.nmc_traps_yardW_1_1
+  - prop.nmc_traps_yardW_1_2
+  - prop.nmc_traps_yardW_1_3
+  - prop.nmc_traps_yardW_2_0
+  - prop.nmc_traps_yardW_2_1
+  - prop.nmc_traps_yardW_2_2
+  - prop.nmc_traps_yardW_2_3
+  - prop.nmc_traps_yardW_3_0
+  - prop.nmc_traps_yardW_3_1
+  - prop.nmc_traps_yardW_3_2
+  - prop.nmc_traps_yardW_3_3
+  - prop.nmc_traps_yardW_4_0
+  - prop.nmc_traps_yardW_4_1
+  - prop.nmc_traps_yardW_4_2
+  - prop.nmc_traps_yardW_4_3
+  - light.nmc_rest_deck_177.6
+  - light.nmc_rest_deck_178.4
+  - light.nmc_dock_183.6
+  - light.nmc_dock_177.6
+  - light.nmc_dock_171.6
+  - light.nmc_dock_165.6
+  - road.nmc.wharf_road
+  - road.nmc.route_91
+  - road.nmc.stream_lane
+  - road.nmc.mill_road
+  - structure.nmc_river_wall.00
+  - structure.nmc_river_wall.01
+  - structure.nmc_river_wall.02
+  - structure.nmc_river_wall.03
+  - structure.nmc_river_wall.04
+  - structure.nmc_river_wall.05
+  - structure.nmc_river_wall.06
+  - structure.nmc_river_wall.07
+  - structure.nmc_river_wall.08
+  - structure.nmc_river_wall.09
+  - structure.nmc_river_wall.10
+  - structure.nmc_river_wall.11
+  - structure.nmc_river_wall.12
+  - structure.nmc_town_north.00
+  - structure.nmc_town_north.01
+  - structure.nmc_town_north.02
+  - structure.nmc_town_north.03
+  - structure.nmc_town_north.04
+  - structure.nmc_town_north.05
+  - structure.nmc_town_south.00
+  - structure.nmc_town_south.01
+  - structure.nmc_town_south.02
+  - structure.nmc_town_south.03
+  - structure.nmc_town_south.04
+  - structure.nmc_town_north.spur_240
+  - structure.nmc_wall_stairs_240
+  - structure.nmc_town_north.spur_205
+  - structure.nmc_town_north.spur_160
+  - structure.nmc_wall_stairs_160
+  - structure.nmc_bank_stairs_236
+  - structure.nmc_bank_stairs_190
+  - prop.nmc_boardwalk_lamp.n252
+  - prop.nmc_boardwalk_lamp.n238
+  - prop.nmc_boardwalk_lamp.n224
+  - prop.nmc_boardwalk_lamp.n212
+  - prop.nmc_boardwalk_lamp.n200
+  - prop.nmc_boardwalk_lamp.n189
+  - prop.nmc_boardwalk_lamp.n166
+  - prop.nmc_boardwalk_lamp.n154
+  - prop.nmc_boardwalk_lamp.s246
+  - prop.nmc_boardwalk_lamp.s230
+  - prop.nmc_boardwalk_lamp.s216
+  - prop.nmc_boardwalk_lamp.s203
+  - prop.nmc_boardwalk_lamp.s190
+  - prop.nmc_boardwalk_lamp.s166
+  - prop.nmc_street_lamp.w236
+  - prop.nmc_street_lamp.w214
+  - prop.nmc_street_lamp.w192
+  - prop.nmc_street_lamp.w160
+  - prop.nmc_street_lamp.w148
+  - structure.nmc_falls_deck.landing
+  - prop.nmc_bar_stake.00
+  - prop.nmc_bar_stake.01
+  - prop.nmc_bar_stake.02
+  - prop.nmc_bar_stake.03
+  - prop.nmc_bar_stake.04
+  - prop.nmc_bar_stake.05
+  - prop.nmc_bar_stake.06
+  - prop.nmc_bar_stake.07
+  - prop.nmc_bar_stake.08
+  - prop.nmc_bar_stake.09
+  - road.nmc.north_creek_lane
+  - road.nmc.creek_lane_south
+  - structure.nmc_creek_dock.1
+  - structure.nmc_creek_dock.2
+  - structure.nmc_creek_dock.3
+  - structure.nmc_creek_dock.4
+  - structure.nmc_creek_dock.5
+  - structure.nmc_creek_dock.6
+  - structure.nmc_creek_dock.7
+  - structure.nmc_creek_dock.1_steps
+  - structure.nmc_creek_dock.3_gangway
+  - structure.nmc_creek_dock.3_steps
+  - structure.nmc_creek_dock.4_gangway
+  - structure.nmc_creek_dock.4_steps
+  - prop.nmc_yard_rack_277
+  - prop.nmc_yard_rack_267
+  - prop.nmc_yard_fence_e140
+  - prop.nmc_lot_strip_256
+  - prop.nmc_lot_strip_241
+  - prop.nmc_lot_strip_210
+  - prop.nmc_lot_island_255_93
+  - prop.nmc_lot_island_198_93
+  - prop.nmc_lot_island_255_81
+  - prop.nmc_lot_island_198_81
+  - prop.nmc_lot_pole_252_97
+  - prop.nmc_lot_pole_229_97
+  - prop.nmc_lot_pole_206_97
+  - prop.nmc_lot_pole_255_81
+  - prop.nmc_lot_pole_198_81
+  - road.nmc.shore_lane
+  - prop.nmc_shore_lane_sand_fence_212
+  - prop.nmc_shore_lane_sand_fence_192
+  - prop.nmc_shore_lane_sand_fence_171
+  - prop.nmc_shore_lane_sand_fence_146
+  - road.nmc.bar_road
+  - road.nmc.water_street
+  - road.nmc.camp_road
+  - road.nmc.camp_loop_a
+  - road.nmc.camp_loop_b_stem
+  - road.nmc.camp_loop_b
+  - road.nmc.camp_loop_c_stem
+  - road.nmc.camp_loop_c
+  - coast.nmc_south_shore + coast.nmc_east_coast
+  - coast.nmc_east_coast.sections
+  - stream.nmc_town_river.mouth
+  - stream.nmc_town_river.head
+  - stream.nmc_town_river.head_of_tide
+  - stream.nmc_north_creek.mouth
+  - stream.nmc_north_creek.head
+  - stream.nmc_camp_brook.mouth
+  - stream.nmc_camp_brook.head
+  - falls.nmc_the_falls.lip
+  - falls.nmc_the_falls.pool
+  - pond.nmc_camp_pond.bed
+  - pond.nmc_north_creek_pond.bed
+  - pond.nmc_barachois.bed
+  - pond.nmc_marsh_pool.bed
+  - boardwalk.nmc_town_north.under
+  - boardwalk.nmc_town_south.under
+  - boardwalk.nmc_falls_deck.under
+  - boardwalk.nmc_marsh_walk.under
+  - stream.nmc_town_river.mid
+  - stream.nmc_town_river_mouth.mid
+  - stream.nmc_north_creek.mid
+  - stream.nmc_camp_brook.mid
+  - pond.nmc_camp_pond.surface
+  - pond.nmc_north_creek_pond.surface
+  - prop.nmc_camp_lights_a6
+  - prop.nmc_camp_tent_a7
+  - prop.nmc_camp_lights_a9
+  - prop.nmc_camp_tent_a10
+  - boat.nmc_creek_dory_3
+  - boat.nmc_creek_dory_4
+  - structure.nmc_plaza_hardware
+  - prop.nmc_plaza_row_1
+  - prop.nmc_plaza_row_2
+  - prop.nmc_plaza_island
+  - prop.nmc_plaza_corral
+  - prop.nmc_plaza_pole_1
+  - prop.nmc_plaza_pole_2
+  - prop.nmc_plaza_pole_3
+  - prop.nmc_plaza_pole_4
+  - prop.nmc_plaza_dock
+  - prop.nmc_plaza_bin
+  - prop.nmc_plaza_pylon
+  - vehicle.nmc_plaza_van_1
+  - vehicle.nmc_plaza_truck_1
+  - vehicle.nmc_plaza_truck_2
+  - vehicle.nmc_plaza_van_2
+  - vehicle.nmc_plaza_truck_3
+  - vehicle.nmc_plaza_truck_4
+  - vehicle.nmc_plaza_van_3
