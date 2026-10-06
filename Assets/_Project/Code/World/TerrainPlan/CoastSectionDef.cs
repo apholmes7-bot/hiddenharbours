@@ -7,7 +7,9 @@ namespace HiddenHarbours.World
     /// <c>coast.stp_north_cove</c>). A cut or fill section lays a cross-shore profile along its part of
     /// the reference line (terrain pass 9, part 1 §3). A paint-only section keeps the ground and repaints
     /// it inside a polygon, or in a bearing sector below a height. The crossing (part 2 §5) is the bar:
-    /// its runnels, lobes, pools and paint.
+    /// its runnels, lobes, pools and paint. Part 2's south (PR 5w) has sections of its own, round the south from the
+    /// Harbour Strand to the bar's root: a cut or a paint-only section as part 1's, a toe section at a cliff's foot (its
+    /// walls' toe line), and a kept one that only takes its share. They paint the ground file; they move none of it.
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/World/Terrain Plan/Coast Section", fileName = "CoastSection")]
     public class CoastSectionDef : ScriptableObject
@@ -16,7 +18,8 @@ namespace HiddenHarbours.World
         [Tooltip("Stable id, append-only (coast.snake_case).")]
         public string Id = "coast.example";
         public string DisplayName = "";
-        [Tooltip("The section's type: sand_beach, shingle_cobble, ledge_platform, salt_marsh, mud_flat, sandy_flats or the_bar.")]
+        [Tooltip("The section's type: sand_beach, shingle_cobble, ledge_platform, salt_marsh, mud_flat, sandy_flats or the_bar; " +
+                 "part 2's: harbour_strand, landing, deep_cliff, toe_reef, gap_cove, storm_beach or sandy_flats.")]
         public string Type = "sand_beach";
         public CoastSectionMode Mode = CoastSectionMode.Fill;
         [Tooltip("The ground material by elevation.")]
@@ -76,6 +79,28 @@ namespace HiddenHarbours.World
         public Vector2 PoolRelease = new Vector2(1.2f, 0.3f);
         [Tooltip("A pool's outline wobbles by this fraction.")]
         public float PoolWobble = 0.06f;
+
+        [Header("Part 2: the south (PR 5w)")]
+        [Tooltip("A toe section's walls, clockwise: their toes are its toe line, which its paint reads off (part 2 §3).")]
+        public CliffWallDef[] Walls = new CliffWallDef[0];
+        [Tooltip("A toe reef's broken ledges: its gullies come closer and wider by the reef's BrokenScale.")]
+        public bool Broken;
+        [Tooltip("A gap cove keeps today's ground above this (m).")]
+        public float KeepAbove = 1f;
+        [Tooltip("The south flats' character off this section: sand, mud, ribs or boulder; empty for none.")]
+        public string FlatsCharacter = "";
+
+        [Header("Part 2: a gap cove's spit")]
+        public bool HasSpit;
+        [Tooltip("The spit runs out from the shore along this bearing (degrees).")]
+        public float SpitBearing;
+        [Tooltip("Its length (m) and half width (m).")]
+        public float SpitLength;
+        public float SpitHalfWidth;
+        [Tooltip("Its crest's height at its root (x) and its tip (y) (m).")]
+        public Vector2 SpitCrest;
+        [Tooltip("The cove's profile cuts at most this far below today's ground (m).")]
+        public float SpitMaxCut;
 
         [TextArea] public string Why = "";
     }

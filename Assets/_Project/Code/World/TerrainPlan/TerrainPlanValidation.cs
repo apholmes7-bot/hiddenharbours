@@ -58,10 +58,17 @@ namespace HiddenHarbours.World
             { typeof(BiomeDef), "biome" }, { typeof(TidalPoolDef), "pool" }, { typeof(FormDef), "form" },
             { typeof(GroundRampDef), "ground" }, { typeof(GroundPlatformDef), "ground" }, { typeof(TidalBarDef), "bar" },
             { typeof(WaterfallDef), "fall" }, { typeof(GroundPatchDef), "patch" }, { typeof(BayDef), "bay" },
+            { typeof(FlatsDef), "flats" },
         };
 
-        /// <summary>The second id type a Def class may carry: a key scene's still pool is a PondDef with a pool id (PR 5 B).</summary>
-        public static readonly Dictionary<Type, string> IdTypesAlso = new Dictionary<Type, string> { { typeof(PondDef), "pool" } };
+        /// <summary>
+        /// The second id type a Def class may carry: a key scene's still pool is a PondDef with a pool id (PR 5 B); a gut
+        /// across the flats is a TidalCreekDef with a gut id, and joins no brook (PR 5w).
+        /// </summary>
+        public static readonly Dictionary<Type, string> IdTypesAlso = new Dictionary<Type, string>
+        {
+            { typeof(PondDef), "pool" }, { typeof(TidalCreekDef), "gut" },
+        };
 
         static readonly Regex IdForm = new Regex(@"^[a-z][a-z0-9]*(_[a-z0-9]+)*\.[a-z0-9]+(_[a-z0-9]+)*$", RegexOptions.CultureInvariant);
 
@@ -134,6 +141,30 @@ namespace HiddenHarbours.World
             Carry("Ramps", plan.Ramps); Carry("Platforms", plan.Platforms); Carry("Bars", plan.Bars); Carry("Falls", plan.Falls);
             Carry("Patches", plan.Patches); Carry("StillPools", plan.StillPools); Carry("Bays", plan.Bays);
             Carry("Routes", plan.Routes);
+            Carry("Sections2", plan.Sections2); Carry("Forms2", plan.Forms2); Carry("Creeks2", plan.Creeks2);
+            Carry("FreshPonds2", plan.FreshPonds2); Carry("FreshStreams2", plan.FreshStreams2);
+            if (!ReferenceEquals(plan.Flats, null) && plan.Flats) carried.Add(plan.Flats);
+            // part 2's walls (PR 5w): a toe section stands on its live walls, each in one section only; no other section lists any
+            if (plan.Sections2 != null)
+            {
+                var wallIn = new Dictionary<string, string>(StringComparer.Ordinal);
+                foreach (var s in plan.Sections2)
+                {
+                    if (ReferenceEquals(s, null) || !s) continue;
+                    bool toe = s.Mode == CoastSectionMode.Toe;
+                    int n = s.Walls != null ? s.Walls.Length : 0;
+                    if (toe && n == 0) o.Add(s.Id + ": a toe section with no walls");
+                    if (!toe && n > 0) o.Add(s.Id + ": lists " + n + " walls, and only a toe section stands on walls");
+                    for (int k = 0; k < n; k++)
+                    {
+                        var w = s.Walls[k];
+                        if (ReferenceEquals(w, null) || !w) { o.Add(s.Id + "'s Walls[" + k + "] does not resolve"); continue; }
+                        if (!w.IsLive) o.Add(s.Id + " lists " + w.Id + ", which does not stand (" + w.Status + ")");
+                        if (wallIn.TryGetValue(w.Id, out var other)) o.Add(w.Id + " is in " + other + " and " + s.Id);
+                        else wallIn[w.Id] = s.Id;
+                    }
+                }
+            }
             // the village's routes are the village plan's Defs, in its own folder: each needs a class the table paints, a width and a line
             if (plan.Routes != null)
                 foreach (var r in plan.Routes)
@@ -164,16 +195,19 @@ namespace HiddenHarbours.World
                     case CoastSectionDef s: Need(who, "Recipe", s.Recipe); break;
                     case PondDef p: Need(who, "Outlet", p.Outlet, optional: true); break;
                     case StreamDef s: Need(who, "Source", s.Source, optional: true); break;
-                    case TidalCreekDef c: Need(who, "Joins", c.Joins); break;
+                    case TidalCreekDef c: Need(who, "Joins", c.Joins, optional: who != null && who.StartsWith("gut.", StringComparison.Ordinal)); break;
                     case FormDef f: Need(who, "Recipe", f.Recipe); break;
                     case GroundRampDef r: Need(who, "Form", r.Form); Need(who, "Recipe", r.Recipe); break;
                     case GroundPlatformDef p: Need(who, "Form", p.Form); Need(who, "Recipe", p.Recipe); break;
                     case TidalBarDef b: Need(who, "Recipe", b.Recipe); break;
+                    case FlatsDef f: Need(who, "SandRecipe", f.SandRecipe); Need(who, "MudRecipe", f.MudRecipe); Need(who, "RibRecipe", f.RibRecipe); break;
                     case WaterfallDef w: Need(who, "Stream", w.Stream); Need(who, "Pool", w.Pool); break;
                     case BayDef b:
                         Need(who, "Recipe", b.Recipe);
                         if (TerrainPlanZones.IndexOf(b.BackZone) < 0) o.Add(who + ": its back zone '" + b.BackZone + "' is not a ground zone");
                         if (b.Shore == null || b.Shore.Length < 2 || b.Rim == null || b.Rim.Length < 2) o.Add(who + ": its shore and rim need two points each");
+                        if (b.EdgeFade < 0 || b.EdgeWander.x < 0 || (b.EdgeWander.x > 0 && !(b.EdgeWander.y > 0)))
+                            o.Add(who + ": its edge fades over " + b.EdgeFade + " m and wanders " + b.EdgeWander.x + " m on a wavelength of " + b.EdgeWander.y + " m");
                         break;
                     case PathDef p:
                         if (!TryLabel(p.Label, out var slot)) { o.Add(who + ": label '" + p.Label + "' is not in the table"); break; }

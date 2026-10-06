@@ -664,6 +664,7 @@ namespace HiddenHarbours.World
                 if (double.IsNaN(s)) continue;
                 if (double.IsInfinity(s) || !(_E[i] < s)) { _still[i] = double.NaN; dropped++; }
             }
+            SouthStillPaint();
             Routes(_zone, _still);
             _biome = BiomeOf(_E, _secidx, _secw);
             double frozenAt = Num(_keep.FrozenAt);

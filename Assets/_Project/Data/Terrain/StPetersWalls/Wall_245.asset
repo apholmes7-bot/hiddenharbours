@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_245
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_245
+  Status: 1
+  SplitFrom: wall.stp_060
+  Follows: wall.stp_060
+  Rock: sandstone
+  Class: 5
+  Aspect: SW
+  Batter: steep
+  Brow:
+  - {x: -13.685636, y: -50.341534}
+  - {x: -13.927886, y: -50.26142}
+  - {x: -14.17006, y: -50.18073}
+  - {x: -14.237633, y: -49.796066}
+  - {x: -14.479019, y: -49.714565}
+  Toe:
+  - {x: -14.9427595, y: -52.560123}
+  - {x: -15.090848, y: -52.303482}
+  - {x: -15.312632, y: -52.176857}
+  - {x: -15.484302, y: -51.963047}
+  - {x: -15.655357, y: -51.74895}
+  DropMetres:
+  - 7.3853846
+  - 7.2740393
+  - 7.24796
+  - 7.392638
+  - 7.2284245
+  ToeElevations:
+  - -1.482765
+  - -1.4362094
+  - -1.5192502
+  - -1.4464437
+  - -1.4729906
+  TextureBrow: []
+  Stations:
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  BrowFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9:
+  - 5.7586317
+  - 5.7383313
+  - 5.592977
+  - 5.9501877
+  - 5.943665
+  ToePass9:
+  - -1.6499428
+  - -1.6499428
+  - -1.6499428
+  - -1.6499428
+  - -1.6494237
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 60
+  MeasuredOn: 'the ground file''s import, StPetersSeabed_HeightTex.png at 883f27b5 (codes sha256 5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261)'
+  FaceNeeded: 
+  Why: 'Cut from 060 at St Peters'' 1 m cut (terrain PR 5w): its stations k4-k8. The list''s row 060 (West Ledges): re-lined.'

@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb11aca9151bc16fc634998c41a2c3fa, type: 3}
+  m_Name: Form_WestGapSkerries
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.FormDef
+  Id: form.stp_west_gap_skerries
+  DisplayName: Gap skerries (west)
+  Kind: skerries
+  Stone: sandstone
+  BatterDeg: 0
+  Brow: []
+  TopInset: 0.4
+  Top: -1.3
+  LedgeHeight: 0
+  LedgeOut: 0
+  LedgeEastOf: 0
+  Centre: {x: -8.75, y: -86.25}
+  Radii: {x: 0, y: 0}
+  RotationDeg: 0
+  PlinthRadii: {x: 0, y: 0}
+  PlinthTop: -1.3
+  PlinthFall: 0
+  PlinthSkirt: {x: 0.85, y: 1.9}
+  SkirtLedgeRadii: {x: 0, y: 0}
+  SkirtLedgeTop: 0
+  Members:
+  - {x: -10.5, y: -85, z: 1.8, w: -1.3}
+  - {x: -7, y: -87.5, z: 1.5, w: -1.3}
+  PlinthRadius: 0
+  PlinthSkirtSlope: 0.8
+  Feet:
+  - {x: -10.5, y: -85, z: 2.52}
+  - {x: -7, y: -87.5, z: 2.1}
+  Recipe: {fileID: 11400000, guid: ca719065258ff30cb60e6315e593f5af, type: 2}
+  SourceId: 
+  Why: 'Off the West Gap spit''s tip. Each a kit ''skerry'' rock. Centre is its members'' mean; Top its highest member''s. (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

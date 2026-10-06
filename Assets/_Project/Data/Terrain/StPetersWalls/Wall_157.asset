@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_157
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_157
+  Status: 1
+  SplitFrom: wall.stp_034
+  Follows: wall.stp_034
+  Rock: sandstone
+  Class: 5
+  Aspect: S
+  Batter: steep
+  Brow:
+  - {x: 113.89996, y: -65.65555}
+  - {x: 113.65654, y: -65.71605}
+  - {x: 113.401, y: -65.72264}
+  - {x: 113.14546, y: -65.72889}
+  - {x: 112.89, y: -65.73476}
+  - {x: 112.537346, y: -65.30088}
+  Toe:
+  - {x: 114.30583, y: -67.430725}
+  - {x: 114.01097, y: -67.2763}
+  - {x: 113.75326, y: -67.28338}
+  - {x: 113.48462, y: -67.241325}
+  - {x: 113.22705, y: -67.247665}
+  - {x: 112.97187, y: -67.26408}
+  DropMetres:
+  - 7.389721
+  - 7.2032175
+  - 7.064526
+  - 7.0387917
+  - 7.1447334
+  - 7.534217
+  ToeElevations:
+  - -1.4768754
+  - -1.3607113
+  - -1.3281592
+  - -1.3735014
+  - -1.4968463
+  - -1.5841928
+  Stations:
+  - 18
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  BrowFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9:
+  - 4.4752812
+  - 4.5313005
+  - 4.775068
+  - 5.0083137
+  - 5.2219005
+  - 5.9464273
+  ToePass9:
+  - -1.6499428
+  - -1.6499428
+  - -1.6499428
+  - -1.6364622
+  - -1.645062
+  - -1.647402
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 34
+  MeasuredOn: 'the ground file''s import, StPetersSeabed_HeightTex.png at 883f27b5 (codes sha256 5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261)'
+  FaceNeeded: 
+  Why: 'Cut from 034, re-lined on the import: its stations k18-k23. The list''s row 034 (East Ledges): re-lined.'

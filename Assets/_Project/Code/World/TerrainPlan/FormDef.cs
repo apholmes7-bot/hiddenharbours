@@ -13,6 +13,8 @@ namespace HiddenHarbours.World
     /// <see cref="PlinthSkirt"/>.x and .y of its radius. The plinth only raises the ground.</item>
     /// </list>
     /// The face, the ledge tier and the skirt ledge are recorded here for PR 5b and shape no ground in PR 5.
+    /// <para>Part 2's six (PR 5w: the Harbour Stack, the Whelps, the Old Man, the Sisters and the gaps' skerries) are in
+    /// the ground file already. Their Defs record them; the derivation only paints inside their <see cref="Feet"/>.</para>
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/World/Terrain Plan/Form", fileName = "Form")]
     public class FormDef : ScriptableObject
@@ -59,8 +61,18 @@ namespace HiddenHarbours.World
         public Vector2 SkirtLedgeRadii;
         public float SkirtLedgeTop;
 
+        [Header("Part 2's stacks and skerries (PR 5w): Defs only, on the ground file")]
+        [Tooltip("A group's members: (x, y, radius (m), top (m)). A skerry's top is its plinth's.")]
+        public Vector4[] Members = new Vector4[0];
+        [Tooltip("The plinth's radius (m) for a stack, and a group's plinth radius before its members' share of it.")]
+        public float PlinthRadius;
+        [Tooltip("Past a foot's radius, the plinth's skirt falls this many metres per metre.")]
+        public float PlinthSkirtSlope;
+        [Tooltip("Each foot the form stands on: (x, y, radius (m)). The south paints its recipe inside each, on the ground.")]
+        public Vector3[] Feet = new Vector3[0];
+
         [Header("Paint")]
-        [Tooltip("The top's and the plinth's ground by height, where they moved it (the key scene's ground).")]
+        [Tooltip("The top's and the plinth's ground by height, where they moved it (the key scene's ground); part 2's feet.")]
         public CoastRecipeDef Recipe;
 
         [Header("Source")]

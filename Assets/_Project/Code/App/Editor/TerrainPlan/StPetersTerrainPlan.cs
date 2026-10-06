@@ -24,7 +24,8 @@ namespace HiddenHarbours.App.Editor
     /// this class only reads the engine. <b>The sources are frozen once</b>, before PR 5 writes its maps
     /// (<see cref="TerrainPlanSourcesJson"/> says why): gathering after the write would read the plan's own paint back
     /// as today's. So <see cref="Freeze"/> refuses to overwrite the file unless told to, and every derivation reads the
-    /// frozen file (<see cref="LoadFrozen"/>).</para>
+    /// frozen file (<see cref="LoadFrozen"/>). Only a walls' patch touches it after that, and only to drop the cliff walls
+    /// that no longer stand (<see cref="KeepStandingWalls"/>).</para>
     ///
     /// <para><b>Today's ground is sampled, never frozen</b>: the analytic <see cref="TidalTerrain"/> the builder
     /// configures, at every cell's centre, in the sim's own float. A headless run uses a float64 port of the same
@@ -184,6 +185,29 @@ namespace HiddenHarbours.App.Editor
             return TerrainPlanSourcesJson.Sha256(text);
         }
 
+        /// <summary>
+        /// The frozen sources after a walls' patch (terrain PR 5w). The cliff walls' points of today's that a wall in
+        /// <paramref name="sceneText"/> still stands on are kept, and the rest dropped (<see cref="TerrainPlanGather.KeepStanding"/>);
+        /// every other root stays as frozen. Part 1 holds today's paint round today's walls: its keep and the guards' cliff
+        /// discs read <see cref="TerrainPlanKeep.CliffRoot"/>, and its barren rule reads it beside the south's live walls (each
+        /// at its first brow). So a wall the patch retires or moves would leave that paint where it stood: today's grass on the
+        /// opened beach, where 044 to 055 were. The plan's own walls keep their paint by their footprints (part 2's south) and
+        /// never enter the file, which stays today's.
+        /// Writes only when a point drops and <paramref name="write"/>; returns how many drop.
+        /// </summary>
+        public static int KeepStandingWalls(string sceneText, bool write)
+        {
+            string text = File.ReadAllText(SourcesPath);
+            string root = (LoadPlan().Keep ?? new TerrainPlanKeep()).CliffRoot;
+            string o = TerrainPlanGather.KeepStanding(text, PlanId, sceneText, root, out int dropped);
+            if (write && o != text)
+            {
+                File.WriteAllText(SourcesPath, o, new UTF8Encoding(false));
+                AssetDatabase.ImportAsset(SourcesPath, ImportAssetOptions.ForceSynchronousImport);
+            }
+            return dropped;
+        }
+
         /// <summary>The frozen sources, today's ground sampled.</summary>
         public static TerrainPlanSources LoadFrozen()
         {
@@ -291,6 +315,7 @@ namespace HiddenHarbours.App.Editor
                 SpringHigh = TerrainPlanMath.Num(StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude),
                 NavFloor = TerrainPlanMath.Num(StPetersNavMarks.Tuning.MinDepthAtSpringLowMetres),
                 WadeDepth = TerrainPlanMath.Num(config.WadeDepth),
+                TidalPeriodHours = TerrainPlanMath.Num(config.TidalPeriodHours),
             };
         }
 

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_056
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_056
+  Status: 2
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 5
+  Aspect: S
+  Batter: ramp
+  Brow:
+  - {x: 0.77130127, y: -57.176746}
+  - {x: 0.540329, y: -57.081345}
+  Toe:
+  - {x: 0.42845717, y: -58.00889}
+  - {x: 0.25340244, y: -57.774292}
+  DropMetres:
+  - 1.3602495
+  - 1.3552732
+  ToeElevations:
+  - 4.63975
+  - 4.6447268
+  Stations:
+  - 5
+  - 6
+  BrowFrom:
+  - 0
+  - 0
+  ToeFrom:
+  - 1
+  - 1
+  BrowPass9:
+  - 5.9754033
+  - 5.888528
+  ToePass9:
+  - 3.1193662
+  - 3.7733972
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 56
+  MeasuredOn: 'the ground file''s import, StPetersSeabed_HeightTex.png at 883f27b5 (codes sha256 5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261)'
+  FaceNeeded: 
+  Why: 'Banked on the import: stations k5-k6. The list''s row 056 (West Ledges): banked.'

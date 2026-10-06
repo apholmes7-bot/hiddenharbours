@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0e87d3230c94ad695159f4e185e8122, type: 3}
+  m_Name: RockScatter_WeatherApron
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RockScatterDef
+  Id: scatter.stp_weather_apron
+  DisplayName: Weather apron
+  Rule: around
+  Over:
+  - form.stp_old_man
+  Band: {x: 0.3, y: 3}
+  Elevation: {x: 0, y: 0}
+  Every: {x: 2.2, y: 3.4}
+  Forms:
+  - Form: cloven
+    Weight: 3
+  - Form: wedge
+    Weight: 3
+  - Form: block
+    Weight: 2
+  - Form: erratic
+    Weight: 1
+  Stone: sandstone
+  State: wet
+  Count: 5
+  Rocks:
+  - N: 0
+    At: {x: 65.95, y: -81.67}
+    Elevation: -1.18
+    Form: cloven
+  - N: 1
+    At: {x: 68.55, y: -83.17}
+    Elevation: -0.67
+    Form: cloven
+  - N: 2
+    At: {x: 71.93, y: -83.24}
+    Elevation: -0.69
+    Form: wedge
+  - N: 3
+    At: {x: 74.66, y: -81}
+    Elevation: -0.68
+    Form: cloven
+  - N: 4
+    At: {x: 75.48, y: -78.72}
+    Elevation: -1.02
+    Form: block
+  Why: 'The Weather Cliff''s fallen blocks, heaped on the Old Man''s plinth: the cliff''s own toe stays in deep water (-3.19, the walls kept), where a boulder would sit 1 m under a spring low and in the boats'' way. Part 2 laid 5. Its rule re-run on the import round PR 5w''s walls (b/rocks.json, A2''s rule) lays 5; 5 stand and 0 are removed: none. (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

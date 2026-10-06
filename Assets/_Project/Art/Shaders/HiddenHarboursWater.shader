@@ -391,6 +391,9 @@ Shader "HiddenHarbours/Water"
         // Owner ruling 2026-08-28: where the sea is actually breaking, the computed whitewater takes the
         // shore fringe's place — the fringe was always the geometric stand-in for it. 0 = keep both
         // (today's look exactly, the passthrough); 1 = physics wins wherever the whitewater is alive.
+        // B1 FRINGE PROPERTY BEGIN
+        _SurfFringeSequenceStrength ("Fringe follows bore (0 = previous look)", Range(0,1)) = 0
+        // B1 FRINGE PROPERTY END
         _SurfSupersedeFringe ("Surf supersedes the shore fringe (0 = keep both)", Range(0,1)) = 1
 
         [Header(PLUNGING anatomy   the lip the barrel the pocket   ONLY where the slope earns it)]
@@ -1490,6 +1493,9 @@ Shader "HiddenHarbours/Water"
                 float  _SurfThresholdSoft;
                 float  _SurfBands;
                 float  _SurfBandDither;
+                // B1 FRINGE UNIFORM BEGIN
+                float  _SurfFringeSequenceStrength;
+                // B1 FRINGE UNIFORM END
                 float  _SurfSupersedeFringe;
                 float  _SurfPlungeStrength;
                 float  _SurfLipThrow;
@@ -5421,8 +5427,17 @@ Shader "HiddenHarbours/Water"
                 // shoreSlope (computed with the fringe above) turns the swash's depth amplitude into a
                 // CONTOUR excursion in metres — on a gently painted bar the run-up no longer sweeps a
                 // metres-wide worm tongue (the 2026-07-23 swirl defect); a steep edge keeps today's look.
-                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only
-                                                 surfRunUpM, boreFoamBlend);   // …and the foam rides the bore's wash too
+                // B1 FRINGE DEPTH BEGIN
+                // Reuse the EDGE's reference-depth domain: a local break gate leaves the wide
+                // offshore fringe white. Only foam moves here; the exact edge/clip above is settled.
+                float fringeDisplacement = lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,
+                                                surfRunUpM, boreFoamBlend);
+                float fringeHandoff = saturate(_SurfFringeSequenceStrength)
+                                    * saturate(_SurfBeatStrength) * boreEdgeBlend;
+                if (fringeHandoff > 0.0)
+                    fringeDisplacement = lerp(fringeDisplacement, surfRunUpM, fringeHandoff);
+                float foamDepth = depthC - fringeDisplacement;
+                // B1 FRINGE DEPTH END
                 // ---- DITHER the band edge (owner judge pass 2026-08-01: "the shoreline foam sometimes gets
                 // these artifact lines"). foamEdge is an ISO-CONTOUR of foamDepth, and foamDepth descends
                 // from the seabed height TEXTURE — 8 bits over a -4..+6 m range, i.e. 3.91 cm per code,
@@ -5486,6 +5501,15 @@ Shader "HiddenHarbours/Water"
                     // _SurfSupersedeFringe = 0 this is exactly today's fringe — the passthrough the dial
                     // ships under, and the A/B a reviewer can take.
                     foamCoverage *= (1.0 - surfSupersede);
+                    // B1 FRINGE COVER BEGIN
+                    // The remaining fringe announces the born front; the existing sheet carries
+                    // its trail. Older deposited foam is untouched (ADR 0040, B1).
+                    if (fringeHandoff > 0.0)
+                    {
+                        float frontPresence = saturate(surfBreaking * surfAlive * surfBore);
+                        foamCoverage *= lerp(1.0, frontPresence, fringeHandoff);
+                    }
+                    // B1 FRINGE COVER END
                     col.rgb = lerp(col.rgb, _FoamColor.rgb, foamCoverage * _FoamColor.a);
                     col.a = max(col.a, foamCoverage * _FoamColor.a);
                 }

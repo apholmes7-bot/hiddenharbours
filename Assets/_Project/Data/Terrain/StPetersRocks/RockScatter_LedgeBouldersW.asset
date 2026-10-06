@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0e87d3230c94ad695159f4e185e8122, type: 3}
+  m_Name: RockScatter_LedgeBouldersW
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RockScatterDef
+  Id: scatter.stp_ledge_boulders_w
+  DisplayName: Ledge boulders (west)
+  Rule: walls
+  Over:
+  - wall.stp_056
+  - wall.stp_188
+  Band: {x: 1, y: 8}
+  Elevation: {x: 0, y: 0}
+  Every: {x: 4, y: 7}
+  Forms:
+  - Form: block
+    Weight: 3
+  - Form: knuckle
+    Weight: 2
+  - Form: slab
+    Weight: 2
+  - Form: cobbles
+    Weight: 2
+  - Form: scree
+    Weight: 1
+  Stone: sandstone
+  State: wet
+  Count: 6
+  Rocks:
+  - N: 0
+    At: {x: -4.53, y: -60.96}
+    Elevation: -1.48
+    Form: cobbles
+  - N: 1
+    At: {x: -9.83, y: -60.87}
+    Elevation: -1.6
+    Form: knuckle
+  - N: 2
+    At: {x: -11.27, y: -56.4}
+    Elevation: -1.65
+    Form: scree
+  - N: 3
+    At: {x: -19.71, y: -54.62}
+    Elevation: -1.74
+    Form: knuckle
+  - N: 5
+    At: {x: -23.19, y: -53.71}
+    Elevation: -1.96
+    Form: knuckle
+  - N: 6
+    At: {x: -28.57, y: -49.72}
+    Elevation: -1.65
+    Form: cobbles
+  Why: 'The same on the West Ledges, denser where the reef is broken. Part 2 laid 5. Its rule re-run on the import round PR 5w''s walls (b/rocks.json, A2''s rule) lays 8 (part 2''s ban takes 3 more); 6 stand and 2 are removed: n 4 (outside its band: 0.67 m off the nearest toe on the sea side, ground -1.65 m); n 7 (outside its band: 2.06 m off the nearest toe on the land side, ground +4.56 m). (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

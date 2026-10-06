@@ -1559,11 +1559,11 @@ namespace HiddenHarbours.App.Editor
             }
 
             // --- THE CLIFF WALLS: THE COAST STANDS UP ---------------------------------------------------
-            // Face quads generated from the plan above and sampled off the SAME TidalTerrain the walk gate
-            // reads, so the wall and the walkability cannot disagree. Runs to the terrain component that
-            // was just configured, never to this file's constants, which is what makes a coast retune move
-            // the geometry with it. Visual only (rule 5) — walkability is the terrain's slope, not this.
-            StPetersCliffWalls.Build(terrain);
+            // One wall per Def, by its real id (terrain PR 5w): the walls stand on the ground file's lines as
+            // the Defs record them, no longer on the analytic walk of the plan above, so a rebuild puts back
+            // exactly the walls the scene holds. Visual only (rule 5): walkability is the terrain's slope,
+            // not this.
+            StPetersCliffWalls.Build(StPetersCliffWalls.LoadDefs());
 
             // --- SPLAT GROUND (ADR 0028) ----------------------------------------------------------------
             // The ground as a FIELD, not a grid: one full-region quad carrying the TerrainSplat shader,

@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af6b04e808ac45e5b743657d953c03a0, type: 3}
+  m_Name: Flats_SouthFlats
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.FlatsDef
+  Id: flats.stp_south_flats
+  DisplayName: The South Flats
+  Window: {x: -110, y: -160, z: 235, w: -5}
+  Width:
+  - {x: 100, y: 0}
+  - {x: 106, y: 14}
+  - {x: 116, y: 24}
+  - {x: 126, y: 32}
+  - {x: 137, y: 40}
+  - {x: 150, y: 48}
+  - {x: 163, y: 44}
+  - {x: 177, y: 52}
+  - {x: 192, y: 50}
+  - {x: 205, y: 42}
+  - {x: 214, y: 38}
+  - {x: 227, y: 42}
+  - {x: 240, y: 30}
+  - {x: 252, y: 26}
+  - {x: 259, y: 20}
+  - {x: 266, y: 0}
+  Lobes: {x: 9, y: 46}
+  Front: 12
+  Moat: {x: 3.5, y: 8}
+  ReefMoat: {x: 10, y: 16}
+  Inner: -0.45
+  Outer: -1.85
+  OuterVar: {x: 0.3, y: 45}
+  Swell: {x: 0.22, y: 30}
+  Ridges: {x: 0.14, y: 16}
+  Ripple: {x: 0.04, y: 3.5}
+  RunnelEvery: {x: 13, y: 21}
+  RunnelWidth: {x: 0.9, y: 1.7}
+  RunnelDepth: {x: 0.16, y: 0.3}
+  RunnelMeander: {x: 3, y: 17}
+  RunnelStart: {x: 0.06, y: 0.4}
+  RunnelBranches: {x: 0, y: 3}
+  BranchAt: {x: 0.3, y: 0.9}
+  BranchLength: {x: 0.15, y: 0.45}
+  BranchAngle: {x: 25, y: 55}
+  BranchWidth: 0.55
+  BranchDepth: 0.6
+  Trickle: 0.04
+  PoolsPer100m: 6
+  PoolRadius: {x: 1.8, y: 4.2}
+  PoolDepth: {x: 0.22, y: 0.42}
+  PoolBand: {x: 0.25, y: 0.85}
+  RibSpacing: 9
+  RibWidth: 0.13
+  RibLift: 0.28
+  RibBreakUp: 0.45
+  RibWander: 0.55
+  MusselBand: {x: -1.35, y: -0.45}
+  MusselLambda: 6
+  MusselCover: 0.62
+  SandRecipe: {fileID: 11400000, guid: f01c745dd0b6dab43e61f319df8e4218, type: 2}
+  MudRecipe: {fileID: 11400000, guid: 1aa3a38d3437276d5145cc5c0f3651f3, type: 2}
+  RibRecipe: {fileID: 11400000, guid: 6e6576addfb180280a2ccd689ef84eed, type: 2}
+  Why: 'Every metre of it bares at a spring low (-2.2) and floods at a neap high (+0.99): the same band as the Bar-Head and Lagoon Flats. At mean tide it is sea to the cliffs'' feet; at a low the stacks stand on it. (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

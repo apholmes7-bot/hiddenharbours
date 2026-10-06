@@ -69,7 +69,8 @@ namespace HiddenHarbours.World
                 double cut0 = Num(bay.EndCut.x), cutW = Num(bay.EndCut.y), fill = Num(bay.EndFill), weigh = Num(bay.SurfaceWeight);
                 double backShort = Num(bay.BackShort), backAbove = Num(bay.BackAbove), noise = Num(bay.Noise.x), lam = Num(bay.Noise.y);
                 double from = Num(bay.From);
-                long seed = _seed + Rules.SeedBay + n;
+                double edgeFade = Num(bay.EdgeFade), wander = Num(bay.EdgeWander.x), wanderLam = Num(bay.EdgeWander.y);
+                long seed = _seed + Rules.SeedBay + n, edgeSeed = _seed + Rules.SeedBayEdge + n;
                 if (!Win(bx0, by0, bx1, by1, out int r0, out int r1, out int c0, out int c1)) continue;
                 int painted = 0, backs = 0;
                 for (int r = r0; r < r1; r++)
@@ -94,6 +95,14 @@ namespace HiddenHarbours.World
                         // A fill holds over EndFill of the end's weight; a cut's must pass its return
                         if (d < 0 || g > b[i] + step) w *= Ss(wEnd / fill);
                         else w *= Ss((wEnd - (cut0 - cutW / 2)) / cutW);
+                    }
+                    if (edgeFade > 0)
+                    {
+                        // the box's edge (PR 5w): where it cuts the surface still weighing in full, the bay fades out inside
+                        // it from a line that wanders, so the paint ends raggedly and not on the box's line
+                        double inside = Math.Min(Math.Min(X - bx0, bx1 - X), Math.Min(Y - by0, by1 - Y) / IsoGround.GroundDepthScale);
+                        if (wander > 0) inside += wander * 2 * (Fbm(X, Y, edgeSeed, wanderLam) - 0.5);
+                        w *= Ss(inside / edgeFade);
                     }
                     if (!(w > weigh)) continue;
                     byte z;

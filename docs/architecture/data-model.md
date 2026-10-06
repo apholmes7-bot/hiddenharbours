@@ -33,10 +33,22 @@ time without merge conflicts. Every Def has a stable **string `id`** (e.g., `fis
 | `PropertyDef` | `Data/Regions/Property/` | houses & commercial lots: purchase, upgrade tiers, furnishing slots, comfort | `design/progression-and-housing.md` |
 | `KeySceneDef` | `Data/KeyScenes/` | one key scene's placements, per variant (`today` first): piece id, kit and piece, at, z and what it stands on (ground, deck), facing, sort line, the words ids its boards carry. Placements belong to the scene, not the piece's Def, so one piece type can stand in many places; `StPetersLayerRefresh` writes them into the scene | the art desk's key-scene return (`scene.json`) |
 | `WordsTableDef` | `Data/Words/` | the words a sign, name board or notice shows, by string id (`words.snake_case`); boards bake blank, so renaming a place changes a string, never a pixel | — |
+| `RegionTerrainPlanDef` | `Data/Terrain/StPetersPlan/` | one region's terrain plan: seed, reference line, section feathers and warp, tide frame, bed rules, the lists of its coast, pond, stream, creek, pan, path and biome Defs, and the live walls' chunk cut (`WallToeSpanMetres`: St Peters 1 m; 2 m, the builder's own, elsewhere) | `design/st-peters-terrain-pass-9.md` §8.1 |
+| `CliffWallDef` | `Data/Terrain/StPetersWalls/` | one cliff wall (`wall.stp_NNN`; append-only: a cut piece records `SplitFrom`, a retired or held id keeps its file): status, rock, class, aspect, batter, the wall it follows; per station its brow, toe, drop and toe height, its k on the wall it came from (`Stations`) and where its lines came from (`Kept`, `Measured`, `Interpolated`); optionally `TextureBrow`, the line its texture runs along where a top moved out | the class's own summary |
 | `GameConfig` | `Data/Config/` | global tunables: day length, tide constants, season length, economy constants, stamina rates | several |
 
 > `GameConfig` centralises balance numbers so the owner / `economy-sim` can tune feel without
 > touching code. Treat magic numbers as a smell — promote them here.
+
+> **Wall format change (terrain PR 5w, St Peters' 1 m cut; made under the `lead-architect` hat).**
+> `CliffWallDef.Stations` went from `int[]` to `float[]`: a k that is not whole is an *interpolated*
+> station, set between the whole stations either side of it, and its `BrowFrom`/`ToeFrom` read
+> `CliffStationSource.Interpolated` (new, `= 2`). It adds no face of its own: `CliffWallSurface` draws
+> it as a slice of the face its whole neighbours draw, so a re-cut moves no rock. `CliffWallDef.TextureBrow`
+> (optional) and `RegionTerrainPlanDef.WallToeSpanMetres` are new. No asset needed a migration: Unity
+> reads an old asset's whole ks into the float field as they were, an absent `TextureBrow` reads empty
+> (the texture runs along the brow), and an absent `WallToeSpanMetres` reads 2 m, the cut every wall had.
+> Nine Mile Creek's walls and plan are untouched.
 
 ## 3. Cross-references use ids, and resolve through `ContentDatabase`
 
