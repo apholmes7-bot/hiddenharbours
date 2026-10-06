@@ -6,11 +6,12 @@ namespace HiddenHarbours.Tools.RigBaking
 {
     /// <summary>
     /// One of Claude Design's character rig kits, as the v9 reader reads it: rig 9 (9.2, under
-    /// <c>character/rig9/</c>) or rig 10 (10.2, under <c>character/rig10/</c>, landed by the rig 10
-    /// intake on 2026-10-02). Rig 10 keeps rig 9's API (skeleton, bindMesh, clip, shadingContract,
-    /// BLINK, LOOK, render) and adds four fields to its faces, so one reader reads both and this names
-    /// what differs: the files, the global, the revision, the table of presets the game bakes, and
-    /// whether the face is drawn as point marks.
+    /// <c>character/rig9/</c>) or rig 10 (10.3, under <c>character/rig10/</c>: 10.2 landed by the rig 10
+    /// intake on 2026-10-02, 10.3 over it on 2026-10-03). Rig 10 keeps rig 9's API (skeleton, bindMesh,
+    /// clip, shadingContract, BLINK, LOOK, render) and adds four fields to its faces, so one reader reads
+    /// both and this names what differs: the files, the global, the revision, the table of presets the
+    /// game bakes, whether the face is drawn as point marks, and whether the rig exports the numbers its
+    /// paint and its gates use.
     ///
     /// <para>A script host holds ONE kit: <see cref="CharacterSkinExtractor.Load9(IRigScriptHost, CharacterRigKit)"/>
     /// installs it and every reader asks the host which (<see cref="CharacterSkinExtractor.KitOf"/>).
@@ -22,12 +23,15 @@ namespace HiddenHarbours.Tools.RigBaking
         /// (<see cref="CharacterSkinAssetBaker.LiveRig"/>). Its folder stays as 9.2's record.</summary>
         public static readonly CharacterRigKit Rig9 = new CharacterRigKit(
             CharacterSkinExtractor.V9CatalogKey, CharacterSkinExtractor.V9RigName,
-            CharacterSkinExtractor.V9Revision, CharacterSkinExtractor.V9Pass, "v9", "CAST", faceMarks: false);
+            CharacterSkinExtractor.V9Revision, CharacterSkinExtractor.V9Pass, "v9", "CAST", faceMarks: false,
+            exportsNumbers: false);
 
-        /// <summary>Rig 10.2. Its <c>CAST</c> is the ten presets and the twenty NPCs; the game bakes
-        /// <c>CAST10</c> alone (owner, 10-01: the twenty NPCs come with the wardrobe).</summary>
+        /// <summary>Rig 10.3. Its <c>CAST</c> is the ten presets and the twenty NPCs; the game bakes
+        /// <c>CAST10</c> alone (owner, 10-01: the twenty NPCs come with the wardrobe). Since 10.3 it
+        /// exports <c>TOL</c>, <c>DITHER</c>, <c>INK</c> and <c>AIM</c> (<see cref="ExportsNumbers"/>).</summary>
         public static readonly CharacterRigKit Rig10 = new CharacterRigKit(
-            "characterRig10", "characterIsoRig10", "10.2", 10, "v10", "CAST10", faceMarks: true);
+            "characterRig10", "characterIsoRig10", "10.3", 10, "v10", "CAST10", faceMarks: true,
+            exportsNumbers: true);
 
         /// <summary>The <see cref="RigCatalog"/> key of the rig's body script.</summary>
         public readonly string CatalogKey;
@@ -53,8 +57,16 @@ namespace HiddenHarbours.Tools.RigBaking
         /// and <c>sn</c> and no <c>minT</c>.</summary>
         public readonly bool FaceMarks;
 
+        /// <summary>True when the rig exports the numbers its paint and its gates use, so the bake reads
+        /// each there and copies none: rig 10 since 10.3 (<c>TOL</c>, which its paint reads its
+        /// tolerances from; <c>DITHER</c>; <c>INK</c> with <c>INK_ROLES</c> and <c>EYE_WHITE</c>;
+        /// <c>AIM</c>). Rig 9.2 exports none: its tolerances are read off its paint's own literals and
+        /// its dither is the canonical matrix. Such a kit writes every number through the rig's own
+        /// <c>R7</c> (7 decimals), and the sidecar check prints the rig's sidecars through it too.</summary>
+        public readonly bool ExportsNumbers;
+
         CharacterRigKit(string catalogKey, string rigName, string revision, int pass, string fileTag,
-                        string presetTable, bool faceMarks)
+                        string presetTable, bool faceMarks, bool exportsNumbers)
         {
             CatalogKey = catalogKey;
             RigName = rigName;
@@ -63,6 +75,7 @@ namespace HiddenHarbours.Tools.RigBaking
             FileTag = fileTag;
             PresetTable = presetTable;
             FaceMarks = faceMarks;
+            ExportsNumbers = exportsNumbers;
         }
 
         /// <summary>"rig 9" or "rig 10", for messages.</summary>

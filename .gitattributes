@@ -268,11 +268,11 @@ docs/art/rigs/character/rig9/**/*.txt                 text eol=lf
 docs/art/rigs/character/rig9/**/*.md                  text eol=lf
 docs/art/rigs/character/rig9/**/*.html                text eol=lf
 
-# The character rig 10.2 kit (Claude Design, docs/art/rigs/character/rig10/), for the same reasons:
-# SHA256SUMS.txt over 194 files, all LF as served (measured: 0 CR in its 74 text files), the
-# intake's INTAKE.SHA256SUMS.txt over the 3 files Node regenerated, and the baker pins the rig and
-# its poses file by their LF sha256. By extension, not `**`: the kit's 121 PNGs keep [attr]lfs's
-# -text.
+# The character rig 10 kit (Claude Design, docs/art/rigs/character/rig10/; kit 10.3 since 2026-10-05),
+# for the same reasons: SHA256SUMS.txt over 319 files, all LF as served (measured: 0 CR in its 79 text
+# files), the intake's INTAKE.SHA256SUMS.txt over the 248 files Node regenerated and the desk's two
+# scripts, and the baker pins the rig and its poses file by their LF sha256. By extension, not `**`:
+# the kit's 241 PNGs keep [attr]lfs's -text.
 docs/art/rigs/character/rig10/**/*.js                 text eol=lf
 docs/art/rigs/character/rig10/**/*.cjs                text eol=lf
 docs/art/rigs/character/rig10/**/*.json               text eol=lf

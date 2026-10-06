@@ -9,17 +9,17 @@ using Debug = UnityEngine.Debug;
 namespace HiddenHarbours.Tests.RigBaking
 {
     /// <summary>
-    /// <b>THE RIG 10 EXPORT (characterIsoRig10.js rev 10.2, drop of 2026-10-01), RE-RUN.</b>
+    /// <b>THE RIG 10 EXPORT (characterIsoRig10.js rev 10.3, landed 2026-10-03 over 10.2's drop of 2026-10-01), RE-RUN.</b>
     ///
     /// <para>Rig 10's kit ships a build per preset (<c>builds/&lt;preset&gt;.v10.json</c>, every number
     /// written to seven decimals), a gameplay sidecar per preset
     /// (<c>gameplay/characterIsoRig10.&lt;preset&gt;.gameplay.json</c>, on one line) and the rig's own
     /// checks (<c>golden-report.json</c>). The presets the game bakes (<c>CAST10</c>; owner, 10-01) are
     /// re-made here from the rig in the kit, in a host of their own, and held to the committed copy:
-    /// numbers within the rig's tolerance, sidecars byte for byte, and every golden check as committed,
-    /// the one the kit records as failing included. Rig 10's render manifest lists its strips without
-    /// hashes, so there is no strip test here: the intake's harness held all 60 to the rig by pixel at
-    /// landing (<c>INTAKE.md</c>).</para>
+    /// numbers within the rig's tolerance, sidecars byte for byte, and every golden check as committed.
+    /// Since 10.3 the render manifest lists each of its 241 images with the sha256 of its pixels
+    /// (<c>rgbaSha256</c>), so the strips are held here too: the owner ruled they come with the 10.3
+    /// intake's Phase B.</para>
     ///
     /// <para>And the reader's contract with rig 10: one script host reads one character rig, and the
     /// game bakes <c>CAST10</c> alone, refusing the twenty NPCs by name.</para>
@@ -116,14 +116,15 @@ namespace HiddenHarbours.Tests.RigBaking
 
         /// <summary>
         /// Every preset the game bakes, re-exported by the rig, matches the committed build within
-        /// <see cref="CharacterSkinExtractor.V9Tolerance"/> on every number, with nothing added, missing
+        /// the rig's gate tolerance (<see cref="CharacterSkinExtractor.GateTolerance9"/>: <c>TOL.gate_m</c>
+        /// since 10.3) on every number, with nothing added, missing
         /// or renamed. The committed numbers are written to seven decimals, so the worst sits near half
         /// a unit of the seventh (5e-8), a twentieth of the bar.
         /// </summary>
         [Test]
         public void V10_EveryPresetExportsWithinTheRigsToleranceOfItsCommittedBuild()
         {
-            double tol = CharacterSkinExtractor.V9Tolerance;
+            double tol = CharacterSkinExtractor.GateTolerance9(V10Host);
             var report = new StringBuilder();
             var problems = new List<string>();
 
@@ -159,17 +160,35 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
+        /// Every 1x strip the render manifest lists (idle at the 8 facings, the walk at S, the blink and
+        /// the look, for every build in the rig's <c>CAST</c>) is the rig's own render today, pixel for
+        /// pixel: drawn here in V8 through the kit's own plan (<c>tools/kit.js</c>, <c>renderPlan</c>)
+        /// and hashed against the manifest's <c>rgbaSha256</c>. The plan and the manifest must list the
+        /// same strips, so a strip dropped from either cannot pass by not being checked.
+        /// </summary>
+        [Test]
+        public void V10_TheCommittedStripsAreTheRigsOwnRender()
+        {
+            List<string> misses = CharacterSkinExtractor.RenderMisses10(V10Host, V10Kit, out int strips, out int planned);
+            Debug.Log($"[CharacterSkinnedExportTests] v10 strips: {strips} of the kit's {planned} 1x strips drawn, " +
+                      $"{misses.Count} miss(es)");
+            Assert.Greater(planned, 0, "The kit's plan draws no 1x strip.");
+            Assert.AreEqual(planned, strips, $"The kit's plan draws {planned} 1x strips; {strips} were checked.");
+            Assert.IsEmpty(misses, "Strips rig 10 no longer renders as committed:\n  " + string.Join("\n  ", misses));
+        }
+
+        /// <summary>
         /// The rig's own checks (<c>runChecks</c>), run on every preset the game bakes, reproduce the
         /// committed golden report row for row: every pass, every gate, every value, and the gated
-        /// totals. The kit records one gated failure among the ten, the girl's <c>face</c> at 7 of 8
-        /// facings (INTAKE.md, finding 10), so a check is held to the report, not to passing: one that
-        /// starts failing, or stops, moves a row.
+        /// totals. Since 10.3 every gated check passes on the ten (the girl's <c>face</c>, 7 of 8 facings
+        /// at 10.2, is 8 of 8), but a check is still held to the report, not to passing: one that starts
+        /// failing, or stops, moves a row.
         ///
         /// <para>The report was written on Node 24 (INTAKE.md), and the game reads the rig in
-        /// ClearScript's V8, which prints a few residuals near 1e-16 m otherwise (three rows among the
-        /// ten, by under 4e-17 m). A value is held as printed or, with the same text, every number within
-        /// the 1e-6 m the rig's own checks gate on (<see cref="CharacterSkinExtractor.V9Tolerance"/>):
-        /// such a row is reprinted, not moved.</para>
+        /// ClearScript's V8, which prints a few residuals near 1e-16 m otherwise (at 10.2, three rows
+        /// among the ten, by under 4e-17 m). A value is held as printed or, with the same text, every
+        /// number within the tolerance the rig's own checks gate on (<c>TOL.gate_m</c> since 10.3,
+        /// <see cref="CharacterSkinExtractor.GateTolerance9"/>): such a row is reprinted, not moved.</para>
         /// </summary>
         [Test]
         public void V10_TheRigsOwnChecksReproduceTheGoldenReport()
@@ -193,6 +212,34 @@ namespace HiddenHarbours.Tests.RigBaking
                       $"; {reprintedTotal} values reprinted within the rig's gate");
             Assert.IsEmpty(problems, "Rig 10's checks no longer reproduce the golden report:\n  " +
                                      string.Join("\n  ", problems));
+        }
+
+        /// <summary>
+        /// The girl passes the rig's <c>face</c> gate at every facing: its own check, run alone, counts the
+        /// eyes it paints at each of the rig's facings (<c>order</c>: two from the front and the front
+        /// diagonals, one in profile, none from behind) and passes, every facing's row ok. At 10.2 she
+        /// showed 7 of 8 (INTAKE.md); 10.3 draws her at all 8. Held to passing, not to the report, so the
+        /// gate cannot fall back with the report.
+        /// </summary>
+        [Test]
+        public void V10_TheGirlPassesTheFaceGateAtEveryFacing()
+        {
+            string g = CharacterRigKit.Rig10.GlobalName;
+            Assert.Contains("girl", CharacterSkinExtractor.Presets9(V10Host), "The game bakes no girl from rig 10.");
+            string[] r = V10Host.EvaluateString(
+                "(function(){var G=" + g + ",c=G.CHECKS.filter(function(x){return x.id==='face';});" +
+                "if(c.length!==1)return 'checks '+c.length;var it=c[0].run(G.buildOf('girl')),s=it.next();while(!s.done)s=it.next();" +
+                "var v=s.value;return [String(v.pass),String(G.order.length),v.rows.map(function(w){return w.label+' '+(w.ok?'ok':'NOT ok')+' ('+w.value+'; '+w.note+')';}).join('\\n')].join('|');})()")
+                .Split('|');
+            Assert.AreEqual(3, r.Length, $"Rig 10's face check read as: {string.Join("|", r)}");
+            string[] rows = r[2].Split('\n');
+            string seen = string.Join("\n  ", rows);
+            Debug.Log($"[CharacterSkinnedExportTests] the girl's face gate, rig 10: pass {r[0]}\n  {seen}");
+            Assert.AreEqual(int.Parse(r[1], CultureInfo.InvariantCulture), rows.Length,
+                $"The face check counted {rows.Length} facings of the rig's {r[1]}:\n  {seen}");
+            foreach (string row in rows)
+                StringAssert.DoesNotContain("NOT ok", row, $"The girl's face fails at a facing:\n  {seen}");
+            Assert.AreEqual("true", r[0], $"The girl's face gate does not pass:\n  {seen}");
         }
     }
 }

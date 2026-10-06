@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Character rig 10.3 — the send-back, blink and look-at masters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+<style>
+body { margin:0; background:#0b141a; }
+a { color:#7fd6c9; } a:hover { color:#b9efe6; }
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b141a;color:#8d9a9d;font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;display:flex;flex-direction:column;align-items:center;gap:16px;padding:22px 16px 40px;box-sizing:border-box;">
+  <div style="width:100%;max-width:1180px;display:flex;flex-direction:column;gap:9px;">
+    <div style="font-size:10px;letter-spacing:0.22em;color:#5d6c71;">CHARACTERISO10 · PASS 10.3 · THE SEND-BACK · FROM <a href="Character v10.2.dc.html">10.2</a></div>
+    <h1 style="font-family:'IM Fell English SC',Georgia,serif;font-size:34px;font-weight:400;color:#e4ece9;margin:0;">Blink and look-at, drawn from the rig</h1>
+    <p style="max-width:86ch;font-size:12px;line-height:1.65;color:#8d9a9d;margin:0;text-wrap:pretty;">This page is the bake page for the blink and look-at masters in renders/1x and renders/4x. It draws each strip with tools/kit.js from the rig on this page, the same code tools/check.cjs runs in Node, and holds every image against renders/manifest.json by its RGBA hash. Below the strips, five of 10.3's fixes are drawn against the frozen 10.2.</p>
+    <div style="font-size:11px;line-height:1.6;color:#6f7e83;">{{ status }}</div>
+  </div>
+
+  <div style="width:100%;max-width:1180px;background:#0f1a20;border:1px solid #1b2a32;padding:13px;display:flex;flex-direction:column;gap:12px;box-sizing:border-box;">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+      <div style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;">1 · BLINK AND LOOK-AT · {{ label }}</div>
+      <div style="flex:1;"></div>
+      <select value="{{ key }}" onChange="{{ pick }}" style="font-family:inherit;font-size:11px;background:#122530;color:#c9d6d4;border:1px solid #2f6079;padding:4px 6px;">
+        <sc-for list="{{ cast }}" as="c" hint-placeholder-count="10"><option value="{{ c.key }}">{{ c.label }}</option></sc-for>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div style="font-size:11px;color:#c9d6d4;">Blink · faceClips.blink, 4 frames of 40 ms</div>
+        <canvas ref="{{ blinkRef }}" width="320" height="520" style="width:100%;max-width:320px;height:auto;image-rendering:pixelated;background:#16252d;"></canvas>
+        <div style="font-size:10.5px;line-height:1.55;color:#6f7e83;">Rows E, SE, S, SW, W. Columns half, shut, shut, half. Idle f0; only the eyes slot changes. Shown cropped to the head, ×4.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;">
+          <button onClick="{{ dlBlink1 }}" style="font-family:inherit;font-size:10.5px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;padding:5px 9px;cursor:pointer;">PNG 1×</button>
+          <button onClick="{{ dlBlink4 }}" style="font-family:inherit;font-size:10.5px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;padding:5px 9px;cursor:pointer;">PNG 4×</button>
+          <div style="font-size:10.5px;color:#8d9a9d;align-self:center;">{{ blinkHash }}</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div style="font-size:11px;color:#c9d6d4;">Look-at · at S</div>
+        <canvas ref="{{ lookRef }}" width="640" height="208" style="width:100%;max-width:640px;height:auto;image-rendering:pixelated;background:#16252d;"></canvas>
+        <div style="font-size:10.5px;line-height:1.55;color:#6f7e83;">Top row: the head turned to each limit (yaw, pitch): −60 0 · 60 0 · 0 −15 · 0 20 · −60 20 · 60 20 · −60 −15 · 60 −15. Bottom row: lookAt() with the default share 0.7 for targets 2 m away at bearings −50 −30 −15 0 15 30 50 level and 0° 0.35 m down, with lookAt's eyes. Shown cropped to the head, ×4.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;">
+          <button onClick="{{ dlLook1 }}" style="font-family:inherit;font-size:10.5px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;padding:5px 9px;cursor:pointer;">PNG 1×</button>
+          <button onClick="{{ dlLook4 }}" style="font-family:inherit;font-size:10.5px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;padding:5px 9px;cursor:pointer;">PNG 4×</button>
+          <div style="font-size:10.5px;color:#8d9a9d;align-self:center;">{{ lookHash }}</div>
+        </div>
+        <div style="font-size:10.5px;line-height:1.55;color:#6f7e83;">{{ turns }}</div>
+      </div>
+    </div>
+    <div style="font-size:11px;line-height:1.6;color:#8d9a9d;max-width:96ch;text-wrap:pretty;">The PNG buttons save the full strip (80 × 104 cells, transparent), as the masters are. Every master of every build is written by node tools/check.cjs --write.</div>
+  </div>
+
+  <div style="width:100%;max-width:1180px;background:#0f1a20;border:1px solid #1b2a32;padding:13px;display:flex;flex-direction:column;gap:11px;box-sizing:border-box;">
+    <div style="font-size:10px;letter-spacing:0.16em;color:#5d6c71;">2 · FIVE FIXES · 10.2 LEFT, 10.3 RIGHT</div>
+    <canvas ref="{{ fixRef }}" width="1120" height="760" style="width:100%;max-width:1120px;height:auto;image-rendering:pixelated;"></canvas>
+    <div style="display:flex;flex-direction:column;gap:5px;font-size:11px;line-height:1.6;color:#8d9a9d;max-width:96ch;">
+      <div style="text-wrap:pretty;"><span style="color:#c9d6d4;">Sleep at N, the deck boss.</span> 10.2 laid the pelvis 0.18 m behind the pivot, so the feet ran 2 rows past the cell's bottom edge. 10.3 lies the body centred on the pivot.</div>
+      <div style="text-wrap:pretty;"><span style="color:#c9d6d4;">The Wharf girl at SW.</span> The eye pair holds 0.08 px inside the cheek, so idle's small head turn cannot take the far eye off her face.</div>
+      <div style="text-wrap:pretty;"><span style="color:#c9d6d4;">A square head with a bob, at E.</span> Where the hair covers the profile eye's pixel, the eye moves a column forward.</div>
+      <div style="text-wrap:pretty;"><span style="color:#c9d6d4;">A lidded eye, brows knit, at S.</span> The knit brow wins over the lid on its pixel, so knit no longer reads as the default.</div>
+      <div style="text-wrap:pretty;"><span style="color:#c9d6d4;">The paper boy at SE.</span> His chin is too short for the mouth row from the diagonal camera, so 10.2 drew no mouth there; 10.3 draws it a row up, on the nose's lowest pixel.</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { key:'fisher', ready:false, err:null, man:null, blinkHash:'', lookHash:'' };
+  componentDidMount(){ this.load().catch(e => this.setState({ err:String(e.message||e) })); }
+  async load(){
+    const add = (src) => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('missing ' + src)); document.head.appendChild(s); });
+    if(!window.CharacterIso10_2){ await add('Art/characterIsoRig10_2.js'); await add('Art/characterIsoRig10_2.poses.js'); }
+    if(!window.CharacterIso10 || window.CharacterIso10.revision !== '10.3'){ await add('Art/characterIsoRig10.js'); await add('Art/characterIsoRig10.poses.js'); }
+    if(!window.HHKit) await add('tools/kit.js');
+    let man = null; try { const r = await fetch('renders/manifest.json'); if(r.ok) man = await r.json(); } catch(e){}
+    this.setState({ ready:true, man }, () => { this.drawStrips(); this.drawFixes(); });
+  }
+  ref(name){ return (el) => { this[name] = el; }; }
+  async hash(rgba){ try { const h = await crypto.subtle.digest('SHA-256', rgba); return [...new Uint8Array(h)].map(x => x.toString(16).padStart(2,'0')).join(''); } catch(e){ return null; } }
+  headBox(C, key, rows){ let y0 = 1e9, y1 = -1; for(const row of rows) for(const c of row){ const R = C.render(Object.assign({ build:key }, c)); for(let i = 0; i < R.face.length; i++){ const f = R.face[i]; if(f >= 0 && R.faces[f].head){ const y = Math.floor(i / R.W); if(y < y0) y0 = y; if(y > y1) y1 = y; } } } return [Math.max(0, y0 - 3), Math.min(C.H, y1 + 5)]; }
+  paintCrop(cv, C, key, rows, k){ if(!cv) return; const K = window.HHKit, g = K.renderGrid(C, key, rows, 1), [y0, y1] = this.headBox(C, key, rows), x0 = 26, x1 = 54, cw = x1 - x0, ch = y1 - y0, cols = rows[0].length;
+    cv.width = cols * cw * k; cv.height = rows.length * ch * k; const ctx = cv.getContext('2d'); ctx.fillStyle = '#16252d'; ctx.fillRect(0, 0, cv.width, cv.height);
+    rows.forEach((row, ri) => row.forEach((c, ci) => { for(let y = 0; y < ch; y++) for(let x = 0; x < cw; x++){ const i = ((ri * C.H + y0 + y) * g.W + ci * C.W + x0 + x) * 4; if(!g.rgba[i+3]) continue; ctx.fillStyle = 'rgb(' + g.rgba[i] + ',' + g.rgba[i+1] + ',' + g.rgba[i+2] + ')'; ctx.fillRect((ci * cw + x) * k, (ri * ch + y) * k, k, k); } }));
+    ctx.fillStyle = '#0b141a'; for(let c = 1; c < cols; c++) ctx.fillRect(c * cw * k - 1, 0, 2, cv.height); for(let r = 1; r < rows.length; r++) ctx.fillRect(0, r * ch * k - 1, cv.width, 2); }
+  async drawStrips(){ const C = window.CharacterIso10, K = window.HHKit; if(!C || !K) return; const key = this.state.key;
+    const B = K.cellsOf(C, 'blink', key), L = K.cellsOf(C, 'look', key); this.paintCrop(this._blink, C, key, B, 4); this.paintCrop(this._look, C, key, L, 4);
+    const cmp = async (kind) => { const g = K.renderGrid(C, key, K.cellsOf(C, kind, key), 1), h = await this.hash(K.canon(g.rgba)), m = this.state.man && this.state.man.images.find(e => e.file === 'renders/1x/' + key + '.' + kind + '.png');
+      return h == null ? 'hash unavailable here' : !m ? 'rgba ' + h.slice(0, 12) + '… (manifest not readable here)' : (m.rgbaSha256 === h ? 'rgba ' + h.slice(0, 12) + '… matches the manifest' : 'rgba ' + h.slice(0, 12) + '… DIFFERS from the manifest'); };
+    this.setState({ blinkHash:await cmp('blink'), lookHash:await cmp('look') }); }
+  download(kind, s){ const C = window.CharacterIso10, K = window.HHKit; if(!C || !K) return; const key = this.state.key, g = K.renderGrid(C, key, K.cellsOf(C, kind, key), s), cv = document.createElement('canvas'); cv.width = g.W; cv.height = g.H;
+    const ctx = cv.getContext('2d'), id = ctx.createImageData(g.W, g.H); id.data.set(K.canon(g.rgba)); ctx.putImageData(id, 0, 0);
+    cv.toBlob((b) => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = key + '.' + kind + '.' + s + 'x.png'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }, 'image/png'); }
+  drawFixes(){ const A = window.CharacterIso10_2, C = window.CharacterIso10, K = window.HHKit, cv = this._fix; if(!A || !C || !K || !cv) return; const ctx = cv.getContext('2d'); ctx.fillStyle = '#0f1a20'; ctx.fillRect(0, 0, cv.width, cv.height); ctx.imageSmoothingEnabled = false;
+    const r94 = C.randomBuild(K.mulberry32(253)), r102 = C.randomBuild(K.mulberry32(102));
+    const rows = [ { label:'sleep N', o:{ build:'deckboss', clip:'sleep', frame:0, dir:0 }, box:[0, 40, 80, 104], k:3 }, { label:'girl SW', o:{ build:'girl', clip:'idle', frame:0, dir:5 }, box:[28, 54, 52, 72], k:6 },
+      { label:'square + bob, E', o:{ build:r94, clip:'idle', frame:0, dir:2 }, box:[28, 42, 52, 62], k:6 }, { label:'lidded, knit', o:{ build:r102, clip:'idle', frame:0, dir:4, face:{ eyes:'open', brows:'knit', mouth:'flat' } }, box:[28, 44, 52, 62], k:6 },
+      { label:'paper boy, SE', o:{ build:'paperboy', clip:'idle', frame:0, dir:3 }, box:[28, 56, 52, 72], k:6 } ];
+    let x = 10, y = 0, rowH = 0; ctx.font = '11px IBM Plex Mono, monospace';
+    for(const r of rows){ const w = (r.box[2] - r.box[0]) * r.k, h = (r.box[3] - r.box[1]) * r.k; if(x + 2 * w + 8 > cv.width - 10){ x = 10; y += rowH + 34; rowH = 0; } rowH = Math.max(rowH, h);
+      [A, C].forEach((R0, j) => { const R = R0.render(r.o), X = x + j * (w + 8), Y = y + 24;
+        ctx.fillStyle = '#16252d'; ctx.fillRect(X, Y, w, h); ctx.strokeStyle = '#7a3a2e'; if(r.label === 'sleep N'){ ctx.strokeRect(X + 0.5, Y + (104 - r.box[1]) * r.k - 0.5, w - 1, 1); }
+        for(let y = r.box[1]; y < r.box[3]; y++) for(let xx = r.box[0]; xx < r.box[2]; xx++){ const i = (y * R.W + xx) * 4; if(!R.rgba[i+3]) continue; ctx.fillStyle = 'rgb(' + R.rgba[i] + ',' + R.rgba[i+1] + ',' + R.rgba[i+2] + ')'; ctx.fillRect(X + (xx - r.box[0]) * r.k, Y + (y - r.box[1]) * r.k, r.k, r.k); }
+        ctx.fillStyle = '#8d9a9d'; ctx.fillText((j ? '10.3 ' : '10.2 ') + r.label, X, Y - 8); });
+      x += 2 * w + 30; }
+    const used = y + rowH + 34; if(cv.height !== used){ const img = ctx.getImageData(0, 0, cv.width, used); cv.height = used; ctx.putImageData(img, 0, 0); } }
+  renderVals(){ const st = this.state, C = window.CharacterIso10, ok = st.ready && C;
+    const cast = ok ? C.CAST.map(k => ({ key:k, label:C.normBuild(k).label })) : [{ key:'fisher', label:'Fisher' }];
+    const turns = ok ? 'Turns used, bottom row: ' + window.HHKit.cellsOf(C, 'look', st.key)[1].map(c => c.look.yaw + '/' + c.look.pitch + (c.face.eyes !== 'open' ? ' ' + c.face.eyes : '')).join(' · ') : '';
+    return { status: st.err ? 'Could not load: ' + st.err : !ok ? 'Loading rig 10.3, its pose library, tools/kit.js and the frozen 10.2…' : 'Rig ' + C.revision + ' loaded with the frozen 10.2 (' + window.CharacterIso10_2.revision + '). Manifest ' + (st.man ? 'read: ' + st.man.images.length + ' images.' : 'not readable from here (open the page from a web server to compare hashes).'),
+      cast, key:st.key, label: ok ? C.normBuild(st.key).label.toUpperCase() : '', turns,
+      pick:(e) => this.setState({ key:e.target.value, blinkHash:'', lookHash:'' }, () => this.drawStrips()),
+      blinkRef:this.ref('_blink'), lookRef:this.ref('_look'), fixRef:this.ref('_fix'), blinkHash:st.blinkHash, lookHash:st.lookHash,
+      dlBlink1:() => this.download('blink', 1), dlBlink4:() => this.download('blink', 4), dlLook1:() => this.download('look', 1), dlLook4:() => this.download('look', 4) };
+  }
+}
+</script>
+</body>
+</html>

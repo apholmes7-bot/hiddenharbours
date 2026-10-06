@@ -13,7 +13,7 @@ using Debug = UnityEngine.Debug;
 namespace HiddenHarbours.Tests.RigBaking
 {
     /// <summary>
-    /// <b>THE RIG 10 BAKE (characterIsoRig10.js rev 10.2), HELD TO RIG 9.2'S GUARDS.</b>
+    /// <b>THE RIG 10 BAKE (characterIsoRig10.js rev 10.3), HELD TO RIG 9.2'S GUARDS.</b>
     ///
     /// <para>The rig 10 intake ports the bake onto rig 10 (<see cref="CharacterRigKit.Rig10"/>), and
     /// since its Phase B the committed skins are rig 10's. Every guard 9.2's bake answers to runs here on
@@ -22,11 +22,12 @@ namespace HiddenHarbours.Tests.RigBaking
     /// export's clips, the face and tool tracks, the blink, the look, the turn, the golden aim, and
     /// the ink against the rig's own render.</para>
     ///
-    /// <para>Three guards are rig 10's own, where 10.2 moved from 9.2: the cell (80 × 104 px, the feet
+    /// <para>Three guards are rig 10's own, where rig 10 moved from 9.2: the cell (80 × 104 px, the feet
     /// at (40, 90)); the face, whose marks cull by their own turn band (<c>az</c>) where 9.2's faces
     /// culled by a role's <c>minT</c> (<c>ROLE</c> is gone), with the groups <c>FACE_EMPTY</c> names
     /// binding no face; and the ink, which draws no keyline (owner, 10-01, ruling K4) and holds the
-    /// floors the rig's paint culls its marks at. 9.2's versions of the last two
+    /// floors the rig's paint culls its marks at (since 10.3 read from its TOL). The numbers 10.3 exports
+    /// (TOL, DITHER, INK, AIM) have guards of their own (CharacterSkinBakeGuardTests.V10Exports). 9.2's versions of the last two
     /// (<see cref="V9_EveryPresetBindsEveryFaceGroupOfTheRig"/>,
     /// <see cref="V9_TheInkIsTheRigsShadingAndRole"/>) read <c>ROLE</c> and stay rig 9's.</para>
     ///
@@ -59,7 +60,7 @@ namespace HiddenHarbours.Tests.RigBaking
             return bake;
         }
 
-        /// <summary>Rig 10.2 as the guard bodies read it.</summary>
+        /// <summary>Rig 10 (10.3) as the guard bodies read it.</summary>
         GuardRig9 Guard10 => _guard10 ??= new GuardRig9(CharacterRigKit.Rig10, () => V10Host, V10Bake);
 
         /// <summary>The fresh bake of <paramref name="preset"/> from the kit the baker loads today
@@ -137,8 +138,9 @@ namespace HiddenHarbours.Tests.RigBaking
             TheTurnComposesAsTheRigsLookDoes(Guard10);
 
         /// <summary><see cref="V9_TheLookPortLandsWhereTheRigsGoldenCheckDoes"/> on rig 10, against rig
-        /// 10's golden report, whose bars are its own (2.82° to 3.73° at 10.2, over 21 targets each:
-        /// the taller body aims less closely than 9.2's 1.70° and 2.40°).</summary>
+        /// 10's golden report, whose bars are its own (2.82° to 3.73° at 10.2 and at 10.3, over 21 targets each:
+        /// the taller body aims less closely than 9.2's 1.70° and 2.40°), on the targets rig 10.3 exports
+        /// (<c>AIM</c>) and inside its <c>AIM.bar_deg</c> (4°, ruled for every build).</summary>
         [Test]
         public void V10_TheLookPortLandsWhereTheRigsGoldenCheckDoes() =>
             TheLookPortLandsWhereTheRigsGoldenCheckDoes(Guard10);
@@ -156,7 +158,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
         /// <summary>
         /// Every def carries the rig's cell, read off the rig (<c>W</c>, <c>H</c>, <c>pivot</c>,
-        /// <c>PX</c>, <c>ELEV</c>): 80 × 104 px with the feet at (40, 90) at 10.2, where 9.2's was
+        /// <c>PX</c>, <c>ELEV</c>): 80 × 104 px with the feet at (40, 90) since 10.0, where 9.2's was
         /// 64 × 92 at (32, 82). The figure is painted and measured in that cell, so a def that kept
         /// 9.2's would crop rig 10's taller body.
         /// </summary>
@@ -322,12 +324,14 @@ namespace HiddenHarbours.Tests.RigBaking
         /// 9.2's, where 10.2 moved: <c>SHADING.edge</c>, <c>keylineMix</c> and <c>keyline</c>, and the head
         /// snap; no keyline unless a caller asks (<c>SHADING.keylineDefault</c> is false and the paint's
         /// one keyline test is <c>o.keyline===true</c>), so the def draws none (owner, 10-01, K4); no
-        /// face culled by a role (the rig has no <c>ROLE</c>); and the floors the paint culls at, each
-        /// read off its source and held there once: the face cull
-        /// (<c>toward&lt;=Math.max(floor, f.minT||0)</c>), the marks' own loop
-        /// (<c>-ny*C.ce+nz*C.se&lt;=floor</c>: the same number, as the def carries one floor), the
-        /// shortest horizontal normal a mark's band is asked of (<c>hh&lt;floor</c>), and how near a
-        /// pixel edge a mark's centre may fall (one number for x and y).
+        /// face culled by a role (the rig has no <c>ROLE</c>); and the floors the paint culls at. Since
+        /// 10.3 the rig exports them (<c>TOL</c>) and its paint reads them there, so each is read here in
+        /// V8 and its site held in the paint once: the face cull and the marks' own loop at
+        /// <c>TOL.cull</c> (<c>toward&lt;=Math.max(TOL.cull, f.minT||0)</c> and
+        /// <c>-ny*C.ce+nz*C.se&lt;=TOL.cull</c>: one floor, as the def carries one), and how near a pixel
+        /// edge a mark's centre may fall at <c>TOL.markEdge</c> (across and down). The shortest horizontal
+        /// normal a mark's band is asked of (<c>hh&lt;floor</c>) is still a literal in its paint, which
+        /// TOL names no key for, read off its source and held there once.
         /// </summary>
         [Test]
         public void V10_TheInkIsTheRigsShadingWithNoKeylineAndTheMarksFloors()
@@ -348,19 +352,22 @@ namespace HiddenHarbours.Tests.RigBaking
             byte Hex(int at) => byte.Parse(hex.Substring(at, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 
             string source = File.ReadAllText(Path.Combine(RigCatalog.RepoRoot, guard.Kit.ScriptPath));
-            double floor = OneLiteral10(source, "its face cull (toward <= Math.max(floor, f.minT||0))",
-                @"toward\s*<=\s*Math\.max\(\s*([0-9.eE+-]+)\s*,\s*f\.minT\s*\|\|\s*0\s*\)");
-            double markFloor = OneLiteral10(source, "its marks' cull (-ny*C.ce+nz*C.se <= floor)",
-                @"if\s*\(\s*-ny\s*\*\s*C\.ce\s*\+\s*nz\s*\*\s*C\.se\s*<=\s*([0-9.eE+-]+)\s*\)\s*continue\s*;");
+            string[] tol = host.EvaluateString(
+                "(function(){var T=" + g + ".TOL;return T&&typeof T==='object'?" +
+                "[String(T.cull),String(T.markEdge)].join('|'):'none';})()").Split('|');
+            Assert.AreEqual(2, tol.Length, "Rig 10 exports no TOL; since 10.3 its paint reads its floors from there.");
+            double floor = D9(tol[0]), edge = D9(tol[1]);
+            Assert.Greater(floor, 0, "Rig 10's TOL.cull.");
+            Assert.Greater(edge, 0, "Rig 10's TOL.markEdge.");
+            OneSite10(source, "its face cull at TOL.cull (toward <= Math.max(TOL.cull, f.minT||0))",
+                @"toward\s*<=\s*Math\.max\(\s*TOL\.cull\s*,\s*f\.minT\s*\|\|\s*0\s*\)");
+            OneSite10(source, "its marks' cull at TOL.cull (-ny*C.ce+nz*C.se <= TOL.cull)",
+                @"if\s*\(\s*-ny\s*\*\s*C\.ce\s*\+\s*nz\s*\*\s*C\.se\s*<=\s*TOL\.cull\s*\)\s*continue\s*;");
             double azFloor = OneLiteral10(source, "its marks' band floor (hh < floor || -ny/hh <= f.az)",
                 @"if\s*\(\s*hh\s*<\s*([0-9.eE+-]+)\s*\|\|\s*-ny\s*/\s*hh\s*<=\s*f\.az\s*\)\s*continue\s*;");
-            MatchCollection edges = Regex.Matches(source,
-                @"Math\.abs\(\s*cx\s*-\s*Math\.round\(\s*cx\s*\)\s*\)\s*<\s*([0-9.eE+-]+)\s*\|\|\s*" +
-                @"Math\.abs\(\s*cy\s*-\s*Math\.round\(\s*cy\s*\)\s*\)\s*<\s*([0-9.eE+-]+)");
-            Assert.AreEqual(1, edges.Count, $"Rig 10's paint holds its marks' pixel-edge test {edges.Count} times, not once.");
-            double edgeX = D9(edges[0].Groups[1].Value), edgeY = D9(edges[0].Groups[2].Value);
-            Assert.AreEqual(edgeX, edgeY, "Rig 10's marks keep off a pixel edge by two numbers; the def carries one.");
-            Assert.AreEqual(floor, markFloor, "Rig 10 culls its marks at a floor its faces do not use; the def carries one.");
+            OneSite10(source, "its marks' pixel-edge test at TOL.markEdge, across and down",
+                @"Math\.abs\(\s*cx\s*-\s*Math\.round\(\s*cx\s*\)\s*\)\s*<\s*TOL\.markEdge\s*\|\|\s*" +
+                @"Math\.abs\(\s*cy\s*-\s*Math\.round\(\s*cy\s*\)\s*\)\s*<\s*TOL\.markEdge");
             int asked = Regex.Matches(source, @"o\.keyline\s*===\s*true").Count;
             int drawn = Regex.Matches(source, @"o\.keyline\s*!==\s*false").Count;
             Assert.AreEqual(1, asked, $"Rig 10's paint asks for its keyline (o.keyline===true) {asked} times, not once.");
@@ -381,13 +388,21 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.IsFalse(def.KeylineDefault,
                     $"{preset}: the def draws a keyline unasked; rig 10 draws none unless a caller asks (K4).");
                 Assert.AreEqual(Vector4.zero, def.FaceMinToward, $"{preset}: the def culls faces by a role's minT.");
-                Assert.AreEqual((float)floor, def.FaceCullFloor, $"{preset}: the paint's cull floor.");
+                Assert.AreEqual((float)floor, def.FaceCullFloor, $"{preset}: TOL.cull, the paint's cull floor.");
                 Assert.AreEqual((float)azFloor, def.FaceMarkAzFloor, $"{preset}: the marks' band floor.");
-                Assert.AreEqual((float)edgeX, def.FaceMarkEdge, $"{preset}: the marks' pixel edge.");
+                Assert.AreEqual((float)edge, def.FaceMarkEdge, $"{preset}: TOL.markEdge, the marks' pixel edge.");
             }
             Debug.Log($"[CharacterSkinBakeGuardTests] v10 ink: edge {s[0]}, keyline {hex} mix {s[1]}, drawn by default " +
-                      $"{s[4]}, head snap {s[3] == "1"}; floors: faces and marks {R9(floor)}, band {R9(azFloor)}, " +
-                      $"pixel edge {R9(edgeX)}.");
+                      $"{s[4]}, head snap {s[3] == "1"}; floors: faces and marks TOL.cull {R9(floor)}, band {R9(azFloor)} " +
+                      $"(a literal in paint), pixel edge TOL.markEdge {R9(edge)}.");
+        }
+
+        /// <summary>Hold that the rig's paint reads a <c>TOL</c> key at the site
+        /// <paramref name="pattern"/> matches, once.</summary>
+        static void OneSite10(string source, string what, string pattern)
+        {
+            int n = Regex.Matches(source, pattern).Count;
+            Assert.AreEqual(1, n, $"Rig 10's paint holds {what} {n} times, not once.");
         }
 
         /// <summary>The one literal <paramref name="pattern"/> captures in the rig's source.</summary>
