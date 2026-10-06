@@ -631,7 +631,8 @@ namespace HiddenHarbours.Tests.RigBaking
         /// (2026-09-26) that is a <see cref="CharacterSkinAssetBaker.ComposeV9"/> kit, rig 9 and since
         /// the rig 10 intake's Phase B (2026-10-02) rig 10 (<see cref="LiveBake"/>), so the composed side
         /// is <c>ComposeV9</c> for the player, held to the kit's own tolerance
-        /// (<see cref="CharacterSkinExtractor.V9Tolerance"/>, the same 1e-6 m for both), and the face is
+        /// (<see cref="CharacterSkinExtractor.GateTolerance9"/>: rig 10.3's <c>TOL.gate_m</c>, rig 9's
+        /// <see cref="CharacterSkinExtractor.V9Tolerance"/>, the same 1e-6 m for both), and the face is
         /// the kit's whole face, every face group bound since character PR 2a
         /// (<see cref="CharacterSkinExtractor.FaceMeshJs9"/>) and on rig 10 its point marks, not the
         /// pass-06 layers above.</para>

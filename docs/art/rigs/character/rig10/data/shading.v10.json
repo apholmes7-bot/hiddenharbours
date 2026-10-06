@@ -1,8 +1,8 @@
 {
- "schema": "hidden-harbours/character-shading@2",
+ "schema": "hidden-harbours/character-shading@3",
  "rig": "characterIsoRig10.js",
- "revision": "10.2",
- "derivedFromRigSha256": "cbd50b54001d504d711a6a2e96ea01b1843a12e8b30665c9002e6ce45a7ed814",
+ "revision": "10.3",
+ "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
  "build": "fisher",
  "key": [
   0,
@@ -427,5 +427,94 @@
    "color": "#6b4028",
    "fixed": true
   }
+ },
+ "dither": {
+  "used": false,
+  "bayer4": [
+   [
+    0,
+    8,
+    2,
+    10
+   ],
+   [
+    12,
+    4,
+    14,
+    6
+   ],
+   [
+    3,
+    11,
+    1,
+    9
+   ],
+   [
+    15,
+    7,
+    13,
+    5
+   ]
+  ],
+  "index": "bayer4[x & 3][y & 3], x the cell column, y the cell row",
+  "threshold": "(m + 0.5) / 16",
+  "note": "no pixel of rig 10 is dithered: the step is clamp(round(...)), never a threshold against this matrix"
+ },
+ "tolerance": {
+  "gate_m": 0.000001,
+  "inside": 0.000001,
+  "area": 1e-9,
+  "cull": 0.0001,
+  "markEdge": 0.0001,
+  "depthScale": 10000000,
+  "shadeScale": 1000000000,
+  "tieDepth": 1e-9,
+  "use": {
+   "gate_m": "the round trip, the loops, the hand-offs and the rocked skin are held equal to this, in metres",
+   "inside": "a pixel centre (x + 0.5, y + 0.5) is inside a triangle when each barycentric weight is >= -inside",
+   "area": "a triangle whose screen area is below this draws nothing",
+   "cull": "a face draws when its toward-camera component is > max(cull, minT); a point mark when it is > cull",
+   "markEdge": "a point mark whose projected centre is within markEdge of a pixel edge draws nothing",
+   "depthScale": "the z-test compares round((d - db) * depthScale) / depthScale",
+   "shadeScale": "the shade value s is round(s * shadeScale) / shadeScale before the step",
+   "tieDepth": "the A/B keyline takes its nearest neighbour by depth, ties within tieDepth going to the darker"
+  }
+ },
+ "ink": {
+  "colours": [
+   "#12181b",
+   "#243036"
+  ],
+  "roles": {
+   "0": "material ink: the open eye and the gaze pupil; the brow is mix(hair ramp[0], INK[0], 0.34)",
+   "1": "material ink2: the half-shut round and lidded eye; the round eye's gaze turned in, seen from the side",
+   "keyline": "SHADING.keyline #101a19 is the A/B keyline's tint (keylineDefault false), a colour of its own, not INK[0]",
+   "iris": "no rig 10 face is drawn in iris: since 10.0 the eye is one pixel of ink, so EYES only names the colour"
+  },
+  "eyeWhite": "#e6e9e2"
+ },
+ "aim": {
+  "bar_deg": 4,
+  "share": 1,
+  "distance_m": 2,
+  "bearings_deg": [
+   -50,
+   -30,
+   -15,
+   0,
+   15,
+   30,
+   50
+  ],
+  "dz_m": [
+   -0.35,
+   0,
+   0.25
+  ],
+  "clip": "idle",
+  "frame": 0,
+  "targets": "from the head point (head bone * headMid) of idle f0, unturned: distance_m away at each bearing (from the figure's +y toward +x) and at each height dz; only the targets whose need is inside the limits",
+  "measure": "turn = lookAt(S, target, share), applied: the angle between the turned head bone's +y and the target seen from the turned head point",
+  "measured": "10.3 on the 30 builds: 2.82 to 2.98 deg, the seven elders 3.65 to 3.73 (9.2: 1.70, the skipper and Nan 2.40)"
  }
 }
