@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb11aca9151bc16fc634998c41a2c3fa, type: 3}
+  m_Name: Form_OldMan
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.FormDef
+  Id: form.stp_old_man
+  DisplayName: The Old Man
+  Kind: stack
+  Stone: sandstone
+  BatterDeg: 84
+  Brow: []
+  TopInset: 0.4
+  Top: 6.4
+  LedgeHeight: 0
+  LedgeOut: 0
+  LedgeEastOf: 0
+  Centre: {x: 70, y: -79.5}
+  Radii: {x: 2.8, y: 2.4}
+  RotationDeg: -10
+  PlinthRadii: {x: 3.5, y: 3.5}
+  PlinthTop: -1
+  PlinthFall: 0
+  PlinthSkirt: {x: 0.85, y: 1.9}
+  SkirtLedgeRadii: {x: 0, y: 0}
+  SkirtLedgeTop: 0
+  Members: []
+  PlinthRadius: 3.5
+  PlinthSkirtSlope: 0.8
+  Feet:
+  - {x: 70, y: -79.5, z: 3.5}
+  Recipe: {fileID: 11400000, guid: ca719065258ff30cb60e6315e593f5af, type: 2}
+  SourceId: 
+  Why: 'A stack as tall as the Weather Cliff, 7.8 m off wall 042''s toe with a channel between. Strata 1 m. (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

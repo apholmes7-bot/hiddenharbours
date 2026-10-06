@@ -7,8 +7,8 @@ namespace HiddenHarbours.World
     /// <summary>
     /// The crossing's kinds (terrain pass 9 part 2 §5, layout B; p2_lib.derive2's bar steps): runnels and sand-wave lobes
     /// on the bar's flanks, the clam holes pulled back into their band, the 23 pools, and the bar's own paint. Part 2's
-    /// other steps (its coast, the flats, the plinths, its streams, ponds and creeks, the reef's pools and its paths) are
-    /// PR 5w's and do not run here.
+    /// south (its coast, the flats, the forms' feet and its creeks) is PR 5w's and lays paint only, here, before the bar's
+    /// (<see cref="South"/>): the ground file holds its heights, and PR 5 B its streams, ponds and still water.
     /// </summary>
     public sealed partial class TerrainPlanDerivation
     {
@@ -20,6 +20,7 @@ namespace HiddenHarbours.World
             if (bar == null) throw new InvalidOperationException("[TerrainPlan] the plan has no crossing.");
             var pools = _plan.Pools;
             Protection2(bar, pools);
+            SouthKeep(_pp2);                                                     // part 2's walls keep part 1's paint at their feet
             var E1 = _r.E1;
             var ke = new double[_n];
             double frozenAt = Num(_keep.FrozenAt);
@@ -74,7 +75,9 @@ namespace HiddenHarbours.World
                 if (!(!double.IsNaN(s) && !double.IsInfinity(s) && (_pe2[i] < 0.5 || !double.IsNaN(_still1[i])) && E[i] < s)) still[i] = double.NaN;
             }
             var z = (byte[])_r.Zone1.Clone();
+            South(z, Pz(E), E1, SouthKe(frozenAt));
             BarPaint(bar, z, Pz(E), still);
+            SouthFresh(z, Pz(E));
             _biome = BiomeOf(Pz(E), _secidx, _secw);
             double keepAbove = Num(_keep.KeepPaintAbove);
             for (int i = 0; i < _n; i++)

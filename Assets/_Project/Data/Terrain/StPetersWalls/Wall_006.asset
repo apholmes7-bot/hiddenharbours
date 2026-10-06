@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_006
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_006
+  Status: 0
+  SplitFrom: 
+  Follows: wall.stp_198
+  Rock: sandstone
+  Class: 4
+  Aspect: E
+  Batter: steep
+  Brow:
+  - {x: 187.78893, y: -13.375635}
+  - {x: 187.70908, y: -13.61269}
+  - {x: 187.62793, y: -13.849319}
+  - {x: 187.5455, y: -14.085492}
+  Toe:
+  - {x: 190.53511, y: -14.292082}
+  - {x: 190.44684, y: -14.543144}
+  - {x: 190.35715, y: -14.793647}
+  - {x: 190.26608, y: -15.043553}
+  DropMetres:
+  - 10
+  - 10
+  - 10
+  - 10
+  ToeElevations:
+  - -4
+  - -4
+  - -4
+  - -4
+  TextureBrow: []
+  Stations:
+  - 3
+  - 4
+  - 5
+  - 6
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9:
+  - 5.945536
+  - 5.9838567
+  - 5.954089
+  - 5.912785
+  ToePass9:
+  - -3.8924613
+  - -3.915843
+  - -3.966297
+  - -3.981219
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 6
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Kept as the scene had it at 883f27b5: the list''s row 006 (South Arm): kept. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k3-k6.'

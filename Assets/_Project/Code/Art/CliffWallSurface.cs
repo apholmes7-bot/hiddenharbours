@@ -55,6 +55,61 @@ namespace HiddenHarbours.Art
     }
 
     /// <summary>
+    /// The whole station past one end of a CUT wall (terrain PR 5w, the 1 m re-cut): where a chunk's first or last station
+    /// is cut from between two whole stations, this is the whole one beyond it, so the cut station can be drawn as a slice
+    /// of the face the two of them draw. Builder-pushed, like the stations; it draws nothing of its own.
+    /// </summary>
+    [System.Serializable]
+    public struct CliffWallSliceEnd
+    {
+        public Vector2 BrowPlan;
+        public Vector2 ToePlan;
+        public float DropMetres;
+        public float ToeElevation;
+        [Tooltip("Where its texture runs along: the brow, unless a top moved out kept its texture where it was.")]
+        public Vector2 TextureBrowPlan;
+
+        public CliffWallSliceEnd(Vector2 browPlan, Vector2 toePlan, float dropMetres, float toeElevation,
+                                 Vector2 textureBrowPlan)
+        {
+            BrowPlan = browPlan;
+            ToePlan = toePlan;
+            DropMetres = dropMetres;
+            ToeElevation = toeElevation;
+            TextureBrowPlan = textureBrowPlan;
+        }
+
+        public CliffWallSample Sample => new CliffWallSample(BrowPlan, ToePlan, DropMetres, ToeElevation);
+    }
+
+    /// <summary>
+    /// The columns a wall's mesh is laid on: the WHOLE stations it draws from (its own whole stations, and the slice end
+    /// past an end that is cut), the brows its texture runs along at each, and where each of the wall's own stations sits
+    /// among them: on its own column, or at a fraction of the way from one column to the next.
+    /// </summary>
+    public sealed class CliffWallColumns
+    {
+        public CliffWallSample[] Whole;
+        public Vector2[] AlongBrow;
+        /// <summary>Per station: the whole column at or before it.</summary>
+        public int[] Gap;
+        /// <summary>Per station: 0 on its column, else the fraction of the way on to the next.</summary>
+        public float[] At;
+        /// <summary>False: one column per station, laid and triangulated exactly as an uncut wall always was.</summary>
+        public bool Sliced;
+    }
+
+    /// <summary>One generated mesh's arrays, before they are a <see cref="Mesh"/>, so a test can read the exact floats.</summary>
+    public sealed class CliffWallMeshData
+    {
+        public Vector3[] Verts;
+        public Vector2[] Uvs;
+        public Vector2[] ElevationUv;
+        public Vector2[] SeaPlanUv;
+        public int[] Tris;
+    }
+
+    /// <summary>
     /// ONE CHUNK of standing cliff — a strip of face quads carrying
     /// <c>HiddenHarbours/CliffFace</c>, generated from the coast the region actually authored, displaced
     /// by the kit's own plan-displacement profile, stratified into rock bands, and finished at top and
@@ -103,6 +158,15 @@ namespace HiddenHarbours.Art
     /// invalid and the shader skips the band entirely, so it draws exactly the wall that shipped until the
     /// region builder is re-run.</para>
     ///
+    /// <para><b>⭐ A RE-CUT WALL DRAWS AS SLICES OF THE FACE IT HAD (terrain PR 5w).</b> Cutting a run finer (St
+    /// Peters' 1 m cut) sets stations between whole ones, and a chunk may start or end on one. Such a station is a
+    /// SLICE, not a new face: the mesh is laid on the WHOLE stations exactly as before (the whole station past a cut
+    /// end rides along as a <see cref="CliffWallSliceEnd"/>), and each cut station is the straight mix of the two
+    /// columns either side of it, in every channel. The quads it cuts are re-cut along their own diagonal, so every
+    /// new triangle lies inside one the whole face drew and draws exactly what that one drew there. A wall with no cut
+    /// station is laid and triangulated exactly as it always was, to the bit. Where a top was moved out, the texture
+    /// can keep running along where it was (<c>_textureBrowPlan</c>), and the run's offsets downstream with it.</para>
+    ///
     /// <para><b>Pure look.</b> Drives no sim and saves nothing (rule 5). Walkability at a cliff belongs to
     /// the terrain's own slope, not to this component — a wall is a picture OF the height field, and the
     /// height field remains the single source of truth for where a player may stand. The waterline is
@@ -127,6 +191,20 @@ namespace HiddenHarbours.Art
                  "(a scene saved before the waterline existed) leaves the waterline INERT for that chunk, " +
                  "which draws exactly the wall that shipped — a region builder re-run turns it on.")]
         [SerializeField] private float[] _toeElevations = new float[0];
+
+        [Header("A re-cut wall: slices of the face its whole stations draw (terrain PR 5w)")]
+        [Tooltip("Where the texture runs along at each station (world XY), where that is not the brow: a top the " +
+                 "builder moved out keeps the face's texture, and the run's offsets downstream, where they were. " +
+                 "Empty = the brow.")]
+        [SerializeField] private Vector2[] _textureBrowPlan = new Vector2[0];
+        [Tooltip("Per station: 0 for a whole station, else how far it is cut from the whole station before it " +
+                 "towards the one after (0..1). A cut station draws as that slice of the face the two of them draw, " +
+                 "in every channel, so cutting a wall finer moves no rock. Empty = every station whole.")]
+        [SerializeField] private float[] _sliceAt = new float[0];
+        [Tooltip("The whole station before the first one, when the first is cut (one, or none).")]
+        [SerializeField] private CliffWallSliceEnd[] _sliceBefore = new CliffWallSliceEnd[0];
+        [Tooltip("The whole station after the last one, when the last is cut (one, or none).")]
+        [SerializeField] private CliffWallSliceEnd[] _sliceAfter = new CliffWallSliceEnd[0];
 
         [Header("⭐ Run continuity — a chunk is a SLICE, and slicing must not show (B3)")]
         [Tooltip("Metres of shore already spent by earlier chunks of this RUN. Restart it at zero and " +
@@ -239,12 +317,18 @@ namespace HiddenHarbours.Art
                               float wallAzimuth, float batter, Vector3 bakeLight,
                               float faceMetresS, float faceMetresT, float subdivideMetres,
                               float profileMetres, float stripMetresT, float browLineAt,
-                              float[] toeElevations = null)
+                              float[] toeElevations = null,
+                              Vector2[] textureBrowPlan = null, float[] sliceAt = null,
+                              CliffWallSliceEnd[] sliceBefore = null, CliffWallSliceEnd[] sliceAfter = null)
         {
             _browPlan = browPlan ?? new Vector2[0];
             _toePlan = toePlan ?? new Vector2[0];
             _dropMetres = dropMetres ?? new float[0];
             _toeElevations = toeElevations ?? new float[0];
+            _textureBrowPlan = textureBrowPlan ?? new Vector2[0];
+            _sliceAt = sliceAt ?? new float[0];
+            _sliceBefore = sliceBefore ?? new CliffWallSliceEnd[0];
+            _sliceAfter = sliceAfter ?? new CliffWallSliceEnd[0];
             _material = material;
             _bands = bands ?? new CliffFaceBand[0];
             _profile = profile;
@@ -371,20 +455,31 @@ namespace HiddenHarbours.Art
                     : CliffWallGeometry.RowsBasisSurfaceMetres(samples),
                 _subdivideMetres);
 
+            // A re-cut wall is laid on its whole stations and sliced at its own (see the class note). Slice data
+            // that does not describe a slice is not guessed at: the wall draws its stations as columns, and says so.
+            if (!TryColumns(samples, _textureBrowPlan, _sliceAt, _sliceBefore, _sliceAfter,
+                            out CliffWallColumns columns, out string problem))
+            {
+                Debug.LogWarning($"[cliff-wall] '{name}': {problem} — drawing its stations unsliced.", this);
+                columns = Unsliced(samples);
+            }
+
             for (int b = 0; b < _bands.Length; b++)
             {
                 if (!_bands[b].HasChannels) continue;
                 string label = string.IsNullOrEmpty(_bands[b].Label) ? b.ToString() : _bands[b].Label;
-                BuildBand(samples, _bands[b], rows, BandChildPrefix + label, localOrder: 0);
+                BuildBand(columns, _bands[b], rows, BandChildPrefix + label, localOrder: 0);
             }
 
             // The decals ride ONE row band above the face so they composite over the rock they finish.
-            if (_browDecal != null) BuildDecal(samples, _browDecal, brow: true, BrowChildName);
-            if (_toeDecal != null) BuildDecal(samples, _toeDecal, brow: false, ToeChildName);
+            if (_browDecal != null) BuildDecal(columns, _browDecal, brow: true, BrowChildName);
+            if (_toeDecal != null) BuildDecal(columns, _toeDecal, brow: false, ToeChildName);
         }
 
-        private static CliffWallSample[] BuildSamples(Vector2[] brow, Vector2[] toe, float[] drop,
-                                                      float[] toeElevation = null)
+        /// <summary>A chunk's stations as samples, the way <see cref="Rebuild"/> reads its serialized lines. Public so a
+        /// test lays a wall's mesh from the same samples the component would.</summary>
+        public static CliffWallSample[] BuildSamples(Vector2[] brow, Vector2[] toe, float[] drop,
+                                                     float[] toeElevation = null)
         {
             int n = brow == null ? 0 : brow.Length;
             if (toe == null || drop == null || toe.Length < n || drop.Length < n) n = 0;
@@ -434,66 +529,15 @@ namespace HiddenHarbours.Art
             return CliffWallGeometry.ProfileMetresFromGrey(grey, _profileMetres);
         }
 
-        private void BuildBand(CliffWallSample[] samples, in CliffFaceBand band, int rows,
+        private void BuildBand(CliffWallColumns columns, in CliffFaceBand band, int rows,
                                string childName, int localOrder)
         {
-            int stations = samples.Length;
-            var verts = new Vector3[stations * (rows + 1)];
-            var uvs = new Vector2[verts.Length];
-            var elevationUv = new Vector2[verts.Length];
-            var seaPlanUv = new Vector2[verts.Length];
-            var tris = new int[(stations - 1) * rows * 6];
             float elevationValid = HasToeElevations ? 1f : 0f;
-
-            Vector3 origin = transform.position;
-            float along = 0f;                       // plan arc length down the shore, metres
-
-            for (int c = 0; c < stations; c++)
-            {
-                if (c > 0) along += Vector2.Distance(samples[c - 1].BrowPlan, samples[c].BrowPlan);
-
-                CliffWallSample s = samples[c];
-                Vector2 brow = s.BrowPlan;
-                Vector2 toe = CliffWallGeometry.ToeScreen(in s);
-                Vector2 outward = CliffWallGeometry.OutwardPlan(in s);
-                float surface = Mathf.Max(1e-4f, CliffWallGeometry.SurfaceLengthMetres(in s));
-                float u = CliffWallGeometry.TileU(_alongOffsetMetres + along, _faceMetresS);
-
-                // A band is bounded in DEPTH below the brow, so each station converts it to its own t —
-                // which is what lets two bands meet exactly at every station of a face whose height is
-                // changing under them. A station shorter than the band's start collapses to the toe,
-                // which is exactly right: on a face shorter than the soil horizon there is no rock band.
-                float t0 = Mathf.Clamp01(band.StartSurfaceMetres / surface);
-                float t1 = band.EndSurfaceMetres > band.StartSurfaceMetres
-                         ? Mathf.Clamp01(band.EndSurfaceMetres / surface)
-                         : 1f;
-                if (t1 < t0) t1 = t0;
-
-                for (int r = 0; r <= rows; r++)
-                {
-                    float t = Mathf.Lerp(t0, t1, (float)r / rows);
-                    Vector2 p = Vector2.Lerp(brow, toe, t) + outward * DisplacementAt(u, t);
-
-                    int idx = c * (rows + 1) + r;
-                    verts[idx] = new Vector3(p.x - origin.x, p.y - origin.y, 0f);
-                    // v counts SURFACE metres from the BAND's own top, never height and never drawn
-                    // screen height — the one rule the kit states twice and the reason _TileMetresT is
-                    // not asked of the shader.
-                    uvs[idx] = new Vector2(
-                        u, CliffWallGeometry.TileV(surface * t - band.StartSurfaceMetres, _faceMetresT));
-                    // The elevation walks the SURFACE parameter, brow → toe, which is the row parameter
-                    // the geometry is laid on — so the waterline crossing lands on the rows the mesh
-                    // already has instead of between them.
-                    elevationUv[idx] = new Vector2(
-                        CliffWaterlineMath.ElevationAt(s.ToeElevation + s.DropMetres, s.DropMetres, t),
-                        elevationValid);
-                    seaPlanUv[idx] = s.ToePlan;
-                }
-            }
-
-            Triangulate(tris, stations, rows);
-            Emit(childName, verts, uvs, tris, band.Unlit, band.Normal, band.Mask, localOrder,
-                 elevationUv, seaPlanUv);
+            CliffWallMeshData m = FaceMesh(columns, band.StartSurfaceMetres, band.EndSurfaceMetres, rows,
+                                           _alongOffsetMetres, _faceMetresS, _faceMetresT, DisplacementAt,
+                                           elevationValid, transform.position);
+            Emit(childName, m.Verts, m.Uvs, m.Tris, band.Unlit, band.Normal, band.Mask, localOrder,
+                 m.ElevationUv, m.SeaPlanUv);
         }
 
         /// <summary>
@@ -508,37 +552,255 @@ namespace HiddenHarbours.Art
         /// FACE, so it follows brow-to-toe in surface metres and samples the profile at the matching
         /// depth, exactly as the rock under it does.</para>
         /// </summary>
-        private void BuildDecal(CliffWallSample[] samples, Texture2D strip, bool brow, string childName)
+        private void BuildDecal(CliffWallColumns columns, Texture2D strip, bool brow, string childName)
         {
-            int stations = samples.Length;
-            int rows = Mathf.Max(2, Mathf.CeilToInt(_stripMetresT / Mathf.Max(0.01f, _subdivideMetres)));
+            float elevationValid = HasToeElevations ? 1f : 0f;
+            CliffWallMeshData m = DecalMesh(columns, brow, _stripMetresT, _browLineAt, _subdivideMetres,
+                                            _alongOffsetMetres, _faceMetresS, DisplacementAt, elevationValid,
+                                            transform.position);
+            // ⭐ localOrder 1: INSIDE the sorting group, so a decal composites over the rock it finishes
+            // without spending an order of the region's decor band.
+            Emit(childName, m.Verts, m.Uvs, m.Tris, strip, null, null, localOrder: 1,
+                 m.ElevationUv, m.SeaPlanUv, decal: true);
+        }
 
-            float inland = CliffWallGeometry.BrowDecalInlandMetres(_stripMetresT, _browLineAt);
-            float browFace = CliffWallGeometry.BrowDecalFaceMetres(_stripMetresT, _browLineAt);
-            float toeFace = CliffWallGeometry.ToeDecalFaceMetres(_stripMetresT);
-            float line = Mathf.Clamp(_browLineAt, 1e-3f, 1f - 1e-3f);
+        // ── The mesh as data ────────────────────────────────────────────────────────────────────────
+        // Static and engine-light (the profile is read through a delegate, the origin is passed in), so a
+        // test lays the exact floats a chunk draws with no scene, texture or renderer.
+
+        /// <summary>How far (m) a cut station may sit off the slice its whole stations draw at its fraction, in brow,
+        /// toe, drop, toe elevation or texture brow, before its slice data is refused. The builder writes exact mixes.</summary>
+        public const float SliceToleranceMetres = 1e-3f;
+
+        /// <summary>One column per station, along the brows: how every wall was laid before the re-cut, and how a wall
+        /// with no cut station still is.</summary>
+        public static CliffWallColumns Unsliced(CliffWallSample[] samples)
+        {
+            int n = samples.Length;
+            var alongBrow = new Vector2[n];
+            var gap = new int[n];
+            for (int i = 0; i < n; i++)
+            {
+                alongBrow[i] = samples[i].BrowPlan;
+                gap[i] = i;
+            }
+            return new CliffWallColumns
+            {
+                Whole = samples, AlongBrow = alongBrow, Gap = gap, At = new float[n], Sliced = false,
+            };
+        }
+
+        /// <summary>
+        /// The columns a chunk's stations are laid on, from its slice data, all of it optional: none at all is
+        /// <see cref="Unsliced"/>, and texture brows alone keep one column per station. False, with the reason, where
+        /// the data does not describe a slice: a length does not match, a cut end has no whole station past it (or a
+        /// whole one has one), the cuts do not run in order, or a cut station is not the straight mix of the whole
+        /// stations either side of it.
+        /// </summary>
+        public static bool TryColumns(CliffWallSample[] samples, Vector2[] textureBrowPlan, float[] sliceAt,
+                                      CliffWallSliceEnd[] sliceBefore, CliffWallSliceEnd[] sliceAfter,
+                                      out CliffWallColumns columns, out string problem)
+        {
+            columns = null;
+            problem = null;
+            int n = samples.Length;
+            int texN = textureBrowPlan == null ? 0 : textureBrowPlan.Length;
+            int atN = sliceAt == null ? 0 : sliceAt.Length;
+            int beforeN = sliceBefore == null ? 0 : sliceBefore.Length;
+            int afterN = sliceAfter == null ? 0 : sliceAfter.Length;
+            if (texN != 0 && texN != n) { problem = $"{texN} texture brows for {n} stations"; return false; }
+            if (atN != 0 && atN != n) { problem = $"{atN} slice fractions for {n} stations"; return false; }
+
+            bool anyCut = false;
+            for (int i = 0; i < atN; i++)
+            {
+                if (!(sliceAt[i] >= 0f && sliceAt[i] < 1f))
+                {
+                    problem = $"station {i} is cut at {sliceAt[i]}, outside [0, 1)";
+                    return false;
+                }
+                if (sliceAt[i] > 0f) anyCut = true;
+            }
+            bool firstCut = anyCut && sliceAt[0] > 0f;
+            bool lastCut = anyCut && sliceAt[n - 1] > 0f;
+            if (beforeN != (firstCut ? 1 : 0))
+            {
+                problem = $"{beforeN} whole stations before a first station cut at {(atN == 0 ? 0f : sliceAt[0])}";
+                return false;
+            }
+            if (afterN != (lastCut ? 1 : 0))
+            {
+                problem = $"{afterN} whole stations after a last station cut at {(atN == 0 ? 0f : sliceAt[n - 1])}";
+                return false;
+            }
+
+            if (!anyCut)
+            {
+                columns = Unsliced(samples);
+                if (texN != 0) columns.AlongBrow = (Vector2[])textureBrowPlan.Clone();
+                return true;
+            }
+
+            var whole = new List<CliffWallSample>(n + 2);
+            var alongBrow = new List<Vector2>(n + 2);
+            var gap = new int[n];
+            var at = new float[n];
+            if (firstCut)
+            {
+                whole.Add(sliceBefore[0].Sample);
+                alongBrow.Add(sliceBefore[0].TextureBrowPlan);
+            }
+            for (int i = 0; i < n; i++)
+            {
+                if (sliceAt[i] == 0f)
+                {
+                    whole.Add(samples[i]);
+                    alongBrow.Add(texN == 0 ? samples[i].BrowPlan : textureBrowPlan[i]);
+                }
+                gap[i] = whole.Count - 1;
+                at[i] = sliceAt[i];
+                if (i > 0 && gap[i] == gap[i - 1] && !(at[i] > at[i - 1]))
+                {
+                    problem = $"station {i} is cut at {at[i]}, not past station {i - 1} at {at[i - 1]}";
+                    return false;
+                }
+            }
+            if (lastCut)
+            {
+                whole.Add(sliceAfter[0].Sample);
+                alongBrow.Add(sliceAfter[0].TextureBrowPlan);
+            }
+
+            for (int i = 0; i < n; i++)
+            {
+                float f = at[i];
+                if (f == 0f) continue;
+                CliffWallSample a = whole[gap[i]], b = whole[gap[i] + 1], s = samples[i];
+                Vector2 tex = texN == 0 ? s.BrowPlan : textureBrowPlan[i];
+                float off = Mathf.Max(
+                    Mathf.Max(Vector2.Distance(s.BrowPlan, Vector2.LerpUnclamped(a.BrowPlan, b.BrowPlan, f)),
+                              Vector2.Distance(s.ToePlan, Vector2.LerpUnclamped(a.ToePlan, b.ToePlan, f))),
+                    Mathf.Max(Mathf.Abs(s.DropMetres - Mathf.LerpUnclamped(a.DropMetres, b.DropMetres, f)),
+                              Mathf.Abs(s.ToeElevation - Mathf.LerpUnclamped(a.ToeElevation, b.ToeElevation, f))));
+                off = Mathf.Max(off, Vector2.Distance(
+                    tex, Vector2.LerpUnclamped(alongBrow[gap[i]], alongBrow[gap[i] + 1], f)));
+                if (!(off <= SliceToleranceMetres))
+                {
+                    problem = $"station {i} sits {off:0.####} m off the slice at {f} of the stations either side";
+                    return false;
+                }
+            }
+
+            columns = new CliffWallColumns
+            {
+                Whole = whole.ToArray(), AlongBrow = alongBrow.ToArray(), Gap = gap, At = at, Sliced = true,
+            };
+            return true;
+        }
+
+        /// <summary>
+        /// One band's mesh: the face between two depths below the brow, laid on <paramref name="columns"/>. A wall with
+        /// no cut station is laid and triangulated exactly as it always was; a cut one is laid on its whole stations
+        /// and then sliced (<see cref="Slice"/>). <paramref name="displacement"/> is the profile read, (u, t) → metres.
+        /// </summary>
+        public static CliffWallMeshData FaceMesh(CliffWallColumns columns, float startSurfaceMetres,
+                                                 float endSurfaceMetres, int rows, float alongOffsetMetres,
+                                                 float faceMetresS, float faceMetresT,
+                                                 System.Func<float, float, float> displacement,
+                                                 float elevationValid, Vector3 origin)
+        {
+            CliffWallSample[] samples = columns.Whole;
+            int stations = samples.Length;
+            var verts = new Vector3[stations * (rows + 1)];
+            var uvs = new Vector2[verts.Length];
+            var elevationUv = new Vector2[verts.Length];
+            var seaPlanUv = new Vector2[verts.Length];
+
+            float along = 0f;                       // plan arc length down the shore, metres
+
+            for (int c = 0; c < stations; c++)
+            {
+                // Along where the texture runs: the brow, unless a top was moved out (see the class note).
+                if (c > 0) along += Vector2.Distance(columns.AlongBrow[c - 1], columns.AlongBrow[c]);
+
+                CliffWallSample s = samples[c];
+                Vector2 brow = s.BrowPlan;
+                Vector2 toe = CliffWallGeometry.ToeScreen(in s);
+                Vector2 outward = CliffWallGeometry.OutwardPlan(in s);
+                float surface = Mathf.Max(1e-4f, CliffWallGeometry.SurfaceLengthMetres(in s));
+                float u = CliffWallGeometry.TileU(alongOffsetMetres + along, faceMetresS);
+
+                // A band is bounded in DEPTH below the brow, so each station converts it to its own t —
+                // which is what lets two bands meet exactly at every station of a face whose height is
+                // changing under them. A station shorter than the band's start collapses to the toe,
+                // which is exactly right: on a face shorter than the soil horizon there is no rock band.
+                float t0 = Mathf.Clamp01(startSurfaceMetres / surface);
+                float t1 = endSurfaceMetres > startSurfaceMetres
+                         ? Mathf.Clamp01(endSurfaceMetres / surface)
+                         : 1f;
+                if (t1 < t0) t1 = t0;
+
+                for (int r = 0; r <= rows; r++)
+                {
+                    float t = Mathf.Lerp(t0, t1, (float)r / rows);
+                    Vector2 p = Vector2.Lerp(brow, toe, t) + outward * displacement(u, t);
+
+                    int idx = c * (rows + 1) + r;
+                    verts[idx] = new Vector3(p.x - origin.x, p.y - origin.y, 0f);
+                    // v counts SURFACE metres from the BAND's own top, never height and never drawn
+                    // screen height — the one rule the kit states twice and the reason _TileMetresT is
+                    // not asked of the shader.
+                    uvs[idx] = new Vector2(
+                        u, CliffWallGeometry.TileV(surface * t - startSurfaceMetres, faceMetresT));
+                    // The elevation walks the SURFACE parameter, brow → toe, which is the row parameter
+                    // the geometry is laid on — so the waterline crossing lands on the rows the mesh
+                    // already has instead of between them.
+                    elevationUv[idx] = new Vector2(
+                        CliffWaterlineMath.ElevationAt(s.ToeElevation + s.DropMetres, s.DropMetres, t),
+                        elevationValid);
+                    seaPlanUv[idx] = s.ToePlan;
+                }
+            }
+
+            return Laid(columns, rows, verts, uvs, elevationUv, seaPlanUv);
+        }
+
+        /// <summary>
+        /// A brow (<paramref name="brow"/> true) or toe strip's mesh, laid on <paramref name="columns"/> the way
+        /// <see cref="FaceMesh"/> lays a band, and sliced the same way where a station is cut.
+        /// </summary>
+        public static CliffWallMeshData DecalMesh(CliffWallColumns columns, bool brow, float stripMetresT,
+                                                  float browLineAt, float subdivideMetres, float alongOffsetMetres,
+                                                  float faceMetresS, System.Func<float, float, float> displacement,
+                                                  float elevationValid, Vector3 origin)
+        {
+            CliffWallSample[] samples = columns.Whole;
+            int stations = samples.Length;
+            int rows = Mathf.Max(2, Mathf.CeilToInt(stripMetresT / Mathf.Max(0.01f, subdivideMetres)));
+
+            float inland = CliffWallGeometry.BrowDecalInlandMetres(stripMetresT, browLineAt);
+            float browFace = CliffWallGeometry.BrowDecalFaceMetres(stripMetresT, browLineAt);
+            float toeFace = CliffWallGeometry.ToeDecalFaceMetres(stripMetresT);
+            float line = Mathf.Clamp(browLineAt, 1e-3f, 1f - 1e-3f);
 
             var verts = new Vector3[stations * (rows + 1)];
             var uvs = new Vector2[verts.Length];
             var elevationUv = new Vector2[verts.Length];
             var seaPlanUv = new Vector2[verts.Length];
-            var tris = new int[(stations - 1) * rows * 6];
-            float elevationValid = HasToeElevations ? 1f : 0f;
 
-            Vector3 origin = transform.position;
             float along = 0f;
 
             for (int c = 0; c < stations; c++)
             {
-                if (c > 0) along += Vector2.Distance(samples[c - 1].BrowPlan, samples[c].BrowPlan);
+                if (c > 0) along += Vector2.Distance(columns.AlongBrow[c - 1], columns.AlongBrow[c]);
 
                 CliffWallSample s = samples[c];
                 Vector2 browP = s.BrowPlan;
                 Vector2 toeP = CliffWallGeometry.ToeScreen(in s);
                 Vector2 outward = CliffWallGeometry.OutwardPlan(in s);
                 float surface = Mathf.Max(1e-4f, CliffWallGeometry.SurfaceLengthMetres(in s));
-                float u = CliffWallGeometry.TileU(_alongOffsetMetres + along, _faceMetresS);
-                float atBrow = DisplacementAt(u, 0f);
+                float u = CliffWallGeometry.TileU(alongOffsetMetres + along, faceMetresS);
+                float atBrow = displacement(u, 0f);
 
                 for (int r = 0; r <= rows; r++)
                 {
@@ -559,7 +821,7 @@ namespace HiddenHarbours.Art
                             ? (v - line) / (1f - line) * browFace          // metres below the brow
                             : surface - (1f - v) * toeFace;                // ...up from the toe
                         faceT = Mathf.Clamp01(depth / surface);
-                        p = Vector2.Lerp(browP, toeP, faceT) + outward * DisplacementAt(u, faceT);
+                        p = Vector2.Lerp(browP, toeP, faceT) + outward * displacement(u, faceT);
                     }
 
                     int idx = c * (rows + 1) + r;
@@ -577,11 +839,106 @@ namespace HiddenHarbours.Art
                 }
             }
 
-            Triangulate(tris, stations, rows);
-            // ⭐ localOrder 1: INSIDE the sorting group, so a decal composites over the rock it finishes
-            // without spending an order of the region's decor band.
-            Emit(childName, verts, uvs, tris, strip, null, null, localOrder: 1,
-                 elevationUv, seaPlanUv, decal: true);
+            return Laid(columns, rows, verts, uvs, elevationUv, seaPlanUv);
+        }
+
+        private static CliffWallMeshData Laid(CliffWallColumns columns, int rows, Vector3[] verts, Vector2[] uvs,
+                                              Vector2[] elevationUv, Vector2[] seaPlanUv)
+        {
+            var laid = new CliffWallMeshData
+            {
+                Verts = verts, Uvs = uvs, ElevationUv = elevationUv, SeaPlanUv = seaPlanUv,
+            };
+            if (columns.Sliced) return Slice(columns, rows, laid);
+
+            int stations = columns.Whole.Length;
+            laid.Tris = new int[(stations - 1) * rows * 6];
+            Triangulate(laid.Tris, stations, rows);
+            return laid;
+        }
+
+        /// <summary>
+        /// ⭐ A re-cut wall's mesh, from the one its whole stations lay (<paramref name="laid"/>, a column per whole
+        /// station). Each of the wall's own stations is a column: a whole one copies its own, a cut one is the
+        /// straight mix of the two either side of it, in every channel. The old quads are two triangles split
+        /// along the diagonal from a row's top on the left to its foot on the right (<see cref="Triangulate"/>),
+        /// so a cut also takes the mix along that diagonal, and the pieces either side of every cut are triangles
+        /// inside the old ones. A triangle's channels are linear across it, so each piece draws exactly what the
+        /// old triangle drew there: cutting a wall finer moves no rock and slides no texture.
+        /// </summary>
+        private static CliffWallMeshData Slice(CliffWallColumns columns, int rows, CliffWallMeshData laid)
+        {
+            int n = columns.Gap.Length;
+            int rowVerts = rows + 1;
+            var ordinal = new int[n];
+            int cuts = 0;
+            for (int j = 0; j < n; j++) ordinal[j] = columns.At[j] > 0f ? cuts++ : -1;
+
+            int diagonals = n * rowVerts;           // where the cuts' diagonal vertices start
+            int count = diagonals + cuts * rows;
+            var verts = new Vector3[count];
+            var uvs = new Vector2[count];
+            var elevation = new Vector2[count];
+            var sea = new Vector2[count];
+
+            for (int j = 0; j < n; j++)
+            {
+                int left = columns.Gap[j] * rowVerts;
+                float f = columns.At[j];
+                if (f == 0f)
+                {
+                    for (int r = 0; r <= rows; r++)
+                    {
+                        int o = j * rowVerts + r;
+                        verts[o] = laid.Verts[left + r];
+                        uvs[o] = laid.Uvs[left + r];
+                        elevation[o] = laid.ElevationUv[left + r];
+                        sea[o] = laid.SeaPlanUv[left + r];
+                    }
+                    continue;
+                }
+                int right = left + rowVerts;
+                for (int r = 0; r <= rows; r++)
+                    Mix(laid, left + r, right + r, f, j * rowVerts + r, verts, uvs, elevation, sea);
+                // Where this cut crosses each row's diagonal: from the left column's row above to the right's own.
+                for (int r = 0; r < rows; r++)
+                    Mix(laid, left + r + 1, right + r, f, diagonals + ordinal[j] * rows + r, verts, uvs, elevation, sea);
+            }
+
+            var tris = new List<int>((n - 1) * rows * 12);
+            for (int i = 0; i < n - 1; i++)
+            {
+                // This strip runs from station i to i + 1, inside ONE old column gap: fi and fj are how far across it.
+                float fi = columns.At[i];
+                float fj = columns.Gap[i + 1] == columns.Gap[i] ? columns.At[i + 1] : 1f;
+                for (int r = 0; r < rows; r++)
+                {
+                    int mi = i * rowVerts + r, ni = mi + 1;
+                    int mj = (i + 1) * rowVerts + r, nj = mj + 1;
+                    int pi = fi == 0f ? ni : diagonals + ordinal[i] * rows + r;
+                    int pj = fj == 1f ? mj : diagonals + ordinal[i + 1] * rows + r;
+                    // Under the diagonal (the old a, d, b), then over it (the old b, d, e), in the old winding.
+                    // Where both stations are whole the middle two ARE the old pair, in the old order.
+                    if (fj < 1f) { tris.Add(mi); tris.Add(mj); tris.Add(pj); }
+                    tris.Add(mi); tris.Add(pj); tris.Add(pi);
+                    tris.Add(pi); tris.Add(pj); tris.Add(nj);
+                    if (fi > 0f) { tris.Add(pi); tris.Add(nj); tris.Add(ni); }
+                }
+            }
+
+            return new CliffWallMeshData
+            {
+                Verts = verts, Uvs = uvs, ElevationUv = elevation, SeaPlanUv = sea, Tris = tris.ToArray(),
+            };
+        }
+
+        private static void Mix(CliffWallMeshData laid, int a, int b, float f, int o,
+                                Vector3[] verts, Vector2[] uvs, Vector2[] elevation, Vector2[] sea)
+        {
+            verts[o] = Vector3.LerpUnclamped(laid.Verts[a], laid.Verts[b], f);
+            uvs[o] = Vector2.LerpUnclamped(laid.Uvs[a], laid.Uvs[b], f);
+            elevation[o] = Vector2.LerpUnclamped(laid.ElevationUv[a], laid.ElevationUv[b], f);
+            sea[o] = Vector2.LerpUnclamped(laid.SeaPlanUv[a], laid.SeaPlanUv[b], f);
         }
 
         private static void Triangulate(int[] tris, int stations, int rows)

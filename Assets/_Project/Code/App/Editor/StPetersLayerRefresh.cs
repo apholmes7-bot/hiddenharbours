@@ -412,6 +412,14 @@ namespace HiddenHarbours.App.Editor
                 Step = step; Root = root; RootGameObject = rootGameObject;
             }
 
+            /// <summary>
+            /// The document this patch's new documents follow, or 0 to put them just before SceneRoots, as the
+            /// hand-written tail does. A step whose root is not the file's last block names its root's own last
+            /// document, so a block another step wrote after it keeps its place (terrain PR 5w: the walls' new chunks
+            /// go in with the walls, and the key scenes stay the last block, as their own step writes them).
+            /// </summary>
+            public long AddAfter { get; internal set; }
+
             public IReadOnlyList<Op> Ops => _ops;
             public IReadOnlyList<Change> Changes => _changes;
             public bool IsEmpty => _ops.Count == 0;
@@ -469,19 +477,29 @@ namespace HiddenHarbours.App.Editor
                     }
                 }
 
-                // New documents go in just before SceneRoots, as the hand-written tail already does.
-                int rootsAt = -1;
-                for (int i = 0; i < scene.Docs.Count; i++)
-                    if (scene.Docs[i].ClassId == SceneRootsClass) rootsAt = i;
+                // New documents go in just after AddAfter when the step names one, else just before SceneRoots, as
+                // the hand-written tail already does.
+                int at = -1;
+                if (AddAfter != 0 && added.Count > 0)
+                {
+                    for (int i = 0; i < scene.Docs.Count && at < 0; i++)
+                        if (scene.Docs[i].FileId == AddAfter) at = i + 1;
+                    if (at < 0)
+                        throw new Refusal($"{Step}: the document its new documents follow (&{AddAfter}) is not in the scene. " +
+                                          "The scene changed after the patch was planned: re-plan it.");
+                }
+                else
+                    for (int i = 0; i < scene.Docs.Count; i++)
+                        if (scene.Docs[i].ClassId == SceneRootsClass) at = i;
                 var docs = new List<Doc>(scene.Docs.Count + added.Count);
                 for (int i = 0; i < scene.Docs.Count; i++)
                 {
-                    if (i == rootsAt) docs.AddRange(added);
+                    if (i == at) docs.AddRange(added);
                     Doc d = scene.Docs[i];
                     if (removed.Contains(d.FileId)) continue;
                     docs.Add(replaced.TryGetValue(d.FileId, out Doc r) ? r : d);
                 }
-                if (rootsAt < 0) docs.AddRange(added);
+                if (at < 0 || at == scene.Docs.Count) docs.AddRange(added);
                 return new SceneYaml(scene.Preamble, docs);
             }
 
@@ -590,6 +608,7 @@ namespace HiddenHarbours.App.Editor
                 sb.Append("step: ").Append(Q(Step)).Append('\n');
                 sb.Append("root: ").Append(Q(Root)).Append('\n');
                 sb.Append("rootGameObject: ").Append(RootGameObject.ToString(CultureInfo.InvariantCulture)).Append('\n');
+                if (AddAfter != 0) sb.Append("addAfter: ").Append(AddAfter.ToString(CultureInfo.InvariantCulture)).Append('\n');
                 sb.Append("differences:").Append(_changes.Count == 0 ? " []\n" : "\n");
                 foreach (Change c in _changes) sb.Append("- ").Append(Q(c.ToString())).Append('\n');
                 foreach (OpKind kind in new[] { OpKind.Delete, OpKind.Edit, OpKind.Add })

@@ -149,6 +149,42 @@ namespace HiddenHarbours.World
         [Tooltip("The clams' tide band (m): the spring range less the builder's clam margin.")]
         public Vector2 ClamBand = new Vector2(-1.8f, 1.8f);
 
+        [Header("Part 2: the south (PR 5w)")]
+        [Tooltip("Part 2's reference line, from the Harbour Strand round the south to the bar's root; a point that starts a " +
+                 "section names it. Its sections weigh by the raw bearing, which runs round the south without a wrap.")]
+        public ShorePoint[] ShoreLine2 = new ShorePoint[0];
+        [Tooltip("Part 2's sections, in the line's order. They paint the ground file and move none of it.")]
+        public CoastSectionDef[] Sections2 = new CoastSectionDef[0];
+        [Tooltip("The south's coast step runs in the line's bounds plus this (m).")]
+        public float ShoreWindow2 = 60f;
+        [Tooltip("Part 2's feather at the shore (degrees of bearing), its growth past FeatherGrowthFrom, and its ends' fade.")]
+        public float SectionFeather2 = 3f;
+        public float FeatherGrowth2 = 0.22f;
+        public float EndFeather2 = 6f;
+        [Tooltip("Part 2's domain warp of the shore distance: amplitude (m), wavelength (m).")]
+        public Vector2 Warp2 = new Vector2(1.2f, 7f);
+        [Tooltip("A live wall's footprint keeps the flats off within x (m), feathered over y (m) (part 2's ground keep; the " +
+                 "ground file holds the heights)...")]
+        public Vector2 WallKeep = new Vector2(3f, 2f);
+        [Tooltip("...and keeps part 1's paint within x (m), feathered over y (m).")]
+        public Vector2 WallPaintKeep = new Vector2(0.5f, 0.5f);
+        [Tooltip("The live walls' chunk cut (screen m): the builder starts a new chunk where a chunk's toes would span more " +
+                 "than this, and no step between a wall's stations may reach half of it. St Peters' walls are cut at 1 m " +
+                 "(terrain PR 5w); 2 m is the builder's own, which Nine Mile Creek keeps.")]
+        public float WallToeSpanMetres = 2f;
+        [Tooltip("The toe reefs' shape.")]
+        public TerrainPlanReef Reef = new TerrainPlanReef();
+        [Tooltip("The flats off the south, or none.")]
+        public FlatsDef Flats;
+        [Tooltip("Part 2's stacks and skerries: Defs only (the ground file holds them); the south paints their feet.")]
+        public FormDef[] Forms2 = new FormDef[0];
+        [Tooltip("Part 2's tidal creeks and guts across the flats: tide water, never still. The south paints their beds and banks.")]
+        public TidalCreekDef[] Creeks2 = new TidalCreekDef[0];
+        [Tooltip("Part 2's ponds and brooks (PR 5 B's; Ponds and Streams hold them for their water). The south paints their " +
+                 "banks again over its own paint, inside their windows.")]
+        public PondDef[] FreshPonds2 = new PondDef[0];
+        public StreamDef[] FreshStreams2 = new StreamDef[0];
+
         [Header("The key scenes' ground (§4.1 tier 3)")]
         public FormDef[] Forms = new FormDef[0];
         public GroundRampDef[] Ramps = new GroundRampDef[0];

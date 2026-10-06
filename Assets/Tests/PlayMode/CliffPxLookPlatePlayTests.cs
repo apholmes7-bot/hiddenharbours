@@ -146,9 +146,10 @@ namespace HiddenHarbours.Tests.PlayMode
         static readonly Station S3 = new Station("s3-stp-east-wall", "CliffWall_DeepShoreCliff_E_steep_008",
             new Vector2(187.5f, -17.5f), new Vector2(186.19f, -15.96f),
             "St Peters: a steep east face (drop 10.00 m), its upper face, her for scale");
-        static readonly Station S4 = new Station("s4-stp-ledge", "CliffWall_LedgeCliff_S_ramp_055",
-            new Vector2(2.5f, -59.5f), new Vector2(2.84f, -57.37f),
-            "St Peters: the ledge (drop 4.43 m), the whole face, her for scale");
+        // Terrain PR 5w retired 055 with the main beach's walls; 056, the ledge's banked end, stands next to it.
+        static readonly Station S4 = new Station("s4-stp-ledge", "CliffWall_LedgeCliff_S_ramp_056",
+            new Vector2(0.5f, -58.1f), new Vector2(0.66f, -57.13f),
+            "St Peters: the ledge's banked end at the main beach (drop 1.36 m), the whole face, her for scale");
         static readonly Station S5 = new Station("s5-stp-south-west-wall", "CliffWall_DeepShoreCliff_SW_steep_070",
             new Vector2(-39f, -31f), new Vector2(-38.13f, -29.4f),
             "St Peters: the south-west face (drop 10.00 m), its upper face, her for scale");

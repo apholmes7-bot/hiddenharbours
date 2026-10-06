@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_274
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_274
+  Status: 2
+  SplitFrom: wall.stp_057
+  Follows: wall.stp_273
+  Rock: sandstone
+  Class: 5
+  Aspect: SW
+  Batter: ramp
+  Brow:
+  - {x: 0.26761767, y: -56.968056}
+  - {x: 0.24665278, y: -56.959312}
+  - {x: 0.22568789, y: -56.950565}
+  Toe:
+  - {x: -0.23809807, y: -58.180447}
+  - {x: -0.3486344, y: -58.385513}
+  - {x: -0.45917073, y: -58.590584}
+  DropMetres:
+  - 2.179515
+  - 2.500283
+  - 2.821051
+  ToeElevations:
+  - 3.820485
+  - 3.499717
+  - 3.178949
+  TextureBrow: []
+  Stations:
+  - 1.181818
+  - 1.272727
+  - 1.363636
+  BrowFrom:
+  - 2
+  - 2
+  - 2
+  ToeFrom:
+  - 2
+  - 2
+  - 2
+  BrowPass9:
+  - 5.846999
+  - 5.845932
+  - 5.8448644
+  ToePass9:
+  - 2.5577176
+  - 2.235749
+  - 1.9137803
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 57
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Cut from 168 at St Peters'' 1 m cut (terrain PR 5w): its stations k1.18-k1.36, with k1.18, k1.27 and k1.36 added as slices of its face. The list''s row 057 (West Ledges): banked.'

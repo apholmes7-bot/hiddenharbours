@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_050
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_050
+  Status: 5
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 3
+  Aspect: S
+  Batter: steep
+  Brow:
+  - {x: 25.278748, y: -64.957275}
+  - {x: 25.03545, y: -64.9001}
+  - {x: 24.792236, y: -64.84258}
+  - {x: 24.549107, y: -64.78472}
+  - {x: 24.306011, y: -64.7265}
+  - {x: 24.063053, y: -64.66795}
+  - {x: 23.820156, y: -64.60906}
+  - {x: 23.577354, y: -64.54983}
+  - {x: 23.334637, y: -64.49025}
+  - {x: 23.091991, y: -64.43032}
+  - {x: 22.849438, y: -64.37004}
+  - {x: 22.606983, y: -64.309425}
+  - {x: 22.364624, y: -64.248474}
+  - {x: 22.122337, y: -64.18716}
+  Toe:
+  - {x: 24.860252, y: -66.74364}
+  - {x: 24.61422, y: -66.68684}
+  - {x: 24.368261, y: -66.6297}
+  - {x: 24.12238, y: -66.57222}
+  - {x: 23.876524, y: -66.51439}
+  - {x: 23.630796, y: -66.45623}
+  - {x: 23.385124, y: -66.39772}
+  - {x: 23.139542, y: -66.33887}
+  - {x: 22.894033, y: -66.27967}
+  - {x: 22.648588, y: -66.22014}
+  - {x: 22.403225, y: -66.160255}
+  - {x: 22.157957, y: -66.10003}
+  - {x: 21.912777, y: -66.03946}
+  - {x: 21.667656, y: -65.97854}
+  DropMetres:
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  - 9.189195
+  - 9.159432
+  - 9.089401
+  - 8.982739
+  - 8.843033
+  - 8.673926
+  - 8.479069
+  - 8.262146
+  - 8.02684
+  - 7.7767797
+  ToeElevations:
+  - -3.19
+  - -3.19
+  - -3.19
+  - -3.19
+  - -3.1891944
+  - -3.1594322
+  - -3.0894012
+  - -2.9827394
+  - -2.8430328
+  - -2.6739266
+  - -2.4790683
+  - -2.262146
+  - -2.0268402
+  - -1.7767798
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  BrowFrom: []
+  ToeFrom: []
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 50
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Retired: the main beach opened its shore. The list''s row 050 (Weather Cliff): opened (opened). Its lines are the scene''s at 883f27b5, kept as a record; the id is never used again.'

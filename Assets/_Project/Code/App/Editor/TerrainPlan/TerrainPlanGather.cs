@@ -231,6 +231,41 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
+        /// The frozen sources' text with one root's points trimmed to those the scene still holds (terrain PR 5w's walls): a
+        /// point of today's stands while an item under the same root in <paramref name="sceneText"/> stands on it, to the
+        /// scan's centimetre. The rest drop, today's order is kept, every other root stays as frozen, and a provenance line
+        /// says how many dropped. Nothing is ever added, so the file stays today's. The text comes back unchanged when none
+        /// drops. Refuses another plan's file, or one that is not canonical.
+        /// </summary>
+        public static string KeepStanding(string frozenText, string planId, string sceneText, string root, out int dropped)
+        {
+            var s = TerrainPlanSourcesJson.Read(frozenText, out string id);
+            if (id != planId) throw new InvalidDataException("[TerrainPlan] the frozen sources are the sources of '" + id + "', not '" + planId + "'.");
+            if (TerrainPlanSourcesJson.Write(s, id) != frozenText)
+                throw new InvalidDataException("[TerrainPlan] the frozen sources are not canonical, so they are not rewritten.");
+            var today = s.ItemsOf(root);
+            var now = TerrainPlanSceneScan.ByRoot(TerrainPlanSceneScan.Items(sceneText));
+            var standing = Standing(today, now.TryGetValue(root, out var w) ? w : new List<PlanPoint>());
+            dropped = today.Count - standing.Count;
+            if (dropped == 0) return frozenText;
+            s.Items[root] = standing;
+            s.Provenance["standing." + root] = "today's points that no item stands on in the scene any more, dropped: " + dropped + " of " + today.Count +
+                                               " (TerrainPlanGather.KeepStanding, after terrain PR 5w's walls' patch)";
+            return TerrainPlanSourcesJson.Write(s, id);
+        }
+
+        /// <summary>The points of <paramref name="today"/> that a point of <paramref name="now"/> stands on exactly, in
+        /// today's order.</summary>
+        public static List<PlanPoint> Standing(IReadOnlyList<PlanPoint> today, IReadOnlyList<PlanPoint> now)
+        {
+            var o = new List<PlanPoint>();
+            foreach (var p in today)
+                foreach (var q in now)
+                    if (p.X == q.X && p.Y == q.Y) { o.Add(p); break; }
+            return o;
+        }
+
+        /// <summary>
         /// Every way two sources differ, in the file's order: a number further apart than <paramref name="tolerance"/>
         /// (metres or degrees), a name, a count, or today's paint (by cell count, and the first cell). Provenance and
         /// Base are not compared. Empty when the two agree.

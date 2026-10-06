@@ -40,6 +40,8 @@ MonoBehaviour:
   - {x: 63, y: -68.6}
   BoxMin: {x: -8, y: -98}
   BoxMax: {x: 70, y: -52}
+  EdgeFade: 5
+  EdgeWander: {x: 4, y: 3}
   MinWidth: 8
   EndFade: 6
   RimFade: 2
@@ -52,4 +54,4 @@ MonoBehaviour:
   BackZone: grass
   Noise: {x: 0.06, y: 0.77}
   From: -2.35
-  Why: 'CD''s paint rule for the main beach (amendment 2 §4.5): tools/stpOnePaint.js (sha256 59142425...) line 83 paints the bay where StpOneBeach.surface (tools/stpOneBeach.js) weighs over 0.45: grass at the back (past D - 0.4 and over +5.6), else line 28''s bands at the height plus 0.12 (vn - 0.5) of noise at x 1.3. The shore, the rim, the box and the fades are the ground file''s main_beach ask''s (PROF endM 6, plateauBlend 2, seaReach 30; END ret 0.5, retW 0.16, fill 0.6). Below -2.35 the paint is CD''s seafloor, so the bay leaves it.'
+  Why: 'CD''s paint rule for the main beach (amendment 2 §4.5): tools/stpOnePaint.js (sha256 59142425...) line 83 paints the bay where StpOneBeach.surface (tools/stpOneBeach.js) weighs over 0.45: grass at the back (past D - 0.4 and over +5.6), else line 28''s bands at the height plus 0.12 (vn - 0.5) of noise at x 1.3. The shore, the rim, the box and the fades are the ground file''s main_beach ask''s (PROF endM 6, plateauBlend 2, seaReach 30; END ret 0.5, retW 0.16, fill 0.6). Below -2.35 the paint is CD''s seafloor, so the bay leaves it. The box is CD''s BOX [-8, 70, -98, -52] (tools/stpOneBeach.js line 21; its surface is null outside it, line 61): at x -8 it cut the beach while the surface still weighed in full, and a straight line ran down the paint (the seam at x -8, terrain PR 5w). So inside the box the bay fades out over 5 m from a line that wanders 4 m on a 3 m wavelength, and the paint ends raggedly; the same fade softens the box''s east (x 70) and south (y -98) cuts.'

@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba11a965f465ae7368870a5168abc3cc, type: 3}
+  m_Name: Coast_WestGap
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CoastSectionDef
+  Id: coast.stp_west_gap
+  DisplayName: West Gap
+  Type: gap_cove
+  Mode: 1
+  Recipe: {fileID: 11400000, guid: ce5023ca5cbf2053091101925e0b3988, type: 2}
+  Edge: {x: 1, y: 8}
+  Knots:
+  - {x: 6, y: 2.2}
+  - {x: 3, y: 1}
+  - {x: 0, y: 0}
+  - {x: -6, y: -0.7}
+  - {x: -14, y: -1.3}
+  - {x: -22, y: -1.8}
+  - {x: -30, y: -2.4}
+  SeaTail: 10
+  HasRockEdge: 0
+  RockEdge: 0
+  Poly: []
+  Sector: {x: 0, y: 0}
+  Below: 0
+  XRange: {x: 0, y: 0}
+  HalfWidth: 0
+  WindowWest: 30
+  GutX: 0
+  GutKeep: 0
+  RunnelEvery: {x: 0, y: 0}
+  RunnelWidth: 0
+  RunnelDepth: 0
+  RunnelBand: {x: -1.8, y: 0.4}
+  RunnelAcross: {x: 5.5, y: 30}
+  MusselNearGut: 0
+  MusselBand: {x: 0, y: 0}
+  LobeAmp: 0
+  LobeLambda: 0
+  LobeBand: {x: 0, y: 0, z: 0, w: 0}
+  PaintBelow: 2.4
+  CrestKeep: {x: 5, y: 1.5}
+  HeadKeep: []
+  HeadKeepFeather: 3
+  PoolRelease: {x: 1.2, y: 0.3}
+  PoolWobble: 0.06
+  Walls: []
+  Broken: 0
+  KeepAbove: 1
+  FlatsCharacter: sand
+  HasSpit: 1
+  SpitBearing: 209
+  SpitLength: 18
+  SpitHalfWidth: 6
+  SpitCrest: {x: 1.2, y: -1.4}
+  SpitMaxCut: 1.6
+  Why: 'The Access ramp between walls 054 and 055, the heath''s way down; the Heath Brook reaches the sea here. (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'
