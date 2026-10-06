@@ -106,6 +106,9 @@ Material:
     - _FoamDensity: 0.3
     - _FoamDensityWind: 0.4
     - _FoamDriftWindVsCurrent: 0.84
+    - _FoamTransportStrain: 0
+    - _FoamTransportCurl: 0
+    - _FoamTransportCollection: 0
     - _FoamEdgeDither: 0.02
     - _FoamEvolveSpeed: 0.08
     - _FoamNoise: 0.09

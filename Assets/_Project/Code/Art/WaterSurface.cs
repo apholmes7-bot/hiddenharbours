@@ -569,6 +569,7 @@ namespace HiddenHarbours.Art
         /// </summary>
         private void PublishSeaLevel(float waterLevelMeters)
         {
+            FoamInjectionRegistry.PublishTransportSeaLevel(waterLevelMeters, true);
             float freqScale = 1f;
             float exaggeration = 1f;
             if (DisplacedSea.TryGet(out DisplacedSeaState sea))
@@ -590,7 +591,11 @@ namespace HiddenHarbours.Art
         }
 
         private static void PublishSeaLevelUnset()
-            => Shader.SetGlobalVector(IdSeaLevelWorld, Vector4.zero);
+        {
+            Shader.SetGlobalVector(IdSeaLevelWorld, Vector4.zero);
+            FoamInjectionRegistry.PublishTransportSeaLevel(0, false);
+            FoamInjectionRegistry.PublishTransportStrengths(Vector3.zero);
+        }
 
         private void OnDestroy()
         {
@@ -776,6 +781,8 @@ namespace HiddenHarbours.Art
             //    ⚠️ The GLOBAL blend, without FoamDriftDir()'s per-position shoreward bias: a rigid
             //    buffer scroll is uniform by construction and cannot carry a position-dependent term.
             Material live = _renderer.sharedMaterial;
+            // Owner transport policy, not a weather-eased mood. Absent material means exact passthrough.
+            FoamInjectionRegistry.PublishTransportStrengths(FoamTransport.ReadStrengths(live));
             if (live != null)
             {
                 float wakeFoamStrength = live.HasProperty(IdWakeFoamStrength)
