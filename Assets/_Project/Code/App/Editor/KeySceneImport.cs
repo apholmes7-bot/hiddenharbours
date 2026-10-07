@@ -222,7 +222,7 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>The asset's fields in the Defs' own order. The writer writes them so, and a test holds the
         /// Defs to these lists.</summary>
-        public static readonly string[] SceneFields = { "Id", "DisplayName", "RegionId", "Source", "Placed", "Pieces", "Lights", "RetiredIds" };
+        public static readonly string[] SceneFields = { "Id", "DisplayName", "RegionId", "Source", "Placed", "Pieces", "Lights", "RetiredIds", "PlacementIds" };
 
         public static readonly string[] PieceFields =
         {
@@ -838,7 +838,10 @@ namespace HiddenHarbours.App.Editor
                 }
             retired.AddRange(newlyRetired);
 
-            string text = AssetText(scene, file, regionId, scriptGuid, old?.Placed ?? false, retired);
+            var selection = (old == null ? null : Get(old.Top, "PlacementIds")?.Items)?.Select(n => n.Scalar).ToList();
+            if (selection != null && selection.Any(id => !ids.Contains(id)))
+                throw new Refusal($"{scene.Id}: a selected placement id is no longer in the package; review the wave selection.");
+            string text = AssetText(scene, file, regionId, scriptGuid, old?.Placed ?? false, retired, selection);
             result.Assets[file] = text;
             result.Tallies[scene.Id] = scene.Tally;
             if (old == null) result.Metas[file + ".meta"] = MetaText(GuidFor(scene.Id));
@@ -896,7 +899,8 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The Def's class identifier, as Unity writes it on a ScriptableObject asset.</summary>
         static string ClassIdentifier => typeof(KeySceneDef).Assembly.GetName().Name + "::" + typeof(KeySceneDef).FullName;
 
-        static string AssetText(Scene s, string file, string regionId, string scriptGuid, bool placed, List<string> retired)
+        static string AssetText(Scene s, string file, string regionId, string scriptGuid, bool placed, List<string> retired,
+                                List<string> selection = null)
         {
             var w = new YamlWriter();
             w.Line("%YAML 1.1");
@@ -966,6 +970,7 @@ namespace HiddenHarbours.App.Editor
                     w.Str(4, "Note", l.Note);
                 }
             w.List(2, "RetiredIds", retired);
+            w.List(2, "PlacementIds", selection ?? new List<string>());
             return w.ToString();
         }
 

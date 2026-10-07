@@ -669,9 +669,15 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(patch.ApplyTo(once) == once, "written a second time, the patch changed the scene again");
             LayerPatch again = Plan(once, scenes);
             Assert.IsTrue(again.IsEmpty, "planned again on its own output, the step still has work to do:\n" + again.Summary());
-            Assert.IsTrue(once == committed,
-                          "the committed StPeters.unity is not the key scenes step's output (" + FirstDifference(committed, once) +
-                          "). Close the scene and run Hidden Harbours ▸ World ▸ St Peters Layer Refresh ▸ Apply the Key Scenes Patch to StPeters.unity.");
+            // An incremental wave appends documents; a rebuild emits them in scene order. Unity binds them
+            // by fileID. Every document, including the ordered hierarchy lists, must still be byte-identical.
+            var expected = StPetersLayerRefresh.SceneYaml.Parse(committed);
+            var rebuilt = StPetersLayerRefresh.SceneYaml.Parse(once);
+            Assert.AreEqual(expected.Preamble, rebuilt.Preamble);
+            CollectionAssert.AreEquivalent(expected.Docs.Select(d => d.FileId), rebuilt.Docs.Select(d => d.FileId));
+            foreach (var doc in expected.Docs)
+                Assert.AreEqual(doc.Text, rebuilt.Get(doc.FileId).Text, $"document &{doc.FileId} differs from the step's output");
+            Assert.IsTrue(Plan(committed, scenes).IsEmpty, "the committed scene still needs a key-scenes patch");
             CommittedSceneUnchanged();
         }
 
@@ -708,6 +714,7 @@ namespace HiddenHarbours.Tests.EditMode
                 }
                 KeySceneDef copy = KeySceneTestData.NewKeyScene(ks.Id, pieces.ToArray());
                 copy.Placed = ks.Placed;
+                copy.PlacementIds = (string[])ks.PlacementIds.Clone();
                 _made.Add(copy);
                 scenes.Add(copy);
             }
@@ -722,7 +729,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.IsFalse(patch.Deletions.Any(), "the step deleted something");
             Assert.AreEqual(1, patch.Ops.Count(o => o.Kind == OpKind.Edit), "the step edits the SceneRoots list and nothing else");
-            var scripts = new HashSet<string>(new[] { typeof(YSortSprite), typeof(TidalFaceWaterline), typeof(SetPieceWindVane) }
+            var scripts = new HashSet<string>(new[] { typeof(YSortSprite), typeof(TidalFaceWaterline), typeof(SetPieceWindVane), typeof(GullPerch) }
                                                   .Select(ty => ty.Assembly.GetName().Name + "::" + ty.FullName));
             foreach (Op op in patch.Ops.Where(o => o.Kind == OpKind.Add))
             {
@@ -733,12 +740,14 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.IsTrue(scripts.Contains(d.Field("m_EditorClassIdentifier")), $"{op.Name} runs {d.Field("m_EditorClassIdentifier")}");
             }
 
-            // Every piece of a placed scene is one of the three prop kits', and none is ground paint. A scene at
-            // Placed 0 is data, whatever its kits.
+            // Selected pieces use the three prop kits, the baked building kit, or a non-rendering perch.
+            // Unselected rows and scenes at Placed 0 remain data; none of this step is ground paint.
             var kits = new[] { StPetersLayerRefresh.SetPiecesKit, StPetersLayerRefresh.DecorKit, StPetersLayerRefresh.FindsKit };
-            foreach (KeyScenePiece p in scenes.Where(s => s.Placed).SelectMany(s => s.Pieces))
+            foreach (KeyScenePiece p in scenes.SelectMany(s => s.Pieces.Where(p => StPetersLayerRefresh.Places(s, p))))
             {
-                CollectionAssert.Contains(kits, p.Kit, $"{p.Id} comes from '{p.Kit}'");
+                if (p.Kind == KeySceneDef.KindBuilding) Assert.AreEqual("wharfBuilding2", p.Kit);
+                else if (p.Kind == KeySceneDef.KindGull) Assert.AreEqual("seagull", p.Kit);
+                else CollectionAssert.Contains(kits, p.Kit, $"{p.Id} comes from '{p.Kit}'");
                 Assert.IsFalse(p.Id.StartsWith("path.", StringComparison.Ordinal), $"{p.Id} is ground paint");
             }
 
@@ -808,10 +817,12 @@ namespace HiddenHarbours.Tests.EditMode
         static bool StepPlaces(bool scenePlaced, string[] variants, string owner, string standsOn) =>
             scenePlaced && variants.Contains(KeySceneDef.Today) && owner.Length == 0 && standsOn != KeySceneDef.StandsOnWater;
 
-        static bool StepPlaces(KeySceneDef ks, KeyScenePiece p) => StepPlaces(ks.Placed, p.Variants, p.Owner, p.StandsOn);
+        static bool StepPlaces(KeySceneDef ks, KeyScenePiece p) => StPetersLayerRefresh.Places(ks, p);
 
         static bool StepPlaces(StPetersKeyScenesRecord.Row r) =>
-            StepPlaces(StPetersKeyScenesRecord.Scenes.Single(s => s.Id == r.Scene).Placed, r.Variants, r.Owner, r.StandsOn);
+            StepPlaces(StPetersKeyScenesRecord.Scenes.Single(s => s.Id == r.Scene).Placed, r.Variants, r.Owner, r.StandsOn) &&
+            (StPetersKeyScenesRecord.Scenes.Single(s => s.Id == r.Scene).PlacementIds.Length == 0 ||
+             StPetersKeyScenesRecord.Scenes.Single(s => s.Id == r.Scene).PlacementIds.Contains(r.Id));
 
         static List<KeyScenePiece> Pieces(List<KeySceneDef> scenes) => scenes.SelectMany(s => s.Pieces).ToList();
 
@@ -930,6 +941,11 @@ namespace HiddenHarbours.Tests.EditMode
 
             foreach (KeyScenePlacement p in placed)
             {
+                if (p.IsPerch)
+                {
+                    Assert.AreEqual(0, p.Sprite.Sprite.FileId, "a perch never places a gull sprite");
+                    continue;
+                }
                 string path = AssetDatabase.GUIDToAssetPath(p.Sprite.Sprite.Guid);
                 Assert.IsNotEmpty(path, $"{p.Id}'s cell ({p.Cell}) is no asset");
                 Sprite sprite = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
@@ -1091,13 +1107,15 @@ namespace HiddenHarbours.Tests.EditMode
             float reach = building + CanneryPropsReachMetres;
             var table = new StringBuilder($"piece | from the cannery (its reach {M(reach)} m)\n");
             var kits = new[] { StPetersLayerRefresh.SetPiecesKit, StPetersLayerRefresh.DecorKit, StPetersLayerRefresh.FindsKit };
-            foreach (KeyScenePiece p in KeySceneTestData.StPeters().Single(s => s.Id == C).Pieces)
+            var cannery = KeySceneTestData.StPeters().Single(s => s.Id == C);
+            foreach (KeyScenePiece p in cannery.Pieces.Where(p => StepPlaces(cannery, p)))
             {
                 float d = Vector2.Distance(p.At, StPetersCannery.Site);
                 table.Append($"{p.Id} | {M(d)}\n");
                 Assert.That(d, Is.LessThanOrEqualTo(reach), $"{p.Id} stands outside the cannery's reach");
-                CollectionAssert.Contains(kits, p.Kit, $"{p.Id} comes from '{p.Kit}': only the prop kits stand by the cannery");
-                Assert.AreEqual(KeySceneDef.StandsOnGround, p.StandsOn, $"{p.Id} stands on the ground it finds, which the step never changes");
+                if (p.Kind == KeySceneDef.KindGull) Assert.AreEqual("structure.stp_cannery", p.MountHost);
+                else CollectionAssert.Contains(kits, p.Kit, $"{p.Id} comes from '{p.Kit}': only the prop kits stand by the cannery");
+                Assert.That(p.StandsOn, Is.EqualTo(KeySceneDef.StandsOnGround).Or.EqualTo(KeySceneDef.StandsOnMount));
             }
             TestContext.WriteLine(table.ToString());
         }

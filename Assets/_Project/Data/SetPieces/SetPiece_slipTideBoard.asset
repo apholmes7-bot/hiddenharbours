@@ -16,86 +16,86 @@ MonoBehaviour:
   DisplayName: Slip tide board
   RigKey: slipTideBoard
   SceneId: keyscene.stp_landing
-  BakedOptionsJson: '{"foot":-1.97,"datum":-2.2,"top":2.6,"growth":1}'
+  BakedOptionsJson: '{"foot":-1.75,"datum":-2.2,"top":2.6,"growth":1}'
   Layer: raised
   Walk: behind
   Mount: ground
   BoundsMin: {x: -0.19, y: -0.19, z: 0}
-  BoundsMax: {x: 0.32, y: 0.204, z: 4.98}
+  BoundsMax: {x: 0.32, y: 0.204, z: 4.76}
   Frames:
   - Sprite: {fileID: -5129110012130721105, guid: bd7a12e8ca07fe049a951bdf5106913b, type: 3}
     RigDir: 0
     ShowFaces: N
     BearingDeg: 0
     CameraSees: its back
-    NativeSize: {x: 24, y: 137}
-    NativePivot: {x: 10, y: 129}
+    NativeSize: {x: 24, y: 131}
+    NativePivot: {x: 10, y: 124}
     Crop: {x: 4, y: 3}
-    Pivot: {x: 6, y: 126}
+    Pivot: {x: 6, y: 121}
   - Sprite: {fileID: -5261038064673423450, guid: bd7a12e8ca07fe049a951bdf5106913b, type: 3}
     RigDir: 7
     ShowFaces: NE
     BearingDeg: 45
     CameraSees: its back
-    NativeSize: {x: 28, y: 140}
-    NativePivot: {x: 12, y: 131}
+    NativeSize: {x: 28, y: 135}
+    NativePivot: {x: 12, y: 126}
     Crop: {x: 3, y: 4}
-    Pivot: {x: 9, y: 127}
+    Pivot: {x: 9, y: 122}
   - Sprite: {fileID: -7941002941957011101, guid: bd7a12e8ca07fe049a951bdf5106913b, type: 3}
     RigDir: 6
     ShowFaces: E
     BearingDeg: 90
     CameraSees: the show face, edge-on or at a diagonal
-    NativeSize: {x: 20, y: 137}
-    NativePivot: {x: 10, y: 129}
+    NativeSize: {x: 20, y: 131}
+    NativePivot: {x: 10, y: 124}
     Crop: {x: 4, y: 3}
-    Pivot: {x: 6, y: 126}
+    Pivot: {x: 6, y: 121}
   - Sprite: {fileID: -7162965941104111169, guid: bd7a12e8ca07fe049a951bdf5106913b, type: 3}
     RigDir: 5
     ShowFaces: SE
     BearingDeg: 135
     CameraSees: the show face
-    NativeSize: {x: 25, y: 140}
-    NativePivot: {x: 12, y: 131}
+    NativeSize: {x: 25, y: 135}
+    NativePivot: {x: 12, y: 126}
     Crop: {x: 3, y: 4}
-    Pivot: {x: 9, y: 127}
+    Pivot: {x: 9, y: 122}
   - Sprite: {fileID: 3419632312278793737, guid: bd7a12e8ca07fe049a951bdf5106913b, type: 3}
     RigDir: 4
     ShowFaces: S
     BearingDeg: 180
     CameraSees: the show face
-    NativeSize: {x: 24, y: 137}
-    NativePivot: {x: 14, y: 129}
+    NativeSize: {x: 24, y: 132}
+    NativePivot: {x: 14, y: 124}
     Crop: {x: 4, y: 3}
-    Pivot: {x: 10, y: 126}
+    Pivot: {x: 10, y: 121}
   - Sprite: {fileID: 5089493596786655723, guid: bd7a12e8ca07fe049a951bdf5106913b, type: 3}
     RigDir: 3
     ShowFaces: SW
     BearingDeg: 225
     CameraSees: the show face
-    NativeSize: {x: 28, y: 140}
-    NativePivot: {x: 15, y: 131}
+    NativeSize: {x: 28, y: 135}
+    NativePivot: {x: 15, y: 126}
     Crop: {x: 3, y: 4}
-    Pivot: {x: 12, y: 127}
+    Pivot: {x: 12, y: 122}
   - Sprite: {fileID: 574306913697710842, guid: bd7a12e8ca07fe049a951bdf5106913b, type: 3}
     RigDir: 2
     ShowFaces: W
     BearingDeg: 270
     CameraSees: the show face, edge-on or at a diagonal
-    NativeSize: {x: 20, y: 137}
-    NativePivot: {x: 10, y: 129}
+    NativeSize: {x: 20, y: 131}
+    NativePivot: {x: 10, y: 124}
     Crop: {x: 4, y: 3}
-    Pivot: {x: 6, y: 126}
+    Pivot: {x: 6, y: 121}
   - Sprite: {fileID: 1385392045, guid: bd7a12e8ca07fe049a951bdf5106913b, type: 3}
     RigDir: 1
     ShowFaces: NW
     BearingDeg: 315
     CameraSees: its back
-    NativeSize: {x: 25, y: 140}
-    NativePivot: {x: 12, y: 131}
+    NativeSize: {x: 25, y: 135}
+    NativePivot: {x: 12, y: 126}
     Crop: {x: 3, y: 4}
-    Pivot: {x: 9, y: 127}
-  CellSize: {x: 21, y: 132}
+    Pivot: {x: 9, y: 122}
+  CellSize: {x: 21, y: 127}
   PixelsPerMetre: 32
   ElevationDeg: 40
   BakedLit: 0
@@ -109,57 +109,52 @@ MonoBehaviour:
     - {x: -0.2, y: -0.2}
   Anchors:
   - Name: top
-    Position: {x: 0, y: 0, z: 4.98}
+    Position: {x: 0, y: 0, z: 4.76}
   Path: []
   TideMarks:
-  - Z: -1.7
-    OverDatum: 0.5
-    At: {x: 0, y: 0.204, z: 0.27}
-    Label: 
-    Kind: half
   - Z: -1.2
     OverDatum: 1
-    At: {x: 0.21, y: 0.204, z: 0.77}
+    At: {x: 0.21, y: 0.204, z: 0.55}
     Label: 1
     Kind: metre
   - Z: -0.7
     OverDatum: 1.5
-    At: {x: 0, y: 0.204, z: 1.27}
+    At: {x: 0, y: 0.204, z: 1.05}
     Label: 
     Kind: half
   - Z: -0.2
     OverDatum: 2
-    At: {x: 0.21, y: 0.204, z: 1.77}
+    At: {x: 0.21, y: 0.204, z: 1.55}
     Label: 2
     Kind: metre
   - Z: 0.3
     OverDatum: 2.5
-    At: {x: 0, y: 0.204, z: 2.27}
+    At: {x: 0, y: 0.204, z: 2.05}
     Label: 
     Kind: half
   - Z: 0.8
     OverDatum: 3
-    At: {x: 0.21, y: 0.204, z: 2.77}
+    At: {x: 0.21, y: 0.204, z: 2.55}
     Label: 3
     Kind: metre
   - Z: 1.3
     OverDatum: 3.5
-    At: {x: 0, y: 0.204, z: 3.27}
+    At: {x: 0, y: 0.204, z: 3.05}
     Label: 
     Kind: half
   - Z: 1.8
     OverDatum: 4
-    At: {x: 0.21, y: 0.204, z: 3.77}
+    At: {x: 0.21, y: 0.204, z: 3.55}
     Label: 4
     Kind: metre
   - Z: 2.3
     OverDatum: 4.5
-    At: {x: 0, y: 0.204, z: 4.27}
+    At: {x: 0, y: 0.204, z: 4.05}
     Label: 
     Kind: half
   - Z: 2.2
     OverDatum: 4.4
-    At: {x: 0.24, y: 0.204, z: 4.18}
+    At: {x: 0.24, y: 0.204, z: 3.96}
     Label: 
     Kind: spring high
   Words:
@@ -167,25 +162,25 @@ MonoBehaviour:
     BodyId: 
     Corners: []
     HasPoint: 1
-    Point: {x: 0.21, y: 0.204, z: 0.77}
+    Point: {x: 0.21, y: 0.204, z: 0.55}
     Size: 0.12
   - Id: words.gauge_2
     BodyId: 
     Corners: []
     HasPoint: 1
-    Point: {x: 0.21, y: 0.204, z: 1.77}
+    Point: {x: 0.21, y: 0.204, z: 1.55}
     Size: 0.12
   - Id: words.gauge_3
     BodyId: 
     Corners: []
     HasPoint: 1
-    Point: {x: 0.21, y: 0.204, z: 2.77}
+    Point: {x: 0.21, y: 0.204, z: 2.55}
     Size: 0.12
   - Id: words.gauge_4
     BodyId: 
     Corners: []
     HasPoint: 1
-    Point: {x: 0.21, y: 0.204, z: 3.77}
+    Point: {x: 0.21, y: 0.204, z: 3.55}
     Size: 0.12
   HasLight: 0
   Light:

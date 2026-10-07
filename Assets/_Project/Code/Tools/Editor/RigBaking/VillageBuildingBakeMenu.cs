@@ -285,6 +285,13 @@ namespace HiddenHarbours.Tools.RigBaking
                         "word). BuildingLifecycleStates.AssertKnown covers the second.");
             }
 
+            if (build.Overrides != null)
+                return BuildingBakeRequest.FromOptions(
+                    build.RigKey, BaseOptionsLiteralFor(build, RigCatalog.Get(build.RigKey).GlobalName), build.Key,
+                    outputFolder, baseName, VillageBuildingKit.Facings, requireDistinctFromDefault: true,
+                    maxSheetDimension: VillageBuildingKit.ImportCapFor(build),
+                    bakeLightChannels: VillageBuildingKit.BakesLightChannels(build));
+
             if (build.IsPreset)
                 return BuildingBakeRequest.FromPreset(
                     build.RigKey, build.Preset, RigCatalog.Get(build.RigKey).GlobalName,
@@ -309,9 +316,13 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <see cref="LifecycleOptionsLiteralFor"/> layers onto.
         /// </summary>
         public static string BaseOptionsLiteralFor(VillageBuildingKit.Build build, string rigGlobal)
-            => build.IsPreset
+        {
+            string basis = build.IsPreset
                 ? $"Object.assign({{}},{rigGlobal}.PRESETS['{build.Preset.Replace("'", "\\'")}'])"
                 : OptionsLiteralFor(build);
+            return build.Overrides == null ? basis
+                : $"Object.assign({basis},{BuildingAxes.ToOptionsLiteral(build.Overrides)})";
+        }
 
         /// <summary>
         /// The build WITH its state: <c>Object.assign({}, Rig.PRESETS['x'], {decay:'ruin'})</c>.

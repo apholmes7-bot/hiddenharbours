@@ -93,3 +93,4 @@ MonoBehaviour:
       Value: grass
   Lights: []
   RetiredIds: []
+  PlacementIds: []

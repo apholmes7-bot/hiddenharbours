@@ -945,3 +945,4 @@ MonoBehaviour:
       Value: 1
   Lights: []
   RetiredIds: []
+  PlacementIds: []

@@ -2383,3 +2383,4 @@ MonoBehaviour:
       Value: 0
   Lights: []
   RetiredIds: []
+  PlacementIds: []
