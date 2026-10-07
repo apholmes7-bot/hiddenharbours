@@ -72,6 +72,7 @@ Material:
     - _CausticCurvatureGain: 12
     - _CausticDayGate: 1
     - _CausticAmount: 0.2
+    - _CausticClarity: 0
     - _CausticDepth: 0.8
     - _CausticScale: 0.9
     - _CausticTexStrength: 0.5
