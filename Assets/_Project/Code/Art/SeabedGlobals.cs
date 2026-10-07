@@ -24,11 +24,14 @@ namespace HiddenHarbours.Art
 
         /// <summary>The seabed most recently published, for C# readers that want the same rect.</summary>
         public static bool IsBound { get; private set; }
+        internal static FoamTransportMap CpuMap { get; private set; }
 
         public static void Publish(Texture heightTex, Vector2 worldMin, Vector2 worldSize,
                                    float minElevation, float maxElevation, float shoreSampleStep)
         {
             if (heightTex == null) { PublishUnset(); return; }
+            CpuMap = new FoamTransportMap(heightTex, worldMin,
+                new Vector2(Mathf.Max(worldSize.x, 1e-3f), Mathf.Max(worldSize.y, 1e-3f)), minElevation, maxElevation);
             Shader.SetGlobalTexture(Tex, heightTex);
             Shader.SetGlobalVector(Rect, new Vector4(worldMin.x, worldMin.y,
                                                      Mathf.Max(worldSize.x, 1e-3f), Mathf.Max(worldSize.y, 1e-3f)));
@@ -38,6 +41,7 @@ namespace HiddenHarbours.Art
 
         public static void PublishUnset()
         {
+            CpuMap = default;
             if (s_Fallback == null)
             {
                 s_Fallback = new Texture2D(1, 1, TextureFormat.R8, false, true) { name = "HH Seabed (unset)", hideFlags = HideFlags.HideAndDontSave };

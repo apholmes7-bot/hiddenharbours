@@ -410,6 +410,8 @@ sentence demands:
   deliberately *coarser* than the pixel grid, which is the Pixelation section's own "foam coarser than
   caustics" scale hierarchy taken up rather than ignored.
 
+**F2 — bounded local foam transport (2026-10-06).** Camera-window movement remains an exact whole-cell copy on the foam buffer's own eight-cells-per-metre lattice. All new transport strengths at zero execute the previous buffer path bit for bit, including its format policy, banked global drift and drawn remainder. Enabled unobstructed uniform flow also uses that whole-cell path. Enabled nonuniform or obstructed flow instead holds the drawn remainder fixed, remaps only the camera window, and moves the full visual velocity, including global drift, through bounded neighbour exchanges. On RG32 UNORM each exchange transfers equal integer coverage codes from donor to receiver; excess inflow is refused and retained at the donor. Freshness travels as a coverage-weighted mean, never an accumulated channel. Solid cells block exchanges. Coverage changes outside transfer remain attributable to the existing deposits, decay, source saturation, source-store rounding and finite-window eviction. Repeated bilinear resampling of foam history is not permitted. Local exchange's numerical spread must be measured against deformation controls, not called tearing. No gameplay surf, boat force, water height or waterline changes.
+
 **The determinism boundary, stated honestly (this is new, and it is a real exception).** The buffer is
 **accumulated VISUAL state**. It is *not* a deterministic function of `(worldSeed, gameTime)`, and it is
 **allowed to differ run-to-run** with frame pacing — exactly as particles are. It therefore:
@@ -479,7 +481,9 @@ decisions above). This is the one place where "pixelate at the end" would have s
 | #9 dispersion | Changes speed only — no new sampling, so the pixelize step is untouched |
 | #10 ripples | World-grid quantized (`Pixelize`) **and** posterized into solid steps with a Bayer-dithered window at each step edge (`_RippleBands` / `_RippleDitherWin`, **default ON**). ~~amplitude faded per discrete zoom tier~~ → **faded by the FRAMING** (`_SeaFramingHeight`): the footprint is tier-invariant, the CYCLE COUNT is not (see the #10 amendment) |
 | #8 reflections | RT at camera render resolution, point filter, warped lookup snapped to the **world** PPU grid (screen-snapping crawls on every pan) |
-| #6 wake buffer | Cells anchored to a **world** grid; camera-relative addressing only, scrolled in whole world cells — **and so is the wind drift**, remainder banked, because a fractional scroll must be resampled and resampling a buffer into itself every frame is a blur filter. On its **own** constant (`FOAM_CELLS_PER_UNIT` = 8/m = 4 px), deliberately coarser than the pixel grid and deliberately **not** `_PixelsPerUnit` (which ships at 24). Value posterized + edge-dithered on the shared world-locked Bayer cell, **default ON** |
+| #6 wake buffer | World-grid integer copy at zero/uniform flow; bounded local exchanges when enabled. See the approved F2 pixelation paragraph immediately below. |
+
+**Pixelation table, #6 wake buffer.** Cells remain on the eight-per-metre world lattice; camera addressing changes only by whole cells. Zero-strength and unobstructed uniform-flow paths preserve exact integer drift copies and the banked drawn remainder. Enabled local transport holds that remainder fixed and transfers bounded integer coverage between neighbouring world cells; obstacle faces block flux. Velocity alone may be interpolated from a one-metre world grid. History is never bilinearly advected. Existing value posterization, shared world Bayer cells and foam compose are unchanged; the grid never derives from material PixelsPerUnit.
 
 ---
 
@@ -522,6 +526,9 @@ P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial 
   nothing else** — that last clause is what contains the exception. Its maths (`FoamBuffer`) is nonetheless pure
   and deterministic in its own arguments, which is what keeps it testable headless. Full statement in the #6
   amendment.
+
+**Bounded visual-history exception, F2.** F2 stays inside #6's existing visual-only exception. Its field reads the published visual wind/current drift; published wave trains, amplitudes, directions, wavelengths, wrapped phases and drawn scale; the published seabed and still-water bytes and sea level; current Core hull footprints; and authored structure contact shapes/transforms. Existing hull, dispersal and bore deposits remain the only foam sources. F2 adds no randomness, independent phase or clock, reads no Time.time in Core, and leaves BorePhaseDegrees/SurfBorePhaseDeg as the bore's one phase law. Input preparation and transfer are deterministic in their explicit arguments; accumulated foam may still differ with frame pacing. Only foam maintenance and the water shader's foam compose may read this history; no simulation or save consumer is added. Unsupported formats retain legacy foam with F2 unavailable; invalid contact/map data holds local movement and reports the degraded state.
+
 - **#5 and #1 do change the field hulls ride** (the #4/#9 "promotions" turned out to be an audit result, not code — see P2). They are deterministic functions of
   `(worldSeed, gameTime)` + authored height, recomputed and never saved — but they require C# twins, headless
   determinism tests, and an **ADR 0018 amendment**. This is stated as a gate, not a footnote.
@@ -530,13 +537,11 @@ P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial 
   byte-identical until the owner dials each in — the discipline every ADR-0010 addendum has kept.
 - **Rule 7:** #8 and #6 each add one filtered list / one RT, both honouring the existing zero-cost-when-idle
   contract. The `HHReflect` list needs a **distance-or-layer rule** so it stays small (see open questions).
-  #6's budget, measured at its 96 m default: **768² × R8 × 2 (ping-pong) = 1.1 MB per camera**, one fullscreen
-  blit per frame over a fixed 8-slot injection loop — against the seabed bake's 1.0 MB per region. Its
-  resolution is **derived** from the window extent (`extent × cells-per-metre`), so "one texel = one world cell"
-  holds by construction and cannot be broken by typing a different number. A single channel is all a coverage
-  mask needs, which is what keeps the later mobile port affordable. **Both** of its gates are shut when idle:
-  no hull churning water (every `FoamInjector` unregisters off the water) **or** the owner's dial at 0 ⇒ no
-  target, no blit, nothing recorded.
+
+**F2 budget, at the existing 96 m window.** The old R8 budget is historical: main now prefers a 768² RG32 pair, 4,718,592 bytes (4.5 MiB), with RGHalf/RG16 fallbacks. Enabled F2 reuses that pair and adds at most a 99² RGFloat velocity texture plus a 768² R8 obstacle mask: 668,232 GPU bytes, total 5,386,824 bytes (5.1373 MiB) per camera. CPU texture backing, two conservative terrain-bound arrays and 128 fixed contact records add at most 5,395,016 bytes (5.1451 MiB) per camera, excluding existing source-map storage and driver staging. One source/decay pass plus four exchanges per substep costs five passes normally and at most seventeen for four substeps; each exchange fragment has at most eight logical texture loads and one RG32 store. Upload at most 668,232 bytes per enabled camera frame. Zero strengths add no resources, uploads or passes. The eight-injector limit remains unchanged. No steady-frame managed allocation is permitted. Target support, CPU work, uploads, GPU timing, numerical spread, camera scaling and memory must be measured in Phase C before positive look values ship. This budget approval covers the 96 m window; larger windows require a stated budget and measurement before F2 is enabled on them.
+
+**F2 evidence status — Phase B, Phase C acceptance pending.** All three strengths ship at 0 on Water and all eight presets. A positive strength may ship only after Phase C maintains 60 fps, adds at most 1 ms CPU preparation and 1 ms GPU time in the normal one-step 96 m case, and adds no steady-frame GC. No visual deformation, GPU identity or performance acceptance is claimed in Phase B. No Unity was run locally. The contact contract is implemented; a reviewed pier fixture belongs to Phase C. Wiring live piers requires a separate World handoff written only after the owner accepts the Phase C pier plate. No builder or scene changes are authorized here. CI results remain pending when the draft PR opens.
+
 
 ## Test & CI guards
 

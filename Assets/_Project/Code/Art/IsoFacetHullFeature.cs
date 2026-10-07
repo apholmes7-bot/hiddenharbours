@@ -147,6 +147,7 @@ namespace HiddenHarbours.Art
         private HullPass _pass;
         private Material _resolveMaterial;
         private Material _foamMaterial;
+        private Material _foamTransportMaterial;
 
         public override void Create()
         {
@@ -210,6 +211,13 @@ namespace HiddenHarbours.Art
             // record this pass, deliberately. The idle branch below still exists for scenes with no
             // hull on the water — which is a statement about this gate, not about the content.
             bool foam = FoamInjectionRegistry.ShouldRun;
+            bool transport = foam && FoamTransport.Requested(FoamInjectionRegistry.TransportStrengths);
+            _pass?.ReleaseTransport(!transport);
+            if (!transport && _foamTransportMaterial != null)
+            {
+                CoreUtils.Destroy(_foamTransportMaterial);
+                _foamTransportMaterial = null;
+            }
             if (!foam)
                 FoamInjectionRegistry.BindIdle();   // never leave a frozen wake bound on the sea
             if (!hulls && !water && !reflect && !meshSubjects && !foam)
@@ -254,6 +262,12 @@ namespace HiddenHarbours.Art
                 }
             }
 
+            if (transport && _foamTransportMaterial == null)
+            {
+                Shader shader = Shader.Find("Hidden/HiddenHarbours/FoamTransport");
+                if (shader != null && shader.isSupported) _foamTransportMaterial = CoreUtils.CreateEngineMaterial(shader);
+            }
+            _pass.TransportMaterial = _foamTransportMaterial;
             InteriorMaskEnabled = _interiorMask;
             _pass.renderPassSortingLayerID = LowestSortingLayerId();
             _pass.ResolveMaterial = _resolveMaterial;
@@ -301,6 +315,8 @@ namespace HiddenHarbours.Art
             _resolveMaterial = null;
             CoreUtils.Destroy(_foamMaterial);
             _foamMaterial = null;
+            CoreUtils.Destroy(_foamTransportMaterial);
+            _foamTransportMaterial = null;
         }
 
         internal sealed class HullPass : ScriptableRenderPass2D
@@ -327,6 +343,7 @@ namespace HiddenHarbours.Art
 
             /// <summary>ADR 0027 #6's advect/decay/inject blit material.</summary>
             public Material FoamMaterial;
+            public Material TransportMaterial;
             /// <summary>Record the advected foam buffer this frame (a hull churning water AND the
             /// owner's look dial above 0)?</summary>
             public bool DrawFoam;
@@ -378,6 +395,18 @@ namespace HiddenHarbours.Art
             // answer no device gave it. Register row 28.
             private GraphicsDeviceType _foamFormatProbedOn = GraphicsDeviceType.Null;
             private RenderTextureFormat _foamFormat = RenderTextureFormat.RG16;
+            private GraphicsDeviceType _transportProbedOn = GraphicsDeviceType.Null;
+            private bool _transportFormats;
+            private bool TransportFormats()
+            {
+                if (_transportProbedOn != SystemInfo.graphicsDeviceType)
+                {
+                    _transportProbedOn = SystemInfo.graphicsDeviceType;
+                    _transportFormats = SystemInfo.SupportsTextureFormat(TextureFormat.RGFloat) &&
+                                        SystemInfo.SupportsTextureFormat(TextureFormat.R8);
+                }
+                return _transportFormats;
+            }
 
             /// <summary>The format <see cref="FoamBuffer.FormatPreference"/> resolves to on this
             /// device, memoized. Never a literal at the descriptor: see <see cref="GetFoamState"/>.</summary>
@@ -402,6 +431,11 @@ namespace HiddenHarbours.Art
             /// </summary>
             private sealed class FoamState
             {
+                public Camera Owner;
+                public FoamTransportField Transport;
+                public FoamTransport.Route TransportRoute;
+                public int ReportedTransportFaults;
+                public float DroppedTransportSeconds;
                 public RTHandle A, B;
                 public bool ReadIsA = true;
                 public Vector2 Origin;          // cell-snapped window corner (world m)
@@ -432,6 +466,7 @@ namespace HiddenHarbours.Art
 
                 public void Release()
                 {
+                    ReleaseTransport();
                     A?.Release();
                     B?.Release();
                     A = null;
@@ -443,6 +478,67 @@ namespace HiddenHarbours.Art
                     Origin = Vector2.zero;
                     DriftResidual = Vector2.zero;
                 }
+                public void ReleaseTransport()
+                {
+                    Transport?.Dispose(); Transport = null;
+                    TransportRoute = FoamTransport.Route.Legacy;
+                    DroppedTransportSeconds = 0;
+                }
+            }
+
+            internal void ReleaseTransport(bool all)
+            {
+                foreach (var item in _foamStates)
+                    if (all || item.Value.Owner == null) item.Value.ReleaseTransport();
+            }
+
+            private FoamTransport.Step PrepareTransport(FoamState state, float extent, Vector2 origin, float dt, bool repeated)
+            {
+                // A repeated render cannot prepare/upload a new field or advance the previous snapshot.
+                if (repeated) return default;
+                Vector3 strengths = FoamInjectionRegistry.TransportStrengths;
+                state.DroppedTransportSeconds = 0;
+                if (!FoamTransport.Requested(strengths)) { state.ReleaseTransport(); return default; }
+                var fault = FoamTransport.Availability(state.Format, extent, TransportFormats());
+                if (fault != FoamTransport.Fault.None)
+                {
+                    state.ReleaseTransport(); state.TransportRoute = FoamTransport.Route.Unavailable;
+                    ReportTransportFault(state, fault); return default;
+                }
+                if (dt <= 0) { state.TransportRoute = FoamTransport.Route.Hold; return default; }
+                if (TransportMaterial == null || !FoamInjectionRegistry.HasTransportSeaLevel)
+                {
+                    state.TransportRoute = FoamTransport.Route.Hold;
+                    ReportTransportFault(state, TransportMaterial == null ? FoamTransport.Fault.Shader : FoamTransport.Fault.Inputs);
+                    return default;
+                }
+                state.Transport ??= new FoamTransportField(state.Resolution, extent);
+                PackedWaveField waves = WaveFieldBridge.ReadPublishedField();
+                state.Transport.Prepare(FoamBuffer.DrawOrigin(origin, state.DriftResidual),
+                    FoamInjectionRegistry.TransportSeaLevel, FoamInjectionRegistry.DriftVelocity, waves,
+                    FoamInjectionRegistry.DrawnWaveScale, strengths, SeabedGlobals.CpuMap, StillWaterGlobals.CpuMap);
+                state.TransportRoute = state.Transport.Route;
+                if (state.Transport.Fault != FoamTransport.Fault.None)
+                    ReportTransportFault(state, state.Transport.Fault);
+                if (state.TransportRoute != FoamTransport.Route.Local) return default;
+                FoamTransport.Step step = FoamTransport.Substeps(state.Transport.MaxComponent, dt);
+                state.DroppedTransportSeconds = step.DroppedSeconds;
+                if (step.Count > 0) state.Transport.Upload();
+                return step;
+            }
+
+            private static void ReportTransportFault(FoamState state, FoamTransport.Fault fault)
+            {
+                int bit = 1 << (int)fault;
+                if ((state.ReportedTransportFaults & bit) != 0) return;
+                state.ReportedTransportFaults |= bit;
+                Debug.LogWarning($"[FoamTransport] {fault}: " +
+                    (state.TransportRoute == FoamTransport.Route.Unavailable
+                        ? "F2 unavailable; legacy foam retained."
+                        : "movement held; existing foam decay and sources retained.") +
+                    (fault == FoamTransport.Fault.Capacity && state.Transport != null
+                        ? $" At least {state.Transport.ContactCount} relevant contacts exceed the {FoamTransport.MaxContacts}-contact capacity."
+                        : ""));
             }
 
             public HullPass(TargetAllocator allocator = null)
@@ -483,6 +579,48 @@ namespace HiddenHarbours.Art
                 public Vector4[] Segments, Shapes;
                 public Vector4[] DispTrackA, DispTrackB, DispTrackC, DispShape;   // PR 11b
                 public Vector4 SurfDeposit;   // ADR 0040 rev 3: strength, drawn scale, dt
+            }
+
+            private class TransportPassData
+            {
+                internal Material Material;
+                internal TextureHandle Previous, Flow, Mask;
+                internal Vector4 Grid, World, FlowWorld;
+                internal int Matching;
+            }
+            private static readonly int F2Prev = Shader.PropertyToID("_F2Prev");
+            private static readonly int F2Velocity = Shader.PropertyToID("_F2Velocity");
+            private static readonly int F2Mask = Shader.PropertyToID("_F2Mask");
+            private static readonly int F2Grid = Shader.PropertyToID("_F2Grid");
+            private static readonly int F2World = Shader.PropertyToID("_F2World");
+            private static readonly int F2FlowWorld = Shader.PropertyToID("_F2FlowWorld");
+            private static readonly string[] TransportNames = { "HH Foam X even", "HH Foam X odd", "HH Foam Y even", "HH Foam Y odd" };
+
+            // Shared by production and the granted-GPU graph tests. All resources are declared, including
+            // uploaded CPU textures. Never sample the attachment being written; order follows graph edges.
+            internal static void RecordTransport(RenderGraph graph, Material material, TextureHandle previous,
+                TextureHandle next, TextureHandle flow, TextureHandle mask, Vector4 grid, Vector4 world,
+                Vector4 flowWorld, int matching)
+            {
+                using var builder = graph.AddRasterRenderPass<TransportPassData>(TransportNames[matching], out var data);
+                data.Material = material; data.Previous = previous; data.Flow = flow; data.Mask = mask;
+                data.Grid = grid; data.World = world; data.FlowWorld = flowWorld; data.Matching = matching;
+                builder.UseTexture(previous, AccessFlags.Read);
+                builder.UseTexture(flow, AccessFlags.Read);
+                builder.UseTexture(mask, AccessFlags.Read);
+                builder.SetRenderAttachment(next, 0);
+                builder.AllowPassCulling(false);
+                builder.SetGlobalTextureAfterPass(next, FoamShaderIds.BufferTex);
+                builder.SetRenderFunc((TransportPassData pass, RasterGraphContext context) =>
+                {
+                    pass.Material.SetTexture(F2Prev, (RTHandle)pass.Previous);
+                    pass.Material.SetTexture(F2Velocity, (RTHandle)pass.Flow);
+                    pass.Material.SetTexture(F2Mask, (RTHandle)pass.Mask);
+                    pass.Material.SetVector(F2Grid, pass.Grid);
+                    pass.Material.SetVector(F2World, pass.World);
+                    pass.Material.SetVector(F2FlowWorld, pass.FlowWorld);
+                    Blitter.BlitTexture(context.cmd, new Vector4(1, 1, 0, 0), pass.Material, pass.Matching);
+                });
             }
 
             private class ResolvePassData
@@ -554,6 +692,7 @@ namespace HiddenHarbours.Art
                 {
                     float foamExtent = Mathf.Clamp(FoamWindowMeters, FoamBuffer.MinExtentMeters, 512f);
                     cameraFoam = GetFoamState(cameraData.camera.GetEntityId(), FoamBuffer.ResolutionForExtent(foamExtent));
+                    cameraFoam.Owner = cameraData.camera;
                     drawFoam = cameraFoam.Initialization.CanRecord();
                     if (!drawFoam) Shader.SetGlobalVector(FoamShaderIds.BufferWorld, Vector4.zero);
                 }
@@ -640,8 +779,16 @@ namespace HiddenHarbours.Art
 
                     Vector3 camPos = cameraData.camera.transform.position;
                     Vector2 newOrigin = FoamBuffer.WorldCellOrigin(new Vector2(camPos.x, camPos.y), extent);
-                    Vector2Int driftCells = FoamBuffer.AdvectCells(
-                        ref state.DriftResidual, FoamInjectionRegistry.DriftVelocity * dt);
+                    FoamTransport.Step transportStep = PrepareTransport(state, extent, newOrigin, dt, repeatedRender);
+                    Vector2Int driftCells;
+                    if (state.TransportRoute == FoamTransport.Route.Legacy || state.TransportRoute == FoamTransport.Route.Unavailable)
+                    {
+                        // The exact old arithmetic and order at all-zero strengths, on every format.
+                        driftCells = FoamBuffer.AdvectCells(
+                            ref state.DriftResidual, FoamInjectionRegistry.DriftVelocity * dt);
+                    }
+                    else driftCells = FoamTransport.DriftCells(state.TransportRoute, ref state.DriftResidual,
+                        FoamInjectionRegistry.DriftVelocity, state.Transport != null ? state.Transport.UniformVelocity : Vector2.zero, dt);
                     // Before the first frame there is no previous window to move content between.
                     Vector2Int sourceOffset = state.Primed
                         ? FoamBuffer.SourceOffsetCells(state.Origin, newOrigin, driftCells)
@@ -763,6 +910,27 @@ namespace HiddenHarbours.Art
                             data.Material.SetVector(FoamShaderIds.SurfDeposit, data.SurfDeposit);
                             Blitter.BlitTexture(ctx.cmd, new Vector4(1f, 1f, 0f, 0f), data.Material, 0);
                         });
+                    }
+
+                    if (transportStep.Count > 0)
+                    {
+                        TextureHandle flow = renderGraph.ImportTexture(state.Transport.VelocityHandle);
+                        TextureHandle mask = renderGraph.ImportTexture(state.Transport.MaskHandle);
+                        TextureHandle current = nextTex, spare = prevTex;
+                        Vector2 flowOrigin = state.Transport.FlowOrigin;
+                        var grid = new Vector4(res, res, FoamBuffer.CellSize, transportStep.Seconds);
+                        var world = new Vector4(drawOrigin.x, drawOrigin.y,
+                            Mathf.RoundToInt(newOrigin.x * FoamBuffer.CellsPerUnit), Mathf.RoundToInt(newOrigin.y * FoamBuffer.CellsPerUnit));
+                        var flowWorld = new Vector4(flowOrigin.x, flowOrigin.y, 1f / FoamTransport.FlowCellMeters, state.Transport.FlowResolution);
+                        for (int step = 0; step < transportStep.Count; step++)
+                        for (int matching = 0; matching < FoamTransport.Matchings; matching++)
+                        {
+                            RecordTransport(renderGraph, TransportMaterial, current, spare, flow, mask,
+                                grid, world, flowWorld, matching);
+                            TextureHandle swap = current; current = spare; spare = swap;
+                        }
+                        // Four exchanges per substep: final target is the source pass's nextTex.
+                        foamTex = current;
                     }
 
                     // Where the buffer sits in the world, for every shader that reads it. A plain

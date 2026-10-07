@@ -1004,6 +1004,10 @@ Shader "HiddenHarbours/Water"
         // unsourced (no prefab carried a FoamInjector either). Both ends are now live, so the sea
         // actually keeps a mark. This is the ONE value in this PR the owner may simply want lower.
         _WakeFoamStrength  ("Wake foam strength (0 = OFF)", Range(0,2)) = 0.85
+        // ADR 0027 F2: CPU-read owner policy. Zero leaves the existing history path untouched.
+        _FoamTransportStrain ("Foam transport strain (m/s)", Float) = 0
+        _FoamTransportCurl ("Foam transport curl (m/s)", Float) = 0
+        _FoamTransportCollection ("Foam transport collection (m/s)", Float) = 0
         // Coverage below this is bare water: a trail's fringe holds a lot of very faint foam, and
         // drawing all of it reads as a grey wash rather than as churn.
         _WakeFoamThreshold ("Wake foam threshold (buffer value where foam begins)", Range(0,1)) = 0.12
@@ -1660,6 +1664,7 @@ Shader "HiddenHarbours/Water"
                 float  _EnvelopeBandDitherWin;
                 // ADR 0027 #6 — the advected foam buffer's compose (default OFF: _WakeFoamStrength 0).
                 float  _WakeFoamStrength;
+                float _FoamTransportStrain, _FoamTransportCurl, _FoamTransportCollection;
                 float  _WakeFoamThreshold;
                 float  _WakeFoamSoftness;
                 float  _WakeFoamBands;

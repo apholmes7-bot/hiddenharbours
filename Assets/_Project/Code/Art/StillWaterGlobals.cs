@@ -33,6 +33,7 @@ namespace HiddenHarbours.Art
 
         /// <summary>True while a still map is published (the last <see cref="Refresh"/> found one).</summary>
         public static bool IsBound { get; private set; }
+        internal static FoamTransportMap CpuMap { get; private set; }
 
         /// <summary>How many consumers hold the globals right now (diagnostics and tests).</summary>
         public static int HolderCount => s_Holders.Count;
@@ -69,6 +70,9 @@ namespace HiddenHarbours.Art
             StillWaterMap map = s_Holders.Count > 0 ? GameServices.StillWater.Map : default;
             if (!map.IsBound) { PublishUnset(); return; }
 
+            CpuMap = new FoamTransportMap(map.Texture, map.WorldMin,
+                new Vector2(Mathf.Max(map.WorldSize.x, 1e-3f), Mathf.Max(map.WorldSize.y, 1e-3f)), map.MinLevel, map.MaxLevel);
+
             Shader.SetGlobalTexture(Tex, map.Texture);
             Shader.SetGlobalVector(Rect, new Vector4(map.WorldMin.x, map.WorldMin.y,
                                                      Mathf.Max(map.WorldSize.x, 1e-3f),
@@ -80,6 +84,7 @@ namespace HiddenHarbours.Art
         /// <summary>"No still water anywhere": a 1×1 code-0 texture, a zero rect, and the bound flag off.</summary>
         public static void PublishUnset()
         {
+            CpuMap = default;
             if (s_Fallback == null)
             {
                 s_Fallback = new Texture2D(1, 1, TextureFormat.R8, false, true) { name = "HH Still water (unset)", hideFlags = HideFlags.HideAndDontSave };
@@ -99,6 +104,7 @@ namespace HiddenHarbours.Art
         {
             GameServices.StillWaterChanged -= Refresh;
             s_Holders.Clear();
+            CpuMap = default;
             IsBound = false;
         }
     }
