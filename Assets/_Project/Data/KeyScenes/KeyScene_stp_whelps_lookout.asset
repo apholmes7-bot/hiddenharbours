@@ -17,7 +17,7 @@ MonoBehaviour:
   RegionId: region.st_peters
   Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_whelps_lookout/scene.json,
     51709 bytes, sha256 6da6a6029654821458c47d2702c855b6c013b16148a14e9671d9a8b5097225f4
-  Placed: 0
+  Placed: 1
   Pieces:
   - Id: prop.stp_whelps_lookout_bench
     Kind: setPiece
@@ -897,3 +897,5 @@ MonoBehaviour:
       Value: rockweed
   Lights: []
   RetiredIds: []
+  PlacementIds:
+  - prop.stp_whelps_lookout_bench

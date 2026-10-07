@@ -10,11 +10,11 @@
             "cells": 8,
             "headings": 0,
             "cellW": 21,
-            "cellH": 132,
+            "cellH": 127,
             "cols": 8,
             "rows": 1,
             "sheetW": 168,
-            "sheetH": 132,
+            "sheetH": 127,
             "frames": [
                 {
                     "cell": 0,
@@ -23,12 +23,12 @@
                     "cropX": 4,
                     "cropY": 3,
                     "pivotX": 6,
-                    "pivotY": 126,
+                    "pivotY": 121,
                     "nativeW": 24,
-                    "nativeH": 137,
+                    "nativeH": 131,
                     "nativePivotX": 10,
-                    "nativePivotY": 129,
-                    "opaque": 1323
+                    "nativePivotY": 124,
+                    "opaque": 1270
                 },
                 {
                     "cell": 1,
@@ -37,12 +37,12 @@
                     "cropX": 3,
                     "cropY": 4,
                     "pivotX": 9,
-                    "pivotY": 127,
+                    "pivotY": 122,
                     "nativeW": 28,
-                    "nativeH": 140,
+                    "nativeH": 135,
                     "nativePivotX": 12,
-                    "nativePivotY": 131,
-                    "opaque": 1924
+                    "nativePivotY": 126,
+                    "opaque": 1845
                 },
                 {
                     "cell": 2,
@@ -51,12 +51,12 @@
                     "cropX": 4,
                     "cropY": 3,
                     "pivotX": 6,
-                    "pivotY": 126,
+                    "pivotY": 121,
                     "nativeW": 20,
-                    "nativeH": 137,
+                    "nativeH": 131,
                     "nativePivotX": 10,
-                    "nativePivotY": 129,
-                    "opaque": 1428
+                    "nativePivotY": 124,
+                    "opaque": 1374
                 },
                 {
                     "cell": 3,
@@ -65,12 +65,12 @@
                     "cropX": 3,
                     "cropY": 4,
                     "pivotX": 9,
-                    "pivotY": 127,
+                    "pivotY": 122,
                     "nativeW": 25,
-                    "nativeH": 140,
+                    "nativeH": 135,
                     "nativePivotX": 12,
-                    "nativePivotY": 131,
-                    "opaque": 1918
+                    "nativePivotY": 126,
+                    "opaque": 1839
                 },
                 {
                     "cell": 4,
@@ -79,12 +79,12 @@
                     "cropX": 4,
                     "cropY": 3,
                     "pivotX": 10,
-                    "pivotY": 126,
+                    "pivotY": 121,
                     "nativeW": 24,
-                    "nativeH": 137,
+                    "nativeH": 132,
                     "nativePivotX": 14,
-                    "nativePivotY": 129,
-                    "opaque": 1328
+                    "nativePivotY": 124,
+                    "opaque": 1280
                 },
                 {
                     "cell": 5,
@@ -93,12 +93,12 @@
                     "cropX": 3,
                     "cropY": 4,
                     "pivotX": 12,
-                    "pivotY": 127,
+                    "pivotY": 122,
                     "nativeW": 28,
-                    "nativeH": 140,
+                    "nativeH": 135,
                     "nativePivotX": 15,
-                    "nativePivotY": 131,
-                    "opaque": 1928
+                    "nativePivotY": 126,
+                    "opaque": 1849
                 },
                 {
                     "cell": 6,
@@ -107,12 +107,12 @@
                     "cropX": 4,
                     "cropY": 3,
                     "pivotX": 6,
-                    "pivotY": 126,
+                    "pivotY": 121,
                     "nativeW": 20,
-                    "nativeH": 137,
+                    "nativeH": 131,
                     "nativePivotX": 10,
-                    "nativePivotY": 129,
-                    "opaque": 1428
+                    "nativePivotY": 124,
+                    "opaque": 1374
                 },
                 {
                     "cell": 7,
@@ -121,15 +121,15 @@
                     "cropX": 3,
                     "cropY": 4,
                     "pivotX": 9,
-                    "pivotY": 127,
+                    "pivotY": 122,
                     "nativeW": 25,
-                    "nativeH": 140,
+                    "nativeH": 135,
                     "nativePivotX": 12,
-                    "nativePivotY": 131,
-                    "opaque": 1914
+                    "nativePivotY": 126,
+                    "opaque": 1835
                 }
             ],
-            "optionsJson": "{\"foot\":-1.97,\"datum\":-2.2,\"top\":2.6,\"growth\":1}"
+            "optionsJson": "{\"foot\":-1.75,\"datum\":-2.2,\"top\":2.6,\"growth\":1}"
         },
         {
             "key": "harbourVane",
@@ -1253,7 +1253,7 @@
         }
     ],
     "kitVersion": "1.0.0",
-    "todaySha256Lf": "04749202a9f8fb865c5805ccfd1dba4c82e6fbfd3d8a1e8b3c2aedfbd3926895",
+    "todaySha256Lf": "86b1557a29b3ed105fe20c5550fcdcecee76542502468982d90c7c97d8ddbe95",
     "skyJson": "{\"time\":14,\"cloud\":0.1,\"wind\":0.3}",
     "bakedLit": 0.0,
     "outline": false,
