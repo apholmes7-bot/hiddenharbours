@@ -131,6 +131,15 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (KeyScenePlacement p in expected)
             {
                 Transform piece = root.transform.Find(p.Scene).Find(p.Id);
+                if (p.IsPerch)
+                {
+                    var perch = piece.GetComponent<HiddenHarbours.World.GullPerch>();
+                    Assert.IsNotNull(perch, p.Id);
+                    Assert.AreEqual(p.Id, perch.Id);
+                    Assert.That(Vector2.Distance(p.At, perch.ScreenPoint), Is.LessThan(Tolerance));
+                    Assert.IsNull(piece.GetComponent<SpriteRenderer>(), "the flock supplies the bird");
+                    continue;
+                }
                 Vector3 at = piece.position;
                 Assert.AreEqual(p.At.x, at.x, Tolerance, $"{p.Id} stands at {at}");
                 Assert.AreEqual(p.At.y, at.y, Tolerance, $"{p.Id} stands at {at}");

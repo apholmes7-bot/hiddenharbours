@@ -15,103 +15,358 @@ MonoBehaviour:
   Id: keyscene.stp_cannery
   DisplayName: The cannery
   RegionId: region.st_peters
-  Source: art-desk return 2 part 1 (key-scenes-r2-part1-ne-light-2026-09-28), scenes/keyscene.stp_cannery/scene.json, 16567 bytes, sha256 4bd06e2bdc14c4b8f21652e4c9c036308570182289a4e4ee3665c5583e8968d9
+  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_cannery/scene.json,
+    18018 bytes, sha256 e803abdb2a08f971140e0e7b9e9d6822a53f645dc7ccf6dcd99e3c7a60ec2f71
+  Placed: 1
   Pieces:
+  - Id: structure.stp_cannery
+    Kind: building
+    Owner: StPetersCannery
+    Kit: wharfBuilding2
+    Piece: cannery
+    State: 
+    At: {x: 170, y: 16}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: cannery
+    - Key: decay
+      Value: collapsing
+  - Id: structure.stp_cannery_restored
+    Kind: building
+    Owner: 
+    Kit: wharfBuilding2
+    Piece: cannery
+    State: 
+    At: {x: 170, y: 16}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - restored
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: cannery
+    - Key: occupancy
+      Value: working
+    - Key: kept
+      Value: 0.85
+    - Key: weather
+      Value: 0.35
   - Id: structure.stp_cannery_boiler_stack
+    Kind: setPiece
+    Owner: 
     Kit: stPetersSetPieces
     Piece: boilerStack
     State: 
     At: {x: 173.32, y: 22.15}
     Z: 6
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 7
     HasSortY: 1
     SortY: 16.4
+    Layer: 
+    Walk: behind
+    Collider: polygon 4.2 x 3.4 m
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: decay
       Value: derelict
     - Key: stackH
       Value: 14
+  - Id: structure.stp_cannery_boiler_stack_restored
+    Kind: setPiece
+    Owner: 
+    Kit: stPetersSetPieces
+    Piece: boilerStack
+    State: 
+    At: {x: 173.32, y: 22.15}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 7
+    HasSortY: 1
+    SortY: 16.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - restored
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: decay
+      Value: restored
+    - Key: stackH
+      Value: 14
   - Id: structure.stp_cannery_trolley_line
+    Kind: setPiece
+    Owner: 
     Kit: stPetersSetPieces
     Piece: trolleyLine
     State: 
     At: {x: 175.59, y: 9.57}
     Z: 6
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 0
     HasSortY: 1
     SortY: 12
+    Layer: floor
+    Walk: on
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: path
       Value: '[[0,0],[4.01,-4.17],[6.41,-7.17],[8.01,-9.27]]'
     - Key: decay
       Value: derelict
+  - Id: structure.stp_cannery_trolley_line_restored
+    Kind: setPiece
+    Owner: 
+    Kit: stPetersSetPieces
+    Piece: trolleyLine
+    State: 
+    At: {x: 175.59, y: 9.57}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 12
+    Layer: floor
+    Walk: on
+    Collider: 
+    Variants:
+    - restored
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: path
+      Value: '[[0,0],[4.01,-4.17],[6.41,-7.17],[8.01,-9.27]]'
+    - Key: decay
+      Value: restored
   - Id: prop.stp_cannery_trolley
+    Kind: setPiece
+    Owner: 
     Kit: stPetersSetPieces
     Piece: trolley
     State: 
     At: {x: 178, y: 6.9}
     Z: 6
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 7
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: decay
       Value: derelict
+  - Id: prop.stp_cannery_trolley_restored
+    Kind: setPiece
+    Owner: 
+    Kit: stPetersSetPieces
+    Piece: trolley
+    State: 
+    At: {x: 180.9, y: 3.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 7
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - restored
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: decay
+      Value: restored
   - Id: prop.stp_cannery_conveyor
+    Kind: setPiece
+    Owner: 
     Kit: stPetersSetPieces
     Piece: conveyor
     State: 
     At: {x: 168.3, y: 9.21}
     Z: 6
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 3
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: under (three leg colliders)
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: decay
       Value: derelict
+  - Id: prop.stp_cannery_conveyor_restored
+    Kind: setPiece
+    Owner: 
+    Kit: stPetersSetPieces
+    Piece: conveyor
+    State: 
+    At: {x: 168.3, y: 9.21}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - restored
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: decay
+      Value: restored
   - Id: prop.stp_cannery_fallen_sign
+    Kind: setPiece
+    Owner: 
     Kit: stPetersSetPieces
     Piece: fallenSign
     State: 
     At: {x: 166.6, y: 5.4}
     Z: 6
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words:
     - words.cannery_sign
     Options: []
+  - Id: prop.stp_cannery_door_notice
+    Kind: setPiece
+    Owner: 
+    Kit: stPetersSetPieces
+    Piece: doorNotice
+    State: 
+    At: {x: 175.52, y: 10.48}
+    Z: 7.2
+    StandsOn: mount
+    MountHost: structure.stp_cannery
+    MountAnchor: door
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 1
+    SortY: 10.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words:
+    - words.cannery_notice
+    Options: []
   - Id: prop.stp_cannery_net_rack
+    Kind: setPiece
+    Owner: 
     Kit: wharfDecor
     Piece: netFrame
     State: 
     At: {x: 180.2, y: 12.6}
     Z: 6
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: weather
@@ -119,17 +374,27 @@ MonoBehaviour:
     - Key: variant
       Value: 1
   - Id: prop.stp_cannery_broken_boxes
+    Kind: setPiece
+    Owner: 
     Kit: wharfDecor
     Piece: crateStack
     State: 
     At: {x: 172.6, y: 8.4}
     Z: 6
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: weather
@@ -137,18 +402,141 @@ MonoBehaviour:
     - Key: variant
       Value: 2
   - Id: prop.stp_cannery_drum
+    Kind: setPiece
+    Owner: 
     Kit: wharfDecor
     Piece: oilDrum
     State: 
     At: {x: 163.9, y: 9.6}
     Z: 6
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: weather
       Value: 1
+  - Id: prop.stp_cannery_gull_a
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 174.38, y: 11.62}
+    Z: 15.3
+    StandsOn: mount
+    MountHost: structure.stp_cannery
+    MountAnchor: ridge
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 15.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+  - Id: prop.stp_cannery_gull_b
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 167.17, y: 20.53}
+    Z: 14.6
+    StandsOn: mount
+    MountHost: structure.stp_cannery
+    MountAnchor: boilerHouseRidge
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 1
+    SortY: 15.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 1
+  - Id: prop.stp_cannery_crates_restored
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: crateStack
+    State: 
+    At: {x: 173.6, y: 9.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - restored
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: weather
+      Value: 0.2
+    - Key: loaded
+      Value: true
+  - Id: prop.stp_cannery_totes_restored
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: toteStack
+    State: 
+    At: {x: 177.6, y: 10}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - restored
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+  Lights: []
+  RetiredIds: []
+  PlacementIds: []

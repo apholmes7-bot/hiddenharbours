@@ -103,3 +103,4 @@ MonoBehaviour:
     Options: []
   Lights: []
   RetiredIds: []
+  PlacementIds: []

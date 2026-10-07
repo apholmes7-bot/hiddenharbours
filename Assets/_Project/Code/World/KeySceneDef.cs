@@ -20,7 +20,7 @@ namespace HiddenHarbours.World
     /// ground plane, which is world XY (ADR 0042, regime 2), and the pivot of every piece is its ground
     /// point, so the place IS the position. <see cref="KeyScenePiece.Z"/> is what it stands on, in metres
     /// above the game's datum, measured on the game's own height source (#890); it is the record the z table
-    /// test holds, and the step never draws with it.</para>
+    /// test holds, and ground placements do not draw with it. A mount draws only its rise above its host ground.</para>
     ///
     /// <para><b>One reading of y (O3, lead-architect).</b> Every position is its plan's own number,
     /// unconverted: a siting is world metres, never squashed (ADR 0042, regime 2). A piece that spans
@@ -74,7 +74,7 @@ namespace HiddenHarbours.World
 
         [Header("Today's pieces")]
         [Tooltip("Whether the step places this scene. A new scene comes in off, as data, and its wave turns it " +
-                 "on when its art is in the game: a scene goes whole or not at all.")]
+                 "on when its art is in the game; PlacementIds can hold an explicitly staged subset.")]
         public bool Placed = true;
 
         [Tooltip("Every piece of the scene, in CD's order. Ids are CD's, stable and append-only. The step places " +
@@ -87,6 +87,9 @@ namespace HiddenHarbours.World
 
         [Tooltip("Ids a later package no longer holds. Kept so that none is ever used again.")]
         public string[] RetiredIds = Array.Empty<string>();
+
+        [Tooltip("Optional wave selection by id. Empty places every eligible row. Unselected rows remain recorded until their host or ground is ready.")]
+        public string[] PlacementIds = Array.Empty<string>();
     }
 
     /// <summary>One placed piece: which kit piece, where, facing which way, standing on what.</summary>
