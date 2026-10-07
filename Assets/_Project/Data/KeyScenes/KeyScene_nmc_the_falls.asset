@@ -1,0 +1,732 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_nmc_the_falls
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.nmc_the_falls
+  DisplayName: 'The Falls: the head of tide'
+  RegionId: region.nine_mile_creek
+  Source: HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02, hh-nmc-key-scenes/scenes/keyscene.nmc_the_falls/scene.json,
+    24021 bytes, sha256 84a30ea30e0ae7a856446d6498468aed55e98eae625b3ae91be317bc41e3ead9
+  Placed: 0
+  Pieces:
+  - Id: structure.nmc_the_falls_water
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: cascade
+    State: 
+    At: {x: -275.5, y: 197.3}
+    Z: 0
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 203.5
+    Layer: water
+    Walk: the blocks and shelves are rock, standable; the water is not walkable
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: edges
+      Value: '[[-6,-2.72,2.58],[-5.75,-2.74,2.56],[-5.5,-2.75,2.53],[-5.25,-2.77,2.51],[-5,-2.79,2.49],[-4.75,-2.82,2.46],[-4.5,-2.84,2.44],[-4.25,-2.86,2.44],[-4,-2.89,2.41],[-3.75,-2.91,2.39],[-3.5,-2.91,2.39],[-3.25,-2.92,2.4],[-3,-2.94,2.4],[-2.75,-2.96,2.42],[-2.5,-2.97,2.43],[-2.25,-3,2.44],[-2,-3.01,2.47],[-1.75,-3.02,2.52],[-1.5,-3.04,2.56],[-1.25,-3.05,2.65],[-1,-3.04,2.76],[-0.75,-3.05,2.85],[-0.5,-3.07,2.93],[-0.25,-3.08,3.04],[0,-3.09,3.13],[0.25,-3.11,3.21],[0.5,-3.12,3.3],[0.75,-3.13,3.37],[1,-3.12,3.44],[1.25,-3.14,3.5],[1.5,-3.15,3.55],[1.75,-3.14,3.62],[2,-3.13,3.69],[2.25,-3.13,3.75],[2.5,-3.12,3.82],[2.75,-3.11,3.91],[3,-3.12,4],[3.25,-3.13,4.11],[3.5,-3.16,4.22],[3.75,-3.19,4.35],[4,-3.24,4.48],[4.25,-3.29,4.61],[4.5,-3.36,4.74],[4.75,-3.43,4.87],[5,-3.5,5],[5.25,-3.57,5.13],[5.5,-3.64,5.24],[5.75,-3.69,5.35],[6,-3.74,5.44],[6.25,-3.79,5.53],[6.5,-3.82,5.6],[6.75,-3.85,5.67],[7,-3.88,5.72],[7.25,-3.89,5.75],[7.5,-3.89,5.77],[7.75,-3.89,5.77],[8,-3.87,5.77],[8.25,-3.84,5.76],[8.5,-3.81,5.77],[8.75,-3.79,5.76],[9,-3.77,5.77]]'
+    - Key: x0
+      Value: -5.5
+    - Key: x1
+      Value: 8.5
+    - Key: seed
+      Value: 29
+    - Key: nmc.name
+      Value: '"the Falls: three sandstone steps and their white water"'
+    - Key: nmc.faces
+      Value: '"local +x downstream (east); it does not turn"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/cascade.gameplay.json"'
+    - Key: nmc.painted
+      Value: '"its water: NmcSetPieces.paint(\u2019cascade\u2019, opts), drawn over
+        the ground\u2019s still water in the pictures"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_the_falls
+    - Key: nmc.type
+      Value: SetPieceDef
+    - Key: nmc.scene.sound
+      Value: '[{"id":"sound.nmc_the_falls","kind":"falls","at":[-275.5,197.3],"z":1.5,"radiusM":30,"gain":"with
+        the river\u2019s flow; loudest on the ebb, when the pool stands clear of the
+        sea","lane":"audio"}]'
+    - Key: nmc.scene.game
+      Value: '["the steps\u2019 blocks and shelves as rock colliders, standable; the
+        white water as the game\u2019s foam on the three lips (the painter is the
+        look asked of it)","fishing: the pool below the third lip, from the Falls
+        deck and the south shelves","the Falls deck (+3.4) and its landing (+3.2)
+        as walkable decks","the Falls sound, loudest on the ebb","the sign\u2019s
+        and the deck\u2019s notices are words (words.nmc_falls_sign, words.nmc_falls_notice),
+        blank in pictures"]'
+    - Key: nmc.scene.budgets
+      Value: '{"masters":[{"board":"falls_morning","sprites":613,"byFamily":{"piece":17,"rock":5,"tree":6,"flower":268,"grass":295,"shrub":22}}],"frames":[{"frame":"wide_falls","pieces":9,"lights":0,"note":"plants
+        and grass as the masters count them, by area"},{"frame":"of_deck","pieces":9,"lights":0,"note":"plants
+        and grass as the masters count them, by area"}],"note":"Every piece is one
+        sprite (the Falls: its rock and its painted water, two); the campers are the
+        costliest."}'
+    - Key: nmc.scene.ground
+      Value: '{"source":"export/HH-nmc-ground-part-1-2026-09-30/ground/NineMileCreekSeabed_HeightTex_plan.png
+        (16-bit, -6 to +6 m; file sha256 a998ce68ca3a8e05179b54d7f1b4d5d95ecdb804fca921b75c20df86ddd56c75,
+        pixels sha256 edce029b38697ebfb3b15eb64f9286f08b697e93c699cd83556eb69236819564),
+        with its still water, through NmcHeightTex","ruled":"09-30, the owner on part
+        1: \u201cGo with leans\u201d (STATE.md s4)","laid":[],"note":"The Falls lay
+        nothing of their own: the texture carries the head of tide as a ramp (bed
+        +2.55 to +0.1 over x -279 to -271, the still water +2.90 to +0.58), and the
+        three steps stand on it as rock (the cascade piece) with their water painted
+        over the texture\u2019s still water.","inTexture":{"grading":"fill.nmc_river_wall","reissue":"HH-nmc-ground-part-1-reissue-2026-10-01
+        (pixels 00cf42cf\u2026), kept in HH-nmc-ground-part-1-reissue-2-2026-10-02","laid":[{"id":"wall.nmc_river_wall","ref":"keyscene.nmc_town_bridge","what":"the
+        town bridge scene\u2019s river wall and fill; its west end (x -266 to -262)
+        is in this scene\u2019s frame","rule":"as keyscene.nmc_town_bridge ground.laid"}]},"standsOn":"export/HH-nmc-ground-part-1-reissue-2-2026-10-02/
+        (pixels b997bdce\u2026)","laidNote":"No scene lays ground of its own: the
+        town bridge\u2019s river wall fill, which this scene drew as a ref is in the
+        texture since the 10-01 re-issue (call 15), by the same rule. The boards stand
+        as baked."}'
+    - Key: nmc.scene.context
+      Value: '{"river":"stream.nmc_town_river: the fresh reach above the Falls at
+        +2.9, the pool below at +0.58 (still water above the tide until the flood
+        tops it)","falls":"falls.nmc_the_falls (lip +2.55, foot +0.3, drop 2.25 m
+        over 5.5 m)","paths":["path.nmc_falls_path (the lookout down to the Falls)","path.nmc_river_trail
+        (the north bank, west)"],"boardwalks":["boardwalk.nmc_falls_deck","boardwalk.nmc_town_north
+        (its west end)"],"lookout":"fill.nmc_falls_lookout (Mill Road\u2019s turn-round,
+        +5.4)","changedFromPlan":[{"what":"the Falls\u2019 three steps","plan":"falls.nmc_the_falls:
+        \u201cred sandstone ledges, three steps\u201d on the texture\u2019s ramp","scene":{"lipsX":[-278.3,-276.3,-274.3],"levels":[2.9,2.15,1.35,0.58],"note":"each
+        lip bowed downstream up to 0.3 m in its middle and ragged (NmcSetPieces.lipOff)"},"why":"the
+        steps are the cascade piece\u2019s rock and its painted water; the texture
+        is not cut"},{"what":"the Falls deck\u2019s landing","plan":"the deck (-263,
+        208) to (-269, 204) and the north boardwalk\u2019s west end (-262, 211.5),
+        3.6 m apart","scene":"a 1.8 m landing at +3.2 joins them (structure.nmc_falls_deck_landing):
+        two 0.2 m steps between the boardwalk\u2019s +3.0 and the deck\u2019s +3.4","why":"the
+        plan leaves the deck unreached"}]}'
+    - Key: nmc.scene.refs
+      Value: '[{"id":"structure.nmc_river_wall_00","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_01","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_02","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_town_north_00","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_town_south_00","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_town_north_spur_01","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_wall_stairs_01","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_boardwalk_lamp_n_01","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_boardwalk_lamp_n_02","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_boardwalk_lamp_s_01","owner":"keyscene.nmc_town_bridge"}]'
+    - Key: nmc.scene.sourceRows
+      Value: 21
+    - Key: nmc.scene.ownedRows
+      Value: 11
+    - Key: nmc.deferred
+      Value: placement=H7; names/households/calendar/visits/fire schedules=H13 after
+        the owner names slate; tide/float=H5/H7/H8/H11; lights/audio/flora=scene placement
+        lane with art-pipeline/audio; river fishery=M3; bookings/fees/ring/bell/pool/court/interiors=separate
+        scope; roads/access=H4 (R2), then R4; office identity=N3; crane gameplay=N9
+  - Id: rock.nmc_falls_block_0
+    Kind: rock
+    Owner: H7
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: block
+    State: 
+    At: {x: -271.2, y: 193.9}
+    Z: 0.64
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 190
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a fallen block of the Falls\u2019 sandstone"'
+    - Key: nmc.form
+      Value: '"block"'
+    - Key: nmc.variant
+      Value: 0
+    - Key: nmc.mirror
+      Value: false
+    - Key: nmc.stone
+      Value: '"sandstone"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"ledge"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_the_falls
+    - Key: nmc.type
+      Value: RockDef
+  - Id: rock.nmc_falls_block_1
+    Kind: rock
+    Owner: H7
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: block
+    State: 
+    At: {x: -269.4, y: 203.1}
+    Z: 0.64
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 203.1
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a fallen block of the Falls\u2019 sandstone"'
+    - Key: nmc.form
+      Value: '"block"'
+    - Key: nmc.variant
+      Value: 1
+    - Key: nmc.mirror
+      Value: true
+    - Key: nmc.stone
+      Value: '"sandstone"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"ledge"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_the_falls
+    - Key: nmc.type
+      Value: RockDef
+  - Id: rock.nmc_falls_block_2
+    Kind: rock
+    Owner: H7
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: block
+    State: 
+    At: {x: -266.8, y: 194.3}
+    Z: 0.27
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 190
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a fallen block of the Falls\u2019 sandstone"'
+    - Key: nmc.form
+      Value: '"block"'
+    - Key: nmc.variant
+      Value: 1
+    - Key: nmc.mirror
+      Value: false
+    - Key: nmc.stone
+      Value: '"sandstone"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"ledge"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_the_falls
+    - Key: nmc.type
+      Value: RockDef
+  - Id: rock.nmc_falls_block_3
+    Kind: rock
+    Owner: H7
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: block
+    State: 
+    At: {x: -272.7, y: 202.3}
+    Z: 0.87
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 202.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a fallen block of the Falls\u2019 sandstone"'
+    - Key: nmc.form
+      Value: '"block"'
+    - Key: nmc.variant
+      Value: 0
+    - Key: nmc.mirror
+      Value: true
+    - Key: nmc.stone
+      Value: '"sandstone"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"ledge"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_the_falls
+    - Key: nmc.type
+      Value: RockDef
+  - Id: rock.nmc_falls_block_4
+    Kind: rock
+    Owner: H7
+    Kit: PxRockIso2 and PxRockIso3 (cliff rock kit v6)
+    Piece: block
+    State: 
+    At: {x: -264.4, y: 202.8}
+    Z: 0.4
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 202.8
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a fallen block of the Falls\u2019 sandstone"'
+    - Key: nmc.form
+      Value: '"block"'
+    - Key: nmc.variant
+      Value: 1
+    - Key: nmc.mirror
+      Value: false
+    - Key: nmc.stone
+      Value: '"sandstone"'
+    - Key: nmc.tide
+      Value: '"dry"'
+    - Key: nmc.seat
+      Value: '"ledge"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_the_falls
+    - Key: nmc.type
+      Value: RockDef
+  - Id: structure.nmc_falls_deck
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: fallsDeck
+    State: 
+    At: {x: -266, y: 206}
+    Z: 0
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 203
+    Layer: raised
+    Walk: deck; the railing blocks on three sides; open to its landing
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 7.211
+    - Key: width
+      Value: 3
+    - Key: deck
+      Value: 3.4
+    - Key: ground
+      Value: '[1.99,1.65,1.26,0.9]'
+    - Key: yaw
+      Value: -146.31
+    - Key: side
+      Value: 1
+    - Key: nmc.name
+      Value: '"the Falls deck"'
+    - Key: nmc.faces
+      Value: '"the pool on its local +y side (side 1)"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/fallsDeck.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_the_falls
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_falls_deck_landing
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: boardwalk
+    State: 
+    At: {x: -262.5, y: 209.75}
+    Z: 0
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 208
+    Layer: raised
+    Walk: deck; the rail blocks
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 4.24
+    - Key: width
+      Value: 1.8
+    - Key: deck
+      Value: 3.2
+    - Key: ground
+      Value: '[2.7,2.7,2.54,2.27,1.99]'
+    - Key: rail
+      Value: -1
+    - Key: yaw
+      Value: -105.95
+    - Key: nmc.name
+      Value: '"a run of town boardwalk on piles"'
+    - Key: nmc.faces
+      Value: '"along its line"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/boardwalk.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_the_falls
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lookout_rail
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: guardRail
+    State: 
+    At: {x: -282, y: 175.5}
+    Z: 5.4
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 175.5
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 12
+    - Key: yaw
+      Value: 0
+    - Key: nmc.name
+      Value: '"the lookout\u2019s timber rail"'
+    - Key: nmc.faces
+      Value: '"along its line"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/guardRail.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_the_falls
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lookout_bench
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: bench
+    State: 
+    At: {x: -285, y: 174.2}
+    Z: 5.4
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid; sit
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a bench"'
+    - Key: nmc.faces
+      Value: '"its seat faces local +Y"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/bench.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_the_falls
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_falls_sign
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.3.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: signBoard
+    State: 
+    At: {x: -281.2, y: 172.6}
+    Z: 5.4
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: words
+      Value: words.nmc_falls_sign
+    - Key: nmc.name
+      Value: '"a sign board"'
+    - Key: nmc.faces
+      Value: '"its board to local +Y"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/signBoard.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_the_falls
+    - Key: nmc.type
+      Value: SetPieceDef
+  Lights: []
+  RetiredIds:
+  - structure.nmc_falls_deck.landing
+  - prop.nmc_waterfront_6_bed_35
+  - prop.nmc_waterfront_6_bed_29
+  - prop.nmc_camp_tent_a19_cabinTent
+  - float.nmc_fingerA
+  - float.nmc_fingerB
+  - ladder.nmc_unloadW
+  - ladder.nmc_unloadE
+  - harbour.armW
+  - harbour.armE
+  - prop.nmc_traps_yardW_0_0
+  - prop.nmc_traps_yardW_0_1
+  - prop.nmc_traps_yardW_0_2
+  - prop.nmc_traps_yardW_0_3
+  - prop.nmc_traps_yardW_1_0
+  - prop.nmc_traps_yardW_1_1
+  - prop.nmc_traps_yardW_1_2
+  - prop.nmc_traps_yardW_1_3
+  - prop.nmc_traps_yardW_2_0
+  - prop.nmc_traps_yardW_2_1
+  - prop.nmc_traps_yardW_2_2
+  - prop.nmc_traps_yardW_2_3
+  - prop.nmc_traps_yardW_3_0
+  - prop.nmc_traps_yardW_3_1
+  - prop.nmc_traps_yardW_3_2
+  - prop.nmc_traps_yardW_3_3
+  - prop.nmc_traps_yardW_4_0
+  - prop.nmc_traps_yardW_4_1
+  - prop.nmc_traps_yardW_4_2
+  - prop.nmc_traps_yardW_4_3
+  - light.nmc_rest_deck_177.6
+  - light.nmc_rest_deck_178.4
+  - light.nmc_dock_183.6
+  - light.nmc_dock_177.6
+  - light.nmc_dock_171.6
+  - light.nmc_dock_165.6
+  - road.nmc.wharf_road
+  - road.nmc.route_91
+  - road.nmc.stream_lane
+  - road.nmc.mill_road
+  - structure.nmc_river_wall.00
+  - structure.nmc_river_wall.01
+  - structure.nmc_river_wall.02
+  - structure.nmc_river_wall.03
+  - structure.nmc_river_wall.04
+  - structure.nmc_river_wall.05
+  - structure.nmc_river_wall.06
+  - structure.nmc_river_wall.07
+  - structure.nmc_river_wall.08
+  - structure.nmc_river_wall.09
+  - structure.nmc_river_wall.10
+  - structure.nmc_river_wall.11
+  - structure.nmc_river_wall.12
+  - structure.nmc_town_north.00
+  - structure.nmc_town_north.01
+  - structure.nmc_town_north.02
+  - structure.nmc_town_north.03
+  - structure.nmc_town_north.04
+  - structure.nmc_town_north.05
+  - structure.nmc_town_south.00
+  - structure.nmc_town_south.01
+  - structure.nmc_town_south.02
+  - structure.nmc_town_south.03
+  - structure.nmc_town_south.04
+  - structure.nmc_town_north.spur_240
+  - structure.nmc_wall_stairs_240
+  - structure.nmc_town_north.spur_205
+  - structure.nmc_town_north.spur_160
+  - structure.nmc_wall_stairs_160
+  - structure.nmc_bank_stairs_236
+  - structure.nmc_bank_stairs_190
+  - prop.nmc_boardwalk_lamp.n252
+  - prop.nmc_boardwalk_lamp.n238
+  - prop.nmc_boardwalk_lamp.n224
+  - prop.nmc_boardwalk_lamp.n212
+  - prop.nmc_boardwalk_lamp.n200
+  - prop.nmc_boardwalk_lamp.n189
+  - prop.nmc_boardwalk_lamp.n166
+  - prop.nmc_boardwalk_lamp.n154
+  - prop.nmc_boardwalk_lamp.s246
+  - prop.nmc_boardwalk_lamp.s230
+  - prop.nmc_boardwalk_lamp.s216
+  - prop.nmc_boardwalk_lamp.s203
+  - prop.nmc_boardwalk_lamp.s190
+  - prop.nmc_boardwalk_lamp.s166
+  - prop.nmc_street_lamp.w236
+  - prop.nmc_street_lamp.w214
+  - prop.nmc_street_lamp.w192
+  - prop.nmc_street_lamp.w160
+  - prop.nmc_street_lamp.w148
+  - prop.nmc_bar_stake.00
+  - prop.nmc_bar_stake.01
+  - prop.nmc_bar_stake.02
+  - prop.nmc_bar_stake.03
+  - prop.nmc_bar_stake.04
+  - prop.nmc_bar_stake.05
+  - prop.nmc_bar_stake.06
+  - prop.nmc_bar_stake.07
+  - prop.nmc_bar_stake.08
+  - prop.nmc_bar_stake.09
+  - road.nmc.north_creek_lane
+  - road.nmc.creek_lane_south
+  - structure.nmc_creek_dock.1
+  - structure.nmc_creek_dock.2
+  - structure.nmc_creek_dock.3
+  - structure.nmc_creek_dock.4
+  - structure.nmc_creek_dock.5
+  - structure.nmc_creek_dock.6
+  - structure.nmc_creek_dock.7
+  - structure.nmc_creek_dock.1_steps
+  - structure.nmc_creek_dock.3_gangway
+  - structure.nmc_creek_dock.3_steps
+  - structure.nmc_creek_dock.4_gangway
+  - structure.nmc_creek_dock.4_steps
+  - prop.nmc_yard_rack_277
+  - prop.nmc_yard_rack_267
+  - prop.nmc_yard_fence_e140
+  - prop.nmc_lot_strip_256
+  - prop.nmc_lot_strip_241
+  - prop.nmc_lot_strip_210
+  - prop.nmc_lot_island_255_93
+  - prop.nmc_lot_island_198_93
+  - prop.nmc_lot_island_255_81
+  - prop.nmc_lot_island_198_81
+  - prop.nmc_lot_pole_252_97
+  - prop.nmc_lot_pole_229_97
+  - prop.nmc_lot_pole_206_97
+  - prop.nmc_lot_pole_255_81
+  - prop.nmc_lot_pole_198_81
+  - road.nmc.shore_lane
+  - prop.nmc_shore_lane_sand_fence_212
+  - prop.nmc_shore_lane_sand_fence_192
+  - prop.nmc_shore_lane_sand_fence_171
+  - prop.nmc_shore_lane_sand_fence_146
+  - road.nmc.bar_road
+  - road.nmc.water_street
+  - road.nmc.camp_road
+  - road.nmc.camp_loop_a
+  - road.nmc.camp_loop_b_stem
+  - road.nmc.camp_loop_b
+  - road.nmc.camp_loop_c_stem
+  - road.nmc.camp_loop_c
+  - coast.nmc_south_shore + coast.nmc_east_coast
+  - coast.nmc_east_coast.sections
+  - stream.nmc_town_river.mouth
+  - stream.nmc_town_river.head
+  - stream.nmc_town_river.head_of_tide
+  - stream.nmc_north_creek.mouth
+  - stream.nmc_north_creek.head
+  - stream.nmc_camp_brook.mouth
+  - stream.nmc_camp_brook.head
+  - falls.nmc_the_falls.lip
+  - falls.nmc_the_falls.pool
+  - pond.nmc_camp_pond.bed
+  - pond.nmc_north_creek_pond.bed
+  - pond.nmc_barachois.bed
+  - pond.nmc_marsh_pool.bed
+  - boardwalk.nmc_town_north.under
+  - boardwalk.nmc_town_south.under
+  - boardwalk.nmc_falls_deck.under
+  - boardwalk.nmc_marsh_walk.under
+  - stream.nmc_town_river.mid
+  - stream.nmc_town_river_mouth.mid
+  - stream.nmc_north_creek.mid
+  - stream.nmc_camp_brook.mid
+  - pond.nmc_camp_pond.surface
+  - pond.nmc_north_creek_pond.surface
+  - prop.nmc_camp_lights_a6
+  - prop.nmc_camp_tent_a7
+  - prop.nmc_camp_lights_a9
+  - prop.nmc_camp_tent_a10
+  - boat.nmc_creek_dory_3
+  - boat.nmc_creek_dory_4
+  - structure.nmc_plaza_hardware
+  - prop.nmc_plaza_row_1
+  - prop.nmc_plaza_row_2
+  - prop.nmc_plaza_island
+  - prop.nmc_plaza_corral
+  - prop.nmc_plaza_pole_1
+  - prop.nmc_plaza_pole_2
+  - prop.nmc_plaza_pole_3
+  - prop.nmc_plaza_pole_4
+  - prop.nmc_plaza_dock
+  - prop.nmc_plaza_bin
+  - prop.nmc_plaza_pylon
+  - vehicle.nmc_plaza_van_1
+  - vehicle.nmc_plaza_truck_1
+  - vehicle.nmc_plaza_truck_2
+  - vehicle.nmc_plaza_van_2
+  - vehicle.nmc_plaza_truck_3
+  - vehicle.nmc_plaza_truck_4
+  - vehicle.nmc_plaza_van_3

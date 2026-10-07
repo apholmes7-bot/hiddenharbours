@@ -1,7 +1,7 @@
 /* Hidden Harbours — characterIsoRig10 POSE LIBRARY (pass 8's clips, retargeted per build). Every clip the game ships, authored from scratch against
    the pass-8 skeleton. A pose is an INTENT: pelvis, four spine angles, ankle targets (world or pelvis frame), palm
    targets (chest frame, or world read through the unrocked chest), a face, a tool attitude, contract pins. The
-   solver in characterIsoRig8.js turns it into bone locals; nothing here touches a bone.
+   solver in characterIsoRig10.js turns it into bone locals; nothing here touches a bone.
 
    Laws kept from the shipped rigs:
      · frames and ms are rig 6's, to the frame (the ANIMS table lives in the core and is gated).
@@ -16,6 +16,9 @@
    Pass 9: body-relative targets go through K.bp (a hand point on the Fisher -> the same place on this build) and
    K.ft (a foot placement); strides, lifts and reaches scale by K.k. World contracts are untouched. 
    10.1: boarding bends to a rail below the arm's reach (reachDown); the hauler's grips and the reach clip's bracing hand are held in reach.
+   10.3: the sleeper lies centred on the pivot (the pelvis at y = pelvisZ - heightM / 2, was -0.18 m), so the 80 x 104 cell holds the
+   lying body at every facing; the saddle mounts turn the swing leg's knee about the leg from the standing pole to the seated pole
+   (10.2 flipped it in one frame as the foot crossed beside the hip: up to 179 deg at the hip).
    */
 (function (root) {
   'use strict';
@@ -175,7 +178,11 @@
       if(lift>0){ pSt=bez(stN,[lerp(stN[0],B1[0],0.3), stN[1], Math.max(stN[2],B1[2])+0.05],B1,lift); }
       const kSw=Math.max(sw, 0), kSt=lift;
       const spl=lerp(0.10, I1.legs[swing].splay, kSw);
+      /* 10.3: on the saddle the swing knee turns about the leg from the standing pole to the seated pole as the foot goes over */
+      let knSw=null; if(!cab && sw>0 && sw<1){ const pole=(J,p,splay)=>{ const Wp=bodyOf(J,B).Wp, hL=rest[ix['hip_'+swing]], dn=vnorm(vsub(mTV(Wp.R, vsub(p, Wp.p)), hL)); return vnorm(mV(Wp.R, vadd(vcross([1,0,0],dn),[G(swing)*splay,0,0]))); };
+        knSw=vnorm(vlerp(pole(I0,swG,0.10), pole(I1,farPeg,I1.legs[swing].splay), sm(sw))); }
       I.legs[swing]={ p:pSw, yaw:lerp(I0.legs[swing].yaw||0, I1.legs[swing].yaw||0, kSw), pitch:lerp(I0.legs[swing].pitch||0, I1.legs[swing].pitch||0, kSw), splay:spl };
+      if(knSw) I.legs[swing].kn=knSw;
       I.legs[stand]={ p:pSt, yaw:lerp(I0.legs[stand].yaw||0, I1.legs[stand].yaw||0, kSt), pitch:lerp(I0.legs[stand].pitch||0, I1.legs[stand].pitch||0, kSt), splay:lerp(0.10, I1.legs[stand].splay, kSt) };
       const stepping=(k)=>k>0 && k<1;
       I.plant[swing] = !(stepping(s1)||stepping(s3)||stepping(sw)); I.plant[stand] = !(stepping(s2)||stepping(s4)||stepping(lift));
@@ -372,7 +379,7 @@
           I.arms[s]={ c:[g*(0.40+0.07*sn(u,g*0.25))*K.k.a, (0.16+0.07*cs(u))*K.k.a, (D.shZ-D.chestZ)-0.12*K.k.a], el:[g*0.5,-0.8,-0.6] }; }
         I.plant={ L:false, R:false }; I.meta.water={ bob }; I.meta.speed=0; },
       sleep(u,I,K){ const D=K.D, bz=K.bedZ, br=0.5-0.5*Math.cos(TAU*u);
-        I.pelvis.yaw=180; I.pelvis.pitch=-90; I.pelvis.p=[0,-0.18,bz+0.105];
+        I.pelvis.yaw=180; I.pelvis.pitch=-90; I.pelvis.p=[0,D.pelvisZ-D.heightM/2,bz+0.105];   /* 10.3: centred on the pivot */
         I.spine.pitch=-2-1.2*br; I.chest.pitch=-0.8*br; I.neck.pitch=18; I.head.pitch=10; I.head.roll=9;
         I.legs.L={ P:[-0.105*K.k.f,0.035,-0.515*K.k.l], rel:'pelvis', yaw:-22 }; I.legs.R={ P:[0.095*K.k.f,0.025,-0.515*K.k.l], rel:'pelvis', yaw:18 };
         I.arms.R={ c:[0.05,0.17*K.k.a,0.02], el:[0.6,-0.2,-0.7] }; I.arms.L={ c:[-0.25*K.k.x,0.03,-0.28*K.k.a], el:[-0.2,-1,0] };

@@ -1,0 +1,1317 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_nmc_fuel_stop
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.nmc_fuel_stop
+  DisplayName: 'Nine Mile Creek: the gas station'
+  RegionId: region.nine_mile_creek
+  Source: HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02, hh-nmc-key-scenes/scenes/keyscene.nmc_fuel_stop/scene.json,
+    22515 bytes, sha256 74c90644894f1ec30f86bc3b3adc82d494d5bb7dcda0347b5c126a948d5be66a
+  Placed: 0
+  Pieces:
+  - Id: station.nmc_store
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: store
+    State: 
+    At: {x: -155, y: 139}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"store"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[19,52]'
+    - Key: nmc.words
+      Value: '[{"id":"words.nmc_station_store","text":"","note":"the name board, blank:
+        the name is open"},{"id":"words.nmc_station_goods","text":"COFFEE  ICE  BAIT","note":"call
+        7, ruled 09-30: the groceries to the plaza\u2019s grocery, the bait to the
+        rivers and the wharf"}]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+    - Key: nmc.scene.roads
+      Value: '[{"id":"road.nmc_wharf_road","cls":"route","width":5.8,"points":[[-178,92],[-110,92]],"note":"pass
+        6\u2019s paved road; it runs on east to the wharf","plan":{"line":[[-177.45,92],[-100,90],[-40,92]],"note":"part
+        1\u2019s plan.json runs Wharf Road through (-100, 90), today\u2019s line:
+        1.4 m south of this frontage at x -124 and 1.7 m at x -110, so its north edge
+        would leave the semi lane\u2019s pads 1.4 m short of the road. Call 30 (NOTES-part2c
+        s8), lean: the plan\u2019s vertex moves to (-100, 92), and Wharf Road runs
+        straight along the frontage as drawn here.","call":30}},{"id":"road.nmc_route_91","cls":"route","width":5.8,"points":[[-177.6,57],[-177.45,92],[-177.1,147],[-176.9,187]],"note":"the
+        region\u2019s through road; in this frame it ends at the bridge\u2019s south
+        abutment, on the rim"},{"id":"road.nmc_stream_lane","cls":"street","surface":"gravel","width":5,"status":"part
+        1 (ruled 09-30)","points":[[-116.5,94],[-116.5,145.5],[-104,154],[-96,156]],"pullOff":{"at":[-116.5,148.2],"radius":5.2},"note":"the
+        river lane: past the pull-off above the river, carried on to the boat shed\u2019s
+        landing (part 1)"},{"id":"road.nmc_mill_road","cls":"street","surface":"gravel","width":5,"points":[[-177.3,158],[-205,160]],"note":"part
+        1\u2019s Mill Road: it leaves Route 91 at the frame\u2019s west edge for the
+        Falls\u2019 lookout"}]'
+    - Key: nmc.scene.lots
+      Value: '[{"id":"lot.nmc_truck_park","at":[-131,78],"size":[20.1,13.4],"status":"part
+        1 (ruled 09-30: the truck park moves south of Wharf Road)","drawn":"a gravel
+        pad, as the region view draws the lots no scene has drawn; its north 4.85
+        m shows in the frame\u2019s bottom strip (x -141..-121)","added":"2026-10-01"}]'
+    - Key: nmc.scene.names
+      Value: '{"status":"open","boards":["words.nmc_station_store","words.nmc_station_canopy","words.nmc_station_pylon"],"candidates":["NINE
+        MILE GAS BAR","JUNCTION GAS BAR","MacKINNON\u2019S GAS BAR & VARIETY"],"lean":"NINE
+        MILE GAS BAR"}'
+    - Key: nmc.scene.refs
+      Value: '[]'
+    - Key: nmc.scene.sourceRows
+      Value: 30
+    - Key: nmc.scene.ownedRows
+      Value: 30
+    - Key: nmc.deferred
+      Value: placement=H9; names/households/calendar/visits/fire schedules=H13 after
+        the owner names slate; tide/float=H5/H7/H8/H11; lights/audio/flora=scene placement
+        lane with art-pipeline/audio; river fishery=M3; bookings/fees/ring/bell/pool/court/interiors=separate
+        scope; roads/access=H4 (R2), then R4; office identity=N3; crane gameplay=N9
+  - Id: station.nmc_canopy
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: canopy
+    State: 
+    At: {x: -154, y: 111}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"canopy"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[20,24]'
+    - Key: nmc.words
+      Value: '[{"id":"words.nmc_station_canopy","text":"","note":"blank: the name
+        is open"}]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_semi_lane
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: truck
+    State: 
+    At: {x: -127, y: 118}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"truck"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[47,31]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_pylon
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: pylon
+    State: 
+    At: {x: -168.8, y: 98.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"pylon"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[5.2,11.6]'
+    - Key: nmc.words
+      Value: '[{"id":"words.nmc_station_pylon","text":"","note":"blank: the name is
+        open; the prices stay the game\u2019s"}]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_propane
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: propane
+    State: 
+    At: {x: -165.6, y: 132.3}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"propane"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[8.4,45.3]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_ice
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: iceBox
+    State: 
+    At: {x: -163.6, y: 132.35}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"iceBox"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[10.4,45.35]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_bench
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: bench
+    State: 
+    At: {x: -161, y: 132.5}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"bench"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[13,45.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_bin
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: bin
+    State: 
+    At: {x: -151.7, y: 132.55}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"bin"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[22.3,45.55]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_firewood
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: firewood
+    State: 
+    At: {x: -145.2, y: 132.3}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"firewood"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[28.8,45.3]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_air
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: air
+    State: 
+    At: {x: -142.8, y: 133.7}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"air"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[31.2,46.7]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_vacuum
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: vacuum
+    State: 
+    At: {x: -143, y: 137.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"vacuum"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[31,50.6]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_dumpster
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: dumpster
+    State: 
+    At: {x: -140.8, y: 143.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"dumpster"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[33.2,56.9]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_picnic
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: picnic
+    State: 
+    At: {x: -169, y: 137.5}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"picnic"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[5,50.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_stop
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: stopSign
+    State: 
+    At: {x: -119.6, y: 138.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"stopSign"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[54.4,51.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_stop_91
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: stopSign
+    State: 
+    At: {x: -172.6, y: 95.7}
+    Z: 5.809
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"stopSign"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[1.4,8.7]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_light_w
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: lampPole
+    State: 
+    At: {x: -170.4, y: 118.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"lampPole"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[3.6,31.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_light_mid
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: lampPole
+    State: 
+    At: {x: -136, y: 118.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"lampPole"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[38,31.6]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_light_e
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: lampPole
+    State: 
+    At: {x: -119.9, y: 129.4}
+    Z: 5.757
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"lampPole"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[54.1,42.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_picnic_stream
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: picnic
+    State: 
+    At: {x: -112.6, y: 150.6}
+    Z: 6.001
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"picnic"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[61.4,63.6]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_bin_stream
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: bin
+    State: 
+    At: {x: -120.4, y: 149.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"bin"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[53.6,62.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_wheel_stop_1
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: wheelStop
+    State: 
+    At: {x: -164.1, y: 130.35}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"wheelStop"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[9.9,43.35]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_wheel_stop_2
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: wheelStop
+    State: 
+    At: {x: -161.5, y: 130.35}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"wheelStop"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[12.5,43.35]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_wheel_stop_3
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: wheelStop
+    State: 
+    At: {x: -158.9, y: 130.35}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"wheelStop"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[15.1,43.35]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_wheel_stop_4
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: wheelStop
+    State: 
+    At: {x: -156.3, y: 130.35}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"wheelStop"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[17.7,43.35]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_wheel_stop_5
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: wheelStop
+    State: 
+    At: {x: -153.7, y: 130.35}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"wheelStop"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[20.3,43.35]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_wheel_stop_6
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: wheelStop
+    State: 
+    At: {x: -151.1, y: 130.35}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"wheelStop"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[22.9,43.35]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_wheel_stop_7
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: wheelStop
+    State: 
+    At: {x: -148.5, y: 130.35}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"wheelStop"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[25.5,43.35]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: station.nmc_wheel_stop_8
+    Kind: setPiece
+    Owner: H9
+    Kit: "fuelStopRig (hh-nmc-key-scenes/fuel-stop/: pass 6\u2019s, the name boards
+      blank, the goods board COFFEE  ICE  BAIT)"
+    Piece: wheelStop
+    State: 
+    At: {x: -145.9, y: 130.35}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"wheelStop"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.site
+      Value: '[28.1,43.35]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: gull.fs_canopy
+    Kind: gull
+    Owner: H9
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -146.6, y: 113.6}
+    Z: 12.16
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+    - Key: nmc.name
+      Value: '"perch"'
+    - Key: nmc.faces
+      Value: '"SE"'
+    - Key: nmc.site
+      Value: '[27.4,26.6]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: gull.fs_parapet
+    Kind: gull
+    Owner: H9
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: -161.4, y: 133.5}
+    Z: 10.68
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+    - Key: nmc.name
+      Value: '"perch"'
+    - Key: nmc.faces
+      Value: '"SW"'
+    - Key: nmc.site
+      Value: '[12.6,46.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_fuel_stop
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  Lights: []
+  RetiredIds:
+  - prop.nmc_waterfront_6_bed_35
+  - prop.nmc_waterfront_6_bed_29
+  - prop.nmc_camp_tent_a19_cabinTent
+  - float.nmc_fingerA
+  - float.nmc_fingerB
+  - ladder.nmc_unloadW
+  - ladder.nmc_unloadE
+  - harbour.armW
+  - harbour.armE
+  - prop.nmc_traps_yardW_0_0
+  - prop.nmc_traps_yardW_0_1
+  - prop.nmc_traps_yardW_0_2
+  - prop.nmc_traps_yardW_0_3
+  - prop.nmc_traps_yardW_1_0
+  - prop.nmc_traps_yardW_1_1
+  - prop.nmc_traps_yardW_1_2
+  - prop.nmc_traps_yardW_1_3
+  - prop.nmc_traps_yardW_2_0
+  - prop.nmc_traps_yardW_2_1
+  - prop.nmc_traps_yardW_2_2
+  - prop.nmc_traps_yardW_2_3
+  - prop.nmc_traps_yardW_3_0
+  - prop.nmc_traps_yardW_3_1
+  - prop.nmc_traps_yardW_3_2
+  - prop.nmc_traps_yardW_3_3
+  - prop.nmc_traps_yardW_4_0
+  - prop.nmc_traps_yardW_4_1
+  - prop.nmc_traps_yardW_4_2
+  - prop.nmc_traps_yardW_4_3
+  - light.nmc_rest_deck_177.6
+  - light.nmc_rest_deck_178.4
+  - light.nmc_dock_183.6
+  - light.nmc_dock_177.6
+  - light.nmc_dock_171.6
+  - light.nmc_dock_165.6
+  - road.nmc.wharf_road
+  - road.nmc.route_91
+  - road.nmc.stream_lane
+  - road.nmc.mill_road
+  - structure.nmc_river_wall.00
+  - structure.nmc_river_wall.01
+  - structure.nmc_river_wall.02
+  - structure.nmc_river_wall.03
+  - structure.nmc_river_wall.04
+  - structure.nmc_river_wall.05
+  - structure.nmc_river_wall.06
+  - structure.nmc_river_wall.07
+  - structure.nmc_river_wall.08
+  - structure.nmc_river_wall.09
+  - structure.nmc_river_wall.10
+  - structure.nmc_river_wall.11
+  - structure.nmc_river_wall.12
+  - structure.nmc_town_north.00
+  - structure.nmc_town_north.01
+  - structure.nmc_town_north.02
+  - structure.nmc_town_north.03
+  - structure.nmc_town_north.04
+  - structure.nmc_town_north.05
+  - structure.nmc_town_south.00
+  - structure.nmc_town_south.01
+  - structure.nmc_town_south.02
+  - structure.nmc_town_south.03
+  - structure.nmc_town_south.04
+  - structure.nmc_town_north.spur_240
+  - structure.nmc_wall_stairs_240
+  - structure.nmc_town_north.spur_205
+  - structure.nmc_town_north.spur_160
+  - structure.nmc_wall_stairs_160
+  - structure.nmc_bank_stairs_236
+  - structure.nmc_bank_stairs_190
+  - prop.nmc_boardwalk_lamp.n252
+  - prop.nmc_boardwalk_lamp.n238
+  - prop.nmc_boardwalk_lamp.n224
+  - prop.nmc_boardwalk_lamp.n212
+  - prop.nmc_boardwalk_lamp.n200
+  - prop.nmc_boardwalk_lamp.n189
+  - prop.nmc_boardwalk_lamp.n166
+  - prop.nmc_boardwalk_lamp.n154
+  - prop.nmc_boardwalk_lamp.s246
+  - prop.nmc_boardwalk_lamp.s230
+  - prop.nmc_boardwalk_lamp.s216
+  - prop.nmc_boardwalk_lamp.s203
+  - prop.nmc_boardwalk_lamp.s190
+  - prop.nmc_boardwalk_lamp.s166
+  - prop.nmc_street_lamp.w236
+  - prop.nmc_street_lamp.w214
+  - prop.nmc_street_lamp.w192
+  - prop.nmc_street_lamp.w160
+  - prop.nmc_street_lamp.w148
+  - structure.nmc_falls_deck.landing
+  - prop.nmc_bar_stake.00
+  - prop.nmc_bar_stake.01
+  - prop.nmc_bar_stake.02
+  - prop.nmc_bar_stake.03
+  - prop.nmc_bar_stake.04
+  - prop.nmc_bar_stake.05
+  - prop.nmc_bar_stake.06
+  - prop.nmc_bar_stake.07
+  - prop.nmc_bar_stake.08
+  - prop.nmc_bar_stake.09
+  - road.nmc.north_creek_lane
+  - road.nmc.creek_lane_south
+  - structure.nmc_creek_dock.1
+  - structure.nmc_creek_dock.2
+  - structure.nmc_creek_dock.3
+  - structure.nmc_creek_dock.4
+  - structure.nmc_creek_dock.5
+  - structure.nmc_creek_dock.6
+  - structure.nmc_creek_dock.7
+  - structure.nmc_creek_dock.1_steps
+  - structure.nmc_creek_dock.3_gangway
+  - structure.nmc_creek_dock.3_steps
+  - structure.nmc_creek_dock.4_gangway
+  - structure.nmc_creek_dock.4_steps
+  - prop.nmc_yard_rack_277
+  - prop.nmc_yard_rack_267
+  - prop.nmc_yard_fence_e140
+  - prop.nmc_lot_strip_256
+  - prop.nmc_lot_strip_241
+  - prop.nmc_lot_strip_210
+  - prop.nmc_lot_island_255_93
+  - prop.nmc_lot_island_198_93
+  - prop.nmc_lot_island_255_81
+  - prop.nmc_lot_island_198_81
+  - prop.nmc_lot_pole_252_97
+  - prop.nmc_lot_pole_229_97
+  - prop.nmc_lot_pole_206_97
+  - prop.nmc_lot_pole_255_81
+  - prop.nmc_lot_pole_198_81
+  - road.nmc.shore_lane
+  - prop.nmc_shore_lane_sand_fence_212
+  - prop.nmc_shore_lane_sand_fence_192
+  - prop.nmc_shore_lane_sand_fence_171
+  - prop.nmc_shore_lane_sand_fence_146
+  - road.nmc.bar_road
+  - road.nmc.water_street
+  - road.nmc.camp_road
+  - road.nmc.camp_loop_a
+  - road.nmc.camp_loop_b_stem
+  - road.nmc.camp_loop_b
+  - road.nmc.camp_loop_c_stem
+  - road.nmc.camp_loop_c
+  - coast.nmc_south_shore + coast.nmc_east_coast
+  - coast.nmc_east_coast.sections
+  - stream.nmc_town_river.mouth
+  - stream.nmc_town_river.head
+  - stream.nmc_town_river.head_of_tide
+  - stream.nmc_north_creek.mouth
+  - stream.nmc_north_creek.head
+  - stream.nmc_camp_brook.mouth
+  - stream.nmc_camp_brook.head
+  - falls.nmc_the_falls.lip
+  - falls.nmc_the_falls.pool
+  - pond.nmc_camp_pond.bed
+  - pond.nmc_north_creek_pond.bed
+  - pond.nmc_barachois.bed
+  - pond.nmc_marsh_pool.bed
+  - boardwalk.nmc_town_north.under
+  - boardwalk.nmc_town_south.under
+  - boardwalk.nmc_falls_deck.under
+  - boardwalk.nmc_marsh_walk.under
+  - stream.nmc_town_river.mid
+  - stream.nmc_town_river_mouth.mid
+  - stream.nmc_north_creek.mid
+  - stream.nmc_camp_brook.mid
+  - pond.nmc_camp_pond.surface
+  - pond.nmc_north_creek_pond.surface
+  - prop.nmc_camp_lights_a6
+  - prop.nmc_camp_tent_a7
+  - prop.nmc_camp_lights_a9
+  - prop.nmc_camp_tent_a10
+  - boat.nmc_creek_dory_3
+  - boat.nmc_creek_dory_4
+  - structure.nmc_plaza_hardware
+  - prop.nmc_plaza_row_1
+  - prop.nmc_plaza_row_2
+  - prop.nmc_plaza_island
+  - prop.nmc_plaza_corral
+  - prop.nmc_plaza_pole_1
+  - prop.nmc_plaza_pole_2
+  - prop.nmc_plaza_pole_3
+  - prop.nmc_plaza_pole_4
+  - prop.nmc_plaza_dock
+  - prop.nmc_plaza_bin
+  - prop.nmc_plaza_pylon
+  - vehicle.nmc_plaza_van_1
+  - vehicle.nmc_plaza_truck_1
+  - vehicle.nmc_plaza_truck_2
+  - vehicle.nmc_plaza_van_2
+  - vehicle.nmc_plaza_truck_3
+  - vehicle.nmc_plaza_truck_4
+  - vehicle.nmc_plaza_van_3

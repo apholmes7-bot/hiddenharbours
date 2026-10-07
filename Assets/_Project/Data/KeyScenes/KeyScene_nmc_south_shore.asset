@@ -1,0 +1,579 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_nmc_south_shore
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.nmc_south_shore
+  DisplayName: 'The south shore: houses on the red bank'
+  RegionId: region.nine_mile_creek
+  Source: HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02, hh-nmc-key-scenes/scenes/keyscene.nmc_south_shore/scene.json,
+    10999 bytes, sha256 e982b56c0d4e7b1762e228f1cedab2027bf5e03b86a405e796a8c1cde8c01c8c
+  Placed: 0
+  Pieces:
+  - Id: structure.nmc_south_shore_house_4
+    Kind: building
+    Owner: H8
+    Kit: "HouseIso (Art/houseIsoRig.js), its preset\u2019s fields"
+    Piece: HouseIso
+    State: 
+    At: {x: -278, y: -160.1}
+    Z: 5.49
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: dormerCape
+    - Key: nmc.name
+      Value: '"a south shore house (dormerCape)"'
+    - Key: nmc.faces
+      Value: '"N: its door to Route 91; its sea side to the camera"'
+    - Key: nmc.rig
+      Value: '"HouseIso"'
+    - Key: nmc.centre
+      Value: '[-278,-156.5]'
+    - Key: nmc.frontM
+      Value: 3.6
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_4"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: BuildingDef
+    - Key: nmc.scene.sound
+      Value: '[{"id":"sound.nmc_south_shore","kind":"surf","at":[-264,-181],"z":2,"radiusM":25,"gain":"the
+        swash on the berm at the flood; the fire; a screen door up on the bank","lane":"audio"}]'
+    - Key: nmc.scene.game
+      Value: '["the houses as homes, their doors to Route 91","the steps as stairs;
+        the bank\u2019s red face not walkable","the beach walkable to the water; the
+        flats below the frame dug for clams at low water","the fire ring lit in the
+        evening on the lamp rule, a seat round it","the dory ambient"]'
+    - Key: nmc.scene.budgets
+      Value: '{"masters":[{"board":"strand_afternoon","sprites":212,"byFamily":{"building":2,"piece":5,"boat":1,"tree":2,"shrub":5,"grass":78,"flower":119}}],"frames":[{"frame":"wide_bank","pieces":5,"lights":0,"note":"plants
+        and grass as the masters count them, by area"},{"frame":"of_beach","pieces":3,"lights":0,"note":"plants
+        and grass as the masters count them, by area"}],"note":"Every piece is one
+        sprite; the two houses are the costliest. The bank\u2019s red face, the wrack
+        line and the lawns are the ground\u2019s paint, not sprites."}'
+    - Key: nmc.scene.ground
+      Value: '{"source":"export/HH-nmc-ground-part-1-reissue-2026-10-01/ground/NineMileCreekSeabed_HeightTex_plan.png
+        (16-bit, -6 to +6 m; file sha256 e840457db37afd925afb585cab322e2908c9ec9643d758c58244a34ae32ad90f,
+        pixels sha256 00cf42cf3ee43620f226bc916471f7d630bb3c9da58ec8324a840c8ca27b7848),
+        with its still water, through NmcHeightTex","ruled":"10-01, the owner on part
+        2 and part 1\u2019s record (\u201cI go with leans\u201d, STATE.md s4); the
+        re-issue carries the groove\u2019s fill, lean A\u2019s ramp, the river wall\u2019s
+        fill and the waterfront pads (STATE.md s6)","laid":[],"note":"The south shore
+        lays nothing. The houses stand on part 1\u2019s bank top at +5.5 and the steps
+        on its red bank, +5.2 down to +2.8. The red face, the wrack and the lawns
+        are the picture\u2019s paint."}'
+    - Key: nmc.scene.context
+      Value: '{"beach":"coast.nmc_rice_point_strand: a red bank 2 m tall, a storm
+        berm, then a sand beach whose flats run 42 m out at the spring low (below
+        the frame)","lots":["lot.nmc_south_shore_4","lot.nmc_south_shore_5"],"road":"road.nmc_route_91,
+        25 to 33 m north of the houses, above the frame; the houses\u2019 drives come
+        off it","changedFromPlan":[{"what":"the houses","plan":"village houses, lots
+        7 x 8.7 m, facing N, z 5.6","scene":"HouseIso dormerCape (lot 4) and gothicRevival
+        (lot 5), at the kit\u2019s sizes, their doors north to Route 91, on the texture\u2019s
+        ground (+5.49 and +5.51)","why":"the house kit\u2019s own sizes, as on the
+        north creek; the texture\u2019s bank top stands 0.1 m under the plan\u2019s
+        +5.6"},{"what":"the steps down the bank","plan":"none","scene":"timber steps
+        (gullySteps) from each lawn\u2019s edge to the beach, 3 m east of each house\u2019s
+        middle: 8.75 m long, 2.37 m down","why":"the bank is a 1:3 face, and the beach
+        below is the shore\u2019s clam ground"},{"what":"a fire ring and a dory","plan":"none","scene":"a
+        fire ring on the berm at (-263.5, -175.4); a dory hauled up at (-283, -175.4)","why":"the
+        strand\u2019s evening fire, and a boat for the flats"}]}'
+    - Key: nmc.scene.refs
+      Value: '[]'
+    - Key: nmc.scene.sourceRows
+      Value: 8
+    - Key: nmc.scene.ownedRows
+      Value: 8
+    - Key: nmc.deferred
+      Value: placement=H8; names/households/calendar/visits/fire schedules=H13 after
+        the owner names slate; tide/float=H5/H7/H8/H11; lights/audio/flora=scene placement
+        lane with art-pipeline/audio; river fishery=M3; bookings/fees/ring/bell/pool/court/interiors=separate
+        scope; roads/access=H4 (R2), then R4; office identity=N3; crane gameplay=N9
+  - Id: structure.nmc_bank_steps_4
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.4.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: gullySteps
+    State: 
+    At: {x: -275, y: -163}
+    Z: 2.77
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: -172.05
+    Layer: raised
+    Walk: stairs; the rope rails hold
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: run
+      Value: 8.75
+    - Key: rise
+      Value: 2.37
+    - Key: width
+      Value: 1.1
+    - Key: yaw
+      Value: -90
+    - Key: landing
+      Value: 1
+    - Key: nmc.name
+      Value: '"timber steps down the red bank (the gully steps\u2019 piece)"'
+    - Key: nmc.faces
+      Value: '"the flight descends south into the cove"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/gullySteps.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_bank_bench_4
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.4.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: bench
+    State: 
+    At: {x: -281.2, y: -162.1}
+    Z: 5.24
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid; sit
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a bench"'
+    - Key: nmc.faces
+      Value: '"its seat faces local +Y"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/bench.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_south_shore_house_5
+    Kind: building
+    Owner: H8
+    Kit: "HouseIso (Art/houseIsoRig.js), its preset\u2019s fields"
+    Piece: HouseIso
+    State: 
+    At: {x: -250, y: -157.96}
+    Z: 5.51
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: gothicRevival
+    - Key: nmc.name
+      Value: '"a south shore house (gothicRevival)"'
+    - Key: nmc.faces
+      Value: '"N: its door to Route 91; its sea side to the camera"'
+    - Key: nmc.rig
+      Value: '"HouseIso"'
+    - Key: nmc.centre
+      Value: '[-250,-154]'
+    - Key: nmc.frontM
+      Value: 3.96
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_5"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_bank_steps_5
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.4.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: gullySteps
+    State: 
+    At: {x: -247, y: -162.25}
+    Z: 2.8
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: -171.3
+    Layer: raised
+    Walk: stairs; the rope rails hold
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: run
+      Value: 8.75
+    - Key: rise
+      Value: 2.36
+    - Key: width
+      Value: 1.1
+    - Key: yaw
+      Value: -90
+    - Key: landing
+      Value: 1
+    - Key: nmc.name
+      Value: '"timber steps down the red bank (the gully steps\u2019 piece)"'
+    - Key: nmc.faces
+      Value: '"the flight descends south into the cove"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/gullySteps.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_bank_bench_5
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.4.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: bench
+    State: 
+    At: {x: -253.2, y: -161.35}
+    Z: 5.25
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid; sit
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"a bench"'
+    - Key: nmc.faces
+      Value: '"its seat faces local +Y"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/bench.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: boat.nmc_shore_dory
+    Kind: boat
+    Owner: H8
+    Kit: DoryIso (Art/doryIsoRig.js)
+    Piece: DoryIso
+    State: 
+    At: {x: -283, y: -175.4}
+    Z: 2.52
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: build
+      Value: oars
+    - Key: nmc.name
+      Value: '"a dory hauled up on the berm"'
+    - Key: nmc.faces
+      Value: '"its bow up the beach"'
+    - Key: nmc.rig
+      Value: '"DoryIso"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: AmbientBoatDef
+  - Id: prop.nmc_shore_fire
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.4.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: fireRing
+    State: 
+    At: {x: -263.5, y: -175.4}
+    Z: 2.5
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: floor
+    Walk: solid; sit round it
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: lit
+      Value: false
+    - Key: nmc.name
+      Value: '"a fire ring"'
+    - Key: nmc.faces
+      Value: '"any"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/fireRing.gameplay.json"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  Lights: []
+  RetiredIds:
+  - prop.nmc_waterfront_6_bed_35
+  - prop.nmc_waterfront_6_bed_29
+  - prop.nmc_camp_tent_a19_cabinTent
+  - float.nmc_fingerA
+  - float.nmc_fingerB
+  - ladder.nmc_unloadW
+  - ladder.nmc_unloadE
+  - harbour.armW
+  - harbour.armE
+  - prop.nmc_traps_yardW_0_0
+  - prop.nmc_traps_yardW_0_1
+  - prop.nmc_traps_yardW_0_2
+  - prop.nmc_traps_yardW_0_3
+  - prop.nmc_traps_yardW_1_0
+  - prop.nmc_traps_yardW_1_1
+  - prop.nmc_traps_yardW_1_2
+  - prop.nmc_traps_yardW_1_3
+  - prop.nmc_traps_yardW_2_0
+  - prop.nmc_traps_yardW_2_1
+  - prop.nmc_traps_yardW_2_2
+  - prop.nmc_traps_yardW_2_3
+  - prop.nmc_traps_yardW_3_0
+  - prop.nmc_traps_yardW_3_1
+  - prop.nmc_traps_yardW_3_2
+  - prop.nmc_traps_yardW_3_3
+  - prop.nmc_traps_yardW_4_0
+  - prop.nmc_traps_yardW_4_1
+  - prop.nmc_traps_yardW_4_2
+  - prop.nmc_traps_yardW_4_3
+  - light.nmc_rest_deck_177.6
+  - light.nmc_rest_deck_178.4
+  - light.nmc_dock_183.6
+  - light.nmc_dock_177.6
+  - light.nmc_dock_171.6
+  - light.nmc_dock_165.6
+  - road.nmc.wharf_road
+  - road.nmc.route_91
+  - road.nmc.stream_lane
+  - road.nmc.mill_road
+  - structure.nmc_river_wall.00
+  - structure.nmc_river_wall.01
+  - structure.nmc_river_wall.02
+  - structure.nmc_river_wall.03
+  - structure.nmc_river_wall.04
+  - structure.nmc_river_wall.05
+  - structure.nmc_river_wall.06
+  - structure.nmc_river_wall.07
+  - structure.nmc_river_wall.08
+  - structure.nmc_river_wall.09
+  - structure.nmc_river_wall.10
+  - structure.nmc_river_wall.11
+  - structure.nmc_river_wall.12
+  - structure.nmc_town_north.00
+  - structure.nmc_town_north.01
+  - structure.nmc_town_north.02
+  - structure.nmc_town_north.03
+  - structure.nmc_town_north.04
+  - structure.nmc_town_north.05
+  - structure.nmc_town_south.00
+  - structure.nmc_town_south.01
+  - structure.nmc_town_south.02
+  - structure.nmc_town_south.03
+  - structure.nmc_town_south.04
+  - structure.nmc_town_north.spur_240
+  - structure.nmc_wall_stairs_240
+  - structure.nmc_town_north.spur_205
+  - structure.nmc_town_north.spur_160
+  - structure.nmc_wall_stairs_160
+  - structure.nmc_bank_stairs_236
+  - structure.nmc_bank_stairs_190
+  - prop.nmc_boardwalk_lamp.n252
+  - prop.nmc_boardwalk_lamp.n238
+  - prop.nmc_boardwalk_lamp.n224
+  - prop.nmc_boardwalk_lamp.n212
+  - prop.nmc_boardwalk_lamp.n200
+  - prop.nmc_boardwalk_lamp.n189
+  - prop.nmc_boardwalk_lamp.n166
+  - prop.nmc_boardwalk_lamp.n154
+  - prop.nmc_boardwalk_lamp.s246
+  - prop.nmc_boardwalk_lamp.s230
+  - prop.nmc_boardwalk_lamp.s216
+  - prop.nmc_boardwalk_lamp.s203
+  - prop.nmc_boardwalk_lamp.s190
+  - prop.nmc_boardwalk_lamp.s166
+  - prop.nmc_street_lamp.w236
+  - prop.nmc_street_lamp.w214
+  - prop.nmc_street_lamp.w192
+  - prop.nmc_street_lamp.w160
+  - prop.nmc_street_lamp.w148
+  - structure.nmc_falls_deck.landing
+  - prop.nmc_bar_stake.00
+  - prop.nmc_bar_stake.01
+  - prop.nmc_bar_stake.02
+  - prop.nmc_bar_stake.03
+  - prop.nmc_bar_stake.04
+  - prop.nmc_bar_stake.05
+  - prop.nmc_bar_stake.06
+  - prop.nmc_bar_stake.07
+  - prop.nmc_bar_stake.08
+  - prop.nmc_bar_stake.09
+  - road.nmc.north_creek_lane
+  - road.nmc.creek_lane_south
+  - structure.nmc_creek_dock.1
+  - structure.nmc_creek_dock.2
+  - structure.nmc_creek_dock.3
+  - structure.nmc_creek_dock.4
+  - structure.nmc_creek_dock.5
+  - structure.nmc_creek_dock.6
+  - structure.nmc_creek_dock.7
+  - structure.nmc_creek_dock.1_steps
+  - structure.nmc_creek_dock.3_gangway
+  - structure.nmc_creek_dock.3_steps
+  - structure.nmc_creek_dock.4_gangway
+  - structure.nmc_creek_dock.4_steps
+  - prop.nmc_yard_rack_277
+  - prop.nmc_yard_rack_267
+  - prop.nmc_yard_fence_e140
+  - prop.nmc_lot_strip_256
+  - prop.nmc_lot_strip_241
+  - prop.nmc_lot_strip_210
+  - prop.nmc_lot_island_255_93
+  - prop.nmc_lot_island_198_93
+  - prop.nmc_lot_island_255_81
+  - prop.nmc_lot_island_198_81
+  - prop.nmc_lot_pole_252_97
+  - prop.nmc_lot_pole_229_97
+  - prop.nmc_lot_pole_206_97
+  - prop.nmc_lot_pole_255_81
+  - prop.nmc_lot_pole_198_81
+  - road.nmc.shore_lane
+  - prop.nmc_shore_lane_sand_fence_212
+  - prop.nmc_shore_lane_sand_fence_192
+  - prop.nmc_shore_lane_sand_fence_171
+  - prop.nmc_shore_lane_sand_fence_146
+  - road.nmc.bar_road
+  - road.nmc.water_street
+  - road.nmc.camp_road
+  - road.nmc.camp_loop_a
+  - road.nmc.camp_loop_b_stem
+  - road.nmc.camp_loop_b
+  - road.nmc.camp_loop_c_stem
+  - road.nmc.camp_loop_c
+  - coast.nmc_south_shore + coast.nmc_east_coast
+  - coast.nmc_east_coast.sections
+  - stream.nmc_town_river.mouth
+  - stream.nmc_town_river.head
+  - stream.nmc_town_river.head_of_tide
+  - stream.nmc_north_creek.mouth
+  - stream.nmc_north_creek.head
+  - stream.nmc_camp_brook.mouth
+  - stream.nmc_camp_brook.head
+  - falls.nmc_the_falls.lip
+  - falls.nmc_the_falls.pool
+  - pond.nmc_camp_pond.bed
+  - pond.nmc_north_creek_pond.bed
+  - pond.nmc_barachois.bed
+  - pond.nmc_marsh_pool.bed
+  - boardwalk.nmc_town_north.under
+  - boardwalk.nmc_town_south.under
+  - boardwalk.nmc_falls_deck.under
+  - boardwalk.nmc_marsh_walk.under
+  - stream.nmc_town_river.mid
+  - stream.nmc_town_river_mouth.mid
+  - stream.nmc_north_creek.mid
+  - stream.nmc_camp_brook.mid
+  - pond.nmc_camp_pond.surface
+  - pond.nmc_north_creek_pond.surface
+  - prop.nmc_camp_lights_a6
+  - prop.nmc_camp_tent_a7
+  - prop.nmc_camp_lights_a9
+  - prop.nmc_camp_tent_a10
+  - boat.nmc_creek_dory_3
+  - boat.nmc_creek_dory_4
+  - structure.nmc_plaza_hardware
+  - prop.nmc_plaza_row_1
+  - prop.nmc_plaza_row_2
+  - prop.nmc_plaza_island
+  - prop.nmc_plaza_corral
+  - prop.nmc_plaza_pole_1
+  - prop.nmc_plaza_pole_2
+  - prop.nmc_plaza_pole_3
+  - prop.nmc_plaza_pole_4
+  - prop.nmc_plaza_dock
+  - prop.nmc_plaza_bin
+  - prop.nmc_plaza_pylon
+  - vehicle.nmc_plaza_van_1
+  - vehicle.nmc_plaza_truck_1
+  - vehicle.nmc_plaza_truck_2
+  - vehicle.nmc_plaza_van_2
+  - vehicle.nmc_plaza_truck_3
+  - vehicle.nmc_plaza_truck_4
+  - vehicle.nmc_plaza_van_3

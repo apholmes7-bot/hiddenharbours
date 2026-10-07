@@ -52,6 +52,17 @@ namespace HiddenHarbours.Tests.EditMode
                 source = Regex.Replace(source, @"(?m)^ *// B1 FRINGE " + part + @" BEGIN\n[\s\S]*?^ *// B1 FRINGE " + part + @" END\n",
                     part == "DEPTH" ? LegacyDepth : "");
             }
+            // Approved F2 declarations only: require each exact line before reconstructing B1's control.
+            foreach (string line in new[] {
+                "        // ADR 0027 F2: CPU-read owner policy. Zero leaves the existing history path untouched.",
+                "        _FoamTransportStrain (\"Foam transport strain (m/s)\", Float) = 0",
+                "        _FoamTransportCurl (\"Foam transport curl (m/s)\", Float) = 0",
+                "        _FoamTransportCollection (\"Foam transport collection (m/s)\", Float) = 0",
+                "                float _FoamTransportStrain, _FoamTransportCurl, _FoamTransportCollection;" })
+            {
+                Assert.That(Regex.Matches(source, "(?m)^" + Regex.Escape(line) + "$").Count, Is.EqualTo(1), line);
+                source = source.Replace(line + "\n", "");
+            }
             Assert.That(Hash(source), Is.EqualTo(BaseWaterHash),
                 "The reconstructed control must be EXACTLY approved main, not another candidate arm.");
             return source;
@@ -167,6 +178,11 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 string yaml = Read(files[i]);
                 Assert.That(Regex.Matches(yaml, @"(?m)^    - " + Dial + @": 0$").Count, Is.EqualTo(1), files[i]);
+                foreach (string key in new[] { "_FoamTransportStrain", "_FoamTransportCurl", "_FoamTransportCollection" })
+                {
+                    Assert.That(Regex.Matches(yaml, @"(?m)^    - " + key + @": 0$").Count, Is.EqualTo(1), files[i] + ": " + key);
+                    yaml = yaml.Replace("    - " + key + ": 0\n", "");
+                }
                 Assert.That(Hash(yaml.Replace("    - " + Dial + ": 0\n", "")), Is.EqualTo(originalHashes[i]),
                     files[i] + ": only the new zero key is authorized");
             }
@@ -181,7 +197,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(Hash(Read("Assets/_Project/Code/Core/Environment/BreakerMath.cs")),
                 Is.EqualTo("abce0b880d89e3976faba111960260c2e958a1444de6a8d81e1b70f9a7ffae07"));
             Assert.That(Hash(Read("Assets/_Project/Code/Art/WaterSurface.cs")),
-                Is.EqualTo("3e9a1d768376fa1b99a805907aa15308f1595f00db6515b847b758b95d5e266a"));
+                Is.EqualTo("0de81020278ca98d019d6401514377558390a1d0837dd20cd2593434242cbcf0"));
         }
 
         static void RequireGpu()

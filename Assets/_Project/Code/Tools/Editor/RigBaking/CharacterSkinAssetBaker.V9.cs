@@ -12,11 +12,14 @@ namespace HiddenHarbours.Tools.RigBaking
     // attach, the clip packer and the turntable-sign adjudication are shared, so a v9 def differs
     // from a rig 7 def only in what the rig said. Rig 10 (the rig 10 intake, 2026-10-02) bakes through
     // the same ComposeV9 from a host loaded with CharacterRigKit.Rig10: its face marks, smooth normals
-    // and no-keyline default ride the same def.
+    // and no-keyline default ride the same def. Since kit 10.3 (2026-10-03) the gate tolerance, the
+    // face cull floor, the marks' pixel edge and the dither are read from the rig's exports (TOL,
+    // DITHER) on that host, never copied here.
     public static partial class CharacterSkinAssetBaker
     {
-        /// <summary>The rig the cast is baked from: rig 10 (kit 10.2) since the rig 10 intake's Phase B
-        /// (2026-10-02), which baked all ten figures from it and shot their plates against rig 9.2.
+        /// <summary>The rig the cast is baked from: rig 10 since the rig 10 intake's Phase B
+        /// (2026-10-02), which baked all ten figures from kit 10.2 and shot their plates against rig 9.2;
+        /// kit 10.3 landed over it on 2026-10-03, and its Phase B re-bakes the ten from it.
         /// Rig 9 was live from the character intake's Phase B (2026-09-26) until then. This is the one
         /// line that switches it: <see cref="CharacterSkinExtractor.V9CatalogKey"/> goes back to rig 9.2
         /// and <see cref="CharacterSkinExtractor.CatalogKey"/> to rig 7, each with a re-bake. Read-only
@@ -66,7 +69,7 @@ namespace HiddenHarbours.Tools.RigBaking
             CharacterRigKit kit = CharacterSkinExtractor.KitOf(host);
             CharacterSkinExtractor.AssertPreset9(host, preset);
             Debug.Log($"[char-skin] census — {CharacterSkinExtractor.Census9(host, preset)}");
-            double tol = CharacterSkinExtractor.V9Tolerance;
+            double tol = CharacterSkinExtractor.GateTolerance9(host);
             string g = kit.GlobalName;
 
             progress?.Invoke("skeleton", 0.02f);
@@ -137,8 +140,8 @@ namespace HiddenHarbours.Tools.RigBaking
             CharacterSkinExtractor.Blink9 blink = CharacterSkinExtractor.ReadBlink9(host);
             CharacterSkinExtractor.Look9 look = CharacterSkinExtractor.ReadLook9(host, preset, rigBones);
             int[] restFace = CharacterSkinExtractor.RestFace9(host, preset, faceGroups);
-            double cullFloor = CharacterSkinExtractor.CullFloor9(kit);
-            CharacterSkinExtractor.MarkCull9 markCull = CharacterSkinExtractor.ReadMarkCull9(kit);
+            double cullFloor = CharacterSkinExtractor.CullFloor9(host);
+            CharacterSkinExtractor.MarkCull9 markCull = CharacterSkinExtractor.ReadMarkCull9(host);
             bool keylineDefault = CharacterSkinExtractor.KeylineDefault9(host);
 
             progress?.Invoke("turntable sign", 0.92f);

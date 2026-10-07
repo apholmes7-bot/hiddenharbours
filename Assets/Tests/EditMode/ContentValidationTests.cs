@@ -28,6 +28,35 @@ namespace HiddenHarbours.Tests.EditMode
         private const string DataRoot = "Assets/_Project/Data";
 
         [Test]
+        public void NmcKeyScenes_Exist_AsUnplacedData_WithUniqueIdsAndResolvedRegion()
+        {
+            var regions = LoadAll<RegionDef>();
+            var scenes = LoadAll<KeySceneDef>().FindAll(s => s.RegionId == "region.nine_mile_creek");
+            Assert.That(scenes.Count, Is.EqualTo(12), "H1's twelve imported key scenes");
+            var seen = new Dictionary<string, string>();
+            foreach (var scene in scenes)
+            {
+                string path = AssetDatabase.GetAssetPath(scene);
+                RegisterUniqueId(seen, scene.Id, path, nameof(KeySceneDef));
+                Assert.That(regions.Exists(r => r.Id == scene.RegionId), Is.True, scene.Id + " region");
+                Assert.That(scene.Placed, Is.False, scene.Id);
+                Assert.That(scene.Source, Does.Contain("sha256"), scene.Id);
+                foreach (var piece in scene.Pieces)
+                {
+                    RegisterUniqueId(seen, piece.Id, path, nameof(KeyScenePiece));
+                    StringAssert.IsMatch(@"^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$", piece.Id);
+                    Assert.That(piece.Owner, Is.Not.Empty, piece.Id);
+                    Assert.That(piece.Kit, Is.Not.Empty, piece.Id);
+                    Assert.That(piece.Variants, Is.Not.Empty, piece.Id);
+                    Assert.That(piece.Words, Is.Empty, "H1 creates no player-facing words: " + piece.Id);
+                    Assert.That(System.Array.IndexOf(scene.RetiredIds, piece.Id), Is.EqualTo(-1), piece.Id);
+                }
+                foreach (var light in scene.Lights)
+                    Assert.That(System.Array.Exists(scene.Pieces, p => p.Id == light.PieceId), Is.True, light.PieceId);
+            }
+        }
+
+        [Test]
         public void VillagePlans_Exist_AndHaveUniqueIdsAndResolvedLists()
         {
             var plans = LoadAll<VillagePlanDef>();

@@ -106,6 +106,16 @@ Every feature must serve at least one pillar. If it serves none, cut it.
 > broke newcomer, not as the absence of a yard). Geography detail and the build order:
 > [`design/world-map-plan.md`](design/world-map-plan.md).
 
+> **Canon amendment — owner-ratified 2026-10-06 (NMC household origins).** Nine Mile Creek's eleven
+> households (four on the creek, seven at the camp) may come from real places beyond the home bay,
+> as the package names them: Halifax, Toronto, Moncton, Sydney, Antigonish, Fredericton,
+> Port Hawkesbury, Baddeck, Ontario and the Cabot Trail. At **11:08:49Z**, the owner ruled:
+> "does art need to copy those drops? and i go with the overhaul charters 7 decisions except 1, i also lean b".
+> Decision 1(b) approves origins and amends canon first. The world remains the **Sablewick Banks**
+> and the **Hillsborough Bay variant** ruled above. H1 keeps household text verbatim as data on
+> its lot or piece, outside Words and player-facing lines. H13 supplies NPCs, routines and lines
+> after the single names slate required by decision 3.
+
 ### 5.4 Boat ladder (LOCKED — "Dory to Dynasty"). Detail + stats in `design/boats-and-navigation.md`.
 Every tier defines: **length (m)**, **draught (m)** *(how shallow it can go before grounding — ties to tide!)*, **hold capacity**, **crew slots**, **range**, **seaworthiness** *(weather tolerance)*, **handling** *(wind/current vulnerability)*.
 

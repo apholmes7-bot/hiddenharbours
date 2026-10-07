@@ -179,6 +179,9 @@ Material:
     - _FoamCrestGate: 0.88
     - _SpecSwellBias: 0.21
     - _FoamDriftWindVsCurrent: 0.84
+    - _FoamTransportStrain: 0
+    - _FoamTransportCurl: 0
+    - _FoamTransportCollection: 0
     - _FoamEvolveSpeed: 0.08
     - _FoamBlobScale: 5.17
     - _FoamThreshold: 0.9

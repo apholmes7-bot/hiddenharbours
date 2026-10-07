@@ -1,0 +1,49 @@
+# seasons — passed
+
+rest pose, variants 1–4, byte comparison of each map against summer
+maps: unlit · normal · light · detail · snow · wind · phase
+
+RedSpruce       sapling autumn shares unlit normal light detail snow wind phase   winter shares nothing
+RedSpruce       young   autumn shares unlit normal light detail snow wind phase   winter shares nothing
+RedSpruce       pole    autumn shares unlit normal light detail snow wind phase   winter shares nothing
+RedSpruce       mature  autumn shares unlit normal light detail snow wind phase   winter shares nothing
+BlackSpruce     sapling autumn shares unlit normal light detail snow wind phase   winter shares nothing
+BlackSpruce     young   autumn shares unlit normal light detail snow wind phase   winter shares nothing
+BlackSpruce     pole    autumn shares unlit normal light detail snow wind phase   winter shares nothing
+BlackSpruce     mature  autumn shares unlit normal light detail snow wind phase   winter shares nothing
+BalsamFir       sapling autumn shares unlit normal light detail snow wind phase   winter shares nothing
+BalsamFir       young   autumn shares unlit normal light detail snow wind phase   winter shares nothing
+BalsamFir       pole    autumn shares unlit normal light detail snow wind phase   winter shares nothing
+BalsamFir       mature  autumn shares unlit normal light detail snow wind phase   winter shares nothing
+WhiteCedar      sapling autumn shares unlit normal light detail snow wind phase   winter shares nothing
+WhiteCedar      young   autumn shares unlit normal light detail snow wind phase   winter shares nothing
+WhiteCedar      pole    autumn shares unlit normal light detail snow wind phase   winter shares nothing
+WhiteCedar      mature  autumn shares unlit normal light detail snow wind phase   winter shares nothing
+Tamarack        sapling autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+Tamarack        young   autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+Tamarack        pole    autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+Tamarack        mature  autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+WhitePine       sapling autumn shares unlit normal light detail snow wind phase   winter shares nothing
+WhitePine       young   autumn shares unlit normal light detail snow wind phase   winter shares nothing
+WhitePine       pole    autumn shares unlit normal light detail snow wind phase   winter shares nothing
+WhitePine       mature  autumn shares unlit normal light detail snow wind phase   winter shares nothing
+WhiteBirch      sapling autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+WhiteBirch      young   autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+WhiteBirch      pole    autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+WhiteBirch      mature  autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+RedMaple        sapling autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+RedMaple        young   autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+RedMaple        pole    autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+RedMaple        mature  autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+RedOak          sapling autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+RedOak          young   autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+RedOak          pole    autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+RedOak          mature  autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+TremblingAspen  sapling autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+TremblingAspen  young   autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+TremblingAspen  pole    autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+TremblingAspen  mature  autumn shares normal light detail snow wind phase · own _unlit (fall colour)   winter shares nothing
+
+pass: autumn shares every geometry map with summer in all four variants, and _unlit too unless the species has a fall colour.
+Fall colour: Tamarack, White Birch, Red Maple, Red Oak, Trembling Aspen. The other five are identical in autumn and cost nothing.
+Winter shares nothing, evergreens included: build() adds 31 to the seed in winter, so a winter spruce is a different draw of the same species.

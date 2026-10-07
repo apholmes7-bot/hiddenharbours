@@ -1,0 +1,5642 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_nmc_wharf
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.nmc_wharf
+  DisplayName: 'Nine Mile Creek: the wharf'
+  RegionId: region.nine_mile_creek
+  Source: HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02, hh-nmc-wharf-return/scenes/keyscene.nmc_wharf/scene.json,
+    78926 bytes, sha256 81307f997035dbbec420c65326337fb439dc82afe9049c0b96de69f856fec26d
+  Placed: 0
+  Pieces:
+  - Id: harbour.west
+    Kind: harbour
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfRig2 + marina kit
+    Piece: nmc_west
+    State: 
+    At: {x: 64, y: 0}
+    Z: -2.2
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 88.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"nmc_west"'
+    - Key: nmc.faces
+      Value: '"N"'
+    - Key: nmc.origin
+      Value: '[64,0]'
+    - Key: nmc.note
+      Value: '"one sprite; its modules, berths, floats and fittings are the kit\u2019s
+        harbour \u2018nmc_west\u2019 (scene/nmcWharf.js defineHarbours)"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own (HarbourDef)"
+    - Key: nmc.scene.harbour
+      Value: '{"fingers":[{"id":"float.nmc_finger_a","x":109.7,"y":[43.9,71.1],"width":2.4,"gangway":{"from":[109.7,86],"length":16}},{"id":"float.nmc_finger_b","x":142.3,"y":[43.9,71.1],"width":2.4,"gangway":{"from":[142.3,86],"length":16}}],"berths":[{"id":"berth.nmc_wall_0","owner":"the
+        player","slot":[78.6,93.8],"face":86,"hull":null,"note":"kept for the player"},{"id":"berth.nmc_wall_1","owner":"Leo
+        Arsenault","slot":[93.8,108.2],"face":86,"hull":"lobStdHardtopNth"},{"id":"berth.nmc_wall_2","owner":"Marie
+        Gallant","slot":[111.2,126.4],"face":86,"hull":"capeIslander"},{"id":"berth.nmc_wall_3","owner":"Yvette
+        Doiron","slot":[126.4,140.8],"face":86,"hull":"lobStdOpenFundy"},{"id":"berth.nmc_wall_4","owner":"Ross
+        MacDonald","slot":[143.8,154.8],"face":86,"hull":"lobInHardtopNfld"},{"id":"berth.nmc_wall_5","owner":"Hughie
+        Campbell","slot":[154.8,165.8],"face":86,"hull":"lobInOpenNth"}],"fingerBerths":[{"id":"berth.nmc_finger_a_w0","hull":"lobInHardtopNfld","x":106.552,"y":[61.821,70.435],"heading":"N","who":"the
+        ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_a_w1","hull":"capeIslander","x":106.26,"y":[47.621,60.421],"heading":"N","who":"the
+        ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_a_e2","hull":"lobStdHardtopNth","x":113.26,"y":[58.31,70.435],"heading":"N","who":"the
+        ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_a_e3","hull":"lobInOpenNth","x":112.816,"y":[48.22,56.91],"heading":"N","who":"the
+        ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_w4","hull":"lobStdOpenFundy","x":138.8,"y":[58.375,70.435],"heading":"N","who":"the
+        ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_w5","hull":"lobInHardtopNfld","x":139.152,"y":[48.361,56.975],"heading":"N","who":"the
+        ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_e6","hull":"lobStdHardtopFundy","x":145.8,"y":[58.375,70.435],"heading":"N","who":"the
+        ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_e7","hull":"capeIslander","x":145.74,"y":[44.175,56.975],"heading":"N","who":"the
+        ambient fleet (a shed lot each when the register grows)"}],"crane":{"berth":[52,78],"face":76,"boat":"Yvette
+        Doiron, bow west, her cockpit under the hook"},"workingFloat":{"x":[48,72],"y":[58.635,61.035],"note":"where
+        WharfRig2Kit.gangwayFrom puts it off the apron (the bake logs it)"},"recFloat":"three
+        rec boats off the east quay\u2019s gate","ladders":[{"id":"ladder.nmc_berth0","x":86.19999999999999,"face":86},{"id":"ladder.nmc_berth1","x":101,"face":86},{"id":"ladder.nmc_berth2","x":118.80000000000001,"face":86},{"id":"ladder.nmc_berth3","x":133.60000000000002,"face":86},{"id":"ladder.nmc_berth4","x":149.3,"face":86},{"id":"ladder.nmc_berth5","x":160.3,"face":86},{"id":"ladder.nmc_east","x":180.2,"face":86},{"id":"ladder.nmc_unload_w","x":55.5,"face":76},{"id":"ladder.nmc_unload_e","x":76.6,"face":76}],"clearance":{"min":30,"over":[96,156],"need":-4.1,"designBoat":{"type":"capeIslander","loa":12.8,"beam":4.4,"draught":1.4,"berth":"fingerA
+        west, the south berth","at":[106.26,54.02],"heading":"north"}},"tracks":{"in":[[137,-45],[137,-10],[136.2,5],[131,16.5],[121,23.5],[108,27],[98.5,31.5],[94.5,38],[96.5,44],[100.8,47.6],[104.6,50.6],[106.26,54.02]],"outAstern":[[106.26,54.02],[106.1,46],[106,38.5]],"out":[[106,38.5],[108.2,31.5],[115,25.5],[126,21],[133.5,13],[136.6,2],[137,-10],[137,-45]]},"lights":{"west":[115.2,2,"green"],"east":[158.6,-5.6,"red"]},"roads":{"main":{"pts":[[76,120],[190,120]],"w":7.5,"gate":[184.4,115,124]},"parking":[{"id":"yard.parking_w","box":[96.5,106,124.1,133.1]},{"id":"yard.parking_e","box":[141.2,146.8,123.5,132.5]}],"truckTurn":{"id":"yard.restaurant_turn","box":[160.5,176.5,118,131]},"cars":[{"id":"vehicle.nmc_buyer_truck","rig":"VehicleIso","at":[98.2,128.4],"dir":4},{"id":"vehicle.nmc_lot_e","rig":"VehicleIso","at":[101,128.4],"dir":4},{"id":"vehicle.nmc_lot_a","rig":"VehicleIso","at":[103.8,128.4],"dir":4},{"id":"vehicle.nmc_lot_b","rig":"VanIso","at":[142.6,128],"dir":4},{"id":"vehicle.nmc_lot_c","rig":"VehicleIso","at":[145.4,128],"dir":4},{"id":"vehicle.nmc_delivery","rig":"VanIso","at":[171.2,127.8],"dir":6}]}}'
+    - Key: nmc.scene.crane
+      Value: '{"at":[72,78.2],"dir":4,"pad":[67.6,81.2],"padSize":2.4,"deck":[69.5,73.4],"envelope":{"pin":[0.05,2.85],"Lm":2.975,"Lj":4.14,"column":[0,0,1.52],"operator":[0,-1.18,0.26],"reach":{"min":2.2,"max":5.6,"rateMS":0.45},"tipZ":{"near":1.9,"far":4.95,"farFrom":5},"slew":{"continuous":true,"rateDegS":20,"stowedDeg":-90},"hoist":{"max":3.6,"min":-7,"upMS":0.4,"downMS":0.55,"belowTip":0.95,"slowNearM":0.3,"slowMS":0.15},"stowed":{"luffDeg":72,"jibDeg":-94,"hookZ":1.35},"swlKg":1000,"latchM":0.35,"landM":0.05,"swing":{"damping":0.6,"maxDeg":12,"fromSlewDegS2":0.35}},"loads":{"none":null,"totes":{"label":"two
+        fish totes, stacked: the landing","size":[1.12,0.72,1.04],"kg":190,"lift":0.4,"seat":"deck
+        or pad"},"traps":{"label":"a sling of four traps: setting day","size":[1.24,1.26,0.9],"kg":150,"lift":0.4,"seat":"pad
+        or deck"},"bait":{"label":"a bait barrel","size":[0.6,0.6,0.9],"kg":120,"lift":0.3,"seat":"pad
+        or deck"}},"states":[{"id":"stowed","means":"jib folded down beside the column,
+        the hook in its cradle, slewed along the quay (-90). Nobody at the stand."},{"id":"idle","means":"working
+        pose, the hook up at the top of its travel, nothing on it. The player is at
+        the stand."},{"id":"reaching","means":"the player is slewing, reaching or
+        hoisting with nothing on the hook."},{"id":"hooked","means":"the eye within
+        latchM of a load\u2019s lift point and latched (E). The load still sits."},{"id":"lifting","means":"a
+        latched load clear of every surface; it swings, damped, never more than swing.maxDeg."},{"id":"landing","means":"the
+        load\u2019s base within hoist.slowNearM of a surface (the pad, a deck, a truck
+        bed): lowering slows to hoist.slowMS."},{"id":"set","means":"the load\u2019s
+        base within landM of a surface: it sits, and E unlatches."}],"poses":{"day":{"state":"working","slewDeg":27.5,"reachM":5.41,"hookZ":-1.06,"load":"totes","hook":[2.498,4.799,-1.06],"hookWorld":[69.502,73.401,2.34],"luffDeg":64.883,"jibDeg":-8.245},"night":{"state":"stowed","slewDeg":-90,"reachM":0.681,"hookZ":1.35,"load":"none","hook":[-0.681,0,1.35],"hookWorld":[72.681,78.2,4.75],"luffDeg":72,"jibDeg":-94}}}'
+    - Key: nmc.scene.lights
+      Value: '[{"id":"light.nmc_head_west","at":[115.2,0.8],"z":3.6,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,5.9],"reachM":7.5,"intensity":0.45,"colour":"#4cff8a"}},{"id":"light.nmc_head_east","at":[158.6,-6.8],"z":3.6,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,5.9],"reachM":7.5,"intensity":0.45,"colour":"#ff4a3c"}},{"id":"light.nmc_pole_court","at":[44.6,107.3],"z":3.634,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,6.6],"reachM":10.5,"intensity":0.72,"colour":"#ffc47a"}},{"id":"light.nmc_pole_lot","at":[124,106.3],"z":3.644,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,6.6],"reachM":10.5,"intensity":0.72,"colour":"#e4ecff"}},{"id":"light.nmc_pole_quay_w","at":[78.4,94.5],"z":3.515,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,6.6],"reachM":10.5,"intensity":0.72,"colour":"#ffc47a"}},{"id":"light.nmc_pole_quay_e","at":[147.8,94.3],"z":3.508,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,6.6],"reachM":10.5,"intensity":0.72,"colour":"#ffc47a"}},{"id":"light.nmc_pole_ramp","at":[48.6,87.3],"z":3.432,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,6.6],"reachM":10.5,"intensity":0.72,"colour":"#ffc47a"}},{"id":"light.nmc_pole_lot_e","at":[164,106.1],"z":3.648,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,6.6],"reachM":10.5,"intensity":0.72,"colour":"#e4ecff"}},{"id":"light.nmc_office_porch","at":[85.35,114.4],"z":3.654,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,2.5],"reachM":3.6,"intensity":0.8,"colour":"#ffd6a0"}},{"id":"light.nmc_office_counter","at":[83.6,110.9],"z":3.666,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,1.6],"reachM":2.8,"intensity":0.55,"colour":"#ffd6a0"}},{"id":"light.nmc_market_door","at":[89.65,124.6],"z":3.565,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,2.3],"reachM":3.4,"intensity":0.8,"colour":"#ffd6a0"}},{"id":"light.nmc_market_window","at":[92.3,124.4],"z":3.567,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,1.4],"reachM":3,"intensity":0.5,"colour":"#ffd6a0"}},{"id":"light.nmc_rest_porch","at":[168.45,130.8],"z":3.52,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,2.4],"reachM":3.8,"intensity":0.85,"colour":"#ffd6a0"}},{"id":"light.nmc_rest_takeout","at":[164.55,130.9],"z":3.512,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,1.6],"reachM":3.4,"intensity":0.6,"colour":"#ffd6a0"}},{"id":"light.nmc_rest_name","at":[168,130.7],"z":3.521,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,4],"reachM":5,"intensity":0.4,"colour":"#ffd6a0"}},{"id":"light.nmc_rest_deck_177_6","at":[177.6,134.5],"z":3.95,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,3.2],"reachM":4.2,"intensity":0.5,"colour":"#ffc98a"}},{"id":"light.nmc_rest_deck_177_6","at":[177.6,138.7],"z":3.95,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,3.2],"reachM":4.2,"intensity":0.5,"colour":"#ffc98a"}},{"id":"light.nmc_rest_deck_178_4","at":[178.4,143.3],"z":3.95,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,3.2],"reachM":4.2,"intensity":0.5,"colour":"#ffc98a"}},{"id":"light.nmc_rest_deck_171","at":[171,143.3],"z":3.95,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,3.2],"reachM":4.2,"intensity":0.5,"colour":"#ffc98a"}},{"id":"light.nmc_rest_deck_163","at":[163,143.3],"z":3.95,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,3.2],"reachM":4.2,"intensity":0.5,"colour":"#ffc98a"}},{"id":"light.nmc_cold_dock","at":[64,108.6],"z":3.637,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,3.6],"reachM":7.5,"intensity":0.7,"colour":"#e4ecff"}},{"id":"light.nmc_yard_flood_w","at":[186,96.8],"z":3.558,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,7.6],"reachM":11,"intensity":0.7,"colour":"#e4ecff"}},{"id":"light.nmc_yard_flood_e","at":[210,123.2],"z":3.604,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,7.6],"reachM":11,"intensity":0.65,"colour":"#e4ecff"}},{"id":"light.nmc_dock_183_6","at":[183.6,70.93],"z":0.5,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,1.2],"reachM":3.2,"intensity":0.55,"colour":"#ffd6a0"}},{"id":"light.nmc_dock_177_6","at":[177.6,68.83],"z":0.5,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,1.2],"reachM":3.2,"intensity":0.55,"colour":"#ffd6a0"}},{"id":"light.nmc_dock_171_6","at":[171.6,70.93],"z":0.5,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,1.2],"reachM":3.2,"intensity":0.55,"colour":"#ffd6a0"}},{"id":"light.nmc_dock_165_6","at":[165.6,68.83],"z":0.5,"light":{"preset":"lamp","whoLights":"LampPosts
+        (the lamp rule)","pool":true,"when":"dusk","at":[0,0,1.2],"reachM":3.2,"intensity":0.55,"colour":"#ffd6a0"}}]'
+    - Key: nmc.scene.game
+      Value: '"NOTES.md \u00a78 lists what the rulings ask of the game: the harbourmaster\u2019s
+        move and the store\u2019s merge, the crane\u2019s gameplay, the longer arms,
+        the new mouth and the boats\u2019 routes, the ground that grows north"'
+    - Key: nmc.scene.ground
+      Value: '{"source":"scene/nmcWharf.js groundAt(x, y): the ground as numbers (NOTES
+        \u00a73 lists them, old and new); the terrain lane rebakes NineMileCreekSeabed
+        from them","arms":{"west":[[38,2],[116,2]],"east":[[212,86],[212,20],[158,-6]],"crest":3.6,"core":"+2.4
+        at 3.2 m from the crest line, then 1:1.1 to the bed, ragged \u00b10.8 m","armour":"granite
+        (the kit\u2019s breakwater preset)"},"mouth":{"between":[[116,2],[158,-6]],"note":"the
+        heads; the navigable width is the checker\u2019s"},"basin":{"bed":-1.6,"note":"the
+        natural bed inside the arms; dries at spring low where it is not dredged"},"dredge":[{"x":[79,184],"y":[74,86],"bed":-4.4,"sides":"1:5,
+        ragged \u00b11.1 m"},{"x":[52,78],"y":[64,76],"bed":-4.2,"sides":"1:5, ragged
+        \u00b11.1 m"},{"x":[86,166],"y":[12,80],"bed":-4.4,"sides":"1:5, ragged \u00b11.1
+        m"},{"x":[36,78],"y":[30,66],"bed":-3.4,"sides":"1:5, ragged \u00b11.1 m"}],"channels":[{"id":"approach","pts":[[137,-40],[137,-6],[136,14]],"hw":11,"bed":-4.4},{"id":"crane","pts":[[90,40],[80,52],[70,63],[62,69]],"hw":7,"bed":-4.4},{"id":"east","pts":[[164,44],[180,56],[198,66]],"hw":6,"bed":-4.4}],"pockets":[{"x":[164,192],"y":[60,74],"bed":-3.2,"shape":"ellipse
+        in the box"},{"x":[192,204],"y":[62,86],"bed":-4.4,"shape":"ellipse in the
+        box"}],"yard":{"rects":[[47,78,76,96],[42,212,86,138],[42,104,86,146],[156,184,136,152]],"deck":3.4,"crown":0.25,"revetment":"1:1.5","grows":"the
+        terrace x 156\u2013184, y 136\u2013146 is new ground (the restaurant\u2019s
+        deck)"},"ramp":{"x":44,"w":5,"head":86,"mid":66,"toe":46,"zHead":3.4,"zMid":0.4,"zToe":-2.6},"creek":"its
+        low-water channel follows y = 148.5 + 3.2 sin(x/17) + 1.4 sin(x/6.3) + 7.5
+        ss(146,160,x) ss(196,184,x) (pushed north past the terrace)","paint":[{"id":"path.nmc_shore_path","kind":"path","material":"trodden","width":1.3,"points":[[60,-150],[56,-130],[50,-110],[44,-88],[38.5,-64],[35.5,-40],[34,-20],[34.2,-8],[35.2,1],[34,8],[32.8,18],[32.5,40],[33,64],[34,88],[36,104],[40,112]],"why":"from
+        the beach landing along the shore to the west arm\u2019s root, then along
+        the bank top to Wharf Road (the owner, 09-28)"},{"id":"yard.to_ramp","kind":"path","material":"gravel","width":5.2,"points":[[44,86.2],[44.6,92],[47.5,97.5],[50.5,99.5]],"why":"the
+        lane a trailer backs down to the ramp"}]}'
+    - Key: nmc.scene.context
+      Value: '{"region":"760 \u00d7 560 m round the origin, unchanged","sandbar":"unchanged
+        (BarFrom (45, \u2212150) \u2192 BarTo (346, \u2212199))","landing":[60,-150],"crossing":"unchanged
+        (352, \u2212200)"}'
+    - Key: nmc.scene.refs
+      Value: '[]'
+    - Key: nmc.scene.sourceRows
+      Value: 134
+    - Key: nmc.scene.ownedRows
+      Value: 134
+    - Key: nmc.deferred
+      Value: placement=H5/H6 (N8 fleet; N9 crane; N3 office); names/households/calendar/visits/fire
+        schedules=H13 after the owner names slate; tide/float=H5/H7/H8/H11; lights/audio/flora=scene
+        placement lane with art-pipeline/audio; river fishery=M3; bookings/fees/ring/bell/pool/court/interiors=separate
+        scope; roads/access=H4 (R2), then R4; office identity=N3; crane gameplay=N9
+    - Key: nmc.ground.source
+      Value: export/HH-nmc-ground-part-1-reissue-2-2026-10-02/ground/plan.json, sha256
+        d7a6a154b0a0ed1f6216821fdff6c885928a9fbc60e24def68ea0ebbb3faa2ad
+    - Key: nmc.plan.coast
+      Value: '{"method":"Pass 9\u2019s: a reference line along the new mean-tide line
+        with the land on its left (north); each section is a cross-shore profile,
+        blended over `feather` metres along the line; seaward of the last knot the
+        ground relaxes to the far floor over `relax` metres. The east coast keeps
+        today\u2019s ground (CoastPoints and CoastSectors, NineMileCreekMainland.cs),
+        measured here as profiles.","far_floor":{"west":-5,"east":"today\u2019s bay
+        (-6.0) by x 200","rule":"floor(x) = lerp(-5.0, -6.0, smoothstep(60, 200, x)),
+        then max with the bar\u2019s ridge"},"south_shore":{"id":"coast.nmc_south_shore","name":"the
+        south shore","line":[[-380,-203],[-330,-200.5],[-280,-198],[-230,-197],[-180,-197.5],[-130,-196.5],[-85,-193.5],[-45,-189.5],[-5,-184.5],[30,-179.5],[55,-172.5],[74,-166],[88,-159],[85,-150],[80,-140],[75.5,-121],[70,-102]],"feather":14,"relax":60,"runs":"from
+        the region\u2019s west edge at (-380, -203), where it carries on into Rice
+        Point\u2019s region, east to the landing\u2019s corner at (88, -159), where
+        the bar leaves it; then a short hook north along today\u2019s east beach to
+        (70, -102), so the corner joins today\u2019s coast","sections":[{"id":"coast.nmc_rice_point_strand","name":"Rice
+        Point Strand","type":"sand beach under a low red bank","from":-380,"to":-205,"houses":true,"profile":[[70,6],[46,5.55],[35,5.15],[31,4.2],[27.5,3],[20,2.35],[12,1.5],[6,0.72],[0,0],[-10,-0.6],[-25,-1.3],[-42,-2.2],[-60,-2.9],[-90,-3.7]],"why":"The
+        houses stand on the bank top. A red sandstone bank 2 m tall, a storm berm,
+        then a wide sand beach whose flats run 42 m out at spring low: clams at low
+        water, as at St Peters\u2019 Lagoon Flats."},{"id":"coast.nmc_camp_dunes","name":"the
+        camp dunes","type":"sand beach under marram dunes","from":-205,"to":-62,"profile":[[82,6],[58,5.25],[44,4.35],[36,4.75],[31,4.9],[27,3.5],[22,2.55],[14,1.7],[6,0.72],[0,0],[-12,-0.7],[-28,-1.4],[-46,-2.2],[-65,-2.9],[-95,-3.8]],"why":"The
+        dune ridge (+4.9) shelters the campground\u2019s south pitches in the swale
+        behind it (+4.35). Boardwalks cross it to the beach."},{"id":"coast.nmc_brook_mouth","name":"the
+        brook mouth","type":"beach berm with a salt marsh behind","from":-62,"to":-18,"profile":[[72,6],[52,4.1],[40,2.55],[31,2.3],[25,2.65],[19,2.1],[9,0.95],[0,0],[-14,-0.8],[-30,-1.5],[-48,-2.2],[-70,-3],[-95,-3.8]],"why":"The
+        camp brook crosses the beach here. A berm (+2.65) holds a little salt marsh
+        (+2.3) behind it, drowned only by the spring highs."},{"id":"coast.nmc_landing_beach","name":"the
+        landing beach","type":"sand beach, the bar\u2019s root","from":-18,"to":88,"profile":[[27,6],[21,5.45],[15,4.1],[9.5,2.45],[4.5,1],[0,0],[-15,-0.8],[-35,-1.6],[-55,-2.2],[-80,-3],[-110,-3.8]],"why":"Where
+        the crossing comes ashore at the corner: the bar\u2019s ridge (+0.88) rises
+        out of the beach at (84, -157), and the beach wraps round the corner into
+        today\u2019s east beach, north of the landing."}],"rule":"E = profile(d) inland
+        of the last seaward knot; beyond it lerp(last, floor, smoothstep(0, relax,
+        d_past)); E = max(E, bar ridge); a section\u2019s profile blends into the
+        next across `feather` metres of x"},"corner":{"id":"coast.nmc_landing_corner","at":[60,-150],"landing_z":5.2,"bar_road_start_z":5.65,"rule":"north
+        of y -118 (and north of the bar\u2019s crest east of x 90) the ground is today\u2019s;
+        south of y -138 it is the south shore\u2019s; smoothstep between. The landing
+        (60, -150) stays the head of the beach: +5.2 on the plan, 3 m over spring
+        high."},"east_coast":{"id":"coast.nmc_east_coast","kept":true,"builder":"NineMileCreekMainland.CoastPoints
+        / CoastSectors (unchanged but the south end)","points_today":[[30,-280],[52,-200],[60,-150],[50,-100],[34,-40],[32,20],[44,70],[58,110],[44,128],[26,134],[24,152],[40,168],[34,210],[30,260],[34,280]],"sections":[{"id":"coast.nmc_south_beach_old","cls":"Beach","s":[0,133.6],"from":[30,-280],"to":[60,-150],"fate":"GOES:
+        the south shore replaces it; the water comes in over the old fields south
+        of the landing"},{"id":"coast.nmc_landing_north_beach","cls":"Beach","s":[133.6,176],"fate":"kept;
+        it now runs round the corner into the landing beach"},{"id":"coast.nmc_dune","cls":"Dune","s":[176,210],"fate":"kept"},{"id":"coast.nmc_ledge_bank","cls":"LedgeCliff","s":[210,268],"fate":"kept"},{"id":"coast.nmc_gully","cls":"Access","s":[268,294],"fate":"kept:
+        the one way down to the ledges"},{"id":"coast.nmc_weather_face","cls":"Cliff","s":[294,370],"fate":"kept:
+        the red bluff, the St Peters sightline"},{"id":"coast.nmc_spit_root","cls":"DeepShoreCliff","s":[370,399],"fate":"kept,
+        under the wharf\u2019s west arm as the wharf return drew it"},{"id":"coast.nmc_creek_mouth","cls":"Beach","s":[399,521],"fate":"reshaped
+        by the wharf return: the yard and its bank to x 36.5, the barachois\u2019s
+        east end back to x 22, the river\u2019s mouth through the bank at (26..48,
+        156..170)"},{"id":"coast.nmc_north_dune","cls":"Dune","s":[521,551],"fate":"kept
+        but for the north creek\u2019s inlet, which cuts it at y 226..238"},{"id":"coast.nmc_north_beach","cls":"Beach","s":[551,596],"fate":"kept"}]}}'
+    - Key: nmc.plan.water
+      Value: '{"rule":"water = max(tide, still) (ADR 0046). Each stream\u2019s still
+        level is bed + depth along its channel: over its fresh reach, and over its
+        tidal reach as the low-water ribbon a river keeps when the tide is out (a
+        call, section 7 of the notes). Ponds hold a flat surface. The lagoon and the
+        marsh pool are the tide\u2019s.","streams":[{"id":"stream.nmc_town_river","name":"Nine
+        Mile Creek (the town river)","joins":["the town river (08-20)","the northern
+        waterway (09-28): it is the junction brook\u2019s course carried up through
+        the town"],"pts":[[50,162],[40,166],[30,162],[22,154],[10,146],[-8,140],[-28,138],[-48,142],[-66,154],[-84,168],[-96,179],[-110,190],[-122,193],[-134,199],[-146,199.5],[-156,202],[-177,205],[-200,207],[-226,206],[-248,202],[-261,199.5],[-268,198.2],[-273,197.6],[-278.5,197],[-290,199],[-304,204],[-311,209],[-318,211],[-326,216],[-334,216],[-342,212.5],[-350,215],[-366,217],[-380,222]],"z":[-1.2,-1.2,-1.15,-1.1,-1.05,-1,-0.95,-0.9,-0.85,-0.8,-0.75,-0.7,-0.65,-0.6,-0.55,-0.5,-0.4,-0.3,-0.15,0,0.05,-0.35,0.3,2.55,2.62,2.68,2.5,2.36,2.8,2.9,2.98,3.05,3.2,3.35],"w":[12,12,12,12,12,12,12,12,11.5,11,11,11,10.5,10.5,10,10,10,10,9.5,9.5,9.5,11,9,7,6.5,6.5,7,7.5,6.5,6.5,6.5,6.5,6.5,6.5],"depth":[0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.4,0.9,0.35,0.35,0.35,0.35,0.5,0.75,0.35,0.35,0.35,0.35,0.35,0.35],"mouth":{"at":[50,162],"into":"the
+        wharf\u2019s creek flats and Nine Mile Creek\u2019s low-water channel along
+        the yard\u2019s north side (the wharf return: creekY(x) = 148.5 + 3.2 sin(x/17)
+        + 1.4 sin(x/6.3) + 13 ss(146,160,x) ss(196,184,x), bed -1.7), out to the bay
+        at x 212"},"head_of_tide":{"at":[-278.5,197],"rule":"the Falls: the bed steps
+        from +0.30 to +2.55 over 5.5 m of sandstone ledges; above them the bed stands
+        over spring high (+2.2)"},"tidal_reach_m":357,"fresh_reach_m":108,"leaves":{"at":[-380,222],"into":"the
+        river\u2019s upper valley in the next region west (not built)"},"banks":{"open":{"mud":4,"upper":5,"note":"outside
+        the town: mud banks 1:4 to +2.4, grass 1:5 to the fields"},"town":{"between_x":[-266,-146],"south":{"mud":3,"bench":[2.7,5],"upper":3},"north":{"mud":3,"bench":[2.7,5.5],"wall":6,"fill":"fill.nmc_river_wall
+        (in the texture since the re-issue)"},"note":"through the town: a boardwalk
+        bench at +2.7 on each bank; the south bank grass 1:3 up to the town (+5.8);
+        the north bank a stone retaining wall (it faces south, so the camera sees
+        it) up to Water Street (+6.0)"},"fresh":{"bank":2,"floodplain":[1,5],"upper":4,"note":"above
+        the Falls: a 1:2 bank to a floodplain meadow 1.0 m over the bed, then 1:4
+        to the fields"}},"fishing":["the Falls pool (-268, 198.2): sea-run trout and
+        gaspereau at the head of tide","the fresh pool (-318, 211): brook trout","the
+        town boardwalks: smelt, striped bass on the flood","the barachois channel
+        at the flood"],"why":"The owner\u2019s river off the ocean and up through
+        the town. It leaves the barachois by its north-west corner, keeps 55 m or
+        more north of the gas bar, crosses Route 91 at (-177, 205) and divides the
+        town, then climbs over the Falls into the fields."},{"id":"stream.nmc_town_river_mouth","name":"Nine
+        Mile Creek, its mouth","part_of":"stream.nmc_town_river","carve":false,"pts":[[50,162],[58,147.95],[70,144.46],[84,146.35],[98,147.13],[112,148.23],[126,152.67],[140,151.15],[152,153.92],[164,161.89],[176,159.4],[188,153.54],[200,146.65],[212,149.3],[222,149.13]],"z":[-1.35,-1.35,-1.7,-1.7,-1.7,-1.7,-1.7,-1.7,-1.7,-1.7,-1.7,-1.7,-1.7,-1.7,-2.6],"w":[8,8,5,5,5,5,5,5,5,5,5,5,5,5,5],"depth":[0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35],"ground":"the
+        wharf return\u2019s creek channel as drawn (creekY(x), bed -1.7): this reach
+        adds the river\u2019s low-water ribbon to the still map and changes no ground","mouth":{"at":[222,156],"into":"the
+        bay, past the yard\u2019s east end"}},{"id":"stream.nmc_north_creek","name":"the
+        north creek","ruled":"09-26: a small creek running west inland from the water
+        north of the wharf, with waterfront properties","pts":[[68,226],[54,230.5],[40,234],[26,232],[12,236.5],[-4,240.5],[-20,236.5],[-36,238],[-50,244.5],[-64,243],[-78,246.5],[-92,249.5],[-104,248.5],[-115,252.5]],"z":[-1.8,-1.35,-1.05,-0.85,-0.65,-0.45,-0.25,-0.05,0.2,0.55,1.2,2.1,2.85,3.45],"w":[12,10.5,9.5,9,8.5,8,7.5,7,6.5,6,5,4,3.2,2.6],"depth":[0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.25,0.25],"mouth":{"at":[66,227],"into":"the
+        bay, through an inlet in the north dune"},"head_of_tide":{"at":[-96,249.3]},"source":"pond.nmc_north_creek_pond","tidal_reach_m":165,"fresh_reach_m":24,"banks":{"mud":3,"upper":5.5,"note":"mud
+        1:3 to +2.4, then 1:5.5: the waterfront lots step down it to their docks"},"fishing":["the
+        docks on the flood: smelt, eel, rock crab","the head of tide: brook trout
+        in the spring run"],"why":"Short and tidal almost to its head, so every waterfront
+        lot has water at its dock on the flood and mud at the ebb."},{"id":"stream.nmc_camp_brook","name":"the
+        camp brook","ruled":"not ruled: a third river for the owner\u2019s \"several\"
+        (09-26)","pts":[[-83.5,9.5],[-76,-6],[-80,-22],[-72,-38],[-70,-52],[-66,-62],[-58,-78],[-63,-92],[-54,-110],[-50,-128],[-45,-149],[-42,-165],[-40,-178],[-38.5,-190],[-37,-202]],"z":[4.55,4.42,4.25,4,3.75,3.5,3.3,3.1,2.85,2.6,2.28,1.5,0.55,-0.35,-1.1],"w":[2.4,2.4,2.5,2.6,2.8,3.4,2.8,2.8,2.8,3,2.8,3.2,3.6,4.2,4.6],"depth":[0.25,0.25,0.25,0.25,0.3,0.5,0.25,0.25,0.25,0.3,0.3,0.25,0.2,0.2,0.2],"source":"pond.nmc_camp_pond","mouth":{"at":[-37,-202],"into":"the
+        south shore, across the beach"},"head_of_tide":{"at":[-45,-150]},"tidal_reach_m":54,"fresh_reach_m":169,"banks":{"bank":2,"floodplain":[0.6,3],"upper":3,"note":"a
+        wooded ravine through the campground"},"fishing":["the pool at (-66, -62):
+        brook trout, the campground\u2019s kids\u2019 water"],"why":"Out of the pond
+        in the middle wood lot, south through the south wood lot and the campground\u2019s
+        tent loop, over the berm and across the beach."}],"ponds":[{"id":"pond.nmc_camp_pond","name":"Camp
+        Pond","kind":"wood pond","c":[-92,18],"r":[15,9],"rot":20,"surface":4.8,"bed":4,"basin":[8,0.2],"outlet":"stream.nmc_camp_brook","why":"A
+        spring pond in the middle wood lot, with the cabins round it."},{"id":"pond.nmc_north_creek_pond","name":"the
+        creek head pond","kind":"spring pond","c":[-126,254],"r":[11,7],"rot":-10,"surface":3.7,"bed":3.1,"basin":[7,0.2],"outlet":"stream.nmc_north_creek","why":"Where
+        the north creek rises, at the town\u2019s east edge."},{"id":"pond.nmc_barachois","name":"the
+        barachois","kind":"tidal lagoon","outline":[[-64,132],[-61,145],[-50,154],[-31,157.5],[-12,154],[4,157],[17,153],[22,142],[18,124],[6,112],[-14,107],[-34,108],[-52,113],[-62,122]],"falloff":9,"bed":-0.8,"tidal":true,"old":{"c":[-10,132],"half":[54,26],"builder":"NineMileCreekMainland.BarachoisCarve"},"why":"Today\u2019s
+        lagoon, bed and all, drawn as a shape rather than a rectangle; its east end
+        moves back from x 44 to x 22, under the bank the wharf return drew, and the
+        town river runs through it to the mouth."},{"id":"pond.nmc_marsh_pool","name":"the
+        marsh pool","kind":"tidal pond","outline":[[-56,58],[-50,68],[-36,73],[-18,72.5],[-4,70],[4,62],[1,50],[-14,43],[-32,42.5],[-48,47]],"falloff":7,"bed":-0.4,"tidal":true,"old":{"c":[-26,58],"half":[30,16],"builder":"NineMileCreekMainland.MarshPoolCarve"},"why":"Today\u2019s
+        pond, bed and extent, drawn as a shape; the neck Wharf Road runs between the
+        two ponds keeps its 12 m and more."}],"falls":{"id":"falls.nmc_the_falls","on":"stream.nmc_town_river","at":[-275.5,197.3],"lip":2.55,"foot":0.3,"pool":{"at":[-268,198.2],"bed":-0.35},"drop":2.25,"length":5.5,"rock":"red
+        sandstone ledges, three steps","why":"The head of tide, and the best fishing
+        on the river."}}'
+    - Key: nmc.plan.roads
+      Value: '[{"id":"road.nmc_route_91","builder":"ThroughRoad","name":"Route 91","cls":"route","surface":"asphalt","width":5.8,"pts":[[-186,280],[-181,242],[-177.6,222],[-176.8,205],[-176.6,197],[-177.1,147],[-177.45,92],[-177.6,57],[-181,10],[-190,-40],[-206,-82],[-232,-112],[-268,-130],[-320,-138.5],[-380,-142]],"old":[[-230,-280],[-206,-140],[-188,-20],[-178,92],[-176,180],[-186,280]],"leaves":[{"edge":"north","at":[-186,280],"to":"the
+        peninsula: north to its centre, then right down Rocky Point; the Cumberland
+        road branches off it (09-26)"},{"edge":"west","at":[-380,-142],"to":"Rice
+        Point, its own region to the south-west (09-26): the through-road carried
+        on, as the owner\u2019s blueprint has it"}],"why":"Unchanged from the north
+        edge to the junction but for a straighter line through the town; south of
+        the junction it bends south-west behind the south shore and leaves by the
+        west edge for Rice Point."},{"id":"road.nmc_wharf_road","builder":"WharfRoad","name":"Wharf
+        Road","cls":"paved","surface":"asphalt","paved":true,"width":5.8,"pts":[[-177.45,92],[-100,92],[-40,92],[14,92],[22,95],[27,101],[29,108],[30.5,114],[34,118],[50,118]],"old":[[-177.45,92],[-100,90],[-40,92],[14,92],[56,104],[100,116],[140,122]],"ends":{"at":[50,118],"in":"the
+        wharf\u2019s turning pad: the wharf return\u2019s court (x 40..82, y 106..144),
+        where its own stub of Wharf Road runs from (40, 118) to (50, 118) into the
+        turning circle (centre (62, 125), r 15)"},"ramp":"cut.nmc_wharf_road_ramp","beyond":{"id":"yard.main_road","from":"the
+        wharf return (fixed)","cls":"street","surface":"gravel","width":7.5,"pts":[[76,120],[190,120]],"gate":[184.4,115,124],"what":"Wharf
+        Road ends at the turning pad. East of it the wharf\u2019s own main road carries
+        the yard\u2019s traffic, straight along y 120 from the pad\u2019s east side
+        (x 76) to the boat yard\u2019s gate (x 184.4): the wharf scene\u2019s net,
+        as drawn, not Wharf Road. Today\u2019s line ran on through the yard by (56,
+        104), (100, 116) and (140, 122); those points leave the line."},"ruled":["09-29:
+        Wharf Road is paved","10-01: straight at y 92 along the gas bar (call 30)","10-01:
+        at the wharf, lean A: onto the ramp and into the turning pad, the ramp regraded
+        at about 14%"],"why":"Paved, as the gas bar draws it. Straight at y 92 from
+        the junction to (14, 92), along the gas bar\u2019s frontage, where its semi
+        lane\u2019s pads and the river lane meet the road\u2019s edge. Then north-east
+        off the fields and down the regraded ramp into the wharf\u2019s turning pad."},{"id":"road.nmc_bar_road","builder":"BarRoad","name":"the
+        bar road","cls":"street","surface":"gravel","width":5,"pts":[[58,-146],[36,-112],[20,-56],[14,0],[20,78],[-16,92]],"old_surface":"dirt,
+        4 m","why":"Today\u2019s line. Gravel and 5 m now, because the campground\u2019s
+        cars and trailers use it."},{"id":"road.nmc_water_street","name":"Water Street","cls":"paved","surface":"asphalt","width":5.4,"pts":[[-266,229],[-240,230],[-205,229.5],[-177.4,228],[-150,226],[-128,222]],"z":6,"why":"Along
+        the top of the river wall on the north bank: the restaurant, the chandlery
+        and the stairs down to the north boardwalk."},{"id":"road.nmc_mill_road","name":"Mill
+        Road","cls":"street","surface":"gravel","width":5,"pts":[[-177.3,158],[-205,160],[-236,163],[-262,166],[-282,170]],"why":"West
+        from Route 91 on the south bank, past the plaza\u2019s back, to the Falls\u2019
+        lookout."},{"id":"road.nmc_north_creek_lane","name":"Creek Lane (north)","cls":"street","surface":"asphalt","width":4.2,"pts":[[-179.5,256],[-150,272],[-110,274.5],[-70,274],[-30,272],[10,268],[30,264]],"why":"The
+        north bank\u2019s waterfront lots, to a turn at the beach.","old":{"cls":"lane","surface":"lane","width":2.8},"ruled":"10-02:
+        asphalt, 4.2 m wide, on the plan\u2019s line (call 45)"},{"id":"road.nmc_creek_lane_south","name":"Creek
+        Lane (south)","cls":"street","surface":"asphalt","width":4.2,"pts":[[-128,222],[-98,214],[-60,208],[-24,205],[10,203],[28,202]],"why":"The
+        south bank\u2019s waterfront lots, off Water Street\u2019s east end.","old":{"cls":"lane","surface":"lane","width":2.8},"ruled":"10-02:
+        asphalt, 4.2 m wide, on the plan\u2019s line (call 45)"},{"id":"road.nmc_stream_lane","name":"the
+        river lane","cls":"lane","surface":"gravel","width":5,"pts":[[-116.5,94],[-116.5,145.5],[-104,154],[-96,156]],"status":"proposal
+        (the gas bar\u2019s lane carried on)","why":"The gas bar\u2019s lane to its
+        pull-off above the river (-116.5, 148.2), carried on to the boat shed\u2019s
+        landing."},{"id":"road.nmc_shore_lane","name":"Shore Lane","cls":"street","surface":"gravel","width":3.1,"pts":[[-226,-110.5],[-212,-134],[-190,-146],[-156,-149.5],[-140,-150]],"why":"Off
+        Route 91 at its bend, east behind the dunes to the three south-shore houses
+        at the campground\u2019s west edge, and a turn there.","old":{"cls":"lane","surface":"lane","width":2.8},"turn":{"id":"turn.nmc_shore_lane","surface":"gravel","width":6.5,"pts":[[-142,-150],[-135.8,-150.2]],"what":"the
+        turn at the lane\u2019s east end, 6.5 m wide over x -142 to -135.8"},"ruled":"10-02:
+        gravel, 3.1 m, on the plan\u2019s line, with its turn (call 39)"},{"id":"road.nmc_camp_road","name":"the
+        campground road","cls":"lane","surface":"gravel","width":3.6,"pts":[[17.8,30],[4,30],[-10,28]],"why":"The
+        gate off the bar road, by the office."},{"id":"road.nmc_camp_loop_a","name":"Loop
+        A (the sea loop)","cls":"lane","surface":"gravel","width":3.6,"pts":[[-10,28],[-4,8],[2,-20],[8,-48],[14,-76],[20,-104],[16,-124],[2,-128],[-12,-118],[-20,-92],[-24,-64],[-26,-36],[-24,-8],[-16,14],[-10,28]],"oneWay":true,"why":"Serviced
+        sites for trailers and campers, on the open ground behind the ledge bank:
+        the sea and St Peters in view."},{"id":"road.nmc_camp_loop_b_stem","name":"Loop
+        B\u2019s stem","cls":"lane","surface":"gravel","width":3.6,"pts":[[-25,-64],[-44,-66],[-62,-66],[-74,-68]],"why":"From
+        Loop A west over the brook bridge."},{"id":"road.nmc_camp_loop_b","name":"Loop
+        B (the brook loop)","cls":"lane","surface":"gravel","width":3.6,"pts":[[-74,-68],[-94,-76],[-110,-96],[-114,-120],[-100,-138],[-82,-137],[-74,-120],[-76,-96],[-74,-68]],"oneWay":true,"why":"Tent
+        sites under the south wood lot\u2019s trees, west of the brook; walk-in sites
+        across the footbridge."},{"id":"road.nmc_camp_loop_c_stem","name":"Loop C\u2019s
+        stem","cls":"lane","surface":"gravel","width":3.6,"pts":[[-10,28],[-30,31],[-50,32],[-62,30]],"why":"From
+        the gate west to the pond."},{"id":"road.nmc_camp_loop_c","name":"Loop C (the
+        pond loop)","cls":"lane","surface":"gravel","width":3.6,"pts":[[-62,30],[-80,42],[-104,40],[-120,27],[-119,8],[-106,-1],[-90,2],[-76,14],[-62,30]],"oneWay":true,"why":"The
+        cabins round Camp Pond in the middle wood lot; the loop crosses the pond\u2019s
+        outlet on its culvert."}]'
+    - Key: nmc.plan.bridges
+      Value: '[{"id":"bridge.nmc_route91_river","name":"the Route 91 bridge","on":"road.nmc_route_91","over":"stream.nmc_town_river","centre":[-176.8,205],"span":36,"deck":6,"width":9.5,"spans":3,"piers":2,"clearance_at_spring_high":3.1,"boardwalks_under":2,"headroom_over_boardwalk":2.3,"abutments":{"south":[-176.9,187],"north":[-176.7,223]},"embankment":{"south":[[-177,160],[-176.9,187]],"north":[[-176.7,223],[-177.5,232]],"top":6,"side_slope":1.5},"ruled":"08-20:
+        the bridge gets its own artwork","why":"Bench to bench over the tidal river:
+        the two boardwalks pass under its end spans, small boats under its middle
+        one."},{"id":"bridge.nmc_camp_brook_bridge","name":"the brook bridge","on":"road.nmc_camp_loop_b_stem","over":"stream.nmc_camp_brook","centre":[-66,-66],"span":8,"deck":5.2,"width":4.2,"why":"Loop
+        B\u2019s one road crossing: a timber bridge over the brook\u2019s pool."},{"id":"bridge.nmc_camp_footbridge","name":"the
+        brook footbridge","on":"path.nmc_camp_brook_path","over":"stream.nmc_camp_brook","centre":[-57,-104],"span":6,"deck":4.1,"width":1.4,"why":"Loop
+        B\u2019s walk-in sites on the brook\u2019s east bank."},{"id":"bridge.nmc_camp_pond_culvert","name":"the
+        pond culvert","on":"road.nmc_camp_loop_c","over":"stream.nmc_camp_brook (the
+        pond\u2019s outlet)","centre":[-82,8],"span":2,"deck":5.4,"width":4.2,"kind":"culvert","why":"Loop
+        C runs over the outlet on a culvert: the loop road is the pond\u2019s little
+        dam."},{"id":"bridge.nmc_notch_plank","name":"the notch plank bridge","status":"optional","on":"path.nmc_north_shore_walk","over":"stream.nmc_town_river
+        (its mouth)","centre":[40,167],"span":14,"deck":3,"width":1.4,"why":"Only
+        if the owner wants the shore path carried north past the wharf (section 7
+        of the notes)."}]'
+    - Key: nmc.plan.boardwalks
+      Value: '[{"id":"boardwalk.nmc_town_north","name":"the north boardwalk","cls":"boardwalk","deck":3,"width":2.4,"pts":[[-262,211.5],[-240,213],[-212,213.3],[-190,212.8],[-176.8,212.2],[-160,210.4],[-146,208]],"stairs":[[-240,219],[-205,219.5],[-160,216]],"dry":"at
+        every tide: 0.8 m over spring high","why":"Along the foot of the river wall,
+        under the bridge\u2019s north span, from the Falls to the chandlery."},{"id":"boardwalk.nmc_town_south","name":"the
+        south boardwalk","cls":"boardwalk","deck":3,"width":2.4,"pts":[[-256,190.2],[-232,193],[-205,195.3],[-188,195.5],[-176.8,195.2],[-164,193.8]],"stairs":[[-236,185],[-190,188]],"dry":"at
+        every tide","why":"On the south bench below the plaza, under the bridge\u2019s
+        south span."},{"id":"boardwalk.nmc_falls_deck","name":"the Falls deck","cls":"boardwalk","deck":3.4,"width":3,"pts":[[-263,208],[-269,204]],"why":"A
+        fishing deck over the Falls pool, off the north boardwalk\u2019s west end."},{"id":"boardwalk.nmc_dune_walk_east","name":"the
+        east dune walk","cls":"boardwalk","deck":"ground + 0.35","width":1.5,"pts":[[-16,-150],[-16,-163],[-15,-172]],"why":"Loop
+        A to the landing beach, over the dune."},{"id":"boardwalk.nmc_dune_walk_west","name":"the
+        west dune walk","cls":"boardwalk","deck":"ground + 0.35","width":1.5,"pts":[[-108,-150],[-108,-163],[-107,-174]],"why":"Loop
+        B to the beach, over the dune."},{"id":"boardwalk.nmc_marsh_walk","name":"the
+        brook-mouth walk","cls":"boardwalk","deck":2.8,"width":1.5,"pts":[[-58,-168],[-44,-170],[-30,-171]],"why":"Across
+        the salt marsh behind the berm, over the brook, dry at every tide."}]'
+    - Key: nmc.plan.paths
+      Value: '[{"id":"path.nmc_shore_path","kept":true,"from":"the wharf return (fixed)","cls":"footpath","width":1.3,"pts":[[60,-150],[56,-130],[50,-110],[44,-88],[38.5,-64],[35.5,-40],[34,-20],[34.2,-8],[35.2,1],[34,8],[32.8,18],[32.5,40],[33,64],[34,88],[36,104],[40,112]]},{"id":"path.nmc_gully_path","kept":true,"builder":"GullyPath","cls":"footpath","width":1.5,"pts":[[14,0],[26,-4],[32,-6]]},{"id":"path.nmc_bar_walk","kept":true,"cls":"tidal_crossing","width":3,"pts":[[45,-150],[150,-167.1],[250,-183.4],[346,-199]],"note":"the
+        bar\u2019s crest, today\u2019s; St Peters\u2019 crossing scene draws the far
+        side"},{"id":"path.nmc_south_strand","cls":"beach","width":"the beach","pts":[[-380,-203],[-330,-200.5],[-280,-198],[-230,-197],[-180,-197.5],[-130,-196.5],[-85,-193.5],[-45,-189.5],[-5,-184.5],[30,-179.5],[55,-172.5],[74,-166],[88,-159],[85,-150],[80,-140],[75.5,-121],[70,-102]],"note":"the
+        south shore\u2019s beach itself: walkable from the landing to Rice Point along
+        its upper beach at every tide but the spring highs","leaves":{"edge":"west","at":[-380,-196],"to":"Rice
+        Point\u2019s beach"}},{"id":"path.nmc_falls_path","cls":"footpath","width":1.2,"pts":[[-282,170],[-280,180],[-276,188]],"why":"From
+        Mill Road\u2019s end down the south bank to the Falls pool."},{"id":"path.nmc_river_trail","cls":"footpath","width":1.2,"pts":[[-270,214],[-290,211],[-306,216.5],[-320,223],[-338,227.5],[-356,226],[-380,232]],"why":"The
+        anglers\u2019 path along the fresh reach\u2019s north bank, from the Falls
+        deck to the west edge."},{"id":"path.nmc_camp_brook_path","cls":"footpath","width":1.2,"pts":[[-74,2],[-70,-22],[-64,-40],[-60,-58],[-52,-80],[-57,-104],[-47,-112],[-43,-130],[-40,-150]],"why":"Down
+        the brook\u2019s east bank from the pond to the marsh walk, over the footbridge
+        to the walk-in sites."},{"id":"path.nmc_north_shore_walk","status":"optional","cls":"footpath","width":1.3,"pts":[[40,112],[38,140],[40,167],[42,200],[38,226]],"why":"Only
+        with the notch plank bridge: the shore path carried north to the north creek\u2019s
+        inlet."}]'
+    - Key: nmc.plan.lots
+      Value: '{"rule":"a lot is its building\u2019s footprint (w x d, metres, before
+        facing), its facing (the side its door looks to), its kit and its pad height;
+        every lot stands clear of every road corridor (3 m) and every valley rim","town":[{"id":"lot.nmc_town_plaza","name":"the
+        plaza: the grocery and the lumber store","at":[-227,120.5],"size":[58,24],"faces":"S","z":6,"kit":"NmcStores
+        (hh-nmc-key-scenes/plaza-stores/nmcStores.js): grocery, lumber, dock (keyscene.nmc_plaza)","stores":[{"id":"structure.nmc_plaza_grocery","trade":"the
+        grocery","at":[-213,120.5],"size":[30,24],"faces":"S","front":108.5},{"id":"structure.nmc_plaza_lumber","trade":"the
+        lumber store (lumber and hardware)","at":[-244,121],"size":[24,22],"faces":"S","front":110}],"site":{"box":[-282,-190,75,156],"what":"the
+        plaza\u2019s ground: the lot, the two stores, the lumber yard, the service
+        drive and the truck apron"},"parking":{"box":[-256,-197,75,104.5],"stalls":40,"rows":2,"from":"the
+        field\u2019s 13 m north of y 88: the lot runs south to y 75"},"yard":{"id":"yard.nmc_lumber","box":[-282,-258,78,142],"what":"the
+        lumber yard and its shed, west of the lumber store"},"service":{"id":"drive.nmc_plaza_service","width":7,"pts":[[-193.5,104],[-193.5,156]],"what":"up
+        the grocery\u2019s east side from the lot to the apron"},"entrance":{"id":"drive.nmc_plaza_entrance","from":"road.nmc_route_91","at":[-177.3,92],"width":9,"pts":[[-193.5,92],[-177.3,92]],"opposite":"road.nmc_wharf_road
+        (a four-way junction at y 92)"},"apron":{"id":"yard.nmc_plaza_apron","box":[-258,-190,132,156],"wells":["well.nmc_plaza_grocery","well.nmc_plaza_lumber"],"grading":"cut.nmc_plaza_wells","drives":[{"to":"road.nmc_mill_road","id":"drive.nmc_plaza_mill_1","width":12,"pts":[[-222,150],[-222,159.4]]},{"to":"road.nmc_mill_road","id":"drive.nmc_plaza_mill_2","width":10,"pts":[[-247,150],[-247,162.1]]},{"to":"road.nmc_mill_road","id":"drive.nmc_plaza_mill_3","width":7,"pts":[[-193.5,150],[-193.5,157]]}]},"ruled":"09-29:
+        a grocery store and a medium-sized hardware store; 10-02: the site as drawn
+        (call 34), the stores facing south (call 31), their names open (call 35)","old":{"name":"the
+        plaza: the grocery store and the hardware store","at":[-240.5,125],"size":[11,40.4],"faces":"E","kit":"PlazaIso
+        (Art/plazaRig.js)","parking":{"box":[-235,-205,104,146],"stalls":40},"yard":{"id":"yard.nmc_lumber","box":[-270,-247,108,140],"what":"the
+        hardware store\u2019s lumber shed and yard"}},"why":"West of Route 91 at the
+        junction with Wharf Road, across the road from the gas bar. The lot opens
+        onto Route 91 opposite Wharf Road; the trucks come and go by the apron behind
+        the stores and Mill Road."},{"id":"lot.nmc_restaurant_bar","name":"the restaurant
+        and bar","at":[-204,239],"size":[16,13],"faces":"S","z":6,"kit":"Manor Iso
+        (a converted manor), with a deck on the river wall and stairs to the north
+        boardwalk","deck":{"box":[-212,-196,228,232.5],"z":6},"ruled":"09-29: a restaurant
+        and bar","why":"The best site in town: the north bank at the bridge, facing
+        south over the river, its deck on the wall."},{"id":"lot.nmc_apartments_1","name":"the
+        walk-up","at":[-236,252],"size":[22.6,18.9],"faces":"S","z":6,"kit":"WalkupIso
+        walkup12 (12 flats, 3 storeys)","ruled":"09-29: two or three apartment buildings"},{"id":"lot.nmc_apartments_2","name":"the
+        three-decker by the bridge","at":[-156,250],"size":[12.5,15.5],"faces":"S","z":6,"kit":"StackFlatsIso
+        (three storeys, porches)"},{"id":"lot.nmc_chandlery","name":"the chandlery","at":[-160,234],"size":[9,8],"faces":"S","z":6,"kit":"Shopfront
+        (chandlery)","builder":"ChandleryPos","old":[-206,116],"why":"The rod vendor
+        moves onto Water Street, over the river it sells gear for."},{"id":"lot.nmc_parish_hall","name":"the
+        parish hall","at":[-152,62],"size":[12,18],"faces":"N","z":6,"builder":"ParishHallPos","old":[-152,62],"kept":true},{"id":"lot.nmc_house_north","name":"a
+        house (was the north house)","at":[-208,268],"size":[7,8.7],"faces":"S","z":6,"kit":"village
+        houses","builder":"HouseNorthPos","old":[-148,196],"why":"Its old lot is the
+        river now."},{"id":"lot.nmc_house_north_west","name":"a house (was the north-west
+        house)","at":[-258,268],"size":[7,8.7],"faces":"S","z":6,"builder":"HouseNorthWestPos","old":[-206,196],"why":"Its
+        old lot is the river now."},{"id":"lot.nmc_house_south","name":"the farmhouse","at":[-208,60],"size":[7,8.7],"faces":"E","z":6,"builder":"HouseSouthPos","old":[-208,60],"kept":true},{"id":"lot.nmc_house_mill","name":"a
+        house on Mill Road (was the tavern)","at":[-264.5,152],"size":[7,8.7],"faces":"N","z":6,"builder":"TavernPos","old":[-206,152],"why":"The
+        tavern becomes the restaurant and bar; its lot is the plaza\u2019s parking
+        now, so a house takes a lot on Mill Road.","moved":{"from":[-262,152],"ruled":"10-02:
+        2.5 m west to (-264.5, 152), 3 m off the plaza\u2019s truck apron","was_clear_of_apron_m":0.5},"clear_of_apron_m":3},{"id":"lot.nmc_boat_shed","name":"the
+        boat shed","at":[-94,158],"size":[10,8],"faces":"N","z":3,"builder":"BoatShedPos","old":[-108,64],"on":"fill.nmc_boat_shed_landing","why":"On
+        the river at last: a landing and a slip, reached by the gas bar\u2019s lane.
+        It still sells the Punt and the pots."}],"gone":[{"builder":"HarbourmasterPos","old":[-150,118],"to":"the
+        wharf office (86.4, 112.6), as ruled 09-28"},{"builder":"GeneralStorePos","old":[-150,152],"to":"the
+        gas bar\u2019s store (-155, 139), as ruled 09-28; its groceries to the plaza\u2019s
+        grocery store (a call)"},{"builder":"TavernPos","old":[-206,152],"to":"lot.nmc_restaurant_bar
+        (-204, 239) (a call)"},{"id":"lot.nmc_apartments_3","old":[-136,244],"to":"left
+        out (call 32, 10-02): the second three-decker, the optional third of the owner\u2019s
+        \"2-3\"","was":{"size":[12.5,15.5],"faces":"SW","kit":"StackFlatsIso"}}],"working":[{"id":"lot.nmc_truck_park","name":"the
+        truck park","at":[-131,78],"size":[20.1,13.4],"z":6,"builder":"TruckParkPos
+        (NineMileCreekTruckPark)","old":[-120,106],"why":"Its old ground is the gas
+        bar\u2019s east lane."},{"id":"lot.nmc_laydown","name":"the laydown","at":[-95,62],"size":[44.8,35.9],"z":6,"builder":"LaydownPos
+        (NineMileCreekLaydown)","old":[-100,136],"why":"Its old ground is the river
+        valley\u2019s south bank; south of Wharf Road it sits by the truck park, clear
+        of the marsh pool by 11 m."}],"south_shore_houses":[{"id":"lot.nmc_south_shore_1","name":"the
+        shore manor","at":[-362,-158],"size":[15,12],"faces":"N","z":5.6,"graded":"on
+        the bank top","kit":"Manor Iso","drive":"road.nmc_route_91","ruled":"09-26:
+        houses on the south shore"},{"id":"lot.nmc_south_shore_2","name":"a south
+        shore house","at":[-334,-157.5],"size":[7,8.7],"faces":"N","z":5.6,"graded":"on
+        the bank top","kit":"village houses","drive":"road.nmc_route_91","ruled":"09-26:
+        houses on the south shore"},{"id":"lot.nmc_south_shore_3","name":"a south
+        shore house","at":[-306,-157],"size":[7,8.7],"faces":"N","z":5.6,"graded":"on
+        the bank top","kit":"village houses","drive":"road.nmc_route_91","ruled":"09-26:
+        houses on the south shore"},{"id":"lot.nmc_south_shore_4","name":"a south
+        shore house","at":[-278,-156.5],"size":[7,8.7],"faces":"N","z":5.6,"graded":"on
+        the bank top","kit":"village houses","drive":"road.nmc_route_91","ruled":"09-26:
+        houses on the south shore"},{"id":"lot.nmc_south_shore_5","name":"a south
+        shore house","at":[-250,-154],"size":[7,8.7],"faces":"N","z":5.6,"graded":"on
+        the bank top","kit":"village houses","drive":"road.nmc_route_91","ruled":"09-26:
+        houses on the south shore"},{"id":"lot.nmc_south_shore_6","name":"a south
+        shore house","at":[-196,-160],"size":[10,7.2],"faces":"N","z":4.75,"graded":"in
+        the dunes\u2019 swale, behind the ridge","kit":"NmcShoreLane (hh-nmc-key-scenes/shore-lane/nmcShoreLane.js):
+        saltbox","drive":"road.nmc_shore_lane","ruled":"09-26: houses on the south
+        shore; 10-02: the houses larger than the plan\u2019s lots, at the plan\u2019s
+        centres (calls 38 to 41)","old_size":[7,8.7],"house":{"kind":"saltbox","name":"the
+        fisherman\u2019s place","extra":"a lean-to gear shed 3.6 x 5.2 m on its west
+        end; a deck 10 x 2.8 m on the crest","household":"a fisherman, year-round"}},{"id":"lot.nmc_south_shore_7","name":"a
+        south shore house","at":[-172,-161],"size":[8,9],"faces":"N","z":4.75,"graded":"in
+        the dunes\u2019 swale, behind the ridge","kit":"NmcShoreLane (hh-nmc-key-scenes/shore-lane/nmcShoreLane.js):
+        summerCottage","drive":"road.nmc_shore_lane","ruled":"09-26: houses on the
+        south shore; 10-02: the houses larger than the plan\u2019s lots, at the plan\u2019s
+        centres (calls 38 to 41)","old_size":[7,8.7],"house":{"kind":"summerCottage","name":"the
+        summer cottage","extra":"a deck 9.2 x 3.6 m over the dune\u2019s face, a pergola
+        on its west half","household":"a summer family"}},{"id":"lot.nmc_south_shore_8","name":"a
+        south shore house","at":[-150,-161],"size":[9.6,7.6],"faces":"N","z":4.75,"graded":"in
+        the dunes\u2019 swale, behind the ridge","kit":"NmcShoreLane (hh-nmc-key-scenes/shore-lane/nmcShoreLane.js):
+        gardenCape","drive":"road.nmc_shore_lane","ruled":"09-26: houses on the south
+        shore; 10-02: the houses larger than the plan\u2019s lots, at the plan\u2019s
+        centres (calls 38 to 41)","old_size":[7,8.7],"house":{"kind":"gardenCape","name":"the
+        gardeners\u2019 Cape","extra":"a glass sunroom 3.2 x 4.2 m on its east end;
+        a flagstone patio 7.4 x 2.6 m on the crest","household":"a retired couple
+        who garden"}}],"waterfront":[{"id":"lot.nmc_waterfront_1","name":"a waterfront
+        house on the north creek: the lodge","at":[-72,264.1],"size":[20.5,10.3],"faces":"N","z":"the
+        main floor at +6.35 over a walkout basement at +3.6 (call 44); call 26\u2019s
+        pads as laid on 10-01","pad_min":3.6,"pad":"fill.nmc_waterfront_pads","old_z":"graded
+        to its slope (+4.5..+5.8)","dock":{"at":[-72,250],"len":7,"deck":2.8},"kit":"NmcCreekHouses
+        (hh-nmc-key-scenes/north-creek/nmcCreekHouses.js) creekHouse, its own recipe
+        (call 43)","drive":"road.nmc_north_creek_lane","ruled":"09-26: waterfront
+        properties on the creek; 10-02: rears to the creek, doors to the lanes, each
+        house its own recipe, at the scene\u2019s centres and sizes (calls 42, 43)","old":{"at":[-72,262],"size":[7,8.7],"faces":"S","kit":"village
+        houses"},"body":[14,9],"footprint":[-79,-58.5,258.3,268.6],"floors":{"main":6.35,"walkout":3.6,"patio":3.55},"door":{"facing":"N","to":"road.nmc_north_creek_lane"},"rear":"S:
+        to the creek","household":"a retired surgeon and her husband; the grandchildren
+        every August","lane_clearance_m":2.67,"nearest_m":2.72,"reads":{"box":3.55,"body":3.86,"note":"the
+        lowest the game reads in the lot\u2019s box and under the house\u2019s body;
+        call 26\u2019s pads (+3.6) were laid on 10-01 under the old boxes"}},{"id":"lot.nmc_waterfront_2","name":"a
+        waterfront house on the north creek: the white Cape on its terrace","at":[-46,263.15],"size":[16.2,8.5],"faces":"N","z":"the
+        main floor at +5.55 over its terrace at +5.33; call 26\u2019s pads as laid
+        on 10-01","pad_min":3.6,"pad":"fill.nmc_waterfront_pads","old_z":"graded to
+        its slope (+4.5..+5.8)","dock":{"at":[-46,247],"len":7,"deck":2.8},"kit":"NmcCreekHouses
+        (hh-nmc-key-scenes/north-creek/nmcCreekHouses.js) creekHouse, its own recipe
+        (call 43)","drive":"road.nmc_north_creek_lane","ruled":"09-26: waterfront
+        properties on the creek; 10-02: rears to the creek, doors to the lanes, each
+        house its own recipe, at the scene\u2019s centres and sizes (calls 42, 43)","old":{"at":[-46,259],"size":[7,8.7],"faces":"S","kit":"village
+        houses"},"body":[12,8.5],"footprint":[-52,-35.8,258.9,267.4],"floors":{"main":5.55,"terrace":5.33},"door":{"facing":"N","to":"road.nmc_north_creek_lane"},"rear":"S:
+        to the creek","household":"a couple from Halifax who come down every weekend
+        May to October","lane_clearance_m":3.3,"nearest_m":2.78,"reads":{"box":3.51,"body":3.58,"note":"the
+        lowest the game reads in the lot\u2019s box and under the house\u2019s body;
+        call 26\u2019s pads (+3.6) were laid on 10-01 under the old boxes"}},{"id":"lot.nmc_waterfront_3","name":"a
+        waterfront house on the north creek: the modern farmhouse","at":[-20,260.85],"size":[22.2,10.75],"faces":"N","z":"the
+        main floor at +6.35 over a walkout basement at +3.6 (call 44); call 26\u2019s
+        pads as laid on 10-01","pad_min":3.6,"pad":"fill.nmc_waterfront_pads","old_z":"graded
+        to its slope (+4.5..+5.8)","dock":{"at":[-20,244],"len":7,"deck":2.8},"kit":"NmcCreekHouses
+        (hh-nmc-key-scenes/north-creek/nmcCreekHouses.js) creekHouse, its own recipe
+        (call 43)","drive":"road.nmc_north_creek_lane","ruled":"09-26: waterfront
+        properties on the creek; 10-02: rears to the creek, doors to the lanes, each
+        house its own recipe, at the scene\u2019s centres and sizes (calls 42, 43)","old":{"at":[-20,256],"size":[7,8.7],"faces":"S","kit":"village
+        houses"},"body":[13,9.5],"footprint":[-29.6,-7.4,254.85,265.6],"floors":{"main":6.35,"walkout":3.6,"patio":3.55},"door":{"facing":"N","to":"road.nmc_north_creek_lane"},"rear":"S:
+        to the creek","household":"a young family who moved down from Toronto; he
+        works from home","lane_clearance_m":2.67,"nearest_m":2.02,"reads":{"box":3.31,"body":3.56,"note":"the
+        lowest the game reads in the lot\u2019s box and under the house\u2019s body;
+        call 26\u2019s pads (+3.6) were laid on 10-01 under the old boxes"}},{"id":"lot.nmc_waterfront_4","name":"a
+        waterfront house on the north creek: the contemporary on the bend","at":[6,258.25],"size":[21.1,10.15],"faces":"N","z":"the
+        main floor at +6.35 over a walkout basement at +3.6 (call 44); call 26\u2019s
+        pads as laid on 10-01","pad_min":3.6,"pad":"fill.nmc_waterfront_pads","old_z":"graded
+        to its slope (+4.5..+5.8)","dock":{"at":[6,242],"len":7,"deck":2.8},"kit":"NmcCreekHouses
+        (hh-nmc-key-scenes/north-creek/nmcCreekHouses.js) creekHouse, its own recipe
+        (call 43)","drive":"road.nmc_north_creek_lane","ruled":"09-26: waterfront
+        properties on the creek; 10-02: rears to the creek, doors to the lanes, each
+        house its own recipe, at the scene\u2019s centres and sizes (calls 42, 43)","old":{"at":[6,253],"size":[7,8.7],"faces":"S","kit":"village
+        houses"},"body":[15,9.5],"footprint":[-7.6,13.5,252.85,263],"floors":{"main":6.35,"walkout":3.6,"patio":3.55},"door":{"facing":"N","to":"road.nmc_north_creek_lane"},"rear":"S:
+        to the creek","household":"an architect from Moncton and her partner, a chef","lane_clearance_m":2.97,"nearest_m":2.12,"reads":{"box":2.7,"body":2.83,"note":"the
+        lowest the game reads in the lot\u2019s box and under the house\u2019s body;
+        call 26\u2019s pads (+3.6) were laid on 10-01 under the old boxes"}},{"id":"lot.nmc_waterfront_5","name":"a
+        waterfront house on the north creek: the white Colonial","at":[-58,220.75],"size":[20.3,9.5],"faces":"S","z":"the
+        main floor at +6.25; call 26\u2019s pads as laid on 10-01","pad_min":3.6,"pad":"fill.nmc_waterfront_pads","old_z":"graded
+        to its slope (+4.5..+5.8)","dock":{"at":[-58,235],"len":7,"deck":2.8},"kit":"NmcCreekHouses
+        (hh-nmc-key-scenes/north-creek/nmcCreekHouses.js) creekHouse, its own recipe
+        (call 43)","drive":"road.nmc_creek_lane_south","ruled":"09-26: waterfront
+        properties on the creek; 10-02: rears to the creek, doors to the lanes, each
+        house its own recipe, at the scene\u2019s centres and sizes (calls 42, 43)","old":{"at":[-58,222],"size":[7,8.7],"faces":"N","kit":"village
+        houses"},"body":[13,9.5],"footprint":[-71.8,-51.5,216,225.5],"floors":{"main":6.25},"door":{"facing":"S","to":"road.nmc_creek_lane_south"},"rear":"N:
+        to the creek","household":"a lawyer from Sydney, her husband and their two
+        teenagers","lane_clearance_m":6.07,"nearest_m":3.96,"reads":{"box":3.69,"body":4.06,"note":"the
+        lowest the game reads in the lot\u2019s box and under the house\u2019s body;
+        call 26\u2019s pads (+3.6) were laid on 10-01 under the old boxes"}},{"id":"lot.nmc_waterfront_6","name":"a
+        waterfront house on the north creek: the Craftsman","at":[-32,218.5],"size":[11,9],"faces":"S","z":"the
+        main floor at +5.45; call 26\u2019s pads as laid on 10-01","pad_min":3.6,"pad":"fill.nmc_waterfront_pads","old_z":"graded
+        to its slope (+4.5..+5.8)","dock":{"at":[-32,232],"len":7,"deck":2.8},"kit":"NmcCreekHouses
+        (hh-nmc-key-scenes/north-creek/nmcCreekHouses.js) creekHouse, its own recipe
+        (call 43)","drive":"road.nmc_creek_lane_south","ruled":"09-26: waterfront
+        properties on the creek; 10-02: rears to the creek, doors to the lanes, each
+        house its own recipe, at the scene\u2019s centres and sizes (calls 42, 43)","old":{"at":[-32,219],"size":[7,8.7],"faces":"N","kit":"village
+        houses"},"body":[11,9],"footprint":[-37.5,-26.5,214,223],"floors":{"main":5.45},"door":{"facing":"S","to":"road.nmc_creek_lane_south"},"rear":"N:
+        to the creek","household":"a retired teacher who restores wooden boats in
+        his garage","outbuilding":{"id":"structure.nmc_waterfront_6_garage","what":"the
+        detached garage and boat shop","at":[-24,220],"size":[6,7]},"lane_clearance_m":6.23,"nearest_m":5.75,"reads":{"box":3.05,"body":3.05,"note":"the
+        lowest the game reads in the lot\u2019s box and under the house\u2019s body;
+        call 26\u2019s pads (+3.6) were laid on 10-01 under the old boxes"}},{"id":"lot.nmc_waterfront_7","name":"a
+        waterfront house on the north creek: the shingled gambrel","at":[-6,216.75],"size":[17.6,9.5],"faces":"S","z":"the
+        main floor at +5.9; call 26\u2019s pads as laid on 10-01","pad_min":3.6,"pad":"fill.nmc_waterfront_pads","old_z":"graded
+        to its slope (+4.5..+5.8)","dock":{"at":[-6,229.5],"len":7,"deck":2.8},"kit":"NmcCreekHouses
+        (hh-nmc-key-scenes/north-creek/nmcCreekHouses.js) creekHouse, its own recipe
+        (call 43)","drive":"road.nmc_creek_lane_south","ruled":"09-26: waterfront
+        properties on the creek; 10-02: rears to the creek, doors to the lanes, each
+        house its own recipe, at the scene\u2019s centres and sizes (calls 42, 43)","old":{"at":[-6,217],"size":[7,8.7],"faces":"N","kit":"village
+        houses"},"body":[12,9.5],"footprint":[-12,5.6,212,221.5],"floors":{"main":5.9},"door":{"facing":"S","to":"road.nmc_creek_lane_south"},"rear":"N:
+        to the creek","household":"three generations of one family: it was the grandparents\u2019
+        summer place","lane_clearance_m":5.96,"nearest_m":5.59,"reads":{"box":3.38,"body":3.5,"note":"the
+        lowest the game reads in the lot\u2019s box and under the house\u2019s body;
+        call 26\u2019s pads (+3.6) were laid on 10-01 under the old boxes"}}],"campground":{"id":"lot.nmc_campground","name":"the
+        campground","ruled":"09-29: a new campground north of the crossing, filling
+        most of the land from the crossing north to the town and the wharf","outline":[[-128,38],[4,38],[14,30],[16,0],[20,-40],[30,-90],[40,-120],[52,-140],[20,-156],[-40,-154],[-128,-150]],"gate":[14,30],"served_by":["road.nmc_bar_road
+        (its gate)","path.nmc_shore_path (along its east edge)","boardwalk.nmc_dune_walk_east
+        / _west (to the beach)","the landing (60, -150), 40 m from Loop A\u2019s south
+        end"],"buildings":[{"id":"structure.nmc_camp_office","name":"the office and
+        camp store","at":[4,38],"size":[10,7],"faces":"E","z":6,"what":"check-in,
+        firewood, ice, a few groceries"},{"id":"structure.nmc_camp_comfort_a","name":"the
+        comfort station (Loop A)","at":[-6,-66],"size":[8,6],"z":6,"what":"washrooms,
+        showers, laundry"},{"id":"structure.nmc_camp_comfort_b","name":"the comfort
+        station (Loop B)","at":[-86,-116],"size":[7,5],"z":6,"what":"washrooms"},{"id":"structure.nmc_camp_shelter","name":"the
+        picnic shelter","at":[-2,-138],"size":[10,6],"z":6,"what":"the rainy-day roof,
+        by the east dune walk"},{"id":"structure.nmc_camp_playground","name":"the
+        playground","at":[-14,22],"size":[14,10],"z":6},{"id":"structure.nmc_camp_dump","name":"the
+        sani-dump","at":[10,18],"size":[4,8],"z":6},{"id":"structure.nmc_camp_tennis","name":"the
+        tennis court","at":[-38,-45],"size":[16.5,32],"z":6,"what":"one court: the
+        doubles court 10.97 x 23.77 m, run-offs 4.1 m at the ends and 2.8 m at the
+        sides; its length north-south; 3 m black chain-link; the gate on its east
+        side by the south end; four lights; two benches","added":"10-02, the campground
+        redrawn (call 52)","clear_m":{"id":"road.nmc_camp_loop_b_stem","d":1.68}},{"id":"structure.nmc_camp_pool","name":"the
+        pool and its pool house","at":[-37,-78.6],"size":[19.2,15.8],"z":6,"piece_at":[-37,-79.5],"what":"a
+        9.8 x 6 m pool (the shallow end west) and a round wading pool under a sail,
+        on a deck 19.2 x 11.2 m in a 1.5 m black picket fence; the pool house on the
+        deck\u2019s north side","deck":[-46.6,-27.4,-86.5,-75.3],"house":{"what":"the
+        pool house: two change rooms, the guard\u2019s counter, the pump room; cedar
+        shingle under a gable","box":[-42.5,-31.5,-75.3,-70.7],"size":[11,4.6]},"added":"10-02,
+        the campground redrawn (call 53)","clear_m":{"deck":{"id":"road.nmc_camp_loop_a","d":3.16},"house":{"id":"road.nmc_camp_loop_b_stem","d":3.03}}}],"pitches":[{"id":"pitch.nmc_camp_a1","loop":"A","kind":"serviced
+        (water, power)","at":[-14.88,18.18],"size":[8,12]},{"id":"pitch.nmc_camp_a2","loop":"A","kind":"serviced
+        (water, power)","at":[-11.58,7.17],"size":[8,12]},{"id":"pitch.nmc_camp_a3","loop":"A","kind":"serviced
+        (water, power)","at":[-9.21,-3.47],"size":[8,12]},{"id":"pitch.nmc_camp_a4","loop":"A","kind":"serviced
+        (water, power)","at":[-6.8,-14.71],"size":[8,12]},{"id":"pitch.nmc_camp_a5","loop":"A","kind":"serviced
+        (water, power)","at":[-4.39,-25.96],"size":[8,12]},{"id":"pitch.nmc_camp_a6","loop":"A","kind":"serviced
+        (water, power)","at":[-1.98,-37.2],"size":[8,12]},{"id":"pitch.nmc_camp_a7","loop":"A","kind":"serviced
+        (water, power)","at":[0.43,-48.45],"size":[8,12]},{"id":"pitch.nmc_camp_a8","loop":"A","kind":"serviced
+        (water, power)","at":[2.83,-59.69],"size":[8,12]},{"id":"pitch.nmc_camp_a9","loop":"A","kind":"serviced
+        (water, power)","at":[5.24,-70.93],"size":[8,12]},{"id":"pitch.nmc_camp_a10","loop":"A","kind":"serviced
+        (water, power)","at":[7.65,-82.18],"size":[8,12]},{"id":"pitch.nmc_camp_a11","loop":"A","kind":"serviced
+        (water, power)","at":[10.06,-93.42],"size":[8,12]},{"id":"pitch.nmc_camp_a12","loop":"A","kind":"serviced
+        (water, power)","at":[12.47,-104.67],"size":[8,12]},{"id":"pitch.nmc_camp_a13","loop":"A","kind":"serviced
+        (water, power)","at":[10.57,-112.9],"size":[8,12]},{"id":"pitch.nmc_camp_a14","loop":"A","kind":"serviced
+        (water, power)","at":[12.32,-117.25],"size":[8,12]},{"id":"pitch.nmc_camp_a15","loop":"A","kind":"serviced
+        (water, power)","at":[1.27,-120.41],"size":[8,12]},{"id":"pitch.nmc_camp_a16","loop":"A","kind":"serviced
+        (water, power)","at":[-1.88,-116.01],"size":[8,12]},{"id":"pitch.nmc_camp_a17","loop":"A","kind":"serviced
+        (water, power)","at":[-6.13,-111.57],"size":[8,12]},{"id":"pitch.nmc_camp_a18","loop":"A","kind":"serviced
+        (water, power)","at":[-9.51,-100.58],"size":[8,12]},{"id":"pitch.nmc_camp_a19","loop":"A","kind":"serviced
+        (water, power)","at":[-12.61,-90.73],"size":[8,12]},{"id":"pitch.nmc_camp_a20","loop":"A","kind":"serviced
+        (water, power)","at":[-14.23,-79.34],"size":[8,12]},{"id":"pitch.nmc_camp_a21","loop":"A","kind":"serviced
+        (water, power)","at":[-15.86,-67.96],"size":[8,12]},{"id":"pitch.nmc_camp_a22","loop":"A","kind":"serviced
+        (water, power)","at":[-16.98,-57.05],"size":[8,12]},{"id":"pitch.nmc_camp_a23","loop":"A","kind":"serviced
+        (water, power)","at":[-17.8,-45.58],"size":[8,12]},{"id":"pitch.nmc_camp_a24","loop":"A","kind":"serviced
+        (water, power)","at":[-18.42,-35.18],"size":[8,12]},{"id":"pitch.nmc_camp_a25","loop":"A","kind":"serviced
+        (water, power)","at":[-17.6,-23.71],"size":[8,12]},{"id":"pitch.nmc_camp_a26","loop":"A","kind":"serviced
+        (water, power)","at":[-16.78,-12.24],"size":[8,12]},{"id":"pitch.nmc_camp_a27","loop":"A","kind":"serviced
+        (water, power)","at":[-14.29,-3.25],"size":[8,12]},{"id":"pitch.nmc_camp_a28","loop":"A","kind":"serviced
+        (water, power)","at":[-10.36,7.56],"size":[8,12]},{"id":"pitch.nmc_camp_a29","loop":"A","kind":"serviced
+        (water, power)","at":[-6.2,17.83],"size":[8,12]},{"id":"pitch.nmc_camp_b1","loop":"B","kind":"tent","at":[-81.98,-64.19],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b1","at":[-81.98,-64.19],"size":[5,4],"top":6.08,"corners":[-0.08,-0.08,-0.08,-0.08],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"}},{"id":"pitch.nmc_camp_b2","loop":"B","kind":"tent","at":[-92.2,-68.28],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b2","at":[-92.2,-68.28],"size":[4,4],"top":6.08,"corners":[-0.08,-0.08,-0.08,-0.08],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"}},{"id":"pitch.nmc_camp_b3","loop":"B","kind":"tent","at":[-103.11,-76.98],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b3","at":[-103.11,-76.98],"size":[3.5,4],"top":6.08,"corners":[-0.08,-0.08,-0.08,-0.08],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"}},{"id":"pitch.nmc_camp_b4","loop":"B","kind":"tent","at":[-109.98,-85.57],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b4","at":[-109.98,-85.57],"size":[4,4],"top":6.08,"corners":[-0.08,-0.08,-0.08,-0.08],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"}},{"id":"pitch.nmc_camp_b5","loop":"B","kind":"tent","at":[-116.88,-97.74],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b5","at":[-116.88,-97.74],"size":[5,4],"top":6.08,"corners":[-0.08,-0.08,-0.08,-0.08],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"}},{"id":"pitch.nmc_camp_b6","loop":"B","kind":"tent","at":[-118.69,-108.59],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b6","at":[-118.69,-108.59],"size":[3.5,3.5],"top":6.08,"corners":[-0.08,-0.08,-0.08,-0.08],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"}},{"id":"pitch.nmc_camp_b7","loop":"B","kind":"tent","at":[-118.81,-124.4],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b7","at":[-118.81,-124.4],"size":[3.5,4],"top":6.05,"corners":[-0.18,-0.18,-0.08,-0.08],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"}},{"id":"pitch.nmc_camp_b8","loop":"B","kind":"tent","at":[-112.06,-133.08],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b8","at":[-112.06,-133.08],"size":[4,4],"top":5.72,"corners":[-0.33,-0.34,-0.09,-0.08],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"}},{"id":"pitch.nmc_camp_b9","loop":"B","kind":"tent","at":[-105.31,-141.76],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b9","at":[-105.31,-141.76],"size":[5,4],"top":5.15,"corners":[-0.42,-0.45,-0.11,-0.08],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"}},{"id":"pitch.nmc_camp_b10","loop":"B","kind":"tent","at":[-88.873,-145.098],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b10","at":[-88.873,-145.098],"size":[4,4],"top":4.77,"corners":[-0.35,-0.37,-0.11,-0.08],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"},"old_at":[-88.94,-143.9],"moved":{"m":1.2,"why":"10-02:
+        the site moved to its pad, where the ground is most level, toward its lane
+        (keyscene.nmc_campground)"}},{"id":"pitch.nmc_camp_b11","loop":"B","kind":"tent","at":[-74.55,-136.43],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b11","at":[-74.55,-136.43],"size":[3.5,3.5],"top":5.37,"corners":[-0.38,-0.43,-0.12,-0.08],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"}},{"id":"pitch.nmc_camp_b12","loop":"B","kind":"tent","at":[-70.775,-126.054],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b12","at":[-70.775,-126.054],"size":[3.5,4],"top":6,"corners":[-0.26,-0.28,-0.09,-0.08],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"},"old_at":[-69.87,-126.48],"moved":{"m":1,"why":"10-02:
+        the site moved to its pad, where the ground is most level, toward its lane
+        (keyscene.nmc_campground)"}},{"id":"pitch.nmc_camp_b13","loop":"B","kind":"tent","at":[-69.694,-112.723],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b13","at":[-69.694,-112.723],"size":[4,4],"top":6.08,"corners":[-0.08,-0.09,-0.25,-0.08],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"},"old_at":[-68.1,-112.59],"moved":{"m":1.6,"why":"10-02:
+        the site moved to its pad, where the ground is most level, toward its lane
+        (keyscene.nmc_campground)"}},{"id":"pitch.nmc_camp_b14","loop":"B","kind":"tent","at":[-70.206,-101.73],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b14","at":[-70.206,-101.73],"size":[5,4],"top":6.03,"corners":[-0.08,-1.05,-1.65,-0.3],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"},"old_at":[-69.01,-101.63],"moved":{"m":1.2,"why":"10-02:
+        the site moved to its pad, where the ground is most level, toward its lane
+        (keyscene.nmc_campground)"}},{"id":"pitch.nmc_camp_b15","loop":"B","kind":"tent","at":[-67.973,-91.745],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b15","at":[-67.973,-91.745],"size":[3.5,4],"top":4.52,"corners":[-0.08,-0.82,-0.81,-0.09],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"},"old_at":[-69.17,-91.66],"moved":{"m":1.2,"why":"10-02:
+        the site moved to its pad, where the ground is most level, toward its lane
+        (keyscene.nmc_campground)"}},{"id":"pitch.nmc_camp_b16","loop":"B","kind":"tent","at":[-69.986,-80.576],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b16","at":[-69.986,-80.576],"size":[4,4],"top":6.06,"corners":[-0.32,-1.28,-0.61,-0.08],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"},"old_at":[-68.39,-80.69],"moved":{"m":1.6,"why":"10-02:
+        the site moved to its pad, where the ground is most level, toward its lane
+        (keyscene.nmc_campground)"}},{"id":"pitch.nmc_camp_b17","loop":"B","kind":"tent","at":[-67.61,-69.72],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b17","at":[-67.61,-69.72],"size":[4,4],"top":5.3,"corners":[-0.08,-1.2,-1.17,-0.71],"what":"a
+        tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
+        the ground from the top"}},{"id":"pitch.nmc_camp_c1","loop":"C","kind":"cabin","at":[-71.71,28.06],"size":[5,6]},{"id":"pitch.nmc_camp_c2","loop":"C","kind":"cabin","at":[-82.11,34.99],"size":[5,6]},{"id":"pitch.nmc_camp_c3","loop":"C","kind":"cabin","at":[-89.75,34.16],"size":[5,6]},{"id":"pitch.nmc_camp_c4","loop":"C","kind":"cabin","at":[-102.21,33.13],"size":[5,6]},{"id":"pitch.nmc_camp_c5","loop":"C","kind":"cabin","at":[-108.34,27.45],"size":[5,6]},{"id":"pitch.nmc_camp_c6","loop":"C","kind":"cabin","at":[-112.84,24.2],"size":[5,6]},{"id":"pitch.nmc_camp_c7","loop":"C","kind":"cabin","at":[-112.19,11.72],"size":[5,6]},{"id":"pitch.nmc_camp_c8","loop":"C","kind":"cabin","at":[-107.5,8.55],"size":[5,6]},{"id":"pitch.nmc_camp_c9","loop":"C","kind":"cabin","at":[-101.56,6.95],"size":[5,6]},{"id":"pitch.nmc_camp_c10","loop":"C","kind":"cabin","at":[-93,8.65],"size":[5,6]},{"id":"pitch.nmc_camp_c11","loop":"C","kind":"cabin","at":[-83.51,16.78],"size":[5,6]},{"id":"pitch.nmc_camp_c12","loop":"C","kind":"cabin","at":[-75.6,25.09],"size":[5,6]},{"id":"pitch.nmc_camp_c13","loop":"C","kind":"cabin","at":[-67.37,34.5],"size":[5,6]}],"counts":{"serviced":29,"tent":17,"cabins":13},"area_m2":29458,"woods":"the
+        south wood lot and the middle wood lot stand inside it: Loop B\u2019s tents
+        and Loop C\u2019s cabins are under their trees","why":"The land between the
+        town and the crossing: open serviced sites on the sea side with St Peters
+        in view, tents in the woods by the brook, cabins round the pond, the beach
+        over the dunes.","walks":[{"id":"walk.nmc_camp_pool","what":"from Loop B\u2019s
+        stem to the pool house","surface":"slab","width":1.6,"pts":[[-37,-66.863],[-37,-70.6]]},{"id":"walk.nmc_camp_pool_gate","what":"from
+        the west leg to the pool\u2019s service gate","surface":"slab","width":1.4,"pts":[[-23.521,-79.25],[-27.3,-79.25]]},{"id":"walk.nmc_camp_court_gate","what":"from
+        the west leg to the court\u2019s gate","surface":"slab","width":1.4,"pts":[[-26.057,-59],[-29.65,-59]]}],"trees":{"clear":[{"what":"the
+        court","box":[-47.85,-28.15,-62.6,-27.4]},{"what":"the pool","box":[-47.8,-26.2,-87.8,-69.3]}],"sight":{"what":"the
+        south wood lot\u2019s edge in front of the pool, thinned so the pool reads
+        from the south","box":[-49,-26,-101.5,-86.5]},"pitches":"each tent pitch\u2019s
+        box and its pad, 4.4 to 4.8 m round","water":"no tree with its foot within
+        2.6 m of the camp brook\u2019s still water","scene":"keyscene.nmc_campground
+        floraRules"},"redrawn":"10-02: keyscene.nmc_campground redrawn (calls 48 to
+        56); it lays nothing on the ground: the court and the pool stand on the plateau\u2019s
+        flat +6.0, the tent pads are pieces on timber frames","roads":{"stand":["road.nmc_camp_loop_a","road.nmc_camp_loop_b_stem","road.nmc_camp_loop_b","road.nmc_camp_loop_c_stem","road.nmc_camp_loop_c","road.nmc_camp_road","road.nmc_bar_road"],"ruled":"10-01:
+        the campground keeps part 1\u2019s two roads (call 23); the redraw moves none"}},"fields":[{"id":"field.nmc_west_farm_south","name":"the
+        west farm, south","poly":[[-380,-130],[-268,-120],[-232,-103],[-206,-73],[-193,-40],[-188,-2],[-380,-2]],"crop":"hay
+        and potatoes"},{"id":"field.nmc_west_farm_north","name":"the west farm, north","poly":[[-380,2],[-187,2],[-183,40],[-182.27,75],[-282,75],[-282,88],[-380,88]],"crop":"grain","old_poly":[[-380,2],[-187,2],[-183,40],[-182,88],[-380,88]],"why":"10-02:
+        the plaza\u2019s lot takes the field\u2019s 13 m north of y 75 along x -282..-182
+        (call 34); west of x -282 the field keeps y 88"},{"id":"field.nmc_river_farm","name":"the
+        river farm","poly":[[-380,100],[-282,100],[-282,178],[-380,196]],"crop":"pasture","note":"and
+        north of the fresh reach, (-380..-270, 238..280)"},{"id":"field.nmc_hall_field","name":"the
+        hall field","poly":[[-170,38],[-128,38],[-128,86],[-170,86]],"crop":"hay","note":"round
+        the parish hall and the truck park"}],"hedges":{"rule":"NineMileCreekFields\u2019
+        own: the 96 m strip lattice (y = 96k) inside the fields, plus both sides of
+        the gravel and paved roads outside the town and the campground","lines":[{"id":"hedge.nmc_y_minus96","pts":[[-380,-96],[-214,-96]]},{"id":"hedge.nmc_y0","pts":[[-380,0],[-187,0]]},{"id":"hedge.nmc_y96","pts":[[-380,96],[-282,96]]},{"id":"hedge.nmc_route91_south","along":"road.nmc_route_91","from":[-177.6,57],"to":[-380,-142]},{"id":"hedge.nmc_wharf_road","along":"road.nmc_wharf_road","from":[-130,92],"to":[-70,92],"old":{"from":[-130,90],"to":[-70,91]},"moved":"10-01:
+        onto the road\u2019s new line (call 30)"}]},"wood_lots":[{"id":"woodlot.nmc_south","builder":"NineMileCreekWoodLots.SouthWoodLot","at":[-61.1,-96],"r":30,"kept":true,"now":"inside
+        the campground: Loop B\u2019s woods","gives_way":[{"what":"the pool","box":[-47.8,-26.2,-87.8,-69.3]},{"what":"in
+        front of the pool, its sight line from the south","box":[-49,-26,-101.5,-86.5]}]},{"id":"woodlot.nmc_middle","builder":"NineMileCreekWoodLots.MiddleWoodLot","at":[-77.3,0],"r":30,"kept":true,"now":"inside
+        the campground: Loop C and Camp Pond"},{"id":"woodlot.nmc_north","builder":"NineMileCreekWoodLots.NorthWoodLot","at":[-73.4,192],"r":30,"kept":true,"now":"the
+        ridge between the town river and the north creek"},{"id":"woodlot.nmc_river_wood","name":"the
+        river wood","at":[-332,236],"r":26,"status":"proposal","why":"Riparian woods
+        on the fresh reach\u2019s north bank: the lots\u2019 share goes from about
+        4% to about 5.3% (the law\u2019s ceiling is 8%)."}],"marsh":[{"id":"marsh.nmc_brook_mouth","at":[-44,-164],"r":[16,6],"why":"behind
+        the berm, +2.3"},{"id":"marsh.nmc_barachois_shoulders","rule":"NineMileCreekFields\u2019
+        own: the ponds\u2019 shoulders, banded by the tide"},{"id":"marsh.nmc_river_benches","rule":"the
+        town river\u2019s mud banks between the barachois and x -146, above neap high
+        (+0.99)"},{"id":"marsh.nmc_north_creek","rule":"the north creek\u2019s banks
+        west of x -40, above neap high"}],"exceptions":[{"rule":"every lot stands
+        clear of every road corridor (3 m)","lots":["lot.nmc_waterfront_1","lot.nmc_waterfront_3","lot.nmc_waterfront_4"],"measured":{"lane_clearance_m":"from
+        the lot box\u2019s lane side at its centre\u2019s x, straight to the asphalt\u2019s
+        edge (the Art desk\u2019s measure, STATE.md s6, 10-02)","nearest_m":"from
+        the house\u2019s own footprint (its wings and porches) to the asphalt\u2019s
+        edge, at the nearest point"},"values":[{"id":"lot.nmc_waterfront_1","lane":"road.nmc_north_creek_lane","lane_clearance_m":2.67,"nearest_m":2.72},{"id":"lot.nmc_waterfront_2","lane":"road.nmc_north_creek_lane","lane_clearance_m":3.3,"nearest_m":2.78},{"id":"lot.nmc_waterfront_3","lane":"road.nmc_north_creek_lane","lane_clearance_m":2.67,"nearest_m":2.02},{"id":"lot.nmc_waterfront_4","lane":"road.nmc_north_creek_lane","lane_clearance_m":2.97,"nearest_m":2.12}],"ruled":"10-02:
+        lots 1, 3 and 4 stand 2.67 to 2.97 m off the asphalt, inside the plan\u2019s
+        3 m, and stay as drawn","open":[{"id":"lot.nmc_waterfront_2","call":57,"what":"outside
+        3 m by the Art desk\u2019s measure (3.3 m), inside it at the house\u2019s
+        nearest corner (2.78 m)"}]}]}'
+    - Key: nmc.plan.frozen
+      Value: '{"rule":"where the plan keeps today\u2019s ground, the texture carries
+        today\u2019s code x 257: the same height, to the bit","today":"uploads zip
+        HH-nine-mile-creek-ground-2026-09-28, NineMileCreekSeabed_HeightTex.png (main
+        8ae9c5af), pixels sha256 55534b737686d1a33b99711596ca6d14df4d93212e152014aa866fe3736ec96d","zones":[{"id":"frozen.nmc_bar_and_seam","what":"the
+        bar from x 170 to the region\u2019s east edge, both flanks, the gut and the
+        seam; the bay round it","box":[170,380,-280,-60],"builder":"NineMileCreekMainland.BarFrom/BarTo/BarHalfWidth/BarCrestElevation/BarFlankToeElevation/BarFlankFalloff/Gut*"},{"id":"frozen.nmc_east_bay","what":"the
+        east bay north of the bar, outside the wharf\u2019s frame (it runs to x 232:
+        from x 216 the wharf return\u2019s ground feathers into today\u2019s)","box":[232,380,-60,280]},{"id":"frozen.nmc_east_coast","what":"the
+        east coast from the landing north to the wharf and from the notch north to
+        the region edge, as CoastPoints and CoastSectors build it (but the north creek\u2019s
+        inlet)","note":"kept except where a feature below cuts it"}]}'
+    - Key: nmc.plan.kinds
+      Value: '{"roads":"road","lots":"lot","bridges":"bridge","households":"household","paths":"PathDef","streams":"StreamDef","ponds":"PondDef","coast":"CoastSectionDef"}'
+    - Key: nmc.plan.contract
+      Value: 'terrain: RegionTerrainPlanDef/GroundFileDef; coast: CoastSectionDef;
+        water: StreamDef/PondDef; paths: PathDef; road/lot/bridge/household: NmcPlanKindOf;
+        H2/H4/H13 apply, never grade in H1'
+  - Id: harbour.fleet
+    Kind: harbour
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfRig2 + marina kit
+    Piece: nmc_fleet
+    State: 
+    At: {x: 120, y: 0}
+    Z: -2.2
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 96.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"nmc_fleet"'
+    - Key: nmc.faces
+      Value: '"N"'
+    - Key: nmc.origin
+      Value: '[120,0]'
+    - Key: nmc.note
+      Value: '"one sprite; its modules, berths, floats and fittings are the kit\u2019s
+        harbour \u2018nmc_fleet\u2019 (scene/nmcWharf.js defineHarbours)"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own (HarbourDef)"
+  - Id: harbour.east
+    Kind: harbour
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfRig2 + marina kit
+    Piece: nmc_east
+    State: 
+    At: {x: 173, y: 0}
+    Z: -2.2
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 96.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"nmc_east"'
+    - Key: nmc.faces
+      Value: '"N"'
+    - Key: nmc.origin
+      Value: '[173,0]'
+    - Key: nmc.note
+      Value: '"one sprite; its modules, berths, floats and fittings are the kit\u2019s
+        harbour \u2018nmc_east\u2019 (scene/nmcWharf.js defineHarbours)"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own (HarbourDef)"
+  - Id: harbour.yard
+    Kind: harbour
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: shipyard2 on wharfRig2
+    Piece: nmc_yard
+    State: 
+    At: {x: 198, y: 0}
+    Z: -2.2
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 146.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"nmc_yard"'
+    - Key: nmc.faces
+      Value: '"N"'
+    - Key: nmc.origin
+      Value: '[198,0]'
+    - Key: nmc.note
+      Value: '"one sprite; its modules, berths, floats and fittings are the kit\u2019s
+        harbour \u2018nmc_yard\u2019 (scene/nmcWharf.js defineHarbours)"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own (HarbourDef)"
+  - Id: harbour.arm_w
+    Kind: harbour
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfRig2 (breakwater preset, granite)
+    Piece: nmc_armW
+    State: 
+    At: {x: 77, y: 0}
+    Z: -2.2
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 6.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"nmc_armW"'
+    - Key: nmc.faces
+      Value: '"N"'
+    - Key: nmc.origin
+      Value: '[77,0]'
+    - Key: nmc.note
+      Value: '"one sprite; its modules, berths, floats and fittings are the kit\u2019s
+        harbour \u2018nmc_armW\u2019 (scene/nmcWharf.js defineHarbours)"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own (HarbourDef)"
+  - Id: harbour.arm_e
+    Kind: harbour
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfRig2 (breakwater preset, granite)
+    Piece: nmc_armE
+    State: 
+    At: {x: 190, y: 0}
+    Z: -2.2
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 88.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"nmc_armE"'
+    - Key: nmc.faces
+      Value: '"N"'
+    - Key: nmc.origin
+      Value: '[190,0]'
+    - Key: nmc.note
+      Value: '"one sprite; its modules, berths, floats and fittings are the kit\u2019s
+        harbour \u2018nmc_armE\u2019 (scene/nmcWharf.js defineHarbours)"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own (HarbourDef)"
+  - Id: structure.nmc_wharf_crane
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: nmcSetPieces
+    Piece: wharfCrane
+    State: working
+    At: {x: 72, y: 78.2}
+    Z: 3.4
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - night
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: state
+      Value: working
+    - Key: slew
+      Value: 27.5
+    - Key: reach
+      Value: 5.41
+    - Key: hookZ
+      Value: -1.06
+    - Key: load
+      Value: totes
+    - Key: nmc.name
+      Value: '"Wharf crane (knuckle boom)"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.animated
+      Value: '{"what":"slew, reach, hoist, the load","input":"the crane\u2019s controls
+        (NOTES \u00a74; gameplay().crane)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+    - Key: nmc.variantPoses
+      Value: '[{"id":"structure.nmc_wharf_crane","name":"Wharf crane (knuckle boom)","defType":"SetPieceDef","kit":"nmcSetPieces","piece":"wharfCrane","opts":{"state":"working","slew":27.5,"reach":5.41,"hookZ":-1.06,"load":"totes"},"at":[72,78.2],"z":3.4,"dir":4,"faces":"S","variants":["today"],"new":true,"layer":"raised","walk":"solid","animated":{"what":"slew,
+        reach, hoist, the load","input":"the crane\u2019s controls (NOTES \u00a74;
+        gameplay().crane)"},"why":"the winch becomes a crane (the owner, 09-28): it
+        lands the catch onto the pad and the traps onto the boats, and it is playable"},{"id":"structure.nmc_wharf_crane","name":"Wharf
+        crane (knuckle boom)","defType":"SetPieceDef","kit":"nmcSetPieces","piece":"wharfCrane","opts":{"state":"stowed"},"at":[72,78.2],"z":3.4,"dir":4,"faces":"S","variants":["night"],"new":true,"layer":"raised","walk":"solid","animated":{"what":"slew,
+        reach, hoist, the load","input":"the crane\u2019s controls (NOTES \u00a74;
+        gameplay().crane)"},"why":"the winch becomes a crane (the owner, 09-28): it
+        lands the catch onto the pad and the traps onto the boats, and it is playable"}]'
+  - Id: prop.nmc_crane_pad
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: nmcSetPieces
+    Piece: landingPad
+    State: 
+    At: {x: 67.6, y: 81.2}
+    Z: 3.4
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 82.8
+    Layer: floor
+    Walk: on
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: size
+      Value: 2.4
+    - Key: nmc.name
+      Value: '"Crane landing pad"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_harbourmaster
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: nmcSetPieces
+    Piece: officeTrailer
+    State: 
+    At: {x: 86.4, y: 112.6}
+    Z: 3.66
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: role
+      Value: harbourmaster
+    - Key: text
+      Value: HARBOURMASTER
+    - Key: nmc.name
+      Value: '"Wharf office (box trailer)"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.words
+      Value: '[{"id":"words.nmc_licences","text":"LICENCES \u00b7 BERTHS \u00b7 WHARFAGE","corners":[[2.12,1.266,0.86],[3.48,1.266,0.86],[3.48,1.266,1.16],[2.12,1.266,1.16]],"note":"under
+        the counter: what the harbourmaster sells"},{"id":"words.nmc_harbourmaster","text":"HARBOURMASTER","corners":[[-1.95,1.268,1.92],[-0.55,1.268,1.92],[-0.55,1.268,2.44],[-1.95,1.268,2.44]],"note":"the
+        office\u2019s sign, lettered by the game"}]'
+    - Key: nmc.light
+      Value: '{"preset":"emissive","when":"dusk","emitters":["lamp","win"],"whoLights":"the
+        lamp rule; the office and the market while they are open"}'
+    - Key: nmc.vendor
+      Value: '{"seller":"seller.nmc_harbourmaster","component":"LicenseVendor","sells":"the
+        cod licence","counter":[2.8,2.034,0],"counterWorld":[83.6,110.566]}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_fish_market
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: nmcSetPieces
+    Piece: fishMarket
+    State: 
+    At: {x: 91.2, y: 127.6}
+    Z: 3.531
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"The fish market"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.words
+      Value: '[{"id":"words.nmc_fish_market","text":"FISH MARKET","corners":[[-2.55,2.644,2.3],[0.35,2.644,2.3],[0.35,2.644,2.62],[-2.55,2.644,2.62]],"note":"the
+        name board over the awning"},{"id":"words.nmc_market_board","text":"TODAY","bind":"market.today","format":["TODAY","{species1}
+        {price1}","{species2} {price2}"],"corners":[[2.41,3.6084,0.11],[2.8899999999999997,3.6084,0.11],[2.8899999999999997,3.39,0.86],[2.41,3.39,0.86]],"note":"the
+        day\u2019s prices, from the market the buyer reads"}]'
+    - Key: nmc.light
+      Value: '{"preset":"emissive","when":"dusk","emitters":["lamp","win"],"whoLights":"the
+        lamp rule; the office and the market while they are open"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_restaurant
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: nmcSetPieces
+    Piece: restaurant
+    State: 
+    At: {x: 168, y: 136}
+    Z: 3.442
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"The restaurant"'
+    - Key: nmc.faces
+      Value: '"N"'
+    - Key: nmc.words
+      Value: '[{"id":"words.nmc_restaurant","text":"RESTAURANT","corners":[[-3.6,-5.064,3.1],[3.6,-5.064,3.1],[3.6,-5.064,3.8],[-3.6,-5.064,3.8]],"note":"the
+        name board over the door; the owner names the place"},{"id":"words.nmc_restaurant_menu","text":"CHOWDER
+        \u00b7 FISH & CHIPS \u00b7 LOBSTER ROLLS","corners":[[5.15,-4.544,1.15],[6.35,-4.544,1.15],[6.35,-4.544,2.15],[5.15,-4.544,2.15]],"note":"the
+        takeout\u2019s chalk menu; the game may bind it to the day\u2019s catch"}]'
+    - Key: nmc.light
+      Value: '{"preset":"emissive","when":"dusk","emitters":["lamp","win"],"whoLights":"the
+        lamp rule; the office and the market while they are open"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_light_west
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: nmcSetPieces
+    Piece: harbourLight
+    State: 
+    At: {x: 115.2, y: 2}
+    Z: 3.6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: colour
+      Value: green
+    - Key: nmc.name
+      Value: '"Harbour light"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.light
+      Value: '{"preset":"emissive","when":"dusk","emitters":["lamp","win"],"whoLights":"the
+        lamp rule; the office and the market while they are open"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_light_east
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: nmcSetPieces
+    Piece: harbourLight
+    State: 
+    At: {x: 158.6, y: -5.6}
+    Z: 3.6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: colour
+      Value: red
+    - Key: nmc.name
+      Value: '"Harbour light"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.light
+      Value: '{"preset":"emissive","when":"dusk","emitters":["lamp","win"],"whoLights":"the
+        lamp rule; the office and the market while they are open"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_shed_leo
+    Kind: building
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfBuilding2
+    Piece: gambrelBarn
+    State: 
+    At: {x: 101, y: 101.8}
+    Z: 3.6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: gambrelBarn
+    - Key: size
+      Value: 1
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"shed leo"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_shed_marie
+    Kind: building
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfBuilding2
+    Piece: redShed
+    State: 
+    At: {x: 118.8, y: 101.8}
+    Z: 3.588
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: redShed
+    - Key: size
+      Value: 0.85
+    - Key: weather
+      Value: 0.75
+    - Key: nmc.name
+      Value: '"shed marie"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_shed_yvette
+    Kind: building
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfBuilding2
+    Piece: netShed
+    State: 
+    At: {x: 133.6, y: 101.8}
+    Z: 3.602
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: netShed
+    - Key: size
+      Value: 0.9
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"shed yvette"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_shed_ross
+    Kind: building
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfBuilding2
+    Piece: tealShack
+    State: 
+    At: {x: 149.3, y: 101.8}
+    Z: 3.602
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: tealShack
+    - Key: size
+      Value: 0.9
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"shed ross"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_shed_hughie
+    Kind: building
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfBuilding2
+    Piece: netShed
+    State: 
+    At: {x: 160.3, y: 101.8}
+    Z: 3.617
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: netShed
+    - Key: size
+      Value: 0.55
+    - Key: weather
+      Value: 0.75
+    - Key: nmc.name
+      Value: '"shed hughie"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_shed_celeste
+    Kind: building
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfBuilding2
+    Piece: tealShack
+    State: 
+    At: {x: 110.5, y: 131}
+    Z: 3.497
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: tealShack
+    - Key: size
+      Value: 0.35
+    - Key: weather
+      Value: 0.6
+    - Key: nmc.name
+      Value: '"shed celeste"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_shed_alma
+    Kind: building
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfBuilding2
+    Piece: netShed
+    State: 
+    At: {x: 118.5, y: 131}
+    Z: 3.487
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: netShed
+    - Key: size
+      Value: 0.35
+    - Key: weather
+      Value: 0.6
+    - Key: nmc.name
+      Value: '"shed alma"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_shed_dan
+    Kind: building
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfBuilding2
+    Piece: tealShack
+    State: 
+    At: {x: 125.6, y: 131}
+    Z: 3.492
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: tealShack
+    - Key: size
+      Value: 0.15
+    - Key: weather
+      Value: 0.6
+    - Key: nmc.name
+      Value: '"shed dan"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_bait_shed
+    Kind: building
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfBuilding2
+    Piece: iceHouse
+    State: 
+    At: {x: 136.5, y: 131.2}
+    Z: 3.495
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: iceHouse
+    - Key: weather
+      Value: 0.7
+    - Key: nmc.name
+      Value: '"bait shed"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_trap_store
+    Kind: building
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfBuilding2
+    Piece: gambrelBarn
+    State: 
+    At: {x: 152, y: 131.4}
+    Z: 3.509
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: gambrelBarn
+    - Key: size
+      Value: 0.9
+    - Key: weather
+      Value: 0.6
+    - Key: nmc.name
+      Value: '"trap store"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_cold_store
+    Kind: building
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfBuilding2
+    Piece: fishPlant
+    State: 
+    At: {x: 64, y: 99.2}
+    Z: 3.569
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: fishPlant
+    - Key: size
+      Value: 0.9
+    - Key: boom
+      Value: false
+    - Key: weather
+      Value: 0.35
+    - Key: occupancy
+      Value: working
+    - Key: nmc.name
+      Value: '"cold store"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: boat.nmc_celeste
+    Kind: boat
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: DoryIso
+    Piece: DoryIso
+    State: 
+    At: {x: 51.45, y: 57.635}
+    Z: -3.353
+    StandsOn: water
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: build
+      Value: motor
+    - Key: nmc.name
+      Value: '"DoryIso"'
+    - Key: nmc.faces
+      Value: '"W"'
+    - Key: nmc.float
+      Value: 0.2
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "BoatDef (the register\u2019s)"
+  - Id: boat.nmc_alma
+    Kind: boat
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: ConsoleIso
+    Piece: ConsoleIso
+    State: 
+    At: {x: 58.6, y: 57.235}
+    Z: -3.475
+    StandsOn: water
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"ConsoleIso"'
+    - Key: nmc.faces
+      Value: '"W"'
+    - Key: nmc.float
+      Value: 0.35
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "BoatDef (the register\u2019s)"
+  - Id: boat.nmc_dan
+    Kind: boat
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: PuntIso
+    Piece: PuntIso
+    State: 
+    At: {x: 66.1, y: 57.595}
+    Z: -4.381
+    StandsOn: water
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"PuntIso"'
+    - Key: nmc.faces
+      Value: '"W"'
+    - Key: nmc.float
+      Value: 0.22
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "BoatDef (the register\u2019s)"
+  - Id: vehicle.nmc_buyer_truck
+    Kind: vehicle
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: VehicleIso
+    Piece: VehicleIso
+    State: 
+    At: {x: 98.2, y: 128.4}
+    Z: 3.524
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"VehicleIso"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: VehicleDef
+  - Id: vehicle.nmc_lot_e
+    Kind: vehicle
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: VehicleIso
+    Piece: VehicleIso
+    State: 
+    At: {x: 101, y: 128.4}
+    Z: 3.525
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"VehicleIso"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: VehicleDef
+  - Id: vehicle.nmc_lot_a
+    Kind: vehicle
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: VehicleIso
+    Piece: VehicleIso
+    State: 
+    At: {x: 103.8, y: 128.4}
+    Z: 3.527
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"VehicleIso"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: VehicleDef
+  - Id: vehicle.nmc_lot_b
+    Kind: vehicle
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: VanIso
+    Piece: VanIso
+    State: 
+    At: {x: 142.6, y: 128}
+    Z: 3.539
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"VanIso"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: VehicleDef
+  - Id: vehicle.nmc_lot_c
+    Kind: vehicle
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: VehicleIso
+    Piece: VehicleIso
+    State: 
+    At: {x: 145.4, y: 128}
+    Z: 3.555
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"VehicleIso"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: VehicleDef
+  - Id: vehicle.nmc_delivery
+    Kind: vehicle
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: VanIso
+    Piece: VanIso
+    State: 
+    At: {x: 171.2, y: 127.8}
+    Z: 3.551
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"VanIso"'
+    - Key: nmc.faces
+      Value: '"E"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: VehicleDef
+  - Id: vehicle.nmc_pickup_leo
+    Kind: vehicle
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: VehicleIso
+    Piece: VehicleIso
+    State: 
+    At: {x: 99.5, y: 91.2}
+    Z: 3.487
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"VehicleIso"'
+    - Key: nmc.faces
+      Value: '"W"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: VehicleDef
+  - Id: vehicle.nmc_pickup_ross
+    Kind: vehicle
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: VehicleIso
+    Piece: VehicleIso
+    State: 
+    At: {x: 141.5, y: 91.6}
+    Z: 3.479
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"VehicleIso"'
+    - Key: nmc.faces
+      Value: '"E"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: VehicleDef
+  - Id: vehicle.nmc_pickup_marie
+    Kind: vehicle
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: VehicleIso
+    Piece: VehicleIso
+    State: 
+    At: {x: 121, y: 91}
+    Z: 3.476
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"VehicleIso"'
+    - Key: nmc.faces
+      Value: '"W"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: VehicleDef
+  - Id: vehicle.nmc_ramp_pickup
+    Kind: vehicle
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: VehicleIso
+    Piece: VehicleIso
+    State: 
+    At: {x: 47.2, y: 95.2}
+    Z: 3.549
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"VehicleIso"'
+    - Key: nmc.faces
+      Value: '"N"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: VehicleDef
+  - Id: vehicle.nmc_reefer_trailer
+    Kind: vehicle
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: TrailerIso
+    Piece: TrailerIso
+    State: 
+    At: {x: 56, y: 133}
+    Z: 3.462
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: reefer53
+    - Key: nmc.name
+      Value: '"TrailerIso"'
+    - Key: nmc.faces
+      Value: '"E"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: VehicleDef
+  - Id: vehicle.nmc_reefer_tractor
+    Kind: vehicle
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: AeroSemiIso
+    Piece: AeroSemiIso
+    State: 
+    At: {x: 65.575, y: 133}
+    Z: 3.483
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"AeroSemiIso"'
+    - Key: nmc.faces
+      Value: '"E"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: VehicleDef
+  - Id: prop.nmc_dumpster
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: fuelStopRig (pass 6)
+    Piece: dumpster
+    State: 
+    At: {x: 92.2, y: 133.8}
+    Z: 3.456
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"dumpster"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_picnic
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: fuelStopRig (pass 6)
+    Piece: picnic
+    State: 
+    At: {x: 93.9, y: 112.4}
+    Z: 3.638
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"picnic"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_ice
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: fuelStopRig (pass 6)
+    Piece: iceBox
+    State: 
+    At: {x: 79.4, y: 111.8}
+    Z: 3.65
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"iceBox"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_bin
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: fuelStopRig (pass 6)
+    Piece: bin
+    State: 
+    At: {x: 92.8, y: 109.2}
+    Z: 3.642
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"bin"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_picnic_r
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: fuelStopRig (pass 6)
+    Piece: picnic
+    State: 
+    At: {x: 157.2, y: 142.8}
+    Z: 3.404
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"picnic"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_light_court
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: fuelStopRig (pass 6)
+    Piece: lampPole
+    State: 
+    At: {x: 44.6, y: 108.6}
+    Z: 3.643
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"lampPole"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_light_lot
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: fuelStopRig (pass 6)
+    Piece: lampPole
+    State: 
+    At: {x: 124, y: 107.6}
+    Z: 3.646
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"lampPole"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_light_quay_w
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: fuelStopRig (pass 6)
+    Piece: lampPole
+    State: 
+    At: {x: 78.4, y: 95.8}
+    Z: 3.531
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"lampPole"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_light_quay_e
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: fuelStopRig (pass 6)
+    Piece: lampPole
+    State: 
+    At: {x: 147.8, y: 95.6}
+    Z: 3.523
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"lampPole"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_light_ramp
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: fuelStopRig (pass 6)
+    Piece: lampPole
+    State: 
+    At: {x: 48.6, y: 88.6}
+    Z: 3.454
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"lampPole"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_light_lot_e
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: fuelStopRig (pass 6)
+    Piece: lampPole
+    State: 
+    At: {x: 164, y: 107.4}
+    Z: 3.653
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"lampPole"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_traps_court_0_0
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 82, y: 144}
+    Z: 3.395
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: weather
+      Value: 0.45
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_0_1
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 83.32, y: 144}
+    Z: 3.397
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_0_2
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 84.64, y: 144}
+    Z: 3.397
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_0_3
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 85.96, y: 144}
+    Z: 3.398
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.45
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_0_4
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 87.28, y: 144}
+    Z: 3.4
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_0_5
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 88.6, y: 144}
+    Z: 3.403
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_0_6
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 89.92, y: 144}
+    Z: 3.404
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.45
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_0_7
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 91.24, y: 144}
+    Z: 3.405
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_0_8
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 92.56, y: 144}
+    Z: 3.406
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_1_0
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 82, y: 142.88}
+    Z: 3.402
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_1_1
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 83.32, y: 142.88}
+    Z: 3.405
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_1_2
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 84.64, y: 142.88}
+    Z: 3.405
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: weather
+      Value: 0.45
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_1_3
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 85.96, y: 142.88}
+    Z: 3.405
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_1_4
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 87.28, y: 142.88}
+    Z: 3.404
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_1_5
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 88.6, y: 142.88}
+    Z: 3.403
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: weather
+      Value: 0.45
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_1_6
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 89.92, y: 142.88}
+    Z: 3.403
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_1_7
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 91.24, y: 142.88}
+    Z: 3.403
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_court_1_8
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 92.56, y: 142.88}
+    Z: 3.404
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.45
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_0_0
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 174.8, y: 110.5}
+    Z: 3.639
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.45
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_0_1
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 176.12, y: 110.5}
+    Z: 3.638
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_0_2
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 177.44, y: 110.5}
+    Z: 3.637
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_0_3
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 178.76, y: 110.5}
+    Z: 3.636
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: weather
+      Value: 0.45
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_1_0
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 174.8, y: 109.38}
+    Z: 3.641
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_1_1
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 176.12, y: 109.38}
+    Z: 3.64
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_1_2
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 177.44, y: 109.38}
+    Z: 3.638
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.45
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_1_3
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 178.76, y: 109.38}
+    Z: 3.635
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_2_0
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 174.8, y: 108.26}
+    Z: 3.642
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_2_1
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 176.12, y: 108.26}
+    Z: 3.641
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: weather
+      Value: 0.45
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_2_2
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 177.44, y: 108.26}
+    Z: 3.638
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_2_3
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 178.76, y: 108.26}
+    Z: 3.634
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_3_0
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 174.8, y: 107.14}
+    Z: 3.642
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.45
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_3_1
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 176.12, y: 107.14}
+    Z: 3.641
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_3_2
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 177.44, y: 107.14}
+    Z: 3.637
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_3_3
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 178.76, y: 107.14}
+    Z: 3.631
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.45
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_4_0
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 174.8, y: 106.02}
+    Z: 3.64
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_4_1
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 176.12, y: 106.02}
+    Z: 3.638
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_4_2
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 177.44, y: 106.02}
+    Z: 3.633
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: weather
+      Value: 0.45
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_yard_w_4_3
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 178.76, y: 106.02}
+    Z: 3.627
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_lot_0_0
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 106.4, y: 109.6}
+    Z: 3.635
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: weather
+      Value: 0.45
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_lot_0_1
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 107.72, y: 109.6}
+    Z: 3.635
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_lot_1_0
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 106.4, y: 108.48}
+    Z: 3.637
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_lot_1_1
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 107.72, y: 108.48}
+    Z: 3.636
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_ramp_0_0
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 43.6, y: 100.8}
+    Z: 3.604
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.45
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_ramp_0_1
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 44.92, y: 100.8}
+    Z: 3.603
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_ramp_1_0
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 43.6, y: 99.68}
+    Z: 3.599
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.55
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_ramp_1_1
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 44.92, y: 99.68}
+    Z: 3.599
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.65
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_0
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 94.6, y: 99}
+    Z: 3.579
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: weather
+      Value: 0.5
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_1
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 95.3, y: 100.4}
+    Z: 3.593
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.5
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_2
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 108, y: 99.2}
+    Z: 3.573
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.5
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_3
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 108.7, y: 100.6}
+    Z: 3.591
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: weather
+      Value: 0.5
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_4
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 124.2, y: 99}
+    Z: 3.584
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: weather
+      Value: 0.5
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_5
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 139.6, y: 99.4}
+    Z: 3.592
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.5
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_6
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 140.3, y: 100.8}
+    Z: 3.598
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.5
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_7
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 154.4, y: 99.2}
+    Z: 3.58
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: weather
+      Value: 0.5
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_8
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 165.2, y: 99.6}
+    Z: 3.585
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: weather
+      Value: 0.5
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_9
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 165.9, y: 101}
+    Z: 3.6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.5
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_10
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 110.2, y: 99.4}
+    Z: 3.588
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.5
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_traps_11
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 110.9, y: 100.8}
+    Z: 3.599
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: weather
+      Value: 0.5
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_quay_traps_0
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 84, y: 94.2}
+    Z: 3.514
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_quay_traps_1
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 127.5, y: 94.6}
+    Z: 3.535
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_quay_traps_2
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 150.5, y: 94.4}
+    Z: 3.517
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: nmc.name
+      Value: '"trapStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_totes_0
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: toteStack
+    State: 
+    At: {x: 74.6, y: 84.6}
+    Z: 3.408
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: nmc.name
+      Value: '"toteStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_totes_1
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: toteStack
+    State: 
+    At: {x: 76, y: 84.9}
+    Z: 3.416
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: nmc.name
+      Value: '"toteStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_totes_2
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: toteStack
+    State: 
+    At: {x: 58.5, y: 85.4}
+    Z: 3.395
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: nmc.name
+      Value: '"toteStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_totes_3
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: toteStack
+    State: 
+    At: {x: 63.6, y: 83.2}
+    Z: 3.384
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: nmc.name
+      Value: '"toteStack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_buoys_leo
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: buoyRack
+    State: 
+    At: {x: 104, y: 97.6}
+    Z: 3.544
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"buoyRack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_buoys_marie
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: buoyRack
+    State: 
+    At: {x: 119.4, y: 97.6}
+    Z: 3.549
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"buoyRack"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_nets_a
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: netPile
+    State: 
+    At: {x: 113, y: 98.2}
+    Z: 3.581
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"netPile"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_ice_crane
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: iceChest
+    State: 
+    At: {x: 62, y: 86.2}
+    Z: 3.391
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"iceChest"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_baskets
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: bushelBaskets
+    State: 
+    At: {x: 134.4, y: 98.2}
+    Z: 3.563
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"bushelBaskets"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_barrow
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: wheelbarrow
+    State: 
+    At: {x: 146.4, y: 98.6}
+    Z: 3.556
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"wheelbarrow"'
+    - Key: nmc.faces
+      Value: '"SE"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_ring_w
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: ringStation
+    State: 
+    At: {x: 80.6, y: 87}
+    Z: 3.417
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"ringStation"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_ring_e
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: ringStation
+    State: 
+    At: {x: 158.8, y: 87}
+    Z: 3.424
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"ringStation"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_ring_ramp
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: ringStation
+    State: 
+    At: {x: 47.6, y: 86.8}
+    Z: 3.424
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"ringStation"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: prop.nmc_notice
+    Kind: setPiece
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: wharfDecor
+    Piece: noticeBoard
+    State: 
+    At: {x: 81.2, y: 110.2}
+    Z: 3.659
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.name
+      Value: '"noticeBoard"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: boat.nmc_damaged_dory
+    Kind: boat
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: dory
+    Piece: dory
+    State: 
+    At: {x: 179.6, y: 126.4}
+    Z: 3.42
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: build
+      Value: motor
+    - Key: nmc.name
+      Value: '"dory"'
+    - Key: nmc.faces
+      Value: '"W"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: gull.nmc_crane
+    Kind: gull
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 72, y: 78.5}
+    Z: 10.285
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+    - Key: nmc.name
+      Value: '"perch"'
+    - Key: nmc.faces
+      Value: '"SE"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: gull.nmc_shed
+    Kind: gull
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 116.2, y: 104.4}
+    Z: 8.908
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+    - Key: nmc.name
+      Value: '"perch"'
+    - Key: nmc.faces
+      Value: '"SW"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: gull.nmc_light
+    Kind: gull
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 158.6, y: -5.4}
+    Z: 8.383
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+    - Key: nmc.name
+      Value: '"perch"'
+    - Key: nmc.faces
+      Value: '"S"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: gull.nmc_arm
+    Kind: gull
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 60, y: 1.6}
+    Z: 2.989
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+    - Key: nmc.name
+      Value: '"perch"'
+    - Key: nmc.faces
+      Value: '"W"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: gull.nmc_flats
+    Kind: gull
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 96, y: 141.4}
+    Z: 3.615
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+    - Key: nmc.name
+      Value: '"perch"'
+    - Key: nmc.faces
+      Value: '"E"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: gull.nmc_restaurant
+    Kind: gull
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 166, y: 136.1}
+    Z: 9.988
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+    - Key: nmc.name
+      Value: '"perch"'
+    - Key: nmc.faces
+      Value: '"SW"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  - Id: gull.nmc_market
+    Kind: gull
+    Owner: H5/H6 (N8 fleet; N9 crane; N3 office)
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 91.6, y: 127.6}
+    Z: 7.681
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+    - Key: nmc.name
+      Value: '"perch"'
+    - Key: nmc.faces
+      Value: '"SE"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_wharf
+    - Key: nmc.type
+      Value: "the kit\u2019s own"
+  Lights:
+  - PieceId: structure.nmc_harbourmaster
+    Preset: emissive
+    Pool: 0
+    ReachMetres: 0
+    At: {x: 0, y: 0, z: 0}
+    Colour: 
+    Intensity: 0
+    When: dusk
+    WhoLights: the lamp rule; the office and the market while they are open
+    Budget: 0
+    Note: 
+  - PieceId: structure.nmc_fish_market
+    Preset: emissive
+    Pool: 0
+    ReachMetres: 0
+    At: {x: 0, y: 0, z: 0}
+    Colour: 
+    Intensity: 0
+    When: dusk
+    WhoLights: the lamp rule; the office and the market while they are open
+    Budget: 0
+    Note: 
+  - PieceId: structure.nmc_restaurant
+    Preset: emissive
+    Pool: 0
+    ReachMetres: 0
+    At: {x: 0, y: 0, z: 0}
+    Colour: 
+    Intensity: 0
+    When: dusk
+    WhoLights: the lamp rule; the office and the market while they are open
+    Budget: 0
+    Note: 
+  - PieceId: structure.nmc_light_west
+    Preset: emissive
+    Pool: 0
+    ReachMetres: 0
+    At: {x: 0, y: 0, z: 0}
+    Colour: 
+    Intensity: 0
+    When: dusk
+    WhoLights: the lamp rule; the office and the market while they are open
+    Budget: 0
+    Note: 
+  - PieceId: structure.nmc_light_east
+    Preset: emissive
+    Pool: 0
+    ReachMetres: 0
+    At: {x: 0, y: 0, z: 0}
+    Colour: 
+    Intensity: 0
+    When: dusk
+    WhoLights: the lamp rule; the office and the market while they are open
+    Budget: 0
+    Note: 
+  RetiredIds:
+  - harbour.armW
+  - harbour.armE
+  - prop.nmc_traps_yardW_0_0
+  - prop.nmc_traps_yardW_0_1
+  - prop.nmc_traps_yardW_0_2
+  - prop.nmc_traps_yardW_0_3
+  - prop.nmc_traps_yardW_1_0
+  - prop.nmc_traps_yardW_1_1
+  - prop.nmc_traps_yardW_1_2
+  - prop.nmc_traps_yardW_1_3
+  - prop.nmc_traps_yardW_2_0
+  - prop.nmc_traps_yardW_2_1
+  - prop.nmc_traps_yardW_2_2
+  - prop.nmc_traps_yardW_2_3
+  - prop.nmc_traps_yardW_3_0
+  - prop.nmc_traps_yardW_3_1
+  - prop.nmc_traps_yardW_3_2
+  - prop.nmc_traps_yardW_3_3
+  - prop.nmc_traps_yardW_4_0
+  - prop.nmc_traps_yardW_4_1
+  - prop.nmc_traps_yardW_4_2
+  - prop.nmc_traps_yardW_4_3
+  - prop.nmc_waterfront_6_bed_35
+  - prop.nmc_waterfront_6_bed_29
+  - prop.nmc_camp_tent_a19_cabinTent
+  - float.nmc_fingerA
+  - float.nmc_fingerB
+  - ladder.nmc_unloadW
+  - ladder.nmc_unloadE
+  - light.nmc_rest_deck_177.6
+  - light.nmc_rest_deck_178.4
+  - light.nmc_dock_183.6
+  - light.nmc_dock_177.6
+  - light.nmc_dock_171.6
+  - light.nmc_dock_165.6
+  - road.nmc.wharf_road
+  - road.nmc.route_91
+  - road.nmc.stream_lane
+  - road.nmc.mill_road
+  - structure.nmc_river_wall.00
+  - structure.nmc_river_wall.01
+  - structure.nmc_river_wall.02
+  - structure.nmc_river_wall.03
+  - structure.nmc_river_wall.04
+  - structure.nmc_river_wall.05
+  - structure.nmc_river_wall.06
+  - structure.nmc_river_wall.07
+  - structure.nmc_river_wall.08
+  - structure.nmc_river_wall.09
+  - structure.nmc_river_wall.10
+  - structure.nmc_river_wall.11
+  - structure.nmc_river_wall.12
+  - structure.nmc_town_north.00
+  - structure.nmc_town_north.01
+  - structure.nmc_town_north.02
+  - structure.nmc_town_north.03
+  - structure.nmc_town_north.04
+  - structure.nmc_town_north.05
+  - structure.nmc_town_south.00
+  - structure.nmc_town_south.01
+  - structure.nmc_town_south.02
+  - structure.nmc_town_south.03
+  - structure.nmc_town_south.04
+  - structure.nmc_town_north.spur_240
+  - structure.nmc_wall_stairs_240
+  - structure.nmc_town_north.spur_205
+  - structure.nmc_town_north.spur_160
+  - structure.nmc_wall_stairs_160
+  - structure.nmc_bank_stairs_236
+  - structure.nmc_bank_stairs_190
+  - prop.nmc_boardwalk_lamp.n252
+  - prop.nmc_boardwalk_lamp.n238
+  - prop.nmc_boardwalk_lamp.n224
+  - prop.nmc_boardwalk_lamp.n212
+  - prop.nmc_boardwalk_lamp.n200
+  - prop.nmc_boardwalk_lamp.n189
+  - prop.nmc_boardwalk_lamp.n166
+  - prop.nmc_boardwalk_lamp.n154
+  - prop.nmc_boardwalk_lamp.s246
+  - prop.nmc_boardwalk_lamp.s230
+  - prop.nmc_boardwalk_lamp.s216
+  - prop.nmc_boardwalk_lamp.s203
+  - prop.nmc_boardwalk_lamp.s190
+  - prop.nmc_boardwalk_lamp.s166
+  - prop.nmc_street_lamp.w236
+  - prop.nmc_street_lamp.w214
+  - prop.nmc_street_lamp.w192
+  - prop.nmc_street_lamp.w160
+  - prop.nmc_street_lamp.w148
+  - structure.nmc_falls_deck.landing
+  - prop.nmc_bar_stake.00
+  - prop.nmc_bar_stake.01
+  - prop.nmc_bar_stake.02
+  - prop.nmc_bar_stake.03
+  - prop.nmc_bar_stake.04
+  - prop.nmc_bar_stake.05
+  - prop.nmc_bar_stake.06
+  - prop.nmc_bar_stake.07
+  - prop.nmc_bar_stake.08
+  - prop.nmc_bar_stake.09
+  - road.nmc.north_creek_lane
+  - road.nmc.creek_lane_south
+  - structure.nmc_creek_dock.1
+  - structure.nmc_creek_dock.2
+  - structure.nmc_creek_dock.3
+  - structure.nmc_creek_dock.4
+  - structure.nmc_creek_dock.5
+  - structure.nmc_creek_dock.6
+  - structure.nmc_creek_dock.7
+  - structure.nmc_creek_dock.1_steps
+  - structure.nmc_creek_dock.3_gangway
+  - structure.nmc_creek_dock.3_steps
+  - structure.nmc_creek_dock.4_gangway
+  - structure.nmc_creek_dock.4_steps
+  - prop.nmc_yard_rack_277
+  - prop.nmc_yard_rack_267
+  - prop.nmc_yard_fence_e140
+  - prop.nmc_lot_strip_256
+  - prop.nmc_lot_strip_241
+  - prop.nmc_lot_strip_210
+  - prop.nmc_lot_island_255_93
+  - prop.nmc_lot_island_198_93
+  - prop.nmc_lot_island_255_81
+  - prop.nmc_lot_island_198_81
+  - prop.nmc_lot_pole_252_97
+  - prop.nmc_lot_pole_229_97
+  - prop.nmc_lot_pole_206_97
+  - prop.nmc_lot_pole_255_81
+  - prop.nmc_lot_pole_198_81
+  - road.nmc.shore_lane
+  - prop.nmc_shore_lane_sand_fence_212
+  - prop.nmc_shore_lane_sand_fence_192
+  - prop.nmc_shore_lane_sand_fence_171
+  - prop.nmc_shore_lane_sand_fence_146
+  - road.nmc.bar_road
+  - road.nmc.water_street
+  - road.nmc.camp_road
+  - road.nmc.camp_loop_a
+  - road.nmc.camp_loop_b_stem
+  - road.nmc.camp_loop_b
+  - road.nmc.camp_loop_c_stem
+  - road.nmc.camp_loop_c
+  - coast.nmc_south_shore + coast.nmc_east_coast
+  - coast.nmc_east_coast.sections
+  - stream.nmc_town_river.mouth
+  - stream.nmc_town_river.head
+  - stream.nmc_town_river.head_of_tide
+  - stream.nmc_north_creek.mouth
+  - stream.nmc_north_creek.head
+  - stream.nmc_camp_brook.mouth
+  - stream.nmc_camp_brook.head
+  - falls.nmc_the_falls.lip
+  - falls.nmc_the_falls.pool
+  - pond.nmc_camp_pond.bed
+  - pond.nmc_north_creek_pond.bed
+  - pond.nmc_barachois.bed
+  - pond.nmc_marsh_pool.bed
+  - boardwalk.nmc_town_north.under
+  - boardwalk.nmc_town_south.under
+  - boardwalk.nmc_falls_deck.under
+  - boardwalk.nmc_marsh_walk.under
+  - stream.nmc_town_river.mid
+  - stream.nmc_town_river_mouth.mid
+  - stream.nmc_north_creek.mid
+  - stream.nmc_camp_brook.mid
+  - pond.nmc_camp_pond.surface
+  - pond.nmc_north_creek_pond.surface
+  - prop.nmc_camp_lights_a6
+  - prop.nmc_camp_tent_a7
+  - prop.nmc_camp_lights_a9
+  - prop.nmc_camp_tent_a10
+  - boat.nmc_creek_dory_3
+  - boat.nmc_creek_dory_4
+  - structure.nmc_plaza_hardware
+  - prop.nmc_plaza_row_1
+  - prop.nmc_plaza_row_2
+  - prop.nmc_plaza_island
+  - prop.nmc_plaza_corral
+  - prop.nmc_plaza_pole_1
+  - prop.nmc_plaza_pole_2
+  - prop.nmc_plaza_pole_3
+  - prop.nmc_plaza_pole_4
+  - prop.nmc_plaza_dock
+  - prop.nmc_plaza_bin
+  - prop.nmc_plaza_pylon
+  - vehicle.nmc_plaza_van_1
+  - vehicle.nmc_plaza_truck_1
+  - vehicle.nmc_plaza_truck_2
+  - vehicle.nmc_plaza_van_2
+  - vehicle.nmc_plaza_truck_3
+  - vehicle.nmc_plaza_truck_4
+  - vehicle.nmc_plaza_van_3

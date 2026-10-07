@@ -311,6 +311,7 @@ namespace HiddenHarbours.App.Editor
         sealed class Scene
         {
             public string Id, Name, Source;
+            public readonly List<string> ReservedIds = new List<string>();
             public readonly List<Row> Rows = new List<Row>();
             public readonly List<Light> Lights = new List<Light>();
             public readonly Tally Tally = new Tally();
@@ -369,6 +370,7 @@ namespace HiddenHarbours.App.Editor
         public static Result Import(string packageName, Func<string, byte[]> read, IReadOnlyDictionary<string, string> existing,
                                     string regionId, string scriptGuid, byte[] idMap, byte[] hosts)
         {
+            existing = WithoutNmc(existing);
             if (string.IsNullOrEmpty(packageName)) throw new Refusal("the package has no name.");
             if (string.IsNullOrEmpty(regionId)) throw new Refusal("no region id.");
             if (scriptGuid == null || !GuidRx.IsMatch(scriptGuid)) throw new Refusal($"'{scriptGuid}' is not KeySceneDef's script guid.");
@@ -398,6 +400,8 @@ namespace HiddenHarbours.App.Editor
             foreach (Json entry in Items(Need(island, "scenes", "island.json"), "island.json's scenes"))
             {
                 string id = Need(entry, "id", "an island scene").Str("an island scene's id");
+                if (id.StartsWith("keyscene.nmc_", StringComparison.Ordinal))
+                    throw new Refusal("St Peters cannot import an NMC scene: " + id);
                 Json file = entry.Get("file");
                 if (file != null) named.Add(file.Str(id + "'s file"));
                 if (id == VillageSceneId)
@@ -498,40 +502,40 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The id map and the hosts' table, each held to its schema: a rename is one step, to an id that
         /// holds no position, and given once; an answer names its piece once, and stands it on a host by id and
         /// anchor, or on its own ground.</summary>
-        static Beside ReadBeside(byte[] idMap, byte[] hosts, Result result)
+        static Beside ReadBeside(byte[] idMap, byte[] hosts, Result result, string idMapName = IdMapFile, string hostsName = HostsFile)
         {
             var beside = new Beside();
-            if (idMap == null) throw new Refusal($"no id map ({IdMapFile}).");
-            Json map = Json.Parse(Text(idMap, IdMapFile), IdMapFile);
-            Only(map, IdMapFile, "schema", "renames");
-            string schema = Need(map, "schema", IdMapFile).Str(IdMapFile + "'s schema");
-            if (schema != IdMapSchema) throw new Refusal($"{IdMapFile}'s schema is '{schema}', not {IdMapSchema}.");
+            if (idMap == null) throw new Refusal($"no id map ({idMapName}).");
+            Json map = Json.Parse(Text(idMap, idMapName), idMapName);
+            Only(map, idMapName, "schema", "renames");
+            string schema = Need(map, "schema", idMapName).Str(idMapName + "'s schema");
+            if (schema != IdMapSchema) throw new Refusal($"{idMapName}'s schema is '{schema}', not {IdMapSchema}.");
             var news = new HashSet<string>(StringComparer.Ordinal);
-            foreach (Json r in Items(Need(map, "renames", IdMapFile), IdMapFile + "'s renames"))
+            foreach (Json r in Items(Need(map, "renames", idMapName), idMapName + "'s renames"))
             {
-                Only(r, IdMapFile + "'s rename", "old", "new");
-                string old = Need(r, "old", IdMapFile + "'s rename").Str(IdMapFile + "'s old id");
-                string renamed = Need(r, "new", IdMapFile + "'s rename").Str(IdMapFile + "'s new id");
-                if (old.Length == 0 || renamed.Length == 0 || old == renamed) throw new Refusal($"{IdMapFile}: '{old}' to '{renamed}' is not a rename.");
-                if (renamed.IndexOf(PositionMark) >= 0) throw new Refusal($"{IdMapFile}: {renamed} holds a position, and a new id never does.");
-                if (beside.Renames.ContainsKey(old)) throw new Refusal($"{IdMapFile} renames {old} twice.");
-                if (!news.Add(renamed)) throw new Refusal($"{IdMapFile} gives {renamed} to two ids.");
+                Only(r, idMapName + "'s rename", "old", "new");
+                string old = Need(r, "old", idMapName + "'s rename").Str(idMapName + "'s old id");
+                string renamed = Need(r, "new", idMapName + "'s rename").Str(idMapName + "'s new id");
+                if (old.Length == 0 || renamed.Length == 0 || old == renamed) throw new Refusal($"{idMapName}: '{old}' to '{renamed}' is not a rename.");
+                if (renamed.IndexOf(PositionMark) >= 0) throw new Refusal($"{idMapName}: {renamed} holds a position, and a new id never does.");
+                if (beside.Renames.ContainsKey(old)) throw new Refusal($"{idMapName} renames {old} twice.");
+                if (!news.Add(renamed)) throw new Refusal($"{idMapName} gives {renamed} to two ids.");
                 beside.Renames[old] = renamed;
             }
             foreach (string old in beside.Renames.Keys)
-                if (news.Contains(old)) throw new Refusal($"{IdMapFile}: {old} is an old id and a new one. A rename is one step.");
-            result.Report.Add($"id map: {IdMapFile}, {beside.Renames.Count} renames, {idMap.Length} bytes, sha256 {Sha256(idMap)}");
+                if (news.Contains(old)) throw new Refusal($"{idMapName}: {old} is an old id and a new one. A rename is one step.");
+            result.Report.Add($"id map: {idMapName}, {beside.Renames.Count} renames, {idMap.Length} bytes, sha256 {Sha256(idMap)}");
 
-            if (hosts == null) throw new Refusal($"no hosts' table ({HostsFile}).");
-            Json table = Json.Parse(Text(hosts, HostsFile), HostsFile);
-            Only(table, HostsFile, "schema", "about", "hosts");
-            schema = Need(table, "schema", HostsFile).Str(HostsFile + "'s schema");
-            if (schema != HostsSchema) throw new Refusal($"{HostsFile}'s schema is '{schema}', not {HostsSchema}.");
-            foreach (Json h in Items(Need(table, "hosts", HostsFile), HostsFile + "'s hosts"))
+            if (hosts == null) throw new Refusal($"no hosts' table ({hostsName}).");
+            Json table = Json.Parse(Text(hosts, hostsName), hostsName);
+            Only(table, hostsName, "schema", "about", "hosts");
+            schema = Need(table, "schema", hostsName).Str(hostsName + "'s schema");
+            if (schema != HostsSchema) throw new Refusal($"{hostsName}'s schema is '{schema}', not {HostsSchema}.");
+            foreach (Json h in Items(Need(table, "hosts", hostsName), hostsName + "'s hosts"))
             {
-                Only(h, HostsFile + "'s answer", "piece", "mount", "standsOn", "host", "anchor", "answer");
-                string piece = beside.Id(Need(h, "piece", HostsFile + "'s answer").Str(HostsFile + "'s piece"), HostsFile);
-                string what = HostsFile + ": " + piece;
+                Only(h, hostsName + "'s answer", "piece", "mount", "standsOn", "host", "anchor", "answer");
+                string piece = beside.Id(Need(h, "piece", hostsName + "'s answer").Str(hostsName + "'s piece"), hostsName);
+                string what = hostsName + ": " + piece;
                 string mount = Need(h, "mount", what).Str(what + "'s mount");
                 string standsOn = Need(h, "standsOn", what).Str(what + "'s standsOn");
                 string host = Need(h, "host", what).Str(what + "'s host");
@@ -547,14 +551,14 @@ namespace HiddenHarbours.App.Editor
                     if (host.Length > 0 || anchor.Length > 0) throw new Refusal($"{what}: on its own ground, it names no host.");
                 }
                 else throw new Refusal($"{what}: it stands on '{standsOn}'; an answer stands a piece on a host or on its own ground.");
-                if (beside.Hosts.ContainsKey(piece)) throw new Refusal($"{HostsFile} answers {piece} twice.");
+                if (beside.Hosts.ContainsKey(piece)) throw new Refusal($"{hostsName} answers {piece} twice.");
                 beside.Hosts[piece] = new HostAnswer
                 {
                     Mount = mount,
                     Rule = new MountRule(standsOn, host.Length == 0 ? "" : beside.Id(host, what + "'s host"), anchor),
                 };
             }
-            result.Report.Add($"hosts' table: {HostsFile}, {beside.Hosts.Count} answers, {hosts.Length} bytes, sha256 {Sha256(hosts)}");
+            result.Report.Add($"hosts' table: {hostsName}, {beside.Hosts.Count} answers, {hosts.Length} bytes, sha256 {Sha256(hosts)}");
             return beside;
         }
 
@@ -837,6 +841,8 @@ namespace HiddenHarbours.App.Editor
                     if (kind != incoming.Kind) throw new Refusal($"{scene.Id} {rid}: its kind changes ({kind} to {incoming.Kind}). An id that changes kind is a STOP for the owner, not a move.");
                 }
             retired.AddRange(newlyRetired);
+            foreach (string reserved in scene.ReservedIds)
+                if (!retired.Contains(reserved)) retired.Add(reserved);
 
             var selection = (old == null ? null : Get(old.Top, "PlacementIds")?.Items)?.Select(n => n.Scalar).ToList();
             if (selection != null && selection.Any(id => !ids.Contains(id)))
@@ -1123,7 +1129,7 @@ namespace HiddenHarbours.App.Editor
             };
             var existing = new Dictionary<string, string>(StringComparer.Ordinal);
             foreach (string path in Directory.GetFiles(StPetersLayerRefresh.KeySceneFolder, "*.asset"))
-                existing[Path.GetFileName(path)] = File.ReadAllText(path);
+                if (!IsNmcAsset(Path.GetFileName(path))) existing[Path.GetFileName(path)] = File.ReadAllText(path);
 
             Result result = Import(PackageName(root), read, existing, StPetersLayerRefresh.StPetersRegionId, ScriptGuid(), idMap, hosts);
 

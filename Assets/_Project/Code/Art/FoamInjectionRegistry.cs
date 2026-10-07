@@ -230,6 +230,15 @@ namespace HiddenHarbours.Art
         /// leans shoreward — a small, stated divergence, not an oversight.</para>
         /// </summary>
         public static Vector2 DriftVelocity { get; private set; }
+        internal static Vector3 TransportStrengths { get; private set; }
+        internal static float TransportSeaLevel { get; private set; }
+        internal static bool HasTransportSeaLevel { get; private set; }
+        internal static void PublishTransportStrengths(Vector3 strengths) => TransportStrengths = strengths;
+        internal static void PublishTransportSeaLevel(float level, bool bound)
+        { TransportSeaLevel = level; HasTransportSeaLevel = bound; }
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetTransport()
+        { TransportStrengths = Vector3.zero; TransportSeaLevel = 0; HasTransportSeaLevel = false; }
 
         /// <summary>Called by <see cref="WaterSurface"/> from the live material (see
         /// <see cref="LookStrength"/>). Not a mood float: this is an owner LOOK knob, not weather
