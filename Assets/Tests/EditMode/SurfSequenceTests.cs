@@ -25,8 +25,8 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "7639d4e86601c7d830c8aecd64b98c214a8430b5d067c3f27c189a71e6523403";
-        // Approved b5825e1f, UTF-8 without BOM, LF. These are scope guards, not copies of physics.
+        const string BaseWaterHash = "9684e894683c4e6197c0696f0e95783b69d2312bfd692f759dcb2ffe316bd953";
+        // Re-approved at W1 Phase D (#932, owner d20 2026-10-07): the swell-read default and Water.mat's one line.
         const string LegacyDepth =
             "                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only\n" +
             "                                                 surfRunUpM, boreFoamBlend);   // …and the foam rides the bore's wash too\n";
@@ -164,7 +164,7 @@ namespace HiddenHarbours.Tests.EditMode
             var files = new[] { "Assets/_Project/Art/Materials/Water.mat" }.Concat(
                 Directory.GetFiles("Assets/_Project/Art/Materials/WaterPresets", "*.mat").OrderBy(p => p, StringComparer.Ordinal)).ToArray();
             string[] originalHashes = {
-                "99ec44b24e11904bc2a76618b1253d95b3268058cab715a12f557055fcd3351e",
+                "d660eea6fe569a17d6bebc74456494ce24d29ffc6ca9d84accd929258f8647db",
                 "65c31ac5d408f3892c8351e47cfe48eeb1fa255df8c11a7c9783480a6eec44b6",
                 "0754e4bed8cc712c95364c43bef405bb0a348cf704dd347b1d8f0c04a5cfa503",
                 "f9db60937eebbb8fc0b27d09378c0c6a9e66f6b969ba7bb4aa35ebb0d8aa92c5",
