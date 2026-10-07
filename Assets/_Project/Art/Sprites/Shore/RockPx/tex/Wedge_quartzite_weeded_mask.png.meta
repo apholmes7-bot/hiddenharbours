@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 1c31c3c56b7a5134e99bff5a4ed6a819
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -509460103426292180
+    second: Wedge_quartzite_weeded_mask_0
+  - first:
+      213: -5956452440539101979
+    second: Wedge_quartzite_weeded_mask_1
+  - first:
+      213: 1711910892963987554
+    second: Wedge_quartzite_weeded_mask_2
+  - first:
+      213: -2096880570807761024
+    second: Wedge_quartzite_weeded_mask_3
+  - first:
+      213: 6929362352934301080
+    second: Wedge_quartzite_weeded_mask_4
+  - first:
+      213: -7314504185423264924
+    second: Wedge_quartzite_weeded_mask_5
+  - first:
+      213: 8499610724004746489
+    second: Wedge_quartzite_weeded_mask_6
+  - first:
+      213: -2720920498404448330
+    second: Wedge_quartzite_weeded_mask_7
+  - first:
+      213: -4197484843901314140
+    second: Wedge_quartzite_weeded_mask_8
+  - first:
+      213: 2634150460324737916
+    second: Wedge_quartzite_weeded_mask_9
+  - first:
+      213: 1658322267782409746
+    second: Wedge_quartzite_weeded_mask_10
+  - first:
+      213: 8753227281420914621
+    second: Wedge_quartzite_weeded_mask_11
+  - first:
+      213: -5547002151466829781
+    second: Wedge_quartzite_weeded_mask_12
+  - first:
+      213: -4819163326022283276
+    second: Wedge_quartzite_weeded_mask_13
+  - first:
+      213: -5432049053714262703
+    second: Wedge_quartzite_weeded_mask_14
+  - first:
+      213: 7538254563319679617
+    second: Wedge_quartzite_weeded_mask_15
+  - first:
+      213: -1344424877835126894
+    second: Wedge_quartzite_weeded_mask_16
+  - first:
+      213: -8257462420674167961
+    second: Wedge_quartzite_weeded_mask_17
+  - first:
+      213: -5529130962547671827
+    second: Wedge_quartzite_weeded_mask_18
+  - first:
+      213: -2269734968856338342
+    second: Wedge_quartzite_weeded_mask_19
+  - first:
+      213: 2399539371253862662
+    second: Wedge_quartzite_weeded_mask_20
+  - first:
+      213: -3156918032693253913
+    second: Wedge_quartzite_weeded_mask_21
+  - first:
+      213: 7588946482654910526
+    second: Wedge_quartzite_weeded_mask_22
+  - first:
+      213: 5956140464605338774
+    second: Wedge_quartzite_weeded_mask_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32bae1cd9f4e3824785c8d4668187ac2
+      internalID: -1640943445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6338f62408639ff439bb82dd827b2b5b
+      internalID: 2004206745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40f4239057242034985002b90a5a68c8
+      internalID: 1877967572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f10a77ad0974e14cb5e0dd5f9f53106
+      internalID: -601070748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b548df36d8a65f41baa7fabd46f4ea7
+      internalID: -582351069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 681a883b1b70db648a71f86db765efa1
+      internalID: 1486964580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d6c408a5f0340144b29ba172b3c455b
+      internalID: -1984963374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e845034509cba146a82a7bfe85fee90
+      internalID: 759903152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 987b4ee7f06d025469630e6b48b65901
+      internalID: 1254660560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c60d09b0b66e83d4ab88700df535b49e
+      internalID: -799993598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc9081edb0bf341469f82ee19d1ad66a
+      internalID: -1889764096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 336ede0cf8becfc48b8ed11449af3823
+      internalID: 1565923220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2634758526ecd8e42ab65a17ea6d942f
+      internalID: -2129473796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7323177ee2d8f134894384476be41401
+      internalID: 674163923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a36ed6af6432fb4f84f0d78c050a7d0
+      internalID: 731420163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04c1f6eaf8390b547b70ba32ab7fd1d0
+      internalID: -1431564642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 204a57b9bf7445048a34b2ff81b3a849
+      internalID: -549669607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7838920ba452b64fb840a16a8fcad90
+      internalID: 1351483710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ea2df5a47a015b4ab108a9dfda7a6c7
+      internalID: -916430420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85b9befb609aca54db8c3ccde08e4c38
+      internalID: -245139311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a9bc475840072a4d8e574e2cde35442
+      internalID: -88188067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2bfba7154e7605c4b8ea54371ddd3bd9
+      internalID: -1833436248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1cceaa67fc048d840b617d2dabc4fa67
+      internalID: -371988584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_quartzite_weeded_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75012afdac4eed347a156bb4f013e9ee
+      internalID: -97950963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 63d75992b8a8d1d48ab96951ae6d3dc0
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Wedge_quartzite_weeded_mask_c0_r0: -1640943445
+      Wedge_quartzite_weeded_mask_c0_r1: 1254660560
+      Wedge_quartzite_weeded_mask_c0_r2: -549669607
+      Wedge_quartzite_weeded_mask_c1_r0: 2004206745
+      Wedge_quartzite_weeded_mask_c1_r1: -799993598
+      Wedge_quartzite_weeded_mask_c1_r2: 1351483710
+      Wedge_quartzite_weeded_mask_c2_r0: 1877967572
+      Wedge_quartzite_weeded_mask_c2_r1: -1889764096
+      Wedge_quartzite_weeded_mask_c2_r2: -916430420
+      Wedge_quartzite_weeded_mask_c3_r0: -601070748
+      Wedge_quartzite_weeded_mask_c3_r1: 1565923220
+      Wedge_quartzite_weeded_mask_c3_r2: -245139311
+      Wedge_quartzite_weeded_mask_c4_r0: -582351069
+      Wedge_quartzite_weeded_mask_c4_r1: -2129473796
+      Wedge_quartzite_weeded_mask_c4_r2: -88188067
+      Wedge_quartzite_weeded_mask_c5_r0: 1486964580
+      Wedge_quartzite_weeded_mask_c5_r1: 674163923
+      Wedge_quartzite_weeded_mask_c5_r2: -1833436248
+      Wedge_quartzite_weeded_mask_c6_r0: -1984963374
+      Wedge_quartzite_weeded_mask_c6_r1: 731420163
+      Wedge_quartzite_weeded_mask_c6_r2: -371988584
+      Wedge_quartzite_weeded_mask_c7_r0: 759903152
+      Wedge_quartzite_weeded_mask_c7_r1: -1431564642
+      Wedge_quartzite_weeded_mask_c7_r2: -97950963
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

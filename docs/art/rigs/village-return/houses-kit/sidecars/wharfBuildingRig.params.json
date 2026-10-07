@@ -1,0 +1,1403 @@
+{
+  "schema": "iso-rig-params/1",
+  "rig": "Art/wharfBuildingRig.js",
+  "exportSymbol": "WharfBuilding",
+  "derivedFromRigSha256": "76dbecb0e1ccadfbcacc66b9ec5787d2ebff8112b7d5976668fa953a08ed8163",
+  "generatedAt": "2026-09-16T01:45:48.322Z",
+  "usedBy": [
+    "Cottage Interior Iso.dc.html"
+  ],
+  "constants": {
+    "W": 1200,
+    "H": 1160,
+    "PX": 32,
+    "DIRS": 8,
+    "defaultElev": 40,
+    "KEY": "#1a1c22"
+  },
+  "enums": {
+    "order": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "SHAPES": [
+      "gable",
+      "gambrel",
+      "shed"
+    ],
+    "SIDINGS": [
+      "shingle",
+      "clapboard",
+      "boardBatten",
+      "corrugated"
+    ],
+    "ROOFS": [
+      "asphaltGrey",
+      "asphaltBrown",
+      "metalSeam",
+      "corrugated",
+      "rusted"
+    ],
+    "DOORS": [
+      "doubleBarn",
+      "slidingBarn",
+      "plank",
+      "rollUp",
+      "personnel"
+    ],
+    "WINDOWS": [
+      "twoOverTwo",
+      "sixOverSix",
+      "oneOverOne",
+      "industrial"
+    ],
+    "CUPOLAS": [
+      "none",
+      "cupola",
+      "monitor"
+    ]
+  },
+  "palettes": {
+    "BODY": {
+      "greyShingle": [
+        "#4c463f",
+        "#5d564c",
+        "#6f665a",
+        "#82786a",
+        "#968b7b",
+        "#a99d8c"
+      ],
+      "white": [
+        "#8c928c",
+        "#a6aaa2",
+        "#bfc2b9",
+        "#d5d8cf",
+        "#e7e9e0",
+        "#f3f4ec"
+      ],
+      "cream": [
+        "#8a6f3c",
+        "#a6884b",
+        "#c2a35f",
+        "#d8bd7c",
+        "#e9d59d",
+        "#f5e7c1"
+      ],
+      "red": [
+        "#4a130f",
+        "#671b14",
+        "#88271c",
+        "#a33124",
+        "#bd4230",
+        "#d25a42"
+      ],
+      "sage": [
+        "#3a4636",
+        "#4a5843",
+        "#5c6b52",
+        "#718063",
+        "#889777",
+        "#a1ae90"
+      ],
+      "blue": [
+        "#33454a",
+        "#43585d",
+        "#556d72",
+        "#6a848a",
+        "#849ea3",
+        "#a3b9bd"
+      ],
+      "rustOrange": [
+        "#5c2a10",
+        "#78380f",
+        "#95491a",
+        "#b05c27",
+        "#c67338",
+        "#d98d4f"
+      ],
+      "mustard": [
+        "#5e4a12",
+        "#7c6119",
+        "#987a26",
+        "#b39440",
+        "#c8ab5e",
+        "#dbc182"
+      ],
+      "teal": [
+        "#143a38",
+        "#1f4d4a",
+        "#2c625e",
+        "#3b7872",
+        "#4d8f88",
+        "#66a69d"
+      ],
+      "galv": [
+        "#464d51",
+        "#5a6267",
+        "#727c81",
+        "#8c979c",
+        "#a6b1b5",
+        "#c2cccf"
+      ],
+      "rustMetal": [
+        "#3a1c10",
+        "#552a17",
+        "#6e3a22",
+        "#8a4e2f",
+        "#a5643f",
+        "#bd7d52"
+      ]
+    },
+    "TRIM": [
+      "#9aa09a",
+      "#b4b8b0",
+      "#ccd0c7",
+      "#e0e2da",
+      "#eef0e8",
+      "#f8f9f2"
+    ],
+    "ROOF_RAMPS": {
+      "asphaltGrey": [
+        "#23262b",
+        "#2e333a",
+        "#3c424a",
+        "#4c535c",
+        "#5d6570",
+        "#6f7883"
+      ],
+      "asphaltBrown": [
+        "#2a211a",
+        "#3a2e23",
+        "#4c3d2e",
+        "#5f4d3a",
+        "#736046",
+        "#877254"
+      ],
+      "metalSeam": [
+        "#424d52",
+        "#556065",
+        "#6c7c81",
+        "#88999e",
+        "#a4babe",
+        "#c0d4d7"
+      ],
+      "corrugated": [
+        "#464d51",
+        "#5a6267",
+        "#727c81",
+        "#8c979c",
+        "#a6b1b5",
+        "#c2cccf"
+      ],
+      "rusted": [
+        "#3a1c10",
+        "#4f2614",
+        "#6a3620",
+        "#84462b",
+        "#9c5b3a",
+        "#b2724c"
+      ]
+    },
+    "GALV": [
+      "#464d51",
+      "#5a6267",
+      "#727c81",
+      "#8c979c",
+      "#a6b1b5",
+      "#c2cccf"
+    ],
+    "RUST": [
+      "#3a1c10",
+      "#4f2614",
+      "#6a3620",
+      "#84462b",
+      "#9c5b3a",
+      "#b2724c"
+    ],
+    "CINDER": [
+      "#4a4842",
+      "#5f5d55",
+      "#77746a",
+      "#8f8b7f",
+      "#a4a094",
+      "#b8b3a6"
+    ],
+    "STEEL": [
+      "#2a2f33",
+      "#3c454b",
+      "#525c63",
+      "#6d777e",
+      "#889298",
+      "#a2acb1"
+    ],
+    "SIGN": [
+      "#7d7566",
+      "#8f8878",
+      "#a89e88",
+      "#c0b69e",
+      "#d4cbb4",
+      "#e4dcc6"
+    ],
+    "STONE": [
+      "#33343a",
+      "#42444b",
+      "#54575d",
+      "#666a70",
+      "#7a7e84"
+    ],
+    "WOOD": [
+      "#4f3a24",
+      "#63492d",
+      "#785a39",
+      "#8f7049",
+      "#a6875d",
+      "#bd9f74"
+    ]
+  },
+  "tables": {
+    "pivot": {
+      "x": 600,
+      "y": 780
+    },
+    "TYPES": {
+      "shack": {
+        "shape": "gable",
+        "pitch": 1.3,
+        "siding": "shingle",
+        "body": "greyShingle",
+        "door": "doubleBarn",
+        "windows": "twoOverTwo",
+        "base": "none",
+        "cupola": "none",
+        "roof": "asphaltGrey",
+        "Wd": [
+          3.6,
+          1.4
+        ],
+        "Ln": [
+          4.5,
+          3
+        ],
+        "wallH": [
+          2.9,
+          1.1
+        ],
+        "fH": 0.4,
+        "loft": "window",
+        "dock": false,
+        "hvac": false,
+        "stacks": 0,
+        "vents": false,
+        "sign": false,
+        "boom": false,
+        "winD": 0.35
+      },
+      "storage": {
+        "shape": "gambrel",
+        "pitch": 1,
+        "siding": "boardBatten",
+        "body": "red",
+        "door": "slidingBarn",
+        "windows": "twoOverTwo",
+        "base": "none",
+        "cupola": "cupola",
+        "roof": "asphaltGrey",
+        "Wd": [
+          5.2,
+          2.2
+        ],
+        "Ln": [
+          6.5,
+          4.5
+        ],
+        "wallH": [
+          3.6,
+          1.6
+        ],
+        "fH": 0.45,
+        "loft": "door",
+        "dock": false,
+        "hvac": false,
+        "stacks": 0,
+        "vents": true,
+        "sign": false,
+        "boom": false,
+        "winD": 0.3
+      },
+      "processing": {
+        "shape": "gable",
+        "pitch": 0.72,
+        "siding": "corrugated",
+        "body": "galv",
+        "door": "rollUp",
+        "windows": "industrial",
+        "base": "block",
+        "cupola": "monitor",
+        "roof": "corrugated",
+        "Wd": [
+          7.2,
+          2.6
+        ],
+        "Ln": [
+          10,
+          6
+        ],
+        "wallH": [
+          4,
+          1.6
+        ],
+        "fH": 0.6,
+        "loft": "none",
+        "dock": true,
+        "hvac": true,
+        "stacks": 2,
+        "vents": true,
+        "sign": true,
+        "boom": true,
+        "winD": 0.5
+      }
+    },
+    "PRESETS": {
+      "netShed": {
+        "type": "shack",
+        "body": "greyShingle",
+        "siding": "shingle",
+        "roof": "asphaltGrey",
+        "door": "doubleBarn",
+        "size": 0.2,
+        "weather": 0.6
+      },
+      "redShed": {
+        "type": "shack",
+        "body": "red",
+        "siding": "boardBatten",
+        "roof": "asphaltBrown",
+        "door": "plank",
+        "size": 0.35,
+        "weather": 0.4
+      },
+      "tealShack": {
+        "type": "shack",
+        "body": "teal",
+        "siding": "clapboard",
+        "roof": "metalSeam",
+        "door": "slidingBarn",
+        "size": 0.3,
+        "weather": 0.45
+      },
+      "gambrelBarn": {
+        "type": "storage",
+        "body": "blue",
+        "siding": "boardBatten",
+        "roof": "asphaltGrey",
+        "door": "slidingBarn",
+        "cupola": "cupola",
+        "size": 0.6,
+        "weather": 0.35
+      },
+      "iceHouse": {
+        "type": "storage",
+        "body": "white",
+        "siding": "clapboard",
+        "roof": "metalSeam",
+        "door": "doubleBarn",
+        "size": 0.5,
+        "weather": 0.25
+      },
+      "fishPlant": {
+        "type": "processing",
+        "body": "galv",
+        "siding": "corrugated",
+        "roof": "corrugated",
+        "size": 0.7,
+        "weather": 0.5
+      },
+      "cannery": {
+        "type": "processing",
+        "body": "rustMetal",
+        "siding": "corrugated",
+        "roof": "rusted",
+        "size": 0.9,
+        "weather": 0.72,
+        "boom": true
+      }
+    }
+  },
+  "api": {
+    "render": "fn(2)",
+    "anchors": "fn(2)",
+    "project": "fn(3)"
+  },
+  "presetCount": 7,
+  "presets": {
+    "netShed": {
+      "options": {
+        "type": "shack",
+        "body": "greyShingle",
+        "siding": "shingle",
+        "roof": "asphaltGrey",
+        "door": "doubleBarn",
+        "size": 0.2,
+        "weather": 0.6
+      },
+      "anchors": {
+        "N": {
+          "stacks": [],
+          "door": {
+            "x": 600,
+            "y": 693.22974
+          },
+          "ridge": {
+            "x": 600,
+            "y": 631.889903
+          },
+          "Wd": 3.88,
+          "Ln": 5.1
+        },
+        "NE": {
+          "stacks": [],
+          "door": {
+            "x": 542.300087,
+            "y": 708.59242
+          },
+          "ridge": {
+            "x": 600,
+            "y": 631.889903
+          },
+          "Wd": 3.88,
+          "Ln": 5.1
+        },
+        "E": {
+          "stacks": [],
+          "door": {
+            "x": 518.4,
+            "y": 745.681209
+          },
+          "ridge": {
+            "x": 600,
+            "y": 631.889903
+          },
+          "Wd": 3.88,
+          "Ln": 5.1
+        },
+        "SE": {
+          "stacks": [],
+          "door": {
+            "x": 542.300087,
+            "y": 782.769998
+          },
+          "ridge": {
+            "x": 600,
+            "y": 631.889903
+          },
+          "Wd": 3.88,
+          "Ln": 5.1
+        },
+        "S": {
+          "stacks": [],
+          "door": {
+            "x": 600,
+            "y": 798.132678
+          },
+          "ridge": {
+            "x": 600,
+            "y": 631.889903
+          },
+          "Wd": 3.88,
+          "Ln": 5.1
+        },
+        "SW": {
+          "stacks": [],
+          "door": {
+            "x": 657.699913,
+            "y": 782.769998
+          },
+          "ridge": {
+            "x": 600,
+            "y": 631.889903
+          },
+          "Wd": 3.88,
+          "Ln": 5.1
+        },
+        "W": {
+          "stacks": [],
+          "door": {
+            "x": 681.6,
+            "y": 745.681209
+          },
+          "ridge": {
+            "x": 600,
+            "y": 631.889903
+          },
+          "Wd": 3.88,
+          "Ln": 5.1
+        },
+        "NW": {
+          "stacks": [],
+          "door": {
+            "x": 657.699913,
+            "y": 708.59242
+          },
+          "ridge": {
+            "x": 600,
+            "y": 631.889903
+          },
+          "Wd": 3.88,
+          "Ln": 5.1
+        }
+      }
+    },
+    "redShed": {
+      "options": {
+        "type": "shack",
+        "body": "red",
+        "siding": "boardBatten",
+        "roof": "asphaltBrown",
+        "door": "plank",
+        "size": 0.35,
+        "weather": 0.4
+      },
+      "anchors": {
+        "N": {
+          "stacks": [],
+          "door": {
+            "x": 600,
+            "y": 688.601669
+          },
+          "ridge": {
+            "x": 600,
+            "y": 624.499106
+          },
+          "Wd": 4.09,
+          "Ln": 5.55
+        },
+        "NE": {
+          "stacks": [],
+          "door": {
+            "x": 537.208918,
+            "y": 705.319879
+          },
+          "ridge": {
+            "x": 600,
+            "y": 624.499106
+          },
+          "Wd": 4.09,
+          "Ln": 5.55
+        },
+        "E": {
+          "stacks": [],
+          "door": {
+            "x": 511.2,
+            "y": 745.681209
+          },
+          "ridge": {
+            "x": 600,
+            "y": 624.499106
+          },
+          "Wd": 4.09,
+          "Ln": 5.55
+        },
+        "SE": {
+          "stacks": [],
+          "door": {
+            "x": 537.208918,
+            "y": 786.042539
+          },
+          "ridge": {
+            "x": 600,
+            "y": 624.499106
+          },
+          "Wd": 4.09,
+          "Ln": 5.55
+        },
+        "S": {
+          "stacks": [],
+          "door": {
+            "x": 600,
+            "y": 802.760749
+          },
+          "ridge": {
+            "x": 600,
+            "y": 624.499106
+          },
+          "Wd": 4.09,
+          "Ln": 5.55
+        },
+        "SW": {
+          "stacks": [],
+          "door": {
+            "x": 662.791082,
+            "y": 786.042539
+          },
+          "ridge": {
+            "x": 600,
+            "y": 624.499106
+          },
+          "Wd": 4.09,
+          "Ln": 5.55
+        },
+        "W": {
+          "stacks": [],
+          "door": {
+            "x": 688.8,
+            "y": 745.681209
+          },
+          "ridge": {
+            "x": 600,
+            "y": 624.499106
+          },
+          "Wd": 4.09,
+          "Ln": 5.55
+        },
+        "NW": {
+          "stacks": [],
+          "door": {
+            "x": 662.791082,
+            "y": 705.319879
+          },
+          "ridge": {
+            "x": 600,
+            "y": 624.499106
+          },
+          "Wd": 4.09,
+          "Ln": 5.55
+        }
+      }
+    },
+    "tealShack": {
+      "options": {
+        "type": "shack",
+        "body": "teal",
+        "siding": "clapboard",
+        "roof": "metalSeam",
+        "door": "slidingBarn",
+        "size": 0.3,
+        "weather": 0.45
+      },
+      "anchors": {
+        "N": {
+          "stacks": [],
+          "door": {
+            "x": 600,
+            "y": 690.144359
+          },
+          "ridge": {
+            "x": 600,
+            "y": 626.962705
+          },
+          "Wd": 4.02,
+          "Ln": 5.4
+        },
+        "NE": {
+          "stacks": [],
+          "door": {
+            "x": 538.905974,
+            "y": 706.410726
+          },
+          "ridge": {
+            "x": 600,
+            "y": 626.962705
+          },
+          "Wd": 4.02,
+          "Ln": 5.4
+        },
+        "E": {
+          "stacks": [],
+          "door": {
+            "x": 513.6,
+            "y": 745.681209
+          },
+          "ridge": {
+            "x": 600,
+            "y": 626.962705
+          },
+          "Wd": 4.02,
+          "Ln": 5.4
+        },
+        "SE": {
+          "stacks": [],
+          "door": {
+            "x": 538.905974,
+            "y": 784.951692
+          },
+          "ridge": {
+            "x": 600,
+            "y": 626.962705
+          },
+          "Wd": 4.02,
+          "Ln": 5.4
+        },
+        "S": {
+          "stacks": [],
+          "door": {
+            "x": 600,
+            "y": 801.218058
+          },
+          "ridge": {
+            "x": 600,
+            "y": 626.962705
+          },
+          "Wd": 4.02,
+          "Ln": 5.4
+        },
+        "SW": {
+          "stacks": [],
+          "door": {
+            "x": 661.094026,
+            "y": 784.951692
+          },
+          "ridge": {
+            "x": 600,
+            "y": 626.962705
+          },
+          "Wd": 4.02,
+          "Ln": 5.4
+        },
+        "W": {
+          "stacks": [],
+          "door": {
+            "x": 686.4,
+            "y": 745.681209
+          },
+          "ridge": {
+            "x": 600,
+            "y": 626.962705
+          },
+          "Wd": 4.02,
+          "Ln": 5.4
+        },
+        "NW": {
+          "stacks": [],
+          "door": {
+            "x": 661.094026,
+            "y": 706.410726
+          },
+          "ridge": {
+            "x": 600,
+            "y": 626.962705
+          },
+          "Wd": 4.02,
+          "Ln": 5.4
+        }
+      }
+    },
+    "gambrelBarn": {
+      "options": {
+        "type": "storage",
+        "body": "blue",
+        "siding": "boardBatten",
+        "roof": "asphaltGrey",
+        "door": "slidingBarn",
+        "cupola": "cupola",
+        "size": 0.6,
+        "weather": 0.35
+      },
+      "anchors": {
+        "N": {
+          "stacks": [],
+          "door": {
+            "x": 600,
+            "y": 649.837202
+          },
+          "ridge": {
+            "x": 600,
+            "y": 569.919972
+          },
+          "Wd": 6.52,
+          "Ln": 9.2
+        },
+        "NE": {
+          "stacks": [],
+          "door": {
+            "x": 495.913882,
+            "y": 677.550271
+          },
+          "ridge": {
+            "x": 600,
+            "y": 569.919972
+          },
+          "Wd": 6.52,
+          "Ln": 9.2
+        },
+        "E": {
+          "stacks": [],
+          "door": {
+            "x": 452.8,
+            "y": 744.455538
+          },
+          "ridge": {
+            "x": 600,
+            "y": 569.919972
+          },
+          "Wd": 6.52,
+          "Ln": 9.2
+        },
+        "SE": {
+          "stacks": [],
+          "door": {
+            "x": 495.913882,
+            "y": 811.360805
+          },
+          "ridge": {
+            "x": 600,
+            "y": 569.919972
+          },
+          "Wd": 6.52,
+          "Ln": 9.2
+        },
+        "S": {
+          "stacks": [],
+          "door": {
+            "x": 600,
+            "y": 839.073874
+          },
+          "ridge": {
+            "x": 600,
+            "y": 569.919972
+          },
+          "Wd": 6.52,
+          "Ln": 9.2
+        },
+        "SW": {
+          "stacks": [],
+          "door": {
+            "x": 704.086118,
+            "y": 811.360805
+          },
+          "ridge": {
+            "x": 600,
+            "y": 569.919972
+          },
+          "Wd": 6.52,
+          "Ln": 9.2
+        },
+        "W": {
+          "stacks": [],
+          "door": {
+            "x": 747.2,
+            "y": 744.455538
+          },
+          "ridge": {
+            "x": 600,
+            "y": 569.919972
+          },
+          "Wd": 6.52,
+          "Ln": 9.2
+        },
+        "NW": {
+          "stacks": [],
+          "door": {
+            "x": 704.086118,
+            "y": 677.550271
+          },
+          "ridge": {
+            "x": 600,
+            "y": 569.919972
+          },
+          "Wd": 6.52,
+          "Ln": 9.2
+        }
+      }
+    },
+    "iceHouse": {
+      "options": {
+        "type": "storage",
+        "body": "white",
+        "siding": "clapboard",
+        "roof": "metalSeam",
+        "door": "doubleBarn",
+        "size": 0.5,
+        "weather": 0.25
+      },
+      "anchors": {
+        "N": {
+          "stacks": [],
+          "door": {
+            "x": 600,
+            "y": 654.465272
+          },
+          "ridge": {
+            "x": 600,
+            "y": 576.538596
+          },
+          "Wd": 6.3,
+          "Ln": 8.75
+        },
+        "NE": {
+          "stacks": [],
+          "door": {
+            "x": 501.005051,
+            "y": 680.822811
+          },
+          "ridge": {
+            "x": 600,
+            "y": 576.538596
+          },
+          "Wd": 6.3,
+          "Ln": 8.75
+        },
+        "E": {
+          "stacks": [],
+          "door": {
+            "x": 460,
+            "y": 744.455538
+          },
+          "ridge": {
+            "x": 600,
+            "y": 576.538596
+          },
+          "Wd": 6.3,
+          "Ln": 8.75
+        },
+        "SE": {
+          "stacks": [],
+          "door": {
+            "x": 501.005051,
+            "y": 808.088265
+          },
+          "ridge": {
+            "x": 600,
+            "y": 576.538596
+          },
+          "Wd": 6.3,
+          "Ln": 8.75
+        },
+        "S": {
+          "stacks": [],
+          "door": {
+            "x": 600,
+            "y": 834.445803
+          },
+          "ridge": {
+            "x": 600,
+            "y": 576.538596
+          },
+          "Wd": 6.3,
+          "Ln": 8.75
+        },
+        "SW": {
+          "stacks": [],
+          "door": {
+            "x": 698.994949,
+            "y": 808.088265
+          },
+          "ridge": {
+            "x": 600,
+            "y": 576.538596
+          },
+          "Wd": 6.3,
+          "Ln": 8.75
+        },
+        "W": {
+          "stacks": [],
+          "door": {
+            "x": 740,
+            "y": 744.455538
+          },
+          "ridge": {
+            "x": 600,
+            "y": 576.538596
+          },
+          "Wd": 6.3,
+          "Ln": 8.75
+        },
+        "NW": {
+          "stacks": [],
+          "door": {
+            "x": 698.994949,
+            "y": 680.822811
+          },
+          "ridge": {
+            "x": 600,
+            "y": 576.538596
+          },
+          "Wd": 6.3,
+          "Ln": 8.75
+        }
+      }
+    },
+    "fishPlant": {
+      "options": {
+        "type": "processing",
+        "body": "galv",
+        "siding": "corrugated",
+        "roof": "corrugated",
+        "size": 0.7,
+        "weather": 0.5
+      },
+      "anchors": {
+        "N": {
+          "stacks": [
+            {
+              "x": 643.296,
+              "y": 556.159831
+            },
+            {
+              "x": 643.296,
+              "y": 458.798935
+            }
+          ],
+          "door": {
+            "x": 600,
+            "y": 594.73718
+          },
+          "ridge": {
+            "x": 600,
+            "y": 560.183241
+          },
+          "Wd": 9.02,
+          "Ln": 14.2
+        },
+        "NE": {
+          "stacks": [
+            {
+              "x": 684.166449,
+              "y": 522.222783
+            },
+            {
+              "x": 577.063342,
+              "y": 453.378233
+            }
+          ],
+          "door": {
+            "x": 439.345339,
+            "y": 637.511699
+          },
+          "ridge": {
+            "x": 600,
+            "y": 560.183241
+          },
+          "Wd": 9.02,
+          "Ln": 14.2
+        },
+        "E": {
+          "stacks": [
+            {
+              "x": 675.733333,
+              "y": 479.649251
+            },
+            {
+              "x": 524.266667,
+              "y": 479.649251
+            }
+          ],
+          "door": {
+            "x": 372.8,
+            "y": 740.778525
+          },
+          "ridge": {
+            "x": 600,
+            "y": 560.183241
+          },
+          "Wd": 9.02,
+          "Ln": 14.2
+        },
+        "SE": {
+          "stacks": [
+            {
+              "x": 622.936658,
+              "y": 453.378233
+            },
+            {
+              "x": 515.833551,
+              "y": 522.222783
+            }
+          ],
+          "door": {
+            "x": 439.345339,
+            "y": 844.04535
+          },
+          "ridge": {
+            "x": 600,
+            "y": 560.183241
+          },
+          "Wd": 9.02,
+          "Ln": 14.2
+        },
+        "S": {
+          "stacks": [
+            {
+              "x": 556.704,
+              "y": 458.798935
+            },
+            {
+              "x": 556.704,
+              "y": 556.159831
+            }
+          ],
+          "door": {
+            "x": 600,
+            "y": 886.819869
+          },
+          "ridge": {
+            "x": 600,
+            "y": 560.183241
+          },
+          "Wd": 9.02,
+          "Ln": 14.2
+        },
+        "SW": {
+          "stacks": [
+            {
+              "x": 515.833551,
+              "y": 492.735983
+            },
+            {
+              "x": 622.936658,
+              "y": 561.580533
+            }
+          ],
+          "door": {
+            "x": 760.654661,
+            "y": 844.04535
+          },
+          "ridge": {
+            "x": 600,
+            "y": 560.183241
+          },
+          "Wd": 9.02,
+          "Ln": 14.2
+        },
+        "W": {
+          "stacks": [
+            {
+              "x": 524.266667,
+              "y": 535.309515
+            },
+            {
+              "x": 675.733333,
+              "y": 535.309515
+            }
+          ],
+          "door": {
+            "x": 827.2,
+            "y": 740.778525
+          },
+          "ridge": {
+            "x": 600,
+            "y": 560.183241
+          },
+          "Wd": 9.02,
+          "Ln": 14.2
+        },
+        "NW": {
+          "stacks": [
+            {
+              "x": 577.063342,
+              "y": 561.580533
+            },
+            {
+              "x": 684.166449,
+              "y": 492.735983
+            }
+          ],
+          "door": {
+            "x": 760.654661,
+            "y": 637.511699
+          },
+          "ridge": {
+            "x": 600,
+            "y": 560.183241
+          },
+          "Wd": 9.02,
+          "Ln": 14.2
+        }
+      }
+    },
+    "cannery": {
+      "options": {
+        "type": "processing",
+        "body": "rustMetal",
+        "siding": "corrugated",
+        "roof": "rusted",
+        "size": 0.9,
+        "weather": 0.72,
+        "boom": true
+      },
+      "anchors": {
+        "N": {
+          "stacks": [
+            {
+              "x": 645.792,
+              "y": 547.840464
+            },
+            {
+              "x": 645.792,
+              "y": 442.251886
+            }
+          ],
+          "door": {
+            "x": 600,
+            "y": 582.395657
+          },
+          "ridge": {
+            "x": 600,
+            "y": 547.750033
+          },
+          "Wd": 9.54,
+          "Ln": 15.4
+        },
+        "NE": {
+          "stacks": [
+            {
+              "x": 690.456871,
+              "y": 511.564019
+            },
+            {
+              "x": 574.302797,
+              "y": 436.90162
+            }
+          ],
+          "door": {
+            "x": 425.768889,
+            "y": 628.784925
+          },
+          "ridge": {
+            "x": 600,
+            "y": 547.750033
+          },
+          "Wd": 9.54,
+          "Ln": 15.4
+        },
+        "E": {
+          "stacks": [
+            {
+              "x": 682.133333,
+              "y": 465.611645
+            },
+            {
+              "x": 517.866667,
+              "y": 465.611645
+            }
+          ],
+          "door": {
+            "x": 353.6,
+            "y": 740.778525
+          },
+          "ridge": {
+            "x": 600,
+            "y": 547.750033
+          },
+          "Wd": 9.54,
+          "Ln": 15.4
+        },
+        "SE": {
+          "stacks": [
+            {
+              "x": 625.697203,
+              "y": 436.90162
+            },
+            {
+              "x": 509.543129,
+              "y": 511.564019
+            }
+          ],
+          "door": {
+            "x": 425.768889,
+            "y": 852.772124
+          },
+          "ridge": {
+            "x": 600,
+            "y": 547.750033
+          },
+          "Wd": 9.54,
+          "Ln": 15.4
+        },
+        "S": {
+          "stacks": [
+            {
+              "x": 554.208,
+              "y": 442.251886
+            },
+            {
+              "x": 554.208,
+              "y": 547.840464
+            }
+          ],
+          "door": {
+            "x": 600,
+            "y": 899.161392
+          },
+          "ridge": {
+            "x": 600,
+            "y": 547.750033
+          },
+          "Wd": 9.54,
+          "Ln": 15.4
+        },
+        "SW": {
+          "stacks": [
+            {
+              "x": 509.543129,
+              "y": 478.528331
+            },
+            {
+              "x": 625.697203,
+              "y": 553.190731
+            }
+          ],
+          "door": {
+            "x": 774.231111,
+            "y": 852.772124
+          },
+          "ridge": {
+            "x": 600,
+            "y": 547.750033
+          },
+          "Wd": 9.54,
+          "Ln": 15.4
+        },
+        "W": {
+          "stacks": [
+            {
+              "x": 517.866667,
+              "y": 524.480705
+            },
+            {
+              "x": 682.133333,
+              "y": 524.480705
+            }
+          ],
+          "door": {
+            "x": 846.4,
+            "y": 740.778525
+          },
+          "ridge": {
+            "x": 600,
+            "y": 547.750033
+          },
+          "Wd": 9.54,
+          "Ln": 15.4
+        },
+        "NW": {
+          "stacks": [
+            {
+              "x": 574.302797,
+              "y": 553.190731
+            },
+            {
+              "x": 690.456871,
+              "y": 478.528331
+            }
+          ],
+          "door": {
+            "x": 774.231111,
+            "y": 628.784925
+          },
+          "ridge": {
+            "x": 600,
+            "y": 547.750033
+          },
+          "Wd": 9.54,
+          "Ln": 15.4
+        }
+      }
+    }
+  }
+}

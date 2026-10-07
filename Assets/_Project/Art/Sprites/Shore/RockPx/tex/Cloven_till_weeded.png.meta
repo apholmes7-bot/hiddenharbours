@@ -1,0 +1,772 @@
+fileFormatVersion: 2
+guid: c2e29ad1c3f47cd45a0bcc47844be3ff
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1813707820337497172
+    second: Cloven_till_weeded_0
+  - first:
+      213: 6563181837053308207
+    second: Cloven_till_weeded_1
+  - first:
+      213: 6178670289974702453
+    second: Cloven_till_weeded_2
+  - first:
+      213: -2257514112577811707
+    second: Cloven_till_weeded_3
+  - first:
+      213: 131302363127982274
+    second: Cloven_till_weeded_4
+  - first:
+      213: 2940094138125744828
+    second: Cloven_till_weeded_5
+  - first:
+      213: -6399024829719849616
+    second: Cloven_till_weeded_6
+  - first:
+      213: -8552396916597937373
+    second: Cloven_till_weeded_7
+  - first:
+      213: -9211012025721963619
+    second: Cloven_till_weeded_8
+  - first:
+      213: 6627446606568318023
+    second: Cloven_till_weeded_9
+  - first:
+      213: 9194761496778156066
+    second: Cloven_till_weeded_10
+  - first:
+      213: -2437914117569420592
+    second: Cloven_till_weeded_11
+  - first:
+      213: 2674413655825642684
+    second: Cloven_till_weeded_12
+  - first:
+      213: -5443001913856480686
+    second: Cloven_till_weeded_13
+  - first:
+      213: 8825925125535715782
+    second: Cloven_till_weeded_14
+  - first:
+      213: -3953492587831794436
+    second: Cloven_till_weeded_15
+  - first:
+      213: 6619907489533958547
+    second: Cloven_till_weeded_16
+  - first:
+      213: -2560516276558509403
+    second: Cloven_till_weeded_17
+  - first:
+      213: -9135719625852351978
+    second: Cloven_till_weeded_18
+  - first:
+      213: -6048827829537094575
+    second: Cloven_till_weeded_19
+  - first:
+      213: 4718664926104326457
+    second: Cloven_till_weeded_20
+  - first:
+      213: -5501005119816923639
+    second: Cloven_till_weeded_21
+  - first:
+      213: -1217842448523242473
+    second: Cloven_till_weeded_22
+  - first:
+      213: -2173090552456089394
+    second: Cloven_till_weeded_23
+  - first:
+      213: -7524332764347561776
+    second: Cloven_till_weeded_24
+  - first:
+      213: 6686668114741940953
+    second: Cloven_till_weeded_25
+  - first:
+      213: 1125658371108748033
+    second: Cloven_till_weeded_26
+  - first:
+      213: 581513393917652803
+    second: Cloven_till_weeded_27
+  - first:
+      213: 3922029363661387600
+    second: Cloven_till_weeded_28
+  - first:
+      213: 3516904039499615477
+    second: Cloven_till_weeded_29
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 696c1e44208176f40b5ae37bba793075
+      internalID: 1049714439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8521149959c6784d8aab3efe9d4e091
+      internalID: 2000746281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebae78b8cc9975644a5e1a52f682a5b9
+      internalID: -558469279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 13c0c488607893848a631c39f8034d9e
+      internalID: -275410524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 403526b9e17097a4bba9855519daa2a9
+      internalID: -537317420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d5f695f6018a74438cb0b5ec2a737e5
+      internalID: 1652935726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf15c84a42b63bb429deb46f58e18650
+      internalID: 633868524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57313dfef5b23d54f8659e7ef575ea76
+      internalID: -74751014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c2247eab6b0bdc4898fcb54a35c8d4d
+      internalID: -760780932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f1be324f7bb81e4c84f1f6d44154635
+      internalID: -1131132273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afa76084f692174408220a686e7677ad
+      internalID: 1818648451
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 984ab639e6f957a4a9936d98cc4ea898
+      internalID: -714034995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a4c671094b29f04cbe4591a0c78e752
+      internalID: -933121105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da031c92493c17746b4a77fefe3ca4a7
+      internalID: 1248863148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 524ff90ed8c098240b46f6da7e0b823c
+      internalID: 1329888059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ca6357f6dadfde40823287c01a1fb7c
+      internalID: -429339422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d7e9d526bd6ff44d88bc0d39502e4a7
+      internalID: 1841027252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a61568dfed7164b47877ae0b426d7808
+      internalID: 1366317355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f509d52d3917d2743bfdbc90233d0b79
+      internalID: 1878613349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61677efb070a4f942ba242ab26c20231
+      internalID: -119727178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6d978fc21874d74d8f4fdb68669d1b6
+      internalID: 1521351596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d495c52c53dd3ad499e4c8b4ff4d8ead
+      internalID: 133699534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b53548563b724d2448e40a02c58ac857
+      internalID: 1465483652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_till_weeded_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c17e00df32e11046879d3efe99e1ba3
+      internalID: -609490321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e3d05595f1c70d8449cc3529b6d050fb
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cloven_till_weeded_c0_r0: 1049714439
+      Cloven_till_weeded_c0_r1: -760780932
+      Cloven_till_weeded_c0_r2: 1841027252
+      Cloven_till_weeded_c1_r0: 2000746281
+      Cloven_till_weeded_c1_r1: -1131132273
+      Cloven_till_weeded_c1_r2: 1366317355
+      Cloven_till_weeded_c2_r0: -558469279
+      Cloven_till_weeded_c2_r1: 1818648451
+      Cloven_till_weeded_c2_r2: 1878613349
+      Cloven_till_weeded_c3_r0: -275410524
+      Cloven_till_weeded_c3_r1: -714034995
+      Cloven_till_weeded_c3_r2: -119727178
+      Cloven_till_weeded_c4_r0: -537317420
+      Cloven_till_weeded_c4_r1: -933121105
+      Cloven_till_weeded_c4_r2: 1521351596
+      Cloven_till_weeded_c5_r0: 1652935726
+      Cloven_till_weeded_c5_r1: 1248863148
+      Cloven_till_weeded_c5_r2: 133699534
+      Cloven_till_weeded_c6_r0: 633868524
+      Cloven_till_weeded_c6_r1: 1329888059
+      Cloven_till_weeded_c6_r2: 1465483652
+      Cloven_till_weeded_c7_r0: -74751014
+      Cloven_till_weeded_c7_r1: -429339422
+      Cloven_till_weeded_c7_r2: -609490321
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

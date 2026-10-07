@@ -1,0 +1,781 @@
+fileFormatVersion: 2
+guid: 5b6aadcbb9ea1df4fa9c26c02cfd4269
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6184845448194632519
+    second: Slab_till_weeded_normal_0
+  - first:
+      213: 3305244777551380621
+    second: Slab_till_weeded_normal_1
+  - first:
+      213: 4374668832181884355
+    second: Slab_till_weeded_normal_2
+  - first:
+      213: -3026646227223078925
+    second: Slab_till_weeded_normal_3
+  - first:
+      213: -5904952253957086624
+    second: Slab_till_weeded_normal_4
+  - first:
+      213: 3120372972885737887
+    second: Slab_till_weeded_normal_5
+  - first:
+      213: 5265709057156850343
+    second: Slab_till_weeded_normal_6
+  - first:
+      213: 3628795083530300633
+    second: Slab_till_weeded_normal_7
+  - first:
+      213: 1045369044558292410
+    second: Slab_till_weeded_normal_8
+  - first:
+      213: 1873183179495828290
+    second: Slab_till_weeded_normal_9
+  - first:
+      213: 4993054700553943361
+    second: Slab_till_weeded_normal_10
+  - first:
+      213: 4115308251840853737
+    second: Slab_till_weeded_normal_11
+  - first:
+      213: -402329241683043281
+    second: Slab_till_weeded_normal_12
+  - first:
+      213: 2764479591181478774
+    second: Slab_till_weeded_normal_13
+  - first:
+      213: -4385998631749257087
+    second: Slab_till_weeded_normal_14
+  - first:
+      213: 6705009630480160069
+    second: Slab_till_weeded_normal_15
+  - first:
+      213: -9140882157488839139
+    second: Slab_till_weeded_normal_16
+  - first:
+      213: 339940659242175860
+    second: Slab_till_weeded_normal_17
+  - first:
+      213: 9135220033741209264
+    second: Slab_till_weeded_normal_18
+  - first:
+      213: 8960671912392609513
+    second: Slab_till_weeded_normal_19
+  - first:
+      213: 2922880666445339590
+    second: Slab_till_weeded_normal_20
+  - first:
+      213: -1392578032633017425
+    second: Slab_till_weeded_normal_21
+  - first:
+      213: -6244854905591120918
+    second: Slab_till_weeded_normal_22
+  - first:
+      213: 5054393195076516766
+    second: Slab_till_weeded_normal_23
+  - first:
+      213: 4722814823886804233
+    second: Slab_till_weeded_normal_24
+  - first:
+      213: 3957026896114545834
+    second: Slab_till_weeded_normal_25
+  - first:
+      213: -6423806530747132928
+    second: Slab_till_weeded_normal_26
+  - first:
+      213: -8248826530827127732
+    second: Slab_till_weeded_normal_27
+  - first:
+      213: -1332829242874918603
+    second: Slab_till_weeded_normal_28
+  - first:
+      213: -1997252132322094568
+    second: Slab_till_weeded_normal_29
+  - first:
+      213: -1420646609952502679
+    second: Slab_till_weeded_normal_30
+  - first:
+      213: 3072544522687493426
+    second: Slab_till_weeded_normal_31
+  - first:
+      213: 1090829030340633003
+    second: Slab_till_weeded_normal_32
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a3b310f670e78148bc23e110a122be1
+      internalID: 1128203795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 020409048794bb84c9c2518da0d1b43b
+      internalID: -1641414626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 034942a9ec78f304898531c5022bee0e
+      internalID: 374519046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8664ca9357d90a74193afd2e08622faa
+      internalID: -898957848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b567529ccb15ec4ea1c35a5648ce8b2
+      internalID: -28725647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 452c4a1095adecd4a85681b2a86ae708
+      internalID: -87563299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb60c37cddc1db444bb6f0ff7f17b57d
+      internalID: 53085249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ceb66e1dbeaeab141a90fa97402dd6ab
+      internalID: 1508279686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80e6289a3c330a54cbce618fad83f39f
+      internalID: 212360493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f81f5ba4c2499c4d817fb8a867c5583
+      internalID: -1305017250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c59f2f073abce341b35e40b1b75a81d
+      internalID: -392522602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8574e941d5cb35e498b094729780c35b
+      internalID: 1272285873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d88380ef0220bed4bac3ce7e80eb2bf5
+      internalID: -489402802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28e0ba182a400bf45a3901e93185a6ac
+      internalID: -1046816822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5bd7ad8889c047540ac127eaf9f2c8f5
+      internalID: -212653650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7efcd0820a9e8b04dab0d292bcdd8b8e
+      internalID: -1269830783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b5697ec2d16a61449362828a27a164a
+      internalID: -30298441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a9143f77ffcbab468de7a2d13532029
+      internalID: 1431258198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1eaddcde96de97e4db1b0393eb8b63d7
+      internalID: -100343989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f80556e7252d704a889574513f6f684
+      internalID: -1639711532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ea33a4b393ddec40829b7c1dd3e26d0
+      internalID: 1851024863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0a9f79509c6aca409298f38951d3edc
+      internalID: -1038842462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 404b76b5ec4268c47b1e81b63d602db8
+      internalID: 2028468498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_till_weeded_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 881c3ba5dce4ec444a19516fa38779e2
+      internalID: -359582533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 4bd48a469e360954a83accc49a2f579f
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Slab_till_weeded_normal_c0_r0: 1128203795
+      Slab_till_weeded_normal_c0_r1: 212360493
+      Slab_till_weeded_normal_c0_r2: -30298441
+      Slab_till_weeded_normal_c1_r0: -1641414626
+      Slab_till_weeded_normal_c1_r1: -1305017250
+      Slab_till_weeded_normal_c1_r2: 1431258198
+      Slab_till_weeded_normal_c2_r0: 374519046
+      Slab_till_weeded_normal_c2_r1: -392522602
+      Slab_till_weeded_normal_c2_r2: -100343989
+      Slab_till_weeded_normal_c3_r0: -898957848
+      Slab_till_weeded_normal_c3_r1: 1272285873
+      Slab_till_weeded_normal_c3_r2: -1639711532
+      Slab_till_weeded_normal_c4_r0: -28725647
+      Slab_till_weeded_normal_c4_r1: -489402802
+      Slab_till_weeded_normal_c4_r2: 1851024863
+      Slab_till_weeded_normal_c5_r0: -87563299
+      Slab_till_weeded_normal_c5_r1: -1046816822
+      Slab_till_weeded_normal_c5_r2: -1038842462
+      Slab_till_weeded_normal_c6_r0: 53085249
+      Slab_till_weeded_normal_c6_r1: -212653650
+      Slab_till_weeded_normal_c6_r2: 2028468498
+      Slab_till_weeded_normal_c7_r0: 1508279686
+      Slab_till_weeded_normal_c7_r1: -1269830783
+      Slab_till_weeded_normal_c7_r2: -359582533
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

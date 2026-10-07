@@ -1,0 +1,781 @@
+fileFormatVersion: 2
+guid: 313bb156694c6474bba7b23442fa2a12
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -222224811452193624
+    second: Slab_quartzite_weeded_0
+  - first:
+      213: -1847918502838730094
+    second: Slab_quartzite_weeded_1
+  - first:
+      213: -1966376464840672603
+    second: Slab_quartzite_weeded_2
+  - first:
+      213: -8021511589165298261
+    second: Slab_quartzite_weeded_3
+  - first:
+      213: -1692227303734679987
+    second: Slab_quartzite_weeded_4
+  - first:
+      213: 4146945529925400622
+    second: Slab_quartzite_weeded_5
+  - first:
+      213: 1867904759883906234
+    second: Slab_quartzite_weeded_6
+  - first:
+      213: -1011600430192692074
+    second: Slab_quartzite_weeded_7
+  - first:
+      213: -8587937218758524052
+    second: Slab_quartzite_weeded_8
+  - first:
+      213: -5833256535658097037
+    second: Slab_quartzite_weeded_9
+  - first:
+      213: -3602860813497201632
+    second: Slab_quartzite_weeded_10
+  - first:
+      213: -1208000736562634029
+    second: Slab_quartzite_weeded_11
+  - first:
+      213: 5193284730684111285
+    second: Slab_quartzite_weeded_12
+  - first:
+      213: -7006690570658363892
+    second: Slab_quartzite_weeded_13
+  - first:
+      213: -4207125982705302775
+    second: Slab_quartzite_weeded_14
+  - first:
+      213: -3360185845379573168
+    second: Slab_quartzite_weeded_15
+  - first:
+      213: -7713950237733367281
+    second: Slab_quartzite_weeded_16
+  - first:
+      213: 7943352871422088029
+    second: Slab_quartzite_weeded_17
+  - first:
+      213: -117110103077622714
+    second: Slab_quartzite_weeded_18
+  - first:
+      213: 1085513107693685602
+    second: Slab_quartzite_weeded_19
+  - first:
+      213: -8888983779849503311
+    second: Slab_quartzite_weeded_20
+  - first:
+      213: -8318892610108137080
+    second: Slab_quartzite_weeded_21
+  - first:
+      213: -2671907698507802867
+    second: Slab_quartzite_weeded_22
+  - first:
+      213: -1228038717992982388
+    second: Slab_quartzite_weeded_23
+  - first:
+      213: -6154589348989899654
+    second: Slab_quartzite_weeded_24
+  - first:
+      213: -7298746339267958366
+    second: Slab_quartzite_weeded_25
+  - first:
+      213: -2078127688505502616
+    second: Slab_quartzite_weeded_26
+  - first:
+      213: 132810086289496954
+    second: Slab_quartzite_weeded_27
+  - first:
+      213: -8337423693701822413
+    second: Slab_quartzite_weeded_28
+  - first:
+      213: -5213692813794451006
+    second: Slab_quartzite_weeded_29
+  - first:
+      213: 3770416209291027800
+    second: Slab_quartzite_weeded_30
+  - first:
+      213: 800531308609264534
+    second: Slab_quartzite_weeded_31
+  - first:
+      213: 7523519341245162650
+    second: Slab_quartzite_weeded_32
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01e1ccb46a2106244a018908df3a4779
+      internalID: -1073691025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbce5ce958bf1494ba59756396e69f74
+      internalID: -1295806088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84092c0a86d5dae418b4ef60893547be
+      internalID: -1433043115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68af9f64b1d7de54383fd4a4c2f60cc0
+      internalID: -1423898234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5d987d1689a0bf4a84be33dada5b5dc
+      internalID: -1046846056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36e7f02fcdb85af4d9632710e437ed9d
+      internalID: 1891473364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4140bb4cfa5df1040928d742cb6a0c2f
+      internalID: -1474863217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d854a32cc54fa3448ede363dc27974c
+      internalID: -1257583992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc00dbb6aaa2f204398c7fdd8a12e080
+      internalID: 2098823202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c6b9655194718b48a5c938b0dbbd509
+      internalID: -1905087047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51a06553815f7b24d9bc33b089544ea5
+      internalID: 2075332176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fdac502db28ef9f419d687261e5f775e
+      internalID: 572819988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 639afc82718c27143a5323f44c8d2d56
+      internalID: -2030941702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27235c80fe3f5c74d80115477cca1337
+      internalID: 1348665147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29ebdcd20d08c4c4b8ef838399b795d9
+      internalID: 664599484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 890269ca9e136cd4f9344887456e5a7d
+      internalID: -153527986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 574ffc880754f9c4fa6c7e63cee7f3b7
+      internalID: 1890409814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d7039876f2dad3498c5466ba41f70b0
+      internalID: 2105744427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d646775ed9449143a33d14b1d7ac3a5
+      internalID: -2061232803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73ce55a4b5a212f4dbe0e7af7b934442
+      internalID: 1074206654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebb01f0e14e228c439432bc0be21f56e
+      internalID: -842968221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 67eba2b80e053704cba5a4dc5cca43d8
+      internalID: -1495202505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84425fec11698da4aae0b52890af1acc
+      internalID: 653008266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_weeded_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3bc19ec629dc0f94abe1f9e6a9b6aaf3
+      internalID: 939031589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 0d7ebf15927cafa4e8769409ade43dea
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Slab_quartzite_weeded_c0_r0: -1073691025
+      Slab_quartzite_weeded_c0_r1: 2098823202
+      Slab_quartzite_weeded_c0_r2: 1890409814
+      Slab_quartzite_weeded_c1_r0: -1295806088
+      Slab_quartzite_weeded_c1_r1: -1905087047
+      Slab_quartzite_weeded_c1_r2: 2105744427
+      Slab_quartzite_weeded_c2_r0: -1433043115
+      Slab_quartzite_weeded_c2_r1: 2075332176
+      Slab_quartzite_weeded_c2_r2: -2061232803
+      Slab_quartzite_weeded_c3_r0: -1423898234
+      Slab_quartzite_weeded_c3_r1: 572819988
+      Slab_quartzite_weeded_c3_r2: 1074206654
+      Slab_quartzite_weeded_c4_r0: -1046846056
+      Slab_quartzite_weeded_c4_r1: -2030941702
+      Slab_quartzite_weeded_c4_r2: -842968221
+      Slab_quartzite_weeded_c5_r0: 1891473364
+      Slab_quartzite_weeded_c5_r1: 1348665147
+      Slab_quartzite_weeded_c5_r2: -1495202505
+      Slab_quartzite_weeded_c6_r0: -1474863217
+      Slab_quartzite_weeded_c6_r1: 664599484
+      Slab_quartzite_weeded_c6_r2: 653008266
+      Slab_quartzite_weeded_c7_r0: -1257583992
+      Slab_quartzite_weeded_c7_r1: -153527986
+      Slab_quartzite_weeded_c7_r2: 939031589
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

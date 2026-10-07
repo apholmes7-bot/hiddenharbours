@@ -1,0 +1,757 @@
+fileFormatVersion: 2
+guid: 822643d96d1145f48847f6a4b71b526c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8973066336563218996
+    second: Erratic_basalt_weeded_0
+  - first:
+      213: 960080281199001243
+    second: Erratic_basalt_weeded_1
+  - first:
+      213: -7907157500557393567
+    second: Erratic_basalt_weeded_2
+  - first:
+      213: -2774541078080114204
+    second: Erratic_basalt_weeded_3
+  - first:
+      213: 2473498151522081242
+    second: Erratic_basalt_weeded_4
+  - first:
+      213: -4503611789185017683
+    second: Erratic_basalt_weeded_5
+  - first:
+      213: -520987309061935734
+    second: Erratic_basalt_weeded_6
+  - first:
+      213: -992869467375075933
+    second: Erratic_basalt_weeded_7
+  - first:
+      213: 1811333406554276794
+    second: Erratic_basalt_weeded_8
+  - first:
+      213: 6639330069696607851
+    second: Erratic_basalt_weeded_9
+  - first:
+      213: 6980557738319070099
+    second: Erratic_basalt_weeded_10
+  - first:
+      213: -4028814817108224618
+    second: Erratic_basalt_weeded_11
+  - first:
+      213: -8452139882476512454
+    second: Erratic_basalt_weeded_12
+  - first:
+      213: -8555241497777021578
+    second: Erratic_basalt_weeded_13
+  - first:
+      213: 2800445253938596891
+    second: Erratic_basalt_weeded_14
+  - first:
+      213: 2270009188615101656
+    second: Erratic_basalt_weeded_15
+  - first:
+      213: -706530050749882620
+    second: Erratic_basalt_weeded_16
+  - first:
+      213: 7674030014475970450
+    second: Erratic_basalt_weeded_17
+  - first:
+      213: 4381024018128440825
+    second: Erratic_basalt_weeded_18
+  - first:
+      213: -8679228093554798477
+    second: Erratic_basalt_weeded_19
+  - first:
+      213: -1451990771318736735
+    second: Erratic_basalt_weeded_20
+  - first:
+      213: -2505344474243033114
+    second: Erratic_basalt_weeded_21
+  - first:
+      213: -6181035199510619555
+    second: Erratic_basalt_weeded_22
+  - first:
+      213: 2762942184810640587
+    second: Erratic_basalt_weeded_23
+  - first:
+      213: -7920193377720590201
+    second: Erratic_basalt_weeded_24
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41b82fe7ede0fa24dbcc041e7fbbd26b
+      internalID: 57085588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4d3c23117432f34498bad65f3887545
+      internalID: 8375100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca1c6d6719b13a243b80bcffab15508a
+      internalID: 1065681800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3f6db4c32d38834daedbd9f1f3a88c3
+      internalID: 1735460871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1427a34d0b91702449792a1c1fb04d72
+      internalID: -611525224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7ab339cd67218942b24bc7243aebc23
+      internalID: 1428480045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7fde05452a942344f8f44e802e2df18c
+      internalID: 607455280
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc429cba706fe4649ab25b3e54bd23eb
+      internalID: 1047418998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 099572915c364a044b21b4cb122a79da
+      internalID: -1263096384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 863e3e8bff93fe943ae201cd5b93b095
+      internalID: 2111457021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1104c947a44982346b77f58e1e72e3ce
+      internalID: -361994984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f49cc1a7fe3c8764eb95da5f67c37213
+      internalID: 619242156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68d69406a41e042499d43c51eea044bf
+      internalID: 1827183399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e94984b8ca993544946394b33cb05d9
+      internalID: 745081794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 830f1b7542f47414b8aa57f1c220b961
+      internalID: -1235203785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ab0be802e4926743aa01b7b7695375f
+      internalID: 248446537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c288c85dd35719d4283739f14f2e7a6e
+      internalID: -509908297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9ead73beb0a9764db44598397b77400
+      internalID: -955355048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd74022997903cb49a741c52671d9282
+      internalID: -770175890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c624d4bb2cac4e4b8e4d8b35ce5d8cc
+      internalID: -406196116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e81d6407f8202d41a7a93f5b7867817
+      internalID: -1415404423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b0f3355b8eb6864cae255869c2da545
+      internalID: -2124353692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f4992378abd34746ab366815315a020
+      internalID: 448074622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_basalt_weeded_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b23116bd8246ffa4c9e03fc1b1a70a63
+      internalID: 1005359744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: c53c3aecd0323994bb0c7eb18521292c
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Erratic_basalt_weeded_c0_r0: 57085588
+      Erratic_basalt_weeded_c0_r1: -1263096384
+      Erratic_basalt_weeded_c0_r2: -509908297
+      Erratic_basalt_weeded_c1_r0: 8375100
+      Erratic_basalt_weeded_c1_r1: 2111457021
+      Erratic_basalt_weeded_c1_r2: -955355048
+      Erratic_basalt_weeded_c2_r0: 1065681800
+      Erratic_basalt_weeded_c2_r1: -361994984
+      Erratic_basalt_weeded_c2_r2: -770175890
+      Erratic_basalt_weeded_c3_r0: 1735460871
+      Erratic_basalt_weeded_c3_r1: 619242156
+      Erratic_basalt_weeded_c3_r2: -406196116
+      Erratic_basalt_weeded_c4_r0: -611525224
+      Erratic_basalt_weeded_c4_r1: 1827183399
+      Erratic_basalt_weeded_c4_r2: -1415404423
+      Erratic_basalt_weeded_c5_r0: 1428480045
+      Erratic_basalt_weeded_c5_r1: 745081794
+      Erratic_basalt_weeded_c5_r2: -2124353692
+      Erratic_basalt_weeded_c6_r0: 607455280
+      Erratic_basalt_weeded_c6_r1: -1235203785
+      Erratic_basalt_weeded_c6_r2: 448074622
+      Erratic_basalt_weeded_c7_r0: 1047418998
+      Erratic_basalt_weeded_c7_r1: 248446537
+      Erratic_basalt_weeded_c7_r2: 1005359744
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

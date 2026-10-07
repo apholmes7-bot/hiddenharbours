@@ -37,6 +37,11 @@
 # macro for files Unity itself serialises.)
 *.recipe.json           text eol=lf linguist-language=json linguist-generated
 
+# St Peters' terrain plan (terrain PR 5; T12). Both are compared byte for byte: the frozen sources must write back to
+# themselves, and the manifest records the sources' file sha256. A CRLF checkout would red both for line endings alone.
+Assets/_Project/Data/Terrain/StPetersPlan.sources.json   text eol=lf linguist-language=json
+Assets/_Project/Data/Terrain/StPetersPlan.manifest.json  text eol=lf linguist-language=json linguist-generated
+
 # Unity UI Toolkit files
 *.tss                   text diff=css linguist-language=css
 *.uss                   text diff=css linguist-language=css
@@ -183,17 +188,12 @@ Packages/packages-lock.json linguist-generated
 # Exceptions for .asset files such as lightning pre-baking
 LightingData.asset     binary
 
-# Derived terrain texture arrays are BINARY Texture2DArray payloads - the repo-wide
-# *.asset unity-yaml TEXT rule mis-serves them (56 MB blobs, ~78 MB per re-bake).
+# Terrain recipes import packed textures into Library (ADR 0047). Keep this retired-path
+# LFS safety net so a forced accidental add cannot create a huge ordinary Git text blob.
 # Path rule wins over the generic one. Ruled by lead-architect on PR #438.
 Assets/_Project/Art/Terrain/Derived/*.asset filter=lfs diff=lfs merge=lfs -text
+*.hhterrain text eol=lf
 
-# The scene-export packages are generated documents whose bytes are compared by
-# `hh_scene_export.py --check`. A checkout with autocrlf on would rewrite them to CRLF, and a
-# tool that regenerates them writes LF — so pin the working-tree form. The gate reads with
-# universal newlines regardless (belt and braces); this keeps the files themselves LF for
-# everyone, so a diff between two machines shows content and not line endings.
-tools/scene-export/packages/** text eol=lf
 docs/tools/reference/*.json    text eol=lf
 
 # The sail rig kit (docs/art/rigs/sail-rig-kit/) ships its own SHA256SUMS.txt, and BOTH sidecars of
@@ -287,6 +287,18 @@ docs/art/rigs/character/rig9/**/*.txt                 text eol=lf
 docs/art/rigs/character/rig9/**/*.md                  text eol=lf
 docs/art/rigs/character/rig9/**/*.html                text eol=lf
 
+# The character rig 10 kit (Claude Design, docs/art/rigs/character/rig10/; kit 10.3 since 2026-10-05),
+# for the same reasons: SHA256SUMS.txt over 319 files, all LF as served (measured: 0 CR in its 79 text
+# files), the intake's INTAKE.SHA256SUMS.txt over the 248 files Node regenerated and the desk's two
+# scripts, and the baker pins the rig and its poses file by their LF sha256. By extension, not `**`:
+# the kit's 241 PNGs keep [attr]lfs's -text.
+docs/art/rigs/character/rig10/**/*.js                 text eol=lf
+docs/art/rigs/character/rig10/**/*.cjs                text eol=lf
+docs/art/rigs/character/rig10/**/*.json               text eol=lf
+docs/art/rigs/character/rig10/**/*.txt                text eol=lf
+docs/art/rigs/character/rig10/**/*.md                 text eol=lf
+docs/art/rigs/character/rig10/**/*.html               text eol=lf
+
 # Terrain pass 9 (PR 2, the ground): two drops' JavaScript as bytes, with SHA256SUMS.txt and a README
 # table of each file's sha256 inside its zip, and TerrainRelight.json stamps the rig files' sha256 as
 # the bake loaded them. All of those are over the LF bytes as written. Pin the working-tree form so
@@ -296,3 +308,17 @@ docs/art/rigs/terrain/pass9/**/*.js                   text eol=lf
 docs/art/rigs/terrain/pass9/**/*.json                 text eol=lf
 docs/art/rigs/terrain/pass9/**/*.md                   text eol=lf
 docs/art/rigs/terrain/pass9/**/*.txt                  text eol=lf
+
+# Wharf rig kit pass 2 (drop 12): preserve SHA256SUMS without overriding PNG LFS -text.
+docs/art/rigs/wharf-rig-kit-v2/**/*.js                text eol=lf
+docs/art/rigs/wharf-rig-kit-v2/**/*.json              text eol=lf
+docs/art/rigs/wharf-rig-kit-v2/**/*.txt               text eol=lf
+docs/art/rigs/wharf-rig-kit-v2/**/*.md                text eol=lf
+docs/art/rigs/wharf-rig-kit-v2/**/*.html              text eol=lf
+
+# Wharf buildings pass 2 (drop 13): preserve SHA256SUMS without overriding the boards' LFS -text.
+docs/art/rigs/wharf-building-kit-v2/**/*.js           text eol=lf
+docs/art/rigs/wharf-building-kit-v2/**/*.json         text eol=lf
+docs/art/rigs/wharf-building-kit-v2/**/*.txt          text eol=lf
+docs/art/rigs/wharf-building-kit-v2/**/*.md           text eol=lf
+docs/art/rigs/wharf-building-kit-v2/**/*.html         text eol=lf

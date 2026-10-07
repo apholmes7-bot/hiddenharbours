@@ -167,6 +167,14 @@ namespace HiddenHarbours.Art
     public static class FoamInjectionRegistry
     {
         static readonly List<FoamInjector> s_Live = new List<FoamInjector>();
+        static readonly Dictionary<FoamInjector, string> s_SelectionKeys = new Dictionary<FoamInjector, string>();
+        static FoamCandidate[] s_Candidates = System.Array.Empty<FoamCandidate>();
+        static readonly FoamSelectionSlot[] s_Selected = new FoamSelectionSlot[FoamBuffer.MaxInjectors];
+
+        // Read-only observation of the real production selection, once per offered injection.
+        // Camera, injector, overlaps window, selected rank (-1 if dropped), eligible count, selected count.
+        // No mutable arrays escape, and no reporting scan runs when nobody is listening.
+        internal static event System.Action<Camera, FoamInjector, bool, int, int, int> InjectionSelectionObserved;
         static Texture2D s_BlackFallback;
         static bool s_WarnedOverCap;
         static bool s_IdleBound;
@@ -476,12 +484,22 @@ namespace HiddenHarbours.Art
         {
             if (injector == null || s_Live.Contains(injector)) return;
             s_Live.Add(injector);
+            // Cache identity and reserve gathering space at membership changes, never per render.
+            // Scene path + hierarchy sibling paths are independent of registration order and frame.
+            string key = string.Empty;
+            for (Transform node = injector.transform; node != null; node = node.parent)
+                key = "/" + node.GetSiblingIndex().ToString(System.Globalization.CultureInfo.InvariantCulture)
+                    + ":" + node.name + key;
+            s_SelectionKeys[injector] = injector.gameObject.scene.path + key;
+            if (s_Candidates.Length < s_Live.Count)
+                s_Candidates = new FoamCandidate[s_Live.Count];
             EnsureFallbackBound();
         }
 
         internal static void Unregister(FoamInjector injector)
         {
             s_Live.Remove(injector);
+            s_SelectionKeys.Remove(injector);
             if (s_Live.Count <= FoamBuffer.MaxInjectors) s_WarnedOverCap = false;
             // ⚠️ Takes her stern wave off the sea in the same call. The per-frame packing already
             // drops a boat that stops publishing — but only once SOMEBODY ELSE publishes and rolls the
@@ -491,16 +509,16 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// Fill <paramref name="into"/> with this frame's deposits, newest-registered first, up to
-        /// <see cref="FoamBuffer.MaxInjectors"/>. Returns how many slots were written. Allocation-free
-        /// (the caller owns the array and reuses it every frame — rule 7).
+        /// Fill the camera's eight slots from overlapping swept/dispersal footprints, nearest to its
+        /// window centre first, then by cached scene/hierarchy key. No frame-time allocations.
+        /// An omitted window preserves the legacy unbounded caller; production always supplies one.
         /// </summary>
-        public static int CollectInjections(FoamInjection[] into)
+        public static int CollectInjections(FoamInjection[] into, Rect? window = null, Camera camera = null)
         {
             if (into == null || into.Length == 0) return 0;
-            int max = Mathf.Min(into.Length, FoamBuffer.MaxInjectors);
-            int n = 0;
-            int dropped = 0;
+            Rect bounds = window ?? Rect.MinMaxRect(-float.MaxValue / 2, -float.MaxValue / 2,
+                                                    float.MaxValue / 2, float.MaxValue / 2);
+            int offered = 0;
             for (int i = 0; i < s_Live.Count; i++)
             {
                 FoamInjector injector = s_Live[i];
@@ -508,8 +526,23 @@ namespace HiddenHarbours.Art
                 // A hull that is live but not actually churning (moored on glass, drifting with the
                 // stream) claims no slot — so the cap bounds BOATS THAT ARE MAKING FOAM, not boats.
                 if (!injector.TryTakeInjection(out FoamInjection injection)) continue;
-                if (n >= max) { dropped++; continue; }
-                into[n++] = injection;
+                s_Candidates[offered++] = new FoamCandidate(injection, s_SelectionKeys[injector], i);
+            }
+            int selected = FoamSelection.Select(s_Candidates, offered, bounds, s_Selected, out int eligible);
+            int n = Mathf.Min(selected, into.Length);
+            for (int i = 0; i < n; i++) into[i] = s_Selected[i].Candidate.Injection;
+            int dropped = eligible - n;
+            if (InjectionSelectionObserved != null)
+            {
+                for (int i = 0; i < offered; i++)
+                {
+                    FoamCandidate candidate = s_Candidates[i];
+                    int rank = -1;
+                    for (int j = 0; j < n; j++)
+                        if (s_Selected[j].Candidate.SourceIndex == candidate.SourceIndex) { rank = j; break; }
+                    InjectionSelectionObserved(camera, s_Live[candidate.SourceIndex],
+                        FoamSelection.Footprint(candidate.Injection, bounds, out _), rank, eligible, n);
+                }
             }
             // ⚠️ Warn only when foam was ACTUALLY dropped — never merely because many injectors exist.
             // No silent caps: a truncation nobody is told about reads as "every boat is churning".
@@ -517,9 +550,9 @@ namespace HiddenHarbours.Art
             {
                 s_WarnedOverCap = true;
                 Debug.LogWarning(
-                    $"[FoamInjectionRegistry] {n + dropped} hulls are churning water but only " +
-                    $"{FoamBuffer.MaxInjectors} slots exist, so {dropped} of them laid NO wake this " +
-                    "frame. The cap is the advect shader's COMPILE-TIME loop bound (ADR 0027 #6); " +
+                    $"[FoamInjectionRegistry] {eligible} hull footprints reach this camera but only " +
+                    $"{n} slots were filled, so {dropped} lower-ranked hulls laid NO wake in this " +
+                    "camera this frame. The cap is the advect shader's COMPILE-TIME loop bound (ADR 0027 #6); " +
                     "raise FoamBuffer.MaxInjectors and FOAM_MAX_INJECTORS together if a fleet needs it.");
             }
             return n;

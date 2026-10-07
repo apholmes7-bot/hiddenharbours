@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9ddd201d40068c5900a1b822ead6478, type: 3}
+  m_Name: Gut_OldMansGut
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.TidalCreekDef
+  Id: gut.stp_old_mans_gut
+  DisplayName: 'The Old Man''s Gut'
+  Joins: {fileID: 0}
+  Points:
+  - {x: 61, y: -75}
+  - {x: 61.4, y: -78}
+  - {x: 62.3, y: -81.1}
+  - {x: 61.7, y: -84}
+  - {x: 60.5, y: -87}
+  - {x: 59.2, y: -89.9}
+  - {x: 58.6, y: -92.9}
+  - {x: 58.9, y: -95.9}
+  - {x: 59.9, y: -99}
+  - {x: 60.9, y: -102}
+  - {x: 61.2, y: -105}
+  - {x: 60.6, y: -108}
+  - {x: 59.4, y: -111}
+  - {x: 58.1, y: -113.9}
+  - {x: 57.5, y: -116.9}
+  - {x: 57.8, y: -119.9}
+  - {x: 58.8, y: -123}
+  - {x: 59.8, y: -126}
+  BedZ:
+  - -2.4
+  - -2.4
+  - -2.4
+  - -2.4
+  - -2.4
+  - -2.4
+  - -2.4
+  - -2.4
+  - -2.4
+  - -2.4
+  - -2.4
+  - -2.4
+  - -2.4
+  - -2.4
+  - -2.4
+  - -2.4
+  - -2.4
+  - -2.4
+  Widths:
+  - 3.2
+  - 3.2228003
+  - 3.2471182
+  - 3.269428
+  - 3.2937694
+  - 3.317711
+  - 3.3407588
+  - 3.363472
+  - 3.3880107
+  - 3.4118335
+  - 3.4345465
+  - 3.4575944
+  - 3.4819357
+  - 3.5058775
+  - 3.5289254
+  - 3.5516384
+  - 3.5761771
+  - 3.6
+  Bank: 0.6

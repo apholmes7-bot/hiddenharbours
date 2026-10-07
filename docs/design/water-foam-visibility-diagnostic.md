@@ -35,8 +35,9 @@ hour 11, north/east/turn drive, production camera, capture, and teardown. The se
 test temporarily promotes the subject in the registry, then restores its position.
 This is a causal experiment, not the proposed production allocation policy.
 
-Each leg records eligible packing immediately before camera rendering, after normal
-injector LateUpdate. It does not call collection to measure selection. Active water
+Each leg now observes the production collector's read-only selection event for its
+camera, after normal injector LateUpdate and actual ranking. It does not call collection
+to measure selection or infer slots from registration order. Active water
 renderers receive indexed property blocks preserving their existing values (or
 inheriting their renderer-wide block if no indexed override existed).
 
@@ -83,3 +84,34 @@ Once delivery is reliable, subsequent work is foam transport and appearance: pat
 stretch, collect, tear apart, and fade with separate coverage/freshness. Keep the
 shared gameplay-wave field and drawn-only wake contract. These behavior changes are
 outside this diagnostic PR.
+
+## F1 boundary (2026-09-27)
+
+F1 replaces registration-order packing with independent selection for each camera's
+cell-snapped foam window. Candidates overlap that window with their swept capsule or
+one of the five dispersal-track capsules widened to the existing `MaxHalfWidth`.
+This is a conservative reach envelope: the shader's astern gate and moving ring can
+still leave individual enclosed texels untouched. `EdgeWidth` cannot expand reach
+beyond `MaxHalfWidth`, where the shader envelope is zero.
+
+Rank is ascending distance from the window centre to the nearest capsule surface,
+then ordinal scene-path/hierarchy key (names and sibling indices, cached on registration).
+There are no selection weights or new reach dials. The existing injector radius and
+dispersal data remain authoritative. A single candidate scan maintains at most eight
+sorted slots; gathering capacity and keys are allocated on registration, not rendering.
+The overflow warning counts only eligible, omitted footprints for that camera.
+
+`InjectionSelectionObserved` reports the camera, injector, overlap, actual selected rank
+(-1 when omitted), eligible count and selected count without exposing writable slot
+arrays. The two #850 test names and the temporary registration reorder remain. With
+F1 the reorder no longer grants priority, so the historical subject-first control no
+longer isolates starvation; its retained all-eligible-offers assertion may fail under
+genuine camera-local overflow. That control's future interpretation belongs to the owner.
+
+F1 preserves #875's initialization/reset protocol, repeated-render guard, decay,
+dispersal and eight-slot shader budget. Four pure EditMode cases cover footprints,
+stable ties, predictable overflow/no allocations, and independent cameras. No local
+Unity or GPU run is part of Phase A. The second #850 failure (selected subject with
+no visible sheet) is **not claimed fixed**: fresh and sequential photograph runs,
+each camera and domain reload, await the owner's editor slot after S1 and C1.
+Known-input consumption and actual production foam response remain separate evidence.

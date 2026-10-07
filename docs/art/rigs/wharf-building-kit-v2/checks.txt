@@ -1,0 +1,94 @@
+checks — wharfBuildingRig2 (WharfBuilding2.checks), every preset, 2026-09-26
+v9.2 fits: every creator body (export/character-v9.2-import-kit/reports/worldfit.txt); reach on a 0.1 m grid from the approach, radius 0.229
+
+netShed  OK
+   ok    stations           7 verbs
+   ok    ladder.loftLadder  10 rungs at 0.24 · top-out board 0.72 · hatch 0.9 × 0.95
+   ok    door.clear         clear 2.306 × 2.39 m · ramp 16.699°
+   ok    roof.stacks        1 stacks and pipes, every one set into the roof and clear of the ridge
+   ok    cell               crop 515 × 377 at (343, 570) in the 1200 × 1160 cell
+   note  sheet              8 facings of the tight 299 × 305 cell pack 2 × 4 under 2048
+   ok    door.d5            99 % of the door shows at facing 5 (door SE)
+   ok    door.d4            98 % of the door shows at facing 4 (door S)
+   ok    door.d3            99 % of the door shows at facing 3 (door SW)
+   verbs: stowNet(reach 0.95) · stokeStove(reach 0.35) · mendNet(bench 0.8) · takeOilskins(reach 1) · fetchTrap(lift 0.78) · climbUp(ladderDown 0.24) · enter(walk)
+
+redShed  OK
+   ok    stations           7 verbs
+   ok    ladder.loftLadder  11 rungs at 0.24 · top-out board 0.72 · hatch 0.9 × 0.95
+   ok    door.clear         clear 1 × 2.15 m · 2 risers of 0.2
+   ok    roof.stacks        1 stacks and pipes, every one set into the roof and clear of the ridge
+   ok    cell               crop 465 × 373 at (368, 558) in the 1200 × 1160 cell
+   note  sheet              8 facings of the tight 281 × 311 cell pack 2 × 4 under 2048
+   ok    door.d5            98 % of the door shows at facing 5 (door SE)
+   ok    door.d4            100 % of the door shows at facing 4 (door S)
+   ok    door.d3            98 % of the door shows at facing 3 (door SW)
+   verbs: stowNet(reach 0.95) · stokeStove(reach 0.35) · mendNet(bench 0.8) · takeOilskins(reach 1) · fetchTrap(lift 0.78) · climbUp(ladderDown 0.24) · enter(walk)
+
+tealShack  OK
+   ok    stations           7 verbs
+   ok    ladder.loftLadder  11 rungs at 0.24 · top-out board 0.72 · hatch 0.9 × 0.95
+   ok    door.clear         clear 1.439 × 2.63 m · ramp 16.699°
+   ok    roof.stacks        1 stacks and pipes, every one set into the roof and clear of the ridge
+   ok    cell               crop 519 × 386 at (341, 562) in the 1200 × 1160 cell
+   note  sheet              8 facings of the tight 303 × 314 cell pack 2 × 4 under 2048
+   ok    door.d5            100 % of the door shows at facing 5 (door SE)
+   ok    door.d4            100 % of the door shows at facing 4 (door S)
+   ok    door.d3            100 % of the door shows at facing 3 (door SW)
+   verbs: stowNet(reach 0.95) · stokeStove(reach 0.35) · mendNet(bench 0.8) · takeOilskins(reach 1) · fetchTrap(lift 0.78) · climbUp(ladderDown 0.24) · enter(walk)
+
+gambrelBarn  OK
+   ok    stations           8 verbs
+   ok    stair.loftStair    16 risers of 0.18 · going 0.26 · 0.95 wide · 34.695°
+   ok    door.clear         clear 2.95 × 2.63 m · ramp 16.699°
+   ok    roof.stacks        0 stacks and pipes, every one set into the roof and clear of the ridge
+   ok    cell               crop 627 × 508 at (287, 475) in the 1200 × 1160 cell
+   note  sheet              8 facings of the tight 399 × 430 cell pack 2 × 4 under 2048
+   ok    door.d3            98 % of the door shows at facing 3 (door SW)
+   ok    door.d5            98 % of the door shows at facing 5 (door SE)
+   ok    door.d4            100 % of the door shows at facing 4 (door S)
+   verbs: stowBuoys(reach 0.95) · fetchTrap(lift 0.78) · fetchBait(lift 0.85) · paintBuoys(bench 0.8) · hoist(haul) · takeHoisted(lift 0.85) · climbStair(walk) · enter(walk)
+
+iceHouse  OK
+   ok    stations           8 verbs
+   ok    stair.loftStair    16 risers of 0.18 · going 0.26 · 0.95 wide · 34.695°
+   ok    door.clear         clear 3.1 × 2.63 m · ramp 16.699°
+   ok    roof.stacks        0 stacks and pipes, every one set into the roof and clear of the ridge
+   ok    cell               crop 613 × 491 at (294, 487) in the 1200 × 1160 cell
+   note  sheet              8 facings of the tight 385 × 413 cell pack 2 × 4 under 2048
+   ok    door.d3            97 % of the door shows at facing 3 (door SW)
+   ok    door.d5            97 % of the door shows at facing 5 (door SE)
+   ok    door.d4            100 % of the door shows at facing 4 (door S)
+   verbs: stowBuoys(reach 0.95) · fetchTrap(lift 0.78) · fetchBait(lift 0.85) · paintBuoys(bench 0.8) · hoist(haul) · takeHoisted(lift 0.85) · climbStair(walk) · enter(walk)
+
+fishPlant  OK
+   ok    stations           19 verbs
+   ok    stair.mezzStair    14 risers of 0.189 · going 0.26 · 1 wide · 35.952°
+   ok    stair.apronStair   7 risers of 0.171 · going 0.28 · 1.1 wide · 31.477°
+   ok    stair.dockStair    7 risers of 0.171 · going 0.28 · 1.1 wide · 31.477°
+   ok    door.clear         clear 3.4 × 3.4 m · apron stair
+   ok    sign               board 4.2 m wide from 5.24, door head 4.96
+   ok    roof.stacks        2 stacks and pipes, every one set into the roof and clear of the ridge
+   ok    cell               crop 951 × 682 at (125, 405) in the 1200 × 1160 cell
+   note  sheet              8 facings of the tight 675 × 591 cell pack 3 × 3 under 2048
+   ok    door.d5            81 % of the door shows at facing 5 (door SE)
+   ok    door.d4            91 % of the door shows at facing 4 (door S)
+   ok    door.d3            86 % of the door shows at facing 3 (door SW)
+   verbs: tally(bench 0.8) · fileTally(reach 0.95) · fillet(chop 0.72) · fillet(chop 0.72) · fillet(chop 0.72) · fillet(chop 0.72) · fillet(chop 0.72) · fillet(chop 0.72) · stackBox(place 0.94) · shovelIce(dig) · weigh(place 0.85) · hoseDown(reach 1) · loadOut(place 0.94) · hoistTote(haul) · climbStair(walk) · climbStair(walk) · climbStair(walk) · enter(walk) · enter(walk)
+
+cannery  OK
+   ok    stations           19 verbs
+   ok    stair.mezzStair    14 risers of 0.189 · going 0.26 · 1 wide · 35.952°
+   ok    stair.apronStair   7 risers of 0.171 · going 0.28 · 1.1 wide · 31.477°
+   ok    stair.dockStair    7 risers of 0.171 · going 0.28 · 1.1 wide · 31.477°
+   ok    door.clear         clear 3.4 × 3.4 m · apron stair
+   ok    sign               board 4.4 m wide from 5.24, door head 4.96
+   ok    roof.stacks        2 stacks and pipes, every one set into the roof and clear of the ridge
+   ok    cell               crop 991 × 720 at (105, 380) in the 1200 × 1160 cell
+   note  sheet              8 facings of the tight 715 × 629 cell need a 4096 sheet  — as pass 1's cannery (840 × 673): the game bakes it at 4096
+   ok    door.d5            81 % of the door shows at facing 5 (door SE)
+   ok    door.d4            90 % of the door shows at facing 4 (door S)
+   ok    door.d3            86 % of the door shows at facing 3 (door SW)
+   verbs: tally(bench 0.8) · fileTally(reach 0.95) · fillet(chop 0.72) · fillet(chop 0.72) · fillet(chop 0.72) · fillet(chop 0.72) · fillet(chop 0.72) · fillet(chop 0.72) · stackBox(place 0.94) · shovelIce(dig) · weigh(place 0.85) · hoseDown(reach 1) · loadOut(place 0.94) · hoistTote(haul) · climbStair(walk) · climbStair(walk) · climbStair(walk) · enter(walk) · enter(walk)
+
+OK — no problems.

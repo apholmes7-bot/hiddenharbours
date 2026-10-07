@@ -1,0 +1,775 @@
+fileFormatVersion: 2
+guid: 9c94973cbfd4ead488be3803976a7100
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3481191948915439770
+    second: Scree_till_barnacled_mask_0
+  - first:
+      213: 1802134860761696850
+    second: Scree_till_barnacled_mask_1
+  - first:
+      213: -4482561908545081310
+    second: Scree_till_barnacled_mask_2
+  - first:
+      213: -1122632493805833302
+    second: Scree_till_barnacled_mask_3
+  - first:
+      213: 1073857772816743102
+    second: Scree_till_barnacled_mask_4
+  - first:
+      213: -4178674963812900733
+    second: Scree_till_barnacled_mask_5
+  - first:
+      213: 1158840547730423405
+    second: Scree_till_barnacled_mask_6
+  - first:
+      213: 7082711310381850764
+    second: Scree_till_barnacled_mask_7
+  - first:
+      213: -2106119761940571983
+    second: Scree_till_barnacled_mask_8
+  - first:
+      213: -4583053902738597758
+    second: Scree_till_barnacled_mask_9
+  - first:
+      213: -4311137430291332100
+    second: Scree_till_barnacled_mask_10
+  - first:
+      213: -5316423063397241515
+    second: Scree_till_barnacled_mask_11
+  - first:
+      213: -1675817972281420191
+    second: Scree_till_barnacled_mask_12
+  - first:
+      213: 5788924486891291969
+    second: Scree_till_barnacled_mask_13
+  - first:
+      213: 8681732568398458034
+    second: Scree_till_barnacled_mask_14
+  - first:
+      213: -7560382202512618992
+    second: Scree_till_barnacled_mask_15
+  - first:
+      213: -5219842765720855335
+    second: Scree_till_barnacled_mask_16
+  - first:
+      213: -4247637808563979029
+    second: Scree_till_barnacled_mask_17
+  - first:
+      213: -3300209528484505422
+    second: Scree_till_barnacled_mask_18
+  - first:
+      213: 187854484626063449
+    second: Scree_till_barnacled_mask_19
+  - first:
+      213: -1975090526259662920
+    second: Scree_till_barnacled_mask_20
+  - first:
+      213: 8279460315264372112
+    second: Scree_till_barnacled_mask_21
+  - first:
+      213: 454286672202854890
+    second: Scree_till_barnacled_mask_22
+  - first:
+      213: 5620699934599179446
+    second: Scree_till_barnacled_mask_23
+  - first:
+      213: 5403546049796140034
+    second: Scree_till_barnacled_mask_24
+  - first:
+      213: 6053431819675651632
+    second: Scree_till_barnacled_mask_25
+  - first:
+      213: 9003909942280401923
+    second: Scree_till_barnacled_mask_26
+  - first:
+      213: 8249336949353034179
+    second: Scree_till_barnacled_mask_27
+  - first:
+      213: -1655090921332263081
+    second: Scree_till_barnacled_mask_28
+  - first:
+      213: 766207529777768895
+    second: Scree_till_barnacled_mask_29
+  - first:
+      213: 8266770562744356913
+    second: Scree_till_barnacled_mask_30
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dcf0aa31b1e716243acea3b1ba9d31af
+      internalID: -1309655042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80abf6be6026a5842a8ba2d73858f811
+      internalID: -299719897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89c7e90f7a032af4f88fa3f32a040fdb
+      internalID: -1964537778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8c67b33a6a078e4c931e96f50ebb15e
+      internalID: 1851360314
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 02176ae2efeeb3a4ab24b1fa760533e7
+      internalID: 1852057387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 517c30bc7c36a404fa170eae4237732e
+      internalID: -1169726823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37ff01972c154f143ae30440685ea641
+      internalID: 1889788044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec30a0b033649e14a8c24ee465f3eef5
+      internalID: -896799271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95a2477065234974ca101c39bbe97fac
+      internalID: 1419713124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e0d5ecc6225499418bc3276f0f504f7
+      internalID: -1047529344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93383ddcc2548f84a91cd483a7c99bab
+      internalID: 2020660505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a4a3102467957f4bbac6840c79ba64b
+      internalID: 732069555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4b7c5b73e796ba4e8f11c024058078a
+      internalID: 1966278167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3c8f404196435a43a88bdfe603cb1b3
+      internalID: 2041932564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e19ef75bbf30434481502a44d67275c
+      internalID: -1771332767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5547a795e02170149a0e3583494b9c56
+      internalID: 1706584998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 034f97f6975164d429081a1cddad42db
+      internalID: -595369626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 691f05147b51d974b8acf6b1b6cb48d8
+      internalID: 309523437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81947081eaad14147971730bd50fcd7f
+      internalID: -860032856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 450ac407692399e49b5f6da0727b56a0
+      internalID: 859982416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbf052ea23002574ba70dbe6d0206e3c
+      internalID: 2095433303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fffe91f11fb1bcc45a19e1181d258c1e
+      internalID: 277348962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afd9e4424bf466e45b45c9eef62a3df2
+      internalID: 521620304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_till_barnacled_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be029e2d40a17c84a874f327ba308b97
+      internalID: 656888586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a67fd9221ab7fd348a90366f05007794
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Scree_till_barnacled_mask_c0_r0: -1309655042
+      Scree_till_barnacled_mask_c0_r1: 1419713124
+      Scree_till_barnacled_mask_c0_r2: -595369626
+      Scree_till_barnacled_mask_c1_r0: -299719897
+      Scree_till_barnacled_mask_c1_r1: -1047529344
+      Scree_till_barnacled_mask_c1_r2: 309523437
+      Scree_till_barnacled_mask_c2_r0: -1964537778
+      Scree_till_barnacled_mask_c2_r1: 2020660505
+      Scree_till_barnacled_mask_c2_r2: -860032856
+      Scree_till_barnacled_mask_c3_r0: 1851360314
+      Scree_till_barnacled_mask_c3_r1: 732069555
+      Scree_till_barnacled_mask_c3_r2: 859982416
+      Scree_till_barnacled_mask_c4_r0: 1852057387
+      Scree_till_barnacled_mask_c4_r1: 1966278167
+      Scree_till_barnacled_mask_c4_r2: 2095433303
+      Scree_till_barnacled_mask_c5_r0: -1169726823
+      Scree_till_barnacled_mask_c5_r1: 2041932564
+      Scree_till_barnacled_mask_c5_r2: 277348962
+      Scree_till_barnacled_mask_c6_r0: 1889788044
+      Scree_till_barnacled_mask_c6_r1: -1771332767
+      Scree_till_barnacled_mask_c6_r2: 521620304
+      Scree_till_barnacled_mask_c7_r0: -896799271
+      Scree_till_barnacled_mask_c7_r1: 1706584998
+      Scree_till_barnacled_mask_c7_r2: 656888586
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

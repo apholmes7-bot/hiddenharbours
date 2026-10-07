@@ -1,0 +1,757 @@
+fileFormatVersion: 2
+guid: 94a8ceb8f145f4a4e91807f166542d69
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7271781881321672611
+    second: Erratic_till_barnacled_unlit_0
+  - first:
+      213: -5242827534502809746
+    second: Erratic_till_barnacled_unlit_1
+  - first:
+      213: 3944583201334832248
+    second: Erratic_till_barnacled_unlit_2
+  - first:
+      213: 1116202480135924337
+    second: Erratic_till_barnacled_unlit_3
+  - first:
+      213: -3776576268266926698
+    second: Erratic_till_barnacled_unlit_4
+  - first:
+      213: -7423559663144256583
+    second: Erratic_till_barnacled_unlit_5
+  - first:
+      213: -8651603136983638027
+    second: Erratic_till_barnacled_unlit_6
+  - first:
+      213: 6323418328459537099
+    second: Erratic_till_barnacled_unlit_7
+  - first:
+      213: -8615775281359116484
+    second: Erratic_till_barnacled_unlit_8
+  - first:
+      213: 31216549481217514
+    second: Erratic_till_barnacled_unlit_9
+  - first:
+      213: -1905534367194674394
+    second: Erratic_till_barnacled_unlit_10
+  - first:
+      213: 9077397583306568494
+    second: Erratic_till_barnacled_unlit_11
+  - first:
+      213: -1880544791227841346
+    second: Erratic_till_barnacled_unlit_12
+  - first:
+      213: -7985463614600283295
+    second: Erratic_till_barnacled_unlit_13
+  - first:
+      213: -4608962935849580732
+    second: Erratic_till_barnacled_unlit_14
+  - first:
+      213: 3817590013604415528
+    second: Erratic_till_barnacled_unlit_15
+  - first:
+      213: 2478945690735021844
+    second: Erratic_till_barnacled_unlit_16
+  - first:
+      213: 8386330149215732487
+    second: Erratic_till_barnacled_unlit_17
+  - first:
+      213: -1425582338788764512
+    second: Erratic_till_barnacled_unlit_18
+  - first:
+      213: 5055601856641063687
+    second: Erratic_till_barnacled_unlit_19
+  - first:
+      213: -6748670206457338278
+    second: Erratic_till_barnacled_unlit_20
+  - first:
+      213: 5737328358470477930
+    second: Erratic_till_barnacled_unlit_21
+  - first:
+      213: -1349756708118296853
+    second: Erratic_till_barnacled_unlit_22
+  - first:
+      213: 6426231879182872579
+    second: Erratic_till_barnacled_unlit_23
+  - first:
+      213: 894806547711424975
+    second: Erratic_till_barnacled_unlit_24
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c16d2d96587b7f2499ebd31cd7705ca6
+      internalID: -1958822367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f96eeaa4f44676f45ac9ce7134e85958
+      internalID: 1942079286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7796ee66e86e05a4299d4ac7e5c37b44
+      internalID: -457678871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5c0a3e8f7b407643b92574850f4e952
+      internalID: 1320442780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e78d6b347047061478c5bb2f957a5499
+      internalID: 136989883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f23bb3cddf7ddc945a4101a4a6279306
+      internalID: 460300845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 87550de150e83a74e836213ff17893b2
+      internalID: 1336240532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59142dd6df47ec740ae1d3dce98e6677
+      internalID: 120999218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 042b6f283e524cb4ebd205bc52547951
+      internalID: 357332352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d716c86820e75b548a845489c3e0e3f6
+      internalID: -733541769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88ab986b8fe84cf46b44df2d0888c37f
+      internalID: 738831534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 936912e4fc4c94042879c1f84b22aa4b
+      internalID: -484614892
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9df8b334222e48746ac28590e120b3a9
+      internalID: -481327833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa2a340618a9a564e95e1e06eb8b107a
+      internalID: 701593659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8ee87256cd65ac4a95a84ce410149ba
+      internalID: 499318658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b884a87e3fd7584baeb5bc3ba24798b
+      internalID: 1598072452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d1869f6f7a42ce4dada25ca748890d8
+      internalID: -2109434895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a6f28f7938a24e4caad13da4aed3fb5
+      internalID: -1624011093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33d4bd98e6d5b124eb173f38acaaf8c5
+      internalID: 477157397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 749923558bcd62e48a7749d41f2b4ae1
+      internalID: -1471985966
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 627f4ba8f37763549a8563f201c20a36
+      internalID: 1461623092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25f07bd728e0a5d438ef1a168ecb3c0c
+      internalID: -1956992025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76c7a6b5cc464654eaaa324ae1aac439
+      internalID: 1384905855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_barnacled_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d6190b12e5929645b5cde53bb1e6745
+      internalID: -268626675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: c3f9017367791e541b2cf86ffdad62c6
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Erratic_till_barnacled_unlit_c0_r0: -1958822367
+      Erratic_till_barnacled_unlit_c0_r1: 357332352
+      Erratic_till_barnacled_unlit_c0_r2: -2109434895
+      Erratic_till_barnacled_unlit_c1_r0: 1942079286
+      Erratic_till_barnacled_unlit_c1_r1: -733541769
+      Erratic_till_barnacled_unlit_c1_r2: -1624011093
+      Erratic_till_barnacled_unlit_c2_r0: -457678871
+      Erratic_till_barnacled_unlit_c2_r1: 738831534
+      Erratic_till_barnacled_unlit_c2_r2: 477157397
+      Erratic_till_barnacled_unlit_c3_r0: 1320442780
+      Erratic_till_barnacled_unlit_c3_r1: -484614892
+      Erratic_till_barnacled_unlit_c3_r2: -1471985966
+      Erratic_till_barnacled_unlit_c4_r0: 136989883
+      Erratic_till_barnacled_unlit_c4_r1: -481327833
+      Erratic_till_barnacled_unlit_c4_r2: 1461623092
+      Erratic_till_barnacled_unlit_c5_r0: 460300845
+      Erratic_till_barnacled_unlit_c5_r1: 701593659
+      Erratic_till_barnacled_unlit_c5_r2: -1956992025
+      Erratic_till_barnacled_unlit_c6_r0: 1336240532
+      Erratic_till_barnacled_unlit_c6_r1: 499318658
+      Erratic_till_barnacled_unlit_c6_r2: 1384905855
+      Erratic_till_barnacled_unlit_c7_r0: 120999218
+      Erratic_till_barnacled_unlit_c7_r1: 1598072452
+      Erratic_till_barnacled_unlit_c7_r2: -268626675
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

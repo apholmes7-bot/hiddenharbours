@@ -1,0 +1,769 @@
+fileFormatVersion: 2
+guid: 0de175f07b4319947b150d0e6b8ae0be
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 542761858695262960
+    second: Bench_sandstone_normal_0
+  - first:
+      213: 2055327545982132744
+    second: Bench_sandstone_normal_1
+  - first:
+      213: 742107551953014632
+    second: Bench_sandstone_normal_2
+  - first:
+      213: -4708859214299134162
+    second: Bench_sandstone_normal_3
+  - first:
+      213: -5835999376208093925
+    second: Bench_sandstone_normal_4
+  - first:
+      213: 3218249432295789217
+    second: Bench_sandstone_normal_5
+  - first:
+      213: 4952707539875024736
+    second: Bench_sandstone_normal_6
+  - first:
+      213: 3874587974358936849
+    second: Bench_sandstone_normal_7
+  - first:
+      213: -5883857753361641008
+    second: Bench_sandstone_normal_8
+  - first:
+      213: -521707972454852665
+    second: Bench_sandstone_normal_9
+  - first:
+      213: 1347707228323870567
+    second: Bench_sandstone_normal_10
+  - first:
+      213: 4740044793681597992
+    second: Bench_sandstone_normal_11
+  - first:
+      213: -7997680103065144051
+    second: Bench_sandstone_normal_12
+  - first:
+      213: -1223221986258144668
+    second: Bench_sandstone_normal_13
+  - first:
+      213: 7171565604374257326
+    second: Bench_sandstone_normal_14
+  - first:
+      213: 2988699461562339475
+    second: Bench_sandstone_normal_15
+  - first:
+      213: -5241158549110193841
+    second: Bench_sandstone_normal_16
+  - first:
+      213: 5955729105349645968
+    second: Bench_sandstone_normal_17
+  - first:
+      213: 4834904989491328840
+    second: Bench_sandstone_normal_18
+  - first:
+      213: -8378486877458485282
+    second: Bench_sandstone_normal_19
+  - first:
+      213: -8764952976828407243
+    second: Bench_sandstone_normal_20
+  - first:
+      213: -3327976527243712804
+    second: Bench_sandstone_normal_21
+  - first:
+      213: 79559177052718311
+    second: Bench_sandstone_normal_22
+  - first:
+      213: 3092040600809752351
+    second: Bench_sandstone_normal_23
+  - first:
+      213: 7081960970105072001
+    second: Bench_sandstone_normal_24
+  - first:
+      213: 3736008192327501083
+    second: Bench_sandstone_normal_25
+  - first:
+      213: 4917919893590582666
+    second: Bench_sandstone_normal_26
+  - first:
+      213: -7284896793662010370
+    second: Bench_sandstone_normal_27
+  - first:
+      213: -647489870763677872
+    second: Bench_sandstone_normal_28
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71c00b78d95a61641af277ee1394c438
+      internalID: 1941535522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d10a43ec46fc95418ef3531290a7def
+      internalID: 501579079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 929cb6d0504b54740a57bef08ef39d1d
+      internalID: 511502808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b2196ee373635a4586a65ac55ab575a
+      internalID: 523353922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fdb4fdb84858d264d9adcc5e100ccf81
+      internalID: -1922430977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 235d824379e472c4fa833a150bf597b8
+      internalID: 1256482542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fb2dda09d9dd774794f71ac13d705d0
+      internalID: -1322582195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31d50b2d52efe8d4b8b876125ba07c38
+      internalID: -2067718376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43cbc654b6ccd174a91f1064b46cb42d
+      internalID: -1924756722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 550afd04bc7f9ff428cbbcdd00a6a6a9
+      internalID: 364165264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a23f6656035556441a3929ed78773563
+      internalID: 1473800392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbbab28c0294bf6439040ac68668088b
+      internalID: -1693033450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 930316c225e3dae489d3315faa91ff52
+      internalID: -1822341987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45e02982b8e0b464f96512bc6db04c01
+      internalID: 15011130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ae2a1a73d599b34dba32693b2e34cd2
+      internalID: -1236138363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1296a7b334d387147a92d61e46ba3856
+      internalID: -680116583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c3515d605ed4774a814be83b6bca864
+      internalID: 1610332228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 013485b691a78e34b8ad30f471d37d80
+      internalID: -803756239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2f0918604df9244dbbaca871405968a
+      internalID: 484117107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08ffdad2eedc3e648a73db746ecf73ad
+      internalID: -1657062976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a71885e74c89ea74cb6d24a31ea0c62a
+      internalID: 303588155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 461fa9f044ef9cf478cc4fbf983b4a56
+      internalID: -62297182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad0bd347bd2c39e4398b839c8c0bba9f
+      internalID: -1044787930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_sandstone_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad0d6979b29bd564992d446cccf02363
+      internalID: 1325950976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a202250421c118c49979600d7840710f
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Bench_sandstone_normal_c0_r0: 1941535522
+      Bench_sandstone_normal_c0_r1: -1924756722
+      Bench_sandstone_normal_c0_r2: 1610332228
+      Bench_sandstone_normal_c1_r0: 501579079
+      Bench_sandstone_normal_c1_r1: 364165264
+      Bench_sandstone_normal_c1_r2: -803756239
+      Bench_sandstone_normal_c2_r0: 511502808
+      Bench_sandstone_normal_c2_r1: 1473800392
+      Bench_sandstone_normal_c2_r2: 484117107
+      Bench_sandstone_normal_c3_r0: 523353922
+      Bench_sandstone_normal_c3_r1: -1693033450
+      Bench_sandstone_normal_c3_r2: -1657062976
+      Bench_sandstone_normal_c4_r0: -1922430977
+      Bench_sandstone_normal_c4_r1: -1822341987
+      Bench_sandstone_normal_c4_r2: 303588155
+      Bench_sandstone_normal_c5_r0: 1256482542
+      Bench_sandstone_normal_c5_r1: 15011130
+      Bench_sandstone_normal_c5_r2: -62297182
+      Bench_sandstone_normal_c6_r0: -1322582195
+      Bench_sandstone_normal_c6_r1: -1236138363
+      Bench_sandstone_normal_c6_r2: -1044787930
+      Bench_sandstone_normal_c7_r0: -2067718376
+      Bench_sandstone_normal_c7_r1: -680116583
+      Bench_sandstone_normal_c7_r2: 1325950976
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

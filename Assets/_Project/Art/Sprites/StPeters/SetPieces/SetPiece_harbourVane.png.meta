@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: b4109267f7abaaf498a4b3f910f2d1e0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5591951899898765398
+    second: SetPiece_harbourVane_0
+  - first:
+      213: 4883061996591176990
+    second: SetPiece_harbourVane_1
+  - first:
+      213: 2398539416382884668
+    second: SetPiece_harbourVane_2
+  - first:
+      213: 4135009450577304023
+    second: SetPiece_harbourVane_3
+  - first:
+      213: -7431376083720410962
+    second: SetPiece_harbourVane_4
+  - first:
+      213: -4596109886088544554
+    second: SetPiece_harbourVane_5
+  - first:
+      213: 9116685272212472832
+    second: SetPiece_harbourVane_6
+  - first:
+      213: -1119576408891683802
+    second: SetPiece_harbourVane_7
+  - first:
+      213: -3916223513125962853
+    second: SetPiece_harbourVane_8
+  - first:
+      213: -8671919366774297793
+    second: SetPiece_harbourVane_9
+  - first:
+      213: -1243871487060560880
+    second: SetPiece_harbourVane_10
+  - first:
+      213: 306829744267495452
+    second: SetPiece_harbourVane_11
+  - first:
+      213: -8150446436295618710
+    second: SetPiece_harbourVane_12
+  - first:
+      213: -873561846181235601
+    second: SetPiece_harbourVane_13
+  - first:
+      213: -2218537281077134318
+    second: SetPiece_harbourVane_14
+  - first:
+      213: -7925838609527432927
+    second: SetPiece_harbourVane_15
+  - first:
+      213: 4222196677911891471
+    second: SetPiece_harbourVane_16
+  - first:
+      213: 4162397679467566926
+    second: SetPiece_harbourVane_17
+  - first:
+      213: 6114924985304591662
+    second: SetPiece_harbourVane_18
+  - first:
+      213: 8981785956306949141
+    second: SetPiece_harbourVane_19
+  - first:
+      213: 6560954254909137947
+    second: SetPiece_harbourVane_20
+  - first:
+      213: -5900113541016874680
+    second: SetPiece_harbourVane_21
+  - first:
+      213: 6794311047171466708
+    second: SetPiece_harbourVane_22
+  - first:
+      213: -4905462807252781164
+    second: SetPiece_harbourVane_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.13013698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aaf967ddf556562b0800000000000000
+      internalID: -5591951899898765398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_1
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10958904}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1dd60ba30f14c340800000000000000
+      internalID: 4883061996591176990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_2
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.10958904}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3b464524e2594120800000000000000
+      internalID: 2398539416382884668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_3
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10958904}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d91b84ef21826930800000000000000
+      internalID: 4135009450577304023
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_4
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.42105263, y: 0.13013698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea8e28133d27ed890800000000000000
+      internalID: -7431376083720410962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_5
+      rect:
+        serializedVersion: 2
+        x: 190
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.5, y: 0.08219178}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6def70be8665730c0800000000000000
+      internalID: -4596109886088544554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_6
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.14383562}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 004824be3f8f48e70800000000000000
+      internalID: 9116685272212472832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_7
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.5, y: 0.08219178}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62c8a1910377670f0800000000000000
+      internalID: -1119576408891683802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_8
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.10958904}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9b381fb677c6a9c0800000000000000
+      internalID: -3916223513125962853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_9
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.09589041}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3b669e184727a780800000000000000
+      internalID: -8671919366774297793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_10
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.10958904}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 014b48b0971ecbee0800000000000000
+      internalID: -1243871487060560880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_11
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.11643836}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c188699d604124400800000000000000
+      internalID: 306829744267495452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_12
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.42105263, y: 0.13013698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6f40cb262cc3ee80800000000000000
+      internalID: -8150446436295618710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_13
+      rect:
+        serializedVersion: 2
+        x: 494
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.10958904}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f647805112c70e3f0800000000000000
+      internalID: -873561846181235601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_14
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.08219178}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21cbf60e81c2631e0800000000000000
+      internalID: -2218537281077134318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_15
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.06849315}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1299a0c07c3c10290800000000000000
+      internalID: -7925838609527432927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_16
+      rect:
+        serializedVersion: 2
+        x: 608
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.14383562}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0ec5c62281489a30800000000000000
+      internalID: 4222196677911891471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_17
+      rect:
+        serializedVersion: 2
+        x: 646
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.06849315}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e47139ad2aec3c930800000000000000
+      internalID: 4162397679467566926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_18
+      rect:
+        serializedVersion: 2
+        x: 684
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.08219178}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2dad3930e39cd450800000000000000
+      internalID: 6114924985304591662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_19
+      rect:
+        serializedVersion: 2
+        x: 722
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.10958904}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 514944e5db6b5ac70800000000000000
+      internalID: 8981785956306949141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_20
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.13013698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b14627722213d0b50800000000000000
+      internalID: 6560954254909137947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_21
+      rect:
+        serializedVersion: 2
+        x: 798
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.11643836}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 841973d9ef59e1ea0800000000000000
+      internalID: -5900113541016874680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_22
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.10958904}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d5ea2c46ed3a4e50800000000000000
+      internalID: 6794311047171466708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_harbourVane_23
+      rect:
+        serializedVersion: 2
+        x: 874
+        y: 0
+        width: 38
+        height: 146
+      alignment: 9
+      pivot: {x: 0.39473686, y: 0.09589041}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 497beca219b4cebb0800000000000000
+      internalID: -4905462807252781164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 159bb67cdfc1fb44287dfeb00b5842b5
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SetPiece_harbourVane_0: -5591951899898765398
+      SetPiece_harbourVane_1: 4883061996591176990
+      SetPiece_harbourVane_10: -1243871487060560880
+      SetPiece_harbourVane_11: 306829744267495452
+      SetPiece_harbourVane_12: -8150446436295618710
+      SetPiece_harbourVane_13: -873561846181235601
+      SetPiece_harbourVane_14: -2218537281077134318
+      SetPiece_harbourVane_15: -7925838609527432927
+      SetPiece_harbourVane_16: 4222196677911891471
+      SetPiece_harbourVane_17: 4162397679467566926
+      SetPiece_harbourVane_18: 6114924985304591662
+      SetPiece_harbourVane_19: 8981785956306949141
+      SetPiece_harbourVane_2: 2398539416382884668
+      SetPiece_harbourVane_20: 6560954254909137947
+      SetPiece_harbourVane_21: -5900113541016874680
+      SetPiece_harbourVane_22: 6794311047171466708
+      SetPiece_harbourVane_23: -4905462807252781164
+      SetPiece_harbourVane_3: 4135009450577304023
+      SetPiece_harbourVane_4: -7431376083720410962
+      SetPiece_harbourVane_5: -4596109886088544554
+      SetPiece_harbourVane_6: 9116685272212472832
+      SetPiece_harbourVane_7: -1119576408891683802
+      SetPiece_harbourVane_8: -3916223513125962853
+      SetPiece_harbourVane_9: -8671919366774297793
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,1825 @@
+{
+ "schema": "hidden-harbours/character-options@2",
+ "rig": "characterIsoRig10.js",
+ "exportSymbol": "CharacterIso10",
+ "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
+ "posesDerivedFromRigSha256": "a28e5d92638d3cf1b26bbc49f887b23221acd3a9590bc36fd8b842ac6127c92d",
+ "revision": "10.3",
+ "authoring": "Generated from the rig's tables. Do not hand-edit.",
+ "options": {
+  "shape": [
+   0,
+   0.25,
+   0.5,
+   0.75,
+   1
+  ],
+  "height": [
+   -2,
+   -1,
+   0,
+   1,
+   2
+  ],
+  "weight": [
+   -2,
+   -1,
+   0,
+   1,
+   2
+  ],
+  "age": [
+   "child",
+   "youth",
+   "adult",
+   "elder"
+  ],
+  "head": [
+   "round",
+   "oval",
+   "square",
+   "long",
+   "heart",
+   "wide",
+   "pear"
+  ],
+  "skin": [
+   "porcelain",
+   "fair",
+   "rose",
+   "olive",
+   "tan",
+   "bronze",
+   "umber",
+   "deep",
+   "ebony"
+  ],
+  "hair": [
+   "blond",
+   "sand",
+   "black",
+   "brown",
+   "auburn",
+   "ginger",
+   "salt",
+   "grey",
+   "white"
+  ],
+  "hairStyle": [
+   "crop",
+   "mop",
+   "bob",
+   "long",
+   "bun",
+   "ponytail",
+   "buzz",
+   "bald"
+  ],
+  "beard": [
+   "none",
+   "stubble",
+   "moustache",
+   "chinstrap",
+   "goatee",
+   "vandyke",
+   "sideburns",
+   "mutton",
+   "full",
+   "long"
+  ],
+  "eyes": [
+   "sea",
+   "sky",
+   "bark",
+   "slate",
+   "amber",
+   "moss",
+   "umber"
+  ],
+  "eyeShape": [
+   "round",
+   "narrow",
+   "lidded"
+  ],
+  "garment": [
+   "tee",
+   "longsleeve",
+   "workshirt",
+   "sweater",
+   "vest",
+   "apron",
+   "breton",
+   "hoodie",
+   "cardigan",
+   "peacoat",
+   "lifevest",
+   "singlet",
+   "overalls",
+   "oilskins",
+   "skirt",
+   "suit",
+   "tux",
+   "dress",
+   "gown",
+   "waders",
+   "coveralls",
+   "greatcoat",
+   "wetsuit",
+   "sundress",
+   "pinafore",
+   "trunks",
+   "briefs",
+   "swimsuit",
+   "bikini"
+  ],
+  "outfit": [
+   "teal",
+   "navy",
+   "oil",
+   "rust",
+   "slate",
+   "moss",
+   "black",
+   "char",
+   "denim",
+   "khaki",
+   "cream",
+   "wine",
+   "plum",
+   "rose",
+   "sky",
+   "orange"
+  ],
+  "shirt": [
+   "white",
+   "cream",
+   "navy",
+   "red",
+   "moss",
+   "slate",
+   "ochre",
+   "black",
+   "sky",
+   "rose"
+  ],
+  "hat": [
+   "none",
+   "watchcap",
+   "souwester",
+   "ballcap",
+   "kerchief",
+   "flatcap",
+   "hood",
+   "tophat",
+   "bowler",
+   "captain",
+   "sunhat",
+   "bucket",
+   "beret"
+  ],
+  "hatCol": [
+   "oil",
+   "navy",
+   "rust",
+   "teal",
+   "char",
+   "oat",
+   "black",
+   "white",
+   "straw"
+  ],
+  "apronCol": [
+   "canvas",
+   "rubber",
+   "ochre",
+   "black",
+   "red",
+   "navy",
+   "white",
+   "orange",
+   "yellow"
+  ],
+  "bottom": [
+   "trousers",
+   "shorts",
+   "cropped",
+   "skirt",
+   "longskirt"
+  ],
+  "sex": [
+   "m",
+   "f"
+  ],
+  "frame": [
+   "lean",
+   "average",
+   "broad",
+   "stocky",
+   "heavy",
+   "slender",
+   "hourglass",
+   "pear",
+   "full"
+  ]
+ },
+ "fields": [
+  "shape",
+  "age",
+  "height",
+  "weight",
+  "head",
+  "skin",
+  "hair",
+  "hairStyle",
+  "beard",
+  "eyes",
+  "eyeShape",
+  "garment",
+  "outfit",
+  "shirt",
+  "hat",
+  "hatCol",
+  "apronCol",
+  "bottom",
+  "sex",
+  "frame"
+ ],
+ "garments": {
+  "tee": {
+   "label": "T-shirt",
+   "top": true,
+   "sleeve": "short",
+   "collar": "crew",
+   "boot": 0.15,
+   "wear": {
+    "shirt": "T-shirt"
+   },
+   "group": "top"
+  },
+  "longsleeve": {
+   "label": "Long sleeve",
+   "top": true,
+   "sleeve": "long",
+   "cuffMat": "shirtD",
+   "collar": "crew",
+   "boot": 0.15,
+   "wear": {
+    "shirt": "Top"
+   },
+   "group": "top"
+  },
+  "workshirt": {
+   "label": "Work shirt",
+   "top": true,
+   "sleeve": "rolled",
+   "collar": "open",
+   "boot": 0.15,
+   "belt": true,
+   "wear": {
+    "shirt": "Shirt"
+   },
+   "group": "top"
+  },
+  "sweater": {
+   "label": "Knit jumper",
+   "short": "Jumper",
+   "top": true,
+   "sleeve": "long",
+   "cuffMat": "shirtD",
+   "collar": "roll",
+   "boot": 0.17,
+   "wear": {
+    "shirt": "Jumper"
+   },
+   "group": "top"
+  },
+  "vest": {
+   "label": "Quilted vest",
+   "short": "Vest",
+   "top": true,
+   "sleeve": "long",
+   "cuffMat": "shirtD",
+   "collar": "stand",
+   "collarMat": "over",
+   "boot": 0.15,
+   "belt": true,
+   "vest": true,
+   "wear": {
+    "outfit": "Vest and %",
+    "shirt": "Shirt"
+   },
+   "group": "top"
+  },
+  "apron": {
+   "label": "Gutting apron",
+   "short": "Apron",
+   "top": true,
+   "sleeve": "short",
+   "collar": "crew",
+   "boot": 0.24,
+   "belt": true,
+   "apron": true,
+   "wear": {
+    "shirt": "Shirt",
+    "trim": "Apron"
+   },
+   "group": "top"
+  },
+  "breton": {
+   "label": "Breton top",
+   "short": "Breton",
+   "top": true,
+   "sleeve": "long",
+   "cuffMat": "shirtD",
+   "collar": "crew",
+   "boot": 0.15,
+   "stripes": true,
+   "wear": {
+    "shirt": "Top",
+    "trim": "Stripes"
+   },
+   "look": {
+    "shirt": "white",
+    "apronCol": "navy"
+   },
+   "group": "top"
+  },
+  "hoodie": {
+   "label": "Hoodie",
+   "top": true,
+   "sleeve": "long",
+   "cuffMat": "shirtD",
+   "collar": "none",
+   "hem": true,
+   "hoodBack": true,
+   "pocket": true,
+   "boot": 0.15,
+   "wear": {
+    "shirt": "Hoodie"
+   },
+   "group": "top"
+  },
+  "cardigan": {
+   "label": "Cardigan",
+   "top": true,
+   "sleeve": "long",
+   "sleeveMat": "over",
+   "cuffMat": "overD",
+   "collar": "crew",
+   "hem": true,
+   "placket": true,
+   "legMat": "overD",
+   "seatMat": "overD",
+   "boot": 0.15,
+   "wear": {
+    "outfit": "Cardigan and %",
+    "shirt": "Shirt"
+   },
+   "group": "top"
+  },
+  "peacoat": {
+   "label": "Pea coat",
+   "top": true,
+   "sleeve": "long",
+   "sleeveMat": "over",
+   "cuffMat": "overD",
+   "collar": "stand",
+   "collarMat": "over",
+   "jacket": true,
+   "lapel": "overL",
+   "buttons": "brass",
+   "legMat": "overD",
+   "seatMat": "overD",
+   "boot": 0.15,
+   "wear": {
+    "outfit": "Coat and %",
+    "shirt": "Shirt"
+   },
+   "look": {
+    "outfit": "navy"
+   },
+   "group": "top"
+  },
+  "lifevest": {
+   "label": "Life vest",
+   "top": true,
+   "sleeve": "short",
+   "collar": "crew",
+   "boot": 0.15,
+   "pfd": true,
+   "wear": {
+    "shirt": "T-shirt",
+    "trim": "Life vest"
+   },
+   "look": {
+    "apronCol": "orange"
+   },
+   "group": "top"
+  },
+  "singlet": {
+   "label": "Singlet",
+   "top": true,
+   "sleeve": "none",
+   "collar": "none",
+   "boot": 0.15,
+   "wear": {
+    "shirt": "Singlet"
+   },
+   "group": "top"
+  },
+  "overalls": {
+   "label": "Bib overalls",
+   "short": "Overalls",
+   "bib": 0.985,
+   "brass": true,
+   "sleeve": "short",
+   "collar": "crew",
+   "boot": 0.214,
+   "wear": {
+    "outfit": "Overalls",
+    "shirt": "Shirt"
+   },
+   "group": "outfit"
+  },
+  "oilskins": {
+   "label": "Oilskins",
+   "bib": 1.03,
+   "sleeve": "long",
+   "sleeveMat": "over",
+   "cuffMat": "overD",
+   "collar": "stand",
+   "collarMat": "over",
+   "boot": 0.3,
+   "wear": {
+    "outfit": "Oilskins",
+    "shirt": "Shirt"
+   },
+   "group": "outfit"
+  },
+  "skirt": {
+   "label": "Skirt and shawl",
+   "short": "Shawl",
+   "fem": true,
+   "sleeve": "long",
+   "cuffMat": "shirtD",
+   "collar": "crew",
+   "boot": 0.12,
+   "skirt": true,
+   "shawl": true,
+   "legMat": "hose",
+   "wear": {
+    "outfit": "Skirt and shawl",
+    "shirt": "Blouse"
+   },
+   "group": "outfit"
+  },
+  "suit": {
+   "label": "Suit",
+   "sleeve": "long",
+   "sleeveMat": "over",
+   "cuffMat": "shirt",
+   "collar": "stand",
+   "jacket": true,
+   "tie": "long",
+   "legMat": "overD",
+   "seatMat": "overD",
+   "boot": 0.12,
+   "wear": {
+    "outfit": "Suit",
+    "shirt": "Shirt",
+    "trim": "Tie"
+   },
+   "look": {
+    "outfit": "char",
+    "shirt": "white",
+    "apronCol": "red"
+   },
+   "group": "outfit"
+  },
+  "tux": {
+   "label": "Tuxedo",
+   "sleeve": "long",
+   "sleeveMat": "over",
+   "cuffMat": "shirt",
+   "collar": "stand",
+   "jacket": true,
+   "lapel": "overL",
+   "tie": "bow",
+   "legMat": "overD",
+   "seatMat": "overD",
+   "boot": 0.12,
+   "wear": {
+    "outfit": "Tuxedo",
+    "shirt": "Shirt",
+    "trim": "Bow tie"
+   },
+   "look": {
+    "outfit": "black",
+    "shirt": "white",
+    "apronCol": "black"
+   },
+   "group": "outfit"
+  },
+  "dress": {
+   "label": "Dress",
+   "fem": true,
+   "sleeve": "short",
+   "sleeveMat": "over",
+   "hemMat": "overD",
+   "collar": "none",
+   "skirt": true,
+   "legMat": "skin",
+   "boot": 0.12,
+   "wear": {
+    "outfit": "Dress",
+    "trim": "Sash"
+   },
+   "group": "outfit"
+  },
+  "gown": {
+   "label": "Gown",
+   "fem": true,
+   "sleeve": "none",
+   "collar": "none",
+   "skirt": "long",
+   "legMat": "hose",
+   "boot": 0.12,
+   "wear": {
+    "outfit": "Gown"
+   },
+   "group": "outfit"
+  },
+  "waders": {
+   "label": "Chest waders",
+   "short": "Waders",
+   "bib": 1,
+   "sleeve": "long",
+   "cuffMat": "shirtD",
+   "collar": "crew",
+   "boot": 0.32,
+   "bootMat": "overD",
+   "belt": true,
+   "wear": {
+    "outfit": "Waders",
+    "shirt": "Shirt"
+   },
+   "look": {
+    "outfit": "moss"
+   },
+   "group": "outfit"
+  },
+  "coveralls": {
+   "label": "Coveralls",
+   "sleeve": "long",
+   "sleeveMat": "over",
+   "cuffMat": "overD",
+   "collar": "open",
+   "collarMat": "over",
+   "boot": 0.17,
+   "belt": true,
+   "pockets": true,
+   "wear": {
+    "outfit": "Coveralls"
+   },
+   "look": {
+    "outfit": "navy"
+   },
+   "group": "outfit"
+  },
+  "greatcoat": {
+   "label": "Greatcoat",
+   "short": "Coat",
+   "sleeve": "long",
+   "sleeveMat": "over",
+   "cuffMat": "overD",
+   "collar": "scarf",
+   "jacket": true,
+   "lapel": "overL",
+   "buttons": "brass",
+   "coat": 0.4,
+   "legMat": "overD",
+   "seatMat": "overD",
+   "boot": 0.17,
+   "wear": {
+    "outfit": "Coat",
+    "shirt": "Shirt",
+    "trim": "Scarf"
+   },
+   "look": {
+    "outfit": "char",
+    "apronCol": "red"
+   },
+   "group": "outfit"
+  },
+  "wetsuit": {
+   "label": "Wetsuit",
+   "sleeve": "long",
+   "sleeveMat": "over",
+   "cuffMat": "over",
+   "collar": "stand",
+   "collarMat": "over",
+   "boot": 0.2,
+   "bootMat": "overD",
+   "wear": {
+    "outfit": "Wetsuit",
+    "trim": "Panels"
+   },
+   "look": {
+    "outfit": "black",
+    "apronCol": "orange"
+   },
+   "group": "outfit"
+  },
+  "sundress": {
+   "label": "Sundress",
+   "fem": true,
+   "sleeve": "none",
+   "collar": "none",
+   "skirt": true,
+   "legMat": "skin",
+   "boot": 0.1,
+   "wear": {
+    "outfit": "Sundress"
+   },
+   "group": "outfit"
+  },
+  "pinafore": {
+   "label": "Pinafore",
+   "fem": true,
+   "bib": 0.99,
+   "sleeve": "long",
+   "cuffMat": "shirtD",
+   "collar": "crew",
+   "skirt": true,
+   "legMat": "hose",
+   "boot": 0.12,
+   "wear": {
+    "outfit": "Pinafore",
+    "shirt": "Blouse"
+   },
+   "group": "outfit"
+  },
+  "trunks": {
+   "label": "Swim trunks",
+   "short": "Trunks",
+   "swim": true,
+   "bare": true,
+   "sleeve": "none",
+   "collar": "none",
+   "shorts": true,
+   "swimTop": "f",
+   "boot": 0.1,
+   "wear": {
+    "outfit": "Trunks"
+   },
+   "look": {
+    "outfit": "sky"
+   },
+   "group": "swimwear"
+  },
+  "briefs": {
+   "label": "Swim briefs",
+   "short": "Briefs",
+   "swim": true,
+   "bare": true,
+   "sleeve": "none",
+   "collar": "none",
+   "legMat": "skin",
+   "swimTop": "f",
+   "boot": 0.1,
+   "wear": {
+    "outfit": "Briefs"
+   },
+   "look": {
+    "outfit": "navy"
+   },
+   "group": "swimwear"
+  },
+  "swimsuit": {
+   "label": "Swimsuit",
+   "fem": true,
+   "swim": true,
+   "bare": true,
+   "suit": true,
+   "sleeve": "none",
+   "collar": "none",
+   "legMat": "skin",
+   "boot": 0.1,
+   "wear": {
+    "outfit": "Swimsuit"
+   },
+   "look": {
+    "outfit": "navy"
+   },
+   "group": "swimwear"
+  },
+  "bikini": {
+   "label": "Bikini",
+   "fem": true,
+   "swim": true,
+   "bare": true,
+   "sleeve": "none",
+   "collar": "none",
+   "legMat": "skin",
+   "swimTop": "all",
+   "boot": 0.1,
+   "wear": {
+    "outfit": "Bikini"
+   },
+   "look": {
+    "outfit": "rose"
+   },
+   "group": "swimwear"
+  }
+ },
+ "bottoms": {
+  "trousers": {
+   "label": "Trousers"
+  },
+  "shorts": {
+   "label": "Shorts",
+   "shorts": true
+  },
+  "cropped": {
+   "label": "Cropped",
+   "cropped": true
+  },
+  "skirt": {
+   "label": "Skirt",
+   "skirt": true,
+   "fem": true
+  },
+  "longskirt": {
+   "label": "Long skirt",
+   "skirt": "long",
+   "fem": true
+  }
+ },
+ "beards": {
+  "none": {
+   "label": "None"
+  },
+  "stubble": {
+   "label": "Stubble",
+   "r0": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "r1": [
+    0,
+    1,
+    2,
+    3,
+    7
+   ],
+   "mat": "stub",
+   "bot": "stub"
+  },
+  "moustache": {
+   "label": "Moustache",
+   "marks": {
+    "1": "T"
+   }
+  },
+  "chinstrap": {
+   "label": "Chinstrap",
+   "r0": [
+    0,
+    1,
+    2,
+    3,
+    7
+   ],
+   "r1": [
+    3,
+    7
+   ],
+   "bot": "beard",
+   "marks": {
+    "0": "E",
+    "1": "E",
+    "2": "E"
+   },
+   "mass": {
+    "w": 0.86,
+    "wMid": 1.4,
+    "wEnd": 1.3,
+    "drop": 0.55,
+    "fwd": 0
+   }
+  },
+  "goatee": {
+   "label": "Goatee",
+   "r0": [
+    1
+   ],
+   "bot": "beard",
+   "mass": {
+    "w": 0.18,
+    "wMid": 0.6,
+    "wEnd": 0.45,
+    "drop": 1.6,
+    "fwd": 0.012
+   }
+  },
+  "vandyke": {
+   "label": "Van Dyke",
+   "r0": [
+    1
+   ],
+   "bot": "beard",
+   "marks": {
+    "1": "T"
+   },
+   "mass": {
+    "w": 0.22,
+    "wMid": 0.7,
+    "wEnd": 0.3,
+    "drop": 1.9,
+    "fwd": 0.014
+   }
+  },
+  "sideburns": {
+   "label": "Sideburns",
+   "r1": [
+    3,
+    7
+   ],
+   "marks": {
+    "0": "E",
+    "-1": "E"
+   }
+  },
+  "mutton": {
+   "label": "Mutton chops",
+   "r0": [
+    3,
+    7
+   ],
+   "r1": [
+    0,
+    2,
+    3,
+    7
+   ],
+   "marks": {
+    "0": "E",
+    "1": "ET",
+    "-1": "E"
+   }
+  },
+  "full": {
+   "label": "Full",
+   "r0": [
+    0,
+    1,
+    2,
+    3,
+    7
+   ],
+   "r1": [
+    0,
+    1,
+    2,
+    3,
+    7
+   ],
+   "bot": "beard",
+   "marks": {
+    "0": "E",
+    "1": "A",
+    "2": "A"
+   },
+   "tache": "hairD",
+   "mass": {
+    "w": 0.94,
+    "wMid": 1.8,
+    "wEnd": 1.3,
+    "drop": 1.4,
+    "fwd": 0.012
+   }
+  },
+  "long": {
+   "label": "Long",
+   "r0": [
+    0,
+    1,
+    2,
+    3,
+    7
+   ],
+   "r1": [
+    0,
+    1,
+    2,
+    3,
+    7
+   ],
+   "bot": "beard",
+   "marks": {
+    "0": "E",
+    "1": "A",
+    "2": "A"
+   },
+   "tache": "hairD",
+   "mass": {
+    "w": 0.94,
+    "wMid": 1.8,
+    "wEnd": 0.6,
+    "drop": 3.6,
+    "fwd": 0.02
+   }
+  }
+ },
+ "hats": {
+  "none": null,
+  "watchcap": {
+   "F": 1.432,
+   "S": 1.4,
+   "B": 1.36,
+   "e": 0.024
+  },
+  "souwester": {
+   "F": 1.455,
+   "S": 1.42,
+   "B": 1.38,
+   "e": 0.024
+  },
+  "ballcap": {
+   "F": 1.46,
+   "S": 1.44,
+   "B": 1.41,
+   "e": 0.02
+  },
+  "kerchief": {
+   "F": 1.435,
+   "S": 1.37,
+   "B": 1.28,
+   "e": 0.026
+  },
+  "flatcap": {
+   "F": 1.45,
+   "S": 1.44,
+   "B": 1.43,
+   "e": 0.028
+  },
+  "hood": {
+   "F": 1.445,
+   "S": 1.2,
+   "B": 1.16,
+   "e": 0.032
+  },
+  "tophat": {
+   "F": 1.445,
+   "S": 1.445,
+   "B": 1.445,
+   "e": 0.022,
+   "h": 0.22,
+   "look": {
+    "hatCol": "black"
+   }
+  },
+  "bowler": {
+   "F": 1.44,
+   "S": 1.44,
+   "B": 1.44,
+   "e": 0.022,
+   "look": {
+    "hatCol": "black"
+   }
+  },
+  "captain": {
+   "F": 1.445,
+   "S": 1.445,
+   "B": 1.445,
+   "e": 0.024,
+   "look": {
+    "hatCol": "white"
+   }
+  },
+  "sunhat": {
+   "F": 1.462,
+   "S": 1.462,
+   "B": 1.462,
+   "e": 0.02,
+   "look": {
+    "hatCol": "straw"
+   }
+  },
+  "bucket": {
+   "F": 1.44,
+   "S": 1.44,
+   "B": 1.44,
+   "e": 0.024
+  },
+  "beret": {
+   "F": 1.455,
+   "S": 1.455,
+   "B": 1.455,
+   "e": 0.018
+  }
+ },
+ "sex": {
+  "m": {
+   "label": "Man",
+   "shape": 0.25
+  },
+  "f": {
+   "label": "Woman",
+   "shape": 0.75,
+   "height": 0.94,
+   "torso": 0.97,
+   "sh": 0.86,
+   "shX": 0.89,
+   "chest": 0.92,
+   "waist": 0.8,
+   "hip": 1.12,
+   "hipX": 1.06,
+   "depth": 0.95,
+   "bust": 0.03,
+   "seat": 0.014,
+   "arm": 0.84,
+   "thigh": 1.06,
+   "calf": 0.92,
+   "neck": 0.8,
+   "jaw": 0.86,
+   "head": 0.97,
+   "hand": 0.86,
+   "foot": 0.88
+  }
+ },
+ "frames": {
+  "m": {
+   "lean": {
+    "label": "Lean",
+    "sh": 0.95,
+    "shX": 0.96,
+    "chest": 0.92,
+    "waist": 0.9,
+    "hip": 0.94,
+    "depth": 0.9,
+    "arm": 0.88,
+    "thigh": 0.88,
+    "calf": 0.9,
+    "neck": 0.92,
+    "leg": 1.02
+   },
+   "average": {
+    "label": "Average"
+   },
+   "broad": {
+    "label": "Broad",
+    "sh": 1.12,
+    "shX": 1.08,
+    "chest": 1.1,
+    "waist": 0.96,
+    "hip": 0.98,
+    "depth": 1.06,
+    "arm": 1.18,
+    "thigh": 1.08,
+    "calf": 1.06,
+    "neck": 1.14,
+    "jaw": 1.06,
+    "hand": 1.08
+   },
+   "stocky": {
+    "label": "Stocky",
+    "height": 0.97,
+    "leg": 0.94,
+    "sh": 1.06,
+    "shX": 1.04,
+    "chest": 1.1,
+    "waist": 1.1,
+    "hip": 1.06,
+    "depth": 1.12,
+    "arm": 1.14,
+    "thigh": 1.16,
+    "calf": 1.12,
+    "neck": 1.18,
+    "jaw": 1.08,
+    "hand": 1.06,
+    "foot": 1.04
+   },
+   "heavy": {
+    "label": "Heavy",
+    "sh": 1.04,
+    "shX": 1.04,
+    "chest": 1.08,
+    "waist": 1.16,
+    "hip": 1.1,
+    "depth": 1.18,
+    "belly": 0.046,
+    "seat": 0.01,
+    "arm": 1.16,
+    "thigh": 1.18,
+    "calf": 1.1,
+    "neck": 1.16,
+    "jaw": 1.1
+   }
+  },
+  "f": {
+   "slender": {
+    "label": "Slender",
+    "sh": 0.96,
+    "shX": 0.97,
+    "chest": 0.92,
+    "waist": 0.9,
+    "hip": 0.92,
+    "depth": 0.9,
+    "bust": -0.012,
+    "seat": -0.006,
+    "arm": 0.88,
+    "thigh": 0.86,
+    "calf": 0.9,
+    "neck": 0.94,
+    "leg": 1.02
+   },
+   "average": {
+    "label": "Average"
+   },
+   "hourglass": {
+    "label": "Hourglass",
+    "chest": 1.02,
+    "waist": 0.88,
+    "hip": 1.08,
+    "bust": 0.016,
+    "seat": 0.008,
+    "thigh": 1.08
+   },
+   "pear": {
+    "label": "Pear",
+    "sh": 0.95,
+    "chest": 0.96,
+    "waist": 0.98,
+    "hip": 1.16,
+    "hipX": 1.06,
+    "bust": -0.008,
+    "seat": 0.016,
+    "thigh": 1.18,
+    "calf": 1.06
+   },
+   "full": {
+    "label": "Full",
+    "sh": 1.04,
+    "shX": 1.03,
+    "chest": 1.1,
+    "waist": 1.14,
+    "hip": 1.12,
+    "depth": 1.14,
+    "bust": 0.02,
+    "belly": 0.026,
+    "seat": 0.012,
+    "arm": 1.16,
+    "thigh": 1.16,
+    "calf": 1.1,
+    "neck": 1.08
+   }
+  }
+ },
+ "ages": {
+  "child": {
+   "height": 0.74,
+   "head": 0.95,
+   "leg": 0.84,
+   "torso": 1.03,
+   "limbR": 0.86,
+   "shoulder": 0.84,
+   "neckLen": 0.55,
+   "stoop": 0,
+   "sexK": 0.2,
+   "frameK": 0.5,
+   "bustK": 0
+  },
+  "youth": {
+   "height": 0.91,
+   "head": 0.98,
+   "leg": 1,
+   "torso": 0.97,
+   "limbR": 0.92,
+   "shoulder": 0.93,
+   "neckLen": 0.9,
+   "stoop": 0,
+   "sexK": 0.85,
+   "frameK": 0.85,
+   "bustK": 0.75
+  },
+  "adult": {
+   "height": 1,
+   "head": 1,
+   "leg": 1,
+   "torso": 1,
+   "limbR": 1,
+   "shoulder": 1,
+   "neckLen": 1,
+   "stoop": 0,
+   "sexK": 1,
+   "frameK": 1,
+   "bustK": 1
+  },
+  "elder": {
+   "height": 0.965,
+   "head": 1,
+   "leg": 0.97,
+   "torso": 0.99,
+   "limbR": 0.95,
+   "shoulder": 0.96,
+   "neckLen": 0.8,
+   "stoop": 8,
+   "sexK": 1,
+   "frameK": 1,
+   "bustK": 1
+  }
+ },
+ "heads": {
+  "round": {
+   "w": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "chin": 1,
+   "z": 1,
+   "c": 1
+  },
+  "oval": {
+   "w": [
+    0.8,
+    0.88,
+    0.96,
+    0.98,
+    0.96,
+    0.95
+   ],
+   "chin": 0.95,
+   "z": 1.05,
+   "c": 1.1
+  },
+  "square": {
+   "w": [
+    1.35,
+    1.15,
+    1.03,
+    1.02,
+    1.07,
+    1.2
+   ],
+   "chin": 1.08,
+   "z": 1,
+   "c": 0.55
+  },
+  "long": {
+   "w": [
+    0.92,
+    0.92,
+    0.93,
+    0.94,
+    0.94,
+    0.94
+   ],
+   "chin": 1,
+   "z": 1.12,
+   "c": 1
+  },
+  "heart": {
+   "w": [
+    0.6,
+    0.8,
+    1.02,
+    1.08,
+    1.06,
+    1.02
+   ],
+   "chin": 0.9,
+   "z": 1.02,
+   "c": 1
+  },
+  "wide": {
+   "w": [
+    1.42,
+    1.24,
+    1.06,
+    0.98,
+    0.95,
+    0.96
+   ],
+   "chin": 1.06,
+   "z": 0.97,
+   "c": 0.8
+  },
+  "pear": {
+   "w": [
+    1.3,
+    1.2,
+    1.08,
+    0.92,
+    0.84,
+    0.84
+   ],
+   "chin": 1.04,
+   "z": 1,
+   "c": 0.9
+  }
+ },
+ "eyeShapes": [
+  "round",
+  "narrow",
+  "lidded"
+ ],
+ "palettes": {
+  "SKINS": {
+   "porcelain": [
+    "#7a4a3e",
+    "#9a6353",
+    "#b8806c",
+    "#d29e88",
+    "#e6bda9",
+    "#f4dccb"
+   ],
+   "fair": [
+    "#6b4028",
+    "#8a5636",
+    "#a8724a",
+    "#c98d63",
+    "#e0a981",
+    "#f0c9a2"
+   ],
+   "rose": [
+    "#75402f",
+    "#96573f",
+    "#b47254",
+    "#d18f6d",
+    "#e7ae8d",
+    "#f6cfb4"
+   ],
+   "olive": [
+    "#4d3c22",
+    "#68522f",
+    "#85703f",
+    "#a28c55",
+    "#bda872",
+    "#d6c497"
+   ],
+   "tan": [
+    "#59331f",
+    "#754628",
+    "#936036",
+    "#b07d4a",
+    "#cc9a63",
+    "#e2b57e"
+   ],
+   "bronze": [
+    "#4a2a17",
+    "#63391f",
+    "#80502c",
+    "#9d6a3d",
+    "#b98653",
+    "#d1a271"
+   ],
+   "umber": [
+    "#3a2116",
+    "#4f2f1e",
+    "#68422a",
+    "#835838",
+    "#9e7049",
+    "#b98c60"
+   ],
+   "deep": [
+    "#301c12",
+    "#45291a",
+    "#5e3a24",
+    "#7a4f31",
+    "#966843",
+    "#b08055"
+   ],
+   "ebony": [
+    "#221a1a",
+    "#332727",
+    "#473838",
+    "#5d4b48",
+    "#75625c",
+    "#8e7a70"
+   ]
+  },
+  "HAIRS": {
+   "blond": [
+    "#7a5a1c",
+    "#946218",
+    "#b07d1f",
+    "#e0b13a",
+    "#f2cf6a"
+   ],
+   "sand": [
+    "#6b5636",
+    "#877049",
+    "#a68d60",
+    "#c4ab7c",
+    "#ddc79c"
+   ],
+   "black": [
+    "#0e1114",
+    "#171b21",
+    "#232a32",
+    "#333c46",
+    "#4a545f"
+   ],
+   "brown": [
+    "#33271b",
+    "#473627",
+    "#5e4630",
+    "#6b4f35",
+    "#8a6a48"
+   ],
+   "auburn": [
+    "#3d1a14",
+    "#57271c",
+    "#732f21",
+    "#8f4029",
+    "#ab5738"
+   ],
+   "ginger": [
+    "#5e2013",
+    "#7d301c",
+    "#9c4327",
+    "#b85835",
+    "#d07048"
+   ],
+   "salt": [
+    "#2a2f31",
+    "#40474a",
+    "#5c656a",
+    "#7d878b",
+    "#a3adaf"
+   ],
+   "grey": [
+    "#6f7a78",
+    "#878b85",
+    "#a2a7a0",
+    "#bcc2ba",
+    "#cfd4cc"
+   ],
+   "white": [
+    "#8a908c",
+    "#a3a8a3",
+    "#bcc0ba",
+    "#d3d6cf",
+    "#dfe1db"
+   ]
+  },
+  "OUTFITS": {
+   "teal": [
+    "#0d3f3c",
+    "#14554e",
+    "#1c7367",
+    "#2ba39a",
+    "#49b8aa"
+   ],
+   "navy": [
+    "#0e1526",
+    "#172644",
+    "#223764",
+    "#2f4c88",
+    "#4166ac"
+   ],
+   "oil": [
+    "#946218",
+    "#b07d1f",
+    "#cf9d24",
+    "#e0b13a",
+    "#f2cf6a"
+   ],
+   "rust": [
+    "#4a100e",
+    "#7c1a15",
+    "#a8241b",
+    "#cf3626",
+    "#e2573c"
+   ],
+   "slate": [
+    "#1b2429",
+    "#28353c",
+    "#374852",
+    "#485c68",
+    "#5c7280"
+   ],
+   "moss": [
+    "#20291f",
+    "#2e3a2a",
+    "#3e4d37",
+    "#4f6045",
+    "#627457"
+   ],
+   "black": [
+    "#0a0c0f",
+    "#13171b",
+    "#1e2429",
+    "#2a3239",
+    "#38424b"
+   ],
+   "char": [
+    "#1c1e21",
+    "#292d31",
+    "#383d43",
+    "#4a5057",
+    "#5e656d"
+   ],
+   "denim": [
+    "#18263a",
+    "#233651",
+    "#314a6b",
+    "#436288",
+    "#5a7ca3"
+   ],
+   "khaki": [
+    "#4a3e28",
+    "#645539",
+    "#7f6e4b",
+    "#9b8a62",
+    "#b6a57c"
+   ],
+   "cream": [
+    "#6b5f49",
+    "#8a7c62",
+    "#a99b7e",
+    "#c6b99b",
+    "#ddd2b7"
+   ],
+   "wine": [
+    "#2c0d16",
+    "#461522",
+    "#621f30",
+    "#7e2f42",
+    "#9a4556"
+   ],
+   "plum": [
+    "#22152c",
+    "#342143",
+    "#492f5b",
+    "#604173",
+    "#79588b"
+   ],
+   "rose": [
+    "#5b2634",
+    "#7b3547",
+    "#9d4b5d",
+    "#bd6776",
+    "#d48790"
+   ],
+   "sky": [
+    "#223b53",
+    "#2f5371",
+    "#416d8f",
+    "#5988ab",
+    "#79a5c5"
+   ],
+   "orange": [
+    "#4a1d0c",
+    "#7a3112",
+    "#a8461a",
+    "#d4632a",
+    "#e8834a"
+   ]
+  },
+  "SHIRTS": {
+   "white": [
+    "#878b85",
+    "#a2a7a0",
+    "#bcc2ba",
+    "#cfd4cc",
+    "#dfe3dc",
+    "#eef0ea"
+   ],
+   "cream": [
+    "#8c6a45",
+    "#a98352",
+    "#c2a06b",
+    "#d8c290",
+    "#ead9ae",
+    "#f4e8c8"
+   ],
+   "navy": [
+    "#0e1526",
+    "#172644",
+    "#223764",
+    "#2f4c88",
+    "#4166ac",
+    "#5a80c2"
+   ],
+   "red": [
+    "#4a100e",
+    "#7c1a15",
+    "#a8241b",
+    "#cf3626",
+    "#e2573c",
+    "#ee7a55"
+   ],
+   "moss": [
+    "#27312c",
+    "#333f37",
+    "#414e43",
+    "#505e50",
+    "#616f60",
+    "#748172"
+   ],
+   "slate": [
+    "#20282c",
+    "#2d383e",
+    "#3d4a52",
+    "#4e5e68",
+    "#61737e",
+    "#7a8b96"
+   ],
+   "ochre": [
+    "#5e4416",
+    "#7b5a20",
+    "#96712c",
+    "#b18b3d",
+    "#c8a555",
+    "#dcc077"
+   ],
+   "black": [
+    "#08090b",
+    "#0f1215",
+    "#171b20",
+    "#21272d",
+    "#2c343b",
+    "#3a434b"
+   ],
+   "sky": [
+    "#24394f",
+    "#304c68",
+    "#3f6384",
+    "#537ea0",
+    "#6d99bb",
+    "#8db4d1"
+   ],
+   "rose": [
+    "#5c2b37",
+    "#7d3b4b",
+    "#9f5360",
+    "#c1707a",
+    "#d88f97",
+    "#eab0b4"
+   ]
+  },
+  "HATCOLS": {
+   "oil": [
+    "#946218",
+    "#b07d1f",
+    "#cf9d24",
+    "#e0b13a",
+    "#f2cf6a"
+   ],
+   "navy": [
+    "#0e1526",
+    "#172644",
+    "#223764",
+    "#2f4c88",
+    "#4166ac"
+   ],
+   "rust": [
+    "#4a100e",
+    "#7c1a15",
+    "#a8241b",
+    "#cf3626",
+    "#e2573c"
+   ],
+   "teal": [
+    "#0d3f3c",
+    "#14554e",
+    "#1c7367",
+    "#2ba39a",
+    "#49b8aa"
+   ],
+   "char": [
+    "#14181b",
+    "#1f262a",
+    "#2c353b",
+    "#3d484f",
+    "#505d65"
+   ],
+   "oat": [
+    "#5c5140",
+    "#786a53",
+    "#948468",
+    "#b09e80",
+    "#c9b899"
+   ],
+   "black": [
+    "#08090b",
+    "#111418",
+    "#1b2026",
+    "#272e36",
+    "#353e48"
+   ],
+   "white": [
+    "#80857f",
+    "#9ea39c",
+    "#babfb8",
+    "#d2d6cf",
+    "#e6e9e3"
+   ],
+   "straw": [
+    "#6e5629",
+    "#8c6f36",
+    "#ab8c47",
+    "#c8a95f",
+    "#dec57f"
+   ]
+  },
+  "APRONS": {
+   "canvas": [
+    "#4d4436",
+    "#665b48",
+    "#7f735c",
+    "#988b71",
+    "#b0a488"
+   ],
+   "rubber": [
+    "#2b2f33",
+    "#3b4147",
+    "#4c545b",
+    "#606a72",
+    "#78838c"
+   ],
+   "ochre": [
+    "#6b4d16",
+    "#8a6520",
+    "#a87f2b",
+    "#c39a3f",
+    "#d9b45c"
+   ],
+   "black": [
+    "#08090b",
+    "#111418",
+    "#1b2026",
+    "#272e36",
+    "#353e48"
+   ],
+   "red": [
+    "#4a100e",
+    "#7c1a15",
+    "#a8241b",
+    "#cf3626",
+    "#e2573c"
+   ],
+   "navy": [
+    "#0e1526",
+    "#172644",
+    "#223764",
+    "#2f4c88",
+    "#4166ac"
+   ],
+   "white": [
+    "#80857f",
+    "#9ea39c",
+    "#babfb8",
+    "#d2d6cf",
+    "#e6e9e3"
+   ],
+   "orange": [
+    "#4a1d0c",
+    "#7a3112",
+    "#a8461a",
+    "#d4632a",
+    "#e8834a"
+   ],
+   "yellow": [
+    "#6b5212",
+    "#8f6e16",
+    "#b8901d",
+    "#dcb534",
+    "#f0d062"
+   ]
+  },
+  "EYES": {
+   "sea": "#2ba39a",
+   "sky": "#4166ac",
+   "bark": "#6b4f35",
+   "slate": "#8a969b",
+   "amber": "#e0b13a",
+   "moss": "#627457",
+   "umber": "#4f2f1e"
+  }
+ },
+ "randomBuild": {
+  "call": "CharacterIso10.randomBuild(rnd, { sex, age })",
+  "rules": [
+   "sex drawn first (m, f), unless given; age adult 3 in 6, youth, elder, child 1 in 6 each, unless given",
+   "a man never draws a garment or bottom marked fem (skirt and shawl, dress, gown, sundress, pinafore, swimsuit, bikini; skirt, long skirt); a woman may draw anything",
+   "swimwear one draw in twelve; trunks or briefs on a woman come with a top (swimTop f)",
+   "beards only on adult and elder men, 3 in 5; a youth: none, none, stubble or moustache",
+   "elders draw salt, grey or white hair 5 in 6: 3 in 4 from those three, else from all nine colours (which hold the three); nobody else draws grey or white, and salt only on adults",
+   "bald only on adult and elder men",
+   "a hat 3 in 5"
+  ]
+ }
+}

@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 3dc63823860ae854f95c2df48e39987e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3791394980597676619
+    second: Perched_granite_weeded_mask_0
+  - first:
+      213: 1697391086843940768
+    second: Perched_granite_weeded_mask_1
+  - first:
+      213: -5997434203011313668
+    second: Perched_granite_weeded_mask_2
+  - first:
+      213: -805919866277983856
+    second: Perched_granite_weeded_mask_3
+  - first:
+      213: 7473426962772869977
+    second: Perched_granite_weeded_mask_4
+  - first:
+      213: 2435483082709255998
+    second: Perched_granite_weeded_mask_5
+  - first:
+      213: 8708268641817106372
+    second: Perched_granite_weeded_mask_6
+  - first:
+      213: 190088218558392679
+    second: Perched_granite_weeded_mask_7
+  - first:
+      213: -9054132697462557851
+    second: Perched_granite_weeded_mask_8
+  - first:
+      213: -7103208731342171803
+    second: Perched_granite_weeded_mask_9
+  - first:
+      213: 4591033122475187898
+    second: Perched_granite_weeded_mask_10
+  - first:
+      213: -7365848356846855713
+    second: Perched_granite_weeded_mask_11
+  - first:
+      213: -2280397925644497154
+    second: Perched_granite_weeded_mask_12
+  - first:
+      213: 6300311328095553812
+    second: Perched_granite_weeded_mask_13
+  - first:
+      213: -6495281994743819990
+    second: Perched_granite_weeded_mask_14
+  - first:
+      213: -6396727404329752723
+    second: Perched_granite_weeded_mask_15
+  - first:
+      213: -5748102410278363189
+    second: Perched_granite_weeded_mask_16
+  - first:
+      213: -3872440417076699848
+    second: Perched_granite_weeded_mask_17
+  - first:
+      213: 3619554852984776584
+    second: Perched_granite_weeded_mask_18
+  - first:
+      213: 6526479305428284490
+    second: Perched_granite_weeded_mask_19
+  - first:
+      213: -4015730850084763701
+    second: Perched_granite_weeded_mask_20
+  - first:
+      213: 1735471186966196039
+    second: Perched_granite_weeded_mask_21
+  - first:
+      213: 1599516207035480975
+    second: Perched_granite_weeded_mask_22
+  - first:
+      213: -2825397986143959616
+    second: Perched_granite_weeded_mask_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 919ebcc8ca0081545bbb1a561ddb6c38
+      internalID: 50207537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27315f6ea9b0a5d479215d1cc729e75c
+      internalID: -709435097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48c9be4dc3db5324595056261372f84f
+      internalID: -873367320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 649ebb15577038642bd3c55f113324fb
+      internalID: -1111260232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 87d9e1a3cc8b5244c94e24c04a1b63b1
+      internalID: 319958748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8c21069a5ddb46498eb5f940ff83e4c
+      internalID: 2020054529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f107fb9f19e7e44da1679add357aed0
+      internalID: 584249468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47cfe12bd044a6e4b8ee4413c48ebf51
+      internalID: 607800842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bb57ac2eb203254dbbb202ec1bf81c6
+      internalID: 1217069376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f6e4fd06b98bb34fbc4a491c71577ac
+      internalID: -631797464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4b7f373317b591498cdfad223f43547
+      internalID: 1955360973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b42c5939b3324db4695635559ccf78d3
+      internalID: -3225341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2641bc37c0cf4394da347122a0129eeb
+      internalID: -100849859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fcf4220e949100844bdbadc42d147ba1
+      internalID: -626780884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 221c73e8d91aba94d957421d283e6f30
+      internalID: -1920230868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03e1f8c5724d52a46938e6f8b45e392a
+      internalID: 1010746258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ab8b0402f6ddb744920bb8a3f5de5cd
+      internalID: 2060183617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59121469bba19af42a5d1bd50a5f35a3
+      internalID: 1490533792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b4844165f4f96a4ea1aee10dc90063f
+      internalID: -1205028949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ade1930bc1940484aaee5e792b365518
+      internalID: 732820702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eaf54ea920607b049b4b402134c29089
+      internalID: -1847412838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8144bdb6327b51048afa5e5179c1051f
+      internalID: -1082895332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 517a0c8295f617143881526c2870def0
+      internalID: 943400109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_granite_weeded_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e7565c72a1264546a89365c31c93876
+      internalID: -1617679641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 4a644e87693d3c84a831e7e296fb573f
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Perched_granite_weeded_mask_c0_r0: 50207537
+      Perched_granite_weeded_mask_c0_r1: 1217069376
+      Perched_granite_weeded_mask_c0_r2: 2060183617
+      Perched_granite_weeded_mask_c1_r0: -709435097
+      Perched_granite_weeded_mask_c1_r1: -631797464
+      Perched_granite_weeded_mask_c1_r2: 1490533792
+      Perched_granite_weeded_mask_c2_r0: -873367320
+      Perched_granite_weeded_mask_c2_r1: 1955360973
+      Perched_granite_weeded_mask_c2_r2: -1205028949
+      Perched_granite_weeded_mask_c3_r0: -1111260232
+      Perched_granite_weeded_mask_c3_r1: -3225341
+      Perched_granite_weeded_mask_c3_r2: 732820702
+      Perched_granite_weeded_mask_c4_r0: 319958748
+      Perched_granite_weeded_mask_c4_r1: -100849859
+      Perched_granite_weeded_mask_c4_r2: -1847412838
+      Perched_granite_weeded_mask_c5_r0: 2020054529
+      Perched_granite_weeded_mask_c5_r1: -626780884
+      Perched_granite_weeded_mask_c5_r2: -1082895332
+      Perched_granite_weeded_mask_c6_r0: 584249468
+      Perched_granite_weeded_mask_c6_r1: -1920230868
+      Perched_granite_weeded_mask_c6_r2: 943400109
+      Perched_granite_weeded_mask_c7_r0: 607800842
+      Perched_granite_weeded_mask_c7_r1: 1010746258
+      Perched_granite_weeded_mask_c7_r2: -1617679641
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

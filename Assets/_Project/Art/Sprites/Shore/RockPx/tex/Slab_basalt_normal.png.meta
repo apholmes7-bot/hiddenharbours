@@ -1,0 +1,781 @@
+fileFormatVersion: 2
+guid: d3ae2c1b65caca94bb76e92d454a7163
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7924150929871303023
+    second: Slab_basalt_normal_0
+  - first:
+      213: -7469281687447076315
+    second: Slab_basalt_normal_1
+  - first:
+      213: -7732587658019374211
+    second: Slab_basalt_normal_2
+  - first:
+      213: 2475527735228319491
+    second: Slab_basalt_normal_3
+  - first:
+      213: -5152819883184129584
+    second: Slab_basalt_normal_4
+  - first:
+      213: 4526183432493842542
+    second: Slab_basalt_normal_5
+  - first:
+      213: -5238148617199476657
+    second: Slab_basalt_normal_6
+  - first:
+      213: 6068573379095789074
+    second: Slab_basalt_normal_7
+  - first:
+      213: -7971297723729617447
+    second: Slab_basalt_normal_8
+  - first:
+      213: 8625894120472658487
+    second: Slab_basalt_normal_9
+  - first:
+      213: -9007859625831071024
+    second: Slab_basalt_normal_10
+  - first:
+      213: 5791097943926176429
+    second: Slab_basalt_normal_11
+  - first:
+      213: -5829020462475903459
+    second: Slab_basalt_normal_12
+  - first:
+      213: -8819585335001587506
+    second: Slab_basalt_normal_13
+  - first:
+      213: 4716274078690950223
+    second: Slab_basalt_normal_14
+  - first:
+      213: -4263644229138833336
+    second: Slab_basalt_normal_15
+  - first:
+      213: -3173286311359896109
+    second: Slab_basalt_normal_16
+  - first:
+      213: 281575670819604425
+    second: Slab_basalt_normal_17
+  - first:
+      213: -6922906323136522615
+    second: Slab_basalt_normal_18
+  - first:
+      213: -3809887255124048135
+    second: Slab_basalt_normal_19
+  - first:
+      213: -3501705347062435289
+    second: Slab_basalt_normal_20
+  - first:
+      213: -8431449335473757135
+    second: Slab_basalt_normal_21
+  - first:
+      213: 8230587586674871998
+    second: Slab_basalt_normal_22
+  - first:
+      213: -9065732845350665026
+    second: Slab_basalt_normal_23
+  - first:
+      213: -5230151366430254609
+    second: Slab_basalt_normal_24
+  - first:
+      213: -6025168457684726478
+    second: Slab_basalt_normal_25
+  - first:
+      213: 382772293340510645
+    second: Slab_basalt_normal_26
+  - first:
+      213: 6154235685221906513
+    second: Slab_basalt_normal_27
+  - first:
+      213: -3455298833343992576
+    second: Slab_basalt_normal_28
+  - first:
+      213: 6776096363635038562
+    second: Slab_basalt_normal_29
+  - first:
+      213: 7715079663835153948
+    second: Slab_basalt_normal_30
+  - first:
+      213: 1946453783053084427
+    second: Slab_basalt_normal_31
+  - first:
+      213: -8112141875960037761
+    second: Slab_basalt_normal_32
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d96829ebbce36e46a133ec8e6c77686
+      internalID: -342641456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a0d8fe617123b24ab9dacb8daa3b43b
+      internalID: -835645000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2c060a5bb745214ca925f50f7c94ecd
+      internalID: -1632374281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b44a86e32ba77c46b06a5900b150c6c
+      internalID: 2126243048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf70765e37ff60d4a9ca6fc2e505335c
+      internalID: -79105973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cbceb42f939106e48a7dc9616dd46d40
+      internalID: -524751341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 751019ae2a4722b41bd6d60bb8dfab7b
+      internalID: -111975361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65e38e18fd9f7f3449b7fb30e4c3ba7f
+      internalID: -1191879157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fcad858d9de2bbc48bbb3cc5f417fec0
+      internalID: -331405587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7be91cf6a442d8c48954b3db474ced4a
+      internalID: 803243877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40c976882d82128489d63f47b903e527
+      internalID: -936181211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e29696496e478f84db66c56b974e101a
+      internalID: -825788144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d03010a7124979e42a77dbf85c7d64f6
+      internalID: 601695879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cb09e06384263248804e9dd6fe362dd
+      internalID: -26960427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3270472bd00660a4f966003b20adb60b
+      internalID: -1526227141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 359292cf23a59c04bb0bfdfd11f5a2bb
+      internalID: -2112082013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7eda8f668f1893f45ac8eb070563907f
+      internalID: 1728488074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bfaaa77280653da4099d09ab343ee123
+      internalID: 363741660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6d8e84ca644c5e4e80f702817fb2933
+      internalID: -191036895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c58ad6aac4509a346a547ba15df4e9c3
+      internalID: -2040589861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b01016ef37d361e4c9a31771680ebaf3
+      internalID: -107889898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afc3ae1514e4d9042be8f8e657683340
+      internalID: -2048561708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eec4557a2c6a4324fa0e698891c6ad53
+      internalID: -961479434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_basalt_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de13371bb9c4b704e9ef500ca3a580b8
+      internalID: -1846481186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 900806efd0782584e9e26897b72bf3b5
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Slab_basalt_normal_c0_r0: -342641456
+      Slab_basalt_normal_c0_r1: -331405587
+      Slab_basalt_normal_c0_r2: 1728488074
+      Slab_basalt_normal_c1_r0: -835645000
+      Slab_basalt_normal_c1_r1: 803243877
+      Slab_basalt_normal_c1_r2: 363741660
+      Slab_basalt_normal_c2_r0: -1632374281
+      Slab_basalt_normal_c2_r1: -936181211
+      Slab_basalt_normal_c2_r2: -191036895
+      Slab_basalt_normal_c3_r0: 2126243048
+      Slab_basalt_normal_c3_r1: -825788144
+      Slab_basalt_normal_c3_r2: -2040589861
+      Slab_basalt_normal_c4_r0: -79105973
+      Slab_basalt_normal_c4_r1: 601695879
+      Slab_basalt_normal_c4_r2: -107889898
+      Slab_basalt_normal_c5_r0: -524751341
+      Slab_basalt_normal_c5_r1: -26960427
+      Slab_basalt_normal_c5_r2: -2048561708
+      Slab_basalt_normal_c6_r0: -111975361
+      Slab_basalt_normal_c6_r1: -1526227141
+      Slab_basalt_normal_c6_r2: -961479434
+      Slab_basalt_normal_c7_r0: -1191879157
+      Slab_basalt_normal_c7_r1: -2112082013
+      Slab_basalt_normal_c7_r2: -1846481186
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

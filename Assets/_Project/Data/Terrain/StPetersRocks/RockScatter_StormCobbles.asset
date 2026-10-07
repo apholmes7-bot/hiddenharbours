@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0e87d3230c94ad695159f4e185e8122, type: 3}
+  m_Name: RockScatter_StormCobbles
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RockScatterDef
+  Id: scatter.stp_storm_cobbles
+  DisplayName: Storm cobbles
+  Rule: sections
+  Over:
+  - coast.stp_storm_beach
+  Band: {x: 0, y: 0}
+  Elevation: {x: 0.5, y: 3.4}
+  Every: {x: 3, y: 5}
+  Forms:
+  - Form: cobbles
+    Weight: 4
+  - Form: knuckle
+    Weight: 1
+  - Form: block
+    Weight: 1
+  Stone: granite
+  State: dry
+  Count: 8
+  Rocks:
+  - N: 0
+    At: {x: -62.45, y: -15.16}
+    Elevation: 0.64
+    Form: knuckle
+  - N: 1
+    At: {x: -62.65, y: -10.68}
+    Elevation: 0.6
+    Form: block
+  - N: 2
+    At: {x: -59.75, y: -15.03}
+    Elevation: 1.43
+    Form: cobbles
+  - N: 3
+    At: {x: -54.64, y: -15.97}
+    Elevation: 1.86
+    Form: cobbles
+  - N: 4
+    At: {x: -50.84, y: -21.4}
+    Elevation: 1.43
+    Form: block
+  - N: 5
+    At: {x: -50.87, y: -17.36}
+    Elevation: 2.13
+    Form: knuckle
+  - N: 6
+    At: {x: -47.66, y: -21.52}
+    Elevation: 1.27
+    Form: block
+  - N: 7
+    At: {x: -46.98, y: -12.56}
+    Elevation: 2.77
+    Form: knuckle
+  Why: 'The berm''s big cobbles, granite from the glacial till (the ''erratic'' stone). Part 2 laid 8. Its rule re-run on the import round PR 5w''s walls (b/rocks.json, A2''s rule) lays 8; 8 stand and 0 are removed: none. (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

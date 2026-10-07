@@ -1,0 +1,2791 @@
+{
+  "kit": "shop-building-kit",
+  "version": 1,
+  "generated": "2026-08-06 — read out of Art/shopfrontRig.js, Art/shopInteriorRig.js, Art/shopBuildingRig.js at their defaults",
+  "loadOrder": [
+    "shopfrontRig.js",
+    "shopInteriorRig.js",
+    "shopBuildingRig.js"
+  ],
+  "globals": {
+    "shopfrontRig": "Shopfront",
+    "shopInteriorRig": "ShopInterior",
+    "shopBuildingRig": "ShopBuilding"
+  },
+  "projection": {
+    "ppu": 32,
+    "unit": "1 m = 32 px",
+    "facings": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "step": "45°",
+    "elev": 40,
+    "elevRange": [
+      30,
+      50
+    ],
+    "key": "fixed upper-LEFT, flat-facet N·L",
+    "shading": "z-buffered, ordered (Bayer) dither, per-face uv texture, depth-edge darkening",
+    "keyline": "1 px, #1a1c22",
+    "antialias": false,
+    "alpha": "binary",
+    "pivot": "ground centre of the level footprint; identical across all 8 facings of a bake"
+  },
+  "grid": {
+    "cell": 0.5,
+    "cellNote": "0.5 m plan cell — rooms, walls and fixture slots all land on it",
+    "exteriorWall": 0.16,
+    "partyWall": 0.14,
+    "floorDeck": 0.34
+  },
+  "registration": {
+    "contract": "Shopfront.dims(type) and ShopInterior.dims(type) resolve Wd/Ln/wallH/fH/shopH from ONE formula, so a trade's room registers inside that trade's shell.",
+    "mainRect": "ShopBuilding.PLANS[type].main IS the shopfront mass (Wd × Ln) centred on the pivot.",
+    "wing": "ShopBuilding.wingOf(type,size) is what the shell must grow at the back to cover the plan; Shopfront reads the same numbers (see shell.wing).",
+    "roomBox": "ShopBuilding.roomBox(type,room,size) hands ShopInterior one room's box + cell grid, so a layout authored in the single-room editor drops into that room of the building unchanged.",
+    "grade": "z 0 is the pavement for Shopfront; each baked level renders its own floor plane at z 0 and levelZ says where that floor sits in world height."
+  },
+  "cutaway": {
+    "exterior": "the two exterior walls whose outward face points at the camera are dropped (3 kept orthogonal, 2 kept diagonal)",
+    "party": "edge-on (|t| <= 0.35) built solid with the opening punched; facing the camera it is CUT BACK to a floor trace + end nibs + free-standing casing/lintel/leaf",
+    "ceilings": "never slabbed — deck above reads as joists plus the wall-top cap; rooms under roof get the trimmed roof underside"
+  },
+  "runtimeOverlays": [
+    "lamp light per room (anchors.lamps)",
+    "stove / oven fire",
+    "lit glass at night",
+    "stack smoke (Shopfront)",
+    "sign lettering — all signs bake blank"
+  ],
+  "doorSpecs": {
+    "doorway": {
+      "w": 1.06,
+      "h": 2.08,
+      "sill": 0,
+      "label": "cased doorway"
+    },
+    "slab": {
+      "w": 0.96,
+      "h": 2.05,
+      "sill": 0,
+      "label": "slab door"
+    },
+    "swingPair": {
+      "w": 1.56,
+      "h": 2.05,
+      "sill": 0,
+      "label": "service double"
+    },
+    "hatch": {
+      "w": 1.34,
+      "h": 0.98,
+      "sill": 1.06,
+      "label": "pass hatch"
+    },
+    "arch": {
+      "w": 2.4,
+      "h": 2.32,
+      "sill": 0,
+      "label": "wide arch"
+    },
+    "curtain": {
+      "w": 1.06,
+      "h": 2.1,
+      "sill": 0,
+      "label": "curtained doorway"
+    },
+    "dutch": {
+      "w": 1,
+      "h": 2.05,
+      "sill": 0,
+      "label": "dutch door"
+    }
+  },
+  "doorPairs": {
+    "dining|kitchen": "swingPair",
+    "dining|stock": "slab",
+    "kitchen|stock": "doorway",
+    "bar|dining": "arch",
+    "bar|kitchen": "swingPair",
+    "bar|stock": "slab",
+    "chandLoft|flat": "doorway",
+    "chandLoft|stockroom": "slab",
+    "barroom|snug": "arch",
+    "barroom|kitchen": "swingPair",
+    "kitchen|snug": "slab",
+    "salesFloor|stockroom": "slab",
+    "chandFloor|stockroom": "slab",
+    "giftFloor|stockroom": "curtain",
+    "cutting|fishCounter": "hatch",
+    "cutting|iceHouse": "dutch",
+    "bakeFront|bakehouse": "hatch",
+    "bakehouse|bedroom": "slab",
+    "lobby|sorting": "slab",
+    "bedroom|parlour": "slab",
+    "bed|flat": "slab",
+    "bedroom|flat": "slab"
+  },
+  "roomKinds": {
+    "salesFloor": {
+      "label": "sales floor",
+      "floor": "plank",
+      "wall": "wainscot",
+      "paper": "cream",
+      "wainscot": true,
+      "ceilShare": 1,
+      "windowDensity": 0.55,
+      "fixtures": [
+        "counter",
+        "wallShelf",
+        "wallShelf",
+        "gondola",
+        "binRack",
+        "potbelly",
+        "crateStack"
+      ]
+    },
+    "stockroom": {
+      "label": "stock room",
+      "floor": "plank",
+      "wall": "board",
+      "paper": "greyShingle",
+      "wainscot": false,
+      "ceilShare": 0.94,
+      "windowDensity": 0.28,
+      "fixtures": [
+        "stockShelf",
+        "stockShelf",
+        "stockShelf",
+        "barrelStack",
+        "sackPile",
+        "crateStack"
+      ]
+    },
+    "parlour": {
+      "label": "parlour",
+      "floor": "plank",
+      "wall": "plaster",
+      "paper": "sage",
+      "wainscot": true,
+      "ceilShare": 1,
+      "windowDensity": 0.5,
+      "fixtures": [
+        "table",
+        "chair",
+        "chair",
+        "larder",
+        "rug",
+        "potbelly"
+      ]
+    },
+    "bedroom": {
+      "label": "bedroom",
+      "floor": "plank",
+      "wall": "plaster",
+      "paper": "blue",
+      "wainscot": false,
+      "ceilShare": 1,
+      "windowDensity": 0.4,
+      "fixtures": [
+        "larder",
+        "bench",
+        "crateStack",
+        "rug"
+      ]
+    },
+    "flat": {
+      "label": "flat",
+      "floor": "plank",
+      "wall": "plaster",
+      "paper": "cream",
+      "wainscot": true,
+      "ceilShare": 1,
+      "windowDensity": 0.48,
+      "fixtures": [
+        "table",
+        "chair",
+        "chair",
+        "larder",
+        "potbelly",
+        "rug"
+      ]
+    },
+    "fishCounter": {
+      "label": "fish counter",
+      "floor": "painted",
+      "wall": "tile",
+      "paper": "white",
+      "wainscot": false,
+      "ceilShare": 1,
+      "windowDensity": 0.5,
+      "fixtures": [
+        "coldTable",
+        "coldTable",
+        "counterShort",
+        "iceChest",
+        "crateStack"
+      ]
+    },
+    "cutting": {
+      "label": "cutting room",
+      "floor": "painted",
+      "wall": "tile",
+      "paper": "white",
+      "wainscot": false,
+      "ceilShare": 0.94,
+      "windowDensity": 0.45,
+      "fixtures": [
+        "prepTable",
+        "sinkRun",
+        "wallShelf",
+        "crateStack"
+      ]
+    },
+    "iceHouse": {
+      "label": "ice house",
+      "floor": "stoneFlag",
+      "wall": "board",
+      "paper": "galv",
+      "wainscot": false,
+      "ceilShare": 0.82,
+      "windowDensity": 0.16,
+      "fixtures": [
+        "iceChest",
+        "iceChest",
+        "crateStack"
+      ]
+    },
+    "chandFloor": {
+      "label": "chandlery floor",
+      "floor": "wideBoard",
+      "wall": "board",
+      "paper": "greyShingle",
+      "wainscot": false,
+      "ceilShare": 1,
+      "windowDensity": 0.5,
+      "fixtures": [
+        "counter",
+        "ropeRack",
+        "wallShelf",
+        "binRack",
+        "gondola",
+        "barrelStack"
+      ]
+    },
+    "chandLoft": {
+      "label": "rigging loft",
+      "floor": "wideBoard",
+      "wall": "stud",
+      "paper": "greyShingle",
+      "wainscot": false,
+      "ceilShare": 1,
+      "windowDensity": 0.35,
+      "fixtures": [
+        "ropeRack",
+        "stockShelf",
+        "crateStack",
+        "sackPile"
+      ]
+    },
+    "bakeFront": {
+      "label": "café front",
+      "floor": "checker",
+      "wall": "tile",
+      "paper": "cream",
+      "wainscot": true,
+      "ceilShare": 1,
+      "windowDensity": 0.55,
+      "fixtures": [
+        "displayCase",
+        "roundTable",
+        "chair",
+        "roundTable",
+        "chair",
+        "chalkMenu",
+        "plantTub"
+      ]
+    },
+    "bakehouse": {
+      "label": "bakehouse",
+      "floor": "stoneFlag",
+      "wall": "brick",
+      "paper": "cream",
+      "wainscot": false,
+      "ceilShare": 0.92,
+      "windowDensity": 0.35,
+      "fixtures": [
+        "ovenBank",
+        "prepTable",
+        "wallShelf",
+        "sinkRun",
+        "sackPile"
+      ]
+    },
+    "dining": {
+      "label": "dining room",
+      "floor": "wideBoard",
+      "wall": "wainscot",
+      "paper": "sage",
+      "wainscot": true,
+      "ceilShare": 1,
+      "windowDensity": 0.6,
+      "fixtures": [
+        "table",
+        "chair",
+        "table",
+        "chair",
+        "booth",
+        "booth",
+        "counterShort",
+        "plantTub",
+        "chalkMenu"
+      ]
+    },
+    "bar": {
+      "label": "bar",
+      "floor": "wideBoard",
+      "wall": "wainscot",
+      "paper": "sage",
+      "wainscot": true,
+      "ceilShare": 1,
+      "windowDensity": 0.4,
+      "fixtures": [
+        "backBar",
+        "bar",
+        "stool",
+        "stool",
+        "stool",
+        "booth",
+        "booth"
+      ]
+    },
+    "kitchen": {
+      "label": "kitchen",
+      "floor": "checker",
+      "wall": "tile",
+      "paper": "white",
+      "wainscot": false,
+      "ceilShare": 0.88,
+      "windowDensity": 0.4,
+      "fixtures": [
+        "pass",
+        "ovenBank",
+        "prepTable",
+        "sinkRun",
+        "wallShelf",
+        "crateStack"
+      ]
+    },
+    "stock": {
+      "label": "stock room",
+      "floor": "plank",
+      "wall": "board",
+      "paper": "greyShingle",
+      "wainscot": false,
+      "ceilShare": 0.88,
+      "windowDensity": 0.24,
+      "fixtures": [
+        "stockShelf",
+        "stockShelf",
+        "barrelStack",
+        "sackPile"
+      ]
+    },
+    "barroom": {
+      "label": "bar room",
+      "floor": "plank",
+      "wall": "panel",
+      "paper": "red",
+      "wainscot": true,
+      "ceilShare": 1,
+      "windowDensity": 0.45,
+      "fixtures": [
+        "bar",
+        "backBar",
+        "stool",
+        "stool",
+        "stool",
+        "table",
+        "chair",
+        "potbelly"
+      ]
+    },
+    "snug": {
+      "label": "snug",
+      "floor": "plank",
+      "wall": "panel",
+      "paper": "plum",
+      "wainscot": true,
+      "ceilShare": 1,
+      "windowDensity": 0.3,
+      "fixtures": [
+        "booth",
+        "table",
+        "chair",
+        "rug"
+      ]
+    },
+    "lobby": {
+      "label": "lobby",
+      "floor": "stoneFlag",
+      "wall": "wainscot",
+      "paper": "blue",
+      "wainscot": true,
+      "ceilShare": 1,
+      "windowDensity": 0.5,
+      "fixtures": [
+        "wicket",
+        "bench",
+        "chalkMenu",
+        "plantTub"
+      ]
+    },
+    "sorting": {
+      "label": "sorting room",
+      "floor": "plank",
+      "wall": "board",
+      "paper": "cream",
+      "wainscot": false,
+      "ceilShare": 0.94,
+      "windowDensity": 0.4,
+      "fixtures": [
+        "pigeonholes",
+        "pigeonholes",
+        "prepTable",
+        "stockShelf",
+        "crateStack"
+      ]
+    },
+    "servery": {
+      "label": "servery",
+      "floor": "painted",
+      "wall": "board",
+      "paper": "mustard",
+      "wainscot": false,
+      "ceilShare": 1,
+      "windowDensity": 0.3,
+      "fixtures": [
+        "counterShort",
+        "prepTable",
+        "wallShelf",
+        "crateStack"
+      ]
+    },
+    "giftFloor": {
+      "label": "gift floor",
+      "floor": "wideBoard",
+      "wall": "plaster",
+      "paper": "teal",
+      "wainscot": true,
+      "ceilShare": 1,
+      "windowDensity": 0.55,
+      "fixtures": [
+        "counter",
+        "wallShelf",
+        "wallShelf",
+        "gondola",
+        "displayCase",
+        "plantTub"
+      ]
+    }
+  },
+  "fixtures": [
+    {
+      "key": "counter",
+      "label": "Shop counter",
+      "cat": "service",
+      "builtin": true,
+      "tall": false,
+      "foot": [
+        2.8,
+        0.7
+      ],
+      "cells": [
+        6,
+        1
+      ]
+    },
+    {
+      "key": "counterShort",
+      "label": "Counter · short",
+      "cat": "service",
+      "builtin": true,
+      "tall": false,
+      "foot": [
+        1.5,
+        0.7
+      ],
+      "cells": [
+        3,
+        1
+      ]
+    },
+    {
+      "key": "displayCase",
+      "label": "Display case",
+      "cat": "service",
+      "builtin": true,
+      "tall": false,
+      "foot": [
+        1.9,
+        0.72
+      ],
+      "cells": [
+        4,
+        1
+      ]
+    },
+    {
+      "key": "coldTable",
+      "label": "Iced fish table",
+      "cat": "cold",
+      "builtin": true,
+      "tall": false,
+      "foot": [
+        2.2,
+        0.9
+      ],
+      "cells": [
+        4,
+        2
+      ]
+    },
+    {
+      "key": "bar",
+      "label": "Bar counter",
+      "cat": "service",
+      "builtin": true,
+      "tall": false,
+      "foot": [
+        3.2,
+        0.82
+      ],
+      "cells": [
+        6,
+        2
+      ]
+    },
+    {
+      "key": "backBar",
+      "label": "Back bar",
+      "cat": "service",
+      "builtin": true,
+      "tall": true,
+      "foot": [
+        2.8,
+        0.52
+      ],
+      "cells": [
+        6,
+        1
+      ]
+    },
+    {
+      "key": "pass",
+      "label": "Kitchen pass",
+      "cat": "kitchen",
+      "builtin": true,
+      "tall": true,
+      "foot": [
+        2,
+        0.6
+      ],
+      "cells": [
+        4,
+        1
+      ]
+    },
+    {
+      "key": "wicket",
+      "label": "Post wicket",
+      "cat": "service",
+      "builtin": true,
+      "tall": true,
+      "foot": [
+        2.2,
+        0.46
+      ],
+      "cells": [
+        4,
+        1
+      ]
+    },
+    {
+      "key": "wallShelf",
+      "label": "Wall shelving",
+      "cat": "shelving",
+      "builtin": true,
+      "tall": true,
+      "foot": [
+        2,
+        0.34
+      ],
+      "cells": [
+        4,
+        1
+      ]
+    },
+    {
+      "key": "gondola",
+      "label": "Gondola aisle",
+      "cat": "shelving",
+      "builtin": true,
+      "tall": true,
+      "foot": [
+        2,
+        0.72
+      ],
+      "cells": [
+        4,
+        1
+      ]
+    },
+    {
+      "key": "stockShelf",
+      "label": "Stock rack",
+      "cat": "shelving",
+      "builtin": true,
+      "tall": true,
+      "foot": [
+        1.8,
+        0.56
+      ],
+      "cells": [
+        4,
+        1
+      ]
+    },
+    {
+      "key": "binRack",
+      "label": "Bin rack",
+      "cat": "shelving",
+      "builtin": true,
+      "tall": true,
+      "foot": [
+        1.6,
+        0.5
+      ],
+      "cells": [
+        3,
+        1
+      ]
+    },
+    {
+      "key": "pigeonholes",
+      "label": "Sorting wall",
+      "cat": "shelving",
+      "builtin": true,
+      "tall": true,
+      "foot": [
+        1.8,
+        0.36
+      ],
+      "cells": [
+        4,
+        1
+      ]
+    },
+    {
+      "key": "ropeRack",
+      "label": "Rope & chain",
+      "cat": "shelving",
+      "builtin": true,
+      "tall": true,
+      "foot": [
+        1.6,
+        0.42
+      ],
+      "cells": [
+        3,
+        1
+      ]
+    },
+    {
+      "key": "larder",
+      "label": "Larder press",
+      "cat": "shelving",
+      "builtin": true,
+      "tall": true,
+      "foot": [
+        1,
+        0.55
+      ],
+      "cells": [
+        2,
+        1
+      ]
+    },
+    {
+      "key": "iceChest",
+      "label": "Ice chest",
+      "cat": "cold",
+      "builtin": true,
+      "tall": false,
+      "foot": [
+        1.3,
+        0.7
+      ],
+      "cells": [
+        3,
+        1
+      ]
+    },
+    {
+      "key": "ovenBank",
+      "label": "Bake oven",
+      "cat": "kitchen",
+      "builtin": true,
+      "tall": true,
+      "foot": [
+        1.5,
+        0.8
+      ],
+      "cells": [
+        3,
+        2
+      ]
+    },
+    {
+      "key": "prepTable",
+      "label": "Prep table",
+      "cat": "kitchen",
+      "builtin": true,
+      "tall": false,
+      "foot": [
+        1.8,
+        0.7
+      ],
+      "cells": [
+        4,
+        1
+      ]
+    },
+    {
+      "key": "sinkRun",
+      "label": "Sink run",
+      "cat": "kitchen",
+      "builtin": true,
+      "tall": false,
+      "foot": [
+        1.5,
+        0.65
+      ],
+      "cells": [
+        3,
+        1
+      ]
+    },
+    {
+      "key": "table",
+      "label": "Table",
+      "cat": "seating",
+      "builtin": false,
+      "tall": false,
+      "foot": [
+        1.3,
+        0.9
+      ],
+      "cells": [
+        3,
+        2
+      ]
+    },
+    {
+      "key": "roundTable",
+      "label": "Round table",
+      "cat": "seating",
+      "builtin": false,
+      "tall": false,
+      "foot": [
+        1,
+        1
+      ],
+      "cells": [
+        2,
+        2
+      ]
+    },
+    {
+      "key": "chair",
+      "label": "Chair",
+      "cat": "seating",
+      "builtin": false,
+      "tall": false,
+      "foot": [
+        0.46,
+        0.46
+      ],
+      "cells": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "stool",
+      "label": "Bar stool",
+      "cat": "seating",
+      "builtin": false,
+      "tall": false,
+      "foot": [
+        0.42,
+        0.42
+      ],
+      "cells": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "booth",
+      "label": "Booth",
+      "cat": "seating",
+      "builtin": false,
+      "tall": true,
+      "foot": [
+        1.7,
+        1.6
+      ],
+      "cells": [
+        3,
+        3
+      ]
+    },
+    {
+      "key": "bench",
+      "label": "Bench",
+      "cat": "seating",
+      "builtin": false,
+      "tall": false,
+      "foot": [
+        1.6,
+        0.4
+      ],
+      "cells": [
+        3,
+        1
+      ]
+    },
+    {
+      "key": "crateStack",
+      "label": "Crate stack",
+      "cat": "stock",
+      "builtin": false,
+      "tall": false,
+      "foot": [
+        0.6,
+        0.6
+      ],
+      "cells": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "barrelStack",
+      "label": "Barrels",
+      "cat": "stock",
+      "builtin": false,
+      "tall": false,
+      "foot": [
+        1.3,
+        0.64
+      ],
+      "cells": [
+        3,
+        1
+      ]
+    },
+    {
+      "key": "sackPile",
+      "label": "Sacks",
+      "cat": "stock",
+      "builtin": false,
+      "tall": false,
+      "foot": [
+        1,
+        0.44
+      ],
+      "cells": [
+        2,
+        1
+      ]
+    },
+    {
+      "key": "potbelly",
+      "label": "Pot-belly stove",
+      "cat": "decor",
+      "builtin": false,
+      "tall": true,
+      "foot": [
+        0.9,
+        0.62
+      ],
+      "cells": [
+        2,
+        1
+      ]
+    },
+    {
+      "key": "rug",
+      "label": "Rug",
+      "cat": "decor",
+      "builtin": false,
+      "tall": false,
+      "foot": [
+        2.2,
+        1.3
+      ],
+      "cells": [
+        4,
+        3
+      ]
+    },
+    {
+      "key": "chalkMenu",
+      "label": "Chalk menu",
+      "cat": "decor",
+      "builtin": false,
+      "tall": true,
+      "foot": [
+        1.2,
+        0.12
+      ],
+      "cells": [
+        2,
+        1
+      ]
+    },
+    {
+      "key": "plantTub",
+      "label": "Plant tub",
+      "cat": "decor",
+      "builtin": false,
+      "tall": false,
+      "foot": [
+        0.5,
+        0.5
+      ],
+      "cells": [
+        1,
+        1
+      ]
+    }
+  ],
+  "trades": {
+    "generalStore": {
+      "label": "general store",
+      "defaultSize": 0.35,
+      "storefront": "bay",
+      "shape": "falseFront",
+      "pitch": 0.62,
+      "shell": {
+        "Wd": 8,
+        "Ln": 10,
+        "wallH": 6.34,
+        "fH": 0.55,
+        "shopH": 3.1,
+        "eaveZ": 6.34,
+        "ridgeZ": 8.82,
+        "storeyZ": 3.99,
+        "shape": "falseFront",
+        "pitch": 0.62,
+        "type": "generalStore",
+        "label": "general store",
+        "wing": null
+      },
+      "wing": null,
+      "rooms": [
+        "salesFloor",
+        "stockroom",
+        "flat"
+      ],
+      "levels": {
+        "ground": {
+          "sheet": {
+            "W": 440,
+            "H": 376,
+            "pivot": [
+              220,
+              229
+            ]
+          },
+          "levelZ": 0.55,
+          "peakZ": 3.35,
+          "env": {
+            "I0": 0,
+            "I1": 16,
+            "J0": 0,
+            "J1": 20,
+            "x0": -4,
+            "x1": 4,
+            "y0": -5,
+            "y1": 5
+          },
+          "rooms": [
+            {
+              "id": "salesFloor",
+              "kind": "salesFloor",
+              "label": "sales floor",
+              "block": "main",
+              "ceilZ": 3.1,
+              "cells": [
+                16,
+                14
+              ],
+              "clear": {
+                "x0": -3.84,
+                "x1": 3.84,
+                "y0": -1.93,
+                "y1": 4.84
+              },
+              "grid": {
+                "nx": 15,
+                "ny": 13,
+                "cell": 0.5,
+                "origin": [
+                  -3.75,
+                  -1.795
+                ]
+              }
+            },
+            {
+              "id": "stockroom",
+              "kind": "stockroom",
+              "label": "stock room",
+              "block": "main",
+              "ceilZ": 3.1,
+              "cells": [
+                16,
+                6
+              ],
+              "clear": {
+                "x0": -3.84,
+                "x1": 3.84,
+                "y0": -4.84,
+                "y1": -2.07
+              },
+              "grid": {
+                "nx": 15,
+                "ny": 5,
+                "cell": 0.5,
+                "origin": [
+                  -3.75,
+                  -4.705
+                ]
+              }
+            }
+          ],
+          "wallSegments": 7,
+          "partyWalls": 1,
+          "exteriorWalls": 6,
+          "openings": [
+            {
+              "seg": "y6:0-16",
+              "between": [
+                "stockroom",
+                "salesFloor"
+              ],
+              "kind": "slab",
+              "label": "slab door",
+              "w": 0.96,
+              "sill": 0,
+              "top": 2.05
+            }
+          ],
+          "fixtures": 12,
+          "stair": {
+            "room": "stockroom",
+            "side": "E",
+            "rise": 3.44
+          }
+        },
+        "upper": {
+          "sheet": {
+            "W": 440,
+            "H": 391,
+            "pivot": [
+              220,
+              244
+            ]
+          },
+          "levelZ": 3.99,
+          "peakZ": 3.953,
+          "env": {
+            "I0": 0,
+            "I1": 16,
+            "J0": 0,
+            "J1": 20,
+            "x0": -4,
+            "x1": 4,
+            "y0": -5,
+            "y1": 5
+          },
+          "rooms": [
+            {
+              "id": "flat",
+              "kind": "flat",
+              "label": "flat",
+              "block": "main",
+              "ceilZ": 1.62,
+              "cells": [
+                16,
+                20
+              ],
+              "clear": {
+                "x0": -3.84,
+                "x1": 3.84,
+                "y0": -4.84,
+                "y1": 4.84
+              },
+              "grid": {
+                "nx": 15,
+                "ny": 19,
+                "cell": 0.5,
+                "origin": [
+                  -3.75,
+                  -4.75
+                ]
+              }
+            }
+          ],
+          "wallSegments": 4,
+          "partyWalls": 0,
+          "exteriorWalls": 4,
+          "openings": [],
+          "fixtures": 6,
+          "stair": {
+            "room": "stockroom",
+            "side": "E",
+            "rise": 3.44
+          }
+        }
+      }
+    },
+    "fishMarket": {
+      "label": "fish market",
+      "defaultSize": 0.4,
+      "storefront": "hatch",
+      "shape": "shed",
+      "pitch": 0.5,
+      "shell": {
+        "Wd": 7.5,
+        "Ln": 8.5,
+        "wallH": 4.825,
+        "fH": 0.45,
+        "shopH": 2.9,
+        "eaveZ": 4.825,
+        "ridgeZ": 4.825,
+        "storeyZ": 3.69,
+        "shape": "shed",
+        "pitch": 0.5,
+        "type": "fishMarket",
+        "label": "fish market",
+        "wing": {
+          "depth": 2,
+          "width": 5,
+          "offset": 0.25,
+          "wallH": 3.128,
+          "ceil": 2.378,
+          "shape": "gable",
+          "pitch": 0.62,
+          "rise": 1.55,
+          "ridgeAxis": "y"
+        }
+      },
+      "wing": {
+        "depth": 2,
+        "width": 5,
+        "offset": 0.25,
+        "wallH": 3.128,
+        "ceil": 2.378,
+        "shape": "gable",
+        "pitch": 0.62,
+        "rise": 1.55,
+        "ridgeAxis": "y"
+      },
+      "rooms": [
+        "counter",
+        "cutting",
+        "ice"
+      ],
+      "levels": {
+        "ground": {
+          "sheet": {
+            "W": 485,
+            "H": 439,
+            "pivot": [
+              242,
+              277
+            ]
+          },
+          "levelZ": 0.45,
+          "peakZ": 4.725,
+          "env": {
+            "I0": 0,
+            "I1": 15,
+            "J0": -4,
+            "J1": 17,
+            "x0": -3.75,
+            "x1": 3.75,
+            "y0": -6.25,
+            "y1": 4.25
+          },
+          "rooms": [
+            {
+              "id": "counter",
+              "kind": "fishCounter",
+              "label": "fish counter",
+              "block": "main",
+              "ceilZ": 2.9,
+              "cells": [
+                15,
+                11
+              ],
+              "clear": {
+                "x0": -3.59,
+                "x1": 3.59,
+                "y0": -1.18,
+                "y1": 4.09
+              },
+              "grid": {
+                "nx": 14,
+                "ny": 10,
+                "cell": 0.5,
+                "origin": [
+                  -3.5,
+                  -1.045
+                ]
+              }
+            },
+            {
+              "id": "cutting",
+              "kind": "cutting",
+              "label": "cutting room",
+              "block": "main",
+              "ceilZ": 2.9,
+              "cells": [
+                15,
+                6
+              ],
+              "clear": {
+                "x0": -3.59,
+                "x1": 3.59,
+                "y0": -4.09,
+                "y1": -1.32
+              },
+              "grid": {
+                "nx": 14,
+                "ny": 5,
+                "cell": 0.5,
+                "origin": [
+                  -3.5,
+                  -3.955
+                ]
+              }
+            },
+            {
+              "id": "ice",
+              "kind": "iceHouse",
+              "label": "ice house",
+              "block": "wing",
+              "ceilZ": 2.378,
+              "cells": [
+                10,
+                4
+              ],
+              "clear": {
+                "x0": -2.09,
+                "x1": 2.59,
+                "y0": -6.09,
+                "y1": -4.32
+              },
+              "grid": {
+                "nx": 9,
+                "ny": 3,
+                "cell": 0.5,
+                "origin": [
+                  -2,
+                  -5.955
+                ]
+              }
+            }
+          ],
+          "wallSegments": 12,
+          "partyWalls": 2,
+          "exteriorWalls": 10,
+          "openings": [
+            {
+              "seg": "y0:3-13",
+              "between": [
+                "ice",
+                "cutting"
+              ],
+              "kind": "dutch",
+              "label": "dutch door",
+              "w": 1,
+              "sill": 0,
+              "top": 2.05
+            },
+            {
+              "seg": "y6:0-15",
+              "between": [
+                "cutting",
+                "counter"
+              ],
+              "kind": "hatch",
+              "label": "pass hatch",
+              "w": 1.34,
+              "sill": 1.06,
+              "top": 2.04
+            }
+          ],
+          "fixtures": 12,
+          "stair": null
+        },
+        "upper": null
+      }
+    },
+    "chandlery": {
+      "label": "chandlery",
+      "defaultSize": 0.45,
+      "storefront": "smallPane",
+      "shape": "gable",
+      "pitch": 0.95,
+      "shell": {
+        "Wd": 7.5,
+        "Ln": 10,
+        "wallH": 6.29,
+        "fH": 0.5,
+        "shopH": 3.1,
+        "eaveZ": 6.29,
+        "ridgeZ": 9.852,
+        "storeyZ": 3.94,
+        "shape": "gable",
+        "pitch": 0.95,
+        "type": "chandlery",
+        "label": "chandlery",
+        "wing": null
+      },
+      "wing": null,
+      "rooms": [
+        "floor",
+        "stockroom",
+        "loft",
+        "flat"
+      ],
+      "levels": {
+        "ground": {
+          "sheet": {
+            "W": 428,
+            "H": 369,
+            "pivot": [
+              214,
+              225
+            ]
+          },
+          "levelZ": 0.5,
+          "peakZ": 3.35,
+          "env": {
+            "I0": 0,
+            "I1": 15,
+            "J0": 0,
+            "J1": 20,
+            "x0": -3.75,
+            "x1": 3.75,
+            "y0": -5,
+            "y1": 5
+          },
+          "rooms": [
+            {
+              "id": "floor",
+              "kind": "chandFloor",
+              "label": "chandlery floor",
+              "block": "main",
+              "ceilZ": 3.1,
+              "cells": [
+                15,
+                13
+              ],
+              "clear": {
+                "x0": -3.59,
+                "x1": 3.59,
+                "y0": -1.43,
+                "y1": 4.84
+              },
+              "grid": {
+                "nx": 14,
+                "ny": 12,
+                "cell": 0.5,
+                "origin": [
+                  -3.5,
+                  -1.295
+                ]
+              }
+            },
+            {
+              "id": "stockroom",
+              "kind": "stockroom",
+              "label": "stock room",
+              "block": "main",
+              "ceilZ": 3.1,
+              "cells": [
+                15,
+                7
+              ],
+              "clear": {
+                "x0": -3.59,
+                "x1": 3.59,
+                "y0": -4.84,
+                "y1": -1.57
+              },
+              "grid": {
+                "nx": 14,
+                "ny": 6,
+                "cell": 0.5,
+                "origin": [
+                  -3.5,
+                  -4.705
+                ]
+              }
+            }
+          ],
+          "wallSegments": 7,
+          "partyWalls": 1,
+          "exteriorWalls": 6,
+          "openings": [
+            {
+              "seg": "y7:0-15",
+              "between": [
+                "stockroom",
+                "floor"
+              ],
+              "kind": "slab",
+              "label": "slab door",
+              "w": 0.96,
+              "sill": 0,
+              "top": 2.05
+            }
+          ],
+          "fixtures": 10,
+          "stair": {
+            "room": "stockroom",
+            "side": "W",
+            "rise": 3.44
+          }
+        },
+        "upper": {
+          "sheet": {
+            "W": 428,
+            "H": 406,
+            "pivot": [
+              214,
+              262
+            ]
+          },
+          "levelZ": 3.94,
+          "peakZ": 4.862,
+          "env": {
+            "I0": 0,
+            "I1": 15,
+            "J0": 0,
+            "J1": 20,
+            "x0": -3.75,
+            "x1": 3.75,
+            "y0": -5,
+            "y1": 5
+          },
+          "rooms": [
+            {
+              "id": "flat",
+              "kind": "flat",
+              "label": "flat",
+              "block": "main",
+              "ceilZ": 1.62,
+              "cells": [
+                15,
+                9
+              ],
+              "clear": {
+                "x0": -3.59,
+                "x1": 3.59,
+                "y0": 0.57,
+                "y1": 4.84
+              },
+              "grid": {
+                "nx": 14,
+                "ny": 8,
+                "cell": 0.5,
+                "origin": [
+                  -3.5,
+                  0.705
+                ]
+              }
+            },
+            {
+              "id": "loft",
+              "kind": "chandLoft",
+              "label": "rigging loft",
+              "block": "main",
+              "ceilZ": 1.62,
+              "cells": [
+                15,
+                11
+              ],
+              "clear": {
+                "x0": -3.59,
+                "x1": 3.59,
+                "y0": -4.84,
+                "y1": 0.43
+              },
+              "grid": {
+                "nx": 14,
+                "ny": 10,
+                "cell": 0.5,
+                "origin": [
+                  -3.5,
+                  -4.705
+                ]
+              }
+            }
+          ],
+          "wallSegments": 7,
+          "partyWalls": 1,
+          "exteriorWalls": 6,
+          "openings": [
+            {
+              "seg": "y11:0-15",
+              "between": [
+                "loft",
+                "flat"
+              ],
+              "kind": "doorway",
+              "label": "cased doorway",
+              "w": 1.06,
+              "sill": 0,
+              "top": 1.5
+            }
+          ],
+          "fixtures": 10,
+          "stair": {
+            "room": "stockroom",
+            "side": "W",
+            "rise": 3.44
+          }
+        }
+      }
+    },
+    "bakery": {
+      "label": "café / bakery",
+      "defaultSize": 0.3,
+      "storefront": "plate",
+      "shape": "falseFront",
+      "pitch": 0.6,
+      "shell": {
+        "Wd": 6.5,
+        "Ln": 8,
+        "wallH": 6.04,
+        "fH": 0.5,
+        "shopH": 2.85,
+        "eaveZ": 6.04,
+        "ridgeZ": 7.99,
+        "storeyZ": 3.69,
+        "shape": "falseFront",
+        "pitch": 0.6,
+        "type": "bakery",
+        "label": "café / bakery",
+        "wing": null
+      },
+      "wing": null,
+      "rooms": [
+        "front",
+        "bakehouse",
+        "flat"
+      ],
+      "levels": {
+        "ground": {
+          "sheet": {
+            "W": 361,
+            "H": 319,
+            "pivot": [
+              180,
+              197
+            ]
+          },
+          "levelZ": 0.5,
+          "peakZ": 3.1,
+          "env": {
+            "I0": 0,
+            "I1": 13,
+            "J0": 0,
+            "J1": 16,
+            "x0": -3.25,
+            "x1": 3.25,
+            "y0": -4,
+            "y1": 4
+          },
+          "rooms": [
+            {
+              "id": "front",
+              "kind": "bakeFront",
+              "label": "café front",
+              "block": "main",
+              "ceilZ": 2.85,
+              "cells": [
+                13,
+                9
+              ],
+              "clear": {
+                "x0": -3.09,
+                "x1": 3.09,
+                "y0": -0.43,
+                "y1": 3.84
+              },
+              "grid": {
+                "nx": 12,
+                "ny": 8,
+                "cell": 0.5,
+                "origin": [
+                  -3,
+                  -0.295
+                ]
+              }
+            },
+            {
+              "id": "bakehouse",
+              "kind": "bakehouse",
+              "label": "bakehouse",
+              "block": "main",
+              "ceilZ": 2.85,
+              "cells": [
+                13,
+                7
+              ],
+              "clear": {
+                "x0": -3.09,
+                "x1": 3.09,
+                "y0": -3.84,
+                "y1": -0.57
+              },
+              "grid": {
+                "nx": 12,
+                "ny": 6,
+                "cell": 0.5,
+                "origin": [
+                  -3,
+                  -3.705
+                ]
+              }
+            }
+          ],
+          "wallSegments": 7,
+          "partyWalls": 1,
+          "exteriorWalls": 6,
+          "openings": [
+            {
+              "seg": "y7:0-13",
+              "between": [
+                "bakehouse",
+                "front"
+              ],
+              "kind": "hatch",
+              "label": "pass hatch",
+              "w": 1.34,
+              "sill": 1.06,
+              "top": 2.04
+            }
+          ],
+          "fixtures": 11,
+          "stair": {
+            "room": "bakehouse",
+            "side": "E",
+            "rise": 3.19
+          }
+        },
+        "upper": {
+          "sheet": {
+            "W": 361,
+            "H": 329,
+            "pivot": [
+              180,
+              207
+            ]
+          },
+          "levelZ": 3.69,
+          "peakZ": 3.508,
+          "env": {
+            "I0": 0,
+            "I1": 13,
+            "J0": 0,
+            "J1": 16,
+            "x0": -3.25,
+            "x1": 3.25,
+            "y0": -4,
+            "y1": 4
+          },
+          "rooms": [
+            {
+              "id": "flat",
+              "kind": "flat",
+              "label": "flat",
+              "block": "main",
+              "ceilZ": 1.62,
+              "cells": [
+                13,
+                16
+              ],
+              "clear": {
+                "x0": -3.09,
+                "x1": 3.09,
+                "y0": -3.84,
+                "y1": 3.84
+              },
+              "grid": {
+                "nx": 12,
+                "ny": 15,
+                "cell": 0.5,
+                "origin": [
+                  -3,
+                  -3.75
+                ]
+              }
+            }
+          ],
+          "wallSegments": 4,
+          "partyWalls": 0,
+          "exteriorWalls": 4,
+          "openings": [],
+          "fixtures": 6,
+          "stair": {
+            "room": "bakehouse",
+            "side": "E",
+            "rise": 3.19
+          }
+        }
+      }
+    },
+    "restaurant": {
+      "label": "restaurant",
+      "defaultSize": 0.5,
+      "storefront": "plate",
+      "shape": "gable",
+      "pitch": 0.85,
+      "shell": {
+        "Wd": 9,
+        "Ln": 11.5,
+        "wallH": 6.29,
+        "fH": 0.5,
+        "shopH": 3.1,
+        "eaveZ": 6.29,
+        "ridgeZ": 10.115,
+        "storeyZ": 3.94,
+        "shape": "gable",
+        "pitch": 0.85,
+        "type": "restaurant",
+        "label": "restaurant",
+        "wing": {
+          "depth": 5,
+          "width": 9,
+          "offset": 0,
+          "wallH": 3.528,
+          "ceil": 2.728,
+          "shape": "gable",
+          "pitch": 0.62,
+          "rise": 2.79,
+          "ridgeAxis": "y"
+        }
+      },
+      "wing": {
+        "depth": 5,
+        "width": 9,
+        "offset": 0,
+        "wallH": 3.528,
+        "ceil": 2.728,
+        "shape": "gable",
+        "pitch": 0.62,
+        "rise": 2.79,
+        "ridgeAxis": "y"
+      },
+      "rooms": [
+        "dining",
+        "bar",
+        "kitchen",
+        "stock",
+        "flat"
+      ],
+      "levels": {
+        "ground": {
+          "sheet": {
+            "W": 723,
+            "H": 595,
+            "pivot": [
+              361,
+              356
+            ]
+          },
+          "levelZ": 0.5,
+          "peakZ": 4.838,
+          "env": {
+            "I0": 0,
+            "I1": 18,
+            "J0": -10,
+            "J1": 23,
+            "x0": -4.5,
+            "x1": 4.5,
+            "y0": -10.75,
+            "y1": 5.75
+          },
+          "rooms": [
+            {
+              "id": "dining",
+              "kind": "dining",
+              "label": "dining room",
+              "block": "main",
+              "ceilZ": 3.1,
+              "cells": [
+                18,
+                16
+              ],
+              "clear": {
+                "x0": -4.34,
+                "x1": 4.34,
+                "y0": -2.18,
+                "y1": 5.59
+              },
+              "grid": {
+                "nx": 17,
+                "ny": 15,
+                "cell": 0.5,
+                "origin": [
+                  -4.25,
+                  -2.045
+                ]
+              }
+            },
+            {
+              "id": "bar",
+              "kind": "bar",
+              "label": "bar",
+              "block": "main",
+              "ceilZ": 3.1,
+              "cells": [
+                18,
+                7
+              ],
+              "clear": {
+                "x0": -4.34,
+                "x1": 4.34,
+                "y0": -5.68,
+                "y1": -2.32
+              },
+              "grid": {
+                "nx": 17,
+                "ny": 6,
+                "cell": 0.5,
+                "origin": [
+                  -4.25,
+                  -5.5
+                ]
+              }
+            },
+            {
+              "id": "kitchen",
+              "kind": "kitchen",
+              "label": "kitchen",
+              "block": "wing",
+              "ceilZ": 2.728,
+              "cells": [
+                12,
+                10
+              ],
+              "clear": {
+                "x0": -4.34,
+                "x1": 1.43,
+                "y0": -10.59,
+                "y1": -5.82
+              },
+              "grid": {
+                "nx": 11,
+                "ny": 9,
+                "cell": 0.5,
+                "origin": [
+                  -4.205,
+                  -10.455
+                ]
+              }
+            },
+            {
+              "id": "stock",
+              "kind": "stock",
+              "label": "stock room",
+              "block": "wing",
+              "ceilZ": 2.728,
+              "cells": [
+                6,
+                10
+              ],
+              "clear": {
+                "x0": 1.57,
+                "x1": 4.34,
+                "y0": -10.59,
+                "y1": -5.82
+              },
+              "grid": {
+                "nx": 5,
+                "ny": 9,
+                "cell": 0.5,
+                "origin": [
+                  1.705,
+                  -10.455
+                ]
+              }
+            }
+          ],
+          "wallSegments": 13,
+          "partyWalls": 4,
+          "exteriorWalls": 9,
+          "openings": [
+            {
+              "seg": "x12:-10-0",
+              "between": [
+                "kitchen",
+                "stock"
+              ],
+              "kind": "doorway",
+              "label": "cased doorway",
+              "w": 1.06,
+              "sill": 0,
+              "top": 2.08
+            },
+            {
+              "seg": "y0:0-12",
+              "between": [
+                "kitchen",
+                "bar"
+              ],
+              "kind": "swingPair",
+              "label": "service double",
+              "w": 1.56,
+              "sill": 0,
+              "top": 2.05
+            },
+            {
+              "seg": "y0:12-18",
+              "between": [
+                "stock",
+                "bar"
+              ],
+              "kind": "slab",
+              "label": "slab door",
+              "w": 0.96,
+              "sill": 0,
+              "top": 2.05
+            },
+            {
+              "seg": "y7:0-18",
+              "between": [
+                "bar",
+                "dining"
+              ],
+              "kind": "arch",
+              "label": "wide arch",
+              "w": 2.4,
+              "sill": 0,
+              "top": 2.32
+            }
+          ],
+          "fixtures": 26,
+          "stair": {
+            "room": "dining",
+            "side": "W",
+            "rise": 3.44
+          }
+        },
+        "upper": {
+          "sheet": {
+            "W": 496,
+            "H": 455,
+            "pivot": [
+              248,
+              290
+            ]
+          },
+          "levelZ": 3.94,
+          "peakZ": 5.083,
+          "env": {
+            "I0": 0,
+            "I1": 18,
+            "J0": 0,
+            "J1": 23,
+            "x0": -4.5,
+            "x1": 4.5,
+            "y0": -5.75,
+            "y1": 5.75
+          },
+          "rooms": [
+            {
+              "id": "flat",
+              "kind": "flat",
+              "label": "flat",
+              "block": "main",
+              "ceilZ": 1.62,
+              "cells": [
+                18,
+                23
+              ],
+              "clear": {
+                "x0": -4.34,
+                "x1": 4.34,
+                "y0": -5.59,
+                "y1": 5.59
+              },
+              "grid": {
+                "nx": 17,
+                "ny": 22,
+                "cell": 0.5,
+                "origin": [
+                  -4.25,
+                  -5.5
+                ]
+              }
+            }
+          ],
+          "wallSegments": 4,
+          "partyWalls": 0,
+          "exteriorWalls": 4,
+          "openings": [],
+          "fixtures": 6,
+          "stair": {
+            "room": "dining",
+            "side": "W",
+            "rise": 3.44
+          }
+        }
+      }
+    },
+    "tavern": {
+      "label": "tavern",
+      "defaultSize": 0.45,
+      "storefront": "narrow",
+      "shape": "gable",
+      "pitch": 1,
+      "shell": {
+        "Wd": 8,
+        "Ln": 10.5,
+        "wallH": 6.29,
+        "fH": 0.5,
+        "shopH": 3.1,
+        "eaveZ": 6.29,
+        "ridgeZ": 10.29,
+        "storeyZ": 3.94,
+        "shape": "gable",
+        "pitch": 1,
+        "type": "tavern",
+        "label": "tavern",
+        "wing": {
+          "depth": 5,
+          "width": 8,
+          "offset": 0,
+          "wallH": 3.528,
+          "ceil": 2.728,
+          "shape": "gable",
+          "pitch": 0.62,
+          "rise": 2.48,
+          "ridgeAxis": "y"
+        }
+      },
+      "wing": {
+        "depth": 5,
+        "width": 8,
+        "offset": 0,
+        "wallH": 3.528,
+        "ceil": 2.728,
+        "shape": "gable",
+        "pitch": 0.62,
+        "rise": 2.48,
+        "ridgeAxis": "y"
+      },
+      "rooms": [
+        "barroom",
+        "snug",
+        "kitchen",
+        "flat"
+      ],
+      "levels": {
+        "ground": {
+          "sheet": {
+            "W": 688,
+            "H": 588,
+            "pivot": [
+              344,
+              361
+            ]
+          },
+          "levelZ": 0.5,
+          "peakZ": 5.458,
+          "env": {
+            "I0": 0,
+            "I1": 16,
+            "J0": -10,
+            "J1": 21,
+            "x0": -4,
+            "x1": 4,
+            "y0": -10.25,
+            "y1": 5.25
+          },
+          "rooms": [
+            {
+              "id": "barroom",
+              "kind": "barroom",
+              "label": "bar room",
+              "block": "main",
+              "ceilZ": 3.1,
+              "cells": [
+                16,
+                14
+              ],
+              "clear": {
+                "x0": -3.84,
+                "x1": 3.84,
+                "y0": -1.68,
+                "y1": 5.09
+              },
+              "grid": {
+                "nx": 15,
+                "ny": 13,
+                "cell": 0.5,
+                "origin": [
+                  -3.75,
+                  -1.545
+                ]
+              }
+            },
+            {
+              "id": "snug",
+              "kind": "snug",
+              "label": "snug",
+              "block": "main",
+              "ceilZ": 3.1,
+              "cells": [
+                16,
+                7
+              ],
+              "clear": {
+                "x0": -3.84,
+                "x1": 3.84,
+                "y0": -5.18,
+                "y1": -1.82
+              },
+              "grid": {
+                "nx": 15,
+                "ny": 6,
+                "cell": 0.5,
+                "origin": [
+                  -3.75,
+                  -5
+                ]
+              }
+            },
+            {
+              "id": "kitchen",
+              "kind": "kitchen",
+              "label": "kitchen",
+              "block": "wing",
+              "ceilZ": 2.728,
+              "cells": [
+                16,
+                10
+              ],
+              "clear": {
+                "x0": -3.84,
+                "x1": 3.84,
+                "y0": -10.09,
+                "y1": -5.32
+              },
+              "grid": {
+                "nx": 15,
+                "ny": 9,
+                "cell": 0.5,
+                "origin": [
+                  -3.75,
+                  -9.955
+                ]
+              }
+            }
+          ],
+          "wallSegments": 10,
+          "partyWalls": 2,
+          "exteriorWalls": 8,
+          "openings": [
+            {
+              "seg": "y0:0-16",
+              "between": [
+                "kitchen",
+                "snug"
+              ],
+              "kind": "slab",
+              "label": "slab door",
+              "w": 0.96,
+              "sill": 0,
+              "top": 2.05
+            },
+            {
+              "seg": "y7:0-16",
+              "between": [
+                "snug",
+                "barroom"
+              ],
+              "kind": "arch",
+              "label": "wide arch",
+              "w": 2.4,
+              "sill": 0,
+              "top": 2.32
+            }
+          ],
+          "fixtures": 18,
+          "stair": {
+            "room": "barroom",
+            "side": "E",
+            "rise": 3.44
+          }
+        },
+        "upper": {
+          "sheet": {
+            "W": 451,
+            "H": 430,
+            "pivot": [
+              225,
+              279
+            ]
+          },
+          "levelZ": 3.94,
+          "peakZ": 5.23,
+          "env": {
+            "I0": 0,
+            "I1": 16,
+            "J0": 0,
+            "J1": 21,
+            "x0": -4,
+            "x1": 4,
+            "y0": -5.25,
+            "y1": 5.25
+          },
+          "rooms": [
+            {
+              "id": "flat",
+              "kind": "flat",
+              "label": "flat",
+              "block": "main",
+              "ceilZ": 1.62,
+              "cells": [
+                16,
+                21
+              ],
+              "clear": {
+                "x0": -3.84,
+                "x1": 3.84,
+                "y0": -5.09,
+                "y1": 5.09
+              },
+              "grid": {
+                "nx": 15,
+                "ny": 20,
+                "cell": 0.5,
+                "origin": [
+                  -3.75,
+                  -5
+                ]
+              }
+            }
+          ],
+          "wallSegments": 4,
+          "partyWalls": 0,
+          "exteriorWalls": 4,
+          "openings": [],
+          "fixtures": 6,
+          "stair": {
+            "room": "barroom",
+            "side": "E",
+            "rise": 3.44
+          }
+        }
+      }
+    },
+    "postOffice": {
+      "label": "post office",
+      "defaultSize": 0.35,
+      "storefront": "narrow",
+      "shape": "falseFront",
+      "pitch": 0.6,
+      "shell": {
+        "Wd": 7.5,
+        "Ln": 8.5,
+        "wallH": 6.39,
+        "fH": 0.6,
+        "shopH": 3.1,
+        "eaveZ": 6.39,
+        "ridgeZ": 8.64,
+        "storeyZ": 4.04,
+        "shape": "falseFront",
+        "pitch": 0.6,
+        "type": "postOffice",
+        "label": "post office",
+        "wing": null
+      },
+      "wing": null,
+      "rooms": [
+        "lobby",
+        "sorting",
+        "flat"
+      ],
+      "levels": {
+        "ground": {
+          "sheet": {
+            "W": 395,
+            "H": 347,
+            "pivot": [
+              197,
+              214
+            ]
+          },
+          "levelZ": 0.6,
+          "peakZ": 3.35,
+          "env": {
+            "I0": 0,
+            "I1": 15,
+            "J0": 0,
+            "J1": 17,
+            "x0": -3.75,
+            "x1": 3.75,
+            "y0": -4.25,
+            "y1": 4.25
+          },
+          "rooms": [
+            {
+              "id": "lobby",
+              "kind": "lobby",
+              "label": "lobby",
+              "block": "main",
+              "ceilZ": 3.1,
+              "cells": [
+                15,
+                9
+              ],
+              "clear": {
+                "x0": -3.59,
+                "x1": 3.59,
+                "y0": -0.18,
+                "y1": 4.09
+              },
+              "grid": {
+                "nx": 14,
+                "ny": 8,
+                "cell": 0.5,
+                "origin": [
+                  -3.5,
+                  -0.045
+                ]
+              }
+            },
+            {
+              "id": "sorting",
+              "kind": "sorting",
+              "label": "sorting room",
+              "block": "main",
+              "ceilZ": 3.1,
+              "cells": [
+                15,
+                8
+              ],
+              "clear": {
+                "x0": -3.59,
+                "x1": 3.59,
+                "y0": -4.09,
+                "y1": -0.32
+              },
+              "grid": {
+                "nx": 14,
+                "ny": 7,
+                "cell": 0.5,
+                "origin": [
+                  -3.5,
+                  -3.955
+                ]
+              }
+            }
+          ],
+          "wallSegments": 7,
+          "partyWalls": 1,
+          "exteriorWalls": 6,
+          "openings": [
+            {
+              "seg": "y8:0-15",
+              "between": [
+                "sorting",
+                "lobby"
+              ],
+              "kind": "slab",
+              "label": "slab door",
+              "w": 0.96,
+              "sill": 0,
+              "top": 2.05
+            }
+          ],
+          "fixtures": 7,
+          "stair": {
+            "room": "sorting",
+            "side": "W",
+            "rise": 3.44
+          }
+        },
+        "upper": {
+          "sheet": {
+            "W": 395,
+            "H": 357,
+            "pivot": [
+              197,
+              225
+            ]
+          },
+          "levelZ": 4.04,
+          "peakZ": 3.76,
+          "env": {
+            "I0": 0,
+            "I1": 15,
+            "J0": 0,
+            "J1": 17,
+            "x0": -3.75,
+            "x1": 3.75,
+            "y0": -4.25,
+            "y1": 4.25
+          },
+          "rooms": [
+            {
+              "id": "flat",
+              "kind": "flat",
+              "label": "flat",
+              "block": "main",
+              "ceilZ": 1.62,
+              "cells": [
+                15,
+                17
+              ],
+              "clear": {
+                "x0": -3.59,
+                "x1": 3.59,
+                "y0": -4.09,
+                "y1": 4.09
+              },
+              "grid": {
+                "nx": 14,
+                "ny": 16,
+                "cell": 0.5,
+                "origin": [
+                  -3.5,
+                  -4
+                ]
+              }
+            }
+          ],
+          "wallSegments": 4,
+          "partyWalls": 0,
+          "exteriorWalls": 4,
+          "openings": [],
+          "fixtures": 6,
+          "stair": {
+            "room": "sorting",
+            "side": "W",
+            "rise": 3.44
+          }
+        }
+      }
+    },
+    "takeoutStand": {
+      "label": "takeout stand",
+      "defaultSize": 0.3,
+      "storefront": "hatch",
+      "shape": "shed",
+      "pitch": 0.45,
+      "shell": {
+        "Wd": 4.5,
+        "Ln": 4.5,
+        "wallH": 3.788,
+        "fH": 0.35,
+        "shopH": 2.55,
+        "eaveZ": 3.788,
+        "ridgeZ": 3.788,
+        "storeyZ": 3.24,
+        "shape": "shed",
+        "pitch": 0.45,
+        "type": "takeoutStand",
+        "label": "takeout stand",
+        "wing": null
+      },
+      "wing": null,
+      "rooms": [
+        "servery"
+      ],
+      "levels": {
+        "ground": {
+          "sheet": {
+            "W": 236,
+            "H": 253,
+            "pivot": [
+              118,
+              171
+            ]
+          },
+          "levelZ": 0.35,
+          "peakZ": 3.65,
+          "env": {
+            "I0": 0,
+            "I1": 9,
+            "J0": 0,
+            "J1": 9,
+            "x0": -2.25,
+            "x1": 2.25,
+            "y0": -2.25,
+            "y1": 2.25
+          },
+          "rooms": [
+            {
+              "id": "servery",
+              "kind": "servery",
+              "label": "servery",
+              "block": "main",
+              "ceilZ": 2.55,
+              "cells": [
+                9,
+                9
+              ],
+              "clear": {
+                "x0": -2.09,
+                "x1": 2.09,
+                "y0": -2.09,
+                "y1": 2.09
+              },
+              "grid": {
+                "nx": 8,
+                "ny": 8,
+                "cell": 0.5,
+                "origin": [
+                  -2,
+                  -2
+                ]
+              }
+            }
+          ],
+          "wallSegments": 4,
+          "partyWalls": 0,
+          "exteriorWalls": 4,
+          "openings": [],
+          "fixtures": 4,
+          "stair": null
+        },
+        "upper": null
+      }
+    },
+    "giftShop": {
+      "label": "gift shop",
+      "defaultSize": 0.3,
+      "storefront": "bay",
+      "shape": "gable",
+      "pitch": 0.9,
+      "shell": {
+        "Wd": 6,
+        "Ln": 7.5,
+        "wallH": 6.04,
+        "fH": 0.5,
+        "shopH": 2.85,
+        "eaveZ": 6.04,
+        "ridgeZ": 8.74,
+        "storeyZ": 3.69,
+        "shape": "gable",
+        "pitch": 0.9,
+        "type": "giftShop",
+        "label": "gift shop",
+        "wing": null
+      },
+      "wing": null,
+      "rooms": [
+        "floor",
+        "stockroom",
+        "flat"
+      ],
+      "levels": {
+        "ground": {
+          "sheet": {
+            "W": 338,
+            "H": 305,
+            "pivot": [
+              169,
+              190
+            ]
+          },
+          "levelZ": 0.5,
+          "peakZ": 3.1,
+          "env": {
+            "I0": 0,
+            "I1": 12,
+            "J0": 0,
+            "J1": 15,
+            "x0": -3,
+            "x1": 3,
+            "y0": -3.75,
+            "y1": 3.75
+          },
+          "rooms": [
+            {
+              "id": "floor",
+              "kind": "giftFloor",
+              "label": "gift floor",
+              "block": "main",
+              "ceilZ": 2.85,
+              "cells": [
+                12,
+                10
+              ],
+              "clear": {
+                "x0": -2.84,
+                "x1": 2.84,
+                "y0": -1.18,
+                "y1": 3.59
+              },
+              "grid": {
+                "nx": 11,
+                "ny": 9,
+                "cell": 0.5,
+                "origin": [
+                  -2.75,
+                  -1.045
+                ]
+              }
+            },
+            {
+              "id": "stockroom",
+              "kind": "stockroom",
+              "label": "stock room",
+              "block": "main",
+              "ceilZ": 2.85,
+              "cells": [
+                12,
+                5
+              ],
+              "clear": {
+                "x0": -2.84,
+                "x1": 2.84,
+                "y0": -3.59,
+                "y1": -1.32
+              },
+              "grid": {
+                "nx": 11,
+                "ny": 4,
+                "cell": 0.5,
+                "origin": [
+                  -2.75,
+                  -3.455
+                ]
+              }
+            }
+          ],
+          "wallSegments": 7,
+          "partyWalls": 1,
+          "exteriorWalls": 6,
+          "openings": [
+            {
+              "seg": "y5:0-12",
+              "between": [
+                "stockroom",
+                "floor"
+              ],
+              "kind": "curtain",
+              "label": "curtained doorway",
+              "w": 1.06,
+              "sill": 0,
+              "top": 2.1
+            }
+          ],
+          "fixtures": 11,
+          "stair": {
+            "room": "stockroom",
+            "side": "E",
+            "rise": 3.19
+          }
+        },
+        "upper": {
+          "sheet": {
+            "W": 338,
+            "H": 330,
+            "pivot": [
+              169,
+              216
+            ]
+          },
+          "levelZ": 3.69,
+          "peakZ": 4.138,
+          "env": {
+            "I0": 0,
+            "I1": 12,
+            "J0": 0,
+            "J1": 15,
+            "x0": -3,
+            "x1": 3,
+            "y0": -3.75,
+            "y1": 3.75
+          },
+          "rooms": [
+            {
+              "id": "flat",
+              "kind": "flat",
+              "label": "flat",
+              "block": "main",
+              "ceilZ": 1.62,
+              "cells": [
+                12,
+                15
+              ],
+              "clear": {
+                "x0": -2.84,
+                "x1": 2.84,
+                "y0": -3.59,
+                "y1": 3.59
+              },
+              "grid": {
+                "nx": 11,
+                "ny": 14,
+                "cell": 0.5,
+                "origin": [
+                  -2.75,
+                  -3.5
+                ]
+              }
+            }
+          ],
+          "wallSegments": 4,
+          "partyWalls": 0,
+          "exteriorWalls": 4,
+          "openings": [],
+          "fixtures": 6,
+          "stair": {
+            "room": "stockroom",
+            "side": "E",
+            "rise": 3.19
+          }
+        }
+      }
+    }
+  },
+  "asserts": [
+    "pivot identical across the 8 facings of one level bake — rotation must not shift the footprint",
+    "ground and upper level of one trade share the pivot; stack them by sheet pivot, offset by levelZ",
+    "a plan boundary maps to the SAME cell line from both sides — never author walls, derive them",
+    "nothing may be placed in ShopBuilding.stairZone() on either level",
+    "signs, menu boards and fascias bake blank; letter them as a decal layer"
+  ]
+}

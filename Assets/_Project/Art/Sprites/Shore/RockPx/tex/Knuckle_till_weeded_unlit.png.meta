@@ -1,0 +1,763 @@
+fileFormatVersion: 2
+guid: 73d95c0ecf31e9a4084338f659127a5f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3739152161433949396
+    second: Knuckle_till_weeded_unlit_0
+  - first:
+      213: -6113496210219641220
+    second: Knuckle_till_weeded_unlit_1
+  - first:
+      213: 1857358778518772626
+    second: Knuckle_till_weeded_unlit_2
+  - first:
+      213: -2755469555021819200
+    second: Knuckle_till_weeded_unlit_3
+  - first:
+      213: 4395204296400582939
+    second: Knuckle_till_weeded_unlit_4
+  - first:
+      213: -4430464570902037893
+    second: Knuckle_till_weeded_unlit_5
+  - first:
+      213: -3794454916853838958
+    second: Knuckle_till_weeded_unlit_6
+  - first:
+      213: -4525824406037881572
+    second: Knuckle_till_weeded_unlit_7
+  - first:
+      213: 2505164501188826052
+    second: Knuckle_till_weeded_unlit_8
+  - first:
+      213: -2936805181385717625
+    second: Knuckle_till_weeded_unlit_9
+  - first:
+      213: 910441693304379082
+    second: Knuckle_till_weeded_unlit_10
+  - first:
+      213: -4654147177980647016
+    second: Knuckle_till_weeded_unlit_11
+  - first:
+      213: -5951570278374227234
+    second: Knuckle_till_weeded_unlit_12
+  - first:
+      213: -7535662023961287433
+    second: Knuckle_till_weeded_unlit_13
+  - first:
+      213: -6689431665258567107
+    second: Knuckle_till_weeded_unlit_14
+  - first:
+      213: -8437273458362789
+    second: Knuckle_till_weeded_unlit_15
+  - first:
+      213: 3935277046198227920
+    second: Knuckle_till_weeded_unlit_16
+  - first:
+      213: -443991910961664018
+    second: Knuckle_till_weeded_unlit_17
+  - first:
+      213: -946499967264768605
+    second: Knuckle_till_weeded_unlit_18
+  - first:
+      213: 3684385039373524870
+    second: Knuckle_till_weeded_unlit_19
+  - first:
+      213: 5960272729673053163
+    second: Knuckle_till_weeded_unlit_20
+  - first:
+      213: 2622531809187496864
+    second: Knuckle_till_weeded_unlit_21
+  - first:
+      213: -2534078967791488743
+    second: Knuckle_till_weeded_unlit_22
+  - first:
+      213: 3946958650320090291
+    second: Knuckle_till_weeded_unlit_23
+  - first:
+      213: 5119572275145958423
+    second: Knuckle_till_weeded_unlit_24
+  - first:
+      213: 1422903208092593411
+    second: Knuckle_till_weeded_unlit_25
+  - first:
+      213: -6797783421108964884
+    second: Knuckle_till_weeded_unlit_26
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b50e63ec035bba468006aacb719cfef
+      internalID: -1921215100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4619d5c641edc2b4895bb39465de242d
+      internalID: 793405422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd2bb34ba39f3044aa2b0429d8ccf8b9
+      internalID: -1791971902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31f6b6badde7f1742a216a1bda7b1caf
+      internalID: 423167149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d57c44410ba7542478f40d532e24fb05
+      internalID: -876814424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 598e04757e56e9c4e894cbfd807846e2
+      internalID: 278295864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d72201030e4207478bfa263efc35434
+      internalID: 374089106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e619133fa471b374ab1ad92a31cd51e4
+      internalID: 1306968205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 587a8b4c4820d504395b8509289681ef
+      internalID: 1692050792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 682ad2fafed1e28459a85cb62b7708d7
+      internalID: -2097856022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4385b78e210ee234b994091f5f850e24
+      internalID: -1178946028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a7504bce589292d418e3bfd2f3869606
+      internalID: 2064130813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3876863de5d36f24fbef7caf5125e80c
+      internalID: 721604167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca3482a56b7b1e447b8e51cd3f273066
+      internalID: 308457922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 689e64fd9cff1a448b1f5bd9c0da6004
+      internalID: 1779743883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb173ec15134fd14db8e692520f3b30a
+      internalID: 43029402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43242d5e47eba1e47ab2fd25e0e3dd82
+      internalID: 1751081029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c94e2d832ea4a545a56e2f1f6a4011b
+      internalID: -541299473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbdce0336df62ff49902e051194bba4d
+      internalID: 1483040269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0334c9d32241e044848a64427fc9cfc
+      internalID: 1830495804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 497efd60b5bc0c746aa8cdfddb2dc4ab
+      internalID: 411229644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 612ed806db94fd94f9ff8ff29aa89bf9
+      internalID: 648681681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83e09adc0c838b9469aea8cd8919d6fb
+      internalID: -884095666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_till_weeded_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1bc7951fb861a48499fec82bda1d27a5
+      internalID: -2102036074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 9048f4856dd4ddd449b036b0ccb72f73
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Knuckle_till_weeded_unlit_c0_r0: -1921215100
+      Knuckle_till_weeded_unlit_c0_r1: 1692050792
+      Knuckle_till_weeded_unlit_c0_r2: 1751081029
+      Knuckle_till_weeded_unlit_c1_r0: 793405422
+      Knuckle_till_weeded_unlit_c1_r1: -2097856022
+      Knuckle_till_weeded_unlit_c1_r2: -541299473
+      Knuckle_till_weeded_unlit_c2_r0: -1791971902
+      Knuckle_till_weeded_unlit_c2_r1: -1178946028
+      Knuckle_till_weeded_unlit_c2_r2: 1483040269
+      Knuckle_till_weeded_unlit_c3_r0: 423167149
+      Knuckle_till_weeded_unlit_c3_r1: 2064130813
+      Knuckle_till_weeded_unlit_c3_r2: 1830495804
+      Knuckle_till_weeded_unlit_c4_r0: -876814424
+      Knuckle_till_weeded_unlit_c4_r1: 721604167
+      Knuckle_till_weeded_unlit_c4_r2: 411229644
+      Knuckle_till_weeded_unlit_c5_r0: 278295864
+      Knuckle_till_weeded_unlit_c5_r1: 308457922
+      Knuckle_till_weeded_unlit_c5_r2: 648681681
+      Knuckle_till_weeded_unlit_c6_r0: 374089106
+      Knuckle_till_weeded_unlit_c6_r1: 1779743883
+      Knuckle_till_weeded_unlit_c6_r2: -884095666
+      Knuckle_till_weeded_unlit_c7_r0: 1306968205
+      Knuckle_till_weeded_unlit_c7_r1: 43029402
+      Knuckle_till_weeded_unlit_c7_r2: -2102036074
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

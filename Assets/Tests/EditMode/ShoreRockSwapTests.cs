@@ -27,9 +27,13 @@ namespace HiddenHarbours.Tests.EditMode
     /// SpriteRenderer changes in its sprite and size lines only; every other document is unchanged.</para>
     ///
     /// <para>The Rock Px sprites are the test's own: a made-up reference per cell, whose GUID is no
-    /// asset (checked). No Rock Px GUID is read or written, because the kit's metas are not committed.
-    /// The ShoreIso sprites are the ones the committed rocks already wear, read from the scene text, so
-    /// that without swaps the step leaves the committed rocks exactly as they are (checked first).</para>
+    /// asset (checked). The test asks the kit for no GUID. The ShoreIso sprites are the ones the
+    /// committed rocks already wear, read from the scene text.</para>
+    ///
+    /// <para><b>Since terrain PR 5w the committed scene carries the nine swaps</b>, so the nine wear the kit's
+    /// Rock Px sprites. A key's ShoreIso sprite is read from the committed rocks no swap names, and without
+    /// swaps the step hands the nine back their key's ShoreIso sprite: on the committed rocks it changes the
+    /// nine's sprite and size and nothing else (checked first).</para>
     /// </summary>
     public class ShoreRockSwapTests
     {
@@ -234,6 +238,14 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>"Within a hundredth of a metre of At" (ShoreRockDef's own contract).</summary>
         const float MatchMetres = 0.01f;
 
+        /// <summary>Is this rock one a row names: the row's name, within a hundredth of a metre of its place?</summary>
+        internal static bool IsOneOfTheNine(LayerRefreshSceneText t, long go)
+        {
+            string name = t.Field(go, "m_Name");
+            Vector2 at = t.Vec3(t.TransformOf(go), "m_LocalPosition");
+            return Nine.Any(r => r.Today == name && Vector2.Distance(at, new Vector2(r.X, r.Y)) <= MatchMetres);
+        }
+
         internal const long TestFileId = 21300000;
         internal static readonly Vector2 TestSize = new Vector2(1.25f, 0.75f);
         const string TestSizeYaml = "{x: 1.25, y: 0.75}";
@@ -250,7 +262,8 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>
         /// The sprites the step is given: for the painter's keys, the ShoreIso sprite the committed
-        /// rocks of that key already wear (read from the scene text); for a swap, the test's own
+        /// rocks of that key already wear (read from the scene text), less the nine the swaps name, which
+        /// wear the kit's Rock Px sprites since terrain PR 5w; for a swap, the test's own
         /// sprite for the cell it names, and a record of every cell asked for.
         /// </summary>
         internal sealed class TestShoreRockSprites : StPetersLayerRefresh.IShoreRockSprites
@@ -270,6 +283,7 @@ namespace HiddenHarbours.Tests.EditMode
                 foreach (long go in t.ChildGameObjects(rocks))
                 {
                     string name = t.Field(go, "m_Name");
+                    if (IsOneOfTheNine(t, go)) continue;                     // it wears its swap's Rock Px sprite
                     string key = name.Substring(name.LastIndexOf('_') + 1);   // the painter names a rock <prefix>_<key>
                     long sr = t.ComponentOfClass(go, 212);
                     string sprite = t.Field(sr, "m_Sprite");
@@ -313,9 +327,6 @@ namespace HiddenHarbours.Tests.EditMode
             var sprites = new TestShoreRockSprites(sceneText);
 
             string plain = StPetersLayerRefresh.Shoreline(scene, placement, sprites, Array.Empty<ShoreRockDef>()).ApplyTo(sceneText);
-            if (placementIsTheCommittedRocks)
-                Assert.IsTrue(plain == sceneText,
-                              "without swaps, with the committed rocks as the placement and the sprites they wear, the step changed the scene");
             Assert.IsEmpty(sprites.Asked, "without swaps, the step asked for a Rock Px sprite");
 
             string swapped = StPetersLayerRefresh.Shoreline(scene, placement, sprites, nine).ApplyTo(sceneText);
@@ -343,6 +354,32 @@ namespace HiddenHarbours.Tests.EditMode
                 foreach (long c in p.Refs(go, "m_Component"))
                     partOf[c] = (row, p.ClassOf(c) == 4 ? "Transform (its place, rotation and scale)" : p.ClassOf(c) == 212 ? "SpriteRenderer" : "YSortSprite");
                 renderers[p.ComponentOfClass(go, 212)] = row;
+            }
+
+            // Since terrain PR 5w the committed rocks wear the nine swaps: without swaps, on the committed rocks
+            // and the sprites they wear, the step hands the nine back their key's ShoreIso sprite and changes
+            // nothing else.
+            if (placementIsTheCommittedRocks)
+            {
+                var committed = new LayerRefreshSceneText(sceneText);
+                CollectionAssert.AreEqual(committed.Order, p.Order,
+                                          "without swaps, on the committed rocks, the step added, removed or reordered a document");
+                foreach (long id in committed.Order)
+                {
+                    if (!renderers.TryGetValue(id, out Row row))
+                    {
+                        Assert.IsTrue(committed.Text(id) == p.Text(id),
+                                      "without swaps, with the committed rocks as the placement and the sprites they wear, " +
+                                      $"the step changed {committed.ObjectName(id)} (&{id})");
+                        continue;
+                    }
+                    string[] was = committed.Text(id).Split('\n'), now = p.Text(id).Split('\n');
+                    Assert.AreEqual(was.Length, now.Length, $"{row.Id}: without swaps, the step changed the SpriteRenderer's shape");
+                    for (int i = 0; i < was.Length; i++)
+                        if (was[i] != now[i])
+                            Assert.IsTrue(was[i].StartsWith("  m_Sprite: ", StringComparison.Ordinal) || was[i].StartsWith("  m_Size: ", StringComparison.Ordinal),
+                                          $"{row.Id}: without swaps, the step changed '{was[i]}' to '{now[i]}'; only the sprite and its size may change");
+                }
             }
 
             foreach (long id in p.Order)

@@ -1,0 +1,125 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_trolley
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: prop.stp_cannery_trolley
+  DisplayName: Derelict trolley
+  RigKey: trolley
+  SceneId: keyscene.stp_cannery
+  BakedOptionsJson: '{"decay":"derelict","load":"box"}'
+  Layer: raised
+  Walk: behind
+  Mount: ground
+  BoundsMin: {x: -0.752, y: -0.5, z: 0}
+  BoundsMax: {x: 0.752, y: 0.5, z: 0.723}
+  Frames:
+  - Sprite: {fileID: -6999513513051083117, guid: 42703b0423166c9458148e717876807f, type: 3}
+    RigDir: 0
+    ShowFaces: N
+    BearingDeg: 0
+    CameraSees: its back
+    NativeSize: {x: 56, y: 36}
+    NativePivot: {x: 28, y: 26}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 24, y: 23}
+  - Sprite: {fileID: 2266290254545407203, guid: 42703b0423166c9458148e717876807f, type: 3}
+    RigDir: 7
+    ShowFaces: NE
+    BearingDeg: 45
+    CameraSees: its back
+    NativeSize: {x: 64, y: 47}
+    NativePivot: {x: 32, y: 31}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 28, y: 27}
+  - Sprite: {fileID: -7934313712868238015, guid: 42703b0423166c9458148e717876807f, type: 3}
+    RigDir: 6
+    ShowFaces: E
+    BearingDeg: 90
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 40, y: 45}
+    NativePivot: {x: 20, y: 28}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 16, y: 24}
+  - Sprite: {fileID: 1098117428155120036, guid: 42703b0423166c9458148e717876807f, type: 3}
+    RigDir: 5
+    ShowFaces: SE
+    BearingDeg: 135
+    CameraSees: the show face
+    NativeSize: {x: 64, y: 48}
+    NativePivot: {x: 31, y: 31}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 27, y: 27}
+  - Sprite: {fileID: -8104174623865226031, guid: 42703b0423166c9458148e717876807f, type: 3}
+    RigDir: 4
+    ShowFaces: S
+    BearingDeg: 180
+    CameraSees: the show face
+    NativeSize: {x: 56, y: 38}
+    NativePivot: {x: 28, y: 26}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 24, y: 23}
+  - Sprite: {fileID: 4837824441721536412, guid: 42703b0423166c9458148e717876807f, type: 3}
+    RigDir: 3
+    ShowFaces: SW
+    BearingDeg: 225
+    CameraSees: the show face
+    NativeSize: {x: 64, y: 49}
+    NativePivot: {x: 31, y: 32}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 28, y: 29}
+  - Sprite: {fileID: -1111312528, guid: 42703b0423166c9458148e717876807f, type: 3}
+    RigDir: 2
+    ShowFaces: W
+    BearingDeg: 270
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 39, y: 48}
+    NativePivot: {x: 19, y: 33}
+    Crop: {x: 3, y: 5}
+    Pivot: {x: 16, y: 28}
+  - Sprite: {fileID: -320196935, guid: 42703b0423166c9458148e717876807f, type: 3}
+    RigDir: 1
+    ShowFaces: NW
+    BearingDeg: 315
+    CameraSees: its back
+    NativeSize: {x: 64, y: 49}
+    NativePivot: {x: 32, y: 32}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 28, y: 29}
+  CellSize: {x: 56, y: 41}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -0.75, y: 0.5}
+    - {x: 0.75, y: 0.5}
+    - {x: 0.75, y: -0.5}
+    - {x: -0.75, y: -0.5}
+  Anchors: []
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []

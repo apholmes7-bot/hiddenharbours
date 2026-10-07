@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 403eb22347c5492a047a67714d80b7ef, type: 3}
+  m_Name: Stream_BarrenBrook
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.StreamDef
+  Id: stream.stp_barren_brook
+  DisplayName: Barren Brook
+  Source: {fileID: 11400000, guid: 7a32c451e88c90915b26880e4e6165f3, type: 2}
+  Points:
+  - {x: 41.5, y: 50.5}
+  - {x: 35, y: 53}
+  - {x: 27, y: 56}
+  - {x: 19, y: 59.5}
+  - {x: 12, y: 63}
+  - {x: 6, y: 67.5}
+  - {x: 1, y: 73}
+  - {x: -4, y: 78}
+  - {x: -7, y: 84}
+  - {x: -9, y: 91}
+  - {x: -11, y: 99}
+  BedZ:
+  - 5.2
+  - 4.95
+  - 4.5
+  - 3.6
+  - 2.6
+  - 1.85
+  - 1.2
+  - 0.55
+  - -0.1
+  - -0.75
+  - -1.35
+  Widths:
+  - 1
+  - 1
+  - 1.05
+  - 1.1
+  - 1.2
+  - 1.3
+  - 1.4
+  - 1.5
+  - 1.7
+  - 1.9
+  - 2.2
+  Depth: 0.14
+  Bank: {x: 0.3, y: 0.55}
+  Why: 'The main brook: out of the bog pond, down through the barren in a shallow valley, into the marsh as its main creek, out across the mud to the lagoon.'

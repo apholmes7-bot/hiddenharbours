@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c7fa69da25f097ee68bd1ab3825272, type: 3}
+  m_Name: yard.st_peters.harbour_gable
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.YardDef
+  Id: "yard.st_peters.harbour_gable"
+  LotId: "lot.st_peters.harbour_gable"
+  Fence: 5
+  Mown: 1
+  Outline:
+  - {x: -13.0, y: 41.5}
+  - {x: 0.5, y: 41.5}
+  - {x: 0.5, y: 49.5}
+  - {x: -13.0, y: 49.5}
+  Gate: {x: -6.25, y: 41.5}
+  Dressing:
+  - PieceId: "prop.stp_vl_harbour_gable_anchor_set"
+    Kind: "anchorSet"
+    Position: {x: -11.3, y: 45.0}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"an anchor and a coil of warp\"}"
+  - PieceId: "prop.stp_vl_harbour_gable_trap_bench"
+    Kind: "trapBench"
+    Position: {x: -1.3, y: 46.5}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"a trap bench with buoys: fishing folk\"}"
+  - PieceId: "prop.stp_vl_harbour_gable_buoy_post"
+    Kind: "buoyPost"
+    Position: {x: -11.8, y: 47.5}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"a buoy post\"}"
+  - PieceId: "prop.stp_vl_harbour_gable_woodpile"
+    Kind: "woodpile"
+    Position: {x: -1.0, y: 48.4}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"the woodpile\"}"
+  FenceSummary:
+    Panels: 20
+    Posts: 6
+    Gates: 0
+    Offcuts: 0
+    OffcutMetres: 0.0
+    Metres: 41.2

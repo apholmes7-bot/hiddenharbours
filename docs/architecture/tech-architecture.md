@@ -242,6 +242,21 @@ never referencing Fishing. The contract's rules:
 Guarded by `Assets/Tests/EditMode/FishingV2ContractTests.cs` (frozen ints, additive-struct,
 Def invariants).
 
+### 4.5 The helm's footprint (overlays and the camera keep clear of the helm without referencing UI) — ADR 0050
+
+**`Core.HelmFootprint` + `Core.HelmFootprintArea` + `Core.HelmFootprintChanged`** — one statement of
+what the helm's UI covers at the bottom of the screen, in screen pixels (bottom-left origin): nothing,
+a full-width band's height, or a card's rect. The helm host (`UI/HelmOverlayHost`) publishes today's
+card, its window and title strip included, and says nothing with no helm in her hand, under hide-all
+or with the window hidden; H2's band publishes `FullWidthBand(144·k)`. The readers keep clear through
+Core only: the dev toast (`Player`), the interact popup and the HUD's nav cluster (`UI`), the quest note
+(`World`), each via the shared `LiftToClear` (a band raises the floor; a card lifts only what reaches
+it, above it, or beside it first for the nav cluster); and the camera (`App/CameraFollow`), which eases
+the boat up by `GameConfig.HelmFootprint.CameraBandShare` of a full-width band (0.5, ruled), in metres
+by the framing on screen, added with the look-ahead ahead of the feel, the snap and the clamp, and
+never for a card. Change-detected, so a quiet frame is a struct compare. Presentation state: unsaved
+(rule 5), nothing published headless, so every reader stands where it did.
+
 ## 5. Boat & entity architecture (composition)
 
 **Character clothing interchange (CW-01, 2026-09-13).** Core now defines the version-1
@@ -363,6 +378,26 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
     characters; "editor" where no build was made), which is §7.8's exit criterion: a playtest report that
     cannot be pinned to a build is worth very little. Moving the CAMERA to a composed title framing is a
     separate, App-lane question — the UI assembly reaches Core only, by design.
+- **The player's save is never clobbered.** The one slot is `persistentDataPath/savegame.json`, which
+  every checkout on a machine shares (the path is keyed on company and product, not on the folder). Two
+  guarantees protect it.
+  - **No test touches it.** `SaveService` opens `SaveStore.ActivePath`. That is the player's save, except
+    under the editor's test runner, where each PlayMode run gets a file of its own:
+    `<project>/Temp/TestRunSaves/<guid>/savegame.json`, which starts absent, so every run begins on a new game
+    as CI always has. The PlayMode tests' run hook (`Tests.PlayMode.TestRunSave`, an assembly-level
+    `PrebuildSetupWithTestData`) sets it before the runner enters play mode. It is handed over in a process
+    environment variable (`SaveStore.TestRunSaveVariable`) because the service reads in `Awake` at
+    BeforeSceneLoad, before any test or run callback exists, and entering play mode reloads the domain, so no
+    static set beforehand would survive. The service keeps the path it opened, so the quit write as the runner
+    leaves play mode lands in the run's file too. The hook disarms when the editor is back in edit mode, a
+    cancelled run included, and again in the runner's cleanup. A built player compiles the branch out. Pinned
+    by `SaveNeverClobberedPlayTests`, which drives every write path of the live service and is not
+    GPU-gated, and by `SaveNeverClobberedTests`.
+  - **A New Game keeps the game it erases.** Before `BeginNewGame` replaces the file, and before the first
+    write over a save that existed but could not be read, `SaveStore.KeepReplaced` copies it, byte for byte,
+    to `savegame.kept-1.json` beside it. Older copies move up one, and the one past
+    `SaveStore.KeptGameCount` (3) is dropped. Every other write is unchanged. There is no in-game undo:
+    recovery is by hand, renaming a kept copy back to `savegame.json`.
 
 ## 7. Tick & performance model
 

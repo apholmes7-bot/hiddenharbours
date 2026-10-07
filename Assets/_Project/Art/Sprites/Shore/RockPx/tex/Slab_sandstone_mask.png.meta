@@ -1,0 +1,781 @@
+fileFormatVersion: 2
+guid: 7d8593403dc7d7a45914739d2671276c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7281236106752917923
+    second: Slab_sandstone_mask_0
+  - first:
+      213: 7589658866876847005
+    second: Slab_sandstone_mask_1
+  - first:
+      213: -8415424069497590419
+    second: Slab_sandstone_mask_2
+  - first:
+      213: -7319158228930202743
+    second: Slab_sandstone_mask_3
+  - first:
+      213: -5065902172930234615
+    second: Slab_sandstone_mask_4
+  - first:
+      213: 2698030147408590971
+    second: Slab_sandstone_mask_5
+  - first:
+      213: -3768094316402960538
+    second: Slab_sandstone_mask_6
+  - first:
+      213: 8705446600178172591
+    second: Slab_sandstone_mask_7
+  - first:
+      213: -4808653776314409320
+    second: Slab_sandstone_mask_8
+  - first:
+      213: -2962691493419374400
+    second: Slab_sandstone_mask_9
+  - first:
+      213: 3074789060346841786
+    second: Slab_sandstone_mask_10
+  - first:
+      213: 5780619280662611079
+    second: Slab_sandstone_mask_11
+  - first:
+      213: -998959000425218590
+    second: Slab_sandstone_mask_12
+  - first:
+      213: 8047865029343228672
+    second: Slab_sandstone_mask_13
+  - first:
+      213: 6486725270960885562
+    second: Slab_sandstone_mask_14
+  - first:
+      213: 9222339114759230157
+    second: Slab_sandstone_mask_15
+  - first:
+      213: -703371380400604791
+    second: Slab_sandstone_mask_16
+  - first:
+      213: -7191896874801250880
+    second: Slab_sandstone_mask_17
+  - first:
+      213: 4381600246144030412
+    second: Slab_sandstone_mask_18
+  - first:
+      213: 606995952567250946
+    second: Slab_sandstone_mask_19
+  - first:
+      213: 6579382125315824379
+    second: Slab_sandstone_mask_20
+  - first:
+      213: -6833928244326758980
+    second: Slab_sandstone_mask_21
+  - first:
+      213: 9159835017806346465
+    second: Slab_sandstone_mask_22
+  - first:
+      213: 7338912707531996985
+    second: Slab_sandstone_mask_23
+  - first:
+      213: 7176845410079710262
+    second: Slab_sandstone_mask_24
+  - first:
+      213: 6612156201711107553
+    second: Slab_sandstone_mask_25
+  - first:
+      213: 211416707174996412
+    second: Slab_sandstone_mask_26
+  - first:
+      213: -4745123186378590701
+    second: Slab_sandstone_mask_27
+  - first:
+      213: -5287810938382055640
+    second: Slab_sandstone_mask_28
+  - first:
+      213: -1793899923452326013
+    second: Slab_sandstone_mask_29
+  - first:
+      213: -7790550331252856161
+    second: Slab_sandstone_mask_30
+  - first:
+      213: 6921722645930569437
+    second: Slab_sandstone_mask_31
+  - first:
+      213: 3512914188231486115
+    second: Slab_sandstone_mask_32
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d55f37df2e9146d49b6d5c88a68b76d3
+      internalID: 222841732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c139a289bfb451b4fab50eb480506f36
+      internalID: 1994548668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76ca895015abf824880eca939a223510
+      internalID: 837373387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: affdde37c6c99b14682f26d20857d8c9
+      internalID: 2020738112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 679872961b5e78f419c38cc108ba65b9
+      internalID: 1667292266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9fe6448a24c214646b90d2b00e17062b
+      internalID: -754341943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b58daa3f92cfbe4d8ebb4690fbaedd1
+      internalID: 50889710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83e4e72bed0095e42934c089b53cacc9
+      internalID: 38731895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9dd34024edc50964b8183e64808da0da
+      internalID: 1165672588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84eb899c587d51f4ba6349e64798eab4
+      internalID: -523131506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec3606d01c365324ab80512eecec0766
+      internalID: -1385570829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44a6190dde7676a48b538da633f9284e
+      internalID: 702737258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e15d73c43733d954a9820d894a25f350
+      internalID: 1580714571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ddb066810596434995b2e7599d49710
+      internalID: -728338777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f31a458ace4c0b43b5ae9585a97b7d3
+      internalID: -53922008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4944cb0a57a37464bab94b681ce8511e
+      internalID: -965520417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29d1c1804411c69479856380560761c5
+      internalID: -609798104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1b55c363e4d9184d90dcaa3bc6faee0
+      internalID: -518345529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95f85ba954b1a71479a4beb0dd066e96
+      internalID: -323502922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9f837bb72444be42b524be531114a5e
+      internalID: -378922624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cbeea2078d6f03048b1801e68ffa0c43
+      internalID: -1115155148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c36e377589524d14c96b84b147db7a75
+      internalID: 628454220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc1e5442e310a9047b3c125890a83b72
+      internalID: -1232376993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_sandstone_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd23d724d4a95e841a7dadd9c11234c2
+      internalID: -558604992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 3c36248f6ca79954cb0fe7e0e3c757b1
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Slab_sandstone_mask_c0_r0: 222841732
+      Slab_sandstone_mask_c0_r1: 1165672588
+      Slab_sandstone_mask_c0_r2: -609798104
+      Slab_sandstone_mask_c1_r0: 1994548668
+      Slab_sandstone_mask_c1_r1: -523131506
+      Slab_sandstone_mask_c1_r2: -518345529
+      Slab_sandstone_mask_c2_r0: 837373387
+      Slab_sandstone_mask_c2_r1: -1385570829
+      Slab_sandstone_mask_c2_r2: -323502922
+      Slab_sandstone_mask_c3_r0: 2020738112
+      Slab_sandstone_mask_c3_r1: 702737258
+      Slab_sandstone_mask_c3_r2: -378922624
+      Slab_sandstone_mask_c4_r0: 1667292266
+      Slab_sandstone_mask_c4_r1: 1580714571
+      Slab_sandstone_mask_c4_r2: -1115155148
+      Slab_sandstone_mask_c5_r0: -754341943
+      Slab_sandstone_mask_c5_r1: -728338777
+      Slab_sandstone_mask_c5_r2: 628454220
+      Slab_sandstone_mask_c6_r0: 50889710
+      Slab_sandstone_mask_c6_r1: -53922008
+      Slab_sandstone_mask_c6_r2: -1232376993
+      Slab_sandstone_mask_c7_r0: 38731895
+      Slab_sandstone_mask_c7_r1: -965520417
+      Slab_sandstone_mask_c7_r2: -558604992
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

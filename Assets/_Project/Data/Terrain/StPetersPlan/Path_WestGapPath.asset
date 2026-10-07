@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e4b07322d732cfe9125965394268f7, type: 3}
+  m_Name: Path_WestGapPath
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PathDef
+  Id: path.stp_west_gap_path
+  DisplayName: West Gap path
+  Kind: 0
+  Width: 0.9
+  Points:
+  - {x: 12.5, y: -55.3}
+  - {x: 11.6, y: -57.6}
+  - {x: 11, y: -59}
+  - {x: 10.4, y: -63.8}
+  - {x: 10, y: -66.5}
+  LineSource: 
+  JoinPoints: []
+  Material: path
+  Weight: 1
+  Label: path
+  Ruts: 0
+  SourceId: path.stp_west_gap_path
+  Frozen: 0
+  PaintOnly: 1
+  Why: 'Down the West Gap ramp to its pocket beach. Down the dune by its steps, as the main beach scene paints it (keyscene.stp_main_beach); the timber steps between (11, -59) and (10.4, -63.8) are prop.stp_beach_steps, whose art is pending.'

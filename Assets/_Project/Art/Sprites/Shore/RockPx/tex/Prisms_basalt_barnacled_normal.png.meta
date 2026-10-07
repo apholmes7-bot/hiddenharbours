@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: d4a28e6f34806bb40b9c235a9ddc03bc
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6110867910951775848
+    second: Prisms_basalt_barnacled_normal_0
+  - first:
+      213: -8355225064484740256
+    second: Prisms_basalt_barnacled_normal_1
+  - first:
+      213: 5137520470227770014
+    second: Prisms_basalt_barnacled_normal_2
+  - first:
+      213: 2006529846854939145
+    second: Prisms_basalt_barnacled_normal_3
+  - first:
+      213: -5352596494865626063
+    second: Prisms_basalt_barnacled_normal_4
+  - first:
+      213: 3954095118188316353
+    second: Prisms_basalt_barnacled_normal_5
+  - first:
+      213: -8423196770000133569
+    second: Prisms_basalt_barnacled_normal_6
+  - first:
+      213: -7701678508404782849
+    second: Prisms_basalt_barnacled_normal_7
+  - first:
+      213: 5137565463321672137
+    second: Prisms_basalt_barnacled_normal_8
+  - first:
+      213: 879905418586714523
+    second: Prisms_basalt_barnacled_normal_9
+  - first:
+      213: -8010333242673072564
+    second: Prisms_basalt_barnacled_normal_10
+  - first:
+      213: 3394798109148194912
+    second: Prisms_basalt_barnacled_normal_11
+  - first:
+      213: 3092764731608518133
+    second: Prisms_basalt_barnacled_normal_12
+  - first:
+      213: 6860998999082948570
+    second: Prisms_basalt_barnacled_normal_13
+  - first:
+      213: 481091566442409471
+    second: Prisms_basalt_barnacled_normal_14
+  - first:
+      213: 1970235016349167108
+    second: Prisms_basalt_barnacled_normal_15
+  - first:
+      213: -7020931153140754016
+    second: Prisms_basalt_barnacled_normal_16
+  - first:
+      213: -6832227621160360034
+    second: Prisms_basalt_barnacled_normal_17
+  - first:
+      213: -8546699520264446581
+    second: Prisms_basalt_barnacled_normal_18
+  - first:
+      213: 6908161234872871278
+    second: Prisms_basalt_barnacled_normal_19
+  - first:
+      213: -3517881919867194681
+    second: Prisms_basalt_barnacled_normal_20
+  - first:
+      213: -1041095558344261690
+    second: Prisms_basalt_barnacled_normal_21
+  - first:
+      213: -5841834824518600100
+    second: Prisms_basalt_barnacled_normal_22
+  - first:
+      213: -720930782633510861
+    second: Prisms_basalt_barnacled_normal_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30584a78a53eb7a4cb63dd017202230b
+      internalID: 302973702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a96e9c2ac49a40d4291f8bfecf9a7741
+      internalID: -2100496008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84debbb90d510e74398f3e142b74e71e
+      internalID: -1638035139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2e7c90480bda6641a8165531018c2dd
+      internalID: 62079351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1458b3af1fee7de4b95021d2453efc20
+      internalID: -1618666369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a9911969f5ef6046b45eaed92be4185
+      internalID: 1292121237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f779fa05abfeda6449caad6d18897dc0
+      internalID: 2015242796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e003729feaec1545849b8155c366623
+      internalID: 1272137325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54c4387810ff9d1448aa7dca231472f0
+      internalID: -333359226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49664343b2090174cb9791d1054a1683
+      internalID: -1255376765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ce2c8da1aa387a4a8e1d37679888fdb
+      internalID: 910362729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7aacf1b7bb519264792deb85e77f8842
+      internalID: 1980366869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32275736da118434595295e15fb40594
+      internalID: 1952676222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32e83bd1bb5062048b0e3e1614740cb9
+      internalID: -1946094171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b08b483277227a44986ec8288b1f45f
+      internalID: 1051293279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94f031de2d81e7a4390507768532dbe0
+      internalID: -1708069424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6ad8752bfbddfd43a788fe870f87f88
+      internalID: -924427752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23be1a476ffd8f24694c4f379abbe53b
+      internalID: 662553275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4925061cfd7fb94b859308c467aa006
+      internalID: 1151729672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19d55bcef681ba14baafeb6f3cb62298
+      internalID: 29455214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d64a67d13cadafc40a636affb293f58e
+      internalID: -2134064815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1fa7680c7ea18945a09f79c0f59ebfe
+      internalID: -1026116290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 079a897ce61085e429dd4b408d6fa536
+      internalID: 1244967964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_basalt_barnacled_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca7594c40c808884f99c443c3ebf776e
+      internalID: -764465964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: dc2d7c84156b72e4388d93dc87891d68
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Prisms_basalt_barnacled_normal_c0_r0: 302973702
+      Prisms_basalt_barnacled_normal_c0_r1: -333359226
+      Prisms_basalt_barnacled_normal_c0_r2: -924427752
+      Prisms_basalt_barnacled_normal_c1_r0: -2100496008
+      Prisms_basalt_barnacled_normal_c1_r1: -1255376765
+      Prisms_basalt_barnacled_normal_c1_r2: 662553275
+      Prisms_basalt_barnacled_normal_c2_r0: -1638035139
+      Prisms_basalt_barnacled_normal_c2_r1: 910362729
+      Prisms_basalt_barnacled_normal_c2_r2: 1151729672
+      Prisms_basalt_barnacled_normal_c3_r0: 62079351
+      Prisms_basalt_barnacled_normal_c3_r1: 1980366869
+      Prisms_basalt_barnacled_normal_c3_r2: 29455214
+      Prisms_basalt_barnacled_normal_c4_r0: -1618666369
+      Prisms_basalt_barnacled_normal_c4_r1: 1952676222
+      Prisms_basalt_barnacled_normal_c4_r2: -2134064815
+      Prisms_basalt_barnacled_normal_c5_r0: 1292121237
+      Prisms_basalt_barnacled_normal_c5_r1: -1946094171
+      Prisms_basalt_barnacled_normal_c5_r2: -1026116290
+      Prisms_basalt_barnacled_normal_c6_r0: 2015242796
+      Prisms_basalt_barnacled_normal_c6_r1: 1051293279
+      Prisms_basalt_barnacled_normal_c6_r2: 1244967964
+      Prisms_basalt_barnacled_normal_c7_r0: 1272137325
+      Prisms_basalt_barnacled_normal_c7_r1: -1708069424
+      Prisms_basalt_barnacled_normal_c7_r2: -764465964
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

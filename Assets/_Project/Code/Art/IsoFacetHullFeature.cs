@@ -184,7 +184,11 @@ namespace HiddenHarbours.Art
             // §26.10's activation opted the fleet in (IsoFacetHullPresentationService.Install) and
             // the trees in (DecorPrefabBuilder / AcadianTreeCatalog), so a live harbour records this
             // pass deliberately, and Water.mat ships _ObjectReflectStrength 0.5 to show it.
-            bool reflect = ReflectionRegistry.Count > 0;
+            bool meshReflect = GameServices.HullMeshReflections;
+            HullMeshReflection.SetMode(meshReflect);
+            bool reflect = (meshReflect ? ReflectionRegistry.NonHullCount : ReflectionRegistry.Count) > 0;
+            bool meshSubjects = meshReflect && HullMeshReflection.Count > 0;
+            if (!reflect && !meshSubjects) ReflectionRegistry.BindIdle();
             // ADR 0027 #6: the advected foam buffer joins as one persistent ping-ponged target, on
             // the same zero-cost-when-idle contract and with BOTH halves of it enforced — no hull is
             // churning water (every FoamInjector unregisters the moment it is off the water) OR the
@@ -208,7 +212,7 @@ namespace HiddenHarbours.Art
             bool foam = FoamInjectionRegistry.ShouldRun;
             if (!foam)
                 FoamInjectionRegistry.BindIdle();   // never leave a frozen wake bound on the sea
-            if (!hulls && !water && !reflect && !foam)
+            if (!hulls && !water && !reflect && !meshSubjects && !foam)
                 return;   // the zero-cost guarantee — scenes without mesh hulls, displaced water, reflectors or churn pay nothing
             // CI runs Unity with NO graphics device ("Null Device"), where recording a raster pass
             // can crash the editor outright (exit 1, no results XML) — and phase 4's PlayMode tests
@@ -220,7 +224,7 @@ namespace HiddenHarbours.Art
                 renderingData.cameraData.cameraType == CameraType.Reflection)
                 return;
 
-            if (hulls && _resolveMaterial == null)
+            if ((hulls || meshSubjects) && _resolveMaterial == null)
             {
                 var shader = _resolveShader != null
                     ? _resolveShader
@@ -260,6 +264,7 @@ namespace HiddenHarbours.Art
             _pass.DrawWater = water;
             _pass.DrawGuard = _interiorMask;
             _pass.DrawReflections = reflect;
+            _pass.MeshReflections = meshReflect;
             _pass.DrawFoam = foam;
             _pass.FoamMaterial = _foamMaterial;
             _pass.FoamWindowMeters = _foamWindowMeters;
@@ -298,7 +303,7 @@ namespace HiddenHarbours.Art
             _foamMaterial = null;
         }
 
-        private sealed class HullPass : ScriptableRenderPass2D
+        internal sealed class HullPass : ScriptableRenderPass2D
         {
             private static readonly ShaderTagId s_FacetTag = new ShaderTagId("HHHullFacet");
             private static readonly ShaderTagId s_DeckTag = new ShaderTagId("HHHullDeck");
@@ -312,6 +317,14 @@ namespace HiddenHarbours.Art
             private static readonly ShaderTagId s_ReflectTag = new ShaderTagId("HHReflect");
 
             public Material ResolveMaterial;
+            internal bool MeshReflections;
+            RTHandle _clearReflectHandle;
+            readonly Dictionary<EntityId, HullMeshReflection.CameraState> _meshCameras = new Dictionary<EntityId, HullMeshReflection.CameraState>();
+            internal delegate void TargetAllocator(ref RTHandle handle, RenderTextureDescriptor descriptor, string name);
+            readonly TargetAllocator _allocateTarget;
+            static void AllocateTarget(ref RTHandle handle, RenderTextureDescriptor descriptor, string name)
+                => RenderingUtils.ReAllocateHandleIfNeeded(ref handle, descriptor, FilterMode.Point, TextureWrapMode.Clamp, name: name);
+
             /// <summary>ADR 0027 #6's advect/decay/inject blit material.</summary>
             public Material FoamMaterial;
             /// <summary>Record the advected foam buffer this frame (a hull churning water AND the
@@ -432,8 +445,9 @@ namespace HiddenHarbours.Art
                 }
             }
 
-            public HullPass()
+            public HullPass(TargetAllocator allocator = null)
             {
+                _allocateTarget = allocator ?? AllocateTarget;
                 profilingSampler = new ProfilingSampler("HH IsoFacet Hulls");
             }
 
@@ -446,6 +460,7 @@ namespace HiddenHarbours.Art
             private class WaterPassData
             {
                 public RendererListHandle Renderers;
+                public TextureHandle ClearReflection;
             }
 
             private class GuardPassData
@@ -474,10 +489,14 @@ namespace HiddenHarbours.Art
             {
                 public Material Material;
                 public TextureHandle Facet, Dark, Key, Depth;
+                public HullMeshReflection.Snapshot MeshSnapshot;
                 public Vector4 TexSize;
                 /// <summary>ADR 0031: this frame's keyline-gate value, applied to the material in
                 /// the render func through <see cref="IsoFacetKeylineGate.Apply"/>.</summary>
                 public bool KeylineFlood;
+                /// <summary>Character PR 2a: this frame's rig 9 ink, <c>(edge, mix, live, 0)</c> from
+                /// <see cref="IsoFacetFigureInk.Value"/>, applied in the render func the same way.</summary>
+                public Vector4 FigureInk;
             }
 
             public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
@@ -487,9 +506,46 @@ namespace HiddenHarbours.Art
                 var desc = cameraData.cameraTargetDescriptor;
                 int w = desc.width, h = desc.height;
                 if (w <= 0 || h <= 0) return;
+                HullMeshReflection.SetMode(MeshReflections);
                 bool drawHulls = DrawHulls && ResolveMaterial != null;
                 bool drawFoam = DrawFoam && FoamMaterial != null;
-                if (!drawHulls && !DrawWater && !DrawReflections && !drawFoam) return;
+                HullMeshReflection.Snapshot mesh = null;
+                if (MeshReflections && ResolveMaterial != null && HullMeshReflection.Count > 0)
+                {
+                    var id = cameraData.camera.GetEntityId();
+                    if (!_meshCameras.TryGetValue(id, out var state))
+                        _meshCameras.Add(id, state = new HullMeshReflection.CameraState());
+                    mesh = state.Acquire(GameServices.HullReflectionMaxPackets);
+                    if (mesh != null)
+                    {
+                        int divisor = GameServices.HullReflectionResolutionDivisor;
+                        HullMeshReflection.Prepare(mesh, cameraData.camera, Mathf.Max(1, (w + divisor - 1) / divisor),
+                            Mathf.Max(1, (h + divisor - 1) / divisor), GameServices.HullReflectionMaxHulls,
+                            GameServices.HullReflectionMaxTriangles);
+                        if (mesh.Overflow && !state.OverflowWarned)
+                            Debug.LogWarning("[HullMeshReflection] Submission budget exceeded; this camera draws no mesh reflections.");
+                        state.OverflowWarned = mesh.Overflow;
+                        if (mesh.Count == 0) { mesh.InUse = false; mesh = null; }
+                    }
+                }
+                if (!DrawReflections && mesh == null) ReflectionRegistry.BindIdle();
+                if (!drawHulls && !DrawWater && !DrawReflections && !drawFoam && mesh == null) return;
+                TextureHandle reflectTex = default;
+                TextureHandle foamTex = default;
+                TextureHandle clearReflection = default;
+                if (DrawReflections || mesh != null)
+                {
+                    RTHandle reflectTarget = GetReflectTarget(cameraData.camera.GetEntityId(), w, h);
+                    if (mesh != null) mesh.Output = reflectTarget;
+                    reflectTex = renderGraph.ImportTexture(reflectTarget,
+                        new ImportResourceParams { clearOnFirstUse = true, clearColor = Color.clear, discardOnLastUse = false });
+                }
+
+                if (!reflectTex.IsValid())
+                {
+                    _clearReflectHandle ??= RTHandles.Alloc(ReflectionRegistry.ClearFallback);
+                    clearReflection = renderGraph.ImportTexture(_clearReflectHandle);
+                }
 
                 // Do not advance/read a camera's pair until its previous initialization commands
                 // have completed. The first graph itself has explicit clear -> advect dependencies.
@@ -520,15 +576,6 @@ namespace HiddenHarbours.Art
                 // pass means overlapping reflectors composite correctly with no sorting contract.
                 if (DrawReflections)
                 {
-                    RTHandle reflectTarget = GetReflectTarget(cameraData.camera.GetEntityId(), w, h);
-                    var reflectImport = new ImportResourceParams
-                    {
-                        clearOnFirstUse = true,
-                        clearColor = Color.clear,
-                        discardOnLastUse = false,
-                    };
-                    TextureHandle reflectTex = renderGraph.ImportTexture(reflectTarget, reflectImport);
-
                     using var builder = renderGraph.AddRasterRenderPass<ReflectPassData>(
                         "HH Object Reflections", out ReflectPassData passData, profilingSampler);
                     var sorting = new SortingSettings(cameraData.camera) { criteria = SortingCriteria.None };
@@ -543,12 +590,13 @@ namespace HiddenHarbours.Art
                     // The consumer is the in-scene water quad, whose read the graph cannot see —
                     // never cull, and publish the result.
                     builder.AllowPassCulling(false);
-                    builder.SetGlobalTextureAfterPass(reflectTex, ReflectionShaderIds.ReflectTex);
+                    if (mesh == null) builder.SetGlobalTextureAfterPass(reflectTex, ReflectionShaderIds.ReflectTex);
                     builder.SetRenderFunc((ReflectPassData data, RasterGraphContext ctx) =>
                     {
                         ctx.cmd.DrawRendererList(data.Renderers);
                     });
                 }
+                if (mesh != null) RecordMeshReflection(renderGraph, mesh, reflectTex, w, h);
                 // ---- THE ADVECTED FOAM BUFFER (ADR 0027 #6) -------------------------------------
                 // One persistent single-channel target, ping-ponged: scroll the previous frame by a
                 // WHOLE number of world cells, decay it exponentially, and inject a capsule of foam
@@ -606,7 +654,8 @@ namespace HiddenHarbours.Art
                     // between would otherwise overwrite the first camera's slots).
                     // Deposits/freshness, like decay, apply once per camera frame. A same-frame
                     // re-render must not inject the still-pending registry capsules a second time.
-                    int injected = repeatedRender ? 0 : FoamInjectionRegistry.CollectInjections(_foamInjections);
+                    int injected = repeatedRender ? 0 : FoamInjectionRegistry.CollectInjections(
+                        _foamInjections, new Rect(state.Origin, new Vector2(extent, extent)), cameraData.camera);
                     for (int i = 0; i < FoamBuffer.MaxInjectors; i++)
                     {
                         if (i < injected)
@@ -694,6 +743,8 @@ namespace HiddenHarbours.Art
                         // The consumers are the water passes / the in-scene water quad, whose reads
                         // the graph cannot see — never cull, and publish the result.
                         builder.AllowPassCulling(false);
+                        if (clearReflection.IsValid()) builder.SetGlobalTextureAfterPass(clearReflection, ReflectionShaderIds.ReflectTex);
+                        foamTex = nextTex;
                         builder.SetGlobalTextureAfterPass(nextTex, FoamShaderIds.BufferTex);
                         builder.SetRenderFunc((FoamPassData data, RasterGraphContext ctx) =>
                         {
@@ -846,6 +897,15 @@ namespace HiddenHarbours.Art
                         passData.Renderers = renderGraph.CreateRendererList(
                             new RendererListParams(renderingData.cullResults, drawing, filtering));
 
+                        passData.ClearReflection = clearReflection;
+                        if (clearReflection.IsValid())
+                        {
+                            builder.UseTexture(clearReflection, AccessFlags.Read);
+                            builder.AllowGlobalStateModification(true);
+                            builder.SetGlobalTextureAfterPass(clearReflection, ReflectionShaderIds.ReflectTex);
+                        }
+                        if (reflectTex.IsValid()) builder.UseTexture(reflectTex, AccessFlags.Read);
+                        if (foamTex.IsValid()) builder.UseTexture(foamTex, AccessFlags.Read);
                         builder.UseRendererList(passData.Renderers);
                         // The water fragment SAMPLES the guard. Declaring the read makes
                         // guard-before-water a real dependency edge in the graph rather than an
@@ -860,6 +920,8 @@ namespace HiddenHarbours.Art
                         builder.SetGlobalTextureAfterPass(waterTex, IsoFacetShaderIds.WaterScreenTex);
                         builder.SetRenderFunc((WaterPassData data, RasterGraphContext ctx) =>
                         {
+                            if (data.ClearReflection.IsValid())
+                                ctx.cmd.SetGlobalTexture(ReflectionShaderIds.ReflectTex, data.ClearReflection);
                             ctx.cmd.DrawRendererList(data.Renderers);
                         });
                     }
@@ -936,6 +998,7 @@ namespace HiddenHarbours.Art
                     passData.Depth = depthVal;
                     passData.TexSize = new Vector4(w, h, 0, 0);
                     passData.KeylineFlood = KeylineFlood;
+                    passData.FigureInk = IsoFacetFigureInk.Value;
 
                     builder.UseTexture(facet, AccessFlags.Read);
                     builder.UseTexture(dark, AccessFlags.Read);
@@ -945,6 +1008,7 @@ namespace HiddenHarbours.Art
                     // The consumers are ordinary scene renderers (the overlay quads) whose reads
                     // the graph cannot see — never cull this pass, and publish the result.
                     builder.AllowPassCulling(false);
+                    if (clearReflection.IsValid()) builder.SetGlobalTextureAfterPass(clearReflection, ReflectionShaderIds.ReflectTex);
                     builder.SetGlobalTextureAfterPass(resolved, IsoFacetShaderIds.HullScreenTex);
                     builder.SetRenderFunc((ResolvePassData data, RasterGraphContext ctx) =>
                     {
@@ -953,7 +1017,78 @@ namespace HiddenHarbours.Art
                         data.Material.SetTexture(IsoFacetShaderIds.KeyTex, (RTHandle)data.Key);
                         data.Material.SetTexture(IsoFacetShaderIds.DepthTex, (RTHandle)data.Depth);
                         IsoFacetKeylineGate.Apply(data.Material, data.KeylineFlood);
+                        IsoFacetFigureInk.Apply(data.Material, data.FigureInk);
                         Blitter.BlitTexture(ctx.cmd, new Vector4(1f, 1f, 0f, 0f), data.Material, 0);
+                    });
+                }
+            }
+
+            sealed class MeshPassData
+            {
+                public HullMeshReflection.Snapshot Snapshot;
+            }
+
+            void RecordMeshReflection(RenderGraph graph, HullMeshReflection.Snapshot snapshot,
+                                      TextureHandle output, int outputWidth, int outputHeight)
+            {
+                int w = snapshot.Width, h = snapshot.Height;
+                var facet = MakeColorTarget(graph, w, h, "_HHMeshReflectFacet");
+                var dark = MakeColorTarget(graph, w, h, "_HHMeshReflectDark");
+                var key = MakeColorTarget(graph, w, h, "_HHMeshReflectKey");
+                var trueDepth = graph.CreateTexture(new TextureDesc(w, h) {
+                    name = "_HHMeshReflectDepth", format = GraphicsFormat.R32_SFloat,
+                    clearBuffer = true, filterMode = FilterMode.Point, msaaSamples = MSAASamples.None });
+                var depth = graph.CreateTexture(new TextureDesc(w, h) {
+                    name = "_HHMeshReflectZ", format = GraphicsFormat.None, depthBufferBits = DepthBits.Depth32,
+                    clearBuffer = true, msaaSamples = MSAASamples.None });
+                using (var builder = graph.AddRasterRenderPass<MeshPassData>("HH Hull Mesh Reflections",
+                           out var data, profilingSampler))
+                {
+                    data.Snapshot = snapshot;
+                    builder.SetRenderAttachment(facet, 0);
+                    builder.SetRenderAttachment(dark, 1);
+                    builder.SetRenderAttachment(key, 2);
+                    builder.SetRenderAttachment(trueDepth, 3);
+                    builder.SetRenderAttachmentDepth(depth, AccessFlags.Write);
+                    builder.SetRenderFunc((MeshPassData d, RasterGraphContext ctx) =>
+                    {
+                        for (int i = 0; i < d.Snapshot.Count; i++)
+                        {
+                            var p = d.Snapshot.Packets[i];
+                            ctx.cmd.DrawMesh(p.Mesh, p.ObjectToWorld, p.Material, p.Submesh, p.Pass, p.Properties);
+                        }
+                    });
+                }
+                if (snapshot.ResolveMaterial == null)
+                    snapshot.ResolveMaterial = CoreUtils.CreateEngineMaterial(ResolveMaterial.shader);
+                using (var builder = graph.AddRasterRenderPass<ResolvePassData>("HH Hull Mesh Reflection Resolve",
+                           out var data, profilingSampler))
+                {
+                    data.Material = snapshot.ResolveMaterial;
+                    data.MeshSnapshot = snapshot;
+                    data.Facet = facet; data.Dark = dark; data.Key = key; data.Depth = trueDepth;
+                    data.TexSize = new Vector4(outputWidth, outputHeight, 0, 0);
+                    data.KeylineFlood = KeylineFlood;
+                    data.FigureInk = IsoFacetFigureInk.Value;
+                    builder.UseTexture(facet, AccessFlags.Read);
+                    builder.UseTexture(dark, AccessFlags.Read);
+                    builder.UseTexture(key, AccessFlags.Read);
+                    builder.UseTexture(trueDepth, AccessFlags.Read);
+                    builder.SetRenderAttachment(output, 0, AccessFlags.ReadWrite);
+                    builder.AllowPassCulling(false);
+                    builder.SetGlobalTextureAfterPass(output, ReflectionShaderIds.ReflectTex);
+                    builder.SetRenderFunc((ResolvePassData d, RasterGraphContext ctx) =>
+                    {
+                        d.Material.SetTexture(IsoFacetShaderIds.FacetTex, (RTHandle)d.Facet);
+                        d.Material.SetTexture(IsoFacetShaderIds.DarkTex, (RTHandle)d.Dark);
+                        d.Material.SetTexture(IsoFacetShaderIds.KeyTex, (RTHandle)d.Key);
+                        d.Material.SetTexture(IsoFacetShaderIds.DepthTex, (RTHandle)d.Depth);
+                        d.Material.SetVector(HullMeshReflection.SizeId, d.TexSize);
+                        d.Material.SetFloatArray(HullMeshReflection.LitId, d.MeshSnapshot.Lit);
+                        IsoFacetKeylineGate.Apply(d.Material, d.KeylineFlood);
+                        IsoFacetFigureInk.Apply(d.Material, d.FigureInk);
+                        Blitter.BlitTexture(ctx.cmd, new Vector4(1, 1, 0, 0), d.Material, 1);
+                        d.MeshSnapshot.InUse = false;
                     });
                 }
             }
@@ -978,8 +1113,7 @@ namespace HiddenHarbours.Art
                     sRGB = true,
                     msaaSamples = 1,
                 };
-                RenderingUtils.ReAllocateHandleIfNeeded(ref handle, desc,
-                    FilterMode.Point, TextureWrapMode.Clamp, name: "_HHHullScreenTex");
+                _allocateTarget(ref handle, desc, "_HHHullScreenTex");
                 _resolveTargets[cameraId] = handle;
                 return handle;
             }
@@ -994,8 +1128,7 @@ namespace HiddenHarbours.Art
                     sRGB = false,
                     msaaSamples = 1,
                 };
-                RenderingUtils.ReAllocateHandleIfNeeded(ref handle, desc,
-                    FilterMode.Point, TextureWrapMode.Clamp, name: "_HHWaterScreenTex");
+                _allocateTarget(ref handle, desc, "_HHWaterScreenTex");
                 _waterTargets[cameraId] = handle;
                 return handle;
             }
@@ -1003,6 +1136,12 @@ namespace HiddenHarbours.Art
             private RTHandle GetReflectTarget(EntityId cameraId, int w, int h)
             {
                 _reflectTargets.TryGetValue(cameraId, out RTHandle handle);
+                if (_meshCameras.TryGetValue(cameraId, out var state))
+                {
+                    state.ReleaseRetired();
+                    if (handle != null && (handle.rt.width != w || handle.rt.height != h)
+                        && state.RetainPending(handle)) handle = null;
+                }
                 // ARGBHalf: a night-lit reflector writes PRE-COMPENSATED colour (divided by the
                 // day/night tint) far above 1, exactly as the moon glitter does, and an 8-bit target
                 // would clamp it — the lit wheelhouse would go out on the way to the water shader.
@@ -1013,8 +1152,7 @@ namespace HiddenHarbours.Art
                     sRGB = false,
                     msaaSamples = 1,
                 };
-                RenderingUtils.ReAllocateHandleIfNeeded(ref handle, descriptor,
-                    FilterMode.Point, TextureWrapMode.Clamp, name: "_HHReflectTex");
+                _allocateTarget(ref handle, descriptor, "_HHReflectTex");
                 _reflectTargets[cameraId] = handle;
                 return handle;
             }
@@ -1095,6 +1233,12 @@ namespace HiddenHarbours.Art
 
             public void Dispose()
             {
+                foreach (var state in _meshCameras.Values) state.Dispose();
+                _meshCameras.Clear();
+                _clearReflectHandle?.Release();
+                _clearReflectHandle = null;
+                HullMeshReflection.SetMode(false);
+                ReflectionRegistry.BindIdle();
                 foreach (var kv in _resolveTargets)
                     kv.Value?.Release();
                 _resolveTargets.Clear();

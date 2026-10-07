@@ -61,8 +61,13 @@ namespace HiddenHarbours.Tools.RigBaking
                 // No prerequisites: the bed pieces would COMPOSE with globalThis.Flowers/Shrubs if those
                 // were loaded, but no piece this repo bakes is a bed and YardKit.BakedCompose passes
                 // compose:false explicitly, so the sheets are independent of what else shares the host.
-                ["yardIso"] = new RigEntry($"{RigFolder}/yard-landscaping-kit/yardIsoRig.js", "YardIso",
-                                           AzimuthConvention.CounterClockwise),
+                //
+                // ⭐ THE VILLAGE RETURN (drop 14, #898): the returned rig, with the companion as its one
+                // prerequisite. It renders every piece on CoastalPass.light — the houses' light, no
+                // dither, no keyline — whenever the pass is loaded and the piece is not {classic:true}.
+                ["yardIso"] = new RigEntry($"{VillageReturnFolder}/yard-landscaping-kit/yardIsoRig.js", "YardIso",
+                                           AzimuthConvention.CounterClockwise,
+                                           new[] { "coastalPass" }),
             };
     }
 }

@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c7fa69da25f097ee68bd1ab3825272, type: 3}
+  m_Name: yard.st_peters.sage_cottage
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.YardDef
+  Id: "yard.st_peters.sage_cottage"
+  LotId: "lot.st_peters.sage_cottage"
+  Fence: 1
+  Mown: 2
+  Outline:
+  - {x: -25.5, y: 35.38}
+  - {x: -17.4, y: 35.38}
+  - {x: -17.4, y: 45.5}
+  - {x: -25.5, y: 45.5}
+  Gate: {x: -21.5, y: 35.38}
+  Dressing:
+  - PieceId: "prop.stp_vl_sage_cottage_buoy_post"
+    Kind: "buoyPost"
+    Position: {x: -20.1, y: 35.88}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"a buoy post by the gate\"}"
+  - PieceId: "prop.stp_vl_sage_cottage_oilskin_line"
+    Kind: "oilskinLine"
+    Position: {x: -18.9, y: 37.18}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"WharfDecor\",\"cell\":4,\"why\":\"the gear line of oilskins\"}"
+  - PieceId: "prop.stp_vl_sage_cottage_dory_planter"
+    Kind: "doryPlanter"
+    Position: {x: -24.3, y: 36.38}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"a dory planter, flowers in an old dory\"}"
+  - PieceId: "prop.stp_vl_sage_cottage_sawhorses"
+    Kind: "sawhorses"
+    Position: {x: -24.3, y: 37.48}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"sawhorses and a plank\"}"
+  FenceSummary:
+    Panels: 18
+    Posts: 6
+    Gates: 1
+    Offcuts: 0
+    OffcutMetres: 0.0
+    Metres: 34.64

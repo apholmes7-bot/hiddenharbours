@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_071
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_071
+  Status: 4
+  SplitFrom: 
+  Follows: wall.stp_255
+  Rock: sandstone
+  Class: 4
+  Aspect: SW
+  Batter: steep
+  Brow:
+  - {x: -39.833725, y: -28.197111}
+  - {x: -39.983772, y: -27.997387}
+  - {x: -40.132973, y: -27.797083}
+  - {x: -40.281387, y: -27.596142}
+  - {x: -40.428963, y: -27.394594}
+  - {x: -40.5757, y: -27.192438}
+  Toe:
+  - {x: -41.94919, y: -29.79314}
+  - {x: -42.185787, y: -29.6447}
+  - {x: -42.234158, y: -29.355602}
+  - {x: -42.392555, y: -29.148655}
+  - {x: -42.550144, y: -28.94101}
+  - {x: -42.706917, y: -28.732656}
+  DropMetres:
+  - 9.797999
+  - 9.927581
+  - 10
+  - 10
+  - 10
+  - 10
+  ToeElevations:
+  - -3.7979991
+  - -3.9275808
+  - -4
+  - -4
+  - -4
+  - -4
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 1
+  - 1
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9:
+  - 5.9206805
+  - 5.8735933
+  - 5.949002
+  - 5.9489446
+  - 5.877521
+  - 5.927295
+  ToePass9:
+  - -3.953343
+  - -3.9679239
+  - -3.970924
+  - -3.9179401
+  - -3.8649042
+  - -3.9265735
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 71
+  MeasuredOn: 'the ground file''s import, StPetersSeabed_HeightTex.png at 883f27b5 (codes sha256 5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261)'
+  FaceNeeded: 
+  Why: 'Toe-lifted on the import: stations k0-k9. The list''s row 071 (South-West Bluff): kept, toe lifted. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k0-k5.'

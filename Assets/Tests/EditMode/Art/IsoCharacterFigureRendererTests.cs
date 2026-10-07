@@ -424,6 +424,25 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void TheAshoreOverlayCoversTheDefsMeasuredReach()
+        {
+            UseFreshIdPool();
+            CharacterSkinDef def = MakeDef();
+            // Room on the left, 0.2 px past the top, exactly at the right edge, and 1.69 px past the
+            // bottom (rig 10's deck boss asleep): the overlay pads 1, 2, 1 and 3 px.
+            def.ReachPx = new Vector4(-3f, 0.2f, 0f, 1.69f);
+            IsoCharacterFigureRenderer figure = MakeFigure(def);
+            Assert.IsTrue(figure.EnterAshore(MakeSortSource(0)));
+
+            float ppu = def.PxPerMetre;
+            Bounds b = figure.AshoreOverlay.GetComponent<MeshFilter>().sharedMesh.bounds;
+            Assert.AreEqual(-def.PivotPx.x / ppu - 1f / ppu, b.min.x, 1e-5f, "left: room to spare keeps the one pixel");
+            Assert.AreEqual(def.PivotPx.y / ppu + 2f / ppu, b.max.y, 1e-5f, "top: 0.2 px past takes a whole pixel more");
+            Assert.AreEqual((def.CellW - def.PivotPx.x) / ppu + 1f / ppu, b.max.x, 1e-5f, "right: at the edge keeps the one pixel");
+            Assert.AreEqual(-(def.CellH - def.PivotPx.y) / ppu - 3f / ppu, b.min.y, 1e-5f, "bottom: 1.69 px past takes two more");
+        }
+
+        [Test]
         public void TheAshoreOverlayCopiesTheSpritesSort_OnEveryWrite()
         {
             UseFreshIdPool();

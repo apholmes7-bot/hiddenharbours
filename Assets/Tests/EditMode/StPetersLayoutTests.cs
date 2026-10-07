@@ -706,24 +706,29 @@ namespace HiddenHarbours.Tests.EditMode
             Debug.Log($"[st-peters] committed seabed: {tex.width} × {tex.height} texels over " +
                       $"{map.WorldSize.x} × {map.WorldSize.y} m = {texelX:F2} m/texel, elevation " +
                       $"{map.MinElevation}..{map.MaxElevation} m, readable={tex.isReadable}, " +
-                      $"{tex.width * tex.height / 1024} KiB R8.");
+                      $"{tex.width * tex.height * (tex.format == TextureFormat.R16 ? 2 : 1) / 1024} KiB {tex.format}.");
         }
 
         /// <summary>
-        /// …and it must be a bake of THIS coast, not merely a correctly-sized one. Decoded elevations are
-        /// compared against the analytic terrain at points chosen to sit in FLAT interiors — island,
-        /// bar crest, channel bed, open floor — where bilinear sampling is exact and only the R8
-        /// quantisation contributes error.
+        /// …and it must be THIS coast, not merely a correctly-sized map. Since terrain PR 5 B the committed
+        /// seabed is St Peters' ground file imported (<c>ground.stp_island</c>: pass 9's base, the package's
+        /// asks and the game's own; <see cref="StPetersGroundFileImportTests"/> pins every code), no longer a
+        /// bake of the analytic terrain. The sim's decode of it (<see cref="PaintedHeightMap.Field"/>) is
+        /// compared with that import at the points the bake was checked at — island, bar crest, channel bed,
+        /// open floor, the mooring — to one R16 step. Where the analytic ground parts from it is reported, not
+        /// judged: the sim sails the analytic ground until it switches to the painted one (T11).
         /// </summary>
         [Test]
-        public void TheCommittedSeabed_DecodesToTheAnalyticCoastItWasBakedFrom()
+        public void TheCommittedSeabed_DecodesToTheGroundFilesImport()
         {
             var map = SeabedOrIgnore();
             PaintedHeightField field = map.Field;
             Assert.IsNotNull(field, "the height texture must decode (readable + linear)");
+            var import = StPetersTerrainPlan.Import(StPetersTerrainPlan.LoadPlan());
+            Assert.IsNotNull(import, "St Peters' terrain plan names no ground file");
 
-            // One R8 step over the encoded range, plus a hair for the round-trip.
-            float tolerance = (map.MaxElevation - map.MinElevation) / 255f + 0.02f;
+            // One R16 step over the encoded range, plus a hair for the float decode.
+            double tolerance = (map.MaxElevation - (double)map.MinElevation) / 65535.0 + 1e-4;
 
             var probes = new (string what, Vector2 p)[]
             {
@@ -737,21 +742,22 @@ namespace HiddenHarbours.Tests.EditMode
             };
 
             var report = new System.Text.StringBuilder(
-                "[st-peters] committed seabed vs the analytic coast it was baked from:\n");
+                "[st-peters] committed seabed vs its ground file's import (and the analytic coast, reported):\n");
             foreach (var (what, p) in probes)
             {
-                float analytic = _terrain.ElevationAtZones(p);
+                double ground = import.Bilinear(import.E, p.x, p.y);
                 float painted = field.ElevationAt(p);
-                report.AppendLine($"  {what,-16} {p}  analytic {analytic,6:F2} m  painted {painted,6:F2} m " +
-                                  $" Δ {Mathf.Abs(painted - analytic):F3} m");
-                Assert.AreEqual(analytic, painted, tolerance,
-                    $"{what}: the committed seabed disagrees with the analytic terrain by more than one " +
-                    "quantisation step — the bake is of a different coast, so what the shader draws is " +
-                    "not what the tide bares (paint = sail, ADR 0014).");
+                float analytic = _terrain.ElevationAtZones(p);
+                report.AppendLine($"  {what,-16} {p}  import {ground,8:F4} m  painted {painted,8:F4} m " +
+                                  $" Δ {System.Math.Abs(painted - ground):F5} m;  analytic {analytic,6:F2} m");
+                Assert.AreEqual(ground, painted, tolerance,
+                    $"{what}: the committed seabed disagrees with its ground file's import by more than one " +
+                    "R16 step — the map is not this ground, so what the shader draws is not the island the " +
+                    "file describes (write the maps again: Hidden Harbours ▸ World ▸ Terrain Plan…).");
             }
 
-            Debug.Log(report + $"  tolerance {tolerance:F3} m (one R8 step over " +
-                      $"{map.MaxElevation - map.MinElevation} m + round-trip).");
+            Debug.Log(report + $"  tolerance {tolerance:F5} m (one R16 step over " +
+                      $"{map.MaxElevation - map.MinElevation} m + the float decode).");
         }
     }
 }

@@ -1,0 +1,772 @@
+fileFormatVersion: 2
+guid: 9f4452fe39ff56e449a988eae917ed2f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7084877275675463232
+    second: Cloven_sandstone_0
+  - first:
+      213: -769912942386436865
+    second: Cloven_sandstone_1
+  - first:
+      213: 6466091740863251286
+    second: Cloven_sandstone_2
+  - first:
+      213: 7109780410655715420
+    second: Cloven_sandstone_3
+  - first:
+      213: -3245929194694271201
+    second: Cloven_sandstone_4
+  - first:
+      213: 3358081959613970809
+    second: Cloven_sandstone_5
+  - first:
+      213: 8893848697603371762
+    second: Cloven_sandstone_6
+  - first:
+      213: 2375699498935578586
+    second: Cloven_sandstone_7
+  - first:
+      213: -253357848314180519
+    second: Cloven_sandstone_8
+  - first:
+      213: -4618967412528936057
+    second: Cloven_sandstone_9
+  - first:
+      213: 384266052891118609
+    second: Cloven_sandstone_10
+  - first:
+      213: 2522344132408029734
+    second: Cloven_sandstone_11
+  - first:
+      213: -1729388797827401682
+    second: Cloven_sandstone_12
+  - first:
+      213: -1261273354008529523
+    second: Cloven_sandstone_13
+  - first:
+      213: 1561966132129712040
+    second: Cloven_sandstone_14
+  - first:
+      213: 296766101296581036
+    second: Cloven_sandstone_15
+  - first:
+      213: -7102152288884142209
+    second: Cloven_sandstone_16
+  - first:
+      213: -7423509122210233540
+    second: Cloven_sandstone_17
+  - first:
+      213: 5360848664414778053
+    second: Cloven_sandstone_18
+  - first:
+      213: 1099201090982332914
+    second: Cloven_sandstone_19
+  - first:
+      213: 5466051542554038980
+    second: Cloven_sandstone_20
+  - first:
+      213: 3541939505582201902
+    second: Cloven_sandstone_21
+  - first:
+      213: -5602498431225744289
+    second: Cloven_sandstone_22
+  - first:
+      213: 6224829486803825644
+    second: Cloven_sandstone_23
+  - first:
+      213: 1186540710043454414
+    second: Cloven_sandstone_24
+  - first:
+      213: 1580177130224950885
+    second: Cloven_sandstone_25
+  - first:
+      213: 2538138090175963047
+    second: Cloven_sandstone_26
+  - first:
+      213: -2017539843537522580
+    second: Cloven_sandstone_27
+  - first:
+      213: 4856411591176876761
+    second: Cloven_sandstone_28
+  - first:
+      213: 7043653669449922991
+    second: Cloven_sandstone_29
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cloven_sandstone_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a45176398d4baa4fa847301cdb0034c
+      internalID: 1873786968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a9873a9ed449d5d4d9d11ed0d53c0923
+      internalID: 1430007275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c86c2f21dc875048a0604d81782e438
+      internalID: -1652958592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a160c2a58cb3d6941809bb48fb06f8d5
+      internalID: 1882946312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 761b284c52db45f44b5e1a346d5d1f3b
+      internalID: 2112158428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1de636cb4e1bfbf4da19ae8f34517bf3
+      internalID: -159832149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89e6e77d8020dc64e939c7cfc318c1a3
+      internalID: -1850835030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1163fa2dab88f941b0dbb8591fee67a
+      internalID: 885409970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2bfbc04703dde7d4bb00c5d7a3eb57ac
+      internalID: -1556570609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e14a31c605e4af4d98bb22a5b51fdf9
+      internalID: 411529128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5020ab9586903f44a9622a3f5bb0a6ec
+      internalID: 1271656054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b6e27292643c9e4babfbbf714a4b5a6
+      internalID: -1789627380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd302584b220da84fb1ffac0575a113c
+      internalID: -1878028959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f9bb1fb3f8c0f942b934f962a7279bc
+      internalID: 1278945578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 358a3dfd2d9819342ad1ea8917ed9a52
+      internalID: 132380374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c906881d649cfa34ca1af5fdb3eec13b
+      internalID: 916780429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ced738e5904c7749b721be92373245a
+      internalID: 125468785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e99cae42a186fa64a97a0b6aa5839403
+      internalID: -925135068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b69240c1a7861bd40b188e6a8557e839
+      internalID: -1027916555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6f52f7404da4bf4486dd658d10b7ef6
+      internalID: -156925893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ead5c343986061b40bc29e5778cbc19a
+      internalID: -1904775296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f81f78ed0967fde4498dbf90c96de39d
+      internalID: 2146393307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2d531d19d190904cb814a1947f7e847
+      internalID: -1155396990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_sandstone_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a56a5b292dd9f54c979422b2c0754f9
+      internalID: 1349042150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: bf306954cb0826f42a258d9501fed2e8
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cloven_sandstone_c0_r0: 1873786968
+      Cloven_sandstone_c0_r1: -1556570609
+      Cloven_sandstone_c0_r2: 125468785
+      Cloven_sandstone_c1_r0: 1430007275
+      Cloven_sandstone_c1_r1: 411529128
+      Cloven_sandstone_c1_r2: -925135068
+      Cloven_sandstone_c2_r0: -1652958592
+      Cloven_sandstone_c2_r1: 1271656054
+      Cloven_sandstone_c2_r2: -1027916555
+      Cloven_sandstone_c3_r0: 1882946312
+      Cloven_sandstone_c3_r1: -1789627380
+      Cloven_sandstone_c3_r2: -156925893
+      Cloven_sandstone_c4_r0: 2112158428
+      Cloven_sandstone_c4_r1: -1878028959
+      Cloven_sandstone_c4_r2: -1904775296
+      Cloven_sandstone_c5_r0: -159832149
+      Cloven_sandstone_c5_r1: 1278945578
+      Cloven_sandstone_c5_r2: 2146393307
+      Cloven_sandstone_c6_r0: -1850835030
+      Cloven_sandstone_c6_r1: 132380374
+      Cloven_sandstone_c6_r2: -1155396990
+      Cloven_sandstone_c7_r0: 885409970
+      Cloven_sandstone_c7_r1: 916780429
+      Cloven_sandstone_c7_r2: 1349042150
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

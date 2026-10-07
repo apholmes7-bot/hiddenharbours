@@ -16,6 +16,7 @@ Material:
   - _USE_DEPTHRAMP
   - _USE_FOAMTEX
   - _USE_HEIGHTTEX
+  - _USE_SEABEDTEX
   - _USE_SPARKLETEX
   - _USE_SURFACETEX
   - _USE_WHITECAPTEX
@@ -60,11 +61,15 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AbsorptionBands: 6
     - _CapAgeStrength: 1
     - _MirrorForm: 1
     - _MirrorSheen: 0.3125
     - _MirrorTiltScale: 6
     - _BeamLitStrength: 1.6
+    - _CausticCurvatureBlend: 0.5
+    - _CausticCurvatureStep: 0.5
+    - _CausticCurvatureGain: 12
     - _CausticDayGate: 1
     - _CausticAmount: 0.45
     - _CausticDepth: 1.4
@@ -109,6 +114,7 @@ Material:
     - _SurfCrestWidth: 3
     - _SurfDepositStrength: 1
     - _SurfEvolveSpeed: 0.5
+    - _SurfFringeSequenceStrength: 0
     - _SurfFrontSlope: 1
     - _SurfLipThrow: 1.1
     - _SurfLipWidth: 1.2
@@ -135,6 +141,7 @@ Material:
     - _UseDepthRamp: 1
     - _UseFoamTex: 1
     - _UseHeightTex: 1
+    - _UseSeabedTex: 1
     - _UseSparkleTex: 1
     - _UseSurfaceTex: 1
     - _UseWhitecapTex: 1
@@ -204,6 +211,7 @@ Material:
     - _RainRingSpeed: 1.5
     - _RainRingStrength: 0.6
     m_Colors:
+    - _AbsorptionRatio: {r: 1, g: 0.18, b: 0.08, a: 0}
     - _CausticColor: {r: 0.5, g: 0.85, b: 0.95, a: 1}
     - _DeepColor: {r: 0.02, g: 0.08, b: 0.26, a: 1}
     - _FlowDir: {r: 1, g: 0, b: 0, a: 0}

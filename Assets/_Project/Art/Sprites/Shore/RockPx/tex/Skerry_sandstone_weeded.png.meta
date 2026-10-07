@@ -1,0 +1,763 @@
+fileFormatVersion: 2
+guid: 426489df48f2b1649bda5ee53aa79b0d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4384786822365680734
+    second: Skerry_sandstone_weeded_0
+  - first:
+      213: 8106151472547246461
+    second: Skerry_sandstone_weeded_1
+  - first:
+      213: 5165434308411527847
+    second: Skerry_sandstone_weeded_2
+  - first:
+      213: -676157333338322676
+    second: Skerry_sandstone_weeded_3
+  - first:
+      213: 2391634387492963887
+    second: Skerry_sandstone_weeded_4
+  - first:
+      213: -8050277002099272587
+    second: Skerry_sandstone_weeded_5
+  - first:
+      213: 51939116406751286
+    second: Skerry_sandstone_weeded_6
+  - first:
+      213: 5644296415193362180
+    second: Skerry_sandstone_weeded_7
+  - first:
+      213: 7376309873168343608
+    second: Skerry_sandstone_weeded_8
+  - first:
+      213: -7882636241035046924
+    second: Skerry_sandstone_weeded_9
+  - first:
+      213: 7593157086573626811
+    second: Skerry_sandstone_weeded_10
+  - first:
+      213: -2642167298890989242
+    second: Skerry_sandstone_weeded_11
+  - first:
+      213: -5291983465001763180
+    second: Skerry_sandstone_weeded_12
+  - first:
+      213: 3547129193818857801
+    second: Skerry_sandstone_weeded_13
+  - first:
+      213: -8948183047306279405
+    second: Skerry_sandstone_weeded_14
+  - first:
+      213: 3539739507883633315
+    second: Skerry_sandstone_weeded_15
+  - first:
+      213: 1305362721883605894
+    second: Skerry_sandstone_weeded_16
+  - first:
+      213: 1611087748338853179
+    second: Skerry_sandstone_weeded_17
+  - first:
+      213: -7182308544736281343
+    second: Skerry_sandstone_weeded_18
+  - first:
+      213: 1903255371136360401
+    second: Skerry_sandstone_weeded_19
+  - first:
+      213: 7680808759097019274
+    second: Skerry_sandstone_weeded_20
+  - first:
+      213: 7874130405948101535
+    second: Skerry_sandstone_weeded_21
+  - first:
+      213: 1843190946931555790
+    second: Skerry_sandstone_weeded_22
+  - first:
+      213: 8257816306206710215
+    second: Skerry_sandstone_weeded_23
+  - first:
+      213: 1834090575671532727
+    second: Skerry_sandstone_weeded_24
+  - first:
+      213: 2062613753414598715
+    second: Skerry_sandstone_weeded_25
+  - first:
+      213: -4956343321256478480
+    second: Skerry_sandstone_weeded_26
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 38aac969828bade4b99f4ce25159ee2b
+      internalID: 152616685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9818fb3e0b36680498bc8640131aac31
+      internalID: 872787289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2173913}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fdeae422d436614b9176a9615700843
+      internalID: -1568159875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd63780aca209ce49b61dce31951d8c6
+      internalID: -923362060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e494a34360c374942a7013b0fab55420
+      internalID: 1000610757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9713efcf67606dd43aaabfbb4497381e
+      internalID: -198411840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2173913}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74f641ebf0d7b8f42afb80ce1af4aa8a
+      internalID: -964027697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 714
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5ab1dc965a82154094e66b2810fefd6
+      internalID: -1078292212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f8bcdac3c8b5b04e96c0f26223ee00a
+      internalID: -1884351441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c01a9aaba0f847541a9d505825d34dbf
+      internalID: 1832145889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2173913}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27a32ef7bcc9ccc4cbad8fec8c3a12d4
+      internalID: 1799948085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4041da432ca053a488ba77e9cbaebffd
+      internalID: 2068689346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3992fd9c64688b42b62a74828a79482
+      internalID: 2046516902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b65b4d68bcb21b740b084b287dae7a64
+      internalID: -1908014653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2173913}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c63737a65579b14a8615ece692be599
+      internalID: 1922603079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 714
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af32ddb8a0d1ae64c802c4699774bc67
+      internalID: -339044419
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6d955e6e2d95ce47b158712f8961695
+      internalID: -921695277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4aad63931a207294ebe742eed0c8f59a
+      internalID: -691874418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2173913}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba827a9b1cdd8454981d4cda91b3986d
+      internalID: 1511676298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5388467e9f12a844ea31d47df5348879
+      internalID: 942104209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed7040fcf348e7948b9490d49d8231ed
+      internalID: -1350367456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eebb6a4af74ec114594ae77c403e056a
+      internalID: -438952380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2173913}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9485c82cfec222b4dbb626e45e2289b2
+      internalID: 1065371014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_sandstone_weeded_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 714
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f665534c3642f94cbe0f86d2fd331e7
+      internalID: -65493981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a3bb10ec6b3d26440ae8db06a9031fc3
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Skerry_sandstone_weeded_c0_r0: 152616685
+      Skerry_sandstone_weeded_c0_r1: -1884351441
+      Skerry_sandstone_weeded_c0_r2: -921695277
+      Skerry_sandstone_weeded_c1_r0: 872787289
+      Skerry_sandstone_weeded_c1_r1: 1832145889
+      Skerry_sandstone_weeded_c1_r2: -691874418
+      Skerry_sandstone_weeded_c2_r0: -1568159875
+      Skerry_sandstone_weeded_c2_r1: 1799948085
+      Skerry_sandstone_weeded_c2_r2: 1511676298
+      Skerry_sandstone_weeded_c3_r0: -923362060
+      Skerry_sandstone_weeded_c3_r1: 2068689346
+      Skerry_sandstone_weeded_c3_r2: 942104209
+      Skerry_sandstone_weeded_c4_r0: 1000610757
+      Skerry_sandstone_weeded_c4_r1: 2046516902
+      Skerry_sandstone_weeded_c4_r2: -1350367456
+      Skerry_sandstone_weeded_c5_r0: -198411840
+      Skerry_sandstone_weeded_c5_r1: -1908014653
+      Skerry_sandstone_weeded_c5_r2: -438952380
+      Skerry_sandstone_weeded_c6_r0: -964027697
+      Skerry_sandstone_weeded_c6_r1: 1922603079
+      Skerry_sandstone_weeded_c6_r2: 1065371014
+      Skerry_sandstone_weeded_c7_r0: -1078292212
+      Skerry_sandstone_weeded_c7_r1: -339044419
+      Skerry_sandstone_weeded_c7_r2: -65493981
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

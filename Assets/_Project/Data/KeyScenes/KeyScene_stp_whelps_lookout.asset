@@ -1,0 +1,899 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_stp_whelps_lookout
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.stp_whelps_lookout
+  DisplayName: "The Whelps from the South Arm\u2019s brow"
+  RegionId: region.st_peters
+  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_whelps_lookout/scene.json,
+    51709 bytes, sha256 6da6a6029654821458c47d2702c855b6c013b16148a14e9671d9a8b5097225f4
+  Placed: 0
+  Pieces:
+  - Id: prop.stp_whelps_lookout_bench
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: bench
+    State: 
+    At: {x: 166.9, y: -39.3}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: "the kit\u2019s bench (wharfDecorRig\u2019s footprint)"
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_xp_gull_stack_a
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 191.4, y: -37.4}
+    Z: 6.25
+    StandsOn: mount
+    MountHost: form.stp_harbour_stack
+    MountAnchor: top
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 1
+    SortY: -37.5
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+  - Id: prop.stp_xp_gull_stack_b
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 192.8, y: -38.6}
+    Z: 6.25
+    StandsOn: mount
+    MountHost: form.stp_harbour_stack
+    MountAnchor: top
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 1
+    SortY: -38.7
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 1
+  - Id: prop.stp_xp_gull_stack_c
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 190.7, y: -38.9}
+    Z: 6.2
+    StandsOn: mount
+    MountHost: form.stp_harbour_stack
+    MountAnchor: top
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -39
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
+  - Id: prop.stp_xp_gull_w2_rock
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 192.3, y: -49.6}
+    Z: -1.11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 1
+    SortY: -49.7
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - night
+    - fog
+    - low
+    WhenTide: '{"below":-1.21,"note":"there while its ground stands 0.10 m or more
+      over the water"}'
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 1
+  - Id: wildlife.stp_seal_w1_a
+    Kind: wildlife
+    Owner: 
+    Kit: sealIso
+    Piece: haul
+    State: 
+    At: {x: 184, y: -45.1}
+    Z: -1.11
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - night
+    - fog
+    - low
+    WhenTide: '{"ebbBelow":-1.41,"floodBelow":-1.26,"rule":"SealIso.HAULOUT"}'
+    Words: []
+    Options:
+    - Key: anim
+      Value: haul
+    - Key: frame
+      Value: 0
+    - Key: coat
+      Value: grey
+    - Key: wet
+      Value: 0.3
+    - Key: seed
+      Value: 583
+  - Id: wildlife.stp_seal_w1_b
+    Kind: wildlife
+    Owner: 
+    Kit: sealIso
+    Piece: banana
+    State: 
+    At: {x: 187.9, y: -46.9}
+    Z: -1.25
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - fog
+    - low
+    WhenTide: '{"ebbBelow":-1.55,"floodBelow":-1.4,"rule":"SealIso.HAULOUT"}'
+    Words: []
+    Options:
+    - Key: anim
+      Value: banana
+    - Key: frame
+      Value: 0
+    - Key: coat
+      Value: brown
+    - Key: wet
+      Value: 0.2
+    - Key: seed
+      Value: 595
+  - Id: wildlife.stp_seal_w1_c
+    Kind: wildlife
+    Owner: 
+    Kit: sealIso
+    Piece: alert
+    State: 
+    At: {x: 186.6, y: -47.95}
+    Z: -1.15
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - night
+    - fog
+    - low
+    WhenTide: '{"ebbBelow":-1.45,"floodBelow":-1.3,"rule":"SealIso.HAULOUT"}'
+    Words: []
+    Options:
+    - Key: anim
+      Value: alert
+    - Key: frame
+      Value: 0
+    - Key: coat
+      Value: dark
+    - Key: wet
+      Value: 0.6
+    - Key: seed
+      Value: 591
+  - Id: wildlife.stp_seal_w2_a
+    Kind: wildlife
+    Owner: 
+    Kit: sealIso
+    Piece: haul
+    State: 
+    At: {x: 190.4, y: -50.7}
+    Z: -1.27
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - fog
+    - low
+    WhenTide: '{"ebbBelow":-1.57,"floodBelow":-1.42,"rule":"SealIso.HAULOUT"}'
+    Words: []
+    Options:
+    - Key: anim
+      Value: haul
+    - Key: frame
+      Value: 1
+    - Key: coat
+      Value: grey
+    - Key: wet
+      Value: 0.2
+    - Key: seed
+      Value: 602
+  - Id: wildlife.stp_seal_w2_b
+    Kind: wildlife
+    Owner: 
+    Kit: sealIso
+    Piece: side
+    State: 
+    At: {x: 193.4, y: -51}
+    Z: -1.2
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - night
+    - fog
+    - low
+    WhenTide: '{"ebbBelow":-1.5,"floodBelow":-1.35,"rule":"SealIso.HAULOUT"}'
+    Words: []
+    Options:
+    - Key: anim
+      Value: side
+    - Key: frame
+      Value: 0
+    - Key: coat
+      Value: brown
+    - Key: wet
+      Value: 0.35
+    - Key: seed
+      Value: 611
+  - Id: wildlife.stp_seal_w3_a
+    Kind: wildlife
+    Owner: 
+    Kit: sealIso
+    Piece: banana
+    State: 
+    At: {x: 179.6, y: -51.3}
+    Z: -0.72
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 7
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - dawn
+    - golden
+    - night
+    - fog
+    - low
+    WhenTide: '{"ebbBelow":-1.02,"floodBelow":-0.87,"rule":"SealIso.HAULOUT"}'
+    Words: []
+    Options:
+    - Key: anim
+      Value: banana
+    - Key: frame
+      Value: 1
+    - Key: coat
+      Value: grey
+    - Key: wet
+      Value: 0.4
+    - Key: seed
+      Value: 570
+  - Id: wildlife.stp_seal_w3_b
+    Kind: wildlife
+    Owner: 
+    Kit: sealIso
+    Piece: haul
+    State: 
+    At: {x: 182.3, y: -53}
+    Z: -0.9
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - night
+    - fog
+    - low
+    WhenTide: '{"ebbBelow":-1.2,"floodBelow":-1.05,"rule":"SealIso.HAULOUT"}'
+    Words: []
+    Options:
+    - Key: anim
+      Value: haul
+    - Key: frame
+      Value: 0
+    - Key: coat
+      Value: dark
+    - Key: wet
+      Value: 0.9
+    - Key: seed
+      Value: 578
+  - Id: wildlife.stp_seal_w3_c
+    Kind: wildlife
+    Owner: 
+    Kit: sealIso
+    Piece: haul
+    State: 
+    At: {x: 179.66, y: -53.34}
+    Z: -0.36
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - dawn
+    - golden
+    - night
+    - fog
+    - low
+    - neap
+    WhenTide: '{"ebbBelow":-0.66,"floodBelow":-0.51,"rule":"SealIso.HAULOUT"}'
+    Words: []
+    Options:
+    - Key: anim
+      Value: haul
+    - Key: frame
+      Value: 1
+    - Key: coat
+      Value: brown
+    - Key: wet
+      Value: 0.25
+    - Key: seed
+      Value: 570
+  - Id: wildlife.stp_seal_w3_d
+    Kind: wildlife
+    Owner: 
+    Kit: sealIso
+    Piece: banana
+    State: 
+    At: {x: 180.83, y: -53.89}
+    Z: -0.56
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - dawn
+    - golden
+    - night
+    - fog
+    - low
+    - neap
+    WhenTide: '{"ebbBelow":-0.86,"floodBelow":-0.71,"rule":"SealIso.HAULOUT"}'
+    Words: []
+    Options:
+    - Key: anim
+      Value: banana
+    - Key: frame
+      Value: 0
+    - Key: coat
+      Value: grey
+    - Key: wet
+      Value: 0.5
+    - Key: seed
+      Value: 573
+  - Id: wildlife.stp_seal_in_a
+    Kind: wildlife
+    Owner: 
+    Kit: sealIso
+    Piece: swim
+    State: 
+    At: {x: 178.2, y: -38.6}
+    Z: 0
+    StandsOn: water
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - fog
+    - low
+    WhenTide: '{"below":-1.9,"note":"a spring ebb"}'
+    Words: []
+    Options:
+    - Key: anim
+      Value: swim
+    - Key: frame
+      Value: 1
+    - Key: coat
+      Value: brown
+    - Key: wet
+      Value: 1
+    - Key: seed
+      Value: 566
+  - Id: wildlife.stp_seal_off_a
+    Kind: wildlife
+    Owner: 
+    Kit: sealIso
+    Piece: bottle
+    State: 
+    At: {x: 189.4, y: -54.4}
+    Z: 0
+    StandsOn: water
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - noon
+    - dusk
+    - high
+    - autumn
+    WhenTide: '{"noneOut":true,"ebbAbove":-0.66,"floodAbove":-0.51,"note":"while no
+      haul-out place is bared, by the same rule"}'
+    Words: []
+    Options:
+    - Key: anim
+      Value: bottle
+    - Key: frame
+      Value: 0
+    - Key: coat
+      Value: grey
+    - Key: wet
+      Value: 1
+    - Key: seed
+      Value: 606
+  - Id: wildlife.stp_seal_off_b
+    Kind: wildlife
+    Owner: 
+    Kit: sealIso
+    Piece: swim
+    State: 
+    At: {x: 183.6, y: -49.6}
+    Z: 0
+    StandsOn: water
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - noon
+    - dusk
+    - high
+    - autumn
+    WhenTide: '{"noneOut":true,"ebbAbove":-0.66,"floodAbove":-0.51,"note":"while no
+      haul-out place is bared, by the same rule"}'
+    Words: []
+    Options:
+    - Key: anim
+      Value: swim
+    - Key: frame
+      Value: 2
+    - Key: coat
+      Value: dark
+    - Key: wet
+      Value: 1
+    - Key: seed
+      Value: 589
+  - Id: boat.stp_dory_home
+    Kind: boat
+    Owner: 
+    Kit: dory
+    Piece: dory
+    State: 
+    At: {x: 196.8, y: -47.2}
+    Z: 0
+    StandsOn: water
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - dusk
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: rock.stp_whelp_1
+    Kind: rock
+    Owner: CoastFormField (PR 5b)
+    Kit: pxRockIso3
+    Piece: skerry
+    State: 
+    At: {x: 186, y: -46}
+    Z: -1.19
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: stone
+      Value: sandstone
+    - Key: tide
+      Value: wet
+    - Key: dress
+      Value: 2
+    - Key: seat
+      Value: rockweed
+  - Id: rock.stp_whelp_1_b
+    Kind: rock
+    Owner: CoastFormField (PR 5b)
+    Kit: pxRockIso3
+    Piece: knuckle
+    State: 
+    At: {x: 184.5, y: -46.9}
+    Z: -1.08
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: stone
+      Value: sandstone
+    - Key: tide
+      Value: wet
+    - Key: dress
+      Value: 2
+    - Key: seat
+      Value: rockweed
+  - Id: rock.stp_whelp_1_c
+    Kind: rock
+    Owner: CoastFormField (PR 5b)
+    Kit: pxRockIso3
+    Piece: shelf
+    State: 
+    At: {x: 187.4, y: -45}
+    Z: -1.16
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: stone
+      Value: sandstone
+    - Key: tide
+      Value: wet
+    - Key: dress
+      Value: 2
+    - Key: seat
+      Value: rockweed
+  - Id: rock.stp_whelp_2
+    Kind: rock
+    Owner: CoastFormField (PR 5b)
+    Kit: pxRockIso3
+    Piece: skerry
+    State: 
+    At: {x: 192, y: -50}
+    Z: -1.14
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: stone
+      Value: sandstone
+    - Key: tide
+      Value: wet
+    - Key: dress
+      Value: 2
+    - Key: seat
+      Value: rockweed
+  - Id: rock.stp_whelp_2_b
+    Kind: rock
+    Owner: CoastFormField (PR 5b)
+    Kit: pxRockIso3
+    Piece: knuckle
+    State: 
+    At: {x: 193.2, y: -49.3}
+    Z: -1.22
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: stone
+      Value: sandstone
+    - Key: tide
+      Value: wet
+    - Key: dress
+      Value: 2
+    - Key: seat
+      Value: rockweed
+  - Id: rock.stp_whelp_3
+    Kind: rock
+    Owner: CoastFormField (PR 5b)
+    Kit: pxRockIso3
+    Piece: skerry
+    State: 
+    At: {x: 181, y: -52}
+    Z: -0.83
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 0
+    - Key: stone
+      Value: sandstone
+    - Key: tide
+      Value: wet
+    - Key: dress
+      Value: 2
+    - Key: seat
+      Value: rockweed
+  - Id: rock.stp_whelp_3_b
+    Kind: rock
+    Owner: CoastFormField (PR 5b)
+    Kit: pxRockIso3
+    Piece: slab
+    State: 
+    At: {x: 182, y: -51.1}
+    Z: -0.94
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: stone
+      Value: sandstone
+    - Key: tide
+      Value: wet
+    - Key: dress
+      Value: 2
+    - Key: seat
+      Value: rockweed
+  - Id: rock.stp_east_gap_skerry
+    Kind: rock
+    Owner: CoastFormField (PR 5b)
+    Kit: pxRockIso3
+    Piece: skerry
+    State: 
+    At: {x: 176.35, y: -55.98}
+    Z: 0.24
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 3
+    - Key: stone
+      Value: sandstone
+    - Key: tide
+      Value: wet
+    - Key: dress
+      Value: 2
+    - Key: seat
+      Value: rockweed
+  Lights: []
+  RetiredIds: []

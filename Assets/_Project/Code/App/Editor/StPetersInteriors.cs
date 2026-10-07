@@ -23,13 +23,13 @@ namespace HiddenHarbours.App.Editor
     /// building's own key and does nothing at all if not. Baking a second room and giving it the key of
     /// the building it belongs inside is the whole of "make the school enterable".</para>
     ///
-    /// <para><b>⚠️ The room is NOT shown at the building's facing.</b> The exterior rigs put their door
-    /// on the <c>+Y</c> gable and the room rig puts its doorway on <c>−Y</c> (the wall the cutaway
-    /// drops), so the same cell index shows the two 180° apart. The bake MEASURES the offset that lines
-    /// their door anchors up at all eight facings and writes it into the contract;
-    /// <see cref="InteriorCatalog.InteriorFacingFor"/> is the only thing that applies it. Get this wrong
-    /// and the player walks in the front door and appears at the BACK of the room — and it reads as an
-    /// art bug, not a placement one.</para>
+    /// <para><b>⚠️ The room's facing is MEASURED, not assumed.</b> Until the village return (drop 14)
+    /// the room rig put its doorway on <c>−Y</c> and the exterior rigs their door on <c>+Y</c>, so the
+    /// same cell index showed the two 180° apart and a room stood four facings round from its house. The
+    /// returned room rig draws its doorway on <c>+Y</c> too, and the bake now measures 0. Whatever it
+    /// measures, it writes into the contract, and <see cref="InteriorCatalog.InteriorFacingFor"/> is the
+    /// only thing that applies it. Get this wrong and the player walks in the front door and appears at
+    /// the BACK of the room — and it reads as an art bug, not a placement one.</para>
     ///
     /// <para><b>⚠️ The world XY plane is the SQUASHED ground plane.</b> One metre of northward ground
     /// travel draws <c>sin 40° ≈ 0.643</c> world units up the screen
@@ -84,9 +84,9 @@ namespace HiddenHarbours.App.Editor
         // =====================================================================================
 
         /// <summary>
-        /// One piece of furniture: which prop, where it stands in the ROOM's own frame (metres,
-        /// <c>+x</c> right across the room, <c>+y</c> toward the back/hearth wall, origin the floor
-        /// centre), and how many facings it is turned relative to the room.
+        /// One piece of furniture: which prop, where it stands in the ROOM's own frame (metres, origin
+        /// the floor centre, <c>+y</c> toward the front door and <c>+x</c> across the room, which is to
+        /// your LEFT as you come in at that door), and how many facings it is turned relative to the room.
         /// </summary>
         public readonly struct Furnishing
         {
@@ -103,7 +103,7 @@ namespace HiddenHarbours.App.Editor
             /// <summary>
             /// ⭐ <b>WHICH END OF THIS BED THE PILLOW IS ON</b>, in the ROOM's own model frame — the same
             /// frame as <see cref="RoomMetres"/>, so it is read straight off the room picture the owner is
-            /// looking at: <c>MinusY</c> is the doorway end, <c>PlusY</c> the hearth end.
+            /// looking at: <c>PlusY</c> is the doorway end, <c>MinusY</c> the hearth end.
             /// <see cref="PillowSide.Undeclared"/> for everything that is not a bed.
             ///
             /// <para><b>Every bed must say, and content validation is what enforces it.</b> Not saying is
@@ -211,7 +211,7 @@ namespace HiddenHarbours.App.Editor
         ///
         /// <para>Model-frame numbers rather than world ones for the same reason every furnishing is: the
         /// room is drawn at a facing the builder chooses and the owner reads these against the picture,
-        /// where <c>y</c> runs toward the hearth. <see cref="InteriorFootprint.Quad"/> does the rotation
+        /// where <c>+y</c> runs toward the front door. <see cref="InteriorFootprint.Quad"/> does the rotation
         /// and the squash.</para>
         /// </summary>
         public readonly struct WallRect
@@ -291,8 +291,9 @@ namespace HiddenHarbours.App.Editor
         ///
         /// <para><b>The cottage's numbers, so the geometry below can be read.</b> <c>sageCottage</c> is
         /// 6.6 × 8.05 m, so the model frame runs x ±3.3 and y ±4.025, and the 0.3 m walls leave a floor
-        /// of x ∈ [−3.0, 3.0], y ∈ [−3.725, 3.725]. <c>y</c> runs toward the hearth (the top of the
-        /// room picture); the front door is the gap at the bottom, centred on x = 0.</para>
+        /// of x ∈ [−3.0, 3.0], y ∈ [−3.725, 3.725]. <c>+y</c> runs toward the front door, which is the
+        /// gap in that end wall, centred on x = 0; the hearth is at the <c>−y</c> end. Left and right
+        /// below are as you come in at the door, which puts the right-hand side at <c>−x</c>.</para>
         ///
         /// <para><b>The plan, in words.</b> A landing runs up the right-hand side, wide enough to walk
         /// two abreast past the stair head. A north–south partition closes it off from the two bedrooms,
@@ -302,12 +303,12 @@ namespace HiddenHarbours.App.Editor
         /// the single thing about this layout worth defending.</para>
         ///
         /// <para><b>Where the stairwell had to go, and why it is not prettier.</b> It stands at
-        /// (2.50, −0.90) on BOTH storeys — that is what makes the level swap need no teleport — so it
+        /// (−2.50, 0.90) on BOTH storeys — that is what makes the level swap need no teleport — so it
         /// has to be clear of the ground floor's shipped furniture as well as of the landing. The
-        /// ground floor is already furnished (the dresser at (2.75, 0.50), the table and its two chairs
+        /// ground floor is already furnished (the dresser at (−2.75, −0.50), the table and its two chairs
         /// across the middle) and that furniture is the VILLAGE cottage's too, so it cannot be moved to
-        /// suit this one. (2.50, −0.90) is the gap that leaves: hard against the right wall, a clear
-        /// 0.68 m south of the dresser, and well outside the doorway lane.</para>
+        /// suit this one. (−2.50, 0.90) is the gap that leaves: hard against the right wall, a clear
+        /// 0.68 m nearer the door than the dresser, and well outside the doorway lane.</para>
         ///
         /// <para><b>⚠ Greybox, and it looks like one.</b> The upper storey draws the SAME baked room
         /// sheet as the one below, because the footprint is identical and the floor and far walls are
@@ -326,7 +327,7 @@ namespace HiddenHarbours.App.Editor
                 // ---- what the GROUND floor gains: the foot of the stairs ---------------------------
                 groundAdditions: new[]
                 {
-                    new Furnishing("seaChest", new Vector2(2.50f, -0.90f), 0,
+                    new Furnishing("seaChest", new Vector2(-2.50f, 0.90f), 4,
                                    "the foot of the stairs, against the right wall in the gap between " +
                                    "the dresser and the chairs — a sea chest STANDING IN for the stair " +
                                    "art, because it is the only prop in the kit you would plausibly " +
@@ -338,21 +339,21 @@ namespace HiddenHarbours.App.Editor
                 // ---- the storey above ---------------------------------------------------------------
                 furnishings: new[]
                 {
-                    new Furnishing("seaChest", new Vector2(2.50f, -0.90f), 0,
+                    new Furnishing("seaChest", new Vector2(-2.50f, 0.90f), 4,
                                    "the head of the same stairs — the SAME model coordinate as the foot, " +
                                    "which is precisely why coming up needs no teleport",
                                    InteriorFixture.StairDown),
 
-                    new Furnishing("bed", new Vector2(-2.10f, -2.30f), 0,
+                    new Furnishing("bed", new Vector2(2.10f, 2.30f), 4,
                                    "THE PLAYER'S BED, in the front room: along the left wall, the far " +
                                    "corner from the landing door, which is where a bed goes in a room " +
                                    "this size — and is the arrangement the ground floor already uses. " +
-                                   "Head at the FRONT wall (−y), which is the kit bed's own head end at " +
+                                   "Head at the FRONT wall (+y), which is the kit bed's own head end at " +
                                    "this offset — so the headboard is against the outside wall and the " +
                                    "foot of the bed points at the landing door",
-                                   InteriorFixture.PlayerBed, PillowSide.MinusY),
+                                   InteriorFixture.PlayerBed, PillowSide.PlusY),
 
-                    new Furnishing("dresser", new Vector2(0.35f, -0.60f), 2,
+                    new Furnishing("dresser", new Vector2(-0.35f, 0.60f), 6,
                                    "the wardrobe, STANDING IN as a dresser (the kit has no wardrobe " +
                                    "yet). Turned a quarter so its back is to the landing partition — " +
                                    "against the one wall in the player's room that is not the outside " +
@@ -360,32 +361,32 @@ namespace HiddenHarbours.App.Editor
                                    "reachable without threading between them",
                                    InteriorFixture.Wardrobe),
 
-                    new Furnishing("bed", new Vector2(-2.10f, 2.30f), 0,
+                    new Furnishing("bed", new Vector2(2.10f, -2.30f), 4,
                                    "GINNY'S BED, in the back room over the hearth — the warm end of the " +
                                    "house, which is the host's, and the same left-wall line as the " +
-                                   "player's so the two rooms read as one plan. Head to −y like the " +
+                                   "player's so the two rooms read as one plan. Head to +y like the " +
                                    "player's: the two beds are the same bed, laid the same way",
-                                   InteriorFixture.OwnerBed, PillowSide.MinusY),
+                                   InteriorFixture.OwnerBed, PillowSide.PlusY),
                 },
 
                 // ---- the walls that exist only up here -----------------------------------------------
                 // The building's OWN four walls are NOT here: they are the same walls on both storeys
                 // and BuildWalls already stood them. Only the partitions and the doorway plug ride the
-                // level. Each rect deliberately runs INTO the outer wall band it meets (±4.025, ∓3.3)
+                // level. Each rect deliberately runs INTO the outer wall band it meets (y ±4.025, x 3.3)
                 // so there is no hairline gap at the join — the quads are separate colliders, so an
                 // overlap is safe, whereas a shared edge is what leaks a player through a corner.
                 partitions: new[]
                 {
-                    new WallRect(0.90f, 1.20f, -4.025f, -3.10f,
+                    new WallRect(-1.20f, -0.90f, 3.10f, 4.025f,
                                  "the landing partition, front run — from the front wall to the " +
                                  "player's door"),
-                    new WallRect(0.90f, 1.20f, -1.90f, 1.40f,
+                    new WallRect(-1.20f, -0.90f, -1.40f, 1.90f,
                                  "the landing partition, middle run — between the two bedroom doors, " +
                                  "and what the east-west partition tees into"),
-                    new WallRect(0.90f, 1.20f, 2.60f, 4.025f,
+                    new WallRect(-1.20f, -0.90f, -4.025f, -2.60f,
                                  "the landing partition, back run — from Ginny's door to the back wall"),
-                    new WallRect(-3.30f, 1.20f, 0.40f, 0.70f,
-                                 "the partition BETWEEN the two bedrooms, running west from the landing " +
+                    new WallRect(-1.20f, 3.30f, -0.70f, -0.40f,
+                                 "the partition BETWEEN the two bedrooms, running from the landing " +
                                  "to the left wall. Solid: each room is entered from the landing, so " +
                                  "neither is a way through to the other"),
                 }),
@@ -404,12 +405,19 @@ namespace HiddenHarbours.App.Editor
         /// collide → Y-sort past), not a decorating pass.
         ///
         /// <para>Coordinates are in the ROOM's own frame, which is what the owner sees in the room art:
-        /// the doorway is at <c>(0, −Ln/2)</c> at the bottom of the picture and the hearth at the top.
+        /// the doorway is at <c>(0, +Ln/2)</c>, on the same gable as the house's own door, and the hearth
+        /// is at the far end.
         /// <b>Each room has its own extent</b> — from the school's 6.36 × 7.63 m to the farmhouse's
         /// 7.68 × 9.94 m — so every list below states the one it was placed against, and
         /// <c>StPetersInteriorsTests</c> checks each against its own <c>size</c> rather than against a
         /// single hard-coded pair (which is what it used to do, and it silently stopped checking the
         /// moment a second room was furnished).</para>
+        ///
+        /// <para><b>⚠ Turned half a turn with the village return</b> (drop 14, #898). The room rig before
+        /// it drew the doorway at <c>(0, −Ln/2)</c>; every coordinate here and in
+        /// <see cref="UpperLevelFor"/> was negated with the new rig, each piece turned four facings more
+        /// and each bed's pillow end flipped, so a room stood from these tables lays out exactly as the
+        /// placed rooms do.</para>
         ///
         /// <para>The doorway lane — <c>x</c> within ±0.7 of centre, near the front wall — is left clear
         /// on purpose: a prop parked in the threshold is a prop you cannot get past, and its collider
@@ -425,22 +433,22 @@ namespace HiddenHarbours.App.Editor
             // 6.6 × 8.05 m, so x runs ±3.3 and y ±4.03.
             "sageCottage" => new[]
             {
-                new Furnishing("bed", new Vector2(-2.35f, 1.50f), 0,
+                new Furnishing("bed", new Vector2(2.35f, -1.50f), 4,
                                "along the left wall in the back half — the far corner from the door, " +
-                               "which is where a bed goes in a one-room cottage. Head to −y, the kit " +
+                               "which is where a bed goes in a one-room cottage. Head to +y, the kit " +
                                "bed's own head end at this offset",
-                               InteriorFixture.None, PillowSide.MinusY),
-                new Furnishing("seaChest", new Vector2(-2.30f, -0.40f), 0,
+                               InteriorFixture.None, PillowSide.PlusY),
+                new Furnishing("seaChest", new Vector2(2.30f, 0.40f), 4,
                                "at the foot of the bed; the shortest prop in the set, so it is the " +
                                "sorting edge case as well as the fisherman's detail"),
-                new Furnishing("table", new Vector2(0.90f, -0.40f), 0,
+                new Furnishing("table", new Vector2(-0.90f, 0.40f), 4,
                                "middle of the room, off centre so the doorway lane stays clear — " +
                                "THE prop the owner is asked to walk behind and then in front of"),
-                new Furnishing("chair", new Vector2(0.30f, -1.15f), 0,
+                new Furnishing("chair", new Vector2(-0.30f, 1.15f), 4,
                                "pulled out on the door side of the table"),
-                new Furnishing("chair", new Vector2(1.50f, -1.15f), 0,
+                new Furnishing("chair", new Vector2(-1.50f, 1.15f), 4,
                                "the second chair — a one-room cottage that seats two reads as lived in"),
-                new Furnishing("dresser", new Vector2(2.75f, 0.50f), 2,
+                new Furnishing("dresser", new Vector2(-2.75f, -0.50f), 6,
                                "against the right wall, turned a quarter so its back is to the wall " +
                                "— proves a prop can sit flush without fighting the wall collider"),
             },
@@ -451,19 +459,19 @@ namespace HiddenHarbours.App.Editor
             // which is the shape a one-room school reads as even with a house's furniture.
             "school" => new[]
             {
-                new Furnishing("table", new Vector2(0f, 0.55f), 0,
+                new Furnishing("table", new Vector2(0f, -0.55f), 4,
                                "the pupils' bench-desk, square in the middle of the room"),
-                new Furnishing("chair", new Vector2(-0.60f, -0.15f), 0,
+                new Furnishing("chair", new Vector2(0.60f, 0.15f), 4,
                                "two seats at it, on the door side so the class faces the front"),
-                new Furnishing("chair", new Vector2(0.60f, -0.15f), 0,
+                new Furnishing("chair", new Vector2(-0.60f, 0.15f), 4,
                                "the second seat"),
-                new Furnishing("table", new Vector2(0f, 2.10f), 0,
+                new Furnishing("table", new Vector2(0f, -2.10f), 4,
                                "the teacher's desk at the stove end, facing back down the room"),
-                new Furnishing("chair", new Vector2(0f, 2.85f), 0,
+                new Furnishing("chair", new Vector2(0f, -2.85f), 4,
                                "her chair behind it, between the desk and the hearth"),
-                new Furnishing("dresser", new Vector2(2.55f, 1.30f), 2,
+                new Furnishing("dresser", new Vector2(-2.55f, -1.30f), 6,
                                "the book press against the right wall, turned a quarter"),
-                new Furnishing("seaChest", new Vector2(-2.35f, 1.30f), 0,
+                new Furnishing("seaChest", new Vector2(2.35f, -1.30f), 4,
                                "the wood box by the stove — a schoolroom that heats itself"),
             },
 
@@ -471,19 +479,19 @@ namespace HiddenHarbours.App.Editor
             // 6.96 × 8.68 m, so x runs ±3.48 and y ±4.34 (usable ±3.18 / ±4.04).
             "redSaltbox" => new[]
             {
-                new Furnishing("bed", new Vector2(-2.35f, 2.30f), 0,
-                               "back-left corner, the furthest point from the door. Head to −y, the " +
+                new Furnishing("bed", new Vector2(2.35f, -2.30f), 4,
+                               "back-left corner, the furthest point from the door. Head to +y, the " +
                                "kit bed's own head end at this offset",
-                               InteriorFixture.None, PillowSide.MinusY),
-                new Furnishing("seaChest", new Vector2(-2.35f, 0.75f), 0,
+                               InteriorFixture.None, PillowSide.PlusY),
+                new Furnishing("seaChest", new Vector2(2.35f, -0.75f), 4,
                                "at the foot of the bed"),
-                new Furnishing("table", new Vector2(1.20f, 0.40f), 0,
+                new Furnishing("table", new Vector2(-1.20f, -0.40f), 4,
                                "off centre to the right, so the doorway lane stays clear"),
-                new Furnishing("chair", new Vector2(0.70f, -0.35f), 0,
+                new Furnishing("chair", new Vector2(-0.70f, 0.35f), 4,
                                "pulled out on the door side"),
-                new Furnishing("chair", new Vector2(1.75f, -0.35f), 0,
+                new Furnishing("chair", new Vector2(-1.75f, 0.35f), 4,
                                "the second chair"),
-                new Furnishing("dresser", new Vector2(2.85f, 2.20f), 2,
+                new Furnishing("dresser", new Vector2(-2.85f, -2.20f), 6,
                                "against the right wall in the back half, turned a quarter"),
             },
 
@@ -493,19 +501,19 @@ namespace HiddenHarbours.App.Editor
             // house with a family in it, and they sleep upstairs.
             "whiteFarmhouse" => new[]
             {
-                new Furnishing("table", new Vector2(0.60f, 0.70f), 0,
+                new Furnishing("table", new Vector2(-0.60f, -0.70f), 4,
                                "the family table, off centre so the doorway lane stays clear"),
-                new Furnishing("chair", new Vector2(-0.20f, -0.10f), 0,
+                new Furnishing("chair", new Vector2(0.20f, 0.10f), 4,
                                "near side, left"),
-                new Furnishing("chair", new Vector2(1.40f, -0.10f), 0,
+                new Furnishing("chair", new Vector2(-1.40f, 0.10f), 4,
                                "near side, right"),
-                new Furnishing("chair", new Vector2(-0.20f, 1.50f), 0,
+                new Furnishing("chair", new Vector2(0.20f, -1.50f), 4,
                                "far side, left — the seat you have to walk round the table to reach"),
-                new Furnishing("chair", new Vector2(1.40f, 1.50f), 0,
+                new Furnishing("chair", new Vector2(-1.40f, -1.50f), 4,
                                "far side, right"),
-                new Furnishing("dresser", new Vector2(3.10f, 1.60f), 2,
+                new Furnishing("dresser", new Vector2(-3.10f, -1.60f), 6,
                                "the dresser against the right wall, turned a quarter"),
-                new Furnishing("seaChest", new Vector2(-2.90f, 2.60f), 0,
+                new Furnishing("seaChest", new Vector2(2.90f, -2.60f), 4,
                                "back-left corner, out of the way of the table"),
             },
 
@@ -671,8 +679,9 @@ namespace HiddenHarbours.App.Editor
             }
 
             // --- ⭐ HOW HIGH THE STOREY IS. Read from the bake's contract — the rig DECLARES a
-            //     floor-to-floor rise (interiorIsoRig.anchors().storeyZ) and the bake writes it as
-            //     storeyHeightMetres — then projected once at the shared camera. Never typed here: the
+            //     floor-to-floor rise (the returned interiorIsoRig's dims() storeys, differenced; the rig
+            //     before it, anchors().storeyZ) and the bake writes it as storeyHeightMetres — then
+            //     projected once at the shared camera. Never typed here: the
             //     precedent is the facing offset three lines up the file, which is measured at bake time
             //     for exactly the same reason. A contract with no declared height reports 0, and
             //     ConfigureUpperLevel says so out loud rather than quietly drawing one storey on another.

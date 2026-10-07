@@ -1,0 +1,763 @@
+fileFormatVersion: 2
+guid: 03c92b71a8bd0e1478e4ce25262ad518
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 756950223400534988
+    second: Knuckle_granite_mask_0
+  - first:
+      213: 6145263252591507953
+    second: Knuckle_granite_mask_1
+  - first:
+      213: -616525757382457641
+    second: Knuckle_granite_mask_2
+  - first:
+      213: 1383196837261900010
+    second: Knuckle_granite_mask_3
+  - first:
+      213: -421640992911836563
+    second: Knuckle_granite_mask_4
+  - first:
+      213: 6352439604668549115
+    second: Knuckle_granite_mask_5
+  - first:
+      213: -6639676360679741056
+    second: Knuckle_granite_mask_6
+  - first:
+      213: 2915451667998026403
+    second: Knuckle_granite_mask_7
+  - first:
+      213: -6897744877649571200
+    second: Knuckle_granite_mask_8
+  - first:
+      213: -1563566762240192311
+    second: Knuckle_granite_mask_9
+  - first:
+      213: 5941752731670437996
+    second: Knuckle_granite_mask_10
+  - first:
+      213: -180874643994467916
+    second: Knuckle_granite_mask_11
+  - first:
+      213: 2934865925551839136
+    second: Knuckle_granite_mask_12
+  - first:
+      213: -565752564332164633
+    second: Knuckle_granite_mask_13
+  - first:
+      213: -4600019270096974524
+    second: Knuckle_granite_mask_14
+  - first:
+      213: 6892048813919833986
+    second: Knuckle_granite_mask_15
+  - first:
+      213: -8658361972481748810
+    second: Knuckle_granite_mask_16
+  - first:
+      213: 685525133065858738
+    second: Knuckle_granite_mask_17
+  - first:
+      213: 2464482407788033778
+    second: Knuckle_granite_mask_18
+  - first:
+      213: -2876727284023262691
+    second: Knuckle_granite_mask_19
+  - first:
+      213: 4638396995191441096
+    second: Knuckle_granite_mask_20
+  - first:
+      213: 4600228862649460623
+    second: Knuckle_granite_mask_21
+  - first:
+      213: 1104405095237182991
+    second: Knuckle_granite_mask_22
+  - first:
+      213: -2447136879107777409
+    second: Knuckle_granite_mask_23
+  - first:
+      213: -8831607231434033895
+    second: Knuckle_granite_mask_24
+  - first:
+      213: -5053713282805817233
+    second: Knuckle_granite_mask_25
+  - first:
+      213: 1800617108667679258
+    second: Knuckle_granite_mask_26
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3f762a42f122ad4c917e8479914805d
+      internalID: 272379816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 279c1a514d960264db092fe7330c090d
+      internalID: 2053647692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b96a1c0a2294b0043bb5bbf69065da60
+      internalID: -1640908437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9863d296a51d47e47b1f0e6192f9aa73
+      internalID: 1706776429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e08b468b78ceacd459c3121195831582
+      internalID: 1171819793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72118479069ef7d48b85062c4d448b71
+      internalID: 999221359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3cd33cfe0a61837408774a18b3f0b916
+      internalID: 73734372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 76
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bd62ca9f69b5504cb7f84f113e4f2a9
+      internalID: -1078016740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac4b8880c95aecb4d9412012d4dc7c8e
+      internalID: -1215026478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57bc8ba6174cb61448d6d5c3989e50c5
+      internalID: -491684803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0c5c71ed977089409789002e279bd1e
+      internalID: -498913526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc3477b6aa1327f4ea1972aa5ecd24e5
+      internalID: -1710576474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6556e4c0f5e0d04c889670a1925e42c
+      internalID: 426595755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69a1f1435088927429ba176738df5a1f
+      internalID: 786900842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b19d9bee3b68d234a9a4361df1282c1d
+      internalID: -315160655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 38
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c982f6611496fe74abc6044904472a8a
+      internalID: -955540329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71093b92d62817e44afbd80df7349f92
+      internalID: -2023831075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e3ca5a803038d7498a99839983d38ef
+      internalID: -873591469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39faba8c7cc42654fba7fc48ec1469f7
+      internalID: 450903757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63d61a31062bc7d489fbfa3062b1c4ae
+      internalID: 797470304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2fddea562ce833042ad78b47a7319f6f
+      internalID: -80142152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2631579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18706c03f0662064e865f60e15145178
+      internalID: 86822613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34210527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f7ebc0ca73ded84990c8c4dd2472fa5
+      internalID: -627919305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knuckle_granite_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 0
+        width: 70
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21052632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f8bc645bba91a640acea26a010d6f5c
+      internalID: -1217074361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: dddf4553df62f9c408778859139d3e1f
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Knuckle_granite_mask_c0_r0: 272379816
+      Knuckle_granite_mask_c0_r1: -1215026478
+      Knuckle_granite_mask_c0_r2: -2023831075
+      Knuckle_granite_mask_c1_r0: 2053647692
+      Knuckle_granite_mask_c1_r1: -491684803
+      Knuckle_granite_mask_c1_r2: -873591469
+      Knuckle_granite_mask_c2_r0: -1640908437
+      Knuckle_granite_mask_c2_r1: -498913526
+      Knuckle_granite_mask_c2_r2: 450903757
+      Knuckle_granite_mask_c3_r0: 1706776429
+      Knuckle_granite_mask_c3_r1: -1710576474
+      Knuckle_granite_mask_c3_r2: 797470304
+      Knuckle_granite_mask_c4_r0: 1171819793
+      Knuckle_granite_mask_c4_r1: 426595755
+      Knuckle_granite_mask_c4_r2: -80142152
+      Knuckle_granite_mask_c5_r0: 999221359
+      Knuckle_granite_mask_c5_r1: 786900842
+      Knuckle_granite_mask_c5_r2: 86822613
+      Knuckle_granite_mask_c6_r0: 73734372
+      Knuckle_granite_mask_c6_r1: -315160655
+      Knuckle_granite_mask_c6_r2: -627919305
+      Knuckle_granite_mask_c7_r0: -1078016740
+      Knuckle_granite_mask_c7_r1: -955540329
+      Knuckle_granite_mask_c7_r2: -1217074361
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

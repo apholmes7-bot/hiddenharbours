@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: a21313d6847ae474c8a4163f0cdede4c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5581164470860134760
+    second: Prisms_sandstone_barnacled_unlit_0
+  - first:
+      213: 540287251190226207
+    second: Prisms_sandstone_barnacled_unlit_1
+  - first:
+      213: 5967715404656544445
+    second: Prisms_sandstone_barnacled_unlit_2
+  - first:
+      213: -1600949130818771633
+    second: Prisms_sandstone_barnacled_unlit_3
+  - first:
+      213: 7626033885619761320
+    second: Prisms_sandstone_barnacled_unlit_4
+  - first:
+      213: -416682140952319764
+    second: Prisms_sandstone_barnacled_unlit_5
+  - first:
+      213: 1113620891453300472
+    second: Prisms_sandstone_barnacled_unlit_6
+  - first:
+      213: 6175267306023249758
+    second: Prisms_sandstone_barnacled_unlit_7
+  - first:
+      213: -6240507353774068530
+    second: Prisms_sandstone_barnacled_unlit_8
+  - first:
+      213: -4143952223365931673
+    second: Prisms_sandstone_barnacled_unlit_9
+  - first:
+      213: 3043279912949970663
+    second: Prisms_sandstone_barnacled_unlit_10
+  - first:
+      213: 1564171304695872568
+    second: Prisms_sandstone_barnacled_unlit_11
+  - first:
+      213: 8498212167501856015
+    second: Prisms_sandstone_barnacled_unlit_12
+  - first:
+      213: -7924535083286805868
+    second: Prisms_sandstone_barnacled_unlit_13
+  - first:
+      213: 2891645036117786925
+    second: Prisms_sandstone_barnacled_unlit_14
+  - first:
+      213: -2321591360589574948
+    second: Prisms_sandstone_barnacled_unlit_15
+  - first:
+      213: 3926387332480682452
+    second: Prisms_sandstone_barnacled_unlit_16
+  - first:
+      213: -1840782004404093720
+    second: Prisms_sandstone_barnacled_unlit_17
+  - first:
+      213: 4161574643354266651
+    second: Prisms_sandstone_barnacled_unlit_18
+  - first:
+      213: -9209197809924891635
+    second: Prisms_sandstone_barnacled_unlit_19
+  - first:
+      213: 4284610532523883467
+    second: Prisms_sandstone_barnacled_unlit_20
+  - first:
+      213: 1784348891908242117
+    second: Prisms_sandstone_barnacled_unlit_21
+  - first:
+      213: 8958985695234080163
+    second: Prisms_sandstone_barnacled_unlit_22
+  - first:
+      213: 6449365338210529998
+    second: Prisms_sandstone_barnacled_unlit_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd343b85c16131340bb8ff3e0d706b55
+      internalID: -596180485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76ce523619934a24c9c0720111cb8ea5
+      internalID: -1387655753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b49a973270e39974d8ad4e058f58a81a
+      internalID: 1883184281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6d31df939b16f84fa9b9f95225e235b
+      internalID: 391970085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fdb4f16b382533647849295a7884ed8b
+      internalID: -375384916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a126cc79658d864cbc35ba6984fd2d4
+      internalID: -1691424260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c53dc549450b1df45a6a1d1a8fb585e6
+      internalID: 1416368737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1873671d9c91ed74d98aceaebb3cd4e6
+      internalID: 1799398510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bc788e5cdea67643bc9419e28604f91
+      internalID: -803496006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48bc45e631160c047b7c530ca8944b6b
+      internalID: 1459127638
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0c0416b41195914a8de790e3f7044fd
+      internalID: 1992510596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f68b1d81b047cc46aea21c7c2ec55f7
+      internalID: 1532505218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e76f2a040ceaa9e4ea83f29f1c78d136
+      internalID: 1242599937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d130786674cead644a7738cd9a8d1dc5
+      internalID: 159121843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3f20da580b272a43beb24a40bd790f9
+      internalID: -590930543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f54827ae5c3126458f13b0517cc78f4
+      internalID: -1218793749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1c59f36cf4ffef4596aeb69172e2901
+      internalID: -2087562256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28253fc19f8772640865f9f20c1e2340
+      internalID: 1257738523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07b2dea6e3da9ec419963d1a061a2e4c
+      internalID: 894145435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f4230c6d2418aa4790da55c28e80de1
+      internalID: 528118311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae88d9214b6d17d478b6cde3f231d5db
+      internalID: -686003798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8bef0c90ce76ff408da9721f9803909
+      internalID: -1876084615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b5fa4bc597cf4046b72dc773be3a4af
+      internalID: 772111058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_sandstone_barnacled_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8c6ba107739a4f498a768672a5a1df0
+      internalID: -1970538868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5429cc406e39d6a4484d3bcb163a981c
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Prisms_sandstone_barnacled_unlit_c0_r0: -596180485
+      Prisms_sandstone_barnacled_unlit_c0_r1: -803496006
+      Prisms_sandstone_barnacled_unlit_c0_r2: -2087562256
+      Prisms_sandstone_barnacled_unlit_c1_r0: -1387655753
+      Prisms_sandstone_barnacled_unlit_c1_r1: 1459127638
+      Prisms_sandstone_barnacled_unlit_c1_r2: 1257738523
+      Prisms_sandstone_barnacled_unlit_c2_r0: 1883184281
+      Prisms_sandstone_barnacled_unlit_c2_r1: 1992510596
+      Prisms_sandstone_barnacled_unlit_c2_r2: 894145435
+      Prisms_sandstone_barnacled_unlit_c3_r0: 391970085
+      Prisms_sandstone_barnacled_unlit_c3_r1: 1532505218
+      Prisms_sandstone_barnacled_unlit_c3_r2: 528118311
+      Prisms_sandstone_barnacled_unlit_c4_r0: -375384916
+      Prisms_sandstone_barnacled_unlit_c4_r1: 1242599937
+      Prisms_sandstone_barnacled_unlit_c4_r2: -686003798
+      Prisms_sandstone_barnacled_unlit_c5_r0: -1691424260
+      Prisms_sandstone_barnacled_unlit_c5_r1: 159121843
+      Prisms_sandstone_barnacled_unlit_c5_r2: -1876084615
+      Prisms_sandstone_barnacled_unlit_c6_r0: 1416368737
+      Prisms_sandstone_barnacled_unlit_c6_r1: -590930543
+      Prisms_sandstone_barnacled_unlit_c6_r2: 772111058
+      Prisms_sandstone_barnacled_unlit_c7_r0: 1799398510
+      Prisms_sandstone_barnacled_unlit_c7_r1: -1218793749
+      Prisms_sandstone_barnacled_unlit_c7_r2: -1970538868
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -594,6 +594,17 @@ namespace HiddenHarbours.Core
         public static AnchorSettings Anchor =>
             Config != null ? Config.Anchor : AnchorSettings.Default;
 
+        /// <summary>The HULL-TRIM policy (the bow answers her speed — owner 2026-09-21; where the hump
+        /// sits, and the limits and lag a hull that authors none inherits), same contract as
+        /// <see cref="WaveField"/> including the <c>Config != null</c> discipline (never
+        /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>) and the resolved-per-read liveness, so
+        /// dragging the trim sliders in play moves the next tick's bow. Falls back to
+        /// <see cref="HullTrimSettings.Default"/> with no config wired. Read by <c>BoatController</c>,
+        /// which publishes the target its one drawer eases after.
+        /// FLAG lead-architect: new Core accessor (the trim block, the WaveField pattern).</summary>
+        public static HullTrimSettings HullTrim =>
+            Config != null ? Config.HullTrim : HullTrimSettings.Default;
+
         /// <summary>The LADDER-BOARDING policy (the tide gap at which a step aboard becomes a climb, and
         /// the measured rig geometry the climb runs on), same contract as <see cref="WaveField"/> —
         /// including the <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a
@@ -859,6 +870,54 @@ namespace HiddenHarbours.Core
         /// FLAG lead-architect: new Core contract (the ADR 0031 world-art style seam).</summary>
         public static bool HullKeylineFlood =>
             Config != null ? Config.HullKeylineFlood : GameConfig.DefaultHullKeylineFlood;
+
+        public static bool HullMeshReflections => Config != null && Config.HullMeshReflections;
+        public static int HullReflectionResolutionDivisor =>
+            Config != null && Config.HullReflectionResolutionDivisor == 2 ? 2 : 1;
+        public static int HullReflectionMaxHulls =>
+            Config != null ? UnityEngine.Mathf.Max(1, Config.HullReflectionMaxHulls)
+                : GameConfig.DefaultHullReflectionMaxHulls;
+        public static int HullReflectionMaxPackets =>
+            Config != null ? UnityEngine.Mathf.Max(1, Config.HullReflectionMaxPackets)
+                : GameConfig.DefaultHullReflectionMaxPackets;
+        public static int HullReflectionMaxTriangles =>
+            Config != null ? UnityEngine.Mathf.Max(1, Config.HullReflectionMaxTriangles)
+                : GameConfig.DefaultHullReflectionMaxTriangles;
+
+        /// <summary>Do rig 9 figures blink (character PR 2a)? Same contract as
+        /// <see cref="HullKeylineFlood"/>, including the <c>Config != null</c> discipline. Falls back
+        /// to <see cref="GameConfig.DefaultCharacterBlink"/> (ON). Read every pose by the figure
+        /// presenters. Presentation only: no sim system reads it or the blink's seed.</summary>
+        public static bool CharacterBlink =>
+            Config != null ? Config.CharacterBlink : GameConfig.DefaultCharacterBlink;
+
+        /// <summary>Do figures turn their neck and head toward what they look at? Falls back to
+        /// <see cref="GameConfig.DefaultCharacterHeadLook"/> (ON). Read every pose.</summary>
+        public static bool CharacterHeadLook =>
+            Config != null ? Config.CharacterHeadLook : GameConfig.DefaultCharacterHeadLook;
+
+        /// <summary>Do the open eyes finish a look the head leaves undone? Falls back to
+        /// <see cref="GameConfig.DefaultCharacterEyeLook"/> (ON). Read every pose.</summary>
+        public static bool CharacterEyeLook =>
+            Config != null ? Config.CharacterEyeLook : GameConfig.DefaultCharacterEyeLook;
+
+        /// <summary>How near, in the figure's metres on its own ground, a look target must be. Falls
+        /// back to <see cref="GameConfig.DefaultCharacterLookRadiusMetres"/>.</summary>
+        public static float CharacterLookRadiusMetres =>
+            Config != null ? Config.CharacterLookRadiusMetres : GameConfig.DefaultCharacterLookRadiusMetres;
+
+        /// <summary>How high above a target's feet a figure aims, in the figure's metres. Falls back
+        /// to <see cref="GameConfig.DefaultCharacterLookTargetHeightMetres"/>.</summary>
+        public static float CharacterLookTargetHeightMetres =>
+            Config != null ? Config.CharacterLookTargetHeightMetres
+                           : GameConfig.DefaultCharacterLookTargetHeightMetres;
+
+        /// <summary>Are rig 9 figures inked by the rig's own rules (the keyline ring on empty pixels
+        /// and the one-tone depth edge)? Falls back to <see cref="GameConfig.DefaultMeshFigureKeyline"/>
+        /// (ON). Read every frame by the figure renderer; OFF is the hull's rules, as before PR 2a.
+        /// FLAG lead-architect: new Core contract (the figure-ink seam, beside ADR 0031's).</summary>
+        public static bool MeshFigureKeyline =>
+            Config != null ? Config.MeshFigureKeyline : GameConfig.DefaultMeshFigureKeyline;
 
         /// <summary>The boat-glow passthrough (owner's ruling, 2026-09-03 — "the glows should be
         /// constrained to their space, if its interior it should be confined to the cabin with the glow

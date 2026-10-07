@@ -1,0 +1,757 @@
+fileFormatVersion: 2
+guid: 10d8560b13c6598468e4f0593690cbb7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4356702237464917438
+    second: Erratic_till_unlit_0
+  - first:
+      213: 4061767321934477388
+    second: Erratic_till_unlit_1
+  - first:
+      213: -9129183505160170482
+    second: Erratic_till_unlit_2
+  - first:
+      213: 7240584575728403771
+    second: Erratic_till_unlit_3
+  - first:
+      213: 5751205825388445297
+    second: Erratic_till_unlit_4
+  - first:
+      213: 8361146497418763738
+    second: Erratic_till_unlit_5
+  - first:
+      213: -3831836422198924302
+    second: Erratic_till_unlit_6
+  - first:
+      213: -7555958676755152154
+    second: Erratic_till_unlit_7
+  - first:
+      213: -3467891225508631569
+    second: Erratic_till_unlit_8
+  - first:
+      213: -1235901004857500400
+    second: Erratic_till_unlit_9
+  - first:
+      213: 6749582577866717631
+    second: Erratic_till_unlit_10
+  - first:
+      213: 2664730936028634502
+    second: Erratic_till_unlit_11
+  - first:
+      213: 5679945902604171792
+    second: Erratic_till_unlit_12
+  - first:
+      213: 2423334816076860713
+    second: Erratic_till_unlit_13
+  - first:
+      213: -7706318217925668581
+    second: Erratic_till_unlit_14
+  - first:
+      213: -8621008990497586084
+    second: Erratic_till_unlit_15
+  - first:
+      213: 876081089685499723
+    second: Erratic_till_unlit_16
+  - first:
+      213: -4519504037521871983
+    second: Erratic_till_unlit_17
+  - first:
+      213: -2937750969349070207
+    second: Erratic_till_unlit_18
+  - first:
+      213: 6573996688148007876
+    second: Erratic_till_unlit_19
+  - first:
+      213: -7158220291738823921
+    second: Erratic_till_unlit_20
+  - first:
+      213: -5489418619277032530
+    second: Erratic_till_unlit_21
+  - first:
+      213: 786643807592739459
+    second: Erratic_till_unlit_22
+  - first:
+      213: -702323873471455879
+    second: Erratic_till_unlit_23
+  - first:
+      213: -7657420704819138573
+    second: Erratic_till_unlit_24
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab746a6baae2e0f4d8355e53606ea89b
+      internalID: 1182283639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe181ff592f933d49bc0964fc7cb2857
+      internalID: -118640765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07a5ae5e29c683449956c3c85caa8f00
+      internalID: -1934702974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6319ea2b393dc444bd51d0cfecb61ed
+      internalID: 1531070451
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a954472647baf8340852f09706e9f0ba
+      internalID: -791601290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b849c65f09836249b9e1f0b2e8f5fac
+      internalID: 1410699260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11023ef019e397643a672fd08b404985
+      internalID: 1770872267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3d24d5eea222864bbcc8961e7558719
+      internalID: 1301058064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 704405135a3a6144c839443fffc15866
+      internalID: 1948193053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6de5bd1ed042fdb44bdbb3a254c8dec3
+      internalID: 981516386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cca8be0ff6d78f744af5b0daadfcf66e
+      internalID: 1779115341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c083ca5a6a28f674894f439a5fc5f8d4
+      internalID: -1124783721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2d804520ceac6b418cf4059cd742c98
+      internalID: 906403043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6fa1cb51feff59409d8afddc795990b
+      internalID: -1204847084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b8d8c9facbac3f46857cc6f58c405c3
+      internalID: 267046143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96d75771e99cc9749a890188d4130024
+      internalID: -585030685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08eda9c752647954c9fa100456f4b84e
+      internalID: -1776674628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba591a350cb72164e9ffafc5e9808b09
+      internalID: 471987719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1149b104f39029a4cb5e2e8884ce2789
+      internalID: 1168903110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a67cb75c9cec0914284d434b03aced0a
+      internalID: 1058815097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69b6f53b72376ce47ac661b56d663dc5
+      internalID: -1689154932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86c59a206a0141e4a9237941650cc3d4
+      internalID: -147435190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cbea2e54ad3861a4da109346b28e9397
+      internalID: -1561043204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_till_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 048d408b345a6c0418675ce2f59227a0
+      internalID: 302452657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 42a587faaea85ba46939f12951b9b2f1
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Erratic_till_unlit_c0_r0: 1182283639
+      Erratic_till_unlit_c0_r1: 1948193053
+      Erratic_till_unlit_c0_r2: -1776674628
+      Erratic_till_unlit_c1_r0: -118640765
+      Erratic_till_unlit_c1_r1: 981516386
+      Erratic_till_unlit_c1_r2: 471987719
+      Erratic_till_unlit_c2_r0: -1934702974
+      Erratic_till_unlit_c2_r1: 1779115341
+      Erratic_till_unlit_c2_r2: 1168903110
+      Erratic_till_unlit_c3_r0: 1531070451
+      Erratic_till_unlit_c3_r1: -1124783721
+      Erratic_till_unlit_c3_r2: 1058815097
+      Erratic_till_unlit_c4_r0: -791601290
+      Erratic_till_unlit_c4_r1: 906403043
+      Erratic_till_unlit_c4_r2: -1689154932
+      Erratic_till_unlit_c5_r0: 1410699260
+      Erratic_till_unlit_c5_r1: -1204847084
+      Erratic_till_unlit_c5_r2: -147435190
+      Erratic_till_unlit_c6_r0: 1770872267
+      Erratic_till_unlit_c6_r1: 267046143
+      Erratic_till_unlit_c6_r2: -1561043204
+      Erratic_till_unlit_c7_r0: 1301058064
+      Erratic_till_unlit_c7_r1: -585030685
+      Erratic_till_unlit_c7_r2: 302452657
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

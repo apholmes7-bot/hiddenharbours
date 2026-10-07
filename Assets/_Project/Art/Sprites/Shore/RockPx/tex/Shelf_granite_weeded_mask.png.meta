@@ -1,0 +1,757 @@
+fileFormatVersion: 2
+guid: ad72eb3d81840574aba3d5474db57a43
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3411346799455390078
+    second: Shelf_granite_weeded_mask_0
+  - first:
+      213: -2068286743170402132
+    second: Shelf_granite_weeded_mask_1
+  - first:
+      213: -5759975469448139293
+    second: Shelf_granite_weeded_mask_2
+  - first:
+      213: 6366704745610356505
+    second: Shelf_granite_weeded_mask_3
+  - first:
+      213: -78085161371583114
+    second: Shelf_granite_weeded_mask_4
+  - first:
+      213: -2028648846786085001
+    second: Shelf_granite_weeded_mask_5
+  - first:
+      213: 3007385831686815725
+    second: Shelf_granite_weeded_mask_6
+  - first:
+      213: -2168430332632825843
+    second: Shelf_granite_weeded_mask_7
+  - first:
+      213: -3721836818026393262
+    second: Shelf_granite_weeded_mask_8
+  - first:
+      213: 7036051995182542563
+    second: Shelf_granite_weeded_mask_9
+  - first:
+      213: 9184214360634704240
+    second: Shelf_granite_weeded_mask_10
+  - first:
+      213: -8076166545004611522
+    second: Shelf_granite_weeded_mask_11
+  - first:
+      213: 2936737694152570120
+    second: Shelf_granite_weeded_mask_12
+  - first:
+      213: -8334031821767866385
+    second: Shelf_granite_weeded_mask_13
+  - first:
+      213: -903435958916570888
+    second: Shelf_granite_weeded_mask_14
+  - first:
+      213: 2389252028250037261
+    second: Shelf_granite_weeded_mask_15
+  - first:
+      213: -7643834073062189643
+    second: Shelf_granite_weeded_mask_16
+  - first:
+      213: 912220399298482857
+    second: Shelf_granite_weeded_mask_17
+  - first:
+      213: -4054605727866963072
+    second: Shelf_granite_weeded_mask_18
+  - first:
+      213: 2094913081570080788
+    second: Shelf_granite_weeded_mask_19
+  - first:
+      213: 2769638615907568327
+    second: Shelf_granite_weeded_mask_20
+  - first:
+      213: -5918849179987406620
+    second: Shelf_granite_weeded_mask_21
+  - first:
+      213: 7458878686880303855
+    second: Shelf_granite_weeded_mask_22
+  - first:
+      213: -2504090636180895556
+    second: Shelf_granite_weeded_mask_23
+  - first:
+      213: -8313832239015003104
+    second: Shelf_granite_weeded_mask_24
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 279d1f8f3b6ef5543ac251b6295f4aca
+      internalID: -1968063780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e0f57b73afdc4f4cab9c61bf7d31067
+      internalID: 2084250491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 327fde74f09d97a4b91b536705555b86
+      internalID: 1021425735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9a609a6eaa0b124ab1dafcbf9ee26d5
+      internalID: -1195006187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e603875839a31734e81d3332be110b63
+      internalID: 521103720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9957bf35c0c0c744caedf02c1130d40e
+      internalID: 1005055316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45377c5985313ff4eb8ac1e47661bfdb
+      internalID: -463286067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 92
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d692ce62c371f744a6efd8b26a0a8e2
+      internalID: 1538006858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc419842d09737b46a975e4585cc5f0e
+      internalID: -660651566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e550387e398ca3742b778629131f3de1
+      internalID: -1389452618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0dd32721127058429034cbd4d469a33
+      internalID: 1371167093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a978ec01d0c616b419a52c2ee87265aa
+      internalID: 198369748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 589c7b226c918eb498fb3e4f67b2ae42
+      internalID: 1253022428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 70d49eea6dfb89a4d95c7792eb730beb
+      internalID: -2020278374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8b101d02b120d74396a47f44ee3284b
+      internalID: -612750689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 46
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f190ba9715a54e648879659ba3a17fce
+      internalID: -1604607600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5060f77405e99341be6bdaaa6e830b2
+      internalID: -673941879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f033df7fcd95b3943bdadfa240328611
+      internalID: -1295692124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 035ad61361423ab4a855a568d978338c
+      internalID: 1781310921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b29af590311a1b459de01f15b855f85
+      internalID: 1728305017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c1c6e7c7c7e99741a7934021c23926f
+      internalID: 209318376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01c349815ee219643971961bb4fb81ca
+      internalID: -1978278543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e670c9152cc29514ca9a0e239e06ff00
+      internalID: -1533874911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shelf_granite_weeded_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 0
+        width: 82
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36956522}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df954396484298b4686f5143f365fddf
+      internalID: -1257468788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 0c163b43e6c21ec4c832e838da4d4d89
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Shelf_granite_weeded_mask_c0_r0: -1968063780
+      Shelf_granite_weeded_mask_c0_r1: -660651566
+      Shelf_granite_weeded_mask_c0_r2: -673941879
+      Shelf_granite_weeded_mask_c1_r0: 2084250491
+      Shelf_granite_weeded_mask_c1_r1: -1389452618
+      Shelf_granite_weeded_mask_c1_r2: -1295692124
+      Shelf_granite_weeded_mask_c2_r0: 1021425735
+      Shelf_granite_weeded_mask_c2_r1: 1371167093
+      Shelf_granite_weeded_mask_c2_r2: 1781310921
+      Shelf_granite_weeded_mask_c3_r0: -1195006187
+      Shelf_granite_weeded_mask_c3_r1: 198369748
+      Shelf_granite_weeded_mask_c3_r2: 1728305017
+      Shelf_granite_weeded_mask_c4_r0: 521103720
+      Shelf_granite_weeded_mask_c4_r1: 1253022428
+      Shelf_granite_weeded_mask_c4_r2: 209318376
+      Shelf_granite_weeded_mask_c5_r0: 1005055316
+      Shelf_granite_weeded_mask_c5_r1: -2020278374
+      Shelf_granite_weeded_mask_c5_r2: -1978278543
+      Shelf_granite_weeded_mask_c6_r0: -463286067
+      Shelf_granite_weeded_mask_c6_r1: -612750689
+      Shelf_granite_weeded_mask_c6_r2: -1533874911
+      Shelf_granite_weeded_mask_c7_r0: 1538006858
+      Shelf_granite_weeded_mask_c7_r1: -1604607600
+      Shelf_granite_weeded_mask_c7_r2: -1257468788
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

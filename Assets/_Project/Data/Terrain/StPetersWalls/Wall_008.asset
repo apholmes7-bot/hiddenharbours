@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_008
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_008
+  Status: 0
+  SplitFrom: 
+  Follows: wall.stp_007
+  Rock: sandstone
+  Class: 4
+  Aspect: E
+  Batter: steep
+  Brow:
+  - {x: 186.74628, y: -16.19007}
+  - {x: 186.65125, y: -16.421495}
+  Toe:
+  - {x: 189.38567, y: -17.265728}
+  - {x: 189.28125, y: -17.509542}
+  DropMetres:
+  - 10
+  - 10
+  ToeElevations:
+  - -4
+  - -4
+  Stations:
+  - 0
+  - 1
+  BrowFrom:
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  BrowPass9:
+  - 5.9977546
+  - 5.952889
+  ToePass9:
+  - -3.9565256
+  - -3.9722269
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 8
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Kept as the scene had it at 883f27b5: the list''s row 008 (South Arm): kept.'

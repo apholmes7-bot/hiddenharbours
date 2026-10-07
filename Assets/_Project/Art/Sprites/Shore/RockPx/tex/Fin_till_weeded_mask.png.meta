@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 898d55fc70b40164882034b34d8ba953
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -415231814733126690
+    second: Fin_till_weeded_mask_0
+  - first:
+      213: -6432201868112091938
+    second: Fin_till_weeded_mask_1
+  - first:
+      213: 8393490640475119049
+    second: Fin_till_weeded_mask_2
+  - first:
+      213: -9077113544387704358
+    second: Fin_till_weeded_mask_3
+  - first:
+      213: 1018866667096034216
+    second: Fin_till_weeded_mask_4
+  - first:
+      213: -3961017357131993667
+    second: Fin_till_weeded_mask_5
+  - first:
+      213: -9202136294030293245
+    second: Fin_till_weeded_mask_6
+  - first:
+      213: 3871200556763106844
+    second: Fin_till_weeded_mask_7
+  - first:
+      213: 6362876287571649152
+    second: Fin_till_weeded_mask_8
+  - first:
+      213: 8701052852963122000
+    second: Fin_till_weeded_mask_9
+  - first:
+      213: 5099105254049027606
+    second: Fin_till_weeded_mask_10
+  - first:
+      213: -8416928537573254399
+    second: Fin_till_weeded_mask_11
+  - first:
+      213: -8096795340008975189
+    second: Fin_till_weeded_mask_12
+  - first:
+      213: 1610004136349379361
+    second: Fin_till_weeded_mask_13
+  - first:
+      213: -5846301393465059299
+    second: Fin_till_weeded_mask_14
+  - first:
+      213: -2158021591405926677
+    second: Fin_till_weeded_mask_15
+  - first:
+      213: -7463878646720970391
+    second: Fin_till_weeded_mask_16
+  - first:
+      213: 6463948772409537507
+    second: Fin_till_weeded_mask_17
+  - first:
+      213: 116179453206852883
+    second: Fin_till_weeded_mask_18
+  - first:
+      213: -2511960559171432074
+    second: Fin_till_weeded_mask_19
+  - first:
+      213: 2283280848239614683
+    second: Fin_till_weeded_mask_20
+  - first:
+      213: 5559325462806037206
+    second: Fin_till_weeded_mask_21
+  - first:
+      213: 5516443429421747087
+    second: Fin_till_weeded_mask_22
+  - first:
+      213: -6872664639355464514
+    second: Fin_till_weeded_mask_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63caa3cb5bc8f834db41ea8772008615
+      internalID: 1823232045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8318d7ec42812345bf69e86f6c44852
+      internalID: 1678669966
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 315fe117c074ab6458f3fa72bd7051f5
+      internalID: 1367323177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59e6177977dc2be46bd788090b30aad8
+      internalID: 1233305864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78e10e0af365a454e8f2f4dc88a9bc95
+      internalID: 1470911322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ddf297096978eb49bab4c9ed49caddd
+      internalID: -1520152999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3318b1fe64d6ff4a8cf1ced33fc602e
+      internalID: 1709520702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3d8979280d12ad4cb5f589421a9f72c
+      internalID: 825768186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81274bc3e37f6c048bba902afb9543ec
+      internalID: 1502480065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5cf8b3e0808b52b409afd025eedc2c06
+      internalID: 878307535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a20380fc12bcc847ac4c69d87622e91
+      internalID: 863688786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86eb777d116e1444291dea08816cf436
+      internalID: 672620083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07483bdc51ba33b46b69fed1105e834a
+      internalID: 330765546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddb8545f8cf32dd4fbee5f54f4d56478
+      internalID: -2138312235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c50d1cf47157b645846aefac1185927
+      internalID: -1291620996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54b5b0fb4dc59ec45a1ae1db8a19da73
+      internalID: -2007466292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2cfaae386b8f7941bc367c27dd64a38
+      internalID: -969663499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61be4dedfd2b0724cb2542be3e528fd4
+      internalID: 1662136414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 517bd2077aefe544d9009f0c44fc78bc
+      internalID: 1121387779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65f4cf4282a91964b8847f9050c77752
+      internalID: 354976116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b71c2c1927568644abf8c0b59d7a8053
+      internalID: -571438226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a783df15b73d3b54abd05e6726b03265
+      internalID: 601173153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17f85918f541d534187581b210411c65
+      internalID: 588397758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_till_weeded_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6a0a08d3264f584692bab380b763fb3
+      internalID: -1333695313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: fe309c17a539ab747a09301e35d43fc2
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fin_till_weeded_mask_c0_r0: 1823232045
+      Fin_till_weeded_mask_c0_r1: 1502480065
+      Fin_till_weeded_mask_c0_r2: -969663499
+      Fin_till_weeded_mask_c1_r0: 1678669966
+      Fin_till_weeded_mask_c1_r1: 878307535
+      Fin_till_weeded_mask_c1_r2: 1662136414
+      Fin_till_weeded_mask_c2_r0: 1367323177
+      Fin_till_weeded_mask_c2_r1: 863688786
+      Fin_till_weeded_mask_c2_r2: 1121387779
+      Fin_till_weeded_mask_c3_r0: 1233305864
+      Fin_till_weeded_mask_c3_r1: 672620083
+      Fin_till_weeded_mask_c3_r2: 354976116
+      Fin_till_weeded_mask_c4_r0: 1470911322
+      Fin_till_weeded_mask_c4_r1: 330765546
+      Fin_till_weeded_mask_c4_r2: -571438226
+      Fin_till_weeded_mask_c5_r0: -1520152999
+      Fin_till_weeded_mask_c5_r1: -2138312235
+      Fin_till_weeded_mask_c5_r2: 601173153
+      Fin_till_weeded_mask_c6_r0: 1709520702
+      Fin_till_weeded_mask_c6_r1: -1291620996
+      Fin_till_weeded_mask_c6_r2: 588397758
+      Fin_till_weeded_mask_c7_r0: 825768186
+      Fin_till_weeded_mask_c7_r1: -2007466292
+      Fin_till_weeded_mask_c7_r2: -1333695313
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

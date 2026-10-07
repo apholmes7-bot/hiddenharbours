@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: b2275bfbf7423614d8daae0b79c50991
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1348872616820551310
+    second: Wedge_sandstone_barnacled_normal_0
+  - first:
+      213: 116724422296403216
+    second: Wedge_sandstone_barnacled_normal_1
+  - first:
+      213: 4194566025598488311
+    second: Wedge_sandstone_barnacled_normal_2
+  - first:
+      213: 8603727828545465275
+    second: Wedge_sandstone_barnacled_normal_3
+  - first:
+      213: 5767310275183145182
+    second: Wedge_sandstone_barnacled_normal_4
+  - first:
+      213: -4570974917840144530
+    second: Wedge_sandstone_barnacled_normal_5
+  - first:
+      213: -7010139933444327776
+    second: Wedge_sandstone_barnacled_normal_6
+  - first:
+      213: -7902932382685066941
+    second: Wedge_sandstone_barnacled_normal_7
+  - first:
+      213: 5762389290270086602
+    second: Wedge_sandstone_barnacled_normal_8
+  - first:
+      213: -7531406817450527275
+    second: Wedge_sandstone_barnacled_normal_9
+  - first:
+      213: 4968335905655440540
+    second: Wedge_sandstone_barnacled_normal_10
+  - first:
+      213: -2962747574099529828
+    second: Wedge_sandstone_barnacled_normal_11
+  - first:
+      213: -8366774207134423953
+    second: Wedge_sandstone_barnacled_normal_12
+  - first:
+      213: 864227324782219821
+    second: Wedge_sandstone_barnacled_normal_13
+  - first:
+      213: 4390346951625557719
+    second: Wedge_sandstone_barnacled_normal_14
+  - first:
+      213: 6040648693423585461
+    second: Wedge_sandstone_barnacled_normal_15
+  - first:
+      213: 6185539458886415453
+    second: Wedge_sandstone_barnacled_normal_16
+  - first:
+      213: -3722624685690476710
+    second: Wedge_sandstone_barnacled_normal_17
+  - first:
+      213: -3231589286402816093
+    second: Wedge_sandstone_barnacled_normal_18
+  - first:
+      213: -1514693589248134538
+    second: Wedge_sandstone_barnacled_normal_19
+  - first:
+      213: 649350186124697245
+    second: Wedge_sandstone_barnacled_normal_20
+  - first:
+      213: 3339870926437841575
+    second: Wedge_sandstone_barnacled_normal_21
+  - first:
+      213: -1087021626885949879
+    second: Wedge_sandstone_barnacled_normal_22
+  - first:
+      213: -7245521623850484888
+    second: Wedge_sandstone_barnacled_normal_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f81b3b9545ed0d64daaf723e06f73494
+      internalID: -1445946194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00d14a654007cf64fb1ffcdc1c2ea337
+      internalID: -901563570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f336246842edd8e44afbb4c25276a611
+      internalID: -343150618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45d2dc1bb4fc19344b64df4168e85051
+      internalID: 412788365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80f60f33e2a1b894e97a3784a270ecc2
+      internalID: 580783610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 246047ca505064a48822e4d8fb2817a2
+      internalID: -358916320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a08a18a9e782904b84b00d3b7a27ec5
+      internalID: 195878920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 112
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6d9d40762673dd468473bad9d53adce
+      internalID: -461263395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e390b8b7644591f47946f3acd779a6d9
+      internalID: -1366675722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9ed51ed098e650408471176b658ca28
+      internalID: 1100222778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0448e70d86970264b8a81df68447c2d7
+      internalID: 1391388015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 173566daecd9d7949ba56e590dbeeba1
+      internalID: 804313158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd47c844ec3e93940b95a53d3d44b6c1
+      internalID: 1197902481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27593b4168cf8984ab3590c96d1ee0a9
+      internalID: -406178056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73f9d119c88f91c468eb9f446e3b8ed0
+      internalID: 392506655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 56
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6720d27453846db47b704d87aa22a8c4
+      internalID: -1059812942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4bbf7d4a2cdc094b8696ddfa369abb4
+      internalID: -308435908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56d754a80ecade34785da17f217097a5
+      internalID: -1567589936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a7b44478b7ba67e4e996568044c261ea
+      internalID: -1681267093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 646afaf63993dac47b2b2eedbd4477b3
+      internalID: -224083667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43665b5a0cee35e49abc2452e07b3d5e
+      internalID: -1695256041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecaf503aac0329d409379f0df10f6eda
+      internalID: -126082445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91995667d4454be449111f5572aed7ea
+      internalID: 1220193899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wedge_sandstone_barnacled_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 0
+        width: 54
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c66591a997ef0734681c546120e9c1b8
+      internalID: 1635931929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a078a195afcbf964095914bb13d9b289
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Wedge_sandstone_barnacled_normal_c0_r0: -1445946194
+      Wedge_sandstone_barnacled_normal_c0_r1: -1366675722
+      Wedge_sandstone_barnacled_normal_c0_r2: -308435908
+      Wedge_sandstone_barnacled_normal_c1_r0: -901563570
+      Wedge_sandstone_barnacled_normal_c1_r1: 1100222778
+      Wedge_sandstone_barnacled_normal_c1_r2: -1567589936
+      Wedge_sandstone_barnacled_normal_c2_r0: -343150618
+      Wedge_sandstone_barnacled_normal_c2_r1: 1391388015
+      Wedge_sandstone_barnacled_normal_c2_r2: -1681267093
+      Wedge_sandstone_barnacled_normal_c3_r0: 412788365
+      Wedge_sandstone_barnacled_normal_c3_r1: 804313158
+      Wedge_sandstone_barnacled_normal_c3_r2: -224083667
+      Wedge_sandstone_barnacled_normal_c4_r0: 580783610
+      Wedge_sandstone_barnacled_normal_c4_r1: 1197902481
+      Wedge_sandstone_barnacled_normal_c4_r2: -1695256041
+      Wedge_sandstone_barnacled_normal_c5_r0: -358916320
+      Wedge_sandstone_barnacled_normal_c5_r1: -406178056
+      Wedge_sandstone_barnacled_normal_c5_r2: -126082445
+      Wedge_sandstone_barnacled_normal_c6_r0: 195878920
+      Wedge_sandstone_barnacled_normal_c6_r1: 392506655
+      Wedge_sandstone_barnacled_normal_c6_r2: 1220193899
+      Wedge_sandstone_barnacled_normal_c7_r0: -461263395
+      Wedge_sandstone_barnacled_normal_c7_r1: -1059812942
+      Wedge_sandstone_barnacled_normal_c7_r2: 1635931929
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

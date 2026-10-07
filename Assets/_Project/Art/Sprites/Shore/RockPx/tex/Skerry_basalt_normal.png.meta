@@ -1,0 +1,763 @@
+fileFormatVersion: 2
+guid: a5a87106cf503e640b6712ce60b65df8
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3934755641047617364
+    second: Skerry_basalt_normal_0
+  - first:
+      213: -3980900730327195707
+    second: Skerry_basalt_normal_1
+  - first:
+      213: -590227632250104121
+    second: Skerry_basalt_normal_2
+  - first:
+      213: 7046277357340333578
+    second: Skerry_basalt_normal_3
+  - first:
+      213: 4419919091602273872
+    second: Skerry_basalt_normal_4
+  - first:
+      213: -4226436182535266291
+    second: Skerry_basalt_normal_5
+  - first:
+      213: 615274350515657191
+    second: Skerry_basalt_normal_6
+  - first:
+      213: -2822650023266853853
+    second: Skerry_basalt_normal_7
+  - first:
+      213: 4863021948740568474
+    second: Skerry_basalt_normal_8
+  - first:
+      213: 1901056894039476331
+    second: Skerry_basalt_normal_9
+  - first:
+      213: 7088661988207784748
+    second: Skerry_basalt_normal_10
+  - first:
+      213: -8535198637391774743
+    second: Skerry_basalt_normal_11
+  - first:
+      213: -7235275418650621876
+    second: Skerry_basalt_normal_12
+  - first:
+      213: 3840811448683839404
+    second: Skerry_basalt_normal_13
+  - first:
+      213: 1815588896160075305
+    second: Skerry_basalt_normal_14
+  - first:
+      213: 6622297331097014422
+    second: Skerry_basalt_normal_15
+  - first:
+      213: -1093985427750310583
+    second: Skerry_basalt_normal_16
+  - first:
+      213: 8440781559158729945
+    second: Skerry_basalt_normal_17
+  - first:
+      213: -7404838414728111392
+    second: Skerry_basalt_normal_18
+  - first:
+      213: 5789731805235710396
+    second: Skerry_basalt_normal_19
+  - first:
+      213: 2939981632049949685
+    second: Skerry_basalt_normal_20
+  - first:
+      213: 9021451368033363321
+    second: Skerry_basalt_normal_21
+  - first:
+      213: -2452428084342172401
+    second: Skerry_basalt_normal_22
+  - first:
+      213: 7801751462716640378
+    second: Skerry_basalt_normal_23
+  - first:
+      213: -2487214736614511114
+    second: Skerry_basalt_normal_24
+  - first:
+      213: -1229434259875063598
+    second: Skerry_basalt_normal_25
+  - first:
+      213: -1376434217062355217
+    second: Skerry_basalt_normal_26
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 206ca6da2c255ac4e8811c90cb52e7a9
+      internalID: 1409309250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2fd521b1e8555cc49b6237767de0b0d9
+      internalID: -581469250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2173913}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a021e27762b29be439e8e81dd363b1cc
+      internalID: 1770460326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e25b4a5d173052f4f9e4081a0e2ae2d1
+      internalID: 862662772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 923f266c77588e644bcd70f6ffcaffb2
+      internalID: -834463607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 46e66fd074515bb4395e68cc32c89716
+      internalID: -684377865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2173913}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16cf3a681c8c02e4c9e9b07025d2936b
+      internalID: -144206094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 714
+        y: 92
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4b0f0f394cabb3428acfdb39720dfb5
+      internalID: -546436860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eccf4767b4b26434b96a0a1738b483cd
+      internalID: -1519964007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c43d58c66a0bb045ae650b61e4cc624
+      internalID: 1003986019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2173913}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3231a50626b2cb74bbd85d1b9c556fe8
+      internalID: -591986213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a88b6547996524c4b95ed6e92c7e7e6d
+      internalID: -1133813962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b290583e0b63e34abbaa8051998309d
+      internalID: -1852449042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3605ba4c9a6f609409848bec30e45569
+      internalID: 336565005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2173913}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0db4a4cf5a859d945823da040644bc74
+      internalID: -1752101820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 714
+        y: 46
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7cb8102ab9eec842ac5de2dbacd747e
+      internalID: 2031381194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2760b8ac0928b0f4fae3d6a932299de8
+      internalID: -979230278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 068976819234c3a43a423a70539c1670
+      internalID: -2060181205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2173913}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7db0f5e199f1b6439960a77c4e4391e
+      internalID: -1796410727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c2070ae27112974caa2cb12cc3c52bb
+      internalID: -1310009209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b64a369d325f7ca458b4f1d9a5c7b24f
+      internalID: -1484506145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90dcad09d474ef6479c94673a87b6e78
+      internalID: -1501022071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2173913}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5841b8783dc40b4c8ea3524f47adf26
+      internalID: -1099813843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skerry_basalt_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 714
+        y: 0
+        width: 102
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 455493f4fb8db7e439169d65ab66cc1e
+      internalID: -1718948602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 4ef31b9ff8c64c84389e9259b3696228
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Skerry_basalt_normal_c0_r0: 1409309250
+      Skerry_basalt_normal_c0_r1: -1519964007
+      Skerry_basalt_normal_c0_r2: -979230278
+      Skerry_basalt_normal_c1_r0: -581469250
+      Skerry_basalt_normal_c1_r1: 1003986019
+      Skerry_basalt_normal_c1_r2: -2060181205
+      Skerry_basalt_normal_c2_r0: 1770460326
+      Skerry_basalt_normal_c2_r1: -591986213
+      Skerry_basalt_normal_c2_r2: -1796410727
+      Skerry_basalt_normal_c3_r0: 862662772
+      Skerry_basalt_normal_c3_r1: -1133813962
+      Skerry_basalt_normal_c3_r2: -1310009209
+      Skerry_basalt_normal_c4_r0: -834463607
+      Skerry_basalt_normal_c4_r1: -1852449042
+      Skerry_basalt_normal_c4_r2: -1484506145
+      Skerry_basalt_normal_c5_r0: -684377865
+      Skerry_basalt_normal_c5_r1: 336565005
+      Skerry_basalt_normal_c5_r2: -1501022071
+      Skerry_basalt_normal_c6_r0: -144206094
+      Skerry_basalt_normal_c6_r1: -1752101820
+      Skerry_basalt_normal_c6_r2: -1099813843
+      Skerry_basalt_normal_c7_r0: -546436860
+      Skerry_basalt_normal_c7_r1: 2031381194
+      Skerry_basalt_normal_c7_r2: -1718948602
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

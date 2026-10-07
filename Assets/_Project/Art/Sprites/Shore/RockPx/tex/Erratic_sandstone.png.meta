@@ -1,0 +1,757 @@
+fileFormatVersion: 2
+guid: 316d317ecbd4c5b438ad86821ce6a7b0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8579291707963298759
+    second: Erratic_sandstone_0
+  - first:
+      213: -8902843855766587333
+    second: Erratic_sandstone_1
+  - first:
+      213: -8833490585590148116
+    second: Erratic_sandstone_2
+  - first:
+      213: 716717784448431252
+    second: Erratic_sandstone_3
+  - first:
+      213: -2360002544914831422
+    second: Erratic_sandstone_4
+  - first:
+      213: -1827950714782374698
+    second: Erratic_sandstone_5
+  - first:
+      213: -8517710962418735915
+    second: Erratic_sandstone_6
+  - first:
+      213: 2816471055408259357
+    second: Erratic_sandstone_7
+  - first:
+      213: -8339779666720438490
+    second: Erratic_sandstone_8
+  - first:
+      213: 6487889791572027093
+    second: Erratic_sandstone_9
+  - first:
+      213: 5559432294096086961
+    second: Erratic_sandstone_10
+  - first:
+      213: 5267775024083881266
+    second: Erratic_sandstone_11
+  - first:
+      213: -2358741059257618216
+    second: Erratic_sandstone_12
+  - first:
+      213: -1009607415639590099
+    second: Erratic_sandstone_13
+  - first:
+      213: -804512125638566710
+    second: Erratic_sandstone_14
+  - first:
+      213: 1637481777562048052
+    second: Erratic_sandstone_15
+  - first:
+      213: -1903316008358016675
+    second: Erratic_sandstone_16
+  - first:
+      213: -9183371125114495587
+    second: Erratic_sandstone_17
+  - first:
+      213: -4425917555893234430
+    second: Erratic_sandstone_18
+  - first:
+      213: -2063057018065299962
+    second: Erratic_sandstone_19
+  - first:
+      213: 3310377341126737467
+    second: Erratic_sandstone_20
+  - first:
+      213: -1969255924524401853
+    second: Erratic_sandstone_21
+  - first:
+      213: 8312229173558562958
+    second: Erratic_sandstone_22
+  - first:
+      213: -616730037168009337
+    second: Erratic_sandstone_23
+  - first:
+      213: 2944809254865538036
+    second: Erratic_sandstone_24
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Erratic_sandstone_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 686bd9a75c1ccb340b99e9dae9fc05d8
+      internalID: 836584365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2f4d9d340f2a2041a518f2e01d09eff
+      internalID: 1844448147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9088ed7d4e583d44f9314c27a5c57fce
+      internalID: 1063185792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58397915763336748a7cfed849d5515b
+      internalID: -1510604262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e43af45bdbcaf1f40a8db25cfef2d53e
+      internalID: 1839081036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84521608514d90b4f8f2901962a3b8e1
+      internalID: 28695736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e77c2db96c1e8cc4083bfec1acb22c05
+      internalID: -1381393430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 100
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b89b325bdd122142843583cecf6f832
+      internalID: -650498297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6438016af025e514991441d2dd2ebb18
+      internalID: -1445737639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97dfb589766b0924a90f0062d5692378
+      internalID: 362780445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9fd128597d6d5ec4e92e512b28ae3a88
+      internalID: 71231558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bbbe25456a40f144870292caaaf3b61
+      internalID: -1903267653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0292de76001bc6742ad2f7ea32bdd553
+      internalID: 713376953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b00d32164cdbd2841aec706bf251fb77
+      internalID: -633083975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b4d1764de730f9479164b739b41aedd
+      internalID: -446816936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 50
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c5f02574ac6fd64785e1204ca30c359
+      internalID: 2016978178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddec0ab34bcbe734394b5b90494635ae
+      internalID: 556774630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09f714b86987880418763d8adcc28e05
+      internalID: -1503540466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7325f2a1befe7d44896471e36cf1177c
+      internalID: -1097479010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba9a103be25e4ac49b5393f76a405a30
+      internalID: 1203029250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8daa0e9d44a84de40bde9855fc8c782f
+      internalID: 721649091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4bb6336f50c8cb746928593a831fbb43
+      internalID: 1057365447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c49700ae691d4a40be084038687f2c5
+      internalID: 2142955640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Erratic_sandstone_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 0
+        width: 56
+        height: 50
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ccad26e112775cf41ad11861b987ea2f
+      internalID: -374193789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 0deec9b108b6b6c4f8fc957594f46cb4
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Erratic_sandstone_c0_r0: 836584365
+      Erratic_sandstone_c0_r1: -1445737639
+      Erratic_sandstone_c0_r2: 556774630
+      Erratic_sandstone_c1_r0: 1844448147
+      Erratic_sandstone_c1_r1: 362780445
+      Erratic_sandstone_c1_r2: -1503540466
+      Erratic_sandstone_c2_r0: 1063185792
+      Erratic_sandstone_c2_r1: 71231558
+      Erratic_sandstone_c2_r2: -1097479010
+      Erratic_sandstone_c3_r0: -1510604262
+      Erratic_sandstone_c3_r1: -1903267653
+      Erratic_sandstone_c3_r2: 1203029250
+      Erratic_sandstone_c4_r0: 1839081036
+      Erratic_sandstone_c4_r1: 713376953
+      Erratic_sandstone_c4_r2: 721649091
+      Erratic_sandstone_c5_r0: 28695736
+      Erratic_sandstone_c5_r1: -633083975
+      Erratic_sandstone_c5_r2: 1057365447
+      Erratic_sandstone_c6_r0: -1381393430
+      Erratic_sandstone_c6_r1: -446816936
+      Erratic_sandstone_c6_r2: 2142955640
+      Erratic_sandstone_c7_r0: -650498297
+      Erratic_sandstone_c7_r1: 2016978178
+      Erratic_sandstone_c7_r2: -374193789
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

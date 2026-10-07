@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 5cbc571005f251f4bab61109d79cd72d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8062486276715167469
+    second: Block_basalt_barnacled_normal_0
+  - first:
+      213: 6904119960077505799
+    second: Block_basalt_barnacled_normal_1
+  - first:
+      213: -2260486419856847534
+    second: Block_basalt_barnacled_normal_2
+  - first:
+      213: 8325245573180520999
+    second: Block_basalt_barnacled_normal_3
+  - first:
+      213: 7119499823844779886
+    second: Block_basalt_barnacled_normal_4
+  - first:
+      213: 5352114760226665251
+    second: Block_basalt_barnacled_normal_5
+  - first:
+      213: 8066421413175822038
+    second: Block_basalt_barnacled_normal_6
+  - first:
+      213: -6095422822401245593
+    second: Block_basalt_barnacled_normal_7
+  - first:
+      213: -6998093092249288571
+    second: Block_basalt_barnacled_normal_8
+  - first:
+      213: 6478523712692344185
+    second: Block_basalt_barnacled_normal_9
+  - first:
+      213: 7662021180846687629
+    second: Block_basalt_barnacled_normal_10
+  - first:
+      213: -1124893522219379596
+    second: Block_basalt_barnacled_normal_11
+  - first:
+      213: 5503904617117772854
+    second: Block_basalt_barnacled_normal_12
+  - first:
+      213: 827396352941500157
+    second: Block_basalt_barnacled_normal_13
+  - first:
+      213: 329587811386913432
+    second: Block_basalt_barnacled_normal_14
+  - first:
+      213: -5599565116012626040
+    second: Block_basalt_barnacled_normal_15
+  - first:
+      213: -6209758095571117831
+    second: Block_basalt_barnacled_normal_16
+  - first:
+      213: 1436575406473220696
+    second: Block_basalt_barnacled_normal_17
+  - first:
+      213: -347540488148981801
+    second: Block_basalt_barnacled_normal_18
+  - first:
+      213: -21444363369831052
+    second: Block_basalt_barnacled_normal_19
+  - first:
+      213: 5666205804770840735
+    second: Block_basalt_barnacled_normal_20
+  - first:
+      213: -7708737687439410129
+    second: Block_basalt_barnacled_normal_21
+  - first:
+      213: 5376324436897545504
+    second: Block_basalt_barnacled_normal_22
+  - first:
+      213: -8320216178970036483
+    second: Block_basalt_barnacled_normal_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18518518}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b878b62aed3f724bb65635819e23bf9
+      internalID: -1550371569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2697239173d01bf45977b255ed59d713
+      internalID: 699579538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14814815}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb826ff01c83a434baca27b880b62ea0
+      internalID: 1452220120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa7910fc049812840bde7be8df251c6a
+      internalID: -1889240129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18518518}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7709bad424f6b88448e72f891b183e2a
+      internalID: 1688528460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6350ea938e9ea0409f4321000358c9f
+      internalID: 84404842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14814815}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 139d7a05d298a104486c745a64b32a4b
+      internalID: -750184638
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 108
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58d5b6811cdda6d4392493db367da2ba
+      internalID: -264423404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18518518}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a28dc6651a44394dba691efae7dc472
+      internalID: 675036958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7110259fa52164147975813ecea96fbe
+      internalID: -577813554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14814815}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2119f0092caa9e548885cd2935f3cea2
+      internalID: 1470630355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bfb997412b6eac047ba94954cedb6b0b
+      internalID: 463436138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18518518}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e9bdbd0949322f47bd560e249287e75
+      internalID: 1354410632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cca32015d4ae4414f9bce7c752361fb6
+      internalID: 1679347455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14814815}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fddac8fd7a9a95b4089f73a6f82fce6d
+      internalID: -1405687653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 54
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd029ea0522f7d042a13ae7fbae6fdf2
+      internalID: 39075899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18518518}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cbfb4fbf41507f04d83d87caf6e8aa5b
+      internalID: 399769950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80c53a9fc0a6f764ab4878f45d8a1402
+      internalID: 412021251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14814815}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bcc1b980faba62f459430879c569a08c
+      internalID: 1065663533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6153c0d22e3266a43b0fe7d15466499d
+      internalID: 1780266166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18518518}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1222ab2ee5dd47459ba0ac8fd828c9c
+      internalID: -1090351334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de880620f4cb50f4ba539cfa722b004d
+      internalID: -1221420858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14814815}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f72e7f839cca3c84aa12a606de99c928
+      internalID: -1337681003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block_basalt_barnacled_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 0
+        width: 56
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25925925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54eb285bf8a82f2438bfd2a431eb8cd5
+      internalID: -264018270
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e9902755f424c08459c58462535ab466
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Block_basalt_barnacled_normal_c0_r0: -1550371569
+      Block_basalt_barnacled_normal_c0_r1: 675036958
+      Block_basalt_barnacled_normal_c0_r2: 399769950
+      Block_basalt_barnacled_normal_c1_r0: 699579538
+      Block_basalt_barnacled_normal_c1_r1: -577813554
+      Block_basalt_barnacled_normal_c1_r2: 412021251
+      Block_basalt_barnacled_normal_c2_r0: 1452220120
+      Block_basalt_barnacled_normal_c2_r1: 1470630355
+      Block_basalt_barnacled_normal_c2_r2: 1065663533
+      Block_basalt_barnacled_normal_c3_r0: -1889240129
+      Block_basalt_barnacled_normal_c3_r1: 463436138
+      Block_basalt_barnacled_normal_c3_r2: 1780266166
+      Block_basalt_barnacled_normal_c4_r0: 1688528460
+      Block_basalt_barnacled_normal_c4_r1: 1354410632
+      Block_basalt_barnacled_normal_c4_r2: -1090351334
+      Block_basalt_barnacled_normal_c5_r0: 84404842
+      Block_basalt_barnacled_normal_c5_r1: 1679347455
+      Block_basalt_barnacled_normal_c5_r2: -1221420858
+      Block_basalt_barnacled_normal_c6_r0: -750184638
+      Block_basalt_barnacled_normal_c6_r1: -1405687653
+      Block_basalt_barnacled_normal_c6_r2: -1337681003
+      Block_basalt_barnacled_normal_c7_r0: -264423404
+      Block_basalt_barnacled_normal_c7_r1: 39075899
+      Block_basalt_barnacled_normal_c7_r2: -264018270
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

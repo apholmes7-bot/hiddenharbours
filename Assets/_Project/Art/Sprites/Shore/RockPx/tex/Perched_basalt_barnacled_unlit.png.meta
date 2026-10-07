@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: e1e3c769f263f2f40a760faa47d6e504
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 68273239416422910
+    second: Perched_basalt_barnacled_unlit_0
+  - first:
+      213: 7832688848702656240
+    second: Perched_basalt_barnacled_unlit_1
+  - first:
+      213: -3262023786639611504
+    second: Perched_basalt_barnacled_unlit_2
+  - first:
+      213: 7600204537500763499
+    second: Perched_basalt_barnacled_unlit_3
+  - first:
+      213: 3885751930127888172
+    second: Perched_basalt_barnacled_unlit_4
+  - first:
+      213: 5976372698816316112
+    second: Perched_basalt_barnacled_unlit_5
+  - first:
+      213: 3334929642941871047
+    second: Perched_basalt_barnacled_unlit_6
+  - first:
+      213: 5095666941182684931
+    second: Perched_basalt_barnacled_unlit_7
+  - first:
+      213: -6204530684622140205
+    second: Perched_basalt_barnacled_unlit_8
+  - first:
+      213: 6943097395842023643
+    second: Perched_basalt_barnacled_unlit_9
+  - first:
+      213: -258947018856430670
+    second: Perched_basalt_barnacled_unlit_10
+  - first:
+      213: -784165635709387313
+    second: Perched_basalt_barnacled_unlit_11
+  - first:
+      213: -4692852952643998027
+    second: Perched_basalt_barnacled_unlit_12
+  - first:
+      213: 7547367239943842733
+    second: Perched_basalt_barnacled_unlit_13
+  - first:
+      213: 5575116477186409599
+    second: Perched_basalt_barnacled_unlit_14
+  - first:
+      213: -3206126196883050777
+    second: Perched_basalt_barnacled_unlit_15
+  - first:
+      213: -7434639227591812869
+    second: Perched_basalt_barnacled_unlit_16
+  - first:
+      213: -7641523050733069691
+    second: Perched_basalt_barnacled_unlit_17
+  - first:
+      213: -4468517717602703505
+    second: Perched_basalt_barnacled_unlit_18
+  - first:
+      213: -7073076237241601963
+    second: Perched_basalt_barnacled_unlit_19
+  - first:
+      213: 4257043214273844381
+    second: Perched_basalt_barnacled_unlit_20
+  - first:
+      213: 6771429804098610554
+    second: Perched_basalt_barnacled_unlit_21
+  - first:
+      213: -2143330740823571618
+    second: Perched_basalt_barnacled_unlit_22
+  - first:
+      213: -502297123050845817
+    second: Perched_basalt_barnacled_unlit_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd754f7fe1f79854fb6e57fc062d0115
+      internalID: 1276819818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2384eb1599cdc0848aeaeebc105d4ccd
+      internalID: -1882582830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6683782e01eea6041bc41aac3c5bb8ee
+      internalID: 17800168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 992ccbe980e726147a1bf48beeb98a69
+      internalID: 545608600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 272f6c77b5a318b49bf67198c175efa9
+      internalID: 1988675848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8dd3e1c840f7c384c8ee304abad7960f
+      internalID: 1125551851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4edef780adda5dc4bb81b0647179c2d0
+      internalID: 553619838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a05bc9ee1572e0f4a8d57433057dbc37
+      internalID: 737881929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b0e5a40bbdd72b479652738593e528e
+      internalID: 496262853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb80fb29796a5644ab6ce6d497d8aefa
+      internalID: 1236741743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3906c9323c33874dbce6549124f592b
+      internalID: -315055420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9bd5f1b338c3c0a4c83df87863d13077
+      internalID: -801317876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec85cbc33fa582246aad979f8c8b1d90
+      internalID: -329402381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 634aa4f0d0b847e41a9eaea25fa57123
+      internalID: 1062465867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3649480bbdc592640abdc5096e00a51a
+      internalID: 1304203898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40bcb63a392a25b4e9eb0fc2e4a8e988
+      internalID: -408339985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0eeb8e95edae37346b0120c4a433cdbb
+      internalID: -995071334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7efb58959d0e7244cb8125ef1901a62c
+      internalID: -1335557473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c930470d30d4f24192f463c5b818f3e
+      internalID: 694181528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc29eeaa82602a94fa00ce6cb7ef5cd2
+      internalID: 423843124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e672a02c3c0ac604d8a5b3cb69858d2d
+      internalID: -1664889798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c990156382fc8704287626f7218a5f7a
+      internalID: 1635505644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 26491c57f60b7d84aa7bba4a25836ffb
+      internalID: 1105065645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_basalt_barnacled_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e4779db571919240aa4a7181f5c54f3
+      internalID: 129661871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 8b60d95b1de5f2b4f9cf3282b657a6eb
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Perched_basalt_barnacled_unlit_c0_r0: 1276819818
+      Perched_basalt_barnacled_unlit_c0_r1: 496262853
+      Perched_basalt_barnacled_unlit_c0_r2: -995071334
+      Perched_basalt_barnacled_unlit_c1_r0: -1882582830
+      Perched_basalt_barnacled_unlit_c1_r1: 1236741743
+      Perched_basalt_barnacled_unlit_c1_r2: -1335557473
+      Perched_basalt_barnacled_unlit_c2_r0: 17800168
+      Perched_basalt_barnacled_unlit_c2_r1: -315055420
+      Perched_basalt_barnacled_unlit_c2_r2: 694181528
+      Perched_basalt_barnacled_unlit_c3_r0: 545608600
+      Perched_basalt_barnacled_unlit_c3_r1: -801317876
+      Perched_basalt_barnacled_unlit_c3_r2: 423843124
+      Perched_basalt_barnacled_unlit_c4_r0: 1988675848
+      Perched_basalt_barnacled_unlit_c4_r1: -329402381
+      Perched_basalt_barnacled_unlit_c4_r2: -1664889798
+      Perched_basalt_barnacled_unlit_c5_r0: 1125551851
+      Perched_basalt_barnacled_unlit_c5_r1: 1062465867
+      Perched_basalt_barnacled_unlit_c5_r2: 1635505644
+      Perched_basalt_barnacled_unlit_c6_r0: 553619838
+      Perched_basalt_barnacled_unlit_c6_r1: 1304203898
+      Perched_basalt_barnacled_unlit_c6_r2: 1105065645
+      Perched_basalt_barnacled_unlit_c7_r0: 737881929
+      Perched_basalt_barnacled_unlit_c7_r1: -408339985
+      Perched_basalt_barnacled_unlit_c7_r2: 129661871
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

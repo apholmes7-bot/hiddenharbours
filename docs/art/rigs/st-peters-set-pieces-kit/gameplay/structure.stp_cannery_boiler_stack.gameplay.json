@@ -1,0 +1,211 @@
+{
+ "schema": "hidden-harbours/st-peters-set-piece@1",
+ "generatedBy": "StPetersSetPieces 1.0.0",
+ "key": "boilerStack",
+ "id": "structure.stp_cannery_boiler_stack",
+ "name": "Boiler house and stack",
+ "defType": "SetPieceDef",
+ "scene": "keyscene.stp_cannery",
+ "units": "metres, the piece's own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -2.25,
+   2.2
+  ],
+  "y": [
+   -1.8,
+   1.9
+  ],
+  "z": [
+   0,
+   13.9
+  ]
+ },
+ "layer": "raised",
+ "walk": "behind",
+ "mount": "ground",
+ "colliders": [
+  {
+   "type": "polygon",
+   "blocks": "walk",
+   "pts": [
+    [
+     -2.1,
+     1.7
+    ],
+    [
+     2.1,
+     1.7
+    ],
+    [
+     2.1,
+     -1.7
+    ],
+    [
+     -2.1,
+     -1.7
+    ]
+   ]
+  }
+ ],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 150,
+   "h": 388,
+   "pivot": [
+    75,
+    349
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 190,
+   "h": 399,
+   "pivot": [
+    97,
+    339
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 126,
+   "h": 380,
+   "pivot": [
+    64,
+    333
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 185,
+   "h": 406,
+   "pivot": [
+    89,
+    347
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 150,
+   "h": 399,
+   "pivot": [
+    74,
+    359
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 190,
+   "h": 426,
+   "pivot": [
+    92,
+    367
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 126,
+   "h": 414,
+   "pivot": [
+    61,
+    367
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 185,
+   "h": 422,
+   "pivot": [
+    95,
+    363
+   ]
+  }
+ ],
+ "anchors": {
+  "flue": [
+   -1.05,
+   -0.25,
+   13.1
+  ],
+  "door": [
+   0.85,
+   1.75,
+   0
+  ],
+  "words": [],
+  "px": {
+   "flue": [
+    107.6,
+    32.7
+   ],
+   "door": [
+    46.8,
+    395
+   ]
+  }
+ },
+ "options": {
+  "stackH": 14,
+  "decay": "derelict",
+  "lit": 0
+ },
+ "light": {
+  "emitters": [
+   "window"
+  ],
+  "when": "restored only: a runtime overlay (the backlog makes windows and smoke overlays)"
+ },
+ "animated": null,
+ "notes": "Derelict (default) or restored. Restored, the flue anchor is where the smoke plume (fx.stp_cannery_smoke) rises: a runtime overlay."
+}

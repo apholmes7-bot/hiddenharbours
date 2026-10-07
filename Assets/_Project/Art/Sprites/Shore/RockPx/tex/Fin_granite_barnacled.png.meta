@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: cfceec80eb1f7d74daf68124d67bdf4b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1713244741624050366
+    second: Fin_granite_barnacled_0
+  - first:
+      213: 7811922387438646075
+    second: Fin_granite_barnacled_1
+  - first:
+      213: 6047435819987770543
+    second: Fin_granite_barnacled_2
+  - first:
+      213: -8067844105559061502
+    second: Fin_granite_barnacled_3
+  - first:
+      213: -4724795316965423756
+    second: Fin_granite_barnacled_4
+  - first:
+      213: 3536686178780832357
+    second: Fin_granite_barnacled_5
+  - first:
+      213: 4330898176143410195
+    second: Fin_granite_barnacled_6
+  - first:
+      213: 7363820319556107232
+    second: Fin_granite_barnacled_7
+  - first:
+      213: 8338148268433656285
+    second: Fin_granite_barnacled_8
+  - first:
+      213: 357983194126898026
+    second: Fin_granite_barnacled_9
+  - first:
+      213: 7736051369314223008
+    second: Fin_granite_barnacled_10
+  - first:
+      213: -8336752289880233533
+    second: Fin_granite_barnacled_11
+  - first:
+      213: 5380321818644678012
+    second: Fin_granite_barnacled_12
+  - first:
+      213: 8691625116287358142
+    second: Fin_granite_barnacled_13
+  - first:
+      213: 1931736044469166611
+    second: Fin_granite_barnacled_14
+  - first:
+      213: 8684311222348241589
+    second: Fin_granite_barnacled_15
+  - first:
+      213: -803779134116767500
+    second: Fin_granite_barnacled_16
+  - first:
+      213: 4978116618058531108
+    second: Fin_granite_barnacled_17
+  - first:
+      213: 336605065722114817
+    second: Fin_granite_barnacled_18
+  - first:
+      213: -293071002871940752
+    second: Fin_granite_barnacled_19
+  - first:
+      213: 4359979270611292930
+    second: Fin_granite_barnacled_20
+  - first:
+      213: -3180561398529519488
+    second: Fin_granite_barnacled_21
+  - first:
+      213: 1250898561429469874
+    second: Fin_granite_barnacled_22
+  - first:
+      213: -6271912127145233943
+    second: Fin_granite_barnacled_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07b47603da5547443a1368fbfdc6159c
+      internalID: -819701939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd175ebdce8fc4b4da4b6e4ad190b2dd
+      internalID: -311594833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c15274018eaaf834d9dd29feec8b44bb
+      internalID: 1812152923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2731415a3d9d82349ab32b2e6951de38
+      internalID: -82384918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43e03fb8271d89643a24ff5578ecfd12
+      internalID: 1667558238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4130228a86c20547bb2e2652a763d83
+      internalID: -744397577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e06f792fd5fe74e4e803b3112c18972a
+      internalID: 2036253999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 132
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c82fdcf739db681478d43aaf64e856e7
+      internalID: 660648242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bce56ffa407a2f94b83fcb698bc8865c
+      internalID: -896074804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8f6add3d97dd844da02039aa08e8277
+      internalID: 173158032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 311092ff9e10e4d468fcdaf551d807b0
+      internalID: -140461931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2821d71498ac7e64db9d2839bb4eeae7
+      internalID: -653722375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd923282fd985134e9d063186891e0aa
+      internalID: 1142425792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b964efc9717440459ceb396f0c5e2a7
+      internalID: -1723325585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff663e83edfb0a24f8039526382ef5b4
+      internalID: 1282242445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 66
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd34d095a818eec4e9ce4cf61c19d76f
+      internalID: -1795649868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85d6b8d22640b244dbd4b2fbcc9c7c79
+      internalID: -1579049105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6aca95dc60f6ef34380eaa65d5b604e2
+      internalID: -1010302318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1c3e973365de984abf9fb2b19aefe5c
+      internalID: 1842373139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83fb5bc87cb70e84582d03178e1f55ca
+      internalID: -95125130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac0108948dd427f4098d79b0526bbe27
+      internalID: 787115647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 285421734ebf4574d9ad08ab6df56d29
+      internalID: -67598103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a6c0becd8e239242a5423ccf295e256
+      internalID: -1534233803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fin_granite_barnacled_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 0
+        width: 46
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99b659671de7f2c47983a6bcaac433dc
+      internalID: 1471272157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 04d348c81d159484d9df3bf1e8a14906
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fin_granite_barnacled_c0_r0: -819701939
+      Fin_granite_barnacled_c0_r1: -896074804
+      Fin_granite_barnacled_c0_r2: -1579049105
+      Fin_granite_barnacled_c1_r0: -311594833
+      Fin_granite_barnacled_c1_r1: 173158032
+      Fin_granite_barnacled_c1_r2: -1010302318
+      Fin_granite_barnacled_c2_r0: 1812152923
+      Fin_granite_barnacled_c2_r1: -140461931
+      Fin_granite_barnacled_c2_r2: 1842373139
+      Fin_granite_barnacled_c3_r0: -82384918
+      Fin_granite_barnacled_c3_r1: -653722375
+      Fin_granite_barnacled_c3_r2: -95125130
+      Fin_granite_barnacled_c4_r0: 1667558238
+      Fin_granite_barnacled_c4_r1: 1142425792
+      Fin_granite_barnacled_c4_r2: 787115647
+      Fin_granite_barnacled_c5_r0: -744397577
+      Fin_granite_barnacled_c5_r1: -1723325585
+      Fin_granite_barnacled_c5_r2: -67598103
+      Fin_granite_barnacled_c6_r0: 2036253999
+      Fin_granite_barnacled_c6_r1: 1282242445
+      Fin_granite_barnacled_c6_r2: -1534233803
+      Fin_granite_barnacled_c7_r0: 660648242
+      Fin_granite_barnacled_c7_r1: -1795649868
+      Fin_granite_barnacled_c7_r2: 1471272157
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

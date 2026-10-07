@@ -1,0 +1,772 @@
+fileFormatVersion: 2
+guid: b4f29eaa82a6e2f48aeed085c849b255
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7933845084068735563
+    second: Cloven_quartzite_barnacled_normal_0
+  - first:
+      213: 9208675777572084314
+    second: Cloven_quartzite_barnacled_normal_1
+  - first:
+      213: 2272680806076052103
+    second: Cloven_quartzite_barnacled_normal_2
+  - first:
+      213: 3819673827875811121
+    second: Cloven_quartzite_barnacled_normal_3
+  - first:
+      213: 2959513330342739873
+    second: Cloven_quartzite_barnacled_normal_4
+  - first:
+      213: 6212070729683711242
+    second: Cloven_quartzite_barnacled_normal_5
+  - first:
+      213: 5105173498884548294
+    second: Cloven_quartzite_barnacled_normal_6
+  - first:
+      213: -7088915518733587446
+    second: Cloven_quartzite_barnacled_normal_7
+  - first:
+      213: 758258762594262710
+    second: Cloven_quartzite_barnacled_normal_8
+  - first:
+      213: -662726999770299515
+    second: Cloven_quartzite_barnacled_normal_9
+  - first:
+      213: 5564367961800193246
+    second: Cloven_quartzite_barnacled_normal_10
+  - first:
+      213: 754847193838974837
+    second: Cloven_quartzite_barnacled_normal_11
+  - first:
+      213: -5213860952548972058
+    second: Cloven_quartzite_barnacled_normal_12
+  - first:
+      213: -1825366317659365682
+    second: Cloven_quartzite_barnacled_normal_13
+  - first:
+      213: -3793775941489765948
+    second: Cloven_quartzite_barnacled_normal_14
+  - first:
+      213: 1395149235683186894
+    second: Cloven_quartzite_barnacled_normal_15
+  - first:
+      213: -1612762288977047798
+    second: Cloven_quartzite_barnacled_normal_16
+  - first:
+      213: -2029159946426259385
+    second: Cloven_quartzite_barnacled_normal_17
+  - first:
+      213: -7006359106190645142
+    second: Cloven_quartzite_barnacled_normal_18
+  - first:
+      213: -4105980472787497501
+    second: Cloven_quartzite_barnacled_normal_19
+  - first:
+      213: -4665246106164755347
+    second: Cloven_quartzite_barnacled_normal_20
+  - first:
+      213: 1898645378768630345
+    second: Cloven_quartzite_barnacled_normal_21
+  - first:
+      213: -2607882547889981705
+    second: Cloven_quartzite_barnacled_normal_22
+  - first:
+      213: -155733827725019237
+    second: Cloven_quartzite_barnacled_normal_23
+  - first:
+      213: 2894036401446243323
+    second: Cloven_quartzite_barnacled_normal_24
+  - first:
+      213: 4625827014052545109
+    second: Cloven_quartzite_barnacled_normal_25
+  - first:
+      213: 7306459498461747070
+    second: Cloven_quartzite_barnacled_normal_26
+  - first:
+      213: -2267005870786956026
+    second: Cloven_quartzite_barnacled_normal_27
+  - first:
+      213: 2467627378937184149
+    second: Cloven_quartzite_barnacled_normal_28
+  - first:
+      213: -9208905391573467229
+    second: Cloven_quartzite_barnacled_normal_29
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d297d54e579b860408073e128cee6d8e
+      internalID: -1326753196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0395892ba34d1748a7d8b8125cb4b7f
+      internalID: -1033382990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2af9214082be47c42ad55d5894049cc0
+      internalID: -1782833951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3cd85a8679d338b4eaf887967f75858e
+      internalID: -1068225039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 184f62cb90aa0d046b61dc79a7c64274
+      internalID: 1274466272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3145b7b4d388378428c6a1f6ffabf2af
+      internalID: -76470081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a538c660130cef94096c2ed4671a2d8f
+      internalID: 1043736477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 172
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2e58110d7ffc3641970d2451bdf39ee
+      internalID: 1666978455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24128be3b3af0ce49a6fa37afb72e654
+      internalID: 1819447115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15ddeae551a90fe47a2de3cd99dd8533
+      internalID: -719717606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 599e71260423c294da255eeeaa8b3051
+      internalID: 2023690202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfd55bbe17e21f940a6507c402aa81fc
+      internalID: 1046530245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ec7502b95d601c4786c6427bdee06e5
+      internalID: -1346098148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f56237ec6b10b3d48876ac6939cb7e7d
+      internalID: -938735994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddf090d4b7144434595bcf9915797cb7
+      internalID: 71418066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 86
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a6d19b2065f3a444b8b7240ae9ae23e
+      internalID: 203561577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a903c32a64890e41b53dacff8e30827
+      internalID: -1800536077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ee2036de6fc3f34891dcd9ac95f491c
+      internalID: -387375926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee51d280c41db194991373b00691daae
+      internalID: -1810501265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79256456effe0454a83c5c65982fadf2
+      internalID: -1652300010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10465116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b7709a233b586c49af6749c06505ca2
+      internalID: 1375828858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10979ca173728804aae95f8ca11460ff
+      internalID: 178037986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.093023255}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9426da717ddb75c448fc0135f6ad68e0
+      internalID: -396379511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cloven_quartzite_barnacled_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 0
+        width: 62
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12790698}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 564d7420a94219444b1a1cd79c29bf9c
+      internalID: -521059834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 233cca2ad30020f48958b3814aee9c63
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cloven_quartzite_barnacled_normal_c0_r0: -1326753196
+      Cloven_quartzite_barnacled_normal_c0_r1: 1819447115
+      Cloven_quartzite_barnacled_normal_c0_r2: -1800536077
+      Cloven_quartzite_barnacled_normal_c1_r0: -1033382990
+      Cloven_quartzite_barnacled_normal_c1_r1: -719717606
+      Cloven_quartzite_barnacled_normal_c1_r2: -387375926
+      Cloven_quartzite_barnacled_normal_c2_r0: -1782833951
+      Cloven_quartzite_barnacled_normal_c2_r1: 2023690202
+      Cloven_quartzite_barnacled_normal_c2_r2: -1810501265
+      Cloven_quartzite_barnacled_normal_c3_r0: -1068225039
+      Cloven_quartzite_barnacled_normal_c3_r1: 1046530245
+      Cloven_quartzite_barnacled_normal_c3_r2: -1652300010
+      Cloven_quartzite_barnacled_normal_c4_r0: 1274466272
+      Cloven_quartzite_barnacled_normal_c4_r1: -1346098148
+      Cloven_quartzite_barnacled_normal_c4_r2: 1375828858
+      Cloven_quartzite_barnacled_normal_c5_r0: -76470081
+      Cloven_quartzite_barnacled_normal_c5_r1: -938735994
+      Cloven_quartzite_barnacled_normal_c5_r2: 178037986
+      Cloven_quartzite_barnacled_normal_c6_r0: 1043736477
+      Cloven_quartzite_barnacled_normal_c6_r1: 71418066
+      Cloven_quartzite_barnacled_normal_c6_r2: -396379511
+      Cloven_quartzite_barnacled_normal_c7_r0: 1666978455
+      Cloven_quartzite_barnacled_normal_c7_r1: 203561577
+      Cloven_quartzite_barnacled_normal_c7_r2: -521059834
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

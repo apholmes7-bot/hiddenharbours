@@ -78,7 +78,10 @@ Material:
     - _BoatLightGain: 0.5
     - _BoatLightTintAmount: 0.25
     - _CausticAmount: 0.45
-    - _CausticDayGate: 0
+    - _CausticCurvatureBlend: 0.5
+    - _CausticCurvatureStep: 0.5
+    - _CausticCurvatureGain: 12
+    - _CausticDayGate: 1
     - _CausticDepth: 1.4
     - _CausticScale: 0.9
     - _CausticShallowBias: 0
@@ -206,6 +209,7 @@ Material:
     - _SurfCrestWidth: 3
     - _SurfDepositStrength: 1
     - _SurfEvolveSpeed: 0.5
+    - _SurfFringeSequenceStrength: 0
     - _SurfFrontSlope: 1
     - _SurfLipThrow: 1.1
     - _SurfLipWidth: 1.2

@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_065
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_065
+  Status: 1
+  SplitFrom: 
+  Follows: wall.stp_248
+  Rock: sandstone
+  Class: 5
+  Aspect: SW
+  Batter: steep
+  Brow:
+  - {x: -27.740831, y: -39.746696}
+  - {x: -27.84696, y: -39.74532}
+  - {x: -28.165775, y: -39.73989}
+  - {x: -28.517235, y: -39.771393}
+  - {x: -29.256922, y: -40.25941}
+  - {x: -29.578611, y: -40.24868}
+  - {x: -29.90069, y: -40.23662}
+  - {x: -30.223225, y: -40.223194}
+  Toe:
+  - {x: -29.7514, y: -42.17159}
+  - {x: -29.509094, y: -41.744648}
+  - {x: -29.833742, y: -41.734356}
+  - {x: -30.191044, y: -41.760956}
+  - {x: -30.516672, y: -41.747875}
+  - {x: -30.87518, y: -41.771477}
+  - {x: -31.592112, y: -42.211235}
+  - {x: -31.953184, y: -42.230614}
+  DropMetres:
+  - 7.6049237
+  - 7.6195183
+  - 7.580304
+  - 7.6192284
+  - 7.453703
+  - 7.5705333
+  - 7.558385
+  - 7.460684
+  ToeElevations:
+  - -1.6050154
+  - -1.6196101
+  - -1.5803955
+  - -1.6498666
+  - -1.6255827
+  - -1.604846
+  - -1.6078173
+  - -1.6114476
+  TextureBrow: []
+  Stations:
+  - 5.666667
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  BrowFrom:
+  - 2
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 2
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9:
+  - 5.999954
+  - 5.999954
+  - 5.999954
+  - 5.988338
+  - 4.363997
+  - 3.4739819
+  - 2.5507073
+  - 1.5934029
+  ToePass9:
+  - -1.312518
+  - -1.1438056
+  - -1.5161971
+  - -1.6352115
+  - -1.6494641
+  - -1.6499428
+  - -1.6499428
+  - -1.6499428
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 65
+  MeasuredOn: 'the ground file''s import, StPetersSeabed_HeightTex.png at 883f27b5 (codes sha256 5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261)'
+  FaceNeeded: 
+  Why: 'Re-lined on the import: stations k5-k12. The list''s row 065 (West Ledges): re-lined. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k5.67-k12, with k5.67 added as a slice of its face.'

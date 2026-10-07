@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e4b07322d732cfe9125965394268f7, type: 3}
+  m_Name: Path_GinnysNorthWalk
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PathDef
+  Id: path.stp_ginnys_north_walk
+  DisplayName: 'Ginny''s north walk'
+  Kind: 0
+  Width: 0.75
+  Points:
+  - {x: 77.1, y: 27}
+  - {x: 77.4, y: 30.6}
+  - {x: 78.2, y: 33.2}
+  - {x: 79.5, y: 38.3}
+  - {x: 80.1, y: 43.9}
+  - {x: 83.6, y: 45.3}
+  - {x: 86, y: 45}
+  LineSource: 
+  JoinPoints: []
+  Material: path
+  Weight: 0.5
+  Label: worn grass
+  Ruts: 0
+  SourceId: walk.ginny.north
+  Frozen: 0
+  PaintOnly: 1
+  Why: 'Worn grass where her feet go: the step to the track.'

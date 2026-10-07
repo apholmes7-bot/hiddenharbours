@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 3414515c01ddcd249a3e03c616ce9985
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 869097418772016161
+    second: Prisms_granite_normal_0
+  - first:
+      213: 7601712342066221444
+    second: Prisms_granite_normal_1
+  - first:
+      213: -7905469570716756627
+    second: Prisms_granite_normal_2
+  - first:
+      213: -6089832662800954015
+    second: Prisms_granite_normal_3
+  - first:
+      213: -765346541306476299
+    second: Prisms_granite_normal_4
+  - first:
+      213: 3163137277074132118
+    second: Prisms_granite_normal_5
+  - first:
+      213: 4233800358725832318
+    second: Prisms_granite_normal_6
+  - first:
+      213: 98048126262332861
+    second: Prisms_granite_normal_7
+  - first:
+      213: 1661602118667073599
+    second: Prisms_granite_normal_8
+  - first:
+      213: 7383579226767792968
+    second: Prisms_granite_normal_9
+  - first:
+      213: -2844991514647155145
+    second: Prisms_granite_normal_10
+  - first:
+      213: -5194785688396987003
+    second: Prisms_granite_normal_11
+  - first:
+      213: 2325498111272993828
+    second: Prisms_granite_normal_12
+  - first:
+      213: -7651576198118972559
+    second: Prisms_granite_normal_13
+  - first:
+      213: 7892296044716714778
+    second: Prisms_granite_normal_14
+  - first:
+      213: -6241137887015205143
+    second: Prisms_granite_normal_15
+  - first:
+      213: 5567652850400931625
+    second: Prisms_granite_normal_16
+  - first:
+      213: -667472590075190664
+    second: Prisms_granite_normal_17
+  - first:
+      213: 993744656952569347
+    second: Prisms_granite_normal_18
+  - first:
+      213: 3407501952231826652
+    second: Prisms_granite_normal_19
+  - first:
+      213: 1256789261208829758
+    second: Prisms_granite_normal_20
+  - first:
+      213: 3530478678372361286
+    second: Prisms_granite_normal_21
+  - first:
+      213: 2051700350037100734
+    second: Prisms_granite_normal_22
+  - first:
+      213: 5483108623209537390
+    second: Prisms_granite_normal_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4aa217222cfdd545b4af4461fb8e108
+      internalID: 2133259721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bc5c96e8efc2744882bd443fbac6b40
+      internalID: 337249761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce08b911ff0e2ab4da82aaeaee5cf602
+      internalID: -9562772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b93f904777caefe44b03911727f48405
+      internalID: -1214688258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82a7d39627070004ea5e89ac297fa2ae
+      internalID: 280862334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cbd32193241911441bf728b9e47c3647
+      internalID: -1120831275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a25eeb255e492b4408d7215a259c0670
+      internalID: 1174726029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 124
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3a63c7c3b8467741b681d947db80900
+      internalID: 2122551543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f56274012e461844da6abdd5482a25db
+      internalID: 1707012372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7db8d08442d221e418108aa731f4ced5
+      internalID: 1941474825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e5777eacb563ab499fdde596aa95624
+      internalID: -1277590894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39d0aa2469ab65a4cb319720f6712cc8
+      internalID: -1957050254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65fef5d89c2191a47a482fa10463c1b1
+      internalID: -700422308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03a88f242db8a6c40b990a19b5988c66
+      internalID: -1744465831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84d078015d1e46e4e8c8b0c1285b0fdc
+      internalID: 2128338281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 62
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 600fa3762cf15ad4689fc0a443f575b4
+      internalID: -1570747418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7b27c96a2c61dc4293bab0803547bf9
+      internalID: -618716393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9982d65795626b0408fa3843702c7c1f
+      internalID: -1705143045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a591f87e73ca54c45bc79cdc96146517
+      internalID: 221580333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40243de63647c594883af8afa0b69047
+      internalID: 1162757517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.12903225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 70a098b51ae839e42bbca56fe54773db
+      internalID: 27739870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20967741}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bf1765976056d44190d24330618cbec
+      internalID: -559907822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.11290322}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d1112f599b75a84da80e56a90ead5a5
+      internalID: 1223484027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prisms_granite_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 0
+        width: 66
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8540007edb85ab04ab9eeb1f829e2610
+      internalID: 1731624535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 8ba00f218b7a9764fac55c2ea6a6c278
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Prisms_granite_normal_c0_r0: 2133259721
+      Prisms_granite_normal_c0_r1: 1707012372
+      Prisms_granite_normal_c0_r2: -618716393
+      Prisms_granite_normal_c1_r0: 337249761
+      Prisms_granite_normal_c1_r1: 1941474825
+      Prisms_granite_normal_c1_r2: -1705143045
+      Prisms_granite_normal_c2_r0: -9562772
+      Prisms_granite_normal_c2_r1: -1277590894
+      Prisms_granite_normal_c2_r2: 221580333
+      Prisms_granite_normal_c3_r0: -1214688258
+      Prisms_granite_normal_c3_r1: -1957050254
+      Prisms_granite_normal_c3_r2: 1162757517
+      Prisms_granite_normal_c4_r0: 280862334
+      Prisms_granite_normal_c4_r1: -700422308
+      Prisms_granite_normal_c4_r2: 27739870
+      Prisms_granite_normal_c5_r0: -1120831275
+      Prisms_granite_normal_c5_r1: -1744465831
+      Prisms_granite_normal_c5_r2: -559907822
+      Prisms_granite_normal_c6_r0: 1174726029
+      Prisms_granite_normal_c6_r1: 2128338281
+      Prisms_granite_normal_c6_r2: 1223484027
+      Prisms_granite_normal_c7_r0: 2122551543
+      Prisms_granite_normal_c7_r1: -1570747418
+      Prisms_granite_normal_c7_r2: 1731624535
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

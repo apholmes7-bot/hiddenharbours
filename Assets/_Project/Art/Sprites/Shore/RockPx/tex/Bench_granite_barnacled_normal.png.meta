@@ -1,0 +1,769 @@
+fileFormatVersion: 2
+guid: 64a239fdfa6b5b94ebea3b1e785b7d2f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 164406024137774914
+    second: Bench_granite_barnacled_normal_0
+  - first:
+      213: -9002927646513807632
+    second: Bench_granite_barnacled_normal_1
+  - first:
+      213: -204456308229635443
+    second: Bench_granite_barnacled_normal_2
+  - first:
+      213: -1222104746386432568
+    second: Bench_granite_barnacled_normal_3
+  - first:
+      213: -1155117548960757542
+    second: Bench_granite_barnacled_normal_4
+  - first:
+      213: 7862951672612489155
+    second: Bench_granite_barnacled_normal_5
+  - first:
+      213: -5238336913232668774
+    second: Bench_granite_barnacled_normal_6
+  - first:
+      213: -675964279030152303
+    second: Bench_granite_barnacled_normal_7
+  - first:
+      213: 4840582778858548053
+    second: Bench_granite_barnacled_normal_8
+  - first:
+      213: 5354733951841007883
+    second: Bench_granite_barnacled_normal_9
+  - first:
+      213: -7198268891726383357
+    second: Bench_granite_barnacled_normal_10
+  - first:
+      213: -4372795405614448929
+    second: Bench_granite_barnacled_normal_11
+  - first:
+      213: 2798548050646019633
+    second: Bench_granite_barnacled_normal_12
+  - first:
+      213: -8668517058900658354
+    second: Bench_granite_barnacled_normal_13
+  - first:
+      213: 4171777468977109440
+    second: Bench_granite_barnacled_normal_14
+  - first:
+      213: 4861042099562408395
+    second: Bench_granite_barnacled_normal_15
+  - first:
+      213: 8810894802674048207
+    second: Bench_granite_barnacled_normal_16
+  - first:
+      213: 5490359097471612004
+    second: Bench_granite_barnacled_normal_17
+  - first:
+      213: -4096495549477734672
+    second: Bench_granite_barnacled_normal_18
+  - first:
+      213: -1133477451985465116
+    second: Bench_granite_barnacled_normal_19
+  - first:
+      213: -5121925496992837297
+    second: Bench_granite_barnacled_normal_20
+  - first:
+      213: -5853171420587280684
+    second: Bench_granite_barnacled_normal_21
+  - first:
+      213: 8397733833011256900
+    second: Bench_granite_barnacled_normal_22
+  - first:
+      213: 3964265272295632664
+    second: Bench_granite_barnacled_normal_23
+  - first:
+      213: 6521754761553028758
+    second: Bench_granite_barnacled_normal_24
+  - first:
+      213: -965334721599213518
+    second: Bench_granite_barnacled_normal_25
+  - first:
+      213: 7197138724113564499
+    second: Bench_granite_barnacled_normal_26
+  - first:
+      213: -6463298103219469351
+    second: Bench_granite_barnacled_normal_27
+  - first:
+      213: -2045974205694110197
+    second: Bench_granite_barnacled_normal_28
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8dcbabdc7b4022e4bbb34037b71f5d37
+      internalID: 1565025443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2aee3ea48997184b92ab947286b7112
+      internalID: -1413562241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c18c18a4d5f0ee4c87cfaf416bd96a8
+      internalID: -865010804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ff887f4cbdcc4d47b3b7c96eba83908
+      internalID: -1420339911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0276dfa8f66dbeb4597513bfd1d22e8d
+      internalID: -448736893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 958a3d2163ada6f47998907ec367e2d7
+      internalID: 808311484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5ec1500b4a11ba4683519a3ff8e76b4
+      internalID: -746802970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 92
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 850ef22643e2ca24e8b10c7a570f889f
+      internalID: -693254305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3ee784138706a84ab1e084adfb52cb1
+      internalID: 806486104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82d3343935c68804da2de1312d4b4237
+      internalID: -1660457256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8754cb716bafaed478769dc251fc3a79
+      internalID: 2099468680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4f1f7a9952cc204287c9b76100c6707
+      internalID: 1127903928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c6199a73d81d44428c99fb0acb43a91
+      internalID: -505066059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12ac9e6d471c6584799719fc2345d9bb
+      internalID: 852040024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cafd5fd248bbced4dbea40f6a17e992a
+      internalID: 1847810491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 46
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec7fdbd460393d84093a2b79e8d49ac6
+      internalID: -567852242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91a333ee0e2f5ef4f889190dd6eb763d
+      internalID: 1867851387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 371c519cde9144447961f88dd49b649c
+      internalID: 6087276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4357af6854abaf14982251e358b5b6ea
+      internalID: -1140958319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9fdc30d6f416d042a8d069313e849b9
+      internalID: 962946908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3043478}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b83c70c5c6d6fc2449ac8d574a619f76
+      internalID: 1443859027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3478261}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 145f6ee8328961f4391e1c59da1f8f94
+      internalID: -1629733652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23913044}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d135d9fe28cb92e4daac67dcb2456f5b
+      internalID: 1267461825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bench_granite_barnacled_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 0
+        width: 98
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b1a801e5c791e844ad0441426bd36b3
+      internalID: -715409511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 40b1e929c808ffb42856637be156ad7f
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Bench_granite_barnacled_normal_c0_r0: 1565025443
+      Bench_granite_barnacled_normal_c0_r1: 806486104
+      Bench_granite_barnacled_normal_c0_r2: 1867851387
+      Bench_granite_barnacled_normal_c1_r0: -1413562241
+      Bench_granite_barnacled_normal_c1_r1: -1660457256
+      Bench_granite_barnacled_normal_c1_r2: 6087276
+      Bench_granite_barnacled_normal_c2_r0: -865010804
+      Bench_granite_barnacled_normal_c2_r1: 2099468680
+      Bench_granite_barnacled_normal_c2_r2: -1140958319
+      Bench_granite_barnacled_normal_c3_r0: -1420339911
+      Bench_granite_barnacled_normal_c3_r1: 1127903928
+      Bench_granite_barnacled_normal_c3_r2: 962946908
+      Bench_granite_barnacled_normal_c4_r0: -448736893
+      Bench_granite_barnacled_normal_c4_r1: -505066059
+      Bench_granite_barnacled_normal_c4_r2: 1443859027
+      Bench_granite_barnacled_normal_c5_r0: 808311484
+      Bench_granite_barnacled_normal_c5_r1: 852040024
+      Bench_granite_barnacled_normal_c5_r2: -1629733652
+      Bench_granite_barnacled_normal_c6_r0: -746802970
+      Bench_granite_barnacled_normal_c6_r1: 1847810491
+      Bench_granite_barnacled_normal_c6_r2: 1267461825
+      Bench_granite_barnacled_normal_c7_r0: -693254305
+      Bench_granite_barnacled_normal_c7_r1: -567852242
+      Bench_granite_barnacled_normal_c7_r2: -715409511
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

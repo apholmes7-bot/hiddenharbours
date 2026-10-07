@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 8386583f8067da3439457cf1f69c60d3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6236233443395950711
+    second: Perched_quartzite_weeded_0
+  - first:
+      213: -7264369692430046278
+    second: Perched_quartzite_weeded_1
+  - first:
+      213: 1480764172874906138
+    second: Perched_quartzite_weeded_2
+  - first:
+      213: -1457006639142867009
+    second: Perched_quartzite_weeded_3
+  - first:
+      213: 4220597826793266853
+    second: Perched_quartzite_weeded_4
+  - first:
+      213: 6606298433528398607
+    second: Perched_quartzite_weeded_5
+  - first:
+      213: -8147224091800852873
+    second: Perched_quartzite_weeded_6
+  - first:
+      213: 1934090901130259764
+    second: Perched_quartzite_weeded_7
+  - first:
+      213: 1196528200483897579
+    second: Perched_quartzite_weeded_8
+  - first:
+      213: 3328296321571231304
+    second: Perched_quartzite_weeded_9
+  - first:
+      213: 4784612512991281338
+    second: Perched_quartzite_weeded_10
+  - first:
+      213: 18295438304544592
+    second: Perched_quartzite_weeded_11
+  - first:
+      213: 5161334373687099339
+    second: Perched_quartzite_weeded_12
+  - first:
+      213: 3662472640497268535
+    second: Perched_quartzite_weeded_13
+  - first:
+      213: -77485733015527435
+    second: Perched_quartzite_weeded_14
+  - first:
+      213: -934319105497805140
+    second: Perched_quartzite_weeded_15
+  - first:
+      213: -5734147245808168704
+    second: Perched_quartzite_weeded_16
+  - first:
+      213: -1277454435587595819
+    second: Perched_quartzite_weeded_17
+  - first:
+      213: 8307879627367265398
+    second: Perched_quartzite_weeded_18
+  - first:
+      213: -6953654470093454723
+    second: Perched_quartzite_weeded_19
+  - first:
+      213: 9218508465538510286
+    second: Perched_quartzite_weeded_20
+  - first:
+      213: 833544789771714553
+    second: Perched_quartzite_weeded_21
+  - first:
+      213: 5786351009169157498
+    second: Perched_quartzite_weeded_22
+  - first:
+      213: 4708080979359822823
+    second: Perched_quartzite_weeded_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4506ec1178350b44bedc573462166c3
+      internalID: 523438712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0383d7a8542fd22469a5a1a8fce07787
+      internalID: 1245467700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 307ea4a7c7ec3f14286baf7acce24c0a
+      internalID: 423212085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f05abfe0346e98439c899d9651cbf91
+      internalID: 1611100944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b84e060b6602dea4b82a8b8368e72ddb
+      internalID: -237251392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d940676660bc2844ba7c492e1075268d
+      internalID: -786025351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1450e5a7e8f9b854e8cf1389d119e4c2
+      internalID: 2135200456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 124
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12cb9a3d10e3de248b748a359e6a2b6c
+      internalID: -1070773155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 417df2217449a224796e0ddfa3fd235c
+      internalID: -569154678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5007ea54416e89f48bd1857e8c7d986d
+      internalID: 1691339933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bad84f9b67cc20a46ab9a3fefaca61ff
+      internalID: -876460184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 593278c5a272d724fac5e454a81f5a2a
+      internalID: -920441062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1890cef82cefa02448217e26086e5597
+      internalID: 1959077339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a08a25e77cd1d84fb836d78bc4c534e
+      internalID: -378290951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8abb69c5f09a1af47af898b2f4dc8204
+      internalID: -203579517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 62
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6af08ed65717047448f462a1377af4ea
+      internalID: 690665836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6599f69fbfebc544b9426d9f334083f
+      internalID: -624290808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fecdb394896e2b4ab7d6a6a8f60daa7
+      internalID: -1372610416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2598ab5eb3ccc00428f97f6cf8833de9
+      internalID: 1553881692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ac63901b4617f744a7dde9f82c2f586
+      internalID: -1123540657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.19354838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97e107884c7a13647897c543e2ee1589
+      internalID: 764079564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b9bbfb725f20a645acc6ba996df04c5
+      internalID: 93638845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16129032}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5f05cd556db5da4eb6a9548db445d96
+      internalID: 233304407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Perched_quartzite_weeded_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 62
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24193548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5e786c691bed3c4b85cb74996e43d27
+      internalID: 861318120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 209bb2f894a387140806ac4d899befa3
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Perched_quartzite_weeded_c0_r0: 523438712
+      Perched_quartzite_weeded_c0_r1: -569154678
+      Perched_quartzite_weeded_c0_r2: -624290808
+      Perched_quartzite_weeded_c1_r0: 1245467700
+      Perched_quartzite_weeded_c1_r1: 1691339933
+      Perched_quartzite_weeded_c1_r2: -1372610416
+      Perched_quartzite_weeded_c2_r0: 423212085
+      Perched_quartzite_weeded_c2_r1: -876460184
+      Perched_quartzite_weeded_c2_r2: 1553881692
+      Perched_quartzite_weeded_c3_r0: 1611100944
+      Perched_quartzite_weeded_c3_r1: -920441062
+      Perched_quartzite_weeded_c3_r2: -1123540657
+      Perched_quartzite_weeded_c4_r0: -237251392
+      Perched_quartzite_weeded_c4_r1: 1959077339
+      Perched_quartzite_weeded_c4_r2: 764079564
+      Perched_quartzite_weeded_c5_r0: -786025351
+      Perched_quartzite_weeded_c5_r1: -378290951
+      Perched_quartzite_weeded_c5_r2: 93638845
+      Perched_quartzite_weeded_c6_r0: 2135200456
+      Perched_quartzite_weeded_c6_r1: -203579517
+      Perched_quartzite_weeded_c6_r2: 233304407
+      Perched_quartzite_weeded_c7_r0: -1070773155
+      Perched_quartzite_weeded_c7_r1: 690665836
+      Perched_quartzite_weeded_c7_r2: 861318120
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
