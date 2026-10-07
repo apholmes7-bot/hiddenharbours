@@ -1,6 +1,6 @@
 # Hidden Harbours: the design desk
 
-**As of 2026-10-07 15:53Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
+**As of 2026-10-07 18:41Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
 
 Read this file at the start of every session, then the brief the owner names. A ruling the owner gives you in a message wins over this file and over any brief. Some older docs still describe sprites where the owner has since ruled meshes (section 4); where they disagree, the ruling wins.
 
@@ -164,6 +164,20 @@ Read this file at the start of every session, then the brief the owner names. A 
   - `gull.stp_gp_reef` stands at +0.11, 0.12 m over the reef ledge's own ground, as the brief gives it (its section 4.1); your −0.01 seats it on the ground;
   - `ruled-ids.json` takes each piece's position from the scene files: five of its pieces (`prop.stp_ne_find_0`, `_1`, `_2` and `_5`, and `boat.stp_ginny_skiff`) still stand there where they were before 10-01;
   - `--ruled` reads `moved.issue2` as well as `moved.from`. Run on the 10-01 package, it fails `prop.stp_ne_find_1`, whose move this issue lists. That move is 0.19 m by your README's coordinates; NOTES says 0.26 m.
+- 10-07, Nine Mile Creek's new areas taken. The owner, on your third issue of the one-scene package (the seven new areas the owner drew with you), part 1's ground re-issued a third time, your calls 59 to 92 and the Art desk's leans on them: "Copy yes and calls as leaned". So every call stands as you leaned it:
+  - the south shore: the three estates on the bluff and the second row's three lots, the salt pond at +2.3, the lawns and terraces level at +6.0, and the bluff at +6.0, the height texture's ceiling (calls 59 and 61 to 65). The game's NPC lane names the households (call 66), and your re-issued ground is the ground (call 67);
+  - Route 91 on its new line: it leaves the region at (-380, -142) about 13° south of west, and Rice Point's region takes the bend (call 60);
+  - Shore Lane's light pass (call 68);
+  - main street as drawn: the block and the restaurant, Water Street's section, the back lane and the lot, the flats over the shops, the square, the amenities, the east side, the chandlery and Creek Lane's mouth (calls 69 to 72, 74, 75 and 79 to 81). The twelve shops carry trade words only, their names open (call 73); the plaques stay blank for the game to letter (call 78); your plan is in `plan.json` (call 77); the town bridge's 2a boards stand as its record (call 76);
+  - the plaza as drawn: the docks on the stores' sides, the yard one way through the shed, the wells filled, the flats with their street and link, and the lot twice the size (calls 82 to 84, 89 and 90). The farmhouse stands at (-200, -8) (call 85). The flats' 26 stalls stay empty for now, with residents' cars a later pass if the owner wants them (call 88);
+  - the sea off the bluff stays empty; a boat for the bluff waits for the owner (call 86);
+  - the game ends Route 91's town section at the region's edge (call 87), places the town bridge's 21 pieces at the town bridge's numbers (call 91), and lets a dory take the ground where the tide leaves it (call 92).
+
+  For your next Nine Mile Creek issue, four small corrections:
+  - `region.json` lists calls 48 to 92 as open, and its `calls.standing` says 1 to 47. The owner ruled 48 to 58 on 10-03 and 59 to 92 on 10-07, so all 92 stand;
+  - `prop.nmc_camp_tent_a19_cabinTent` is still in the package; the game's id is `prop.nmc_camp_tent_a19_cabin` (10-03, above);
+  - the salt pond's east bank steps up to 1.79 m between neighbouring texels at about x -211, y -165.5 to -163.5, where the pond's bowl stops one texel short of the kept ground. Smooth it at your next ground issue;
+  - in the text: NOTES' "The new areas" names 12 whole board PNGs (`boards/shore_afternoon.png` and the rest) that do not ship, as `PIXELS.txt` says, one of them an evening board Shore Lane's section never had; your README says the One Scene page carries calls 48 to 90 (they run to 92); and NOTES section 1 still names `pictures/region-key-scenes.png`, which `region-new-areas.png` replaced.
 
 ## 5. How work comes back
 
@@ -210,7 +224,7 @@ Each thread has, or will get, its own paste in its own conversation. This list i
 
   Your re-issue of part 1's ground arrived on 10-01 and passed on real Node, 33 of 33. Your one-scene package (parts 2d, 2e and 2f, and all twelve scenes on one ground with one index) arrived on 10-02 and passed 24 of 24. Its re-issue the same day, with the north creek redrawn, passed 27 of 27. The owner took all three (section 4).
 
-  Your re-issue of part 1's ground, with the truck wells and the five laid boxes, came back with your second re-issue of the package, the campground redrawn as the owner asked you. They passed on real Node, 35 of 35 and 32 of 32, and the owner took both (section 4). The Art desk baked the gas bar's three boards. Nothing more is asked of Nine Mile Creek's key scenes.
+  Your re-issue of part 1's ground, with the truck wells and the five laid boxes, came back with your second re-issue of the package, the campground redrawn as the owner asked you. They passed on real Node, 35 of 35 and 32 of 32, and the owner took both (section 4). The Art desk baked the gas bar's three boards. Then the owner drew seven new areas with you, and the Art desk asked for them in one delivery. Your third issue of the package, with part 1's ground re-issued a third time, arrived on 10-07 in six parts and one. They passed on real Node, 38 of 38 and 11 of 11, every sum matching, and the ground moved only inside the new areas' boxes; the owner took them, your calls 59 to 92 as leaned (section 4). Nothing more is asked of Nine Mile Creek's key scenes.
 - Character kit 9.2 (09-24), then kits 10.2 (10-01) and 10.3 (10-03), on rig 10. 9.2 has been in the game since 09-26, and since 09-30 it plays its face, blink, look-at and carry clips. A change in review bakes the ten cast presets from rig 10. Kit 10.3 answered the send-back on 10.2, [briefs/BRIEF-2026-10-03-character-10-2-send-back.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-10-03-character-10-2-send-back.md), and it passes on real Node once its files are regenerated there. As shipped, your checker finds 5 problems on real Node, all in the last decimals or in the golden report's tied "worst at" labels; no gate and no pixel differs. The owner's ruling on the aim bar is in section 4. Nothing is asked of you on the characters now. The Art desk's few small findings on 10.3 come with the next character brief, and nothing in the game waits on them.
 - The channel check (09-27, on this branch): DONE the same day. Text reaches you; pictures do not (section 1). [briefs/BRIEF-2026-09-27-channel-check.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-27-channel-check.md).
 
