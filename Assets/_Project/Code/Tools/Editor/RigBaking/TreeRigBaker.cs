@@ -120,6 +120,15 @@ namespace HiddenHarbours.Tools.RigBaking
                                           Action<string, float> progress = null)
         {
             outputFolder ??= DefaultOutputFolder;
+
+            // ⚠️ Once the kit is pass 4 this bake would write a pass-3 contract over it and leave
+            // three-channel sheets beside six-channel ones. The Rig Studio adapter calls it too.
+            if (TreeKitCatalog.IsPass4Live && TreePass4Baker.IsInsideTheLiveKit(outputFolder))
+                throw new InvalidOperationException(
+                    $"The kit is pass 4 ({TreeKitCatalog.RigScriptPath}); the pass-3 baker will not " +
+                    $"write under {TreeKitCatalog.TreesRoot}. Bake pass 4 (TreePass4Baker), or name " +
+                    "a folder outside the kit.");
+
             var total = Stopwatch.StartNew();
 
             using IRigScriptHost host = RigScriptHostFactory.Create();
@@ -207,14 +216,15 @@ namespace HiddenHarbours.Tools.RigBaking
         // =====================================================================================
 
         /// <summary>
-        /// Loads <c>treeIsoRig.js</c> into a host and asserts the global installed. Deliberately
+        /// Loads the PASS-3 rig (<see cref="TreeKitCatalog.Pass3RigScriptPath"/>, which this baker
+        /// drives whatever the kit is) into a host and asserts the global installed. Deliberately
         /// not <c>RigCatalog.Install</c>: that reads <c>W/H/pivot</c> globals a tree does not have
         /// (its cell is per species) and would throw on the missing <c>pivot</c>. The source is
         /// read and handed over UNMODIFIED, exactly as <see cref="RigCatalog.ReadSource"/> does.
         /// </summary>
         public static void InstallRig(IRigScriptHost host)
         {
-            string full = Path.Combine(RigCatalog.RepoRoot, TreeKitCatalog.RigScriptPath);
+            string full = Path.Combine(RigCatalog.RepoRoot, TreeKitCatalog.Pass3RigScriptPath);
             if (!File.Exists(full))
                 throw new FileNotFoundException(
                     $"Tree rig source missing at {full}. It is committed under docs/art/rigs/ — " +
@@ -222,10 +232,10 @@ namespace HiddenHarbours.Tools.RigBaking
 
             host.Execute(File.ReadAllText(full));
 
-            string g = TreeKitCatalog.RigGlobalName;
+            string g = TreeKitCatalog.Pass3RigGlobalName;
             if (!host.EvaluateBool($"typeof {g} === 'object' && {g} !== null"))
                 throw new InvalidOperationException(
-                    $"'{TreeKitCatalog.RigScriptPath}' ran but did not install globalThis.{g} — " +
+                    $"'{TreeKitCatalog.Pass3RigScriptPath}' ran but did not install globalThis.{g} — " +
                     "the rig changed shape.");
 
             // The five entry points this baker calls. Asserted rather than discovered mid-bake,
@@ -239,13 +249,13 @@ namespace HiddenHarbours.Tools.RigBaking
 
         public static IReadOnlyList<string> ReadSpeciesKeys(IRigScriptHost host)
         {
-            string g = TreeKitCatalog.RigGlobalName;
+            string g = TreeKitCatalog.Pass3RigGlobalName;
             return FishingKitBaker.ReadStringArray(host, $"{g}.SPECIES.map(function(s){{return s.key;}})");
         }
 
         static void AssertStage(IRigScriptHost host, string stage)
         {
-            string g = TreeKitCatalog.RigGlobalName;
+            string g = TreeKitCatalog.Pass3RigGlobalName;
             if (!host.EvaluateBool($"typeof {g}.STAGES[{Js(stage)}] === 'number'"))
                 throw new ArgumentException(
                     $"TreeRig declares no stage '{stage}'. Known: " +
@@ -254,7 +264,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
         static void AssertSeason(IRigScriptHost host, string season)
         {
-            string g = TreeKitCatalog.RigGlobalName;
+            string g = TreeKitCatalog.Pass3RigGlobalName;
             if (!host.EvaluateBool($"{g}.SEASONS.indexOf({Js(season)}) >= 0"))
                 throw new ArgumentException(
                     $"TreeRig declares no season '{season}'. Known: " +
@@ -288,7 +298,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
         public static SheetSpec ReadSheetSpec(IRigScriptHost host, string species, string stage)
         {
-            string g = TreeKitCatalog.RigGlobalName;
+            string g = TreeKitCatalog.Pass3RigGlobalName;
             string sp = $"{g}.sheetSpec({Js(species)}, {g}.STAGES[{Js(stage)}])";
 
             int cellH = (int)host.EvaluateNumber($"{sp}.cell[1]");
@@ -349,7 +359,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <see cref="SwayRowsBaked"/>.</summary>
         public static string ResultExpr(string species, string stage, string season, int variant,
                                         int frame) =>
-            $"{TreeKitCatalog.RigGlobalName}.render({Js(species)},{{variant:{variant}," +
+            $"{TreeKitCatalog.Pass3RigGlobalName}.render({Js(species)},{{variant:{variant}," +
             $"season:{Js(season)},frame:{frame},stage:{Js(stage)}}})";
 
         /// <summary>
@@ -366,7 +376,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         public static string ChannelExpr(string resultExpr, TreeKitCatalog.Channel channel)
         {
-            string g = TreeKitCatalog.RigGlobalName;
+            string g = TreeKitCatalog.Pass3RigGlobalName;
             return channel switch
             {
                 // R=key light, G=back rim, B=depth, A=coverage — the rig's own pack.
@@ -447,7 +457,7 @@ namespace HiddenHarbours.Tools.RigBaking
         static TreeKitCatalog.Entry BuildEntry(IRigScriptHost host, string species, string stage,
                                                string season, in SheetSpec spec)
         {
-            string g = TreeKitCatalog.RigGlobalName;
+            string g = TreeKitCatalog.Pass3RigGlobalName;
             string sp = $"{g}.byKey[{Js(species)}]";
 
             // The worst (highest thinPct) variant's report — the rule-1 audit number that matters,
@@ -504,7 +514,7 @@ namespace HiddenHarbours.Tools.RigBaking
         static TreeKitCatalog.Contract BuildContract(IRigScriptHost host,
                                                      TreeKitCatalog.Entry[] entries)
         {
-            string g = TreeKitCatalog.RigGlobalName;
+            string g = TreeKitCatalog.Pass3RigGlobalName;
             return new TreeKitCatalog.Contract
             {
                 note = "Baked in-engine by TreeRigBaker from docs/art/rigs/treeIsoRig.js — " +
@@ -514,7 +524,7 @@ namespace HiddenHarbours.Tools.RigBaking
                        "does not pivot bottom-centre. unityPivot is the same point normalised " +
                        "bottom-origin, and trunkAnchor is that height as a fraction of the cell — " +
                        "the wind shader's _TrunkAnchor for this species.",
-                rig = TreeKitCatalog.RigScriptPath,
+                rig = TreeKitCatalog.Pass3RigScriptPath,
                 global = g,
                 ppu = (int)host.EvaluateNumber($"{g}.PPU"),
                 camera = new TreeKitCatalog.CameraBlock

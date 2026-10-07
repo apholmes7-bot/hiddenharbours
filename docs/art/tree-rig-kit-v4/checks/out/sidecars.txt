@@ -1,0 +1,14 @@
+# sidecars — passed
+
+RedSpruce       identical to the committed file · writer self-test 142 checks, 0 failed
+BlackSpruce     identical to the committed file · writer self-test 134 checks, 0 failed
+BalsamFir       identical to the committed file · writer self-test 120 checks, 0 failed
+WhitePine       identical to the committed file · writer self-test 156 checks, 0 failed
+WhiteCedar      identical to the committed file · writer self-test 102 checks, 0 failed
+Tamarack        identical to the committed file · writer self-test 148 checks, 0 failed
+WhiteBirch      identical to the committed file · writer self-test 164 checks, 0 failed
+RedMaple        identical to the committed file · writer self-test 164 checks, 0 failed
+RedOak          identical to the committed file · writer self-test 164 checks, 0 failed
+TremblingAspen  identical to the committed file · writer self-test 164 checks, 0 failed
+
+1458 self-test checks re-run

@@ -1,7 +1,7 @@
 {
-    "note": "Baked in-engine by TreeRigBaker from docs/art/rigs/treeIsoRig.js — REGENERATE rather than hand-edit (Hidden Harbours > Art > Bake Acadian Trees). pivotX/pivotY are the TRUNK FOOT in cell px from the top-left; nearFlarePad rows of near-root flare sit BELOW it, which is why a tree does not pivot bottom-centre. unityPivot is the same point normalised bottom-origin, and trunkAnchor is that height as a fraction of the cell — the wind shader's _TrunkAnchor for this species.",
-    "rig": "docs/art/rigs/treeIsoRig3.js",
-    "global": "TreeRig3",
+    "note": "Written by TreePass4Baker.ExportContract from docs/art/rigs/treeIsoRig4.js and treeMaps4.js through the HHTreePass4 glue (version 1), stage mature, seasons summer, autumn, winter. REGENERATE rather than hand-edit (Hidden Harbours > Art > Export Acadian Tree Contract, then Bake Acadian Trees); the bake obeys this file and refuses a rig that drifted from it. pivotX/pivotY are the TRUNK FOOT in cell px from the top-left; nearFlarePad rows of near-root flare sit BELOW it. unityPivot is the same point normalised bottom-origin, and trunkAnchor is that height as a fraction of the cell. audit is empty: rig 4 reports no rule audit.",
+    "rig": "docs/art/rigs/treeIsoRig4.js",
+    "global": "TreeRig4",
     "ppu": 32,
     "camera": {
         "name": "ADR-0006/0022",
@@ -21,7 +21,7 @@
             -0.2803225517272949,
             -0.8309561610221863
         ],
-        "note": "fixed upper-left key + back rim, screen space (art bible section 1)"
+        "note": "the MASK's fixed upper-left key + back rim, screen space (art bible section 1): rig 3's LIGHT, which rig 4 keeps as its own. The albedo is relit once under TreeRig4.REF_SKY; the game's light comes from the mask and normal, as in pass 3"
     },
     "rules": {
         "rimPx": 2,
@@ -35,13 +35,13 @@
         "colAxis": "variant",
         "rowAxis": "sway frame",
         "rigSwayRows": 4,
-        "swayNote": "ONE sway row is baked, on purpose: HiddenHarboursTreeWind.shader sways the canopy off the shared deterministic wind (_WindWorld) that the grass and water also read, so one gust moves all three together — and because the shader passes uv through untouched, albedo/mask/normal stay co-registered by construction. Baked frames would loop on a timer that knows nothing about the wind, at 4x the sheet area."
+        "swayNote": "ONE row is baked: the four variants at REST. The rig's 16-frame wind loop is not baked as frames; HiddenHarboursTreeWind.shader replays the rig's own response from the wind and phase maps, off the shared deterministic wind (_WindWorld) the grass and the water read, so one gust moves all three together."
     },
     "channels": {
-        "albedo": "RGBA, binary alpha, no AA, NO keyline (ADR 0031)",
-        "mask": "R=key light, G=back rim, B=depth, A=coverage",
+        "albedo": "RGBA: TreeRig4.relight at rest under REF_SKY, binary alpha, no AA, no keyline (ADR 0031)",
+        "mask": "R=key light, G=back rim, B=depth, A=coverage: pass 3's order, by rig 3's formulas on the rest frame",
         "normal": "view-space normal, R=x, G=y-up, B=toward camera",
-        "coverageNote": "all THREE sheets cover exactly the same pixels — the rig's geometry. That is new: ADR 0031 wave 2 retired the 1 px keyline ring, which used to be composited into rgba (and so into the mask's A) while carrying no surface normal, leaving the NORMAL 11% smaller. Measured on Red Spruce mature: albedo/mask 6570 px against normal 5848 px, a difference of 722 px = exactly the ring; retiring it took albedo/mask to 5848 (pass 1 was 7601 / 6990 / 611 px = 8%). Sample all three through the ALBEDO's mesh and uv anyway, and keep the no-normal fallback: the sheets import Tight, so the meshes can still differ, and the lighting include is shared with rigs and older sheets that do carry a ring."
+        "coverageNote": "albedo, mask, normal and snow cover the same pixels at rest. The wind and phase sheets are DATA: wind.B, wind.A and phase.A carry the packed word W, never alpha, so they import with alphaIsTransparency OFF. A leaf the wind moves is gathered from its rest pixel by the shader, so every channel is sampled at the one source texel it finds."
     },
     "trees": [
         {
@@ -51,29 +51,91 @@
             "form": "spire",
             "stage": "mature",
             "seasons": [
-                "summer"
+                "summer",
+                "autumn",
+                "winter"
             ],
             "metres": 12.600000381469727,
-            "cellW": 156,
-            "cellH": 329,
-            "pivotX": 77,
-            "pivotY": 318,
+            "cellW": 244,
+            "cellH": 332,
+            "pivotX": 122,
+            "pivotY": 321,
             "nearFlarePad": 10,
-            "trunkAnchor": 0.030395137146115304,
-            "unityPivotX": 0.49358972907066347,
-            "unityPivotY": 0.030395137146115304,
-            "sheetW": 624,
-            "sheetH": 329,
-            "rigSheetW": 624,
-            "rigSheetH": 1316,
+            "trunkAnchor": 0.0301204826682806,
+            "unityPivotX": 0.5,
+            "unityPivotY": 0.0301204826682806,
+            "sheetW": 976,
+            "sheetH": 332,
+            "rigSheetW": 976,
+            "rigSheetH": 1328,
             "rigFitsUnity2048": true,
             "audit": {
-                "thinPct": 0.30000001192092898,
-                "bodyRatio": 89,
-                "despeckled": 103,
-                "pass": true,
+                "thinPct": 0.0,
+                "bodyRatio": 0,
+                "despeckled": 0,
+                "pass": false,
                 "underFloor": false
-            }
+            },
+            "wind": {
+                "H": 403.20001220703127,
+                "bendPx": 16.128000259399415,
+                "limbPx": 3.225600004196167,
+                "bob": 1.0,
+                "flutter": 0.11999999731779099,
+                "shimmer": [],
+                "conifer": true,
+                "windReach": 44
+            },
+            "seasonRows": [
+                {
+                    "season": "summer",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1b2d2f",
+                        "233c38",
+                        "29413d",
+                        "325344",
+                        "3e5c4c",
+                        "677f62",
+                        "969a76",
+                        "969a76"
+                    ],
+                    "paletteRow": 1
+                },
+                {
+                    "season": "autumn",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1b2d2f",
+                        "233c38",
+                        "29413d",
+                        "325344",
+                        "3e5c4c",
+                        "677f62",
+                        "969a76",
+                        "969a76"
+                    ],
+                    "paletteRow": 1
+                },
+                {
+                    "season": "winter",
+                    "maps": "winter",
+                    "albedo": "winter",
+                    "gapRow": [
+                        "1b2d30",
+                        "233938",
+                        "293e3d",
+                        "314d45",
+                        "3c564d",
+                        "657964",
+                        "959677",
+                        "959677"
+                    ],
+                    "paletteRow": 2
+                }
+            ]
         },
         {
             "species": "BlackSpruce",
@@ -82,29 +144,91 @@
             "form": "spire",
             "stage": "mature",
             "seasons": [
-                "summer"
+                "summer",
+                "autumn",
+                "winter"
             ],
             "metres": 6.599999904632568,
-            "cellW": 73,
-            "cellH": 179,
-            "pivotX": 36,
-            "pivotY": 171,
+            "cellW": 129,
+            "cellH": 182,
+            "pivotX": 64,
+            "pivotY": 174,
             "nearFlarePad": 7,
-            "trunkAnchor": 0.03910614550113678,
-            "unityPivotX": 0.4931506812572479,
-            "unityPivotY": 0.03910614550113678,
-            "sheetW": 292,
-            "sheetH": 179,
-            "rigSheetW": 292,
-            "rigSheetH": 716,
+            "trunkAnchor": 0.03846153989434242,
+            "unityPivotX": 0.4961240291595459,
+            "unityPivotY": 0.03846153989434242,
+            "sheetW": 516,
+            "sheetH": 182,
+            "rigSheetW": 516,
+            "rigSheetH": 728,
             "rigFitsUnity2048": true,
             "audit": {
-                "thinPct": 0.8999999761581421,
-                "bodyRatio": 64,
-                "despeckled": 50,
-                "pass": true,
+                "thinPct": 0.0,
+                "bodyRatio": 0,
+                "despeckled": 0,
+                "pass": false,
                 "underFloor": false
-            }
+            },
+            "wind": {
+                "H": 211.1999969482422,
+                "bendPx": 10.5600004196167,
+                "limbPx": 1.4079999923706055,
+                "bob": 0.800000011920929,
+                "flutter": 0.10000000149011612,
+                "shimmer": [],
+                "conifer": true,
+                "windReach": 28
+            },
+            "seasonRows": [
+                {
+                    "season": "summer",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1a2c2e",
+                        "223737",
+                        "293c3c",
+                        "2e4b42",
+                        "3a544a",
+                        "63765f",
+                        "939474",
+                        "939474"
+                    ],
+                    "paletteRow": 3
+                },
+                {
+                    "season": "autumn",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1a2c2e",
+                        "223737",
+                        "293c3c",
+                        "2e4b42",
+                        "3a544a",
+                        "63765f",
+                        "939474",
+                        "939474"
+                    ],
+                    "paletteRow": 3
+                },
+                {
+                    "season": "winter",
+                    "maps": "winter",
+                    "albedo": "winter",
+                    "gapRow": [
+                        "1a2b2f",
+                        "223638",
+                        "293b3d",
+                        "2e4843",
+                        "3a524b",
+                        "637361",
+                        "939275",
+                        "939275"
+                    ],
+                    "paletteRow": 4
+                }
+            ]
         },
         {
             "species": "BalsamFir",
@@ -113,29 +237,91 @@
             "form": "spire",
             "stage": "mature",
             "seasons": [
-                "summer"
+                "summer",
+                "autumn",
+                "winter"
             ],
             "metres": 9.600000381469727,
-            "cellW": 119,
-            "cellH": 252,
-            "pivotX": 59,
-            "pivotY": 243,
+            "cellW": 179,
+            "cellH": 255,
+            "pivotX": 90,
+            "pivotY": 246,
             "nearFlarePad": 8,
-            "trunkAnchor": 0.0317460335791111,
-            "unityPivotX": 0.4957983195781708,
-            "unityPivotY": 0.0317460335791111,
-            "sheetW": 476,
-            "sheetH": 252,
-            "rigSheetW": 476,
-            "rigSheetH": 1008,
+            "trunkAnchor": 0.0313725508749485,
+            "unityPivotX": 0.5027933120727539,
+            "unityPivotY": 0.0313725508749485,
+            "sheetW": 716,
+            "sheetH": 255,
+            "rigSheetW": 716,
+            "rigSheetH": 1020,
             "rigFitsUnity2048": true,
             "audit": {
-                "thinPct": 0.800000011920929,
-                "bodyRatio": 85,
-                "despeckled": 19,
-                "pass": true,
+                "thinPct": 0.0,
+                "bodyRatio": 0,
+                "despeckled": 0,
+                "pass": false,
                 "underFloor": false
-            }
+            },
+            "wind": {
+                "H": 307.20001220703127,
+                "bendPx": 10.44480037689209,
+                "limbPx": 2.0480000972747804,
+                "bob": 0.800000011920929,
+                "flutter": 0.10000000149011612,
+                "shimmer": [],
+                "conifer": true,
+                "windReach": 30
+            },
+            "seasonRows": [
+                {
+                    "season": "summer",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1b2f2e",
+                        "233c35",
+                        "294139",
+                        "31563e",
+                        "3c5f47",
+                        "65835c",
+                        "959d71",
+                        "959d71"
+                    ],
+                    "paletteRow": 5
+                },
+                {
+                    "season": "autumn",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1b2f2e",
+                        "233c35",
+                        "294139",
+                        "31563e",
+                        "3c5f47",
+                        "65835c",
+                        "959d71",
+                        "959d71"
+                    ],
+                    "paletteRow": 5
+                },
+                {
+                    "season": "winter",
+                    "maps": "winter",
+                    "albedo": "winter",
+                    "gapRow": [
+                        "1a2d2e",
+                        "223a37",
+                        "293f3c",
+                        "305042",
+                        "3c5a4a",
+                        "657b5f",
+                        "949874",
+                        "949874"
+                    ],
+                    "paletteRow": 6
+                }
+            ]
         },
         {
             "species": "WhitePine",
@@ -144,29 +330,91 @@
             "form": "pine",
             "stage": "mature",
             "seasons": [
-                "summer"
+                "summer",
+                "autumn",
+                "winter"
             ],
             "metres": 16.200000762939454,
-            "cellW": 269,
-            "cellH": 442,
-            "pivotX": 134,
-            "pivotY": 429,
+            "cellW": 379,
+            "cellH": 441,
+            "pivotX": 190,
+            "pivotY": 428,
             "nearFlarePad": 12,
-            "trunkAnchor": 0.027149321511387826,
-            "unityPivotX": 0.49814125895500185,
-            "unityPivotY": 0.027149321511387826,
-            "sheetW": 1076,
-            "sheetH": 442,
-            "rigSheetW": 1076,
-            "rigSheetH": 1768,
+            "trunkAnchor": 0.027210883796215059,
+            "unityPivotX": 0.5013192892074585,
+            "unityPivotY": 0.027210883796215059,
+            "sheetW": 1516,
+            "sheetH": 441,
+            "rigSheetW": 1516,
+            "rigSheetH": 1764,
             "rigFitsUnity2048": true,
             "audit": {
                 "thinPct": 0.0,
-                "bodyRatio": 84,
-                "despeckled": 238,
-                "pass": true,
+                "bodyRatio": 0,
+                "despeckled": 0,
+                "pass": false,
                 "underFloor": false
-            }
+            },
+            "wind": {
+                "H": 518.4000244140625,
+                "bendPx": 25.920000076293947,
+                "limbPx": 6.220799922943115,
+                "bob": 1.2000000476837159,
+                "flutter": 0.20000000298023225,
+                "shimmer": [],
+                "conifer": true,
+                "windReach": 70
+            },
+            "seasonRows": [
+                {
+                    "season": "summer",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1e3131",
+                        "2a433b",
+                        "30483f",
+                        "3f6349",
+                        "4a6b51",
+                        "748f68",
+                        "a0a679",
+                        "a0a679"
+                    ],
+                    "paletteRow": 7
+                },
+                {
+                    "season": "autumn",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1e3131",
+                        "2a433b",
+                        "30483f",
+                        "3f6349",
+                        "4a6b51",
+                        "748f68",
+                        "a0a679",
+                        "a0a679"
+                    ],
+                    "paletteRow": 7
+                },
+                {
+                    "season": "winter",
+                    "maps": "winter",
+                    "albedo": "winter",
+                    "gapRow": [
+                        "1c2f31",
+                        "263e3b",
+                        "2d433f",
+                        "395948",
+                        "446150",
+                        "6d8467",
+                        "9b9f79",
+                        "9b9f79"
+                    ],
+                    "paletteRow": 8
+                }
+            ]
         },
         {
             "species": "WhiteCedar",
@@ -175,29 +423,91 @@
             "form": "cedar",
             "stage": "mature",
             "seasons": [
-                "summer"
+                "summer",
+                "autumn",
+                "winter"
             ],
             "metres": 7.800000190734863,
-            "cellW": 96,
-            "cellH": 225,
-            "pivotX": 47,
-            "pivotY": 202,
+            "cellW": 140,
+            "cellH": 228,
+            "pivotX": 70,
+            "pivotY": 205,
             "nearFlarePad": 22,
-            "trunkAnchor": 0.09777777642011643,
-            "unityPivotX": 0.4895833432674408,
-            "unityPivotY": 0.09777777642011643,
-            "sheetW": 384,
-            "sheetH": 225,
-            "rigSheetW": 384,
-            "rigSheetH": 900,
+            "trunkAnchor": 0.09649122506380081,
+            "unityPivotX": 0.5,
+            "unityPivotY": 0.09649122506380081,
+            "sheetW": 560,
+            "sheetH": 228,
+            "rigSheetW": 560,
+            "rigSheetH": 912,
             "rigFitsUnity2048": true,
             "audit": {
-                "thinPct": 0.6000000238418579,
-                "bodyRatio": 82,
-                "despeckled": 2,
-                "pass": true,
+                "thinPct": 0.0,
+                "bodyRatio": 0,
+                "despeckled": 0,
+                "pass": false,
                 "underFloor": false
-            }
+            },
+            "wind": {
+                "H": 249.60000610351563,
+                "bendPx": 7.48799991607666,
+                "limbPx": 1.1648000478744507,
+                "bob": 0.5,
+                "flutter": 0.11999999731779099,
+                "shimmer": [],
+                "conifer": true,
+                "windReach": 22
+            },
+            "seasonRows": [
+                {
+                    "season": "summer",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1e2f2c",
+                        "2a3f33",
+                        "304437",
+                        "415b37",
+                        "4c6440",
+                        "768754",
+                        "a1a06c",
+                        "a1a06c"
+                    ],
+                    "paletteRow": 9
+                },
+                {
+                    "season": "autumn",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1e2f2c",
+                        "2a3f33",
+                        "304437",
+                        "415b37",
+                        "4c6440",
+                        "768754",
+                        "a1a06c",
+                        "a1a06c"
+                    ],
+                    "paletteRow": 9
+                },
+                {
+                    "season": "winter",
+                    "maps": "winter",
+                    "albedo": "winter",
+                    "gapRow": [
+                        "1d2d2e",
+                        "283c35",
+                        "2e4139",
+                        "3b533d",
+                        "465c45",
+                        "707f5b",
+                        "9c9b70",
+                        "9c9b70"
+                    ],
+                    "paletteRow": 10
+                }
+            ]
         },
         {
             "species": "Tamarack",
@@ -206,29 +516,91 @@
             "form": "larch",
             "stage": "mature",
             "seasons": [
-                "summer"
+                "summer",
+                "autumn",
+                "winter"
             ],
             "metres": 10.199999809265137,
-            "cellW": 111,
-            "cellH": 266,
-            "pivotX": 55,
-            "pivotY": 257,
+            "cellW": 207,
+            "cellH": 269,
+            "pivotX": 103,
+            "pivotY": 260,
             "nearFlarePad": 8,
-            "trunkAnchor": 0.030075188726186754,
-            "unityPivotX": 0.4954954981803894,
-            "unityPivotY": 0.030075188726186754,
-            "sheetW": 444,
-            "sheetH": 266,
-            "rigSheetW": 444,
-            "rigSheetH": 1064,
+            "trunkAnchor": 0.029739776626229287,
+            "unityPivotX": 0.4975845515727997,
+            "unityPivotY": 0.029739776626229287,
+            "sheetW": 828,
+            "sheetH": 269,
+            "rigSheetW": 828,
+            "rigSheetH": 1076,
             "rigFitsUnity2048": true,
             "audit": {
-                "thinPct": 0.800000011920929,
-                "bodyRatio": 80,
-                "despeckled": 57,
-                "pass": true,
+                "thinPct": 0.0,
+                "bodyRatio": 0,
+                "despeckled": 0,
+                "pass": false,
                 "underFloor": false
-            }
+            },
+            "wind": {
+                "H": 326.3999938964844,
+                "bendPx": 18.278400421142579,
+                "limbPx": 3.2639999389648439,
+                "bob": 0.800000011920929,
+                "flutter": 0.30000001192092898,
+                "shimmer": [],
+                "conifer": true,
+                "windReach": 48
+            },
+            "seasonRows": [
+                {
+                    "season": "summer",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "22342d",
+                        "324733",
+                        "384b37",
+                        "516e38",
+                        "5b7541",
+                        "879a56",
+                        "aeae6d",
+                        "aeae6d"
+                    ],
+                    "paletteRow": 11
+                },
+                {
+                    "season": "autumn",
+                    "maps": "summer",
+                    "albedo": "autumn",
+                    "gapRow": [
+                        "2e362d",
+                        "4c4c33",
+                        "515137",
+                        "8a7938",
+                        "918041",
+                        "c2a756",
+                        "d7b76d",
+                        "d7b76d"
+                    ],
+                    "paletteRow": 12
+                },
+                {
+                    "season": "winter",
+                    "maps": "winter",
+                    "albedo": "winter",
+                    "gapRow": [
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000"
+                    ],
+                    "paletteRow": 13
+                }
+            ]
         },
         {
             "species": "WhiteBirch",
@@ -237,29 +609,94 @@
             "form": "oval",
             "stage": "mature",
             "seasons": [
-                "summer"
+                "summer",
+                "autumn",
+                "winter"
             ],
             "metres": 10.199999809265137,
-            "cellW": 162,
-            "cellH": 269,
-            "pivotX": 81,
-            "pivotY": 260,
+            "cellW": 283,
+            "cellH": 277,
+            "pivotX": 140,
+            "pivotY": 268,
             "nearFlarePad": 8,
-            "trunkAnchor": 0.029739776626229287,
-            "unityPivotX": 0.5,
-            "unityPivotY": 0.029739776626229287,
-            "sheetW": 648,
-            "sheetH": 269,
-            "rigSheetW": 648,
-            "rigSheetH": 1076,
+            "trunkAnchor": 0.02888086624443531,
+            "unityPivotX": 0.4946996569633484,
+            "unityPivotY": 0.02888086624443531,
+            "sheetW": 1132,
+            "sheetH": 277,
+            "rigSheetW": 1132,
+            "rigSheetH": 1108,
             "rigFitsUnity2048": true,
             "audit": {
-                "thinPct": 0.10000000149011612,
-                "bodyRatio": 85,
-                "despeckled": 15,
-                "pass": true,
+                "thinPct": 0.0,
+                "bodyRatio": 0,
+                "despeckled": 0,
+                "pass": false,
                 "underFloor": false
-            }
+            },
+            "wind": {
+                "H": 326.3999938964844,
+                "bendPx": 22.847999572753908,
+                "limbPx": 3.916800022125244,
+                "bob": 0.8999999761581421,
+                "flutter": 0.6000000238418579,
+                "shimmer": [
+                    0.75,
+                    0.10000000149011612
+                ],
+                "conifer": false,
+                "windReach": 58
+            },
+            "seasonRows": [
+                {
+                    "season": "summer",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1f312c",
+                        "2a4331",
+                        "304836",
+                        "426335",
+                        "4d6b3e",
+                        "788f53",
+                        "a2a66a",
+                        "a2a66a"
+                    ],
+                    "paletteRow": 14
+                },
+                {
+                    "season": "autumn",
+                    "maps": "summer",
+                    "albedo": "autumn",
+                    "gapRow": [
+                        "2e362c",
+                        "4c4d31",
+                        "515236",
+                        "8a7a34",
+                        "91813d",
+                        "c2a852",
+                        "d7b86a",
+                        "d7b86a"
+                    ],
+                    "paletteRow": 15
+                },
+                {
+                    "season": "winter",
+                    "maps": "winter",
+                    "albedo": "winter",
+                    "gapRow": [
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000"
+                    ],
+                    "paletteRow": 13
+                }
+            ]
         },
         {
             "species": "RedMaple",
@@ -268,29 +705,94 @@
             "form": "round",
             "stage": "mature",
             "seasons": [
-                "summer"
+                "summer",
+                "autumn",
+                "winter"
             ],
             "metres": 12.0,
-            "cellW": 209,
-            "cellH": 320,
-            "pivotX": 104,
-            "pivotY": 309,
+            "cellW": 301,
+            "cellH": 321,
+            "pivotX": 149,
+            "pivotY": 310,
             "nearFlarePad": 10,
-            "trunkAnchor": 0.03125,
-            "unityPivotX": 0.49760764837265017,
-            "unityPivotY": 0.03125,
-            "sheetW": 836,
-            "sheetH": 320,
-            "rigSheetW": 836,
-            "rigSheetH": 1280,
+            "trunkAnchor": 0.031152648851275445,
+            "unityPivotX": 0.49501660466194155,
+            "unityPivotY": 0.031152648851275445,
+            "sheetW": 1204,
+            "sheetH": 321,
+            "rigSheetW": 1204,
+            "rigSheetH": 1284,
             "rigFitsUnity2048": true,
             "audit": {
                 "thinPct": 0.0,
-                "bodyRatio": 91,
-                "despeckled": 6,
-                "pass": true,
+                "bodyRatio": 0,
+                "despeckled": 0,
+                "pass": false,
                 "underFloor": false
-            }
+            },
+            "wind": {
+                "H": 384.0,
+                "bendPx": 17.280000686645509,
+                "limbPx": 3.8399999141693117,
+                "bob": 0.699999988079071,
+                "flutter": 0.4000000059604645,
+                "shimmer": [
+                    0.6000000238418579,
+                    0.05999999865889549
+                ],
+                "conifer": false,
+                "windReach": 47
+            },
+            "seasonRows": [
+                {
+                    "season": "summer",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1c2f2c",
+                        "263f30",
+                        "2d4435",
+                        "395c33",
+                        "44653c",
+                        "6d8750",
+                        "9ba06a",
+                        "9ba06a"
+                    ],
+                    "paletteRow": 16
+                },
+                {
+                    "season": "autumn",
+                    "maps": "summer",
+                    "albedo": "autumn",
+                    "gapRow": [
+                        "2b2a2a",
+                        "44342e",
+                        "4a3a33",
+                        "7a442e",
+                        "824e37",
+                        "b26f4b",
+                        "cc8f65",
+                        "cc8f65"
+                    ],
+                    "paletteRow": 17
+                },
+                {
+                    "season": "winter",
+                    "maps": "winter",
+                    "albedo": "winter",
+                    "gapRow": [
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000"
+                    ],
+                    "paletteRow": 13
+                }
+            ]
         },
         {
             "species": "RedOak",
@@ -299,29 +801,94 @@
             "form": "round",
             "stage": "mature",
             "seasons": [
-                "summer"
+                "summer",
+                "autumn",
+                "winter"
             ],
             "metres": 13.199999809265137,
-            "cellW": 331,
+            "cellW": 407,
             "cellH": 347,
-            "pivotX": 165,
+            "pivotX": 202,
             "pivotY": 334,
             "nearFlarePad": 12,
             "trunkAnchor": 0.03458213433623314,
-            "unityPivotX": 0.4984894394874573,
+            "unityPivotX": 0.49631449580192568,
             "unityPivotY": 0.03458213433623314,
-            "sheetW": 1324,
+            "sheetW": 1628,
             "sheetH": 347,
-            "rigSheetW": 1324,
+            "rigSheetW": 1628,
             "rigSheetH": 1388,
             "rigFitsUnity2048": true,
             "audit": {
                 "thinPct": 0.0,
-                "bodyRatio": 95,
-                "despeckled": 1,
-                "pass": true,
+                "bodyRatio": 0,
+                "despeckled": 0,
+                "pass": false,
                 "underFloor": false
-            }
+            },
+            "wind": {
+                "H": 422.3999938964844,
+                "bendPx": 13.516799926757813,
+                "limbPx": 3.379199981689453,
+                "bob": 0.6000000238418579,
+                "flutter": 0.30000001192092898,
+                "shimmer": [
+                    0.4000000059604645,
+                    0.03999999910593033
+                ],
+                "conifer": false,
+                "windReach": 39
+            },
+            "seasonRows": [
+                {
+                    "season": "summer",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1c2d2c",
+                        "253b30",
+                        "2b4034",
+                        "365131",
+                        "415a3a",
+                        "6b7d4f",
+                        "999968",
+                        "999968"
+                    ],
+                    "paletteRow": 18
+                },
+                {
+                    "season": "autumn",
+                    "maps": "summer",
+                    "albedo": "autumn",
+                    "gapRow": [
+                        "272c2b",
+                        "3e382f",
+                        "443d33",
+                        "6c4b2f",
+                        "745538",
+                        "a3774c",
+                        "c19566",
+                        "c19566"
+                    ],
+                    "paletteRow": 19
+                },
+                {
+                    "season": "winter",
+                    "maps": "winter",
+                    "albedo": "winter",
+                    "gapRow": [
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000"
+                    ],
+                    "paletteRow": 13
+                }
+            ]
         },
         {
             "species": "TremblingAspen",
@@ -330,29 +897,120 @@
             "form": "oval",
             "stage": "mature",
             "seasons": [
-                "summer"
+                "summer",
+                "autumn",
+                "winter"
             ],
             "metres": 10.800000190734864,
-            "cellW": 117,
-            "cellH": 271,
-            "pivotX": 58,
-            "pivotY": 262,
+            "cellW": 226,
+            "cellH": 294,
+            "pivotX": 113,
+            "pivotY": 285,
             "nearFlarePad": 8,
-            "trunkAnchor": 0.029520295560359956,
-            "unityPivotX": 0.49572649598121645,
-            "unityPivotY": 0.029520295560359956,
-            "sheetW": 468,
-            "sheetH": 271,
-            "rigSheetW": 468,
-            "rigSheetH": 1084,
+            "trunkAnchor": 0.027210883796215059,
+            "unityPivotX": 0.5,
+            "unityPivotY": 0.027210883796215059,
+            "sheetW": 904,
+            "sheetH": 294,
+            "rigSheetW": 904,
+            "rigSheetH": 1176,
             "rigFitsUnity2048": true,
             "audit": {
                 "thinPct": 0.0,
-                "bodyRatio": 77,
-                "despeckled": 2,
-                "pass": true,
+                "bodyRatio": 0,
+                "despeckled": 0,
+                "pass": false,
                 "underFloor": false
-            }
+            },
+            "wind": {
+                "H": 345.6000061035156,
+                "bendPx": 20.736000061035158,
+                "limbPx": 3.225600004196167,
+                "bob": 0.699999988079071,
+                "flutter": 1.0,
+                "shimmer": [
+                    1.0,
+                    0.3499999940395355
+                ],
+                "conifer": false,
+                "windReach": 52
+            },
+            "seasonRows": [
+                {
+                    "season": "summer",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "22332d",
+                        "314634",
+                        "374b38",
+                        "4f6a39",
+                        "597242",
+                        "859757",
+                        "abac6e",
+                        "abac6e"
+                    ],
+                    "paletteRow": 20
+                },
+                {
+                    "season": "autumn",
+                    "maps": "summer",
+                    "albedo": "autumn",
+                    "gapRow": [
+                        "30382d",
+                        "4f4f34",
+                        "545438",
+                        "918039",
+                        "978742",
+                        "c9ad57",
+                        "dcbc6e",
+                        "dcbc6e"
+                    ],
+                    "paletteRow": 21
+                },
+                {
+                    "season": "winter",
+                    "maps": "winter",
+                    "albedo": "winter",
+                    "gapRow": [
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000",
+                        "000000"
+                    ],
+                    "paletteRow": 13
+                }
+            ]
         }
-    ]
+    ],
+    "maps": {
+        "script": "docs/art/rigs/treeMaps4.js",
+        "global": "TreeMaps4",
+        "glue": "HHTreePass4",
+        "glueVersion": 1,
+        "loop": 16,
+        "windNote": "wind: R=lean, G=sway as TreeMaps4 writes them. phase: R=wave, G=play, B=depth. Per species the response is the tree's wind block (bendPx, limbPx, bob, flutter, shimmer, conifer), read by the shader per renderer the way _TrunkAnchor is.",
+        "snowNote": "snow: R=G=B = the cover x 254 at which the pixel turns to snow; 255 never snows, 0 is outside. The shader thresholds it by the global _FoliageSnow; a snowed pixel takes its colour from the palette's snow row.",
+        "packNote": "W, 24 bits = wind.B << 16 | wind.A << 8 | phase.A, high to low: class 2 (0 outside, 1 wood, 2 between leaves, 3 leaf) | gapSnow 3 | gap 3 | snow 3 | stamp id + 1 13. snow and gapSnow index the palette's snow row, gap indexes the season's gap row. Read the class from W, never wind.B > 127."
+    },
+    "snowRow": [
+        "728894",
+        "768b96",
+        "9db1b7",
+        "a3b4b9",
+        "c8d5d8",
+        "cdd8d7",
+        "eff4f2",
+        "f1f3ee"
+    ],
+    "palette": {
+        "file": "TreePalette.png",
+        "width": 8,
+        "rows": 22,
+        "note": "sRGB colours, point-sampled. Row 0 (the bottom texel row, as Texture2D.GetPixel and the shader's Load number it) is the snow row; each season row's paletteRow names its gap row. Rows are sorted by packed RGB and padded by repeating the last colour."
+    }
 }
