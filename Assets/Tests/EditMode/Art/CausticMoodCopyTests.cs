@@ -9,6 +9,48 @@ namespace HiddenHarbours.Tests.Art.EditMode
 {
     public class CausticMoodCopyTests
     {
+        [TestCase("Water")]
+        [TestCase("Water_DeepBlue")]
+        [TestCase("Water_FoggySmother")]
+        [TestCase("Water_GlassyCalm")]
+        [TestCase("Water_NorthAtlantic")]
+        [TestCase("Water_StirredBrown")]
+        [TestCase("Water_StormGrey")]
+        [TestCase("Water_Tropical")]
+        [TestCase("Water_WarmShelter")]
+        public void CausticClarity_PresetApplyRestoresZero(string name)
+        {
+            string path = "Assets/_Project/Art/Materials/" +
+                          (name == "Water" ? "" : "WaterPresets/") + name + ".mat";
+            var asset = AssetDatabase.LoadAssetAtPath<Material>(path);
+            Assert.That(asset, Is.Not.Null, path);
+            Assert.That(asset.HasProperty("_CausticClarity"), Is.True);
+            Assert.That(asset.GetFloat("_CausticClarity"), Is.EqualTo(0f));
+            var scratch = new Material(asset);
+            try
+            {
+                scratch.SetFloat("_CausticClarity", 1f);
+                Assert.That(scratch.GetFloat("_CausticClarity"), Is.EqualTo(1f));
+                scratch.CopyPropertiesFromMaterial(asset);
+                Assert.That(scratch.GetFloat("_CausticClarity"), Is.EqualTo(0f));
+            }
+            finally
+            {
+                Object.DestroyImmediate(scratch);
+            }
+        }
+
+        [Test]
+        public void CausticClarity_IsOwnerPolicyOutsideMoodCopy()
+        {
+            var field = typeof(WaterSurface).GetField("MoodFloatNames",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.That(field, Is.Not.Null);
+            var names = (string[])field.GetValue(null);
+            Assert.That(names, Does.Not.Contain("_CausticClarity"));
+            Assert.That(names, Does.Contain("_Turbidity"));
+        }
+
         [Test]
         public void CausticActivation_WeatherBlendCarriesAllCurvatureDials()
         {

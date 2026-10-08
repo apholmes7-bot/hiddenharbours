@@ -25,8 +25,8 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "7639d4e86601c7d830c8aecd64b98c214a8430b5d067c3f27c189a71e6523403";
-        // Approved b5825e1f, UTF-8 without BOM, LF. These are scope guards, not copies of physics.
+        const string BaseWaterHash = "f686d199c20882de255cdfdfc4bd3dee7011e47406398adfe3d1644ab643302c";
+        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a (#933, caustics, default off). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
         const string LegacyDepth =
             "                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only\n" +
             "                                                 surfRunUpM, boreFoamBlend);   // …and the foam rides the bore's wash too\n";
@@ -164,15 +164,15 @@ namespace HiddenHarbours.Tests.EditMode
             var files = new[] { "Assets/_Project/Art/Materials/Water.mat" }.Concat(
                 Directory.GetFiles("Assets/_Project/Art/Materials/WaterPresets", "*.mat").OrderBy(p => p, StringComparer.Ordinal)).ToArray();
             string[] originalHashes = {
-                "99ec44b24e11904bc2a76618b1253d95b3268058cab715a12f557055fcd3351e",
-                "65c31ac5d408f3892c8351e47cfe48eeb1fa255df8c11a7c9783480a6eec44b6",
-                "0754e4bed8cc712c95364c43bef405bb0a348cf704dd347b1d8f0c04a5cfa503",
-                "f9db60937eebbb8fc0b27d09378c0c6a9e66f6b969ba7bb4aa35ebb0d8aa92c5",
-                "a9e2471696ab937823f20b12355b87febbe273b14fa39d925745e6dde66b99b9",
-                "232cffe5a1364ee88c0ca1a7d02067754891da1d551f23984d0994f6c5e2bf05",
-                "949deddee6eb1b67532f3c14be7428c0b9ea27bb2ee41f741dab6bbe25e9be5d",
-                "11bb592a9d9e82b2a7a39c987e645689b789b39e3e8abb21ff04358d9b89a38e",
-                "09e80cfaa580ddcf4fa312eb8a1a2c41d0db212c2add5ed30791f17557bab090" };
+                "239365879d18b5aa66a3c004ba35b3a9a44a9f59519713298eafd0f41324ff3b",
+                "7590a18165dd8430887e8f6c15d2c5a803a43cce795b40f0a412f93d72a6296b",
+                "0e5c26f3975ed78e2a288c271656b02ea5db6bfc09625d416f1692f635d8e41a",
+                "3434e4f8e95a8bea8d7939e50f8f08b11915bdf2a8baad5ba742be9d4069093a",
+                "7561760a2ba512dc7197c93e65064e83ee7ccfd56cae54370caf410d211460d9",
+                "bac7be796cef410bb56c506e353187a91c668bbae40b23f46ce893be826a4d66",
+                "62b27d291ab2f1647540e0cba9ea67609ae19113b5318209362d710f3b002a93",
+                "d1d0e902616294f08f7fec6a181ac45236942a5aa19627d6d95061953a96c88a",
+                "0b44d4731458581f20dfa532d67a9364e2396fc085c48fe5109915cc09b602a1" };
             Assert.That(files.Length, Is.EqualTo(9));
             for (int i = 0; i < files.Length; i++)
             {

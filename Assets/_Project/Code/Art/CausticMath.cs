@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace HiddenHarbours.Art
 {
@@ -45,6 +46,20 @@ namespace HiddenHarbours.Art
         {
             float sunUp = tintSum > 1e-3f ? Saturate(sunElevation) : 1f;
             return 1f + (sunUp - 1f) * Saturate(strength);
+        }
+
+        /// <summary>
+        /// C2a: attenuate the light nets with the seabed's per-channel, down-and-back law.
+        /// Use real column depth (not the caustic placement bias), and band before blending.
+        /// Clarity is owner look policy, not mood-eased; zero strength or inactive sigma is
+        /// exactly Vector3.one. All optical arithmetic stays in WaterAbsorption.
+        /// </summary>
+        public static Vector3 ClarityTransmission(Vector3 sigma, float depth, float clarity, float bands)
+        {
+            if (clarity <= 0f || !WaterAbsorption.IsActive(sigma)) return Vector3.one;
+            Vector3 transmission = WaterAbsorption.BandTransmission(
+                WaterAbsorption.Transmission(sigma, depth), bands);
+            return Vector3.Lerp(Vector3.one, transmission, Saturate(clarity));
         }
 
         private static float Saturate(float value) => Math.Min(Math.Max(value, 0f), 1f);

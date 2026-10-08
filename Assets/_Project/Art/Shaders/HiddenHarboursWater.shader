@@ -138,10 +138,10 @@ Shader "HiddenHarbours/Water"
         // col.rgb ONLY: it ADDS to the colour like every water layer and NEVER touches depth/clip/the deep
         // tint/_WaterLevel/the sim wave field (P1 integrity, CLAUDE.md rule 5) — the waterline the player
         // wades and the crest the haul samples are byte-identical. _SwellReadStrength = 0 = EXACT passthrough.
-        //   _SwellReadStrength — master contrast amount (0 = off / stock look; ~0.35 = a clearly legible swell).
+        //   _SwellReadStrength — master contrast amount (0 = off; .2 = the shipped read, the owner's d20, 2026-10-07).
         //   _SwellReadBands    — posterize the moving band into N discrete VALUE steps for a crisp pixel-art
         //                        marching-contour read (0 = smooth). Mirrors _DepthBands / _SpecBands.
-        _SwellReadStrength ("Swell read contrast (0 = off, ~0.35 = legible)", Range(0,1)) = 0.35
+        _SwellReadStrength ("Swell read contrast (0 = off, 0.2 = shipped d20)", Range(0,1)) = 0.2
         _SwellReadBands    ("Swell read posterize bands (0 = smooth)", Float) = 0
         // W1 owner policy, held still across moods. ToggleUI adds no keyword/variant.
         // Off retains the absolute read; on bounds it by the positive colour already beneath it.
@@ -722,6 +722,7 @@ Shader "HiddenHarbours/Water"
         // stays opaque and that cancellation is gone BY CONSTRUCTION.
         _CausticDayGate       ("Caustic day gate (0 = off / always on, 1 = day only)", Range(0,1)) = 0.0
         _CausticShallowBias   ("Caustic band deepen bias (m; push dapple off the very edge)", Float) = 0.0
+        _CausticClarity       ("Caustic clarity (0 = off, 1 = seabed transmission)", Range(0,1)) = 0.0
 
         [Header(Seabed absorption (ADR 0027 num 7)   the bottom seen THROUGH the column   col.rgb only)]
         // The painted _DepthRamp stays the colour authority for the WATER BODY (ADR 0027 finding 1: a
@@ -1601,6 +1602,7 @@ Shader "HiddenHarbours/Water"
                 // props that sat here are RETIRED by ADR 0027 #7's seabed absorption below.)
                 float  _CausticDayGate;
                 float  _CausticShallowBias;
+                float  _CausticClarity;
                 // ADR 0027 #2 — field-driven caustics (curvature of the shared wave field; default OFF).
                 float  _CausticCurvatureBlend;
                 float  _CausticCurvatureStep;
@@ -5049,8 +5051,8 @@ Shader "HiddenHarbours/Water"
                         b01 = floor(b01 * _SwellReadBands + 0.5) / _SwellReadBands;
                         readBand = b01 * 2.0 - 1.0;
                     }
-                    // 0.25 ceiling: at the 0.35 default the swing is +/-0.0875 (a clearly legible band, ~3x
-                    // the owner's tuned stock swell); the palette guard-rail's value floor/ceiling bounds the
+                    // 0.25 scale: at the 0.2 default the smooth, full-gate swing is +/-0.05 (owner d20,
+                    // 2026-10-07); the palette guard-rail's value floor/ceiling bounds the
                     // extremes so troughs never go muddy nor crests blow out. A dedicated add (not a bump to
                     // _OceanSwellStrength) so the owner has ONE clear "how readable is the swell" knob.
                     // The calm gate scales the FINISHED layer (after the posterize), so on a falling sea the
@@ -5329,7 +5331,21 @@ Shader "HiddenHarbours/Water"
                     float causticDnSum = _DayNightTint.r + _DayNightTint.g + _DayNightTint.b;
                     float causticSunUp = (causticDnSum > 1e-3) ? saturate(_SunElevation) : 1.0;
                     float causticDay = lerp(1.0, causticSunUp, saturate(_CausticDayGate));
-                    col.rgb += _CausticColor.rgb * caustic * _CausticAmount * causticGate * causticDay;
+                    // C2a: real column depth, RGB down-and-back absorption, same bands as the seabed.
+                    // Owner look policy, default OFF; zero clarity or inactive sigma is exactly one.
+                    // One exp per channel only inside this shallow branch when clarity and sigma are active.
+                    float3 causticTransmission = float3(1.0, 1.0, 1.0);
+                    if (_CausticClarity > 0.0)
+                    {
+                        float3 causticSigma = AbsorptionSigma();
+                        if (dot(causticSigma, float3(1.0, 1.0, 1.0)) > ABSORPTION_EPS)
+                        {
+                            float3 causticT = AbsorptionTransmission(causticSigma, depth);
+                            causticT = AbsorptionBand(causticT, _AbsorptionBands);
+                            causticTransmission = lerp(float3(1.0, 1.0, 1.0), causticT, saturate(_CausticClarity));
+                        }
+                    }
+                    col.rgb += _CausticColor.rgb * caustic * _CausticAmount * causticGate * causticDay * causticTransmission;
                 }
 
                 // ---- layer 4 specular glints (implied single sun; pixelized so it sparkles, not smears) -------

@@ -213,6 +213,7 @@ namespace HiddenHarbours.Tests.EditMode
                 "      Value: -1.75",
                 "  Lights: []",
                 "  RetiredIds: []",
+                "  PlacementIds: []",
                 "",
             });
             Assert.AreEqual(expected, r.Assets[CoveAsset]);
@@ -278,6 +279,27 @@ namespace HiddenHarbours.Tests.EditMode
             CollectionAssert.IsEmpty(second.Changed, "run twice, it changes nothing");
             CollectionAssert.IsEmpty(second.Metas, "and makes no second meta");
             Assert.AreEqual(first.Assets[CoveAsset], second.Assets[CoveAsset]);
+        }
+
+        [Test]
+        public void APlacementSelection_SurvivesImport_AndRefusesAMissingSelectedId()
+        {
+            var first = Import(Cove());
+            first.Assets[CoveAsset] = first.Assets[CoveAsset].Replace("  PlacementIds: []", "  PlacementIds:\n  - prop.t_find");
+            var second = Import(Cove(), first.Assets);
+            CollectionAssert.IsEmpty(second.Changed);
+            StringAssert.Contains("  PlacementIds:\n  - prop.t_find", second.Assets[CoveAsset]);
+            first.Assets[CoveAsset] = first.Assets[CoveAsset].Replace("  - prop.t_find", "  - prop.t_missing");
+            Refuses(Cove(), "selected placement id", first.Assets);
+        }
+
+        [Test]
+        public void EastEndImport_RefusesAnyOtherSourceBeforeItReadsGround()
+        {
+            bool readGround = false;
+            Assert.Throws<KeySceneImport.Refusal>(() => KeySceneImport.ImportEastEnd(
+                Encoding.UTF8.GetBytes("{}"), at => { readGround = true; return 0f; }, null, ScriptGuid));
+            Assert.IsFalse(readGround);
         }
 
         [Test]

@@ -78,6 +78,7 @@ Material:
     - _BoatLightGain: 0.5
     - _BoatLightTintAmount: 0.25
     - _CausticAmount: 0.45
+    - _CausticClarity: 0
     - _CausticCurvatureBlend: 0.5
     - _CausticCurvatureStep: 0.5
     - _CausticCurvatureGain: 12
@@ -237,7 +238,7 @@ Material:
     - _SwellFaceShade: 0.22
     - _SwellReadBands: 0
     - _SwellReadSeaStateLo: 0.1
-    - _SwellReadStrength: 0.35
+    - _SwellReadStrength: 0.2
     - _Turbidity: 0.25
     - _UntileStrength: 1
     - _UseCausticTex: 1

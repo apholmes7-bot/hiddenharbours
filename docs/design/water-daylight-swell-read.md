@@ -193,3 +193,41 @@ SHA/size/WorldSeed checks. Return exact editor PIDs closed, unchanged save seed 
 lowest commit headroom. The known main GPU sun-side red is reported, not repaired.
 No defaults ship until the owner rules from plates; Phase D material changes also
 wait for #909's merge confirmation.
+
+## Phase D: owner's d20 (2026-10-07)
+
+The owner ruled, verbatim, "ok lets go d20" after reviewing Phase C. The chosen
+arm is **d20-f06**: the existing absolute read, `_SwellReadRelative = 0`, at
+`_SwellReadStrength = 0.20`; `_ReflectionFadeChop` stays **0.6**. Part A changes
+only the strength in `Water.mat` and the shader Properties default, both
+**0.35 -> 0.20**, plus their comments, the default/copy test and this record.
+The branch starts at main `032f6239310707ff22dab20852351fcc16103226`.
+
+All eight `WaterPresets/*.mat` and their eight `.preset` twins omit
+`_SwellReadStrength` and use the water shader. The editor's "Apply to live Water"
+uses `WaterPresetMenu.ApplyVariant`'s `CopyPropertiesFromMaterial(variant)`;
+changing only `Water.mat` would let an unapplied shader default of .35 return.
+`DisplacedWaterSurface` constructs from the live material and re-copies it in
+`SyncUniforms`. `WaterSurface` reads mood keys individually; its line 292 copy
+reference is a comment about the editor menu, not another runtime copy. The
+strength is absent from `MoodFloatNames` and stays so. The default-dials test now
+pins .20 on a bare material and on a scratch copy of the live asset and every
+preset, after deliberately seeding that scratch with the superseded .35.
+
+**GPU position:** Phase C priced **0/60: NOT VERIFIED**. Source inspection of
+`HiddenHarboursWater.shader` confirms that .35 and .20 both take the same
+`_SwellReadStrength > 0.001` path, with relative mode still zero; the absolute
+expression remains `readBand * _SwellReadStrength * swellReadGate * 0.25`.
+Only the uniform value changes: no added ALU, sample, keyword or instruction path.
+Therefore d20 needs no new incremental GPU pricing; this is a source conclusion,
+not measured timing. The 0/60 pricing gap remains open for any relative arm;
+none ships.
+
+Part A launches no Unity. Part B needs a new owner-granted editor slot: re-shoot
+d20 anchors and gameplay MoodGrade plates through the shipped material with no
+override, compare against Phase C d20 at
+`b9e31bcf8c74472527dc2ca9f91155608a77f5f2`, and run the GPU water classes named in
+the PR. Old .35-era measured bars and historical 77%/37% diagnostic numbers stay
+unchanged pending those measurements; the PR names each affected premise. The
+known main sun-side GPU failure (~0.27% against 0.5%) is still open. No tests are
+retired and no default other than the owner's strength changes.

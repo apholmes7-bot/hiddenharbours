@@ -25,7 +25,7 @@ namespace HiddenHarbours.Tests.RigBaking
     {
         internal const string Kit = "docs/art/rigs/st-peters-set-pieces-kit/";
         internal const string TodayPath = "Assets/_Project/Art/Sprites/StPeters/SetPieces/stPetersSetPieces.today.json";
-        const string TodaySha256Lf = "04749202a9f8fb865c5805ccfd1dba4c82e6fbfd3d8a1e8b3c2aedfbd3926895";
+        const string TodaySha256Lf = "86b1557a29b3ed105fe20c5550fcdcecee76542502468982d90c7c97d8ddbe95";
 
         /// <summary>The eight pieces, rig key to Def id, in the kit's KEYS order.</summary>
         internal static readonly (string Key, string Id)[] Pieces =
