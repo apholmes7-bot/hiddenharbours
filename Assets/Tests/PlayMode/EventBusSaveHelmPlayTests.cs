@@ -37,10 +37,13 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(runPath, Is.Not.Null.And.Not.Empty);
             string runDirectory = Path.GetDirectoryName(Path.GetFullPath(runPath));
             Assert.That(Path.GetDirectoryName(runDirectory), Is.EqualTo(TestRunSave.RunsRoot));
-            var service = GameServices.Save as SaveService;
+            // Earlier fixtures can clear the locator without destroying the bootstrap object.
+            // Find that already-redirected object; never create another service here.
+            var service = Object.FindAnyObjectByType<SaveService>();
             Assert.That(service, Is.Not.Null, "the real BeforeSceneLoad bootstrap must have run");
             Assert.That(service.SavePath, Is.EqualTo(runPath));
             Assert.That(SaveStore.ActivePath, Is.EqualTo(runPath));
+            var previousSaveService = GameServices.Save;
 
             // Give this case a separate file under the already-verified run directory. This uses the
             // real service's internal Open seam; its original Awake was also redirected, never live.
@@ -61,6 +64,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Action<GameSaved> observeSaved = null;
             try
             {
+                GameServices.Save = service;
                 ShellFlow.Reset();
                 Interactables.Clear(); InteractVerb.Reset(); InteractionGate.Reset();
                 InteractActionClaim.Reset(); InteractOffer.Reset(); InteractActorProbe.Reset();
@@ -138,6 +142,8 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             finally
             {
+                // Restore the locator even if later cleanup fails; it may originally have been null.
+                GameServices.Save = previousSaveService;
                 SaveStore.BeforeReplaceForTests = previousFault;
                 EventBus.Unsubscribe(observeBoat); EventBus.Unsubscribe(observeMode); EventBus.Unsubscribe(observeSaved);
                 if (addedSaveHandler) { EventBus.Unsubscribe(saveHandler); EventBus.Subscribe(saveHandler); }

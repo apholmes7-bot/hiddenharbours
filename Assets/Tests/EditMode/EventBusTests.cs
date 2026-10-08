@@ -7,6 +7,8 @@ using HiddenHarbours.Core;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.TestTools.Constraints;
+using Is = UnityEngine.TestTools.Constraints.Is;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -267,11 +269,32 @@ namespace HiddenHarbours.Tests.EditMode
         {
             EventBus.Subscribe<Message>(Count); EventBus.Subscribe<Message>(Count);
             for (int i = 0; i < 10000; i++) EventBus.Publish(new Message(1));
-            MeasurePublishAllocation(); // warm the measurement method/JIT too
+            PublishMeasuredLoop();
+            MeasurePublishAllocation(); // warm the optional byte measurement method/JIT too
+            Assert.That(() => { _allocationSink = new object[64]; }, Is.AllocatingGCMemory(),
+                "harness: the GC.Alloc recorder must detect a known allocation");
+            _delivered = 0;
+            Assert.That(() => PublishMeasuredLoop(), Is.Not.AllocatingGCMemory(),
+                "bus-only stable dispatch must allocate no GC memory");
+            Assert.That(_delivered, Is.EqualTo(200000));
+
+            // Some Unity runtimes report zero for every thread-counter read. The GC.Alloc
+            // recorder above is the proof; only add a byte-count assertion when this counter works.
+            if (MeasureKnownAllocation() <= 0)
+            {
+                Debug.Log("[EventBusTests] GC.GetAllocatedBytesForCurrentThread counts nothing on this runtime. " +
+                    "The GC.Alloc recorder above is the allocation measurement.");
+                return;
+            }
             _delivered = 0;
             long bytes = MeasurePublishAllocation();
             Assert.That(_delivered, Is.EqualTo(200000));
             Assert.That(bytes, Is.EqualTo(0L), "bus-only stable dispatch must allocate zero bytes");
+        }
+
+        private static void PublishMeasuredLoop()
+        {
+            for (int i = 0; i < 100000; i++) EventBus.Publish(new Message(1));
         }
 
         // Keep NUnit's boxed assertion arguments out of the measured method, including JIT hoisting.
@@ -280,20 +303,29 @@ namespace HiddenHarbours.Tests.EditMode
         {
             GC.GetAllocatedBytesForCurrentThread();
             long before = GC.GetAllocatedBytesForCurrentThread();
-            for (int i = 0; i < 100000; i++) EventBus.Publish(new Message(1));
+            PublishMeasuredLoop();
             return GC.GetAllocatedBytesForCurrentThread() - before;
         }
 
         [Test]
         public void AllocationCounter_DetectsExplicitAllocation()
         {
-            GC.GetAllocatedBytesForCurrentThread();
-            long before = GC.GetAllocatedBytesForCurrentThread();
-            _allocationSink = new byte[1024];
-            long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
-            Assert.That(bytes, Is.GreaterThanOrEqualTo(1024));
+            Assert.That(() => { _allocationSink = new object[64]; }, Is.AllocatingGCMemory(),
+                "harness: the GC.Alloc recorder must detect a known allocation");
             GC.KeepAlive(_allocationSink);
             _allocationSink = null;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static long MeasureKnownAllocation()
+        {
+            GC.GetAllocatedBytesForCurrentThread();
+            long before = GC.GetAllocatedBytesForCurrentThread();
+            _allocationSink = new object[64];
+            long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
+            GC.KeepAlive(_allocationSink);
+            _allocationSink = null;
+            return bytes;
         }
     }
 }
