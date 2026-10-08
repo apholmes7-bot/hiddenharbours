@@ -316,7 +316,7 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <summary>
         /// Every pixel the kit wrote for an anchor at dir 4 (the tide board's marks and numerals, the sign's and
         /// notice's corners, the flue, the door, the conveyor's ends, the notice's lock) lands where the Def
-        /// projects the same model point: thirty in all.
+        /// projects the same model point: twenty-nine after the tide board's foot is raised to -1.75.
         /// </summary>
         [Test]
         public void AnchorsLandOnTheKitsOwnPixelsAtDirFour()
@@ -361,7 +361,9 @@ namespace HiddenHarbours.Tests.RigBaking
                     projected++;
                 }
             }
-            Assert.That(projected, Is.EqualTo(30));
+            // The committed rig omits the -1.70 half-mark at the new foot's lower drawing boundary.
+            // Every remaining mark retains its absolute tide level and is checked above against its pixels.
+            Assert.That(projected, Is.EqualTo(29));
         }
 
         [Test]

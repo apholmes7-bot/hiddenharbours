@@ -66,6 +66,16 @@ installer + a `ServiceLocator` exposed through Core interfaces. `lead-architect`
 | **SaveService** | Versioned save/load, autosave, app-suspend safety. | See §6. |
 | **AudioDirector** | Adaptive ambient/music/SFX driven by region + EnvironmentSample. | (`design/art-and-audio-bible.md`) |
 
+### Authored gull perches (O3 wave 1b)
+
+Core's `IGullPerch` offers a stable id, ground point, screen point and host sort line.
+`GullPerches` holds scene-lifetime offers and exclusive reservations in stable id order.
+World's `GullPerch` registers on enable and unregisters on disable; it has no per-frame callback.
+Art's `GullFlock` claims an offer on its existing decision tick and uses its landing and departure
+states, releasing the reservation on departure, timeout, disable or host removal. The modules
+reference Core only. Neither offers nor reservations are saved. See
+[`wave-1b-placement.md`](../design/st-peters-key-scenes/wave-1b-placement.md) for the placement ruling.
+
 ## 4. The Environment → Boat force contract (P1, the signature loop)
 
 `EnvironmentService` produces, each physics tick, a sample the boat physics consumes:

@@ -1,0 +1,568 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d4ebc05de4cf6957872faaf3cb719, type: 3}
+  m_Name: KeyScene_stp_east_end
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
+  Id: keyscene.stp_east_end
+  DisplayName: St Peters east end
+  RegionId: region.st_peters
+  Source: HH-st-peters-phase-a-art-2026-10-02/east-end/eastEndPieces.json; sha256
+    e7cd4023be9c6819a7c1d66143ba76dfa47ad5f13ba4f8e12c90c0080c160f9a
+  Placed: 1
+  Pieces:
+  - Id: structure.stp_net_loft
+    Kind: building
+    Owner: 
+    Kit: wharfBuilding2
+    Piece: redShed
+    State: 
+    At: {x: 183.2, y: 22.8}
+    Z: 5.8907366
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: redShed
+    - Key: weather
+      Value: 0.55
+  - Id: structure.stp_net_shed
+    Kind: building
+    Owner: 
+    Kit: wharfBuilding2
+    Piece: netShed
+    State: 
+    At: {x: 187.7, y: 9.3}
+    Z: 5.9999084
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: netShed
+    - Key: weather
+      Value: 0.7
+  - Id: structure.stp_ice_house
+    Kind: building
+    Owner: 
+    Kit: wharfBuilding2
+    Piece: iceHouse
+    State: 
+    At: {x: 158.6, y: 7.6}
+    Z: 5.9999084
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: iceHouse
+    - Key: weather
+      Value: 0.6
+  - Id: prop.stp_loft_traps
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 185.3, y: 20.5}
+    Z: 5.61872
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 1
+    - Key: weather
+      Value: 0.5
+  - Id: prop.stp_loft_traps_b
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: trapStack
+    State: 
+    At: {x: 186.1, y: 21.6}
+    Z: 4.9786916
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+    - Key: weather
+      Value: 0.6
+  - Id: prop.stp_loft_buoys
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: buoyRack
+    State: 
+    At: {x: 180.6, y: 21}
+    Z: 5.9999084
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_loft_nets
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: netPile
+    State: 
+    At: {x: 185.2, y: 24.4}
+    Z: 4.740137
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_loft_wood
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: woodStack
+    State: 
+    At: {x: 180.4, y: 25.2}
+    Z: 5.9644203
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_loft_oilskins
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: oilskinLine
+    State: 
+    At: {x: 179.2, y: 22.6}
+    Z: 5.9999084
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_loft_barrow
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: wheelbarrow
+    State: 
+    At: {x: 186.8, y: 19.4}
+    Z: 5.1399226
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_flake_a
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: codFlake
+    State: 
+    At: {x: 178, y: 26.6}
+    Z: 5.9941587
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_flake_b
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: codFlake
+    State: 
+    At: {x: 175.2, y: 29}
+    Z: 5.9784727
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_shed_reel
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: netReel
+    State: 
+    At: {x: 189.9, y: 7.3}
+    Z: 5.82554
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_shed_totes
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: toteStack
+    State: 
+    At: {x: 185.6, y: 7.8}
+    Z: 5.9999084
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: variant
+      Value: 2
+  - Id: prop.stp_shed_baskets
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: bushelBaskets
+    State: 
+    At: {x: 186.6, y: 6.6}
+    Z: 5.8830423
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_bait_ice
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: iceChest
+    State: 
+    At: {x: 184.9, y: -7.1}
+    Z: 5.9999084
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_bait_salt
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: saltBin
+    State: 
+    At: {x: 184.4, y: -5.8}
+    Z: 5.9959526
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_bait_bike
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: bicycle
+    State: 
+    At: {x: 179.9, y: -6.4}
+    Z: 5.9999084
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_bait_flag
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: flagpole
+    State: 
+    At: {x: 179.6, y: -11.4}
+    Z: 5.9999084
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_ice_wood
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: woodStack
+    State: 
+    At: {x: 156.7, y: 5.4}
+    Z: 5.999601
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_ice_barrow
+    Kind: setPiece
+    Owner: 
+    Kit: wharfDecor
+    Piece: wheelbarrow
+    State: 
+    At: {x: 161.1, y: 4.6}
+    Z: 5.9999084
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 3
+    HasSortY: 0
+    SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  Lights: []
+  RetiredIds: []
+  PlacementIds:
+  - structure.stp_net_loft
+  - structure.stp_net_shed
+  - prop.stp_loft_traps
+  - prop.stp_loft_traps_b
+  - prop.stp_loft_buoys
+  - prop.stp_loft_nets
+  - prop.stp_loft_wood
+  - prop.stp_loft_oilskins
+  - prop.stp_loft_barrow
+  - prop.stp_flake_a
+  - prop.stp_flake_b
+  - prop.stp_shed_reel
+  - prop.stp_shed_totes
+  - prop.stp_shed_baskets
+  - prop.stp_bait_ice
+  - prop.stp_bait_salt
+  - prop.stp_bait_bike
+  - prop.stp_bait_flag

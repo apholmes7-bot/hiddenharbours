@@ -439,8 +439,8 @@ namespace HiddenHarbours.Tests.RigBaking
 
             AssertNone(failures, "the door's loop no longer agrees with its side — the loop reading's sign " +
                                  "is calibrated on these builds, so BuildingRigAzimuthProbe's eave path is unproven");
-            Assert.AreEqual(13, read, "the calibration was measured on 13 builds whose side the probe reads " +
-                                      "(5 on main's house, 4 on the returned, 4 wharf); a new build re-opens it");
+            Assert.AreEqual(17, read, "the calibration is measured on 17 builds whose side the probe reads " +
+                                      "(5 on main's house, 4 on the returned, 8 wharf including O3's four)");
             Assert.AreEqual(1, eave, "and exactly one door the side cannot read: the general store's");
         }
 

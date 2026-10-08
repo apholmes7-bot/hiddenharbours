@@ -15,20 +15,32 @@ MonoBehaviour:
   Id: keyscene.stp_landing
   DisplayName: The Landing
   RegionId: region.st_peters
-  Source: art-desk return 2 part 1 (key-scenes-r2-part1-ne-light-2026-09-28), scenes/keyscene.stp_landing/scene.json, 16389 bytes, sha256 ea9004c8fd232d1502e88acc5f8d0e83e942b65e52f02a2f82a45685cce6d28d
+  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_landing/scene.json,
+    19211 bytes, sha256 0ec0da53ccf7f2a55a2f40697fa7fe6ec26e809c3ef4ed63a1ac6f1be5cdebd4
+  Placed: 1
   Pieces:
   - Id: prop.stp_slip_tide_board
+    Kind: setPiece
+    Owner: 
     Kit: stPetersSetPieces
     Piece: slipTideBoard
     State: 
     At: {x: 200.9, y: -3.62}
     Z: -1.75
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 0
     SortY: 0
+    Layer: raised
+    Walk: behind
+    Collider: polygon 0.40 x 0.42 m
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: foot
@@ -38,31 +50,128 @@ MonoBehaviour:
     - Key: top
       Value: 2.6
   - Id: prop.stp_harbour_vane
+    Kind: setPiece
+    Owner: 
     Kit: stPetersSetPieces
     Piece: harbourVane
     State: 
     At: {x: 183.6, y: -4.4}
     Z: 5.96
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 0
     HasSortY: 0
     SortY: 0
+    Layer: raised
+    Walk: behind
+    Collider: polygon 0.84 x 0.84 m
     Variants:
     - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: structure.stp_bait_store
+    Kind: building
+    Owner: 
+    Kit: wharfBuilding2
+    Piece: tealShack
+    State: 
+    At: {x: 182.3, y: -8.8}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: behind
+    Collider: the kit's footprint (4.02 x 5.40 m)
+    Variants:
+    - today
+    WhenTide: 
+    Words:
+    - words.bait_store_name
+    Options:
+    - Key: preset
+      Value: tealShack
+    - Key: sign
+      Value: true
+  - Id: station.st_peters.slip_lantern
+    Kind: setPiece
+    Owner: StPetersWharf.LampPostSites
+    Kit: wharfDecor
+    Piece: lanternPost
+    State: 
+    At: {x: 184.5, y: 0.5}
+    Z: 5.35
+    StandsOn: deck
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 0.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: station.st_peters.head_lamp
+    Kind: setPiece
+    Owner: StPetersWharf.LampPostSites
+    Kit: wharfDecor
+    Piece: lanternPost
+    State: 
+    At: {x: 211.5, y: 0.5}
+    Z: 5.35
+    StandsOn: deck
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 0.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
     Words: []
     Options: []
   - Id: prop.stp_landing_traps
+    Kind: setPiece
+    Owner: 
     Kit: wharfDecor
     Piece: trapStack
     State: 
     At: {x: 187.3, y: 2.05}
     Z: 5.35
     StandsOn: deck
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: variant
@@ -72,156 +181,311 @@ MonoBehaviour:
     - Key: weather
       Value: 0.35
   - Id: prop.stp_landing_totes
+    Kind: setPiece
+    Owner: 
     Kit: wharfDecor
     Piece: toteStack
     State: 
     At: {x: 190.1, y: 2.2}
     Z: 5.35
     StandsOn: deck
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: variant
       Value: 1
   - Id: prop.stp_landing_cart
+    Kind: setPiece
+    Owner: 
     Kit: wharfDecor
     Piece: dockCart
     State: 
     At: {x: 193.2, y: 1.5}
     Z: 5.35
     StandsOn: deck
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: loaded
       Value: true
   - Id: prop.stp_landing_bait_barrel
+    Kind: setPiece
+    Owner: 
     Kit: wharfDecor
     Piece: baitBarrel
     State: 
     At: {x: 205.9, y: 2}
     Z: 5.35
     StandsOn: deck
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options: []
   - Id: prop.stp_landing_rope
+    Kind: setPiece
+    Owner: 
     Kit: wharfDecor
     Piece: ropeCoil
     State: 
     At: {x: 206.5, y: -2}
     Z: 5.35
     StandsOn: deck
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: on (it is a coil on the planks)
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options: []
+  - Id: prop.stp_landing_gull
+    Kind: gull
+    Owner: 
+    Kit: seagull
+    Piece: perch
+    State: 
+    At: {x: 213.5, y: 2.5}
+    Z: 5.72
+    StandsOn: mount
+    MountHost: context.wharf
+    MountAnchor: northPilehead
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 5
+    HasSortY: 1
+    SortY: 2.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: anim
+      Value: perch
+    - Key: frame
+      Value: 0
   - Id: prop.stp_strand_bench
+    Kind: setPiece
+    Owner: 
     Kit: wharfDecor
     Piece: bench
     State: 
     At: {x: 186, y: 17.2}
     Z: 5.86
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options: []
   - Id: prop.stp_wrack_driftwood
+    Kind: setPiece
+    Owner: 
     Kit: shoreFinds
     Piece: Driftwood
     State: bleached
     At: {x: 198.45, y: 12.4}
     Z: 2.39
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: state
       Value: bleached
   - Id: prop.stp_wrack_plank
+    Kind: setPiece
+    Owner: 
     Kit: shoreFinds
     Piece: DriftPlank
     State: dry
     At: {x: 197.1, y: 16.4}
     Z: 2.41
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 3
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: state
       Value: dry
   - Id: prop.stp_wrack_float
+    Kind: setPiece
+    Owner: 
     Kit: shoreFinds
     Piece: NetFloat
     State: dry
     At: {x: 198.95, y: 10.4}
     Z: 2.42
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: state
       Value: dry
   - Id: prop.stp_wrack_rope
+    Kind: setPiece
+    Owner: 
     Kit: shoreFinds
     Piece: RopeScrap
     State: dry
     At: {x: 196.2, y: 18.6}
     Z: 2.41
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: state
       Value: dry
   - Id: prop.stp_wrack_lath
+    Kind: setPiece
+    Owner: 
     Kit: shoreFinds
     Piece: TrapLath
     State: bleached
     At: {x: 197.9, y: 14.3}
     Z: 2.38
     StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
     Dir: 5
     HasSortY: 0
     SortY: 0
+    Layer: 
+    Walk: 
+    Collider: 
     Variants:
     - today
+    WhenTide: 
     Words: []
     Options:
     - Key: state
       Value: bleached
+  Lights:
+  - PieceId: station.st_peters.slip_lantern
+    Preset: lanternPost (small, warm)
+    Pool: 1
+    ReachMetres: 3.6
+    At: {x: 0, y: 0, z: 2.2}
+    Colour: '#ffc774'
+    Intensity: 0.95
+    When: dusk
+    WhoLights: 'whoever is last off the water (routine: the last villager to tie up
+      after sunset lights it; out at dawn)'
+    Budget: 1
+    Note: 'Not ruled yet: the last-villager rule is a proposal. The game lights this
+      lantern itself at night today, and the boards draw it so until the owner rules.'
+  - PieceId: station.st_peters.head_lamp
+    Preset: lanternPost
+    Pool: 1
+    ReachMetres: 3.6
+    At: {x: 0, y: 0, z: 2.2}
+    Colour: 
+    Intensity: 0
+    When: dusk
+    WhoLights: the game lights it at night (StPetersWharf.LampPostSites, LampPosts.cs)
+    Budget: 1
+    Note: 
+  RetiredIds: []
+  PlacementIds: []

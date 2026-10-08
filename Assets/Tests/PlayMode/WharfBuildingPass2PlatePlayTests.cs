@@ -46,7 +46,7 @@ namespace HiddenHarbours.Tests.PlayMode
     ///
     /// <para>Needs a GPU: skips loudly as NOT VERIFIED on CI's Null device rather than reading green.</para>
     /// </summary>
-    public class WharfBuildingPass2PlatePlayTests
+    public partial class WharfBuildingPass2PlatePlayTests
     {
         const string PlateDir = "WharfBuildingPass2Plates";
         const string CleanupSceneName = "WharfBuildingPass2PlateCleanup";
@@ -304,7 +304,8 @@ namespace HiddenHarbours.Tests.PlayMode
         List<(SpriteRenderer sr, string key, string rig)> WharfRenderers()
         {
             Dictionary<string, Building> rows = ReadContract<Buildings>(BuildingsContractPath).buildings
-                .Where(b => b.rig != HouseRig).ToDictionary(b => b.key, b => b);
+                .Where(b => b.rig != HouseRig && (b.key == CanneryKey || b.key.StartsWith(YardKeyPrefix, StringComparison.Ordinal)))
+                .ToDictionary(b => b.key, b => b);
             var found = new List<(SpriteRenderer, string, string)>();
             var sizes = new List<string>();
             foreach (SpriteRenderer sr in Object.FindObjectsByType<SpriteRenderer>())
@@ -312,6 +313,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 Texture2D albedo = sr.sprite != null ? sr.sprite.texture : null;
                 if (albedo == null || !albedo.name.StartsWith(VillageSheetPrefix, StringComparison.Ordinal)) continue;
                 string key = albedo.name.Substring(VillageSheetPrefix.Length);
+                if (key != CanneryKey && !key.StartsWith(YardKeyPrefix, StringComparison.Ordinal)) continue;
                 if (!rows.TryGetValue(key, out Building row)) continue;   // a house, or a channel sheet
                 found.Add((sr, key, row.rig));
                 sizes.Add($"{key} {albedo.width}x{albedo.height}");

@@ -1068,3 +1068,4 @@ MonoBehaviour:
     Budget: 1
     Note: 
   RetiredIds: []
+  PlacementIds: []
