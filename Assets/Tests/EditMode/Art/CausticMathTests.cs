@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using HiddenHarbours.Art;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace HiddenHarbours.Tests.Art.EditMode
 {
@@ -86,6 +87,123 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(CausticMath.BlendWithField(0.8f, 0.2f, 0.5f, 0.025f), Is.EqualTo(0.5f).Within(1e-6f));
             Assert.That(CausticMath.BlendWithField(0.8f, 0.2f, 2f, 0.025f), Is.EqualTo(0.2f).Within(1e-6f));
             Assert.That(CausticMath.BlendWithField(0.8f, 0f, 1f, 0.025f), Is.EqualTo(0f));
+        }
+
+        [TestCase(0f)]
+        [TestCase(6f)]
+        public void CausticTransmission_IsMonotoneInDepthAndTurbidity(float bands)
+        {
+            // At d = 0, exp(0) = 1 on every channel (also exactly 6/6 when banded).
+            // Both sweeps start above the inactive-sigma threshold; increasing sigma or 2d
+            // cannot increase transmission, including the plateaus introduced by six bands.
+            foreach (float clarity in new[] { 0.5f, 1f })
+            {
+                Vector3 previousDepth = Vector3.one;
+                Vector3 previousTurbidity = Vector3.one;
+                for (int i = 0; i <= 100; i++)
+                {
+                    Vector3 byDepth = CausticMath.ClarityTransmission(
+                        WaterAbsorption.Sigma(3f, WaterAbsorption.DefaultRatio), i * 0.1f, clarity, bands);
+                    Vector3 byTurbidity = CausticMath.ClarityTransmission(
+                        WaterAbsorption.Sigma(0.01f + i * 0.03f, WaterAbsorption.DefaultRatio),
+                        0.5f, clarity, bands);
+                    for (int channel = 0; channel < 3; channel++)
+                    {
+                        if (i == 0) Assert.That(byDepth[channel], Is.EqualTo(1f));
+                        Assert.That(byDepth[channel], Is.InRange(0f, previousDepth[channel]));
+                        Assert.That(byTurbidity[channel], Is.InRange(0f, previousTurbidity[channel]));
+                    }
+                    previousDepth = byDepth;
+                    previousTurbidity = byTurbidity;
+                }
+            }
+        }
+
+        [Test]
+        public void CausticTransmission_ZeroStrengthIsPassthrough()
+        {
+            // Exactly IEEE-754 1.0 (0x3f800000), with no tolerance, for every output channel.
+            foreach (float depth in new[] { -1f, 0f, 0.5f, 100f })
+            foreach (float bands in new[] { 0f, 6f })
+            {
+                foreach (Vector3 sigma in new[] { Vector3.zero, new Vector3(3f, 0.54f, 0.24f),
+                    new Vector3(100f, 100f, 100f) })
+                    AssertOneBits(CausticMath.ClarityTransmission(sigma, depth, 0f, bands));
+                foreach (float clarity in new[] { -1f, 0f, 0.5f, 1f, 2f })
+                foreach (Vector3 sigma in new[] { Vector3.zero, new Vector3(0.00002f, 0.00002f, 0.00002f),
+                    new Vector3(0.0001f, 0f, 0f) })
+                    AssertOneBits(CausticMath.ClarityTransmission(sigma, depth, clarity, bands));
+            }
+        }
+
+        [TestCase(1f, 0f, 0.04978707f, 0.58274825f, 0.78662786f)]
+        [TestCase(0.5f, 0f, 0.52489353f, 0.79137413f, 0.89331393f)]
+        [TestCase(1f, 6f, 0f, 0.5f, 0.83333333f)]
+        [TestCase(0.5f, 6f, 0.5f, 0.75f, 0.91666667f)]
+        public void CausticTransmission_StirredBrownMatchesWorkedNumbers(
+            float clarity, float bands, float red, float green, float blue)
+        {
+            // Turbidity 3 * (1, .18, .08) = (3, .54, .24); at .5 m, path = 1 m.
+            // exp(-3, -.54, -.24) gives the first row. Round(T*6)/6 gives (0, 3/6, 5/6).
+            // The half-strength rows average those independent numbers with (1, 1, 1).
+            Vector3 actual = CausticMath.ClarityTransmission(
+                WaterAbsorption.Sigma(3f, WaterAbsorption.DefaultRatio), 0.5f, clarity, bands);
+            Assert.That(actual.x, Is.EqualTo(red).Within(1e-6f));
+            Assert.That(actual.y, Is.EqualTo(green).Within(1e-6f));
+            Assert.That(actual.z, Is.EqualTo(blue).Within(1e-6f));
+        }
+
+        [Test]
+        public void CausticTransmission_ClampsStrengthAndNegativeDepth()
+        {
+            var sigma = new Vector3(3f, 0.54f, 0.24f);
+            AssertOneBits(CausticMath.ClarityTransmission(sigma, 0.5f, -1f, 6f));
+            AssertOneBits(CausticMath.ClarityTransmission(sigma, -1f, 1f, 6f));
+            Vector3 full = CausticMath.ClarityTransmission(sigma, 0.5f, 2f, 6f);
+            Assert.That(full.x, Is.EqualTo(0f));
+            Assert.That(full.y, Is.EqualTo(0.5f));
+            Assert.That(full.z, Is.EqualTo(5f / 6f).Within(1e-6f));
+        }
+
+        [TestCase("Water")]
+        [TestCase("Water_DeepBlue")]
+        [TestCase("Water_FoggySmother")]
+        [TestCase("Water_GlassyCalm")]
+        [TestCase("Water_NorthAtlantic")]
+        [TestCase("Water_StirredBrown")]
+        [TestCase("Water_StormGrey")]
+        [TestCase("Water_Tropical")]
+        [TestCase("Water_WarmShelter")]
+        public void CausticClarity_AllMaterialsSerializeZero(string name)
+        {
+            string path = "Assets/_Project/Art/Materials/" +
+                          (name == "Water" ? "" : "WaterPresets/") + name + ".mat";
+            AssertSerialized(File.ReadAllText(path), "_CausticClarity", 0f);
+        }
+
+        [Test]
+        public void CausticTransmission_ShaderUsesSharedLawInsideCausticGate()
+        {
+            string source = File.ReadAllText("Assets/_Project/Art/Shaders/HiddenHarboursWater.shader");
+            string compact = Regex.Replace(source, @"\s+", "");
+            string block = compact.Substring(compact.IndexOf("if(causticGate>0.001&&_CausticAmount>0.001)"));
+            block = block.Substring(0, block.IndexOf("//----layer4specularglints"));
+            StringAssert.Contains("float3causticTransmission=float3(1.0,1.0,1.0);" +
+                "if(_CausticClarity>0.0){float3causticSigma=AbsorptionSigma();" +
+                "if(dot(causticSigma,float3(1.0,1.0,1.0))>ABSORPTION_EPS){" +
+                "float3causticT=AbsorptionTransmission(causticSigma,depth);" +
+                "causticT=AbsorptionBand(causticT,_AbsorptionBands);" +
+                "causticTransmission=lerp(float3(1.0,1.0,1.0),causticT,saturate(_CausticClarity));}}", block);
+            StringAssert.Contains("col.rgb+=_CausticColor.rgb*caustic*_CausticAmount*causticGate*causticDay*causticTransmission;", block);
+            StringAssert.Contains("float_CausticClarity;", compact);
+            StringAssert.Contains("_CausticClarity(\"Causticclarity(0=off,1=seabedtransmission)\",Range(0,1))=0.0", compact);
+        }
+
+        private static void AssertOneBits(Vector3 actual)
+        {
+            for (int channel = 0; channel < 3; channel++)
+                Assert.That(System.BitConverter.ToInt32(System.BitConverter.GetBytes(actual[channel]), 0),
+                    Is.EqualTo(0x3f800000));
         }
 
         private static void AssertSerialized(string yaml, string key, float expected)
