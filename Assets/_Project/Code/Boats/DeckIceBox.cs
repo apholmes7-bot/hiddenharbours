@@ -23,10 +23,11 @@ namespace HiddenHarbours.Boats
     ///
     /// <para><b>Wiring.</b> Runtime-spawned by its same-module sibling <see cref="ShipHold"/> (the
     /// DeckContainerPresenter pattern — no builder re-run). The island store selling ice and lids is
-    /// economy-sim's (§7.5); until it lands, the DEV keys below are the only source — greybox
+    /// economy-sim's (§7.5); until it lands, the DEV ice key below supplies ice — greybox
     /// scaffolding the shop replaces. ⚠ The stall keys this used to point at as the same kind of
     /// scaffolding (P to buy, B to sell) have since retired into the storekeeper's own conversation,
-    /// which is what "the shop replaces it" looks like when it happens.</para>
+    /// which is what "the shop replaces it" looks like when it happens. The lid uses the shared
+    /// deck interact verb, with a lower priority than doors and fuel work.</para>
     ///
     /// <para><b>Known limit (flagged in the PR):</b> remaining ice/lid state is NOT in the save (the
     /// v5 shape carries hold contents only), so a quit-and-reload forfeits unspent ice: on load any
@@ -35,18 +36,18 @@ namespace HiddenHarbours.Boats
     /// addition (one double + one bool) if the loss reads as unfair in play.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class DeckIceBox : MonoBehaviour
+    public sealed class DeckIceBox : MonoBehaviour, IInteractable
     {
         [Tooltip("DEV: add one unit of ice (the store is §7.5's; this is greybox scaffolding).")]
         [SerializeField] private Key _devAddIceKey = Key.I;
-        [Tooltip("DEV: toggle the lid.")]
-        [SerializeField] private Key _devLidKey = Key.L;
-        [Tooltip("Enable the dev keys above (off for release builds / when the store lands).")]
+        [Tooltip("Enable the dev ice key above (off for release builds / when the store lands).")]
         [SerializeField] private bool _devKeys = true;
 
         private ShipHold _hold;                    // same-module sibling on the physics root
         private double _protectionEndsAt;          // game-seconds instant the ice gives out; ≤ now = none
         private bool _lidOn;
+        private string _interactId;
+        private DeckContainerPresenter _presenter;
 
         /// <summary>True while the container is actively holding the catch on ice.</summary>
         public bool ProtectionActive
@@ -62,8 +63,44 @@ namespace HiddenHarbours.Boats
 
         private void Awake() => _hold = GetComponent<ShipHold>();
 
-        private void OnEnable() => EventBus.Subscribe<FishCaught>(OnFishCaught);
-        private void OnDisable() => EventBus.Unsubscribe<FishCaught>(OnFishCaught);
+        private void OnEnable()
+        {
+            EventBus.Subscribe<FishCaught>(OnFishCaught);
+            Interactables.Register(this);
+        }
+
+        private void OnDisable()
+        {
+            EventBus.Unsubscribe<FishCaught>(OnFishCaught);
+            Interactables.Unregister(this);
+        }
+
+        public string Id => _interactId ??= $"fixture.ice_box#{GetEntityId()}";
+        public string VerbLabel => _lidOn ? "Open the ice box" : "Close the ice box";
+        public Vector2 WorldPosition
+        {
+            get
+            {
+                if (_presenter == null) _presenter = GetComponent<DeckContainerPresenter>();
+                return _presenter != null ? (Vector2)_presenter.ContainerWorldPosition : (Vector2)transform.position;
+            }
+        }
+        public float ReachMeters => Def != null ? Def.LidReachMeters : 0f;
+        public int Priority => InteractPriority.DeckStorage;
+        public InteractContext Contexts => InteractContext.OnDeck;
+        public bool RequiresFacing => false;
+        public bool IsAvailable => Def != null && GameServices.PlayerTransform != null
+            && GameServices.PlayerTransform.IsChildOf(transform);
+
+        // The shared interact verb owns the binding and its gates (ADR 0043); no private E read.
+        public void Interact(in InteractActor actor)
+        {
+            if (actor.Context != InteractContext.OnDeck || !IsAvailable) return;
+            SetLid(!_lidOn);
+            EventBus.Publish(new DevNotice(_lidOn
+                ? $"Lid ON — the ice stretches ({DescribeRemaining()})."
+                : $"Lid OFF ({DescribeRemaining()})."));
+        }
 
         // A catch landed while the ice holds goes straight onto it — otherwise a fresh fish would rot
         // ambient inside an iced tote.
@@ -82,13 +119,6 @@ namespace HiddenHarbours.Boats
                     EventBus.Publish(new DevNotice($"Packed a unit of ice ({DescribeRemaining()})."));
                 else
                     EventBus.Publish(new DevNotice("The tote can't take more ice."));
-            }
-            if (kb[_devLidKey].wasPressedThisFrame)
-            {
-                SetLid(!_lidOn);
-                EventBus.Publish(new DevNotice(_lidOn
-                    ? $"Lid ON — the ice stretches ({DescribeRemaining()})."
-                    : $"Lid OFF ({DescribeRemaining()})."));
             }
         }
 

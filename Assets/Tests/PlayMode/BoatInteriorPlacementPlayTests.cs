@@ -89,7 +89,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.IsFalse(rig.Installer.Built);
             Assert.IsNull(rig.Installer.Interior);
-            Assert.AreEqual(0, Interactables.Count, "…and she registers no door to press");
+            var tank = rig.Boat.GetComponent<BoatFuelTank>();
+            Assert.IsNotNull(tank, "BoatController.Awake mounts the hull's own filler cap");
+            CollectionAssert.AreEquivalent(new IInteractable[] { tank }, Interactables.Active,
+                "…and she registers no door to press; the hull's own filler cap is registered too since #936");
         }
 
         [UnityTest]
@@ -110,7 +113,10 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsFalse(rig.Installer.Interior.SwapIsCompletable,
                            "the exterior half is null on a mesh hull until the per-level tags land — and " +
                            "the CAPABILITY must keep saying so, because that is the signal R1 flips");
-            Assert.AreEqual(1, Interactables.Count, "the door IS registered");
+            var tank = rig.Boat.GetComponent<BoatFuelTank>();
+            Assert.IsNotNull(tank, "BoatController.Awake mounts the hull's own filler cap");
+            CollectionAssert.AreEquivalent(new IInteractable[] { tank, rig.Installer.Door }, Interactables.Active,
+                "the door IS registered; the hull's own filler cap is registered too since #936");
             Assert.IsTrue(rig.Installer.Door.IsAvailable, "…and, since 2026-08-22, it offers");
 
             InteractVerb.PublishCandidate(
