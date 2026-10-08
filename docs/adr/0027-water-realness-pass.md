@@ -155,7 +155,7 @@ The painted `_DepthRamp` stays the colour authority for the water body (finding 
 rolling over it. Caustics are focused light: brightest where the surface is locally **convex toward the sun**.
 Derive them from the local **curvature** of `WaveFieldSample()` (already available in HLSL, §16.2), keeping the
 existing `_CausticDepth` gate and the `_CausticDayGate` sun gate. **No new uniform.** Cheapest real win on the list.
-C2a's optional, default-off clarity dial shares #7's optical law; see [water rendering §17.12](../design/water-rendering.md#1712-c2a-caustic-clarity-attenuation-default-off-2026-10-07).
+C2a's clarity dial ships at **1** (owner, 2026-10-08) and shares #7's optical law; see [water rendering §17.12](../design/water-rendering.md#1712-c2a-caustic-clarity-attenuation-ships-at-1-2026-10-08).
 
 **(3) #3 — Foam gains a convergence (Jacobian) gate.**
 Unity spawns foam where the surface **Jacobian goes negative** — where the surface pinches and folds — not merely

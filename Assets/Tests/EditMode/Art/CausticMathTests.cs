@@ -174,11 +174,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [TestCase("Water_StormGrey")]
         [TestCase("Water_Tropical")]
         [TestCase("Water_WarmShelter")]
-        public void CausticClarity_AllMaterialsSerializeZero(string name)
+        public void CausticClarity_AllMaterialsSerializeOne(string name)
         {
             string path = "Assets/_Project/Art/Materials/" +
                           (name == "Water" ? "" : "WaterPresets/") + name + ".mat";
-            AssertSerialized(File.ReadAllText(path), "_CausticClarity", 0f);
+            AssertSerialized(File.ReadAllText(path), "_CausticClarity", 1f);
         }
 
         [Test]
@@ -196,7 +196,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "causticTransmission=lerp(float3(1.0,1.0,1.0),causticT,saturate(_CausticClarity));}}", block);
             StringAssert.Contains("col.rgb+=_CausticColor.rgb*caustic*_CausticAmount*causticGate*causticDay*causticTransmission;", block);
             StringAssert.Contains("float_CausticClarity;", compact);
-            StringAssert.Contains("_CausticClarity(\"Causticclarity(0=off,1=seabedtransmission)\",Range(0,1))=0.0", compact);
+            StringAssert.Contains("_CausticClarity(\"Causticclarity(0=off,1=seabedtransmission)\",Range(0,1))=1.0", compact);
         }
 
         private static void AssertOneBits(Vector3 actual)
