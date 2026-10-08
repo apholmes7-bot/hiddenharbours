@@ -17,10 +17,12 @@ MonoBehaviour:
   Source: 0
   Kind: 0
   Retired: 0
+  IssueBoxes: []
+  RetirementWhy: 
   Rule: "the dipping pool (floor 0.32 m under the brook\u2019s bed, 0.82 x 0.66 m)
     and a level pad under each sill at +5.28, cut into the valley side"
-  Package: HH-st-peters-one-scene-package-2026-10-01
-  GroundFileSha256: c2cca02b0a9a41cfb2cdd47386f3fe2d839336c1e30b364af5693c9fd60e5e19
+  Package: HH-st-peters-one-scene-package-2026-10-07
+  GroundFileSha256: 0c16426af980dcbb593f5f62bd3f458103e39e1a99ad46e134bafbe4909378ad
   Scene: keyscene.stp_gap_bridge
   FileKind: pads and pool
   Ruled: "2026-09-29 (footings level at +5.28; the pool\u2019s floor +4.70)"

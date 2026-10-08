@@ -20,7 +20,7 @@ namespace HiddenHarbours.World
         [Tooltip("Stable id, append-only (pond.snake_case; pool.snake_case for a key scene's still pool).")]
         public string Id = "pond.example";
         public string DisplayName = "";
-        [Tooltip("bog_pond, fen_pool, plunge_pool, pond or dipping_pool.")]
+        [Tooltip("bog_pond, fen_pool, plunge_pool, pond, dipping_pool or rock_pool.")]
         public string Kind = "bog_pond";
         public Vector2 Centre;
         [Tooltip("The water's radii (m): along, across.")]
@@ -34,6 +34,10 @@ namespace HiddenHarbours.World
         public Vector2 Basin;
         [Tooltip("The stream it spills into, or none.")]
         public StreamDef Outlet;
+        [Tooltip("A ground-file bowl may lower by whole R16 steps to hold its surface, as a StillPool does.")]
+        public bool AdjustToSpill;
+        [Tooltip("Optional floor paint on the flooded cells; empty preserves the plan's paint.")]
+        public string FloorZone = "";
         [TextArea] public string Why = "";
     }
 }

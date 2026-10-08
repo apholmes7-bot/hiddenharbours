@@ -157,8 +157,9 @@ namespace HiddenHarbours.App.Editor
         public const double StillLevelTolerance = 0.0005;
 
         /// <summary>The Heath Brook's mouth (amendment 2 §4.2): its Def ends where its bed crosses mean tide, so the sea owns the
-        /// mouth. The ground at its end stands at or over the mean, and falls under it within 2 m past it (read every 5 cm).</summary>
-        public const double MouthReach = 2.0, MouthStep = 0.05;
+        /// mouth. Issue 3 places the last authored bed at mean tide: bilinear R16 ground may stand either side of it,
+        /// within 1 cm. The ground must still fall under the mean within 2 m beyond it (read every 5 cm).</summary>
+        public const double MouthReach = 2.0, MouthStep = 0.05, MouthLevelTolerance = 0.01;
 
         /// <summary>The village plan's ground checks (docs/design/st-peters-village-plan.md:682 and :765; amendment 2 §4.4), in
         /// ground metres: 3 m from every trunk; the ground at least 5.9 m under a footprint and 5.5 m under a yard; pass 9's
@@ -214,7 +215,7 @@ namespace HiddenHarbours.App.Editor
             "FrozenMaskHoldsToday", "HeldGroundUnchanged", "NavMarksDeepAtSpringLow", "ClamsInsideTheirBand", "PondsDoNotLeak",
             "StreamsNeverClimb", "CrossingSillIsTheGut", "CrestBandHoldsOutsideThePools", "WestOfTheCrossingHolds",
             "LandingAndCanneryHold", "HeadClearOfTheArrivalRoute", "HeadClearOfTheCannery", "StackAndBarWhereTerrainJsonPutsThem",
-            "CutInsideItsBox", "PlungePoolHoldsItsSurface", "GinnysPlotHeldAtPart1", "ShorePathNeverCut",
+            "FenPoolHoldsItsSurface", "RockPoolsHoldTheirSurfaces", "CutInsideItsBox", "PlungePoolHoldsItsSurface", "GinnysPlotHeldAtPart1", "ShorePathNeverCut",
             "EastCardinalDeepAtSpringLow", "NoShoreRockOnTheHead", "NoRockOrClamOnAKeyScenePath", "SeaRangeIsTheMapRange",
             "CanneryCircleIsPassNine", "ToeChannelsHoldAtSpringLow", "BeachWestEndBlends", "BeachDrySandStaysAboveTheSpringHigh",
             "DippingPoolHoldsItsLevel", "NeckHollowFilled", "HeathBrookNeverClimbsToTheShore", "CrossingWalkOffStillWater",
@@ -231,7 +232,7 @@ namespace HiddenHarbours.App.Editor
             var cases = new Func<Ctx, TerrainPlanGuardCase>[]
             {
                 FrozenMaskHoldsToday, HeldGroundUnchanged, NavMarksDeep, ClamsInBand, PondsHold, StreamsNeverClimb, CrossingSill,
-                CrestBandHolds, WestHolds, LandingAndCannery, HeadClearOfRoute, HeadClearOfCannery, StackAndBarPlaced, CutInBox,
+                CrestBandHolds, WestHolds, LandingAndCannery, HeadClearOfRoute, HeadClearOfCannery, StackAndBarPlaced, FenPoolHolds, RockPoolsHold, CutInBox,
                 PlungePoolHolds, GinnysPlotHeld, ShorePathNeverCut, EastCardinalDeep, NoShoreRockOnHead, NoRockOrClamOnKeyPaint,
                 SeaRangeMatchesMap,
                 CanneryCircle, ToeChannelsHold, BeachWestEndBlends, BeachDrySand, DippingPoolHolds, NeckHollowFilled, HeathBrook,
@@ -445,7 +446,9 @@ namespace HiddenHarbours.App.Editor
             var parts = new List<string>();
             for (int n = 0; n < x.Plan.Ponds.Length; n++)
             {
-                bool ok = PondHolds(x, n, out string what);
+                string what;
+                var pond = x.Plan.Ponds[n];
+                bool ok = pond.AdjustToSpill ? StillHolds(x, k, pond, out what, out _) : PondHolds(x, n, out what);
                 pass &= ok;
                 parts.Add(what);
                 Put(k, x.Plan.Ponds[n].Id + ".holds", ok ? 1 : 0);
@@ -458,8 +461,8 @@ namespace HiddenHarbours.App.Editor
         /// <summary>
         /// The streams never climb: along each carved centreline, no rise over its lowest point upstream beyond 2 cm. A pond, a
         /// still pool or a fall's plunge pool on the line reads as its water, not its bed (amendment 2 §4.2: the dipping pool).
-        /// A fall's own reach, from its box's south edge to the chute's top, is skipped by the fall's id: its water climbs in its
-        /// bowl and past its spill by design (amendment 2 §4.2, the Alder Run), and its pool's case judges it.
+        /// A fall owns the authored stations its Def names on its Stream. Those indices alone leave this check; the source
+        /// station stays checked. The fall's pool is judged by flood, and every other brook retains its dense check.
         /// </summary>
         static TerrainPlanGuardCase StreamsNeverClimb(Ctx x)
         {
@@ -471,14 +474,30 @@ namespace HiddenHarbours.App.Editor
                 var falls = new List<WaterfallDef>();
                 foreach (var f in x.Plan.Falls) if (f != null && f.Stream != null && f.Stream.Id == st.Id) falls.Add(f);
                 var line = Catmull(Num(st.Points), Num(x.Plan.LineStep));
-                double climb = Climb(x, st, line, q =>
+                double climb;
+                int at, skipped;
+                if (falls.Count == 0) climb = Climb(x, st, line, null, out at, out skipped);
+                else
                 {
-                    foreach (var f in falls) if (q.Y >= Num(f.BoxMin.y) && q.Y <= Num(f.ChuteTo)) return true;
-                    return false;
-                }, out int at, out int skipped);
+                    var skip = new HashSet<int>();
+                    foreach (var f in falls) foreach (int station in f.StreamStations) skip.Add(station);
+                    line = Straight(Num(st.Points), Num(x.Plan.LineStep));
+                    // The published indices name the authored stations, not resampled points or a y interval.
+                    double low = double.PositiveInfinity;
+                    climb = double.NegativeInfinity; at = -1; skipped = 0;
+                    for (int j = 0; j < st.Points.Length; j++)
+                    {
+                        if (skip.Contains(j)) { skipped++; continue; }
+                        var p = Num(st.Points[j]);
+                        double e = x.G.Sample(x.R.E, p.X, p.Y);
+                        double level = TerrainPlanDerivation.BrookHeadLevel(st, Math.Min(Num(st.BedZ[j]), e), j);
+                        if (!double.IsPositiveInfinity(low) && level - low > climb) climb = level - low;
+                        low = Math.Min(low, level);
+                    }
+                }
                 pass &= climb <= StreamClimb;
                 string what = st.Id + " climbs " + F(climb) + " m" + (at >= 0 ? " at (" + F(line.R[at].X) + ", " + F(line.R[at].Y) + ")" : "");
-                foreach (var f in falls) what += " (" + f.Id + "'s reach, y " + F(Num(f.BoxMin.y)) + " to " + F(Num(f.ChuteTo)) + ", skipped: " + skipped + " stations)";
+                foreach (var f in falls) what += " (" + f.Id + "/" + st.Id + " stations [" + string.Join(",", f.StreamStations) + "] skipped: " + skipped + ")";
                 parts.Add(what);
                 Put(k, st.Id + ".max_climb_m", climb);
                 if (falls.Count > 0) Put(k, st.Id + ".skipped_stations", skipped);
@@ -520,6 +539,47 @@ namespace HiddenHarbours.App.Editor
         {
             double rot = Radians(Num(p.RotationDeg));
             return EllipseRadius(X, Y, Num(p.Centre), Num(p.Radii.x), Num(p.Radii.y), Math.Cos(rot), Math.Sin(rot), 0, 0.0, 0.0);
+        }
+
+        static string IssueBox(Ctx x, int i)
+        {
+            double px = x.Xs[i % x.W], py = x.Ys[i / x.W];
+            foreach (var a in x.Plan.Ground.Asks)
+            {
+                if (a == null || a.Source != GroundAskSource.Package) continue;
+                foreach (var b in a.IssueBoxes ?? new UnityEngine.Vector4[0])
+                    if (px >= Num(b.x) && px <= Num(b.z) && py >= Num(b.y) && py <= Num(b.w)) return a.Id;
+            }
+            return null;
+        }
+
+        static TerrainPlanGuardCase FenPoolHolds(Ctx x)
+        {
+            var k = New("FenPoolHoldsItsSurface");
+            PondDef fen = null;
+            foreach (var p in x.Plan.Ponds) if (p.Id == "pond.stp_fen_pool") fen = p;
+            if (fen == null) { k.Pass = false; k.Detail = "the restored fen is missing"; return k; }
+            k.Pass = StillHolds(x, k, fen, out var what, out var level) && Math.Abs(level - Num(fen.Surface)) <= 0.01 && fen.Basin == UnityEngine.Vector2.zero;
+            k.Detail = what;
+            return k;
+        }
+
+        static TerrainPlanGuardCase RockPoolsHold(Ctx x)
+        {
+            var k = New("RockPoolsHoldTheirSurfaces");
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            var parts = new List<string>(); bool pass = true;
+            foreach (var p in x.Plan.StillPools)
+            {
+                if (p.Kind != "rock_pool") continue;
+                pass &= ids.Add(p.Id) && p.Basin == UnityEngine.Vector2.zero && p.Outlet == null && p.FloorZone == "irishmoss";
+                pass &= StillHolds(x, k, p, out var what, out var level) && Math.Abs(level - Num(p.Surface)) <= 0.01;
+                parts.Add(what);
+            }
+            k.Pass = pass && ids.Count == 24;
+            k.Detail = string.Join("; ", parts);
+            Put(k, "pools", ids.Count);
+            return k;
         }
 
         // ---- the crossing -----------------------------------------------------------------------------------------------------
@@ -829,8 +889,8 @@ namespace HiddenHarbours.App.Editor
         /// <summary>
         /// Ginny's plot: the key scenes' frozen pieces (tier 2) and her track at the heights Phase A froze them at, part 1's,
         /// within one R16 step, but the fall's west rim, by name (amendment 2 §4.4, question 4 (a)). Part 1 there is pass 9's
-        /// ground, the file's base: the plan's own part 1 no longer is where a held Def's work is gone (pond.stp_fen_pool's
-        /// basin reaches the plot), so the case reads the base, and reports how far the plan's part 1 now stands off it.
+        /// ground, the file's base. The restored fen has Basin (0, 0), so it carves nothing into the plot. The case still reads
+        /// that historical ground, allowing the issue's named boxes, and reports the plan's part 1 difference.
         /// </summary>
         static TerrainPlanGuardCase GinnysPlotHeld(Ctx x)
         {
@@ -843,7 +903,7 @@ namespace HiddenHarbours.App.Editor
             {
                 if (x.R.Frozen[i] != 2) continue;
                 part1.Add(i, x.C1, x.CI, x.R.E1, imp.Base, UnchangedCodes);
-                if (x.InGinnyRim(i)) rim.Add(i, x.CE, x.CI, x.R.E, imp.Base, UnchangedCodes);
+                if (x.InGinnyRim(i) || IssueBox(x, i) != null) rim.Add(i, x.CE, x.CI, x.R.E, imp.Base, UnchangedCodes);
                 else tier2.Add(i, x.CE, x.CI, x.R.E, imp.Base, UnchangedCodes);
             }
 
@@ -1264,7 +1324,8 @@ namespace HiddenHarbours.App.Editor
             double eEnd = x.G.Sample(x.R.E, end.X, end.Y), under = double.NaN;
             for (int j = 1; j * MouthStep <= MouthReach + 1e-9; j++)
                 if (x.G.Sample(x.R.E, end.X + dx * j * MouthStep, end.Y + dy * j * MouthStep) < mean) { under = j * MouthStep; break; }
-            k.Pass = climb <= StreamClimb && eEnd >= mean && !double.IsNaN(under);
+            k.Pass = climb <= StreamClimb && Math.Abs(Num(st.BedZ[st.BedZ.Length - 1]) - mean) <= x.Step &&
+                     Math.Abs(eEnd - mean) <= MouthLevelTolerance && !double.IsNaN(under);
             k.Detail = HeathBrookId + " climbs " + F(climb) + " m" + (at >= 0 ? " at (" + F(line.R[at].X) + ", " + F(line.R[at].Y) + ")" : "") + " (at most " +
                        F(StreamClimb) + "); its end (" + F(end.X) + ", " + F(end.Y) + ") stands " + F(eEnd - mean) + " m over mean tide, and the ground falls under it " +
                        (double.IsNaN(under) ? "NOT within " + F(MouthReach) + " m" : F(under) + " m past the end");
@@ -2164,6 +2225,7 @@ namespace HiddenHarbours.App.Editor
             public bool Add(Ctx x, int i)
             {
                 Cells++;
+                if (IssueBox(x, i) != null) return false;
                 int p = x.PlaceOf(i);
                 double d = Math.Abs(x.R.E[i] - x.Base[i]);
                 if (p < 0 && d > MaxAbs) { MaxAbs = d; MaxAt = i; }

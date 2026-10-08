@@ -17,26 +17,37 @@ MonoBehaviour:
   Source: 0
   Kind: 0
   Retired: 0
+  IssueBoxes:
+  - {x: 99.2, y: 52.5, z: 113.7, w: 68.4}
+  RetirementWhy: 
   Rule: "pass 6\u2019s cut over x 98.8 to 113.8, y 55.0 to 69.4 (SCHEMA: the ground
     change round the fall): the fan eased, the channel above the lip, the pool\u2019s
     bowl and the chute, blended into the ground round it over its last 1.6 m; and,
     where pass 9\u2019s shore stands 1.5 to 2 m under part 1\u2019s bank north of
     the pool, a shingle bar on the pool\u2019s north rim (crest +2.25, its outer
     face 0.45 m a metre down to pass 9\u2019s beach, notched to +2.03 at the spill)
-    so the pool holds at +2.05 as drawn"
-  Package: HH-st-peters-one-scene-package-2026-10-01
-  GroundFileSha256: c2cca02b0a9a41cfb2cdd47386f3fe2d839336c1e30b364af5693c9fd60e5e19
+    so the pool holds as drawn. Laid on Ginny\u2019s plan ground without the Fen
+    Pool\u2019s fill, which is pass 9 (the second issue s2.1). At the run\u2019s
+    head, the Fen Pool\u2019s sill: in the outlet\u2019s sector of the pool\u2019s
+    rim (28 deg either side of the run\u2019s line, in the pool\u2019s own frame),
+    between 1.03 and 1.15 of its radius, its crest +5.25 at the run\u2019s line (106.93,
+    55.3) rising 0.15 m to the sector\u2019s ends, its faces 1 in 1; only raises.
+    With it the bowl holds the fen at +5.25, as pass 9 plans it and the ruled boards
+    draw it"
+  Package: HH-st-peters-one-scene-package-2026-10-07
+  GroundFileSha256: 0c16426af980dcbb593f5f62bd3f458103e39e1a99ad46e134bafbe4909378ad
   Scene: keyscene.stp_alder_fall
   FileKind: cut and fill
   Ruled: "2026-09-28 (the Alder Fall stands as drawn); the pool\u2019s rim laid on
-    pass 9, 2026-10-01"
-  BoxMin: {x: 99.3, y: 52.5}
-  BoxMax: {x: 113.7, y: 68.3}
+    pass 9, 2026-10-01; re-cut on the ground without the fen\u2019s fill, with the
+    fen\u2019s sill, 2026-10-07 (the second issue s2.1)"
+  BoxMin: {x: 99.2, y: 54.1}
+  BoxMax: {x: 110.7, y: 68.4}
   Step: 0.1
-  Width: 145
-  Height: 159
+  Width: 116
+  Height: 144
   Patch: {fileID: 2800000, guid: 4e315bbc582d7a74bb29b449d37b2bb1, type: 3}
-  PatchSha256: b6bf211544913e84f956d2df40b5afa12dc4974dd7aba4599bff71814eb45205
+  PatchSha256: 96c4d7971ee8d8ec43fd080ed96119a7ff3be78b1349daff21e1f8688cfbc056
   PatchRange: {x: -4, y: 12}
   Line: []
   LineOf: 

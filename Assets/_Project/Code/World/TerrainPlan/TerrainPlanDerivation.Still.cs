@@ -33,6 +33,7 @@ namespace HiddenHarbours.World
         void StillOnGround()
         {
             var G = _E;
+            _pondWet = new bool[_n];
             var still = Filled(double.NaN);
             double step = (Num(_plan.HeightRange.y) - Num(_plan.HeightRange.x)) / TerrainPlanMaps.CodeCount;
             double cellM2 = _g.Mpp * _g.Mpp / IsoGround.GroundDepthScale;
@@ -40,7 +41,7 @@ namespace HiddenHarbours.World
             var own = new List<int>();                                              // the cells the ponds' and pools' basins hold
 
             // the ponds, then a key scene's pools: a flood at the surface
-            foreach (var p in _plan.Ponds) said.Add(PondOnGround(G, still, p, Outlet(p), 0, step, cellM2, own));
+            foreach (var p in _plan.Ponds) said.Add(PondOnGround(G, still, p, p.AdjustToSpill ? null : Outlet(p), p.AdjustToSpill ? Rules.StillStepsDown : 0, step, cellM2, own));
             if (_plan.StillPools != null)
                 foreach (var p in _plan.StillPools) said.Add(PondOnGround(G, still, p, null, Rules.StillStepsDown, step, cellM2, own));
 
@@ -143,7 +144,15 @@ namespace HiddenHarbours.World
                 return p.Id + " LEAKS at " + F(lvl, "0.0000") + ": no water";
             }
             double deepest = 0;
-            foreach (int i in cells) { deepest = Math.Max(deepest, lvl - G[i]); Lay(still, i, lvl); }
+            bool fallSource = false;
+            foreach (var fall in _plan.Falls ?? new WaterfallDef[0])
+                if (fall != null && fall.Stream != null && ReferenceEquals(fall.Stream.Source, p)) fallSource = true;
+            foreach (int i in cells)
+            {
+                deepest = Math.Max(deepest, lvl - G[i]); Lay(still, i, lvl);
+                if (fallSource && _pondWet != null) _pondWet[i] = true;
+                if (!string.IsNullOrEmpty(p.FloorZone) && _zone != null) _zone[i] = Zi(p.FloorZone);
+            }
             _r.Note(p.Id + ".ground_level", lvl);
             _r.Note(p.Id + ".ground_cells", cells.Count);
             _r.Note(p.Id + ".ground_m2", cells.Count * cellM2);
@@ -198,6 +207,9 @@ namespace HiddenHarbours.World
         /// along it is its guard's (StreamsNeverClimb). Its water, the bed plus its full depth (CD's rule), fills its channel.
         /// Returns the cells laid.
         /// </summary>
+        public static double BrookHeadLevel(StreamDef stream, double bed, int station) =>
+            station == 0 && stream.Source != null ? Num(stream.Source.Surface) : bed + Num(stream.Depth);
+
         int BrookOnGround(double[] G, double[] still, int n)
         {
             var st = _plan.Streams[n];
@@ -215,11 +227,11 @@ namespace HiddenHarbours.World
             for (int j = 0; j < m; j++)
             {
                 double x = g.R[j].X, y = g.R[j].Y;
-                if (reach != null && reach.InBox(x, y) && y < reach.ChuteTo) { zb[j] = double.NaN; continue; }   // the fall's own water
+                if (j > 0 && reach != null && reach.InBox(x, y) && y < reach.ChuteTo) { zb[j] = double.NaN; continue; }   // the fall's own water
                 double e = _g.Sample(G, x, y);
                 double body = BodyAt(x, y);
                 if (!double.IsNaN(body)) e = Math.Max(e, body - depth);
-                zb[j] = Math.Min(Interp(g.S[j], g.Knots, z), e);                   // the file's bed: no running minimum
+                zb[j] = BrookHeadLevel(st, Math.Min(Interp(g.S[j], g.Knots, z), e), j) - depth;                   // the file's bed: no running minimum
             }
             var widths = Num(st.Widths);
             double x0 = double.PositiveInfinity, y0 = double.PositiveInfinity, x1 = double.NegativeInfinity, y1 = double.NegativeInfinity;
@@ -307,7 +319,7 @@ namespace HiddenHarbours.World
             if (!Win(s.BoxX0, s.BoxY0, s.BoxX1, s.BoxY1, out int r0, out int r1, out int c0, out int c1)) return f.Id + " off the grid";
             for (int r = r0; r < r1; r++)
             for (int c = c0; c < c1; c++)
-                if (s.InBox(_xs[c], _ys[r]) && _ys[r] < s.ChuteTo) still[r * _w + c] = double.NaN;
+                if (s.InBox(_xs[c], _ys[r]) && _ys[r] < s.ChuteTo && (_pondWet == null || !_pondWet[r * _w + c])) still[r * _w + c] = double.NaN;
             // the pool: a flood at its level, inside its own window
             var pool = f.Pool;
             double lvl0 = s.Surf + s.PoolWater, R = Math.Max(s.Pra, s.Prb) * Num(_plan.FloodWindow) + Num(pool.Basin.x), leakQ = Num(_plan.FloodLeak);
@@ -344,7 +356,7 @@ namespace HiddenHarbours.World
             {
                 int i = r * _w + c;
                 double X = _xs[c], Y = _ys[r];
-                if (!s.InBox(X, Y) || s.PoolQ(X, Y) < 1) continue;
+                if (!s.InBox(X, Y) || s.PoolQ(X, Y) < 1 || (_pondWet != null && _pondWet[i])) continue;
                 double a = Math.Abs(X - s.CxAt(Y)), w;
                 if (Y >= s.ApproachFrom && Y <= s.LipY && a < s.WaterHalf)
                     w = s.ZbUp(Y) + (Y < s.Step ? s.GlideWater : Y < s.Sill ? s.SlideWater : s.SillWater);
