@@ -53,6 +53,18 @@ installer + a `ServiceLocator` exposed through Core interfaces. `lead-architect`
 
 ## 3. Core services (the spine)
 
+**Helm switches (2026-10-07):** `BoatAnchor` answers `IVesselWay` on the physics root and
+pushes `IVesselWayListener` when its derived lamp regime changes. Holding uses the existing
+`VesselWay.Moored`; stowed or dragging uses `UnderWay`. If a `MooredBoat` also lives on that
+root, both providers return the same combined answer: a declared berth or a holding anchor wins.
+Rebuilt lamps read that answer immediately; no way state is saved. `DeckIceBox` registers an
+`IInteractable` on the player's own deck, at the new `InteractPriority.DeckStorage` rung (-10),
+below doors (`Fixture`) and fuel work (`ToolTarget`). Both the box and the fuel tank register with
+`Interactables` on enable and relinquish that registration on disable; priority only applies to
+registered candidates. The switcher's helm-first ladder is unchanged.
+The lid consumes the shared interact verb (ADR 0043); its old L read is removed. The dev I ice
+scaffold remains as-is pending the input lane's PR 1; no binding or key is added.
+
 | Service | Responsibility | Notes / determinism |
 |---------|----------------|---------------------|
 | **EventBus** | Decoupled pub/sub between modules (`FishCaught`, `FishingStateChanged`, `TideChanged`, `BoatGrounded`, `DayStarted`, `MarketTick`). | Typed events; no module references another's classes. |
