@@ -3,7 +3,7 @@
   "exportSymbol": "ModernTruck2500",
   "variant": "modern2500",
   "schema": "hidden-harbours-gameplay/modern2500/v1",
-  "derivedFromRigSha256": "6d020da2881d188027b7033db8e7c8a0a17756cfd2abc6b6c6a0774862ac2eef",
+  "derivedFromRigSha256": "7b483a56d32329f4841f7f5678cadb18ff2dcdbbbf8c4ed68727c912f025df3b",
   "kind": "road_vehicle",
   "label": "Modern 2500",
   "generated": "bake-kit.js, from the rig's own G, anchorPoints() and the builder literals listed under each provenance",

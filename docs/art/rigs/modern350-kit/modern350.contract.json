@@ -3,7 +3,7 @@
   "status": "art candidate; requires game integration review",
   "rig": "modern350.rig.js",
   "exportSymbol": "ModernTruck350",
-  "rigSha256": "4dd63af08bc79a7f35fa4272e62909df129a4f144a1bf6d38bc09b4813cc3580",
+  "rigSha256": "9457a399d041e2b2590fb702305fdccf658ee7f1291bfe48664ee48ca361a8fb",
   "source": "Claude Design, the modern-trucks kit of 2026-09-26",
   "bake": {
     "scale_px_per_m": 32,

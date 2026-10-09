@@ -668,5 +668,5 @@
   }
   root.ModernTruck350={W,H,PX,DIRS:8,pivot:{x:cx,y:groundY},defaultElev:40,order:['N','NE','E','SE','S','SW','W','NW'],
     BODY,PRESETS,CUES,G,travel:{F:TF,R:TR},version:'1.0.0-art-candidate',list:()=>[RIG.key],dims,resolve,render,frames,project,
-    anchors,anchorPoints,bodyOffset:(y,o={})=>bodyOffset(y,resolve(o)),mesh,obj};
+    anchors,anchorPoints,bodyOffset:(y,o={})=>bodyOffset(y,resolve(o)),mesh,obj,KEY,GAIN,BIAS,LN,build};
 })(typeof globalThis!=='undefined'?globalThis:window);
