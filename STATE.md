@@ -1,6 +1,6 @@
 # Hidden Harbours: the design desk
 
-**As of 2026-10-07 18:41Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
+**As of 2026-10-09 20:22Z.** The Art desk (the owner's steady art seat, an AI) keeps this file. The owner rules; the Art desk writes this branch and checks every return you send.
 
 Read this file at the start of every session, then the brief the owner names. A ruling the owner gives you in a message wins over this file and over any brief. Some older docs still describe sprites where the owner has since ruled meshes (section 4); where they disagree, the ruling wins.
 
@@ -173,11 +173,14 @@ Read this file at the start of every session, then the brief the owner names. A 
   - the sea off the bluff stays empty; a boat for the bluff waits for the owner (call 86);
   - the game ends Route 91's town section at the region's edge (call 87), places the town bridge's 21 pieces at the town bridge's numbers (call 91), and lets a dory take the ground where the tide leaves it (call 92).
 
-  For your next Nine Mile Creek issue, four small corrections:
+  For your next Nine Mile Creek issue, six small corrections:
   - `region.json` lists calls 48 to 92 as open, and its `calls.standing` says 1 to 47. The owner ruled 48 to 58 on 10-03 and 59 to 92 on 10-07, so all 92 stand;
   - `prop.nmc_camp_tent_a19_cabinTent` is still in the package; the game's id is `prop.nmc_camp_tent_a19_cabin` (10-03, above);
   - the salt pond's east bank steps up to 1.79 m between neighbouring texels at about x -211, y -165.5 to -163.5, where the pond's bowl stops one texel short of the kept ground. Smooth it at your next ground issue;
+  - the town river's valley meets the west edge against a step: from y 222.75 north-east to about (-375, 234), column 0 and the texels next to it stand at the ceiling, +6.0, beside the valley floor at +3.4 to +5.4, a step of up to 2.6 m between neighbouring texels. Smooth it at your next ground issue;
+  - `plan.json` still runs `field.nmc_west_farm_south` from (-380, -130), and `hedge.nmc_y_minus96` along y -96 from the west edge to x -214, through the cupola Cape's lot (`lot.nmc_south_shore_estate_4`). Call 61 put the west farm's south edge, with a hedgerow, at y -80: move both there (the Rice Point brief, section 2);
   - in the text: NOTES' "The new areas" names 12 whole board PNGs (`boards/shore_afternoon.png` and the rest) that do not ship, as `PIXELS.txt` says, one of them an evening board Shore Lane's section never had; your README says the One Scene page carries calls 48 to 90 (they run to 92); and NOTES section 1 still names `pictures/region-key-scenes.png`, which `region-new-areas.png` replaced.
+- 10-08, Rice Point next. The owner: "Rice Point next, write the brief for CD". And on its shape: "it should be wider than it is tall, it wont be accessed by any northern roads only the south road in NMC, so it will be mainly shoreline with the wharf and different fishing areas". So Rice Point is the next region you draw, ground first: [briefs/BRIEF-2026-10-08-rice-point.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-10-08-rice-point.md).
 
 ## 5. How work comes back
 
@@ -225,6 +228,9 @@ Each thread has, or will get, its own paste in its own conversation. This list i
   Your re-issue of part 1's ground arrived on 10-01 and passed on real Node, 33 of 33. Your one-scene package (parts 2d, 2e and 2f, and all twelve scenes on one ground with one index) arrived on 10-02 and passed 24 of 24. Its re-issue the same day, with the north creek redrawn, passed 27 of 27. The owner took all three (section 4).
 
   Your re-issue of part 1's ground, with the truck wells and the five laid boxes, came back with your second re-issue of the package, the campground redrawn as the owner asked you. They passed on real Node, 35 of 35 and 32 of 32, and the owner took both (section 4). The Art desk baked the gas bar's three boards. Then the owner drew seven new areas with you, and the Art desk asked for them in one delivery. Your third issue of the package, with part 1's ground re-issued a third time, arrived on 10-07 in six parts and one. They passed on real Node, 38 of 38 and 11 of 11, every sum matching, and the ground moved only inside the new areas' boxes; the owner took them, your calls 59 to 92 as leaned (section 4). Nothing more is asked of Nine Mile Creek's key scenes.
+- Rice Point (10-08). Asked of you, ground first ([briefs/BRIEF-2026-10-08-rice-point.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-10-08-rice-point.md)):
+  - part 1, Rice Point's whole region as ground: the shore, the wharf as it stands today with its growth as a plan in stages, the fishing areas, the houses, and Route 91 carried on to its end, with the seam to Nine Mile Creek held fixed; as numbers and as a texture, with your list of key scenes; then a stop for the owner's look;
+  - part 2, the key scenes the owner picks, drawn as one scene on the ruled ground.
 - Character kit 9.2 (09-24), then kits 10.2 (10-01) and 10.3 (10-03), on rig 10. 9.2 has been in the game since 09-26, and since 09-30 it plays its face, blink, look-at and carry clips. A change in review bakes the ten cast presets from rig 10. Kit 10.3 answered the send-back on 10.2, [briefs/BRIEF-2026-10-03-character-10-2-send-back.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-10-03-character-10-2-send-back.md), and it passes on real Node once its files are regenerated there. As shipped, your checker finds 5 problems on real Node, all in the last decimals or in the golden report's tied "worst at" labels; no gate and no pixel differs. The owner's ruling on the aim bar is in section 4. Nothing is asked of you on the characters now. The Art desk's few small findings on 10.3 come with the next character brief, and nothing in the game waits on them.
 - The channel check (09-27, on this branch): DONE the same day. Text reaches you; pictures do not (section 1). [briefs/BRIEF-2026-09-27-channel-check.md](https://github.com/apholmes7-bot/hiddenharbours/blob/design-desk/briefs/BRIEF-2026-09-27-channel-check.md).
 
