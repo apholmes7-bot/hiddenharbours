@@ -41,6 +41,9 @@ namespace HiddenHarbours.UI
         /// </summary>
         public const string TrailerCaptured = "Pin's in the slot — get out and couple her";
 
+        /// <summary>A control hint, not an unearned instrument readout.</summary>
+        public const string FishingAtHelm = "No fishing at the helm — E to the deck.";
+
         public const string Unknown   = "--";
         public const string Booting   = "";   // empty = HUD shows nothing until services are up
 
