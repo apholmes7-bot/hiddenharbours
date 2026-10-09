@@ -100466,6 +100466,13 @@ MonoBehaviour:
     BedElevation: -3.9
     HalfWidthMetres: 12
     CuttableCeiling: -1.6
+  - Waypoints:
+    - {x: 1E+02, y: 7E+01}
+    - {x: 98.95, y: 84}
+    - {x: 160.2, y: 84}
+    BedElevation: -4.2074075
+    HalfWidthMetres: 12
+    CuttableCeiling: -1.6
 --- !u!4 &581129740
 Transform:
   m_ObjectHideFlags: 0
