@@ -1122,7 +1122,7 @@ namespace HiddenHarbours.Core
     [System.Serializable]
     public struct HelmOverlaySettings
     {
-        [Tooltip("Scale of the small dash-card state (screen pixels per rig pixel). 1 = native rig size.")]
+        [Tooltip("Scale of the small card in HUD reference pixels per rig pixel. 1 = native at 1280x720.")]
         [Min(0.1f)] public float SmallScale;
 
         [Tooltip("Scale of the FOCUSED state (click the instrument to enlarge; Esc/click-away returns). " +
@@ -1136,7 +1136,7 @@ namespace HiddenHarbours.Core
         [Tooltip("Where the FOCUSED card centres horizontally, as a 0..1 fraction of screen width.")]
         [Range(0f, 1f)] public float FocusCenterX01;
 
-        [Tooltip("Margin (px) from the screen's bottom edge — BOTH states anchor to the bottom of the " +
+        [Tooltip("Margin (HUD reference px) from the screen's bottom edge — BOTH states anchor to the bottom of the " +
                  "screen (the helm rises from the dash).")]
         [Min(0f)] public float MarginY;
 
@@ -1238,14 +1238,14 @@ namespace HiddenHarbours.Core
     [System.Serializable]
     public struct BoatUiWindowSettings
     {
-        [Tooltip("Height (screen px) of the window title strip that appears on hover above each " +
+        [Tooltip("Height (screen px; HUD reference px for the helm) of the window title strip that appears on hover above each " +
                  "boat-UI card — the grab handle for dragging.")]
         [Min(0f)] public float TitleBarPx;
 
-        [Tooltip("Width (screen px) of the two strip buttons (collapse tier, hide).")]
+        [Tooltip("Width (screen px; HUD reference px for the helm) of the two strip buttons (collapse tier, hide).")]
         [Min(0f)] public float ChromeButtonPx;
 
-        [Tooltip("Size (screen px) of the corner resize grip inside the card's bottom-right.")]
+        [Tooltip("Size (screen px; HUD reference px for the helm) of the corner resize grip inside the card's bottom-right.")]
         [Min(0f)] public float GripPx;
 
         [Tooltip("The COMPACT collapse tier's scale multiplier on the window's Full size — the " +
