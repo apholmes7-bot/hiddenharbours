@@ -10,8 +10,8 @@ Every path lives in the live config (``slot.json``), never in this file: the rep
     python slot.py pause [--reason TEXT]  |  resume  |  stop
     python slot.py take --label L
     python slot.py wait --label L --max-minutes M
-    python slot.py launch --lease ID [--max-minutes 30] -- <unity args>
-    python slot.py wait-run --lease ID [--max-minutes M]
+    python slot.py launch --lease ID [--max-minutes 9] -- <unity args>
+    python slot.py wait-run --lease ID [--max-minutes 9]
     python slot.py keep --lease ID
     python slot.py give --lease ID [--stop]
 
@@ -90,6 +90,9 @@ RUN_POLL_SECONDS = 3.0
 CREATED_TOLERANCE_MS = 1000
 PORCELAIN_MAX_LINES = 200
 RETURNS_SHOWN = 3
+# How long `launch` and `wait-run` wait before answering RUNNING: under a lane's 10-minute tool call
+# (the owner's ruling, 10-08). The watchdog keeps the editor; the lane calls `wait-run` again.
+CALL_WAIT_MINUTES = 9.0
 REPLACE_RETRIES = 20
 
 LABEL_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,47}$")
@@ -1790,10 +1793,10 @@ def build_parser():
     w.add_argument("--max-minutes", type=float, required=True)
     la = sub.add_parser("launch", parents=[common], help="start Unity under the watchdog: launch --lease ID -- args")
     la.add_argument("--lease", required=True)
-    la.add_argument("--max-minutes", type=float, default=30.0)
+    la.add_argument("--max-minutes", type=float, default=CALL_WAIT_MINUTES)
     wr = sub.add_parser("wait-run", parents=[common], help="wait again for a launch the watchdog still has")
     wr.add_argument("--lease", required=True)
-    wr.add_argument("--max-minutes", type=float, default=30.0)
+    wr.add_argument("--max-minutes", type=float, default=CALL_WAIT_MINUTES)
     k = sub.add_parser("keep", parents=[common], help="heartbeat between launches")
     k.add_argument("--lease", required=True)
     g = sub.add_parser("give", parents=[common], help="end the lease")

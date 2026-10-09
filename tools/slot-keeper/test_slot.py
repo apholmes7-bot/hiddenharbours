@@ -655,6 +655,11 @@ class SafetyAndRecordTests(Base):
         self.assertFalse(slot.names_path("Unity.exe -projectPath C:\\hh-gauntlet\\box2", "C:\\hh-gauntlet\\box"))
         self.assertFalse(slot.names_path("Unity.exe -projectPath D:\\C\\hh-gauntlet\\box", "C:\\hh-gauntlet\\box"))
 
+    def test_launch_and_wait_run_wait_9_minutes_by_default(self):
+        parser = slot.build_parser()
+        self.assertEqual(parser.parse_args(["launch", "--lease", "L"]).max_minutes, 9)
+        self.assertEqual(parser.parse_args(["wait-run", "--lease", "L"]).max_minutes, 9)
+
 
 if __name__ == "__main__":
     unittest.main()

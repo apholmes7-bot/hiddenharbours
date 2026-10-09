@@ -25,8 +25,8 @@ Exit codes: **0** done or GRANTED, **1** an error, **2** REFUSED, **3** QUEUED, 
 | `stop` | owner | Ends the current lease now: closes its editor by PID tree, waits for the watchdog, writes the return. |
 | `take --label L` | lane | Answers at once: `GRANTED <lease-id>`, `QUEUED (position n of m): why`, or `REFUSED: why`. |
 | `wait --label L --max-minutes M` | lane | `take` every `wait_check_seconds` until granted or M runs out (`STILL QUEUED ...`). |
-| `launch --lease ID [--max-minutes 30] -- <unity args>` | lane | R2 and R3, then a detached watchdog starts the editor and enforces R4-R6. Prints the outcome line, or `RUNNING ...` when M runs out first. |
-| `wait-run --lease ID [--max-minutes M]` | lane | Waits again on a launch the watchdog still has. |
+| `launch --lease ID [--max-minutes 9] -- <unity args>` | lane | R2 and R3, then a detached watchdog starts the editor and enforces R4-R6. Prints the outcome line, or `RUNNING ...` when M runs out first. |
+| `wait-run --lease ID [--max-minutes 9]` | lane | Waits again on a launch the watchdog still has. |
 | `keep --lease ID` | lane | Heartbeat between launches: resets the idle clock. |
 | `give --lease ID [--stop]` | lane | Ends the lease and writes the return. Refused while a launch runs, unless `--stop`. |
 
