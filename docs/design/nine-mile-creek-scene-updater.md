@@ -28,3 +28,42 @@ New terrain, roads, passages, lots, people, fleet or interiors each need an expl
 The trial on `032f6239` reproduced the 298 trees and their bindings, but dropped the S1 seabed texture. It also changed shared-helper output beyond Phase A's accepted inventory: local wind fallback values, nav-mark physics/phase overrides, vehicle presentation children, current sprite sizes and grass payloads. The raw trial changed roughly 739,000 lines including regenerated ids. The rejected trial, object ledger and named deletions are retained in the lane's ignored artifacts. N1 restored the base scene before applying its scoped patch; none of those wider trial changes is in the final scene.
 
 N1 adds six EditMode cases: repeatability, outside-root preservation (including the tree/shadow census), builder parity, and negative controls for missing sprites, unknown components and transformed parents. No production test or subject is retired. The scene exporter remains retired under #900.
+
+
+## Owner hold 10-09: berth depth, placement and pale foam
+
+The live scene lagged behind two existing builder plans. Its `TidalTerrain` carried only the
+harbour channel, so the tide riders correctly grounded the wall fleet on the -1.6 m basin at low
+water. Its five wall-hull transforms also retained the old packed grid. The plan-only berth tests
+could not detect those stale scene placements.
+
+`NineMileCreekBerthRefresh` extends the one-root text-patch route with `03-berth-trench` and
+`04-wall-berths`. The first adds the existing `NineMileCreekMainland.BerthTrench` after the
+harbour entry. It parses the channel schema and requires exact float values, field order and
+entry/waypoint counts; alternate float spelling is accepted, but the original harbour bytes
+are retained. The second resolves owners by asset identity within `NineMileCreekFleet` and
+moves only the five wall hulls to their existing owner berth plan. Float owners are unchanged.
+The combined scene diff is seven added channel lines and five position-line replacements,
+with no deleted objects or other serialized changes.
+
+The pale discs were advected wake foam drawn by the displaced-water chunk renderers. A linear
+current response continually deposited foam from moored hulls, and seeking the plate clock
+changed the wave field while its animator still eased from the old field, producing a false
+impact pulse. `FoamInjector` now listens to Core's vessel-way seam, gives moored hulls zero
+travel velocity and a serialized cubic current response, and re-primes its wave/history state
+on a clock seek. Underway wake shaping remains linear. No boat, water shader or material is
+changed; `MooredBoat.cs` is untouched.
+
+Nine new EditMode cases guard exact channel parsing, rejection of a moved waypoint/changed bed,
+scene parity, preservation and repeatability. Three new PlayMode cases load the real NMC scene:
+all five wall hulls must float and rise with its actual float at four tide times; posed mesh
+bounds must leave the fender gap; and a same-frame wake-layer pixel comparison must find no pale
+disc under any of the seven resident hulls. The pixel case explicitly skips without a graphics
+device. All three controls failed for their named defects against the unfixed copy. No test or
+production subject is retired.
+
+The owner review evidence lives under `artifacts/nmc-n1/plates/934-fix/verified/`: the original
+low/mean/high camera and times, spring low at game second 24840 (sea -2.1968317 m), and the whole
+berth line at mean, with `proof.json`. The night-time spring-low plate retains the actual lighting.
+The final scene's second application is byte-identical, SHA256
+`B37D074EB976F51E06A3252E0F8D7DEA13FE0C176E22EA0138E4C1A38F7B471B`.
