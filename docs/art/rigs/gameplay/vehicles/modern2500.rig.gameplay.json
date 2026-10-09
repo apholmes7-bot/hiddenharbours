@@ -2,7 +2,7 @@
   "rig": "modern2500.rig.js",
   "exportSymbol": "ModernTruck2500",
   "variant": "modern2500",
-  "schema": "hidden-harbours-gameplay/modern2500/v1",
+  "schema": "hidden-harbours-gameplay/modern2500/v2",
   "derivedFromRigSha256": "7b483a56d32329f4841f7f5678cadb18ff2dcdbbbf8c4ed68727c912f025df3b",
   "kind": "road_vehicle",
   "label": "Modern 2500",
@@ -48,29 +48,29 @@
     "wheels": 4,
     "collider_bbox": {
       "x": [
-        -1.085,
-        1.085
+        -1.092,
+        1.092
       ],
       "y": [
-        -3.19,
-        3.19
+        -3.25,
+        3.275
       ],
       "z": [
-        0,
-        2.11
+        0.004,
+        2.108
       ],
-      "_note": "flares and bumpers, not mirrors or steps. Add 0.19 m per side if the mirrors must be solid."
+      "_note": "Node bounds at rest with hitch, steps and mirrors disabled: x from the body group; y and z from all mesh faces. Rounded to millimetres."
     },
     "main_body_bbox": [
       [
-        -1.085,
-        -3.19,
-        0
+        -1.092,
+        -3.25,
+        0.004
       ],
       [
-        1.085,
-        3.19,
-        2.11
+        1.092,
+        3.275,
+        2.108
       ]
     ],
     "ground_clearance_m": {
@@ -253,52 +253,6 @@
     ],
     "provenance": "interior() and cab(), read verbatim"
   },
-  "SEATS": [
-    {
-      "id": "front_street",
-      "role": "driver",
-      "seat_ref": [
-        -0.53,
-        0.5,
-        1.26
-      ]
-    },
-    {
-      "id": "front_curb",
-      "role": "passenger",
-      "seat_ref": [
-        0.53,
-        0.5,
-        1.26
-      ]
-    },
-    {
-      "id": "rear_bench",
-      "role": "rear",
-      "seat_ref": [
-        0,
-        -0.46,
-        1.26
-      ],
-      "positions": [
-        [
-          -0.54,
-          -0.46,
-          1.26
-        ],
-        [
-          0,
-          -0.46,
-          1.26
-        ],
-        [
-          0.54,
-          -0.46,
-          1.26
-        ]
-      ]
-    }
-  ],
   "CARGO": {
     "floor": {
       "z": 1.02,
@@ -1141,8 +1095,8 @@
       "at": "door_fl",
       "anchor": "doorFL",
       "reach_point": [
-        -1.7,
-        0.82,
+        -1.602,
+        0.2,
         0
       ],
       "visible_facings": [
@@ -1157,8 +1111,8 @@
       "at": "door_fr",
       "anchor": "doorFR",
       "reach_point": [
-        1.7,
-        0.82,
+        1.602,
+        0.2,
         0
       ],
       "visible_facings": [
@@ -1173,8 +1127,8 @@
       "at": "door_rl",
       "anchor": "doorRL",
       "reach_point": [
-        -1.7,
-        -0.31,
+        -1.602,
+        -0.78,
         0
       ],
       "visible_facings": [
@@ -1189,8 +1143,8 @@
       "at": "door_rr",
       "anchor": "doorRR",
       "reach_point": [
-        1.7,
-        -0.31,
+        1.602,
+        -0.78,
         0
       ],
       "visible_facings": [
@@ -1300,5 +1254,10 @@
     "roof": "not a walkable surface",
     "mirror_collider": "BODY.collider_bbox stops at the flares; the mirrors reach 2.54 m over.",
     "steering": "STEERING moves the front wheels only; nothing couples it to heading."
+  },
+  "_integration": {
+    "cab": "Enclosed seats remain in CAB.seats. drive.at and ride.at name doors; the driver stays hidden.",
+    "door_reach": "x is the measured body half-width plus 0.51 m; y is G.doorF[0] or G.doorR[0]. Ground and door clearance await the runtime plates.",
+    "towing": "No towing. TOW and hitch interaction data are inert."
   }
 }
