@@ -14,6 +14,12 @@ namespace HiddenHarbours.Core
     /// </summary>
     public static class SaveStore
     {
+#if UNITY_EDITOR
+        // Test-only fault at the replacement boundary, after the temp file is complete.
+        // A test must filter its own destination path and restore this hook in finally/teardown.
+        // No override of a successful write and no player-build persistence behavior change.
+        internal static System.Action<string> BeforeReplaceForTests;
+#endif
         /// <summary>Default save file name under <see cref="Application.persistentDataPath"/>.</summary>
         public const string DefaultFileName = "savegame.json";
 
@@ -103,7 +109,13 @@ namespace HiddenHarbours.Core
 
             // Swap temp → final. File.Replace is atomic on the same volume when the target exists;
             // first write is a plain move.
-            if (File.Exists(path)) File.Replace(tmp, path, destinationBackupFileName: null);
+            if (File.Exists(path))
+            {
+#if UNITY_EDITOR
+                BeforeReplaceForTests?.Invoke(path);
+#endif
+                File.Replace(tmp, path, destinationBackupFileName: null);
+            }
             else File.Move(tmp, path);
         }
 
