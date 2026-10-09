@@ -67,7 +67,7 @@ scaffold remains as-is pending the input lane's PR 1; no binding or key is added
 
 | Service | Responsibility | Notes / determinism |
 |---------|----------------|---------------------|
-| **EventBus** | Decoupled pub/sub between modules (`FishCaught`, `FishingStateChanged`, `TideChanged`, `BoatGrounded`, `DayStarted`, `MarketTick`). | Typed events; no module references another's classes. |
+| **EventBus** | Typed, synchronous, main-thread notifications between modules; events are notifications, not transactions. A handler failure is logged once and later handlers and the publisher continue, without rethrowing. A request still needs its own explicit outcome. | Ordered, flattened snapshots preserve delegate removal and reentrancy semantics. Successful Publish allocates zero bus bytes after initialization; subscription changes and fault logging may allocate. Unexpected exception logs fail tests; injected faults require exact `LogAssert.Expect`, never ignored failures. [ADR 0052](../adr/0052-event-handler-isolation.md). |
 | **TimeService** | The 24h clock, day/week/season/year, time scale, sleep/wait. `gameTime` is a `double` (in-game seconds). | The master clock everything derives from. |
 | **EnvironmentService** | Computes **tide, wind, weather, sea state, visibility** from `(worldSeed, gameTime, region)`. Emits an `EnvironmentSample` per region per tick. | **Deterministic** → not saved, recomputed. (`design/time-tides-weather.md`) |
 | **RegionService** | Additive load/unload of region scenes, the `MapGraph`, travel/transit, fog-of-war reveal state. | Reveal state is saved; geometry is authored. |
