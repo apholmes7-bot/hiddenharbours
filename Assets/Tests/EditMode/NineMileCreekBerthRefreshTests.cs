@@ -80,6 +80,43 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
         [Test]
+        public void TheCommittedWallFleetMatchesItsOwnerBerths() =>
+            Assert.IsTrue(NineMileCreekBerthRefresh.Fleet(SceneYaml.Parse(Text)).IsEmpty);
+        [Test]
+        public void ASecondFleetRunChangesNothing()
+        {
+            string text = Text;
+            string once = NineMileCreekBerthRefresh.Fleet(SceneYaml.Parse(text)).ApplyTo(text);
+            Assert.AreEqual(once, NineMileCreekBerthRefresh.Fleet(SceneYaml.Parse(once)).ApplyTo(once));
+        }
+
+        // A deliberate always-pass precondition, in memory only. Exercise the SAME assertions as
+        // the two permanent refusal tests, save their red output, then apply the real guarded patch.
+        public static void ProveControlsAndApply()
+        {
+            var messages = new System.Collections.Generic.List<string>();
+            System.Action<string, HiddenHarbours.World.MainlandChannel[]> alwaysPass = (block, plan) => { };
+            foreach (var check in new System.Action<System.Action<string, HiddenHarbours.World.MainlandChannel[]>>[]
+                { AssertMovedWaypointRejected, AssertChangedBedRejected })
+            {
+                check(NineMileCreekBerthRefresh.RequireChannels);
+                try { check(alwaysPass); }
+                catch (AssertionException e) { messages.Add(check.Method.Name + ": RED as required: " + e.Message); }
+            }
+            File.WriteAllLines("artifacts/nmc-n1/fix934/precondition-always-pass-control.txt", messages);
+            Assert.AreEqual(2, messages.Count, "Both negative guards must fail with an always-pass precondition.");
+            NineMileCreekBerthRefresh.ApplyOwnerHold();
+            string once = Text;
+            NineMileCreekBerthRefresh.ApplyTrench(); NineMileCreekBerthRefresh.ApplyFleet();
+            string twice = Text;
+            using (var sha = System.Security.Cryptography.SHA256.Create())
+                File.WriteAllLines("artifacts/nmc-n1/fix934/second-run-sha256.txt", new[] {
+                    System.BitConverter.ToString(sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(once))).Replace("-", ""),
+                    System.BitConverter.ToString(sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(twice))).Replace("-", "") });
+            Assert.AreEqual(once, twice);
+        }
+
+        [Test]
         public void TheCommittedTerrainCarriesTheBuildersBerthTrench()
         {
             Assert.IsTrue(NineMileCreekBerthRefresh.Trench(SceneYaml.Parse(Text)).IsEmpty,

@@ -93,6 +93,57 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
+        public const string FleetStep = "04-wall-berths";
+        public static LayerPatch Fleet(SceneYaml scene)
+        {
+            Doc root = scene.RootNamed(NineMileCreekMooredFleet.RootName);
+            Doc rootTransform = scene.TransformOf(root);
+            if (rootTransform.Field("m_LocalPosition") != "{x: 0, y: 0, z: 0}" ||
+                rootTransform.Field("m_LocalRotation") != "{x: 0, y: 0, z: 0, w: 1}" ||
+                rootTransform.Field("m_LocalScale") != "{x: 1, y: 1, z: 1}")
+                throw new Refusal("The fleet root must retain its builder transform.");
+            var patch = new LayerPatch(FleetStep, NineMileCreekMooredFleet.RootName, root.FileId);
+            var mine = scene.SubtreeOf(root.FileId);
+            var found = new System.Collections.Generic.HashSet<string>(StringComparer.Ordinal);
+            var expected = NineMileCreekMooredFleet.LoadOwners().Where(o => !o.LiesAtTheFloat && o.IsPresentable())
+                .ToDictionary(o => o.Id, StringComparer.Ordinal);
+            foreach (Doc boat in scene.Docs.Where(d => mine.Contains(d.FileId) && d.IsScript("HiddenHarbours.Boats.MooredBoat")))
+            {
+                string guid = ObjRef.Parse(boat.Field("_owner")).Guid;
+                var owner = AssetDatabase.LoadAssetAtPath<HiddenHarbours.Boats.BoatOwnerDef>(AssetDatabase.GUIDToAssetPath(guid));
+                if (owner == null) throw new Refusal("A fleet hull has an unresolved owner reference.");
+                if (owner.LiesAtTheFloat) continue;
+                if (!expected.ContainsKey(owner.Id) || !found.Add(owner.Id))
+                    throw new Refusal("Unknown or repeated wall owner: " + owner.Id);
+                Doc go = scene.Require(boat.FieldRef("m_GameObject"), owner.Id);
+                Doc tr = scene.TransformOf(go);
+                if (tr.FieldRef("m_Father") != rootTransform.FileId)
+                    throw new Refusal(owner.Id + " is not a direct fleet child.");
+                var at = NineMileCreekMainland.BerthPos(owner.BerthIndex, NineMileCreekMooredFleet.HalfBeamOf(owner));
+                var old = ParseVec3(tr.Field("m_LocalPosition"));
+                string value = $"{{x: {F(at.x)}, y: {F(at.y)}, z: {F(old.z)}}}";
+                string after = tr.Text.Replace("  m_LocalPosition: " + tr.Field("m_LocalPosition"), "  m_LocalPosition: " + value);
+                patch.Edit(tr, after, "NineMileCreekFleet/" + owner.Id);
+            }
+            if (!found.SetEquals(expected.Keys)) throw new Refusal("The serialized wall fleet differs from its owner register.");
+            return patch.Seal(scene);
+        }
+
+        [MenuItem("Hidden Harbours/Nine Mile Creek Layers/Apply wall berths")]
+        public static void ApplyFleet() => Apply(Fleet);
+
+        public static void ApplyOwnerHold()
+        {
+            ApplyTrench();
+            File.Copy(NineMileCreekLayerRefresh.ScenePath, "artifacts/nmc-n1/fix934/scene-trench-only.unity", true);
+            ApplyFleet();
+            string once = File.ReadAllText(NineMileCreekLayerRefresh.ScenePath);
+            ApplyTrench(); ApplyFleet();
+            string twice = File.ReadAllText(NineMileCreekLayerRefresh.ScenePath);
+            if (once != twice) throw new InvalidOperationException("Second berth refresh changed scene bytes.");
+            UnityEngine.Debug.Log("NMC_BERTH_SECOND_RUN_IDENTICAL");
+        }
+
         static string Channels(params MainlandChannel[] channels)
         {
             var text = new StringBuilder("  _channels:");
